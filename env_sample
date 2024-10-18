@@ -1,0 +1,25 @@
+
+# DEBUG=True
+SECRET_KEY=your_secret_key
+ALLOWED_HOSTS=['*']
+DEV_USE_AUDITLOG=False
+
+DJANGO_STORAGE_BACKEND=local
+# DJANGO_STORAGE_BACKEND=google
+STORAGES_STATICFILES_BACKEND=whitenoise.storage.CompressedStaticFilesStorage
+# STORAGES_STATICFILES_BACKEND=whitenoise.storage.CompressedManifestStaticFilesStorage
+# GS_CREDENTIALS={serviceaccount_data_string}
+# GS_BUCKET_NAME=bucket_name
+# GS_PROJECT_ID=project_id
+# GS_IS_GZIPPED=False
+# GZIP_CONTENT_TYPES=(text/css,text/javascript,application/javascript,application/x-javascript,image/svg+xml)
+# GS_DEFAULT_ACL=None
+# GS_QUERYSTRING_AUTH=True
+# GS_FILE_OVERWRITE=True
+
+EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+EMAIL_HOST=localhost
+EMAIL_PORT=25
+EMAIL_USE_TLS=False
+EMAIL_HOST_USER=None
+EMAIL_HOST_PASSWORD=None
