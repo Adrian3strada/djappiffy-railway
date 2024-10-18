@@ -47,3 +47,4 @@ django-cors-headers
 dj-database-url
 firebase_admin
 django-jazzmin
+django-cities-light

@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "common.base",
     "common.users",
     "common.firebase_auth",
+    "common.misc",
 
     "common.producers",
     "common.brokers",
