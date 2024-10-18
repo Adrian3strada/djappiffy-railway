@@ -79,7 +79,6 @@ INSTALLED_APPS = [
     "common.government",
 
     "common.profiles",
-    "common.organizations",
 
 
 ]
@@ -99,7 +98,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
 ]
 
-ROOT_URLCONF = "forestiffy_backend.urls"
+ROOT_URLCONF = "application.urls"
 
 TEMPLATES = [
     {

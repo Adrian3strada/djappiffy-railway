@@ -58,4 +58,4 @@ RUN python manage.py collectstatic --noinput --clear
 #   phase facilities of your hosting platform. This is used only so the
 #   Wagtail instance can be started with a simple "docker run" command.
 # CMD set -xe; python manage.py migrate --noinput; gunicorn application.wsgi:application
-CMD gunicorn forestiffy_backend.wsgi:application --workers 2 --worker-class gthread --threads 2 --timeout 180 --log-level=info --access-logfile - --access-logformat '%({x-forwarded-for}i)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
+CMD gunicorn application.wsgi:application --workers 2 --worker-class gthread --threads 2 --timeout 180 --log-level=info --access-logfile - --access-logformat '%({x-forwarded-for}i)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'

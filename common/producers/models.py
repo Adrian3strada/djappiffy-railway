@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-from profiles.models import OrganizationProfile
+from common.profiles.models import OrganizationProfile
 
 # Create your models here.
 

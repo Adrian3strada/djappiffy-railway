@@ -3,7 +3,7 @@ line-length = 80
 extend-exclude = ["migrations"]
 
 [tool.django-stubs]
-django_settings_module = "forestiffy_backend.settings.dev"
+django_settings_module = "application.settings.dev"
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -16,7 +16,7 @@ exclude = [
 ]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "forestiffy_backend.settings.dev"
+DJANGO_SETTINGS_MODULE = "application.settings.dev"
 addopts = "--cov --cov-report html"
 python_files = "tests.py test_*.py"
 

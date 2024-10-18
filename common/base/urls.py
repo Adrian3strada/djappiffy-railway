@@ -1,5 +1,5 @@
 from django.urls import path
-from base.router import drf_router
+from common.base.router import drf_router
 from .views import CountryListView
 from .viewsets import ProductViewSet
 

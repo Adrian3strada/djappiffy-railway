@@ -8,7 +8,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 from search import views as search_views
 
-from base.router import drf_router
+from common.base.router import drf_router
 
 urlpatterns = [
     path("dadmin/", admin.site.urls),
@@ -18,10 +18,10 @@ urlpatterns = [
 
     path("", include("common.base.urls")),
     path("", include("common.profiles.urls")),
-    path("", include("eudd.producers.urls")),
-    path("", include("eudd.importers.urls")),
-    path("", include("eudd.exporters.urls")),
-    path("", include("eudd.government.urls")),
+    path("", include("common.producers.urls")),
+    path("", include("common.importers.urls")),
+    path("", include("common.exporters.urls")),
+    path("", include("common.government.urls")),
 ]
 
 # Añadir el set_language

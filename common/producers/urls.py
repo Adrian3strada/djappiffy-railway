@@ -1,4 +1,4 @@
-from base.router import drf_router
+from common.base.router import drf_router
 from .viewsets import ProducerViewSet, CertificationViewSet
 
 # write your urls here
