@@ -72,13 +72,16 @@ INSTALLED_APPS = [
     "common.users",
     "common.firebase_auth",
 
+    "common.producers",
+    "common.brokers",
+    "common.exporters",
+    "common.importers",
+    "common.government",
+
     "common.profiles",
     "common.organizations",
 
-    "eudd.producers",
-    "eudd.exporters",
-    "eudd.importers",
-    "eudd.government",
+
 ]
 
 MIDDLEWARE = [
