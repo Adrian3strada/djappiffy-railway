@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 # Create your models here.
 
 
+"""
 class TaxRegimeCategory(Orderable):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='tax_regime_categories')
@@ -20,6 +21,7 @@ class TaxRegimeCategory(Orderable):
         # verbose_name_plural = _('Categorías de Regímenes Fiscales')
         verbose_name = _('Tax Regime Category')
         verbose_name_plural = _('Tax Regime Categories')
+"""
 
 
 class TaxRegime(Orderable):
@@ -57,7 +59,7 @@ class LegalEntityCategory(Orderable):
 class LegalEntity(Orderable):
     tax_regime = models.ForeignKey(TaxRegime, verbose_name=_('Tax regime'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
-    category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Category'), on_delete=models.PROTECT)
+    category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal Entity Category'), on_delete=models.PROTECT)
     tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
     country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='legal_entities')
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
@@ -78,3 +80,23 @@ class LegalEntity(Orderable):
     class Meta:
         verbose_name = _('Legal Entity')
         verbose_name_plural = _('Legal Entities')
+
+
+class BillingSerieKind(models.Model):
+    name = models.CharField(max_length=60, verbose_name=_('Name'), unique=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class BillingSerie(models.Model):
+    serie = models.CharField(max_length=100, verbose_name=_('Serie'))
+    folio = models.CharField(max_length=160, verbose_name=_('Folio'))
+    kind = models.ForeignKey(BillingSerieKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
+    is_enabled = models.BooleanField(default=False, verbose_name=_('Is enabled'))
+    legal_entity = models.ForeignKey(LegalEntity, verbose_name=_('Legal Entity'), on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = _('Billing Serie')
+        verbose_name_plural = _('Billing Series')
+        unique_together = ('serie', 'folio', 'kind', 'legal_entity')

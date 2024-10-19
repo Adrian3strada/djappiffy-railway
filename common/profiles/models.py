@@ -35,6 +35,7 @@ class UserProfile(models.Model):
 class OrganizationProfile(models.Model):
     kind = models.CharField(max_length=20, choices=ORGANIZATION_TYPES)
     name = models.CharField(max_length=255)
+    logo = models.ImageField(upload_to='logos/', blank=True, null=True)
     idf = models.CharField(max_length=100)  # TODO: determinar si el id fiscal debe ser único, es decir, si solo puede haber un solo registro con el mismo idf
     address = models.TextField()
     phone_number = models.CharField(max_length=20)

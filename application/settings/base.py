@@ -67,11 +67,12 @@ INSTALLED_APPS = [
     'modeltranslation',
     'cities_light',
 
-    # Forestiffy apps
+    # djappiffy apps
     "common.base",
     "common.users",
     "common.firebase_auth",
-    "common.misc",
+    "common.profiles",
+    "common.billing",
 
     "common.producers",
     "common.brokers",
@@ -79,8 +80,7 @@ INSTALLED_APPS = [
     "common.importers",
     "common.government",
 
-    "common.profiles",
-
+    "packhouses.catalogs",
 
 ]
 
