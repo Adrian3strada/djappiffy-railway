@@ -64,8 +64,8 @@ INSTALLED_APPS = [
     'organizations',
     'django_filters',
     'django_extensions',
-    'django_countries',
     'modeltranslation',
+    'cities_light',
 
     # Forestiffy apps
     "common.base",
@@ -153,7 +153,7 @@ AUTH_USER_MODEL = "users.User"
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "es-es"
+LANGUAGE_CODE = "es"
 
 TIME_ZONE = "America/Mexico_City"
 
@@ -261,22 +261,22 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 JAZZMIN_SETTINGS = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)
-    "site_title": "Certiffy Admin",
+    "site_title": "djappiffy Admin",
 
     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_header": "Certiffy",
+    "site_header": "djappiffy",
 
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_brand": "Certiffy",
+    "site_brand": "djappiffy",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
-    "site_logo": "img/logo.png",
+    "site_logo": "img/logo2.png",
 
     # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
-    "login_logo": True,
+    "login_logo": False,
 
     # Logo to use for login form in dark themes (defaults to login_logo)
-    "login_logo_dark": None,
+    "login_logo_dark": False,
 
     # CSS classes that are applied to the logo above
     "site_logo_classes": "img-circle",

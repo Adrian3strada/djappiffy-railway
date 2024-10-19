@@ -10,6 +10,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
+    """
     def list(self, request, *args, **kwargs):
         # Detectar el idioma desde el parámetro de consulta o URL
         lang = request.query_params.get('lang', None)  # Alternativamente, puedes extraerlo de kwargs si está en la URL
@@ -25,3 +26,4 @@ class ProductViewSet(viewsets.ModelViewSet):
             translation.activate(lang)
 
         return super().retrieve(request, *args, **kwargs)
+    """

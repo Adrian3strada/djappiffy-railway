@@ -3,13 +3,13 @@ from rest_framework import serializers
 from .models import UserProfile, OrganizationProfile
 from organizations.models import Organization, OrganizationOwner, OrganizationUser
 from common.base.serializers import CountrySerializer
-from django_countries import countries
+# from django_countries import countries
 #
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    country = serializers.ChoiceField(choices=countries, required=False)
-    country_value = CountrySerializer(source='country', read_only=True)
+    # country = serializers.ChoiceField(choices=countries, required=False)
+    # country_value = CountrySerializer(source='country', read_only=True)
     display_name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -20,8 +20,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
         """Retorna el valor del método __str__ del modelo."""
         return str(instance)
 
+    """
     def to_representation(self, instance):
-        """Override to return the readable country name."""
+        # Override to return the readable country name.
         data = super().to_representation(instance)
 
         # Cambiar el código de país por el nombre del país
@@ -33,7 +34,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        """Override to create the UserProfile with country code."""
+        # Override to create the UserProfile with country code.
         country_code = validated_data.pop('country', None)
         user_profile = UserProfile(**validated_data)
 
@@ -45,7 +46,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return user_profile
 
     def update(self, instance, validated_data):
-        """Override to update the UserProfile with country code."""
+        # Override to update the UserProfile with country code.
         country_code = validated_data.pop('country', None)
 
         for attr, value in validated_data.items():
@@ -57,6 +58,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+    """
 
 
 class OrganizationProfileSerializer(serializers.ModelSerializer):

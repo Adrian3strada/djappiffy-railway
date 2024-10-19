@@ -1,6 +1,7 @@
 from django.db import models
 from organizations.models import Organization, OrganizationOwner
-from django_countries.fields import CountryField
+# from django_countries.fields import CountryField
+from cities_light.models import Country
 from common.base.models import Product
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
@@ -18,7 +19,8 @@ class UserProfile(models.Model):
     first_name = models.CharField(max_length=255,default="")
     last_name = models.CharField(max_length=255, default="")
     phone_number = models.CharField(max_length=20, default="")
-    country = CountryField(null=True)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT,
+                                null=True, blank=True, related_name='user_profiles')
 
     def __str__(self):
         full_name = ' '.join(filter(None, [self.first_name.strip(), self.last_name.strip()]))
@@ -38,7 +40,8 @@ class OrganizationProfile(models.Model):
     phone_number = models.CharField(max_length=20)
     url = models.URLField(blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
-    country = CountryField()
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT,
+                                related_name='organization_profiles')
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
 
     def __str__(self):

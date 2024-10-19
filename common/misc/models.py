@@ -1,73 +1,80 @@
 from django.db import models
 from wagtail.models import Orderable
-from django_countries.fields import CountryField
+# from django_countries.fields import CountryField
+from organizations.models import Organization
+from cities_light.models import City, Country, Region
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 
 
 class TaxRegimeCategory(Orderable):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='tax_regime_categories')
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
     class Meta:
-        verbose_name = 'Categoría de Regimen Fiscal'
-        verbose_name_plural = 'Categorías de Regímenes Fiscales'
+        # verbose_name = _('Categoría de Regimen Fiscal')
+        # verbose_name_plural = _('Categorías de Regímenes Fiscales')
+        verbose_name = _('Tax Regime Category')
+        verbose_name_plural = _('Tax Regime Categories')
 
 
 class TaxRegime(Orderable):
-    code = models.CharField(max_length=30)
-    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=30, verbose_name=_('Code'))
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
     # category = models.ForeignKey(TaxRegimeCategory, on_delete=models.PROTECT)
-    country = CountryField(default='MX', editable=False)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='tax_regimes')
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = 'Regimen Fiscal'
-        verbose_name_plural = 'Regímenes Fiscales'
+        # verbose_name = 'Regimen Fiscal'
+        # verbose_name_plural = 'Regímenes Fiscales'
+        verbose_name = _('Tax Regime')
+        verbose_name_plural = _('Tax Regimes')
         unique_together = ('code', 'name', 'country')
-        # TODO: poner lazy _ para traducción
 
 
 class LegalEntityCategory(Orderable):
-    name = models.CharField(max_length=255)
-    country = CountryField(default='MX', editable=False)
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='legal_entity_categories')
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = 'Regimen Capital'
-        verbose_name_plural = 'Regímenes Capitales'
+        # verbose_name = 'Regimen Capital'
+        # verbose_name_plural = 'Regímenes Capitales'
+        verbose_name = _('Legal Entity Category')
+        verbose_name_plural = _('Legal Entity Categories')
         unique_together = ('name', 'country')
 
 
 class LegalEntity(Orderable):
-    tax_regime = models.ForeignKey(TaxRegime, on_delete=models.PROTECT)
-    category = models.ForeignKey(LegalEntityCategory, on_delete=models.PROTECT)
-    name = models.CharField(max_length=255)
-    tax_id = models.CharField(max_length=30)
-    country = CountryField(default='MX', editable=False)
-    postal_code = models.CharField(max_length=10)
-    state = models.CharField(max_length=255)
-    city = models.CharField(max_length=255)
-    district = models.CharField(max_length=255)
-    neighborhood = models.CharField(max_length=255)
-    street = models.CharField(max_length=255)
-    ext_number = models.CharField(max_length=10)
-    int_number = models.CharField(max_length=10)
-    phone = models.CharField(max_length=15)
-    email = models.EmailField()
-
+    tax_regime = models.ForeignKey(TaxRegime, verbose_name=_('Tax regime'), on_delete=models.PROTECT)
+    name = models.CharField(max_length=255, verbose_name=_('Full name'))
+    category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Category'), on_delete=models.PROTECT)
+    tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='legal_entities')
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    state = models.CharField(max_length=255, verbose_name=_('State'))
+    city = models.CharField(max_length=255, verbose_name=_('City'))
+    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
+    street = models.CharField(max_length=255, verbose_name=_('Street'), null=True, blank=True)
+    ext_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
+    int_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
+    phone = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
+    email = models.EmailField(verbose_name=_('Email'), null=True, blank=True)
+    organization = models.OneToOneField(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = 'Entidad Legal'
-        verbose_name_plural = 'Entidades Legales'
-        unique_together = ('code', 'name', 'country')
-
+        verbose_name = _('Legal Entity')
+        verbose_name_plural = _('Legal Entities')
