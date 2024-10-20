@@ -6,6 +6,7 @@ from django.core.validators import MinValueValidator
 from django_ckeditor_5.fields import CKEditor5Field
 from django.conf import settings
 
+
 # Create your models here.
 
 
@@ -43,6 +44,20 @@ class KGCostMarket(models.Model):
         unique_together = ('name', 'market')
 
 
+class ProductQualityKind(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Product Quality Kind')
+        verbose_name_plural = _('Product Quality Kinds')
+        unique_together = ('name', 'organization')
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
@@ -56,9 +71,6 @@ class Product(models.Model):
         verbose_name_plural = _('Products')
         unique_together = ('name', 'organization')
 
-
-class ProductSizeKind(models.Model):
-    pass
 
 class ProductVariety(models.Model):
     name = models.CharField(max_length=100)
@@ -74,29 +86,54 @@ class ProductVariety(models.Model):
         unique_together = ('name', 'product')
 
 
-class ProductVarietyKind(models.Model):
+class ProductVarietyHarvestKind(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"{self.product_variety.product.name} : {self.product_variety.name} : {self.name}"
+        return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Product Variety Kind')
-        verbose_name_plural = _('Product Variety Kinds')
-        unique_together = ('name', 'product_variety')
+        verbose_name = _('Product Variety Harvest Kind')
+        verbose_name_plural = _('Product Variety Harvest Kinds')
+        unique_together = ('name', 'organization')
+
+
+class ProductVarietySizeKind(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Product Variety Size Kind')
+        verbose_name_plural = _('Product Variety Size Kinds')
+        unique_together = ('name', 'organization')
 
 
 class ProductVarietySize(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
-    product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product Variety'), on_delete=models.PROTECT)
+    quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Product Quality Kind'), on_delete=models.PROTECT)
+    name = models.CharField(max_length=160, verbose_name=_('Size Name'))
+    # apeam... TODO: generalizar esto para que no sea solo apeam
+    harvest_kind = models.ForeignKey(ProductVarietyHarvestKind, verbose_name=_('Product Variety Harvest Kind'), on_delete=models.PROTECT)
+    description = models.CharField(max_length=200, verbose_name=_('Description'))
+    # product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    variety = models.ForeignKey(ProductVariety, verbose_name=_('Product Variety'), on_delete=models.PROTECT)
+
+    size_kind = models.ForeignKey(ProductVarietySizeKind, verbose_name=_('Product Variety Size Kind'), on_delete=models.PROTECT)
+    requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires Corner Protector'))
+    is_enabled = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"{self.product_variety.product.name} : {self.product_variety.name} : {self.name}"
+        return f"{self.variety.product.name} : {self.variety.name} : {self.name}"
 
     class Meta:
         verbose_name = _('Product Variety Size')
         verbose_name_plural = _('Product Variety Sizes')
-        unique_together = ('name', 'product_variety')
+        unique_together = ('name', 'variety')
+        ordering = ['order']

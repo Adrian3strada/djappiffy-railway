@@ -66,8 +66,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'modeltranslation',
     'cities_light',
-    'ckeditor',
     'django_ckeditor_5',
+    'adminsortable2',
 
     # djappiffy apps
     "common.base",
