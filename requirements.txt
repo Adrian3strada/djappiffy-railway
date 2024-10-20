@@ -48,3 +48,4 @@ dj-database-url
 firebase_admin
 django-jazzmin
 django-cities-light
+django-ckeditor-5
