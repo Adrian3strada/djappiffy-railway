@@ -261,39 +261,6 @@ class PaymentKind(models.Model):
         ordering = ('name',)
 
 
-class Client(models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('Full name'))
-    category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal Entity Category'), on_delete=models.PROTECT)
-    tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
-    market = models.ForeignKey(Market, on_delete=models.PROTECT)
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='legal_entities')
-    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
-    state = models.CharField(max_length=255, verbose_name=_('State'))
-    city = models.CharField(max_length=255, verbose_name=_('City'))
-    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
-    street = models.CharField(max_length=255, verbose_name=_('Street'), null=True, blank=True)
-    ext_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
-    int_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    phone = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
-    email = models.EmailField(verbose_name=_('Email'), null=True, blank=True)
-    swift = models.CharField(max_length=20, verbose_name=_('SWIFT'), null=True, blank=True)
-    aba = models.CharField(max_length=20, verbose_name=_('ABA'), null=True, blank=True)
-    clabe = models.CharField(max_length=18, verbose_name=_('CLABE'), null=True, blank=True)
-    payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
-    credit_max_money_limit = models.FloatField(verbose_name=_('Credit max money limit'), null=True, blank=True)
-    credit_max_days_limit = models.FloatField(verbose_name=_('Credit max days limit'), null=True, blank=True)
-
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Client')
-        verbose_name_plural = _('Clients')
-
-
 class VehicleOwnership(models.Model):
     name = models.CharField(max_length=100)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -386,3 +353,187 @@ class Collector(models.Model):
     class Meta:
         verbose_name = _('Collector')
         verbose_name_plural = _('Collectors')
+
+
+class Client(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Full name'))
+    category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal Entity Category'), on_delete=models.PROTECT)
+    tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
+    market = models.ForeignKey(Market, on_delete=models.PROTECT)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='legal_entities')
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    state = models.CharField(max_length=255, verbose_name=_('State'))
+    city = models.CharField(max_length=255, verbose_name=_('City'))
+    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
+    street = models.CharField(max_length=255, verbose_name=_('Street'), null=True, blank=True)
+    ext_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
+    int_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
+    phone = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
+    email = models.EmailField(verbose_name=_('Email'), null=True, blank=True)
+    swift = models.CharField(max_length=20, verbose_name=_('SWIFT'), null=True, blank=True)
+    aba = models.CharField(max_length=20, verbose_name=_('ABA'), null=True, blank=True)
+    clabe = models.CharField(max_length=18, verbose_name=_('CLABE'), null=True, blank=True)
+    payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
+    credit_max_money_limit = models.FloatField(verbose_name=_('Credit max money limit'), null=True, blank=True)
+    credit_max_days_limit = models.FloatField(verbose_name=_('Credit max days limit'), null=True, blank=True)
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Client')
+        verbose_name_plural = _('Clients')
+
+
+class Maquiladora(models.Model):
+    zone = models.CharField(max_length=200, verbose_name=_('Zone'))
+    first_name = models.CharField(max_length=255, verbose_name=_('First name'))
+    last_name = models.CharField(max_length=255, verbose_name=_('Last name'))
+    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'))
+    tax_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'))
+    social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'))
+    birthday = models.DateField()
+    sex = models.CharField(max_length=1, choices=(('', _('Sex')), ('male', _('Male'), ('female', _('Female')))))
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='legal_entities')
+    state = models.CharField(max_length=255, verbose_name=_('State'))
+    city = models.CharField(max_length=255, verbose_name=_('City'))
+    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
+    street = models.CharField(max_length=255, verbose_name=_('Street'), null=True, blank=True)
+    ext_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
+    int_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
+    phone = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
+    email = models.EmailField(verbose_name=_('Email'), null=True, blank=True)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT)
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+    class Meta:
+        verbose_name = _('Collector')
+        verbose_name_plural = _('Collectors')
+
+
+class MaquiladoraClient(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Full name'))
+    category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal Entity Category'), on_delete=models.PROTECT)
+    tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
+    market = models.ForeignKey(Market, on_delete=models.PROTECT)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='legal_entities')
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    state = models.CharField(max_length=255, verbose_name=_('State'))
+    city = models.CharField(max_length=255, verbose_name=_('City'))
+    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
+    street = models.CharField(max_length=255, verbose_name=_('Street'), null=True, blank=True)
+    ext_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
+    int_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
+    phone = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
+    email = models.EmailField(verbose_name=_('Email'), null=True, blank=True)
+    swift = models.CharField(max_length=20, verbose_name=_('SWIFT'), null=True, blank=True)
+    aba = models.CharField(max_length=20, verbose_name=_('ABA'), null=True, blank=True)
+    clabe = models.CharField(max_length=18, verbose_name=_('CLABE'), null=True, blank=True)
+    payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
+    credit_max_money_limit = models.FloatField(verbose_name=_('Credit max money limit'), null=True, blank=True)
+    credit_max_days_limit = models.FloatField(verbose_name=_('Credit max days limit'), null=True, blank=True)
+    is_enabled = models.BooleanField(default=True)
+    maquiladora = models.ForeignKey(Maquiladora, verbose_name=_('Maquiladora'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Maquiladora Client')
+        verbose_name_plural = _('Maquiladora Clients')
+
+
+class Orchard(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Orchard name'))
+    producer = models.ForeignKey(ProductProducer, verbose_name=_('Producer'), on_delete=models.PROTECT)
+    registration_date = models.DateField(verbose_name=_('Registration date'))
+    forest_land_use_change = models.CharField(max_length=100, verbose_name=_('Forest land use change'))
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
+    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
+    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
+    ha = models.FloatField(verbose_name=_('Hectares'))
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    phytosanitary_certificate = models.CharField(max_length=100, verbose_name=_('Phytosanitary certificate'))
+    is_enabled = models.BooleanField(default=False)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Orchard')
+        verbose_name_plural = _('Orchards')
+        unique_together = ('name', 'organization')
+        ordering = ('name',)
+
+
+class OrchardCertificationKind(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Orchard Certification Kind')
+        verbose_name_plural = _('Orchard Certification Kinds')
+        unique_together = ('name', 'organization')
+        ordering = ('name',)
+
+
+class OrchardCertificationVerifier(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Orchard Certification Verifier')
+        verbose_name_plural = _('Orchard Certification Verifiers')
+        unique_together = ('name', 'organization')
+        ordering = ('name',)
+
+
+class OrchardCertification(models.Model):
+    certification_kind = models.ForeignKey(OrchardCertificationKind, verbose_name=_('Orchard Certification Kind'), on_delete=models.PROTECT)
+    certification_number = models.CharField(max_length=100, verbose_name=_('Certification number'))
+    expiration_date = models.DateField(verbose_name=_('Expiration date'))
+    verifier = models.ForeignKey(OrchardCertificationVerifier, verbose_name=_('Verifier'), on_delete=models.PROTECT)
+    is_enabled = models.BooleanField(default=True)
+    orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.orchard.name} : {self.certification_kind.name}"
+
+    class Meta:
+        verbose_name = _('Orchard Certification')
+        verbose_name_plural = _('Orchard Certifications')
+        unique_together = ('orchard', 'certification_kind')
+        ordering = ('orchard', 'certification_kind')
+
+
+class HarvestCrew(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Harvest Crew')
+        verbose_name_plural = _('Harvest Crews')
+        unique_together = ('name', 'organization')
+        ordering = ('name',)

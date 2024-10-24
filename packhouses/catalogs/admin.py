@@ -94,8 +94,6 @@ class BankAdmin(admin.ModelAdmin):
     pass
 
 
-
-
 class ProductProviderBenefactorInline(admin.TabularInline):
     model = ProductProviderBenefactor
     extra = 0
