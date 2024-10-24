@@ -97,7 +97,6 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 
-    # 'base.middleware.LanguageDetectionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
 ]
 
@@ -123,7 +122,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "application.wsgi.application"
 
-# Database
+# brew install spatialite-toolsse
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASE_URL = os.getenv('DATABASE_URL', 'spatialite:///db.spatialite')

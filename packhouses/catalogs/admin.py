@@ -1,7 +1,11 @@
 from django.contrib import admin
 from .models import (Market, KGCostMarket, Product, ProductVariety, ProductVarietySize, ProductQualityKind,
                      ProductVarietySizeKind,
-                     ProductVarietyHarvestKind)
+                     ProductVarietyHarvestKind,
+                     Bank,
+                     ProductProvider,
+                     ProductProviderBenefactor,
+                     )
 from django_ckeditor_5.widgets import CKEditor5Widget
 import nested_admin
 from django import forms
@@ -58,7 +62,7 @@ class ProductVarietySizeKindAdmin(admin.ModelAdmin):
     pass
 
 
-class ProductVarietySizeInline(admin.TabularInline):
+class ProductVarietySizeInline(admin.StackedInline):
     model = ProductVarietySize
     extra = 0
 
@@ -80,3 +84,24 @@ class ProductVarietyAdmin(SortableAdminBase, admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductVarietyInline]
+
+
+# Product Providers
+
+
+@admin.register(Bank)
+class BankAdmin(admin.ModelAdmin):
+    pass
+
+
+
+
+class ProductProviderBenefactorInline(admin.TabularInline):
+    model = ProductProviderBenefactor
+    extra = 0
+
+
+@admin.register(ProductProvider)
+class ProductProviderAdmin(admin.ModelAdmin):
+    inlines = (ProductProviderBenefactorInline,)
+
