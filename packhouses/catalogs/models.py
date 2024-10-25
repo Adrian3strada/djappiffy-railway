@@ -524,6 +524,8 @@ class OrchardCertification(models.Model):
         ordering = ('orchard', 'certification_kind')
 
 
+# Cuadrillas de cosecha
+
 class HarvestCrew(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
 
@@ -535,5 +537,299 @@ class HarvestCrew(models.Model):
     class Meta:
         verbose_name = _('Harvest Crew')
         verbose_name_plural = _('Harvest Crews')
+        unique_together = ('name', 'organization')
+        ordering = ('name',)
+
+
+#  Proveedores de insumos
+
+
+class SupplyUnitKind(models.Model):
+    name = models.CharField(max_length=100)
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Supply Unit Kind')
+        verbose_name_plural = _('Supply Unit Kinds')
+        unique_together = ('name', 'organization')
+        ordering = ('name',)
+
+
+class SupplyKind(models.Model):
+    name = models.CharField(max_length=100)
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Supply Kind')
+        verbose_name_plural = _('Supply Kinds')
+        unique_together = ('name', 'organization')
+        ordering = ('name',)
+
+
+class SupplyKindRelation(models.Model):
+    from_kind = models.ForeignKey(SupplyKind, related_name='from_kind_relations', on_delete=models.CASCADE)
+    to_kind = models.ForeignKey(SupplyKind, related_name='to_kind_relations', on_delete=models.CASCADE)
+    is_enabled = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.from_kind} -> {self.to_kind}"
+
+    class Meta:
+        unique_together = ('from_kind', 'to_kind')
+        verbose_name = _('Supply Kind Relation')
+        verbose_name_plural = _('Supply Kind Relations')
+
+
+class Supply(models.Model):
+    name = models.CharField(max_length=255)
+    unit_cost = models.FloatField()
+    unit_price = models.FloatField()
+    unit_quantity = models.PositiveIntegerField()
+    unit_kind = models.ForeignKey(SupplyUnitKind, on_delete=models.PROTECT)
+    minimum_stock_quantity = models.PositiveIntegerField()
+    maximum_stock_quantity = models.PositiveIntegerField()
+    kind = models.ForeignKey(SupplyKind, on_delete=models.PROTECT)
+    related_supply = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='related_supplies')
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Supply')
+        verbose_name_plural = _('Supplies')
+        unique_together = ('name', 'organization')
+        ordering = ('name',)
+
+
+class Supplier(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    tax_id = models.CharField(max_length=100)
+    state = models.ForeignKey(Region, on_delete=models.PROTECT)
+    city = models.ForeignKey(City, on_delete=models.PROTECT)
+    neighborhood = models.CharField(max_length=200)
+    postal_code = models.CharField(max_length=10)
+    address = models.CharField(max_length=255)
+    external_number = models.CharField(max_length=20)
+    internal_number = models.CharField(max_length=20)
+    payment_kind = models.ForeignKey(PaymentKind, on_delete=models.PROTECT)
+    credit_days = models.PositiveIntegerField()
+    balance = models.FloatField()
+    supplies = models.ManyToManyField(Supply, verbose_name=_('Supplies'))
+    observations = models.TextField(blank=True, null=True)
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Supplier')
+        verbose_name_plural = _('Suppliers')
+        unique_together = ('name', 'organization')
+
+
+# Presentaciones de mallas
+
+
+class MeshBagKind(models.Model):
+    name = models.CharField(max_length=100)
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Mesh Bag Kind')
+        verbose_name_plural = _('Mesh Bag Kinds')
+        unique_together = ('name', 'organization')
+
+
+class MeshBagFilmKind(models.Model):
+    name = models.CharField(max_length=100)
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Mesh Bag Film Kind')
+        verbose_name_plural = _('Mesh Bag Film Kinds')
+        unique_together = ('name', 'organization')
+
+
+class MeshBag(models.Model):
+    name = models.CharField(max_length=100)
+    market = models.ForeignKey(Market, on_delete=models.PROTECT)
+    product_variety_size = models.ForeignKey(ProductVarietySize, on_delete=models.PROTECT)
+    meshbags_per_box = models.PositiveIntegerField()
+    quantity_per_meshbags = models.PositiveIntegerField()
+    meshbag_kind = models.ForeignKey(MeshBagKind, on_delete=models.PROTECT)
+    meshbagfilm_kind = models.ForeignKey(MeshBagFilmKind, on_delete=models.PROTECT)
+    meshbag_discount = models.FloatField()
+    meshbagfilm_discount = models.FloatField()
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Mesh Bag')
+        verbose_name_plural = _('Mesh Bags')
+        unique_together = ('name', 'organization')
+
+
+# Proveedores de servicios
+
+
+class ServiceProvider(models.Model):
+    name = models.CharField(max_length=255)
+    state = models.ForeignKey(Region, on_delete=models.PROTECT)
+    city = models.ForeignKey(City, on_delete=models.PROTECT)
+    neighborhood = models.CharField(max_length=200)
+    postal_code = models.CharField(max_length=10)
+    address = models.CharField(max_length=255)
+    external_number = models.CharField(max_length=20)
+    internal_number = models.CharField(max_length=20)
+    tax_id = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=20)
+    bank_account_number = models.CharField(max_length=20)
+    bank = models.ForeignKey(Bank, on_delete=models.PROTECT)
+    is_enabled = models.BooleanField(default=False)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Product Provider')
+        verbose_name_plural = _('Product Providers')
+        unique_together = ('name', 'organization')
+        ordering = ('name',)
+
+
+class ServiceProviderBenefactor(models.Model):
+    name = models.CharField(max_length=255)
+    bank_account_number = models.CharField(max_length=20)
+    bank = models.ForeignKey(Bank, on_delete=models.PROTECT)
+    service_provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Service Provider Benefactor')
+        verbose_name_plural = _('Service Provider Benefactors')
+        unique_together = ('name', 'service_provider')
+        ordering = ('name',)
+
+
+class Service(models.Model):
+    name = models.CharField(max_length=255)
+    is_enabled = models.BooleanField(default=True)
+    service_provider = models.ForeignKey(ServiceProvider, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Service')
+        verbose_name_plural = _('Services')
+        unique_together = ('name', 'service_provider')
+        ordering = ('name',)
+
+
+# Tipos de cajas
+
+class AuthorityBoxKind(models.Model):
+    name = models.CharField(max_length=100)
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Authority Box Kind')
+        verbose_name_plural = _('Authority Box Kinds')
+        unique_together = ('name', 'organization')
+
+
+class BoxKind(models.Model):
+    name = models.CharField(max_length=100)
+    kg_per_box = models.FloatField()
+    trays_per_box = models.PositiveIntegerField()
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Box Kind')
+        verbose_name_plural = _('Box Kinds')
+        unique_together = ('name', 'organization')
+
+
+# Básculas
+
+class WeighingScale(models.Model):
+    name = models.CharField(max_length=255)
+    number = models.CharField(max_length=20)
+    state = models.ForeignKey(Region, on_delete=models.PROTECT)
+    city = models.ForeignKey(City, on_delete=models.PROTECT)
+    neighborhood = models.CharField(max_length=200)
+    postal_code = models.CharField(max_length=10)
+    address = models.CharField(max_length=255)
+    external_number = models.CharField(max_length=20)
+    internal_number = models.CharField(max_length=20)
+    observations = models.TextField(blank=True, null=True)
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Weighing Scale')
+        verbose_name_plural = _('Weighing Scales')
+        unique_together = ('name', 'organization')
+        ordering = ('name',)
+
+
+# Cámaras de frío
+
+
+class ColdChamber(models.Model):
+    name = models.CharField(max_length=255)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    is_foreign = models.BooleanField(default=False)
+    country = models.ForeignKey(Country, on_delete=models.PROTECT)
+    pallets_capacity = models.PositiveIntegerField()
+    freshness_days_warning = models.PositiveIntegerField()
+    freshness_days_alert = models.PositiveIntegerField()
+    observations = models.TextField(blank=True, null=True)
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Cold Chamber')
+        verbose_name_plural = _('Cold Chambers')
         unique_together = ('name', 'organization')
         ordering = ('name',)

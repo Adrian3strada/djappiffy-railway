@@ -5,6 +5,7 @@ from .models import (Market, KGCostMarket, Product, ProductVariety, ProductVarie
                      Bank,
                      ProductProvider,
                      ProductProviderBenefactor,
+                     Supply, SupplyKindRelation, ProductProviderBenefactor,
                      )
 from django_ckeditor_5.widgets import CKEditor5Widget
 import nested_admin
@@ -12,6 +13,7 @@ from django import forms
 from django.db import models
 from nested_admin.nested import NestedTabularInline, NestedStackedInline, NestedModelAdmin
 from adminsortable2.admin import SortableAdminMixin, SortableAdminBase, SortableInlineAdminMixin
+
 
 # Register your models here.
 
@@ -22,7 +24,6 @@ class KGCostMarketInline(admin.TabularInline):
 
 
 class MarketAdminForm(forms.ModelForm):
-
     class Meta:
         model = Market
         fields = '__all__'
@@ -103,3 +104,29 @@ class ProductProviderBenefactorInline(admin.TabularInline):
 class ProductProviderAdmin(admin.ModelAdmin):
     inlines = (ProductProviderBenefactorInline,)
 
+
+# supplies...
+
+
+class SupplyAdminForm(forms.ModelForm):
+    class Meta:
+        model = Supply
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.kind:
+            allowed_kinds = SupplyKindRelation.objects.filter(from_kind=self.instance.kind).values_list('to_kind',
+                                                                                                        flat=True)
+            self.fields['related_supply'].queryset = Supply.objects.filter(kind__in=allowed_kinds)
+
+
+@admin.register(Supply)
+class SupplyAdmin(admin.ModelAdmin):
+    form = SupplyAdminForm
+
+
+@admin.register(SupplyKindRelation)
+class SupplyKindRelationAdmin(admin.ModelAdmin):
+    list_display = ('from_kind', 'to_kind', 'is_enabled')
+    list_filter = ('from_kind', 'to_kind', 'is_enabled')
