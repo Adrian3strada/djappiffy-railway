@@ -13,13 +13,13 @@ from .utils import vehicle_year_choices, vehicle_validate_year
 
 
 class Market(models.Model):
-    name = models.CharField(max_length=100)
-    management_cost_per_kg = models.FloatField(validators=[MinValueValidator(0.01)], help_text=_('Cost generated per Kg for product management and packaging'))
-    is_foreign = models.BooleanField(default=False, help_text=_('Conditional for performance reporting to separate foreign and domestic markets; separation in the report of volume by mass and customer addresses'))
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    management_cost_per_kg = models.FloatField(verbose_name=_('Management cost per Kg'), validators=[MinValueValidator(0.01)], help_text=_('Cost generated per Kg for product management and packaging'))
+    is_foreign = models.BooleanField(default=False, verbose_name=_('Is foreign'), help_text=_('Conditional for performance reporting to separate foreign and domestic markets; separation in the report of volume by mass and customer addresses'))
     is_mixable = models.BooleanField(default=False, verbose_name=_('Is mixable'), help_text=_('Conditional that does not allow mixing fruit with other markets'))
-    label_language = models.CharField(max_length=100, choices=settings.LANGUAGES, default='es')
-    address_label = CKEditor5Field(blank=True, null=True, verbose_name=_('Address on label with the packing house address'), help_text=_('Leave blank to use the default address defined in the organization'))
-    is_enabled = models.BooleanField(default=True)
+    label_language = models.CharField(max_length=100, verbose_name=_('Label language'), choices=settings.LANGUAGES, default='es')
+    address_label = CKEditor5Field(blank=True, null=True, verbose_name=_('Address on label with the packaging house address'), help_text=_('Leave blank to use the default address defined in the organization'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -32,9 +32,9 @@ class Market(models.Model):
 
 
 class KGCostMarket(models.Model):
-    name = models.CharField(max_length=100)
-    cost_per_kg = models.FloatField(validators=[MinValueValidator(0.01)])
-    is_enabled = models.BooleanField(default=False)
+    name = models.CharField(max_length=120, verbose_name=_('Name'))
+    cost_per_kg = models.FloatField(validators=[MinValueValidator(0.01)], verbose_name=_('Cost per Kg'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -47,8 +47,7 @@ class KGCostMarket(models.Model):
 
 
 class MarketClass(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -57,7 +56,7 @@ class MarketClass(models.Model):
     class Meta:
         verbose_name = _('Market Class')
         verbose_name_plural = _('Market Classes')
-        unique_together = ('name', 'organization')
+        unique_together = ('name', 'market')
 
 
 class ProductQualityKind(models.Model):
@@ -133,7 +132,8 @@ class ProductVarietySizeKind(models.Model):
 class ProductVarietySize(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Product Quality Kind'), on_delete=models.PROTECT)
-    name = models.CharField(max_length=160, verbose_name=_('Size Name'))
+    name = models.CharField(max_length=160, verbose_name=_('Variety size name'))
+    alias = models.CharField(max_length=20, verbose_name=_('Variety size alias'))
     # apeam... TODO: generalizar esto para que no sea solo apeam
     harvest_kind = models.ForeignKey(ProductVarietyHarvestKind, verbose_name=_('Product Variety Harvest Kind'), on_delete=models.PROTECT)
     description = models.CharField(max_length=200, verbose_name=_('Description'))
@@ -142,7 +142,7 @@ class ProductVarietySize(models.Model):
 
     size_kind = models.ForeignKey(ProductVarietySizeKind, verbose_name=_('Product Variety Size Kind'), on_delete=models.PROTECT)
     requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires Corner Protector'))
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     order = models.PositiveIntegerField(default=0)
 
     def __str__(self):
@@ -173,8 +173,8 @@ class Bank(models.Model):
 
 class ProductProvider(models.Model):
     name = models.CharField(max_length=255)
-    state = models.ForeignKey(Region, on_delete=models.PROTECT)
-    city = models.ForeignKey(City, on_delete=models.PROTECT)
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
+    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     neighborhood = models.CharField(max_length=200)
     postal_code = models.CharField(max_length=10)
     address = models.CharField(max_length=255)
@@ -185,7 +185,7 @@ class ProductProvider(models.Model):
     phone_number = models.CharField(max_length=20)
     bank_account_number = models.CharField(max_length=20)
     bank = models.ForeignKey(Bank, on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=False)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -219,8 +219,8 @@ class ProductProviderBenefactor(models.Model):
 
 class ProductProducer(models.Model):
     name = models.CharField(max_length=255)
-    state = models.ForeignKey(Region, on_delete=models.PROTECT)
-    city = models.ForeignKey(City, on_delete=models.PROTECT)
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
+    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     neighborhood = models.CharField(max_length=200)
     postal_code = models.CharField(max_length=10)
     address = models.CharField(max_length=255)
@@ -232,7 +232,7 @@ class ProductProducer(models.Model):
     product_provider = models.ForeignKey(ProductProvider, on_delete=models.PROTECT)
     bank_account_number = models.CharField(max_length=20)
     bank = models.ForeignKey(Bank, on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=False)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -322,7 +322,7 @@ class Vehicle(models.Model):
     color = models.CharField(max_length=50, verbose_name=_('Color'),)
     ownership = models.ForeignKey(VehicleOwnership, verbose_name=_('Ownership Status'), on_delete=models.PROTECT)
     fuel = models.ForeignKey(VehicleFuel, verbose_name=_('Fuel Name'), on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enable'),)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'),)
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True, )
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -346,9 +346,9 @@ class Collector(models.Model):
     tax_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'))
     social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'))
     birthday = models.DateField()
-    sex = models.CharField(max_length=1, choices=(('', _('Sex')), ('male', _('Male'), ('female', _('Female')))))
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='legal_entities')
-    state = models.CharField(max_length=255, verbose_name=_('State'))
+    sex = models.CharField(max_length=1, choices=[('', _('Sex')), ('M', _('Male')), ('F', _('Female'))])
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.CharField(max_length=255, verbose_name=_('City'))
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
     neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
@@ -358,7 +358,7 @@ class Collector(models.Model):
     phone = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
     email = models.EmailField(verbose_name=_('Email'), null=True, blank=True)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -374,9 +374,9 @@ class Client(models.Model):
     category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal Entity Category'), on_delete=models.PROTECT)
     tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
     market = models.ForeignKey(Market, on_delete=models.PROTECT)
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='legal_entities')
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
-    state = models.CharField(max_length=255, verbose_name=_('State'))
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.CharField(max_length=255, verbose_name=_('City'))
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
     neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
@@ -391,7 +391,7 @@ class Client(models.Model):
     payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
     credit_max_money_limit = models.FloatField(verbose_name=_('Credit max money limit'), null=True, blank=True)
     credit_max_days_limit = models.FloatField(verbose_name=_('Credit max days limit'), null=True, blank=True)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -410,9 +410,9 @@ class Maquiladora(models.Model):
     tax_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'))
     social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'))
     birthday = models.DateField()
-    sex = models.CharField(max_length=1, choices=(('', _('Sex')), ('male', _('Male'), ('female', _('Female')))))
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='legal_entities')
-    state = models.CharField(max_length=255, verbose_name=_('State'))
+    sex = models.CharField(max_length=1, choices=[('', _('Sex')), ('M', _('Male')), ('F', _('Female'))])
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.CharField(max_length=255, verbose_name=_('City'))
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
     neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
@@ -422,7 +422,7 @@ class Maquiladora(models.Model):
     phone = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
     email = models.EmailField(verbose_name=_('Email'), null=True, blank=True)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -438,9 +438,9 @@ class MaquiladoraClient(models.Model):
     category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal Entity Category'), on_delete=models.PROTECT)
     tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
     market = models.ForeignKey(Market, on_delete=models.PROTECT)
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='legal_entities')
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
-    state = models.CharField(max_length=255, verbose_name=_('State'))
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.CharField(max_length=255, verbose_name=_('City'))
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
     neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
@@ -455,7 +455,7 @@ class MaquiladoraClient(models.Model):
     payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
     credit_max_money_limit = models.FloatField(verbose_name=_('Credit max money limit'), null=True, blank=True)
     credit_max_days_limit = models.FloatField(verbose_name=_('Credit max days limit'), null=True, blank=True)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     maquiladora = models.ForeignKey(Maquiladora, verbose_name=_('Maquiladora'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -491,7 +491,7 @@ class Orchard(models.Model):
     ha = models.FloatField(verbose_name=_('Hectares'))
     product_classification = models.ForeignKey(OrchardProductClassification, verbose_name=_('Product Classification'), on_delete=models.PROTECT)
     phytosanitary_certificate = models.CharField(max_length=100, verbose_name=_('Phytosanitary certificate'))
-    is_enabled = models.BooleanField(default=False)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -506,7 +506,7 @@ class Orchard(models.Model):
 
 class OrchardCertificationKind(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -521,7 +521,7 @@ class OrchardCertificationKind(models.Model):
 
 class OrchardCertificationVerifier(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -539,7 +539,7 @@ class OrchardCertification(models.Model):
     certification_number = models.CharField(max_length=100, verbose_name=_('Certification number'))
     expiration_date = models.DateField(verbose_name=_('Expiration date'))
     verifier = models.ForeignKey(OrchardCertificationVerifier, verbose_name=_('Verifier'), on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -574,7 +574,7 @@ class HarvestCrew(models.Model):
 
 class SupplyUnitKind(models.Model):
     name = models.CharField(max_length=100)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -589,7 +589,7 @@ class SupplyUnitKind(models.Model):
 
 class SupplyKind(models.Model):
     name = models.CharField(max_length=100)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -605,7 +605,7 @@ class SupplyKind(models.Model):
 class SupplyKindRelation(models.Model):
     from_kind = models.ForeignKey(SupplyKind, related_name='from_kind_relations', on_delete=models.CASCADE)
     to_kind = models.ForeignKey(SupplyKind, related_name='to_kind_relations', on_delete=models.CASCADE)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
         return f"{self.from_kind} -> {self.to_kind}"
@@ -627,7 +627,7 @@ class Supply(models.Model):
     kind = models.ForeignKey(SupplyKind, on_delete=models.PROTECT)
     is_tray = models.BooleanField(default=False)
     related_supply = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='related_supplies')
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -643,8 +643,8 @@ class Supply(models.Model):
 class Supplier(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     tax_id = models.CharField(max_length=100)
-    state = models.ForeignKey(Region, on_delete=models.PROTECT)
-    city = models.ForeignKey(City, on_delete=models.PROTECT)
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
+    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     neighborhood = models.CharField(max_length=200)
     postal_code = models.CharField(max_length=10)
     address = models.CharField(max_length=255)
@@ -655,7 +655,7 @@ class Supplier(models.Model):
     balance = models.FloatField()
     supplies = models.ManyToManyField(Supply, verbose_name=_('Supplies'))
     observations = models.TextField(blank=True, null=True)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -672,7 +672,7 @@ class Supplier(models.Model):
 
 class MeshBagKind(models.Model):
     name = models.CharField(max_length=100)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -686,7 +686,7 @@ class MeshBagKind(models.Model):
 
 class MeshBagFilmKind(models.Model):
     name = models.CharField(max_length=100)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -708,7 +708,7 @@ class MeshBag(models.Model):
     meshbagfilm_kind = models.ForeignKey(MeshBagFilmKind, on_delete=models.PROTECT)
     meshbag_discount = models.FloatField()
     meshbagfilm_discount = models.FloatField()
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -725,8 +725,8 @@ class MeshBag(models.Model):
 
 class ServiceProvider(models.Model):
     name = models.CharField(max_length=255)
-    state = models.ForeignKey(Region, on_delete=models.PROTECT)
-    city = models.ForeignKey(City, on_delete=models.PROTECT)
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
+    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     neighborhood = models.CharField(max_length=200)
     postal_code = models.CharField(max_length=10)
     address = models.CharField(max_length=255)
@@ -737,7 +737,7 @@ class ServiceProvider(models.Model):
     phone_number = models.CharField(max_length=20)
     bank_account_number = models.CharField(max_length=20)
     bank = models.ForeignKey(Bank, on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=False)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -768,7 +768,7 @@ class ServiceProviderBenefactor(models.Model):
 
 class Service(models.Model):
     name = models.CharField(max_length=255)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     service_provider = models.ForeignKey(ServiceProvider, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -785,7 +785,7 @@ class Service(models.Model):
 
 class AuthorityBoxKind(models.Model):
     name = models.CharField(max_length=100)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -801,7 +801,7 @@ class BoxKind(models.Model):
     name = models.CharField(max_length=100)
     kg_per_box = models.FloatField()
     trays_per_box = models.PositiveIntegerField()
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -818,15 +818,15 @@ class BoxKind(models.Model):
 class WeighingScale(models.Model):
     name = models.CharField(max_length=255)
     number = models.CharField(max_length=20)
-    state = models.ForeignKey(Region, on_delete=models.PROTECT)
-    city = models.ForeignKey(City, on_delete=models.PROTECT)
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
+    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     neighborhood = models.CharField(max_length=200)
     postal_code = models.CharField(max_length=10)
     address = models.CharField(max_length=255)
     external_number = models.CharField(max_length=20)
     internal_number = models.CharField(max_length=20)
     observations = models.TextField(blank=True, null=True)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -850,12 +850,12 @@ class ColdChamber(models.Model):
     freshness_days_warning = models.PositiveIntegerField()
     freshness_days_alert = models.PositiveIntegerField()
     observations = models.TextField(blank=True, null=True)
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.name}"
-    
+
     class Meta:
         verbose_name = _('Cold Chamber')
         verbose_name_plural = _('Cold Chambers')
@@ -870,7 +870,7 @@ class Pallet(models.Model):
     alias = models.CharField(max_length=20)
     boxes_quantity = models.PositiveIntegerField()
     kg_quantity = models.FloatField()
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -887,7 +887,7 @@ class PalletExpense(models.Model):
     supply = models.ForeignKey(Supply, on_delete=models.PROTECT, null=True, blank=True)
     quantity = models.PositiveIntegerField()
     unit_cost = models.FloatField()
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     pallet = models.ForeignKey(Pallet, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -896,7 +896,7 @@ class PalletExpense(models.Model):
     class Meta:
         verbose_name = _('Pallet Expense')
         verbose_name_plural = _('Pallet Expenses')
-        unique_together = ('name', 'organization')
+        unique_together = ('name', 'pallet')
 
 
 # configuración de productos
@@ -920,7 +920,7 @@ class ProductPackaging(models.Model):
     market_class = models.ForeignKey(MarketClass, verbose_name=_('Market Class'), on_delete=models.PROTECT)
     supply_tray = models.ForeignKey(Supply, verbose_name=_('Supply Tray'), on_delete=models.PROTECT, related_name='product_packaging_supplies_trays')
     # TODO: agregar campo para tipo de malla, o no se que va aquí pero falta uno
-    is_enabled = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
