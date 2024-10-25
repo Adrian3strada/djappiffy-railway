@@ -17,7 +17,7 @@ class Market(models.Model):
     management_cost_per_kg = models.FloatField(verbose_name=_('Management cost per Kg'), validators=[MinValueValidator(0.01)], help_text=_('Cost generated per Kg for product management and packaging'))
     is_foreign = models.BooleanField(default=False, verbose_name=_('Is foreign'), help_text=_('Conditional for performance reporting to separate foreign and domestic markets; separation in the report of volume by mass and customer addresses'))
     is_mixable = models.BooleanField(default=False, verbose_name=_('Is mixable'), help_text=_('Conditional that does not allow mixing fruit with other markets'))
-    label_language = models.CharField(max_length=100, verbose_name=_('Label language'), choices=settings.LANGUAGES, default='es')
+    label_language = models.CharField(max_length=20, verbose_name=_('Label language'), choices=settings.LANGUAGES, default='es')
     address_label = CKEditor5Field(blank=True, null=True, verbose_name=_('Address on label with the packaging house address'), help_text=_('Leave blank to use the default address defined in the organization'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -130,20 +130,18 @@ class ProductVarietySizeKind(models.Model):
 
 
 class ProductVarietySize(models.Model):
+    variety = models.ForeignKey(ProductVariety, verbose_name=_('Variety'), on_delete=models.PROTECT)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Product Quality Kind'), on_delete=models.PROTECT)
-    name = models.CharField(max_length=160, verbose_name=_('Variety size name'))
-    alias = models.CharField(max_length=20, verbose_name=_('Variety size alias'))
+    quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Quality kind'), on_delete=models.PROTECT)
+    name = models.CharField(max_length=160, verbose_name=_('Size name'))
+    alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     # apeam... TODO: generalizar esto para que no sea solo apeam
-    harvest_kind = models.ForeignKey(ProductVarietyHarvestKind, verbose_name=_('Product Variety Harvest Kind'), on_delete=models.PROTECT)
-    description = models.CharField(max_length=200, verbose_name=_('Description'))
-    # product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    variety = models.ForeignKey(ProductVariety, verbose_name=_('Product Variety'), on_delete=models.PROTECT)
-
-    size_kind = models.ForeignKey(ProductVarietySizeKind, verbose_name=_('Product Variety Size Kind'), on_delete=models.PROTECT)
+    harvest_kind = models.ForeignKey(ProductVarietyHarvestKind, verbose_name=_('Harvest Kind'), on_delete=models.PROTECT)
+    description = models.CharField(max_length=255, verbose_name=_('Description'))
+    size_kind = models.ForeignKey(ProductVarietySizeKind, verbose_name=_('Size Kind'), on_delete=models.PROTECT, help_text=_('To separate sizes by kind in the mass volume report'))
     requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires Corner Protector'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    order = models.PositiveIntegerField(default=0)
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 
     def __str__(self):
         return f"{self.variety.product.name} : {self.variety.name} : {self.name}"
@@ -151,14 +149,14 @@ class ProductVarietySize(models.Model):
     class Meta:
         verbose_name = _('Product Variety Size')
         verbose_name_plural = _('Product Variety Sizes')
-        unique_together = ('name', 'variety')
+        unique_together = ('name', 'market', 'variety')
         ordering = ['order']
 
 
 # Proveedores de fruta:
 
 class Bank(models.Model):
-    name = models.CharField(max_length=120)
+    name = models.CharField(max_length=120, verbose_name=_('Name'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -172,7 +170,7 @@ class Bank(models.Model):
 
 
 class ProductProvider(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     neighborhood = models.CharField(max_length=200)
