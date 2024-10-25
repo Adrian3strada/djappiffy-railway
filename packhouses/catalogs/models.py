@@ -46,6 +46,20 @@ class KGCostMarket(models.Model):
         unique_together = ('name', 'market')
 
 
+class MarketClass(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Market Class')
+        verbose_name_plural = _('Market Classes')
+        unique_together = ('name', 'organization')
+
+
 class ProductQualityKind(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
@@ -452,6 +466,20 @@ class MaquiladoraClient(models.Model):
         verbose_name_plural = _('Maquiladora Clients')
 
 
+class OrchardProductClassification(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Product Classification')
+        verbose_name_plural = _('Product Classifications')
+        unique_together = ('name', 'organization')
+
+
 class Orchard(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Orchard name'))
     producer = models.ForeignKey(ProductProducer, verbose_name=_('Producer'), on_delete=models.PROTECT)
@@ -461,7 +489,7 @@ class Orchard(models.Model):
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
     ha = models.FloatField(verbose_name=_('Hectares'))
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product_classification = models.ForeignKey(OrchardProductClassification, verbose_name=_('Product Classification'), on_delete=models.PROTECT)
     phytosanitary_certificate = models.CharField(max_length=100, verbose_name=_('Phytosanitary certificate'))
     is_enabled = models.BooleanField(default=False)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -597,6 +625,7 @@ class Supply(models.Model):
     minimum_stock_quantity = models.PositiveIntegerField()
     maximum_stock_quantity = models.PositiveIntegerField()
     kind = models.ForeignKey(SupplyKind, on_delete=models.PROTECT)
+    is_tray = models.BooleanField(default=False)
     related_supply = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='related_supplies')
     is_enabled = models.BooleanField(default=True)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
@@ -833,3 +862,72 @@ class ColdChamber(models.Model):
         verbose_name_plural = _('Cold Chambers')
         unique_together = ('name', 'organization')
         ordering = ('name',)
+
+
+# Pallets
+
+class Pallet(models.Model):
+    name = models.CharField(max_length=100)
+    alias = models.CharField(max_length=20)
+    boxes_quantity = models.PositiveIntegerField()
+    kg_quantity = models.FloatField()
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Pallet')
+        verbose_name_plural = _('Pallets')
+        unique_together = ('name', 'organization')
+
+
+class PalletExpense(models.Model):
+    name = models.CharField(max_length=255)
+    supply = models.ForeignKey(Supply, on_delete=models.PROTECT, null=True, blank=True)
+    quantity = models.PositiveIntegerField()
+    unit_cost = models.FloatField()
+    is_enabled = models.BooleanField(default=True)
+    pallet = models.ForeignKey(Pallet, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Pallet Expense')
+        verbose_name_plural = _('Pallet Expenses')
+        unique_together = ('name', 'organization')
+
+
+# configuración de productos
+
+class ProductPackaging(models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    name = models.CharField(max_length=255)
+    alias = models.CharField(max_length=20)
+    boxes_quantity = models.PositiveIntegerField()
+    kg_quantity = models.FloatField()
+    kg_tare = models.FloatField()
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    box_kind = models.ForeignKey(BoxKind, verbose_name=_('Box Kind'), on_delete=models.PROTECT)  # TODO: detallar tipos de caja por tipo de producto?
+    product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product Variety'), on_delete=models.PROTECT)
+    product_variety_size = models.ForeignKey(ProductVarietySize, verbose_name=_('Product Variety Size'), on_delete=models.PROTECT)
+    kg_per_box = models.FloatField()
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, related_name='product_packaging_supplies')
+    is_dark = models.BooleanField(default=False)
+    provisional_cost = models.FloatField()
+    provisional_price = models.FloatField()
+    market_class = models.ForeignKey(MarketClass, verbose_name=_('Market Class'), on_delete=models.PROTECT)
+    supply_tray = models.ForeignKey(Supply, verbose_name=_('Supply Tray'), on_delete=models.PROTECT, related_name='product_packaging_supplies_trays')
+    # TODO: agregar campo para tipo de malla, o no se que va aquí pero falta uno
+    is_enabled = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Product Packaging')
+        verbose_name_plural = _('Product Packagings')
+        unique_together = ('name', 'organization')
