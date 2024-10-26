@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     "common.government",
 
     "packhouses.catalogs",
+    "packhouses.collection",
 
 ]
 

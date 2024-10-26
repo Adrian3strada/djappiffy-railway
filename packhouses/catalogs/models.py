@@ -41,9 +41,10 @@ class KGCostMarket(models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('KG Cost Market')
-        verbose_name_plural = _('KG Cost Markets')
+        verbose_name = _('Cost per Kg on Market')
+        verbose_name_plural = _('Costs per Kg on Market')
         unique_together = ('name', 'market')
+        ordering = ('name',)
 
 
 class MarketClass(models.Model):
@@ -54,28 +55,30 @@ class MarketClass(models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Market Class')
-        verbose_name_plural = _('Market Classes')
+        verbose_name = _('Market class')
+        verbose_name_plural = _('Market classes')
         unique_together = ('name', 'market')
+        ordering = ('name',)
 
 
 class ProductQualityKind(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Product Quality Kind')
-        verbose_name_plural = _('Product Quality Kinds')
+        verbose_name = _('Product quality kind')
+        verbose_name_plural = _('Product quality kinds')
         unique_together = ('name', 'organization')
+        ordering = ('name',)
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -88,45 +91,48 @@ class Product(models.Model):
 
 
 class ProductVariety(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.product.name} : {self.name}"
 
     class Meta:
-        verbose_name = _('Product Variety')
-        verbose_name_plural = _('Product Varieties')
+        verbose_name = _('Product variety')
+        verbose_name_plural = _('Product varieties')
         unique_together = ('name', 'product')
+        ordering = ('name',)
 
 
 class ProductVarietyHarvestKind(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Product Variety Harvest Kind')
-        verbose_name_plural = _('Product Variety Harvest Kinds')
+        verbose_name = _('Product variety harvest Kind')
+        verbose_name_plural = _('Product variety harvest kinds')
         unique_together = ('name', 'organization')
+        ordering = ('name',)
 
 
 class ProductVarietySizeKind(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Product Variety Size Kind')
-        verbose_name_plural = _('Product Variety Size Kinds')
+        verbose_name = _('Product variety size kind')
+        verbose_name_plural = _('Product variety size kinds')
         unique_together = ('name', 'organization')
+        ordering = ('name',)
 
 
 class ProductVarietySize(models.Model):
@@ -136,10 +142,10 @@ class ProductVarietySize(models.Model):
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     # apeam... TODO: generalizar esto para que no sea solo apeam
-    harvest_kind = models.ForeignKey(ProductVarietyHarvestKind, verbose_name=_('Harvest Kind'), on_delete=models.PROTECT)
+    harvest_kind = models.ForeignKey(ProductVarietyHarvestKind, verbose_name=_('Harvest kind'), on_delete=models.PROTECT)
     description = models.CharField(max_length=255, verbose_name=_('Description'))
-    size_kind = models.ForeignKey(ProductVarietySizeKind, verbose_name=_('Size Kind'), on_delete=models.PROTECT, help_text=_('To separate sizes by kind in the mass volume report'))
-    requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires Corner Protector'))
+    size_kind = models.ForeignKey(ProductVarietySizeKind, verbose_name=_('Size kind'), on_delete=models.PROTECT, help_text=_('To separate sizes by kind in the mass volume report'))
+    requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 
@@ -147,8 +153,8 @@ class ProductVarietySize(models.Model):
         return f"{self.variety.product.name} : {self.variety.name} : {self.name}"
 
     class Meta:
-        verbose_name = _('Product Variety Size')
-        verbose_name_plural = _('Product Variety Sizes')
+        verbose_name = _('Product variety size')
+        verbose_name_plural = _('Product variety sizes')
         unique_together = ('name', 'market', 'variety')
         ordering = ['order']
 
@@ -274,7 +280,7 @@ class PaymentKind(models.Model):
 
 
 class VehicleOwnership(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -287,7 +293,7 @@ class VehicleOwnership(models.Model):
 
 
 class VehicleKind(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -300,7 +306,7 @@ class VehicleKind(models.Model):
 
 
 class VehicleFuel(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -465,8 +471,8 @@ class MaquiladoraClient(models.Model):
 
 
 class OrchardProductClassification(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -571,7 +577,7 @@ class HarvestCrew(models.Model):
 
 
 class SupplyUnitKind(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
@@ -586,7 +592,7 @@ class SupplyUnitKind(models.Model):
 
 
 class SupplyKind(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
@@ -669,7 +675,7 @@ class Supplier(models.Model):
 
 
 class MeshBagKind(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
@@ -683,7 +689,7 @@ class MeshBagKind(models.Model):
 
 
 class MeshBagFilmKind(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
@@ -697,7 +703,7 @@ class MeshBagFilmKind(models.Model):
 
 
 class MeshBag(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     market = models.ForeignKey(Market, on_delete=models.PROTECT)
     product_variety_size = models.ForeignKey(ProductVarietySize, on_delete=models.PROTECT)
     meshbags_per_box = models.PositiveIntegerField()
@@ -782,7 +788,7 @@ class Service(models.Model):
 # Tipos de cajas
 
 class AuthorityBoxKind(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
@@ -796,7 +802,7 @@ class AuthorityBoxKind(models.Model):
 
 
 class BoxKind(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     kg_per_box = models.FloatField()
     trays_per_box = models.PositiveIntegerField()
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -864,7 +870,7 @@ class ColdChamber(models.Model):
 # Pallets
 
 class Pallet(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20)
     boxes_quantity = models.PositiveIntegerField()
     kg_quantity = models.FloatField()
@@ -926,5 +932,5 @@ class ProductPackaging(models.Model):
 
     class Meta:
         verbose_name = _('Product Packaging')
-        verbose_name_plural = _('Product Packagings')
+        verbose_name_plural = _('Product Packaging')
         unique_together = ('name', 'organization')
