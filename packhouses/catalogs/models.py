@@ -174,6 +174,8 @@ class Bank(models.Model):
         unique_together = ('name', 'organization')
         ordering = ('name',)
 
+# AQUÍ
+
 
 class ProductProvider(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
