@@ -1,0 +1,36 @@
+/* Cambiar el color de fondo de la barra lateral */
+.main-sidebar {
+    background-color: #0e1e3f !important;
+}
+
+/* Cambiar el color del texto de los enlaces de la barra lateral */
+.main-sidebar a {
+    color: #ffffff !important;
+
+}
+
+/* Cambiar el color de los enlaces activos en la barra lateral */
+.main-sidebar .active a {
+    background-color: #0e1e3f !important;
+    color: #ffffff !important;
+}
+
+/* Estilo global para todos los botones de agregar inlines */
+.inline-group1 .add-row {
+    background-color: #bebebe; /* Cambia esto al color que desees */
+    color: #3884a5; /* Color del texto */
+    border: 1px solid transparent; /* Borde */
+    border-radius: 0.25rem; /* Bordes redondeados */
+    padding: 0.375rem 0.75rem; /* Espaciado interno */
+    text-align: center; /* Alineación del texto */
+    text-decoration: none; /* Sin subrayado */
+    display: inline-block; /* Mostrar como bloque en línea */
+    font-weight: 500; /* Peso del texto */
+    cursor: pointer; /* Cambia el cursor al pasar sobre él */
+}
+
+.inline-group1 .add-row:hover {
+    background-color: #0056b3; /* Color de fondo al pasar el mouse */
+    color: #fff; /* Color del texto al pasar el mouse */
+    text-decoration: none; /* Sin subrayado al pasar el mouse */
+}

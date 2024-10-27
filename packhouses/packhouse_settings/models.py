@@ -19,3 +19,39 @@ class Status(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ProductKind(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Product kind')
+        verbose_name_plural = _('Product kinds')
+        ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='productkind_unique_name_organization'),
+        ]
+
+
+class ProductStandardSize(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Product standard size')
+        verbose_name_plural = _('Product standard sizes')
+        ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'organization'],
+                name='productstandardsize_unique_name_organization'
+            ),
+        ]

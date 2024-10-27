@@ -51,3 +51,4 @@ django-cities-light
 django-ckeditor-5
 django-admin-sortable2
 django-nested-admin
+django-modeladmin-reorder

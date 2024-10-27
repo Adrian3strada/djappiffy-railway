@@ -90,13 +90,14 @@ msgid "Label language"
 msgstr "Idioma de etiqueta"
 
 #: .\packhouses\catalogs\models.py:23
-msgid "Address on label with the packaging house address"
-msgstr "Dirección en etiqueta con la dirección del empaque"
+msgid "Address of packaging house to show in label"
+
+msgstr "Domicilio del empaque para mostrar en etiqueta "
 
 #: .\packhouses\catalogs\models.py:23
-msgid "Leave blank to use the default address defined in the organization"
+msgid "Leave blank to keep the default address defined in the organization"
 msgstr ""
-"Dejar en blanco para usar la dirección predeterminada definida en la "
+"Dejar en blanco para mantener la dirección predeterminada definida en la "
 "organización"
 
 #: .\packhouses\catalogs\models.py:24 .\packhouses\catalogs\models.py:39

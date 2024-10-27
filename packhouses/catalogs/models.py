@@ -5,8 +5,12 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator
 from django_ckeditor_5.fields import CKEditor5Field
 from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from common.billing.models import TaxRegime, LegalEntityCategory
 from .utils import vehicle_year_choices, vehicle_validate_year
+from django.core.exceptions import ValidationError
+from packhouses.packhouse_settings.models import ProductKind
 
 
 # Create your models here.
@@ -18,19 +22,46 @@ class Market(models.Model):
     country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
     management_cost_per_kg = models.FloatField(verbose_name=_('Management cost per Kg'), validators=[MinValueValidator(0.01)], help_text=_('Cost generated per Kg for product management and packaging'))
     is_foreign = models.BooleanField(default=False, verbose_name=_('Is foreign'), help_text=_('Conditional for performance reporting to separate foreign and domestic markets; separation in the report of volume by mass and customer addresses'))
-    is_mixable = models.BooleanField(default=False, verbose_name=_('Is mixable'), help_text=_('Conditional that does not allow mixing fruit with other markets'))
+    is_mixable = models.BooleanField(default=True, verbose_name=_('Is mixable'), help_text=_('Conditional that does not allow mixing fruit with other markets'))
     label_language = models.CharField(max_length=20, verbose_name=_('Label language'), choices=settings.LANGUAGES, default='es')
-    address_label = CKEditor5Field(blank=True, null=True, verbose_name=_('Address on label with the packaging house address'), help_text=_('Leave blank to use the default address defined in the organization'))
+    address_label = CKEditor5Field(blank=True, null=True, verbose_name=_('Address of packaging house to show in label'), help_text=_('Leave blank to keep the default address defined in the organization'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.name}"
 
+    def clean(self):
+        self.name = self.name.upper()
+        self.alias = self.alias.upper()
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.organization_id:
+            if Market.objects.filter(name=self.name, organization=self.organization).exclude(pk=self.pk).exists():
+                errors['name'] = _('Name must be unique, it already exists.')
+            if Market.objects.filter(alias=self.alias, organization=self.organization).exclude(pk=self.pk).exists():
+                errors['alias'] = _('Alias must be unique, it already exists.')
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = _('Market')
         verbose_name_plural = _('Markets')
-        unique_together = ('name', 'organization')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='market_unique_name_organization'),
+            models.UniqueConstraint(fields=['alias', 'organization'], name='market_unique_alias_organization')
+        ]
 
 
 class KGCostMarket(models.Model):
@@ -42,25 +73,103 @@ class KGCostMarket(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    def clean(self):
+        self.name = self.name.upper()
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = _('Cost per Kg on Market')
         verbose_name_plural = _('Costs per Kg on Market')
-        unique_together = ('name', 'market')
-        ordering = ('name',)
+        ordering = ('market', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'market'], name='kgcostmarket_unique_name_market'),
+        ]
 
 
 class MarketClass(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
         return f"{self.name}"
 
+    def clean(self):
+        self.name = self.name.upper()
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    @receiver(post_save, sender=Market)
+    def create_market_classes(sender, instance, created, **kwargs):
+        if created:
+            MarketClass.objects.bulk_create([
+                MarketClass(name='A', market=instance),
+                MarketClass(name='B', market=instance),
+                MarketClass(name='C', market=instance),
+                MarketClass(name='CC', market=instance),
+            ])
+
     class Meta:
         verbose_name = _('Market class')
         verbose_name_plural = _('Market classes')
-        unique_together = ('name', 'market')
+        ordering = ('market', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'market'], name='marketclass_unique_name_market'),
+        ]
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    def clean(self):
+        self.name = self.name.upper()
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('Product')
+        verbose_name_plural = _('Products')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='product_unique_name_organization'),
+        ]
+
+
+class ProductVariety(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.product.name}: {self.name}"
+
+    def clean(self):
+        self.name = self.name.upper()
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('Product variety')
+        verbose_name_plural = _('Product varieties')
         ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product'], name='product_unique_name_product'),
+        ]
 
 
 class ProductQualityKind(models.Model):
@@ -78,36 +187,7 @@ class ProductQualityKind(models.Model):
         ordering = ('name',)
 
 
-class Product(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Product')
-        verbose_name_plural = _('Products')
-        unique_together = ('name', 'organization')
-
-
-class ProductVariety(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.product.name} : {self.name}"
-
-    class Meta:
-        verbose_name = _('Product variety')
-        verbose_name_plural = _('Product varieties')
-        unique_together = ('name', 'product')
-        ordering = ('name',)
-
-
-class ProductVarietyHarvestKind(models.Model):
+class ProductHarvestKind(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -122,21 +202,6 @@ class ProductVarietyHarvestKind(models.Model):
         ordering = ('name',)
 
 
-class ProductVarietySizeKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Product variety size kind')
-        verbose_name_plural = _('Product variety size kinds')
-        unique_together = ('name', 'organization')
-        ordering = ('name',)
-
-
 class ProductVarietySize(models.Model):
     variety = models.ForeignKey(ProductVariety, verbose_name=_('Variety'), on_delete=models.PROTECT)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
@@ -144,9 +209,9 @@ class ProductVarietySize(models.Model):
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     # apeam... TODO: generalizar esto para que no sea solo apeam
-    harvest_kind = models.ForeignKey(ProductVarietyHarvestKind, verbose_name=_('Harvest kind'), on_delete=models.PROTECT)
+    harvest_kind = models.ForeignKey(ProductHarvestKind, verbose_name=_('Harvest kind'), on_delete=models.PROTECT)
     description = models.CharField(max_length=255, verbose_name=_('Description'))
-    size_kind = models.ForeignKey(ProductVarietySizeKind, verbose_name=_('Size kind'), on_delete=models.PROTECT, help_text=_('To separate sizes by kind in the mass volume report'))
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product kind'), on_delete=models.PROTECT, help_text=_('To separate sizes by product kind in the mass volume report'))
     requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))  # TODO: implementar ordenamiento con drag and drop
