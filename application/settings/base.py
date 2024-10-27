@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'cities_light',
     'django_ckeditor_5',
     'adminsortable2',
+    'polymorphic',
 
     # djappiffy apps
     "common.base",
@@ -82,6 +83,8 @@ INSTALLED_APPS = [
     "common.importers",
     "common.government",
 
+    "packhouses",
+    "packhouses.packhouse_settings",
     "packhouses.catalogs",
     "packhouses.collection",
 

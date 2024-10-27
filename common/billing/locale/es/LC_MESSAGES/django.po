@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-21 11:24-0600\n"
+"POT-Creation-Date: 2024-10-26 18:23-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,124 +19,124 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
 "1 : 2;\n"
 
-#: common/billing/apps.py:8
+#: .\common\billing\apps.py:8
 msgid "Billing"
 msgstr "Facturación"
 
-#: common/billing/models.py:28
+#: .\common\billing\models.py:28
 msgid "Code"
 msgstr "Código"
 
-#: common/billing/models.py:29 common/billing/models.py:45
-#: common/billing/models.py:86
+#: .\common\billing\models.py:29 .\common\billing\models.py:45
+#: .\common\billing\models.py:86
 msgid "Name"
 msgstr "Nombre"
 
-#: common/billing/models.py:31 common/billing/models.py:46
-#: common/billing/models.py:64
+#: .\common\billing\models.py:31 .\common\billing\models.py:46
+#: .\common\billing\models.py:64
 msgid "Country"
 msgstr "País"
 
-#: common/billing/models.py:39
+#: .\common\billing\models.py:39
 msgid "Tax Regime"
 msgstr "Régimen Fiscal"
 
-#: common/billing/models.py:40
+#: .\common\billing\models.py:40
 msgid "Tax Regimes"
 msgstr "Regímenes fiscales"
 
-#: common/billing/models.py:54 common/billing/models.py:62
+#: .\common\billing\models.py:54 .\common\billing\models.py:62
 msgid "Legal Entity Category"
 msgstr "Régimen de capital"
 
-#: common/billing/models.py:55
+#: .\common\billing\models.py:55
 msgid "Legal Entity Categories"
 msgstr "Regímenes de capital"
 
-#: common/billing/models.py:60
+#: .\common\billing\models.py:60
 msgid "Tax regime"
 msgstr "Régimen fiscal"
 
-#: common/billing/models.py:61
+#: .\common\billing\models.py:61
 msgid "Full name"
 msgstr "Nombre completo o Razón Social"
 
-#: common/billing/models.py:63
+#: .\common\billing\models.py:63
 msgid "Tax ID"
 msgstr "RFC"
 
-#: common/billing/models.py:65
+#: .\common\billing\models.py:65
 msgid "Postal code"
 msgstr "Código postal"
 
-#: common/billing/models.py:66
+#: .\common\billing\models.py:66
 msgid "State"
 msgstr "Estado"
 
-#: common/billing/models.py:67
+#: .\common\billing\models.py:67
 msgid "City"
 msgstr "Municipio"
 
-#: common/billing/models.py:68
+#: .\common\billing\models.py:68
 msgid "District"
 msgstr "Localidad"
 
-#: common/billing/models.py:69
+#: .\common\billing\models.py:69
 msgid "Neighborhood"
 msgstr "Colonia"
 
-#: common/billing/models.py:70
+#: .\common\billing\models.py:70
 msgid "Street"
 msgstr "Calle"
 
-#: common/billing/models.py:71
+#: .\common\billing\models.py:71
 msgid "External number"
 msgstr "Número exterior"
 
-#: common/billing/models.py:72
+#: .\common\billing\models.py:72
 msgid "Internal number"
 msgstr "Número interior"
 
-#: common/billing/models.py:73
+#: .\common\billing\models.py:73
 msgid "Phone number"
 msgstr "Número telefónico"
 
-#: common/billing/models.py:74
+#: .\common\billing\models.py:74
 msgid "Email"
 msgstr "email"
 
-#: common/billing/models.py:75
+#: .\common\billing\models.py:75
 msgid "Organization"
 msgstr "Organización"
 
-#: common/billing/models.py:81 common/billing/models.py:97
+#: .\common\billing\models.py:81 .\common\billing\models.py:97
 msgid "Legal Entity"
 msgstr "Identidad Fiscal"
 
-#: common/billing/models.py:82
+#: .\common\billing\models.py:82
 msgid "Legal Entities"
 msgstr "Identidades Fiscales"
 
-#: common/billing/models.py:93
+#: .\common\billing\models.py:93
 msgid "Serie"
 msgstr "Serie"
 
-#: common/billing/models.py:94
+#: .\common\billing\models.py:94
 msgid "Folio"
 msgstr "Folio"
 
-#: common/billing/models.py:95
+#: .\common\billing\models.py:95
 msgid "Kind"
 msgstr "Tipo"
 
-#: common/billing/models.py:96
+#: .\common\billing\models.py:96
 msgid "Is enabled"
 msgstr "Está activo"
 
-#: common/billing/models.py:100
+#: .\common\billing\models.py:100
 msgid "Billing Serie"
 msgstr "Serie de Facturación"
 
-#: common/billing/models.py:101
+#: .\common\billing\models.py:101
 msgid "Billing Series"
 msgstr "Serie de Facturación"

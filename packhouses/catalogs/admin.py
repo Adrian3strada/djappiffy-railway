@@ -2,8 +2,8 @@ from django.contrib import admin
 from .models import (
     Market, KGCostMarket, MarketClass, Product, ProductVariety, ProductVarietySize, ProductQualityKind,
     ProductVarietySizeKind, ProductVarietyHarvestKind, Bank, ProductProvider, ProductProviderBenefactor,
-    ProductProducer, ProductProducerBenefactor, PaymentKind, VehicleOwnership, VehicleKind, VehicleFuel, Vehicle,
-    Collector, Client, Maquiladora, MaquiladoraClient, OrchardProductClassification, Orchard, OrchardCertificationKind,
+    ProductProducer, ProductProducerBenefactor, PaymentKind, VehicleOwnershipKind, VehicleKind, VehicleFuelKind, Vehicle,
+    Collector, Client, Maquilador, MaquiladorClient, OrchardProductClassification, Orchard, OrchardCertificationKind,
     OrchardCertificationVerifier, OrchardCertification, HarvestCrew, SupplyUnitKind, SupplyKind, SupplyKindRelation,
     Supply, Supplier, MeshBagKind, MeshBagFilmKind, MeshBag, ServiceProvider, ServiceProviderBenefactor, Service,
     AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber, Pallet, PalletExpense, ProductPackaging
@@ -139,7 +139,7 @@ class PaymentKindAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(VehicleOwnership)
+@admin.register(VehicleOwnershipKind)
 class VehicleOwnershipAdmin(admin.ModelAdmin):
     pass
 
@@ -149,7 +149,7 @@ class VehicleKindAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(VehicleFuel)
+@admin.register(VehicleFuelKind)
 class VehicleFuelAdmin(admin.ModelAdmin):
     pass
 
@@ -169,12 +169,12 @@ class ClientAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Maquiladora)
+@admin.register(Maquilador)
 class MaquiladoraAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(MaquiladoraClient)
+@admin.register(MaquiladorClient)
 class MaquiladoraClientAdmin(admin.ModelAdmin):
     pass
 
