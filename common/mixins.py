@@ -1,0 +1,153 @@
+from django.db import models
+from organizations.models import Organization
+from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
+
+# Create your mixins here.
+
+
+class CleanNameAndOrganizationMixin(models.Model):
+    def __str__(self):
+        return f"{self.name}"
+
+    def clean(self):
+        self.name = getattr(self, 'name', None)
+        self.organization = getattr(self, 'organization', None)
+        self.organization_id = getattr(self, 'organization_id', None)
+
+        if self.name:
+            self.name = self.name.upper()
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.organization_id:
+            if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(
+                    pk=self.pk).exists():
+                errors['name'] = _('Name must be unique, it already exists.')
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
+
+class CleanNameOrAliasAndOrganizationMixin(models.Model):
+    def __str__(self):
+        return f"{self.name}"
+
+    def clean(self):
+        self.name = getattr(self, 'name', None)
+        self.alias = getattr(self, 'alias', None)
+        self.organization = getattr(self, 'organization', None)
+        self.organization_id = getattr(self, 'organization_id', None)
+
+        if self.name:
+            self.name = self.name.upper()
+
+        if self.alias:
+            self.alias = self.alias.upper()
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.organization_id:
+            if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(
+                    pk=self.pk).exists():
+                errors['name'] = _('Name must be unique, it already exists.')
+            if self.__class__.objects.filter(alias=self.alias, organization=self.organization).exclude(
+                    pk=self.pk).exists():
+                errors['alias'] = _('Alias must be unique, it already exists.')
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
+
+class CleanNameAndMarketMixin(models.Model):
+    def __str__(self):
+        return f"{self.name}"
+
+    def clean(self):
+        self.name = getattr(self, 'name', None)
+        self.market = getattr(self, 'market', None)
+        self.market_id = getattr(self, 'market_id', None)
+
+        if self.name:
+            self.name = self.name.upper()
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.market_id:
+            if self.__class__.objects.filter(name=self.name, market=self.market).exclude(
+                    pk=self.pk).exists():
+                errors['name'] = _('Name must be unique, it already exists.')
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
+
+class CleanNameAndProductMixin(models.Model):
+    def __str__(self):
+        return f"{self.product.name}: {self.name}"
+
+    def clean(self):
+        self.name = getattr(self, 'name', None)
+        self.product = getattr(self, 'product', None)
+        self.product_id = getattr(self, 'product_id', None)
+
+        if self.name:
+            self.name = self.name.upper()
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.product_id:
+            if self.__class__.objects.filter(name=self.name, product=self.product).exclude(
+                    pk=self.pk).exists():
+                errors['name'] = _('Name must be unique, it already exists.')
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True

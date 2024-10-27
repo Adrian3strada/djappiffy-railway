@@ -36,5 +36,5 @@ class AutoGrowingTextareaWidget(forms.Textarea):
 
     class Media:
         js = (
-            'js/admin/forms/adjust_textarea_height.js',  # Asume que crearás este archivo JS
+            'js/admin/forms/adjust_textarea_height.js',
         )

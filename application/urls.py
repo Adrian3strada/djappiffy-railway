@@ -28,7 +28,7 @@ urlpatterns = [
 urlpatterns += [
     path('i18n/', include('django.conf.urls.i18n')),
     path("ckeditor5/", include('django_ckeditor_5.urls')),
-    path('_nested_admin/', include('nested_admin.urls')), # quitar si no se usa
+    path("catalogs/", include('packhouses.catalogs.urls')),
 ]
 
 if settings.DEBUG:

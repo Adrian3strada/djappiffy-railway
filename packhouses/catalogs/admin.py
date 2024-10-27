@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (
-    Market, KGCostMarket, MarketClass, Product, ProductVariety, ProductVarietySize,
+    Market, KGCostMarket, MarketClass, MarketStandardProductSize, Product, ProductVariety, ProductVarietySize,
     ProductHarvestKind, Bank, ProductProvider, ProductProviderBenefactor,
     ProductProducer, ProductProducerBenefactor, PaymentKind, VehicleOwnershipKind, VehicleKind, VehicleFuelKind, Vehicle,
     Collector, Client, Maquilador, MaquiladorClient, OrchardProductClassification, Orchard, OrchardCertificationKind,
@@ -8,6 +8,7 @@ from .models import (
     Supply, Supplier, MeshBagKind, MeshBagFilmKind, MeshBag, ServiceProvider, ServiceProviderBenefactor, Service,
     AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber, Pallet, PalletExpense, ProductPackaging
 )
+from .forms import ProductVarietySizeForm
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
@@ -31,32 +32,36 @@ class KGCostMarketInline(admin.TabularInline):
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        formset.form.base_fields['name'].widget = UppercaseTextInputWidget()  # Asigna el widget
+        formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
         return formset
+
+
+class MarketClassInline(admin.TabularInline):
+    model = MarketClass
+    extra = 0
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return formset
+
+
+class MarketStandardProductSizeInline(admin.TabularInline):
+    model = MarketStandardProductSize
+    extra = 0
 
 
 @admin.register(Market)
 class MarketAdmin(admin.ModelAdmin):
     list_display = ('name', 'alias', 'is_enabled')
     list_filter = ('is_enabled',)
-    inlines = [KGCostMarketInline]
+    inlines = [KGCostMarketInline, MarketClassInline, MarketStandardProductSizeInline]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['name'].widget = UppercaseTextInputWidget()
         form.base_fields['alias'].widget = UppercaseAlphanumericTextInputWidget()
         form.base_fields['address_label'].widget = CKEditor5Widget()
-        return form
-
-
-@admin.register(MarketClass)
-class MarketClassAdmin(admin.ModelAdmin):
-    list_display = ('name', 'market', 'is_enabled')
-    list_filter = ('market', 'is_enabled')
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
@@ -73,6 +78,7 @@ class ProductVarietyInline(admin.TabularInline):
 
 class ProductVarietySizeInline(admin.StackedInline):
     model = ProductVarietySize
+    form = ProductVarietySizeForm
     extra = 0
 
 
@@ -115,8 +121,8 @@ class ProductVarietySizeAdmin(admin.ModelAdmin):
 
 @admin.register(ProductVariety)
 class ProductVarietyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'is_enabled')
-    list_filter = ('is_enabled',)
+    list_display = ('name', 'product', 'description', 'is_enabled')
+    list_filter = (('product', admin.RelatedOnlyFieldListFilter), 'is_enabled',)
     inlines = [ProductVarietySizeInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -124,6 +130,9 @@ class ProductVarietyAdmin(admin.ModelAdmin):
         form.base_fields['name'].widget = UppercaseTextInputWidget()
         form.base_fields['description'].widget = AutoGrowingTextareaWidget()
         return form
+
+    class Media:
+        js = ('js/admin/forms/product_variety_size.js',)
 
 
 @admin.register(Product)

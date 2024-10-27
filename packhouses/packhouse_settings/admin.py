@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Status, ProductQualityKind, ProductKind, ProductStandardSize
+from .models import Status, ProductQualityKind, ProductKind
 from common.formwidgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 
 
@@ -26,7 +26,3 @@ class ProductQualityKindAdmin(admin.ModelAdmin):
 class ProductKindAdmin(admin.ModelAdmin):
     pass
 
-
-@admin.register(ProductStandardSize)
-class ProductStandardSizeAdmin(admin.ModelAdmin):
-    pass

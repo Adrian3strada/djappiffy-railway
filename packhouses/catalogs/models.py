@@ -1,4 +1,6 @@
 from django.db import models
+from common.mixins import (CleanNameAndOrganizationMixin, CleanNameOrAliasAndOrganizationMixin,
+                           CleanNameAndMarketMixin, CleanNameAndProductMixin)
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from django.utils.translation import gettext_lazy as _
@@ -16,7 +18,7 @@ from packhouses.packhouse_settings.models import ProductQualityKind, ProductKind
 # Create your models here.
 
 
-class Market(models.Model):
+class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
@@ -28,33 +30,6 @@ class Market(models.Model):
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
-    def __str__(self):
-        return f"{self.name}"
-
-    def clean(self):
-        self.name = self.name.upper()
-        self.alias = self.alias.upper()
-
-        errors = {}
-
-        try:
-            super().clean()
-        except ValidationError as e:
-            errors = e.message_dict
-
-        if self.organization_id:
-            if Market.objects.filter(name=self.name, organization=self.organization).exclude(pk=self.pk).exists():
-                errors['name'] = _('Name must be unique, it already exists.')
-            if Market.objects.filter(alias=self.alias, organization=self.organization).exclude(pk=self.pk).exists():
-                errors['alias'] = _('Alias must be unique, it already exists.')
-
-        if errors:
-            raise ValidationError(errors)
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
-
     class Meta:
         verbose_name = _('Market')
         verbose_name_plural = _('Markets')
@@ -64,21 +39,11 @@ class Market(models.Model):
         ]
 
 
-class KGCostMarket(models.Model):
+class KGCostMarket(CleanNameAndMarketMixin, models.Model):
     name = models.CharField(max_length=120, verbose_name=_('Name'))
     cost_per_kg = models.FloatField(validators=[MinValueValidator(0.01)], verbose_name=_('Cost per Kg'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    def clean(self):
-        self.name = self.name.upper()
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Cost per Kg on Market')
@@ -89,30 +54,20 @@ class KGCostMarket(models.Model):
         ]
 
 
-class MarketClass(models.Model):
+class MarketClass(CleanNameAndMarketMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
-    def __str__(self):
-        return f"{self.name}"
-
-    def clean(self):
-        self.name = self.name.upper()
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
-
     @receiver(post_save, sender=Market)
     def create_market_classes(sender, instance, created, **kwargs):
         if created:
-            MarketClass.objects.bulk_create([
-                MarketClass(name='A', market=instance),
-                MarketClass(name='B', market=instance),
-                MarketClass(name='C', market=instance),
-                MarketClass(name='CC', market=instance),
-            ])
+            if not MarketClass.objects.filter(market=instance).exists():
+                MarketClass.objects.bulk_create([
+                    MarketClass(name='A', market=instance),
+                    MarketClass(name='B', market=instance),
+                    MarketClass(name='C', market=instance),
+                ])
 
     class Meta:
         verbose_name = _('Market class')
@@ -123,21 +78,51 @@ class MarketClass(models.Model):
         ]
 
 
-class Product(models.Model):
+class MarketStandardProductSize(models.Model):
+    # En caso de que se necesite poner "apeam" o algo similar, ver la posibilidad de ponerlo en el Market como atributo
+    # a modo de autoridad en la materia
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 
     def __str__(self):
         return f"{self.name}"
 
     def clean(self):
-        self.name = self.name.upper()
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.market_id:
+            if self.__class__.objects.filter(name=self.name, market=self.market).exclude(
+                    pk=self.pk).exists():
+                errors['name'] = _('Name must be unique, it already exists.')
+
+        if errors:
+            raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('Market standard product size')
+        verbose_name_plural = _('Market standard product sizes')
+        ordering = ['order']
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'market'], name='marketstandardproductsize_unique_name_market'),
+        ]
+
+
+class Product(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = _('Product')
@@ -147,21 +132,11 @@ class Product(models.Model):
         ]
 
 
-class ProductVariety(models.Model):
+class ProductVariety(CleanNameAndProductMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.product.name}: {self.name}"
-
-    def clean(self):
-        self.name = self.name.upper()
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Product variety')
@@ -172,13 +147,10 @@ class ProductVariety(models.Model):
         ]
 
 
-class ProductHarvestKind(models.Model):
+class ProductHarvestKind(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Product variety harvest Kind')
@@ -190,9 +162,9 @@ class ProductHarvestKind(models.Model):
 class ProductVarietySize(models.Model):
     variety = models.ForeignKey(ProductVariety, verbose_name=_('Variety'), on_delete=models.PROTECT)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Quality kind'), on_delete=models.PROTECT)
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
+    quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Quality kind'), on_delete=models.PROTECT)  # Normal, roña, etc
     # apeam... TODO: generalizar esto para que no sea solo apeam
     harvest_kind = models.ForeignKey(ProductHarvestKind, verbose_name=_('Harvest kind'), on_delete=models.PROTECT)
     description = models.CharField(max_length=255, verbose_name=_('Description'))
@@ -207,8 +179,11 @@ class ProductVarietySize(models.Model):
     class Meta:
         verbose_name = _('Product variety size')
         verbose_name_plural = _('Product variety sizes')
-        unique_together = ('name', 'market', 'variety')
         ordering = ['order']
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'variety'], name='Productvarietysize_unique_name_variety'),
+            models.UniqueConstraint(fields=['name', 'market'], name='Productvarietysize_unique_name_market'),
+        ]
 
 
 # Proveedores de fruta:
