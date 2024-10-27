@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (
-    Market, KGCostMarket, MarketClass, Product, ProductVariety, ProductVarietySize, ProductQualityKind,
+    Market, KGCostMarket, MarketClass, Product, ProductVariety, ProductVarietySize,
     ProductHarvestKind, Bank, ProductProvider, ProductProviderBenefactor,
     ProductProducer, ProductProducerBenefactor, PaymentKind, VehicleOwnershipKind, VehicleKind, VehicleFuelKind, Vehicle,
     Collector, Client, Maquilador, MaquiladorClient, OrchardProductClassification, Orchard, OrchardCertificationKind,
@@ -18,50 +18,11 @@ from cities_light.models import Country, Region, City
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.utils.html import format_html
+from common.formwidgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
 admin.site.unregister(City)
-
-
-class UppercaseTextInputWidget(forms.TextInput):
-    def __init__(self, *args, **kwargs):
-        kwargs['attrs'] = {'oninput': 'this.value = this.value.toUpperCase();'}
-        super().__init__(*args, **kwargs)
-
-    def format_value(self, value):
-        return value.upper() if value else ''
-
-
-class UppercaseAlphanumericTextInputWidget(forms.TextInput):
-    def __init__(self, *args, **kwargs):
-        kwargs['attrs'] = {
-            'oninput': (
-                "this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');"
-            )
-        }
-        super().__init__(*args, **kwargs)
-
-    def format_value(self, value):
-        return value.upper() if value else ''
-
-
-class AutoGrowingTextareaWidget(forms.Textarea):
-    def __init__(self, attrs=None):
-        default_attrs = {
-            'rows': 1,
-            'class': 'vTextField',
-            'style': 'width: 100%; max-height: 12em; overflow-y: auto; min-height: calc(2.25rem + 2px);',
-            'oninput': 'this.style.height = ""; this.style.height = Math.min(this.scrollHeight, 12 * parseFloat(getComputedStyle(this).lineHeight)) + "px";'
-        }
-        if attrs:
-            default_attrs.update(attrs)
-        super().__init__(attrs=default_attrs)
-
-    class Media:
-        js = (
-            'js/admin/forms/adjust_textarea_height.js',  # Asume que crearás este archivo JS
-        )
 
 
 class KGCostMarketInline(admin.TabularInline):
@@ -140,11 +101,6 @@ class SupplyAdminForm(forms.ModelForm):
         if self.instance and self.instance.product_kind:
             allowed_kinds = SupplyKindRelation.objects.filter(from_kind=self.instance.product_kind).values_list('to_kind', flat=True)
             self.fields['related_supply'].queryset = Supply.objects.filter(kind__in=allowed_kinds)
-
-
-@admin.register(ProductQualityKind)
-class ProductQualityKindAdmin(admin.ModelAdmin):
-    pass
 
 
 @admin.register(ProductHarvestKind)

@@ -10,7 +10,7 @@ from django.dispatch import receiver
 from common.billing.models import TaxRegime, LegalEntityCategory
 from .utils import vehicle_year_choices, vehicle_validate_year
 from django.core.exceptions import ValidationError
-from packhouses.packhouse_settings.models import ProductKind
+from packhouses.packhouse_settings.models import ProductQualityKind, ProductKind
 
 
 # Create your models here.
@@ -170,21 +170,6 @@ class ProductVariety(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'], name='product_unique_name_product'),
         ]
-
-
-class ProductQualityKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Product quality kind')
-        verbose_name_plural = _('Product quality kinds')
-        unique_together = ('name', 'organization')
-        ordering = ('name',)
 
 
 class ProductHarvestKind(models.Model):

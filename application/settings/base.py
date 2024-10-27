@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'polymorphic',
 
     # djappiffy apps
+    "common",
     "common.base",
     "common.users",
     "common.firebase_auth",
