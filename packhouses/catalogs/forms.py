@@ -28,3 +28,5 @@ class ProductVarietySizeForm(forms.ModelForm):
         elif self.instance.pk and self.instance.market:
             self.fields['market_standard_product_size'].queryset = MarketStandardProductSize.objects.filter(market=self.instance.market)
 
+    class Media:
+        js = ('js/admin/forms/product_variety_size.js',)

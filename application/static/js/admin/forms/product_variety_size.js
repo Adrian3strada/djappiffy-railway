@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('select[name^="productvarietysize_set-"][name$="-market"]').forEach(marketField => {
             marketField.removeEventListener('change', handleMarketChange); // Remove existing listener to avoid duplicates
             marketField.addEventListener('change', handleMarketChange);
+            alert('Event listener added');
+            console.log(marketField);
         });
     }
 
