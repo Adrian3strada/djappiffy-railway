@@ -24,20 +24,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    document.querySelectorAll('select[name^="productvarietysize_set-"][name$="-market"]').forEach(marketField => {
-        marketField.addEventListener('change', function() {
-            updateMarketStandardProductSizeField(marketField);
+    function addMarketFieldEventListeners() {
+        document.querySelectorAll('select[name^="productvarietysize_set-"][name$="-market"]').forEach(marketField => {
+            marketField.removeEventListener('change', handleMarketChange); // Remove existing listener to avoid duplicates
+            marketField.addEventListener('change', handleMarketChange);
+        });
+    }
+
+    function handleMarketChange(event) {
+        updateMarketStandardProductSizeField(event.target);
+    }
+
+    // Initial call to add event listeners to existing fields
+    addMarketFieldEventListeners();
+
+    // Observe for new inlines being added
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.addedNodes.length) {
+                addMarketFieldEventListeners();
+            }
         });
     });
 
-    // Add a new select element for MarketStandardProductSize
-    document.querySelectorAll('.inline-related').forEach((inline, index) => {
-        const marketField = inline.querySelector('select[name$="-market"]');
-        if (marketField) {
-            const marketStandardProductSizeField = document.createElement('select');
-            marketStandardProductSizeField.name = `productvarietysize_set-${index}-market_standard_product_size`;
-            marketStandardProductSizeField.classList.add('vSelectField');
-            marketField.parentNode.insertBefore(marketStandardProductSizeField, marketField.nextSibling);
-        }
-    });
+    const inlineContainer = document.querySelector('#productvarietysize_set-group');
+    if (inlineContainer) {
+        observer.observe(inlineContainer, { childList: true });
+    }
 });
