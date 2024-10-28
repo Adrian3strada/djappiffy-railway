@@ -1,5 +1,6 @@
 from django import forms
 
+
 class UppercaseTextInputWidget(forms.TextInput):
     def __init__(self, *args, **kwargs):
         kwargs['attrs'] = {'oninput': 'this.value = this.value.toUpperCase();'}

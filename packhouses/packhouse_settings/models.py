@@ -39,13 +39,14 @@ class ProductQualityKind(CleanNameAndOrganizationMixin, models.Model):
 
 class ProductKind(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))  # TODO: implementar ordenamiento con drag and drop
 
     class Meta:
         verbose_name = _('Product kind')
         verbose_name_plural = _('Product kinds')
-        ordering = ('name',)
+        ordering = ('order',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='productkind_unique_name_organization'),
         ]

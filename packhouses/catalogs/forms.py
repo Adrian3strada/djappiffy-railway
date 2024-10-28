@@ -1,6 +1,7 @@
 from django import forms
 from .models import ProductVarietySize, MarketStandardProductSize
 from django.utils.translation import gettext_lazy as _
+from django.forms.widgets import RadioSelect
 
 
 class ProductVarietySizeForm(forms.ModelForm):
@@ -16,6 +17,9 @@ class ProductVarietySizeForm(forms.ModelForm):
         model = ProductVarietySize
         fields = ['market', 'market_standard_product_size', 'name', 'alias', 'quality_kind', 'harvest_kind',
                   'description', 'product_kind', 'requires_corner_protector', 'is_enabled', 'order']
+        widgets = {
+            # 'product_kind': RadioSelect(),  # Usa RadioSelect para el campo ForeignKey
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

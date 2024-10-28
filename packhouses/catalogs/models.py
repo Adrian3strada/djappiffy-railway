@@ -120,7 +120,7 @@ class MarketStandardProductSize(models.Model):
 
 class Product(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
+    description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -134,7 +134,7 @@ class Product(CleanNameAndOrganizationMixin, models.Model):
 
 class ProductVariety(CleanNameAndProductMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
+    description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
 
@@ -149,14 +149,18 @@ class ProductVariety(CleanNameAndProductMixin, models.Model):
 
 class ProductHarvestKind(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 
     class Meta:
         verbose_name = _('Product variety harvest Kind')
         verbose_name_plural = _('Product variety harvest kinds')
         unique_together = ('name', 'organization')
-        ordering = ('name',)
+        ordering = ('order',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='productharvestkind_unique_name_organization'),
+        ]
 
 
 class ProductVarietySize(models.Model):
@@ -164,9 +168,9 @@ class ProductVarietySize(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
+    description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
     quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Quality kind'), on_delete=models.PROTECT)  # Normal, roña, etc
     harvest_kind = models.ForeignKey(ProductHarvestKind, verbose_name=_('Harvest kind'), on_delete=models.PROTECT)
-    description = models.CharField(max_length=255, verbose_name=_('Description'))
     product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product kind'), on_delete=models.PROTECT, help_text=_('To separate sizes by product kind in the mass volume report'))
     requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -178,7 +182,7 @@ class ProductVarietySize(models.Model):
     class Meta:
         verbose_name = _('Product variety size')
         verbose_name_plural = _('Product variety sizes')
-        ordering = ['order']
+        ordering = ['variety', 'order']
         constraints = [
             models.UniqueConstraint(fields=['name', 'variety'], name='Productvarietysize_unique_name_variety'),
             models.UniqueConstraint(fields=['name', 'market'], name='Productvarietysize_unique_name_market'),
@@ -537,7 +541,7 @@ class MaquiladorClient(models.Model):
 
 class OrchardProductClassification(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
+    description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):

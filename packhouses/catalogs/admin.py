@@ -19,7 +19,7 @@ from cities_light.models import Country, Region, City
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.utils.html import format_html
-from common.formwidgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
+from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -144,7 +144,7 @@ class ProductAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['name'].widget = UppercaseTextInputWidget()
-        form.base_fields['description'].widget = AutoGrowingTextareaWidget()
+        # form.base_fields['description'].widget = AutoGrowingTextareaWidget()
         return form
 
 
