@@ -19,6 +19,20 @@ document.addEventListener('DOMContentLoaded', () => {
             option.textContent = item.name;
             marketStandardProductSizeField.appendChild(option);
           });
+
+          // Adjuntar el evento después de actualizar el campo
+          $(marketStandardProductSizeField).on('select2:select', function (e) {
+            console.log('Opción seleccionada:', e.params.data);
+            const selectedText = e.params.data.text;
+            const nameField = form.querySelector('input[name$="-name"]');
+            const aliasField = form.querySelector('input[name$="-alias"]');
+            if (nameField) {
+              nameField.value = selectedText;
+            }
+            if (aliasField) {
+              aliasField.value = transformTextForAlias(selectedText);
+            }
+          });
         })
         .catch(error => {
           console.error('Error fetching market standard product sizes:', error);
@@ -26,26 +40,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Función para transformar el texto para el campo alias
+  function transformTextForAlias(text) {
+    const accentsMap = {
+      'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
+      'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U'
+    };
+    return text
+      .replace(/[áéíóúÁÉÍÓÚ]/g, match => accentsMap[match])
+      .replace(/[^a-zA-Z0-9]/g, '');
+  }
+
   // Agregar listener para cuando se añadan formularios en el inline de `ProductVarietySize`
   document.addEventListener('formset:added', (event) => {
     if (event.detail.formsetName === 'productvarietysize_set') {
       const newForm = event.target;
 
-      console.log("Nuevo formulario añadido en ProductVarietySize:", newForm);
-      console.log("Nuevo formulario añadido en ProductVarietySize:", event.target.id);
-
       const marketField = newForm.querySelector('select[name$="-market"]');
       console.log("marketField (original):", marketField);
 
       if (marketField) {
-        // Listener para cuando se selecciona una opción en el campo `market`
-        $(marketField).on('select2:select', function (e) {
+        $(marketField).on('select2:select', (e) => {
           console.log('Opción seleccionada:', e.params.data);
           const marketId = e.params.data.id;
           updateMarketStandardProductSize(marketId, newForm);
         });
 
-        // Verificar si el campo ya tiene un valor y ejecutar la lógica correspondiente
         const selectedMarketId = marketField.value;
         if (selectedMarketId) {
           updateMarketStandardProductSize(selectedMarketId, newForm);
@@ -76,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Agregar listener para cuando se eliminen formularios en el inline de `ProductVarietySize`
   document.addEventListener('formset:removed', (event) => {
     if (event.detail.formsetName === 'productvarietysize_set') {
-      const removedForm = event.detail.form;
+      const removedForm = event.target;
       console.log("Formulario eliminado en ProductVarietySize:", removedForm);
     }
   });

@@ -165,7 +165,6 @@ class ProductVarietySize(models.Model):
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Quality kind'), on_delete=models.PROTECT)  # Normal, roña, etc
-    # apeam... TODO: generalizar esto para que no sea solo apeam
     harvest_kind = models.ForeignKey(ProductHarvestKind, verbose_name=_('Harvest kind'), on_delete=models.PROTECT)
     description = models.CharField(max_length=255, verbose_name=_('Description'))
     product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product kind'), on_delete=models.PROTECT, help_text=_('To separate sizes by product kind in the mass volume report'))
