@@ -1,0 +1,107 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-10-28 02:46-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
+#: .\packhouses\collection\models.py:16
+msgid "Status"
+msgstr ""
+
+#: .\packhouses\collection\models.py:17
+msgid "Provider"
+msgstr ""
+
+#: .\packhouses\collection\models.py:19
+msgid "organization"
+msgstr ""
+
+#: .\packhouses\collection\models.py:20
+msgid "name"
+msgstr ""
+
+#: .\packhouses\collection\models.py:21
+msgid "description"
+msgstr ""
+
+#: .\packhouses\collection\models.py:22
+msgid "city"
+msgstr ""
+
+#: .\packhouses\collection\models.py:23
+msgid "country"
+msgstr ""
+
+#: .\packhouses\collection\models.py:24
+msgid "region"
+msgstr ""
+
+#: .\packhouses\collection\models.py:25
+msgid "address"
+msgstr ""
+
+#: .\packhouses\collection\models.py:26
+msgid "postal code"
+msgstr ""
+
+#: .\packhouses\collection\models.py:27
+msgid "latitude"
+msgstr ""
+
+#: .\packhouses\collection\models.py:28
+msgid "longitude"
+msgstr ""
+
+#: .\packhouses\collection\models.py:29
+msgid "phone"
+msgstr ""
+
+#: .\packhouses\collection\models.py:30
+msgid "email"
+msgstr ""
+
+#: .\packhouses\collection\models.py:31
+msgid "website"
+msgstr ""
+
+#: .\packhouses\collection\models.py:32
+msgid "tax regime"
+msgstr ""
+
+#: .\packhouses\collection\models.py:33
+msgid "legal entity category"
+msgstr ""
+
+#: .\packhouses\collection\models.py:34
+msgid "created by"
+msgstr ""
+
+#: .\packhouses\collection\models.py:35
+msgid "created at"
+msgstr ""
+
+#: .\packhouses\collection\models.py:36
+msgid "updated at"
+msgstr ""
+
+#: .\packhouses\collection\models.py:39
+msgid "collection"
+msgstr ""
+
+#: .\packhouses\collection\models.py:40
+msgid "collections"
+msgstr ""

@@ -81,9 +81,6 @@ class ProductVarietySizeInline(admin.StackedInline):
     form = ProductVarietySizeForm
     extra = 0
 
-    class Media:
-        js = ('js/admin/forms/product_variety_size.js',)
-
 
 class ProductProviderBenefactorInline(admin.TabularInline):
     model = ProductProviderBenefactor

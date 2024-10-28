@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-26 21:32-0600\n"
+"POT-Creation-Date: 2024-10-28 02:45-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,52 +23,62 @@ msgstr ""
 msgid "Catalogs"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:16 .\packhouses\catalogs\models.py:37
-#: .\packhouses\catalogs\models.py:53 .\packhouses\catalogs\models.py:67
-#: .\packhouses\catalogs\models.py:82 .\packhouses\catalogs\models.py:96
-#: .\packhouses\catalogs\models.py:111 .\packhouses\catalogs\models.py:126
-#: .\packhouses\catalogs\models.py:167 .\packhouses\catalogs\models.py:258
-#: .\packhouses\catalogs\models.py:274 .\packhouses\catalogs\models.py:323
-#: .\packhouses\catalogs\models.py:336 .\packhouses\catalogs\models.py:349
-#: .\packhouses\catalogs\models.py:362 .\packhouses\catalogs\models.py:515
-#: .\packhouses\catalogs\models.py:529 .\packhouses\catalogs\models.py:553
-#: .\packhouses\catalogs\models.py:568 .\packhouses\catalogs\models.py:603
-#: .\packhouses\catalogs\models.py:621 .\packhouses\catalogs\models.py:636
-#: .\packhouses\catalogs\models.py:665 .\packhouses\catalogs\models.py:689
-#: .\packhouses\catalogs\models.py:720 .\packhouses\catalogs\models.py:734
-#: .\packhouses\catalogs\models.py:748 .\packhouses\catalogs\models.py:773
-#: .\packhouses\catalogs\models.py:817 .\packhouses\catalogs\models.py:834
-#: .\packhouses\catalogs\models.py:848 .\packhouses\catalogs\models.py:866
-#: .\packhouses\catalogs\models.py:894 .\packhouses\catalogs\models.py:917
-#: .\packhouses\catalogs\models.py:934 .\packhouses\catalogs\models.py:954
+#: .\packhouses\catalogs\forms.py:10
+msgid "Market Standard Product Sizes"
+msgstr ""
+
+#: .\packhouses\catalogs\forms.py:11
+msgid ""
+"Choose a Standard Product Size per Market (optional), it will put its name "
+"in the size name field."
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:22 .\packhouses\catalogs\models.py:43
+#: .\packhouses\catalogs\models.py:58 .\packhouses\catalogs\models.py:84
+#: .\packhouses\catalogs\models.py:122 .\packhouses\catalogs\models.py:136
+#: .\packhouses\catalogs\models.py:151 .\packhouses\catalogs\models.py:192
+#: .\packhouses\catalogs\models.py:283 .\packhouses\catalogs\models.py:299
+#: .\packhouses\catalogs\models.py:348 .\packhouses\catalogs\models.py:361
+#: .\packhouses\catalogs\models.py:374 .\packhouses\catalogs\models.py:387
+#: .\packhouses\catalogs\models.py:540 .\packhouses\catalogs\models.py:554
+#: .\packhouses\catalogs\models.py:578 .\packhouses\catalogs\models.py:593
+#: .\packhouses\catalogs\models.py:628 .\packhouses\catalogs\models.py:646
+#: .\packhouses\catalogs\models.py:661 .\packhouses\catalogs\models.py:690
+#: .\packhouses\catalogs\models.py:714 .\packhouses\catalogs\models.py:745
+#: .\packhouses\catalogs\models.py:759 .\packhouses\catalogs\models.py:773
+#: .\packhouses\catalogs\models.py:798 .\packhouses\catalogs\models.py:842
+#: .\packhouses\catalogs\models.py:859 .\packhouses\catalogs\models.py:873
+#: .\packhouses\catalogs\models.py:891 .\packhouses\catalogs\models.py:919
+#: .\packhouses\catalogs\models.py:942 .\packhouses\catalogs\models.py:959
+#: .\packhouses\catalogs\models.py:979
 msgid "Name"
 msgstr "Nombre"
 
-#: .\packhouses\catalogs\models.py:17 .\packhouses\catalogs\models.py:145
-#: .\packhouses\catalogs\models.py:182 .\packhouses\catalogs\models.py:918
-#: .\packhouses\catalogs\models.py:955
+#: .\packhouses\catalogs\models.py:23 .\packhouses\catalogs\models.py:166
+#: .\packhouses\catalogs\models.py:207 .\packhouses\catalogs\models.py:943
+#: .\packhouses\catalogs\models.py:980
 msgid "Alias"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:18 .\packhouses\catalogs\models.py:292
-#: .\packhouses\catalogs\models.py:393 .\packhouses\catalogs\models.py:425
-#: .\packhouses\catalogs\models.py:453 .\packhouses\catalogs\models.py:486
+#: .\packhouses\catalogs\models.py:24 .\packhouses\catalogs\models.py:317
+#: .\packhouses\catalogs\models.py:418 .\packhouses\catalogs\models.py:450
+#: .\packhouses\catalogs\models.py:478 .\packhouses\catalogs\models.py:511
 msgid "Country"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:19
+#: .\packhouses\catalogs\models.py:25
 msgid "Management cost per Kg"
 msgstr "Costo de administración por Kg"
 
-#: .\packhouses\catalogs\models.py:19
+#: .\packhouses\catalogs\models.py:25
 msgid "Cost generated per Kg for product management and packaging"
 msgstr "Costo generado por administración y empacado por Kg de producto"
 
-#: .\packhouses\catalogs\models.py:20
+#: .\packhouses\catalogs\models.py:26
 msgid "Is foreign"
 msgstr "Es extranjero"
 
-#: .\packhouses\catalogs\models.py:20
+#: .\packhouses\catalogs\models.py:26
 msgid ""
 "Conditional for performance reporting to separate foreign and domestic "
 "markets; separation in the report of volume by mass and customer addresses"
@@ -77,839 +87,835 @@ msgstr ""
 "nacionales; separación en el reporte de volumen por masa y direcciones de "
 "clientes"
 
-#: .\packhouses\catalogs\models.py:21
+#: .\packhouses\catalogs\models.py:27
 msgid "Is mixable"
 msgstr "Se puede mezclar"
 
-#: .\packhouses\catalogs\models.py:21
+#: .\packhouses\catalogs\models.py:27
 msgid "Conditional that does not allow mixing fruit with other markets"
 msgstr "Condicional que no permite mezclar frutas con otros mercados"
 
-#: .\packhouses\catalogs\models.py:22
+#: .\packhouses\catalogs\models.py:28
 msgid "Label language"
 msgstr "Idioma de etiqueta"
 
-#: .\packhouses\catalogs\models.py:23
+#: .\packhouses\catalogs\models.py:29
 msgid "Address of packaging house to show in label"
-
 msgstr "Domicilio del empaque para mostrar en etiqueta "
 
-#: .\packhouses\catalogs\models.py:23
+#: .\packhouses\catalogs\models.py:29
 msgid "Leave blank to keep the default address defined in the organization"
 msgstr ""
 "Dejar en blanco para mantener la dirección predeterminada definida en la "
 "organización"
 
-#: .\packhouses\catalogs\models.py:24 .\packhouses\catalogs\models.py:39
-#: .\packhouses\catalogs\models.py:151 .\packhouses\catalogs\models.py:196
-#: .\packhouses\catalogs\models.py:244 .\packhouses\catalogs\models.py:311
-#: .\packhouses\catalogs\models.py:369 .\packhouses\catalogs\models.py:406
-#: .\packhouses\catalogs\models.py:437 .\packhouses\catalogs\models.py:470
-#: .\packhouses\catalogs\models.py:503 .\packhouses\catalogs\models.py:539
-#: .\packhouses\catalogs\models.py:554 .\packhouses\catalogs\models.py:569
-#: .\packhouses\catalogs\models.py:587 .\packhouses\catalogs\models.py:622
-#: .\packhouses\catalogs\models.py:637 .\packhouses\catalogs\models.py:653
-#: .\packhouses\catalogs\models.py:675 .\packhouses\catalogs\models.py:704
-#: .\packhouses\catalogs\models.py:721 .\packhouses\catalogs\models.py:735
-#: .\packhouses\catalogs\models.py:757 .\packhouses\catalogs\models.py:787
-#: .\packhouses\catalogs\models.py:818 .\packhouses\catalogs\models.py:835
-#: .\packhouses\catalogs\models.py:851 .\packhouses\catalogs\models.py:877
-#: .\packhouses\catalogs\models.py:901 .\packhouses\catalogs\models.py:921
-#: .\packhouses\catalogs\models.py:938 .\packhouses\catalogs\models.py:971
+#: .\packhouses\catalogs\models.py:30 .\packhouses\catalogs\models.py:45
+#: .\packhouses\catalogs\models.py:60 .\packhouses\catalogs\models.py:85
+#: .\packhouses\catalogs\models.py:124 .\packhouses\catalogs\models.py:138
+#: .\packhouses\catalogs\models.py:173 .\packhouses\catalogs\models.py:221
+#: .\packhouses\catalogs\models.py:269 .\packhouses\catalogs\models.py:336
+#: .\packhouses\catalogs\models.py:394 .\packhouses\catalogs\models.py:431
+#: .\packhouses\catalogs\models.py:462 .\packhouses\catalogs\models.py:495
+#: .\packhouses\catalogs\models.py:528 .\packhouses\catalogs\models.py:564
+#: .\packhouses\catalogs\models.py:579 .\packhouses\catalogs\models.py:594
+#: .\packhouses\catalogs\models.py:612 .\packhouses\catalogs\models.py:647
+#: .\packhouses\catalogs\models.py:662 .\packhouses\catalogs\models.py:678
+#: .\packhouses\catalogs\models.py:700 .\packhouses\catalogs\models.py:729
+#: .\packhouses\catalogs\models.py:746 .\packhouses\catalogs\models.py:760
+#: .\packhouses\catalogs\models.py:782 .\packhouses\catalogs\models.py:812
+#: .\packhouses\catalogs\models.py:843 .\packhouses\catalogs\models.py:860
+#: .\packhouses\catalogs\models.py:876 .\packhouses\catalogs\models.py:902
+#: .\packhouses\catalogs\models.py:926 .\packhouses\catalogs\models.py:946
+#: .\packhouses\catalogs\models.py:963 .\packhouses\catalogs\models.py:996
 msgid "Is enabled"
 msgstr "Está activo"
 
-#: .\packhouses\catalogs\models.py:25 .\packhouses\catalogs\models.py:69
-#: .\packhouses\catalogs\models.py:84 .\packhouses\catalogs\models.py:113
-#: .\packhouses\catalogs\models.py:128 .\packhouses\catalogs\models.py:168
-#: .\packhouses\catalogs\models.py:197 .\packhouses\catalogs\models.py:245
-#: .\packhouses\catalogs\models.py:275 .\packhouses\catalogs\models.py:312
-#: .\packhouses\catalogs\models.py:324 .\packhouses\catalogs\models.py:337
-#: .\packhouses\catalogs\models.py:350 .\packhouses\catalogs\models.py:371
-#: .\packhouses\catalogs\models.py:407 .\packhouses\catalogs\models.py:438
-#: .\packhouses\catalogs\models.py:517 .\packhouses\catalogs\models.py:540
-#: .\packhouses\catalogs\models.py:555 .\packhouses\catalogs\models.py:570
-#: .\packhouses\catalogs\models.py:605 .\packhouses\catalogs\models.py:623
-#: .\packhouses\catalogs\models.py:638 .\packhouses\catalogs\models.py:676
-#: .\packhouses\catalogs\models.py:705 .\packhouses\catalogs\models.py:722
-#: .\packhouses\catalogs\models.py:736 .\packhouses\catalogs\models.py:758
-#: .\packhouses\catalogs\models.py:788 .\packhouses\catalogs\models.py:836
-#: .\packhouses\catalogs\models.py:852 .\packhouses\catalogs\models.py:878
-#: .\packhouses\catalogs\models.py:902 .\packhouses\catalogs\models.py:922
-#: .\packhouses\catalogs\models.py:972
+#: .\packhouses\catalogs\models.py:31 .\packhouses\catalogs\models.py:125
+#: .\packhouses\catalogs\models.py:153 .\packhouses\catalogs\models.py:193
+#: .\packhouses\catalogs\models.py:222 .\packhouses\catalogs\models.py:270
+#: .\packhouses\catalogs\models.py:300 .\packhouses\catalogs\models.py:337
+#: .\packhouses\catalogs\models.py:349 .\packhouses\catalogs\models.py:362
+#: .\packhouses\catalogs\models.py:375 .\packhouses\catalogs\models.py:396
+#: .\packhouses\catalogs\models.py:432 .\packhouses\catalogs\models.py:463
+#: .\packhouses\catalogs\models.py:542 .\packhouses\catalogs\models.py:565
+#: .\packhouses\catalogs\models.py:580 .\packhouses\catalogs\models.py:595
+#: .\packhouses\catalogs\models.py:630 .\packhouses\catalogs\models.py:648
+#: .\packhouses\catalogs\models.py:663 .\packhouses\catalogs\models.py:701
+#: .\packhouses\catalogs\models.py:730 .\packhouses\catalogs\models.py:747
+#: .\packhouses\catalogs\models.py:761 .\packhouses\catalogs\models.py:783
+#: .\packhouses\catalogs\models.py:813 .\packhouses\catalogs\models.py:861
+#: .\packhouses\catalogs\models.py:877 .\packhouses\catalogs\models.py:903
+#: .\packhouses\catalogs\models.py:927 .\packhouses\catalogs\models.py:947
+#: .\packhouses\catalogs\models.py:997
 msgid "Organization"
 msgstr "Organización"
 
-#: .\packhouses\catalogs\models.py:31 .\packhouses\catalogs\models.py:40
-#: .\packhouses\catalogs\models.py:54 .\packhouses\catalogs\models.py:142
-#: .\packhouses\catalogs\models.py:291 .\packhouses\catalogs\models.py:452
-#: .\packhouses\catalogs\models.py:485 .\packhouses\catalogs\models.py:749
-#: .\packhouses\catalogs\models.py:896 .\packhouses\catalogs\models.py:959
+#: .\packhouses\catalogs\models.py:34 .\packhouses\catalogs\models.py:46
+#: .\packhouses\catalogs\models.py:59 .\packhouses\catalogs\models.py:86
+#: .\packhouses\catalogs\models.py:164 .\packhouses\catalogs\models.py:316
+#: .\packhouses\catalogs\models.py:477 .\packhouses\catalogs\models.py:510
+#: .\packhouses\catalogs\models.py:774 .\packhouses\catalogs\models.py:921
+#: .\packhouses\catalogs\models.py:984
 msgid "Market"
 msgstr "Mercado"
 
-#: .\packhouses\catalogs\models.py:32
+#: .\packhouses\catalogs\models.py:35
 msgid "Markets"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:38
+#: .\packhouses\catalogs\models.py:44
 msgid "Cost per Kg"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:46
+#: .\packhouses\catalogs\models.py:49
 msgid "Cost per Kg on Market"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:47
+#: .\packhouses\catalogs\models.py:50
 msgid "Costs per Kg on Market"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:60 .\packhouses\catalogs\models.py:968
+#: .\packhouses\catalogs\models.py:73 .\packhouses\catalogs\models.py:993
 msgid "Market class"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:61
+#: .\packhouses\catalogs\models.py:74
 msgid "Market classes"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:68 .\packhouses\catalogs\models.py:83
-#: .\packhouses\catalogs\models.py:97 .\packhouses\catalogs\models.py:112
-#: .\packhouses\catalogs\models.py:127 .\packhouses\catalogs\models.py:148
-#: .\packhouses\catalogs\models.py:516
-msgid "Description"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:75
-msgid "Product quality kind"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:76
-msgid "Product quality kinds"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:90 .\packhouses\catalogs\models.py:98
-#: .\packhouses\catalogs\models.py:895 .\packhouses\catalogs\models.py:953
-msgid "Product"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:91
-msgid "Products"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:104 .\packhouses\catalogs\models.py:961
-msgid "Product variety"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:105
-msgid "Product varieties"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:119
-msgid "Product variety harvest Kind"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:120
-msgid "Product variety harvest kinds"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:134
-msgid "Product variety size kind"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:135
-msgid "Product variety size kinds"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:141
-msgid "Variety"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:143
-msgid "Quality kind"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:144
-msgid "Size name"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:147
-msgid "Harvest kind"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:149
-msgid "Size kind"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:149
-msgid "To separate sizes by kind in the mass volume report"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:150
-msgid "Requires corner protector"
-msgstr ""
-
-#: .\packhouses\catalogs\models.py:152
+#: .\packhouses\catalogs\models.py:87 .\packhouses\catalogs\models.py:174
 msgid "Order"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:158 .\packhouses\catalogs\models.py:750
-#: .\packhouses\catalogs\models.py:962
+#: .\packhouses\catalogs\models.py:103
+msgid "Name must be unique, it already exists."
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:113
+msgid "Market standard product size"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:114
+msgid "Market standard product sizes"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:123 .\packhouses\catalogs\models.py:137
+#: .\packhouses\catalogs\models.py:152 .\packhouses\catalogs\models.py:170
+#: .\packhouses\catalogs\models.py:541
+msgid "Description"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:128 .\packhouses\catalogs\models.py:139
+#: .\packhouses\catalogs\models.py:920 .\packhouses\catalogs\models.py:978
+msgid "Product"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:129
+msgid "Products"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:142 .\packhouses\catalogs\models.py:986
+msgid "Product variety"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:143
+msgid "Product varieties"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:156
+msgid "Product variety harvest Kind"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:157
+msgid "Product variety harvest kinds"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:163
+msgid "Variety"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:165
+msgid "Size name"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:167
+msgid "Quality kind"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:169
+msgid "Harvest kind"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:171
+msgid "Product kind"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:171
+msgid "To separate sizes by product kind in the mass volume report"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:172
+msgid "Requires corner protector"
+msgstr ""
+
+#: .\packhouses\catalogs\models.py:180 .\packhouses\catalogs\models.py:775
+#: .\packhouses\catalogs\models.py:987
 msgid "Product variety size"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:159
+#: .\packhouses\catalogs\models.py:181
 msgid "Product variety sizes"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:174 .\packhouses\catalogs\models.py:195
-#: .\packhouses\catalogs\models.py:212 .\packhouses\catalogs\models.py:243
-#: .\packhouses\catalogs\models.py:260 .\packhouses\catalogs\models.py:786
-#: .\packhouses\catalogs\models.py:803
+#: .\packhouses\catalogs\models.py:199 .\packhouses\catalogs\models.py:220
+#: .\packhouses\catalogs\models.py:237 .\packhouses\catalogs\models.py:268
+#: .\packhouses\catalogs\models.py:285 .\packhouses\catalogs\models.py:811
+#: .\packhouses\catalogs\models.py:828
 msgid "Bank"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:175
+#: .\packhouses\catalogs\models.py:200
 msgid "Banks"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:181 .\packhouses\catalogs\models.py:210
-#: .\packhouses\catalogs\models.py:229 .\packhouses\catalogs\models.py:288
-#: .\packhouses\catalogs\models.py:387 .\packhouses\catalogs\models.py:419
-#: .\packhouses\catalogs\models.py:449 .\packhouses\catalogs\models.py:482
-#: .\packhouses\catalogs\models.py:801
+#: .\packhouses\catalogs\models.py:206 .\packhouses\catalogs\models.py:235
+#: .\packhouses\catalogs\models.py:254 .\packhouses\catalogs\models.py:313
+#: .\packhouses\catalogs\models.py:412 .\packhouses\catalogs\models.py:444
+#: .\packhouses\catalogs\models.py:474 .\packhouses\catalogs\models.py:507
+#: .\packhouses\catalogs\models.py:826
 msgid "Full name"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:183 .\packhouses\catalogs\models.py:230
-#: .\packhouses\catalogs\models.py:293 .\packhouses\catalogs\models.py:394
-#: .\packhouses\catalogs\models.py:426 .\packhouses\catalogs\models.py:454
-#: .\packhouses\catalogs\models.py:487 .\packhouses\catalogs\models.py:533
-#: .\packhouses\catalogs\models.py:691 .\packhouses\catalogs\models.py:774
-#: .\packhouses\catalogs\models.py:868
+#: .\packhouses\catalogs\models.py:208 .\packhouses\catalogs\models.py:255
+#: .\packhouses\catalogs\models.py:318 .\packhouses\catalogs\models.py:419
+#: .\packhouses\catalogs\models.py:451 .\packhouses\catalogs\models.py:479
+#: .\packhouses\catalogs\models.py:512 .\packhouses\catalogs\models.py:558
+#: .\packhouses\catalogs\models.py:716 .\packhouses\catalogs\models.py:799
+#: .\packhouses\catalogs\models.py:893
 msgid "State"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:184 .\packhouses\catalogs\models.py:231
-#: .\packhouses\catalogs\models.py:294 .\packhouses\catalogs\models.py:395
-#: .\packhouses\catalogs\models.py:427 .\packhouses\catalogs\models.py:455
-#: .\packhouses\catalogs\models.py:488 .\packhouses\catalogs\models.py:534
-#: .\packhouses\catalogs\models.py:692 .\packhouses\catalogs\models.py:775
-#: .\packhouses\catalogs\models.py:869
+#: .\packhouses\catalogs\models.py:209 .\packhouses\catalogs\models.py:256
+#: .\packhouses\catalogs\models.py:319 .\packhouses\catalogs\models.py:420
+#: .\packhouses\catalogs\models.py:452 .\packhouses\catalogs\models.py:480
+#: .\packhouses\catalogs\models.py:513 .\packhouses\catalogs\models.py:559
+#: .\packhouses\catalogs\models.py:717 .\packhouses\catalogs\models.py:800
+#: .\packhouses\catalogs\models.py:894
 msgid "City"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:185 .\packhouses\catalogs\models.py:232
-#: .\packhouses\catalogs\models.py:295 .\packhouses\catalogs\models.py:396
-#: .\packhouses\catalogs\models.py:428 .\packhouses\catalogs\models.py:456
-#: .\packhouses\catalogs\models.py:489 .\packhouses\catalogs\models.py:535
-#: .\packhouses\catalogs\models.py:693 .\packhouses\catalogs\models.py:776
-#: .\packhouses\catalogs\models.py:870
+#: .\packhouses\catalogs\models.py:210 .\packhouses\catalogs\models.py:257
+#: .\packhouses\catalogs\models.py:320 .\packhouses\catalogs\models.py:421
+#: .\packhouses\catalogs\models.py:453 .\packhouses\catalogs\models.py:481
+#: .\packhouses\catalogs\models.py:514 .\packhouses\catalogs\models.py:560
+#: .\packhouses\catalogs\models.py:718 .\packhouses\catalogs\models.py:801
+#: .\packhouses\catalogs\models.py:895
 msgid "District"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:186 .\packhouses\catalogs\models.py:233
-#: .\packhouses\catalogs\models.py:296 .\packhouses\catalogs\models.py:397
-#: .\packhouses\catalogs\models.py:429 .\packhouses\catalogs\models.py:457
-#: .\packhouses\catalogs\models.py:490 .\packhouses\catalogs\models.py:694
-#: .\packhouses\catalogs\models.py:777 .\packhouses\catalogs\models.py:871
+#: .\packhouses\catalogs\models.py:211 .\packhouses\catalogs\models.py:258
+#: .\packhouses\catalogs\models.py:321 .\packhouses\catalogs\models.py:422
+#: .\packhouses\catalogs\models.py:454 .\packhouses\catalogs\models.py:482
+#: .\packhouses\catalogs\models.py:515 .\packhouses\catalogs\models.py:719
+#: .\packhouses\catalogs\models.py:802 .\packhouses\catalogs\models.py:896
 msgid "Neighborhood"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:187 .\packhouses\catalogs\models.py:234
-#: .\packhouses\catalogs\models.py:297 .\packhouses\catalogs\models.py:398
-#: .\packhouses\catalogs\models.py:430 .\packhouses\catalogs\models.py:458
-#: .\packhouses\catalogs\models.py:491 .\packhouses\catalogs\models.py:695
-#: .\packhouses\catalogs\models.py:778 .\packhouses\catalogs\models.py:872
+#: .\packhouses\catalogs\models.py:212 .\packhouses\catalogs\models.py:259
+#: .\packhouses\catalogs\models.py:322 .\packhouses\catalogs\models.py:423
+#: .\packhouses\catalogs\models.py:455 .\packhouses\catalogs\models.py:483
+#: .\packhouses\catalogs\models.py:516 .\packhouses\catalogs\models.py:720
+#: .\packhouses\catalogs\models.py:803 .\packhouses\catalogs\models.py:897
 msgid "Postal code"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:188 .\packhouses\catalogs\models.py:235
-#: .\packhouses\catalogs\models.py:298 .\packhouses\catalogs\models.py:399
-#: .\packhouses\catalogs\models.py:431 .\packhouses\catalogs\models.py:459
-#: .\packhouses\catalogs\models.py:492 .\packhouses\catalogs\models.py:696
-#: .\packhouses\catalogs\models.py:779 .\packhouses\catalogs\models.py:873
+#: .\packhouses\catalogs\models.py:213 .\packhouses\catalogs\models.py:260
+#: .\packhouses\catalogs\models.py:323 .\packhouses\catalogs\models.py:424
+#: .\packhouses\catalogs\models.py:456 .\packhouses\catalogs\models.py:484
+#: .\packhouses\catalogs\models.py:517 .\packhouses\catalogs\models.py:721
+#: .\packhouses\catalogs\models.py:804 .\packhouses\catalogs\models.py:898
 msgid "Address"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:189 .\packhouses\catalogs\models.py:236
-#: .\packhouses\catalogs\models.py:299 .\packhouses\catalogs\models.py:400
-#: .\packhouses\catalogs\models.py:432 .\packhouses\catalogs\models.py:460
-#: .\packhouses\catalogs\models.py:493 .\packhouses\catalogs\models.py:697
-#: .\packhouses\catalogs\models.py:780 .\packhouses\catalogs\models.py:874
+#: .\packhouses\catalogs\models.py:214 .\packhouses\catalogs\models.py:261
+#: .\packhouses\catalogs\models.py:324 .\packhouses\catalogs\models.py:425
+#: .\packhouses\catalogs\models.py:457 .\packhouses\catalogs\models.py:485
+#: .\packhouses\catalogs\models.py:518 .\packhouses\catalogs\models.py:722
+#: .\packhouses\catalogs\models.py:805 .\packhouses\catalogs\models.py:899
 msgid "External number"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:190 .\packhouses\catalogs\models.py:237
-#: .\packhouses\catalogs\models.py:300 .\packhouses\catalogs\models.py:401
-#: .\packhouses\catalogs\models.py:433 .\packhouses\catalogs\models.py:461
-#: .\packhouses\catalogs\models.py:494 .\packhouses\catalogs\models.py:698
-#: .\packhouses\catalogs\models.py:781 .\packhouses\catalogs\models.py:875
+#: .\packhouses\catalogs\models.py:215 .\packhouses\catalogs\models.py:262
+#: .\packhouses\catalogs\models.py:325 .\packhouses\catalogs\models.py:426
+#: .\packhouses\catalogs\models.py:458 .\packhouses\catalogs\models.py:486
+#: .\packhouses\catalogs\models.py:519 .\packhouses\catalogs\models.py:723
+#: .\packhouses\catalogs\models.py:806 .\packhouses\catalogs\models.py:900
 msgid "Internal number"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:191 .\packhouses\catalogs\models.py:238
-#: .\packhouses\catalogs\models.py:290 .\packhouses\catalogs\models.py:451
-#: .\packhouses\catalogs\models.py:484 .\packhouses\catalogs\models.py:690
-#: .\packhouses\catalogs\models.py:782
+#: .\packhouses\catalogs\models.py:216 .\packhouses\catalogs\models.py:263
+#: .\packhouses\catalogs\models.py:315 .\packhouses\catalogs\models.py:476
+#: .\packhouses\catalogs\models.py:509 .\packhouses\catalogs\models.py:715
+#: .\packhouses\catalogs\models.py:807
 msgid "Tax ID"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:193 .\packhouses\catalogs\models.py:240
-#: .\packhouses\catalogs\models.py:301 .\packhouses\catalogs\models.py:402
-#: .\packhouses\catalogs\models.py:434 .\packhouses\catalogs\models.py:462
-#: .\packhouses\catalogs\models.py:495 .\packhouses\catalogs\models.py:784
+#: .\packhouses\catalogs\models.py:218 .\packhouses\catalogs\models.py:265
+#: .\packhouses\catalogs\models.py:326 .\packhouses\catalogs\models.py:427
+#: .\packhouses\catalogs\models.py:459 .\packhouses\catalogs\models.py:487
+#: .\packhouses\catalogs\models.py:520 .\packhouses\catalogs\models.py:809
 msgid "Phone number"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:194 .\packhouses\catalogs\models.py:211
-#: .\packhouses\catalogs\models.py:242 .\packhouses\catalogs\models.py:259
-#: .\packhouses\catalogs\models.py:785 .\packhouses\catalogs\models.py:802
+#: .\packhouses\catalogs\models.py:219 .\packhouses\catalogs\models.py:236
+#: .\packhouses\catalogs\models.py:267 .\packhouses\catalogs\models.py:284
+#: .\packhouses\catalogs\models.py:810 .\packhouses\catalogs\models.py:827
 msgid "Bank account number"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:203 .\packhouses\catalogs\models.py:241
-#: .\packhouses\catalogs\models.py:794
+#: .\packhouses\catalogs\models.py:228 .\packhouses\catalogs\models.py:266
+#: .\packhouses\catalogs\models.py:819
 msgid "Product provider"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:204 .\packhouses\catalogs\models.py:795
+#: .\packhouses\catalogs\models.py:229 .\packhouses\catalogs\models.py:820
 msgid "Product providers"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:219
+#: .\packhouses\catalogs\models.py:244
 msgid "Product Provider Benefactor"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:220
+#: .\packhouses\catalogs\models.py:245
 msgid "Product Provider Benefactors"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:251 .\packhouses\catalogs\models.py:261
+#: .\packhouses\catalogs\models.py:276 .\packhouses\catalogs\models.py:286
 msgid "Product producer"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:252
+#: .\packhouses\catalogs\models.py:277
 msgid "Product producers"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:267
+#: .\packhouses\catalogs\models.py:292
 msgid "Product producer benefactor"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:268
+#: .\packhouses\catalogs\models.py:293
 msgid "Product producer benefactors"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:281 .\packhouses\catalogs\models.py:308
-#: .\packhouses\catalogs\models.py:467 .\packhouses\catalogs\models.py:500
-#: .\packhouses\catalogs\models.py:699
+#: .\packhouses\catalogs\models.py:306 .\packhouses\catalogs\models.py:333
+#: .\packhouses\catalogs\models.py:492 .\packhouses\catalogs\models.py:525
+#: .\packhouses\catalogs\models.py:724
 msgid "Payment kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:282
+#: .\packhouses\catalogs\models.py:307
 msgid "Payment kinds"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:289 .\packhouses\catalogs\models.py:450
-#: .\packhouses\catalogs\models.py:483
+#: .\packhouses\catalogs\models.py:314 .\packhouses\catalogs\models.py:475
+#: .\packhouses\catalogs\models.py:508
 msgid "Legal entity category"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:303
+#: .\packhouses\catalogs\models.py:328
 msgid "FDA"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:305 .\packhouses\catalogs\models.py:464
-#: .\packhouses\catalogs\models.py:497
+#: .\packhouses\catalogs\models.py:330 .\packhouses\catalogs\models.py:489
+#: .\packhouses\catalogs\models.py:522
 msgid "SWIFT"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:306 .\packhouses\catalogs\models.py:465
-#: .\packhouses\catalogs\models.py:498
+#: .\packhouses\catalogs\models.py:331 .\packhouses\catalogs\models.py:490
+#: .\packhouses\catalogs\models.py:523
 msgid "ABA"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:307 .\packhouses\catalogs\models.py:466
-#: .\packhouses\catalogs\models.py:499
+#: .\packhouses\catalogs\models.py:332 .\packhouses\catalogs\models.py:491
+#: .\packhouses\catalogs\models.py:524
 msgid "CLABE"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:309 .\packhouses\catalogs\models.py:468
-#: .\packhouses\catalogs\models.py:501
+#: .\packhouses\catalogs\models.py:334 .\packhouses\catalogs\models.py:493
+#: .\packhouses\catalogs\models.py:526
 msgid "Max money credit limit"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:310 .\packhouses\catalogs\models.py:469
-#: .\packhouses\catalogs\models.py:502
+#: .\packhouses\catalogs\models.py:335 .\packhouses\catalogs\models.py:494
+#: .\packhouses\catalogs\models.py:527
 msgid "Max days credit limit"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:318
+#: .\packhouses\catalogs\models.py:343
 msgid "Client"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:319
+#: .\packhouses\catalogs\models.py:344
 msgid "Clients"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:330
+#: .\packhouses\catalogs\models.py:355
 msgid "Vehicle ownership kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:331
+#: .\packhouses\catalogs\models.py:356
 msgid "Vehicle ownership kinds"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:343
+#: .\packhouses\catalogs\models.py:368
 msgid "Vehicle kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:344
+#: .\packhouses\catalogs\models.py:369
 msgid "Vehicle kinds"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:356
+#: .\packhouses\catalogs\models.py:381
 msgid "Vehicle fuel kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:357
+#: .\packhouses\catalogs\models.py:382
 msgid "Vehicle fuel kinds"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:363
+#: .\packhouses\catalogs\models.py:388
 msgid "Model"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:364
+#: .\packhouses\catalogs\models.py:389
 msgid "License plate"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:365
+#: .\packhouses\catalogs\models.py:390
 msgid "Serial number"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:366
+#: .\packhouses\catalogs\models.py:391
 msgid "Color"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:367
+#: .\packhouses\catalogs\models.py:392
 msgid "Ownership kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:368
+#: .\packhouses\catalogs\models.py:393
 msgid "Fuel kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:370 .\packhouses\catalogs\models.py:703
-#: .\packhouses\catalogs\models.py:876 .\packhouses\catalogs\models.py:900
+#: .\packhouses\catalogs\models.py:395 .\packhouses\catalogs\models.py:728
+#: .\packhouses\catalogs\models.py:901 .\packhouses\catalogs\models.py:925
 msgid "Comments"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:377
+#: .\packhouses\catalogs\models.py:402
 msgid "Vehicle"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:378
+#: .\packhouses\catalogs\models.py:403
 msgid "Vehicles"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:386 .\packhouses\catalogs\models.py:418
+#: .\packhouses\catalogs\models.py:411 .\packhouses\catalogs\models.py:443
 msgid "Zone"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:388 .\packhouses\catalogs\models.py:420
+#: .\packhouses\catalogs\models.py:413 .\packhouses\catalogs\models.py:445
 msgid "Population registry code"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:389 .\packhouses\catalogs\models.py:421
+#: .\packhouses\catalogs\models.py:414 .\packhouses\catalogs\models.py:446
 msgid "Tax registry code"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:390 .\packhouses\catalogs\models.py:422
+#: .\packhouses\catalogs\models.py:415 .\packhouses\catalogs\models.py:447
 msgid "Social number code"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:391 .\packhouses\catalogs\models.py:423
+#: .\packhouses\catalogs\models.py:416 .\packhouses\catalogs\models.py:448
 msgid "Birthday"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:392 .\packhouses\catalogs\models.py:424
+#: .\packhouses\catalogs\models.py:417 .\packhouses\catalogs\models.py:449
 msgid "Sex"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:392 .\packhouses\catalogs\models.py:424
+#: .\packhouses\catalogs\models.py:417 .\packhouses\catalogs\models.py:449
 msgid "Male"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:392 .\packhouses\catalogs\models.py:424
+#: .\packhouses\catalogs\models.py:417 .\packhouses\catalogs\models.py:449
 msgid "Female"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:405
+#: .\packhouses\catalogs\models.py:430
 msgid "Is maquilador"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:413 .\packhouses\catalogs\models.py:471
+#: .\packhouses\catalogs\models.py:438 .\packhouses\catalogs\models.py:496
 msgid "Collector"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:414
+#: .\packhouses\catalogs\models.py:439
 msgid "Collectors"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:444 .\packhouses\catalogs\models.py:504
+#: .\packhouses\catalogs\models.py:469 .\packhouses\catalogs\models.py:529
 msgid "Maquilador"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:445
+#: .\packhouses\catalogs\models.py:470
 msgid "Maquiladores"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:477
+#: .\packhouses\catalogs\models.py:502
 msgid "Collector client"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:478
+#: .\packhouses\catalogs\models.py:503
 msgid "Collector clients"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:510
+#: .\packhouses\catalogs\models.py:535
 msgid "Maquilador client"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:511
+#: .\packhouses\catalogs\models.py:536
 msgid "Maquilador clients"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:523 .\packhouses\catalogs\models.py:537
+#: .\packhouses\catalogs\models.py:548 .\packhouses\catalogs\models.py:562
 msgid "Product Classification"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:524
+#: .\packhouses\catalogs\models.py:549
 msgid "Product Classifications"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:530
+#: .\packhouses\catalogs\models.py:555
 msgid "Producer"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:531
+#: .\packhouses\catalogs\models.py:556
 msgid "Registration date"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:532
+#: .\packhouses\catalogs\models.py:557
 msgid "Forest land use change"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:536
+#: .\packhouses\catalogs\models.py:561
 msgid "Hectares"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:538
+#: .\packhouses\catalogs\models.py:563
 msgid "Phytosanitary certificate"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:546 .\packhouses\catalogs\models.py:588
+#: .\packhouses\catalogs\models.py:571 .\packhouses\catalogs\models.py:613
 msgid "Orchard"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:547
+#: .\packhouses\catalogs\models.py:572
 msgid "Orchards"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:561 .\packhouses\catalogs\models.py:583
+#: .\packhouses\catalogs\models.py:586 .\packhouses\catalogs\models.py:608
 msgid "Orchard certification kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:562
+#: .\packhouses\catalogs\models.py:587
 msgid "Orchard certification kinds"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:576 .\packhouses\catalogs\models.py:586
+#: .\packhouses\catalogs\models.py:601 .\packhouses\catalogs\models.py:611
 msgid "Orchard certification verifier"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:577
+#: .\packhouses\catalogs\models.py:602
 msgid "Orchard certification verifiers"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:584
+#: .\packhouses\catalogs\models.py:609
 msgid "Certification number"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:585
+#: .\packhouses\catalogs\models.py:610
 msgid "Expiration date"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:594
+#: .\packhouses\catalogs\models.py:619
 msgid "Orchard certification"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:595
+#: .\packhouses\catalogs\models.py:620
 msgid "Orchard certifications"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:611
+#: .\packhouses\catalogs\models.py:636
 msgid "Harvest crew"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:612
+#: .\packhouses\catalogs\models.py:637
 msgid "Harvest crews"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:629
+#: .\packhouses\catalogs\models.py:654
 msgid "Supply unit kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:630
+#: .\packhouses\catalogs\models.py:655
 msgid "Supply unit kinds"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:644
+#: .\packhouses\catalogs\models.py:669
 msgid "Supply kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:645
+#: .\packhouses\catalogs\models.py:670
 msgid "Supply kinds"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:660
+#: .\packhouses\catalogs\models.py:685
 msgid "Supply kind relation"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:661
+#: .\packhouses\catalogs\models.py:686
 msgid "Supply kind relations"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:666 .\packhouses\catalogs\models.py:937
+#: .\packhouses\catalogs\models.py:691 .\packhouses\catalogs\models.py:962
 msgid "Unit cost"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:667
+#: .\packhouses\catalogs\models.py:692
 msgid "Unit price"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:668
+#: .\packhouses\catalogs\models.py:693
 msgid "Unit quantity"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:669
+#: .\packhouses\catalogs\models.py:694
 msgid "Unit kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:670
+#: .\packhouses\catalogs\models.py:695
 msgid "Minimum stock quantity"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:671
+#: .\packhouses\catalogs\models.py:696
 msgid "Maximum stock quantity"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:672
+#: .\packhouses\catalogs\models.py:697
 msgid "Kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:673
+#: .\packhouses\catalogs\models.py:698
 msgid "Is tray"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:674
+#: .\packhouses\catalogs\models.py:699
 msgid "Related supply"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:682 .\packhouses\catalogs\models.py:935
-#: .\packhouses\catalogs\models.py:964
+#: .\packhouses\catalogs\models.py:707 .\packhouses\catalogs\models.py:960
+#: .\packhouses\catalogs\models.py:989
 msgid "Supply"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:683 .\packhouses\catalogs\models.py:702
+#: .\packhouses\catalogs\models.py:708 .\packhouses\catalogs\models.py:727
 msgid "Supplies"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:700
+#: .\packhouses\catalogs\models.py:725
 msgid "Credit days"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:701
+#: .\packhouses\catalogs\models.py:726
 msgid "Balance"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:711
+#: .\packhouses\catalogs\models.py:736
 msgid "Supplier"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:712
+#: .\packhouses\catalogs\models.py:737
 msgid "Suppliers"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:728
+#: .\packhouses\catalogs\models.py:753
 msgid "Mesh Bag Kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:729
+#: .\packhouses\catalogs\models.py:754
 msgid "Mesh Bag Kinds"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:742 .\packhouses\catalogs\models.py:754
+#: .\packhouses\catalogs\models.py:767 .\packhouses\catalogs\models.py:779
 msgid "Mesh bag film kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:743
+#: .\packhouses\catalogs\models.py:768
 msgid "Mesh bag film kinds"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:751
+#: .\packhouses\catalogs\models.py:776
 msgid "Mesh bags per box"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:752
+#: .\packhouses\catalogs\models.py:777
 msgid "Pieces per mesh bags"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:753
+#: .\packhouses\catalogs\models.py:778
 msgid "Mesh bag kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:755
+#: .\packhouses\catalogs\models.py:780
 msgid "Mesh bag discount"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:756
+#: .\packhouses\catalogs\models.py:781
 msgid "Mesh bag film discount"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:764
+#: .\packhouses\catalogs\models.py:789
 msgid "Mesh bag"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:765
+#: .\packhouses\catalogs\models.py:790
 msgid "Mesh bags"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:810
+#: .\packhouses\catalogs\models.py:835
 msgid "Service provider benefactor"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:811
+#: .\packhouses\catalogs\models.py:836
 msgid "Service provider benefactors"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:819
+#: .\packhouses\catalogs\models.py:844
 msgid "Service provider"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:825
+#: .\packhouses\catalogs\models.py:850
 msgid "Service"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:826
+#: .\packhouses\catalogs\models.py:851
 msgid "Services"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:842
+#: .\packhouses\catalogs\models.py:867
 msgid "Authority box kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:843
+#: .\packhouses\catalogs\models.py:868
 msgid "Authority box kinds"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:849 .\packhouses\catalogs\models.py:963
+#: .\packhouses\catalogs\models.py:874 .\packhouses\catalogs\models.py:988
 msgid "Kg per box"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:850
+#: .\packhouses\catalogs\models.py:875
 msgid "Trays per box"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:858 .\packhouses\catalogs\models.py:960
+#: .\packhouses\catalogs\models.py:883 .\packhouses\catalogs\models.py:985
 msgid "Box kind"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:859
+#: .\packhouses\catalogs\models.py:884
 msgid "Box kinds"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:867
+#: .\packhouses\catalogs\models.py:892
 msgid "Number"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:884
+#: .\packhouses\catalogs\models.py:909
 msgid "Weighing scale"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:885
+#: .\packhouses\catalogs\models.py:910
 msgid "Weighing scales"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:897
+#: .\packhouses\catalogs\models.py:922
 msgid "Pallet capacity"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:898
+#: .\packhouses\catalogs\models.py:923
 msgid "Freshness days warning"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:899
+#: .\packhouses\catalogs\models.py:924
 msgid "Freshness days alert"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:908
+#: .\packhouses\catalogs\models.py:933
 msgid "Cold chamber"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:909
+#: .\packhouses\catalogs\models.py:934
 msgid "Cold chambers"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:919 .\packhouses\catalogs\models.py:956
+#: .\packhouses\catalogs\models.py:944 .\packhouses\catalogs\models.py:981
 msgid "Boxes quantity"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:920 .\packhouses\catalogs\models.py:957
+#: .\packhouses\catalogs\models.py:945 .\packhouses\catalogs\models.py:982
 msgid "Kg amount"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:928 .\packhouses\catalogs\models.py:939
+#: .\packhouses\catalogs\models.py:953 .\packhouses\catalogs\models.py:964
 msgid "Pallet"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:929
+#: .\packhouses\catalogs\models.py:954
 msgid "Pallets"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:936
+#: .\packhouses\catalogs\models.py:961
 msgid "Quantity"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:945
+#: .\packhouses\catalogs\models.py:970
 msgid "Pallet expense"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:946
+#: .\packhouses\catalogs\models.py:971
 msgid "Pallet expenses"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:958
+#: .\packhouses\catalogs\models.py:983
 msgid "Kg tare"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:965
+#: .\packhouses\catalogs\models.py:990
 msgid "Is dark"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:966
+#: .\packhouses\catalogs\models.py:991
 msgid "provisional cost"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:967
+#: .\packhouses\catalogs\models.py:992
 msgid "provisional price"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:969
+#: .\packhouses\catalogs\models.py:994
 msgid "Supply tray"
 msgstr ""
 
-#: .\packhouses\catalogs\models.py:978 .\packhouses\catalogs\models.py:979
+#: .\packhouses\catalogs\models.py:1003 .\packhouses\catalogs\models.py:1004
 msgid "Product Packaging"
 msgstr ""

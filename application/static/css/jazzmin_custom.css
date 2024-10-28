@@ -1,4 +1,14 @@
 /* Cambiar el color de fondo de la barra lateral */
+
+
+#jazzy-actions .object-tools a[href*="/history/"] {
+    display: none;
+}
+
+.layout-navbar-fixed .wrapper .sidebar-dark-warning .brand-link:not([class*="navbar"]) {
+	background-color: #0e1e3f !important;
+}
+
 .main-sidebar {
     background-color: #0e1e3f !important;
 }

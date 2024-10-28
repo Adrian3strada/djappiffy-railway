@@ -403,6 +403,7 @@ JAZZMIN_SETTINGS = {
     "changeform_format_overrides": {"users": "collapsible", "auth.group": "vertical_tabs"},
     # Add a language dropdown into the admin
     "language_chooser": True,
+
 }
 
 JAZZMIN_UI_TWEAKS = {
