@@ -175,6 +175,10 @@ class ProductVarietySize(models.Model):
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))  # TODO: implementar ordenamiento con drag and drop
 
+    @property
+    def product_name(self):
+        return self.variety.product.name if self.variety and self.variety.product else None
+
     def __str__(self):
         return f"{self.variety.product.name} : {self.variety.name} : {self.name}"
 

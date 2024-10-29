@@ -120,7 +120,7 @@ class CleanNameAndMarketMixin(models.Model):
 
 class CleanNameAndProductMixin(models.Model):
     def __str__(self):
-        return f"{self.product.name}: {self.name}"
+        return f"{self.name}"
 
     def clean(self):
         self.name = getattr(self, 'name', None)
