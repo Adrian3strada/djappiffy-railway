@@ -22,13 +22,14 @@ urlpatterns = [
     path("", include("common.importers.urls")),
     path("", include("common.exporters.urls")),
     path("", include("common.government.urls")),
+    path("", include('packhouses.catalogs.urls')),
 ]
 
 # Añadir el set_language
 urlpatterns += [
     path('i18n/', include('django.conf.urls.i18n')),
     path("ckeditor5/", include('django_ckeditor_5.urls')),
-    path("catalogs/", include('packhouses.catalogs.urls')),
+
 ]
 
 if settings.DEBUG:

@@ -1,32 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Función para actualizar el campo de `market_standard_product_size`
   function updateMarketStandardProductSize(marketId, form) {
-    const marketStandardProductSizeField = form.querySelector('select[name$="-market_standard_product_size"]');
-    console.log("marketStandardProductSizeField (original):", marketStandardProductSizeField);
+    const marketStandardSizeField = form.querySelector('select[name$="-market_standard_size"]');
+    console.log("marketStandardProductSizeField (original):", marketStandardSizeField);
 
     if (marketId !== '') {
-      fetch(`/catalogs/market_standard_product_size/${marketId}/`)
+      fetch(`/rest/v1/catalogs/market_standard_product_size/?market=${marketId}&is_enabled=1`)
         .then(response => response.json())
         .then(data => {
-          marketStandardProductSizeField.innerHTML = '';
+          marketStandardSizeField.innerHTML = '';
           const defaultOption = document.createElement('option');
           defaultOption.value = '';
           defaultOption.textContent = '---------';
-          marketStandardProductSizeField.appendChild(defaultOption);
+          marketStandardSizeField.appendChild(defaultOption);
           data.forEach(item => {
             const option = document.createElement('option');
             option.value = item.id;
             option.textContent = item.name;
-            marketStandardProductSizeField.appendChild(option);
+            marketStandardSizeField.appendChild(option);
           });
 
+          // Preseleccionar el tamaño estándar del mercado si ya está establecido
+          const selectedValue = marketStandardSizeField.dataset.selectedValue;
+          if (selectedValue) {
+            $(marketStandardSizeField).val(selectedValue).trigger('change');
+          }
+
           // Adjuntar el evento después de actualizar el campo
-          $(marketStandardProductSizeField).on('select2:select', function (e) {
+          $(marketStandardSizeField).on('select2:select', function (e) {
             console.log('Opción seleccionada:', e.params.data);
             const selectedText = e.params.data.text;
             const nameField = form.querySelector('input[name$="-name"]');
             const aliasField = form.querySelector('input[name$="-alias"]');
-            if (nameField) {
+            if (nameField && nameField.value !== '---------') {
               nameField.value = selectedText;
             }
             if (aliasField) {
@@ -55,9 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('formset:added', (event) => {
     if (event.detail.formsetName === 'productvarietysize_set') {
       const newForm = event.target;
-
       const marketField = newForm.querySelector('select[name$="-market"]');
-      console.log("marketField (original):", marketField);
 
       if (marketField) {
         $(marketField).on('select2:select', (e) => {
@@ -65,11 +69,15 @@ document.addEventListener('DOMContentLoaded', () => {
           const marketId = e.params.data.id;
           updateMarketStandardProductSize(marketId, newForm);
         });
+      }
 
-        const selectedMarketId = marketField.value;
-        if (selectedMarketId) {
-          updateMarketStandardProductSize(selectedMarketId, newForm);
-        }
+      // Añadir listener al campo `name` para limpiar la selección de `market_standard_size`
+      const nameField = newForm.querySelector('input[name$="-name"]');
+      if (nameField) {
+        nameField.addEventListener('input', () => {
+          const marketStandardSizeField = newForm.querySelector('select[name$="-market_standard_size"]');
+          $(marketStandardSizeField).val('').trigger('change'); // Limpiar solo la selección del campo market_standard_size
+        });
       }
     }
   });
@@ -78,18 +86,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const existingForms = document.querySelectorAll('div[id^="productvarietysize_set-"]');
   existingForms.forEach(form => {
     const marketField = form.querySelector('select[name$="-market"]');
+    const marketStandardSizeField = form.querySelector('select[name$="-market_standard_size"]');
+
+    // Almacenar el valor seleccionado para usarlo más tarde
+    marketStandardSizeField.dataset.selectedValue = marketStandardSizeField.value;
+
     if (marketField) {
       const selectedMarketId = marketField.value;
       if (selectedMarketId) {
         updateMarketStandardProductSize(selectedMarketId, form);
       }
 
-      // Agregar listener para el nuevo formulario
       $(marketField).on('select2:select', function (e) {
         console.log('Opción seleccionada:', e.params.data);
         const marketId = e.params.data.id;
         updateMarketStandardProductSize(marketId, form);
       });
+
+      // Añadir listener al campo `name` para limpiar la selección de `market_standard_size`
+      const nameField = form.querySelector('input[name$="-name"]');
+      if (nameField) {
+        nameField.addEventListener('input', () => {
+          $(marketStandardSizeField).val('').trigger('change'); // Limpiar solo la selección del campo market_standard_size
+        });
+      }
     }
   });
 

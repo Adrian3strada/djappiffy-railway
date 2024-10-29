@@ -22,11 +22,17 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
-    management_cost_per_kg = models.FloatField(verbose_name=_('Management cost per Kg'), validators=[MinValueValidator(0.01)], help_text=_('Cost generated per Kg for product management and packaging'))
-    is_foreign = models.BooleanField(default=False, verbose_name=_('Is foreign'), help_text=_('Conditional for performance reporting to separate foreign and domestic markets; separation in the report of volume by mass and customer addresses'))
-    is_mixable = models.BooleanField(default=True, verbose_name=_('Is mixable'), help_text=_('Conditional that does not allow mixing fruit with other markets'))
-    label_language = models.CharField(max_length=20, verbose_name=_('Label language'), choices=settings.LANGUAGES, default='es')
-    address_label = CKEditor5Field(blank=True, null=True, verbose_name=_('Address of packaging house to show in label'), help_text=_('Leave blank to keep the default address defined in the organization'))
+    management_cost_per_kg = models.FloatField(verbose_name=_('Management cost per Kg'),
+                                               validators=[MinValueValidator(0.01)], help_text=_(
+            'Cost generated per Kg for product management and packaging'))
+    is_foreign = models.BooleanField(default=False, verbose_name=_('Is foreign'), help_text=_(
+        'Conditional for performance reporting to separate foreign and domestic markets; separation in the report of volume by mass and customer addresses'))
+    is_mixable = models.BooleanField(default=True, verbose_name=_('Is mixable'),
+                                     help_text=_('Conditional that does not allow mixing fruit with other markets'))
+    label_language = models.CharField(max_length=20, verbose_name=_('Label language'), choices=settings.LANGUAGES,
+                                      default='es')
+    address_label = CKEditor5Field(blank=True, null=True, verbose_name=_('Address of packaging house to show in label'),
+                                   help_text=_('Leave blank to keep the default address defined in the organization'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -99,7 +105,7 @@ class MarketStandardProductSize(models.Model):
 
         if self.market_id:
             if self.__class__.objects.filter(name=self.name, market=self.market).exclude(
-                    pk=self.pk).exists():
+                pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
 
         if errors:
@@ -165,15 +171,24 @@ class ProductHarvestKind(CleanNameAndProductMixin, models.Model):
 class ProductVarietySize(models.Model):
     variety = models.ForeignKey(ProductVariety, verbose_name=_('Variety'), on_delete=models.PROTECT)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    market_standard_size = models.ForeignKey(MarketStandardProductSize,
+                                             verbose_name=_('Market standard product size'),
+                                             help_text=_(
+                                                 'Choose a Standard Product Size per Market (optional), it will put its name in the size name field.'),
+                                             on_delete=models.PROTECT, null=True, blank=True)
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
-    quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Quality kind'), on_delete=models.PROTECT)  # Normal, roña, etc
-    harvest_kind = models.ForeignKey(ProductHarvestKind, verbose_name=_('Harvest kind'), on_delete=models.PROTECT)  # Tipos de corte
-    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product kind'), on_delete=models.PROTECT, help_text=_('To separate sizes by product kind in the mass volume report'))
+    quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Quality kind'),
+                                     on_delete=models.PROTECT)  # Normal, roña, etc
+    harvest_kind = models.ForeignKey(ProductHarvestKind, verbose_name=_('Harvest kind'),
+                                     on_delete=models.PROTECT)  # Tipos de corte
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product kind'), on_delete=models.PROTECT,
+                                     help_text=_('To separate sizes by product kind in the mass volume report'))
     requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))  # TODO: implementar ordenamiento con drag and drop
+    order = models.PositiveIntegerField(default=0,
+                                        verbose_name=_('Order'))  # TODO: implementar ordenamiento con drag and drop
 
     @property
     def product_name(self):
@@ -187,8 +202,8 @@ class ProductVarietySize(models.Model):
         verbose_name_plural = _('Product variety sizes')
         ordering = ['variety', 'order']
         constraints = [
-            models.UniqueConstraint(fields=['name', 'variety'], name='Productvarietysize_unique_name_variety'),
-            models.UniqueConstraint(fields=['name', 'market'], name='Productvarietysize_unique_name_market'),
+            models.UniqueConstraint(fields=['name', 'variety', 'market'],
+                                    name='Productvarietysize_unique_name_variety_market'),
         ]
 
 
@@ -317,7 +332,8 @@ class PaymentKind(models.Model):
 
 class Client(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
-    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'), on_delete=models.PROTECT)
+    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
+                                       on_delete=models.PROTECT)
     tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
@@ -391,13 +407,14 @@ class VehicleFuelKind(models.Model):
 
 class Vehicle(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    model = models.CharField(max_length=4, verbose_name=_('Model'), choices=vehicle_year_choices(), validators=[vehicle_validate_year])
+    model = models.CharField(max_length=4, verbose_name=_('Model'), choices=vehicle_year_choices(),
+                             validators=[vehicle_validate_year])
     license_plate = models.CharField(max_length=15, verbose_name=_('License plate'))
     serial_number = models.CharField(max_length=100, verbose_name=_('Serial number'))
     color = models.CharField(max_length=50, verbose_name=_('Color'))
     ownership = models.ForeignKey(VehicleOwnershipKind, verbose_name=_('Ownership kind'), on_delete=models.PROTECT)
     fuel = models.ForeignKey(VehicleFuelKind, verbose_name=_('Fuel kind'), on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'),)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'), )
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -478,7 +495,8 @@ class Maquilador(models.Model):
 
 class CollectorClient(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
-    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'), on_delete=models.PROTECT)
+    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
+                                       on_delete=models.PROTECT)
     tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
@@ -511,7 +529,8 @@ class CollectorClient(models.Model):
 
 class MaquiladorClient(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
-    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'), on_delete=models.PROTECT)
+    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
+                                       on_delete=models.PROTECT)
     tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
@@ -560,12 +579,14 @@ class Orchard(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     producer = models.ForeignKey(ProductProducer, verbose_name=_('Producer'), on_delete=models.PROTECT)
     registration_date = models.DateField(verbose_name=_('Registration date'))
-    forest_land_use_change = models.CharField(max_length=100, verbose_name=_('Forest land use change'), null=True, blank=True)
+    forest_land_use_change = models.CharField(max_length=100, verbose_name=_('Forest land use change'), null=True,
+                                              blank=True)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
     ha = models.FloatField(verbose_name=_('Hectares'))
-    product_classification = models.ForeignKey(OrchardProductClassification, verbose_name=_('Product Classification'), on_delete=models.PROTECT)
+    product_classification = models.ForeignKey(OrchardProductClassification, verbose_name=_('Product Classification'),
+                                               on_delete=models.PROTECT)
     phytosanitary_certificate = models.CharField(max_length=100, verbose_name=_('Phytosanitary certificate'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -611,10 +632,12 @@ class OrchardCertificationVerifier(models.Model):
 
 
 class OrchardCertification(models.Model):
-    certification_kind = models.ForeignKey(OrchardCertificationKind, verbose_name=_('Orchard certification kind'), on_delete=models.PROTECT)
+    certification_kind = models.ForeignKey(OrchardCertificationKind, verbose_name=_('Orchard certification kind'),
+                                           on_delete=models.PROTECT)
     certification_number = models.CharField(max_length=100, verbose_name=_('Certification number'))
     expiration_date = models.DateField(verbose_name=_('Expiration date'))
-    verifier = models.ForeignKey(OrchardCertificationVerifier, verbose_name=_('Orchard certification verifier'), on_delete=models.PROTECT)
+    verifier = models.ForeignKey(OrchardCertificationVerifier, verbose_name=_('Orchard certification verifier'),
+                                 on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.PROTECT)
 
@@ -702,7 +725,8 @@ class Supply(models.Model):
     maximum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Maximum stock quantity'))
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     is_tray = models.BooleanField(default=False, verbose_name=_('Is tray'))
-    related_supply = models.ForeignKey('self', verbose_name=_('Related supply'), null=True, blank=True, on_delete=models.SET_NULL, related_name='related_supplies')
+    related_supply = models.ForeignKey('self', verbose_name=_('Related supply'), null=True, blank=True,
+                                       on_delete=models.SET_NULL, related_name='related_supplies')
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -778,11 +802,13 @@ class MeshBagFilmKind(models.Model):
 class MeshBag(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    product_variety_size = models.ForeignKey(ProductVarietySize, verbose_name=_('Product variety size'), on_delete=models.PROTECT)
+    product_variety_size = models.ForeignKey(ProductVarietySize, verbose_name=_('Product variety size'),
+                                             on_delete=models.PROTECT)
     mesh_bags_per_box = models.PositiveIntegerField(verbose_name=_('Mesh bags per box'))
     pieces_per_mesh_bag = models.PositiveIntegerField(verbose_name=_('Pieces per mesh bags'))
     mesh_bag_kind = models.ForeignKey(MeshBagKind, verbose_name=_('Mesh bag kind'), on_delete=models.PROTECT)
-    mesh_bag_film_kind = models.ForeignKey(MeshBagFilmKind, verbose_name=_('Mesh bag film kind'), on_delete=models.PROTECT)
+    mesh_bag_film_kind = models.ForeignKey(MeshBagFilmKind, verbose_name=_('Mesh bag film kind'),
+                                           on_delete=models.PROTECT)
     mesh_bag_discount = models.FloatField(verbose_name=_('Mesh bag discount'))
     mesh_bag_film_discount = models.FloatField(verbose_name=_('Mesh bag film discount'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -988,16 +1014,20 @@ class ProductPackaging(models.Model):
     kg_amount = models.FloatField(verbose_name=_('Kg amount'))
     kg_tare = models.FloatField(verbose_name=_('Kg tare'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    box_kind = models.ForeignKey(BoxKind, verbose_name=_('Box kind'), on_delete=models.PROTECT)  # TODO: detallar tipos de caja por tipo de producto?
+    box_kind = models.ForeignKey(BoxKind, verbose_name=_('Box kind'),
+                                 on_delete=models.PROTECT)  # TODO: detallar tipos de caja por tipo de producto?
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
-    product_variety_size = models.ForeignKey(ProductVarietySize, verbose_name=_('Product variety size'), on_delete=models.PROTECT)
+    product_variety_size = models.ForeignKey(ProductVarietySize, verbose_name=_('Product variety size'),
+                                             on_delete=models.PROTECT)
     kg_per_box = models.FloatField(verbose_name=_('Kg per box'))
-    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, related_name='product_packaging_supplies')
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT,
+                               related_name='product_packaging_supplies')
     is_dark = models.BooleanField(default=False, verbose_name=_('Is dark'))
     provisional_cost = models.FloatField(verbose_name=_('provisional cost'))
     provisional_price = models.FloatField(verbose_name=_('provisional price'))
     market_class = models.ForeignKey(MarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
-    supply_tray = models.ForeignKey(Supply, verbose_name=_('Supply tray'), on_delete=models.PROTECT, related_name='product_packaging_supplies_trays')
+    supply_tray = models.ForeignKey(Supply, verbose_name=_('Supply tray'), on_delete=models.PROTECT,
+                                    related_name='product_packaging_supplies_trays')
     # TODO: agregar campo para tipo de malla, o no se que va aquí pero falta uno
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -1009,4 +1039,3 @@ class ProductPackaging(models.Model):
         verbose_name = _('Product Packaging')
         verbose_name_plural = _('Product Packaging')
         unique_together = ('name', 'organization')
-

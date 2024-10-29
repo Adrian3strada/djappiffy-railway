@@ -9,7 +9,7 @@ from .models import (
     Supply, Supplier, MeshBagKind, MeshBagFilmKind, MeshBag, ServiceProvider, ServiceProviderBenefactor, Service,
     AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber, Pallet, PalletExpense, ProductPackaging
 )
-from .forms import ProductVarietySizeForm, ProductVarietySizeInlineForm
+from .forms import ProductVarietySizeInlineForm
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
@@ -80,10 +80,43 @@ class ProductVarietyInline(admin.TabularInline):
         return formset
 
 
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'is_enabled')
+    list_filter = ('is_enabled',)
+    search_fields = ('name', 'description')
+    inlines = [ProductVarietyInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['name'].widget = UppercaseTextInputWidget()
+        # form.base_fields['description'].widget = AutoGrowingTextareaWidget()
+        return form
+
+
 class ProductVarietySizeInline(admin.StackedInline):
     model = ProductVarietySize
     form = ProductVarietySizeInlineForm
     extra = 0
+
+    class Meta:
+        fields = '__all__'
+
+
+
+@admin.register(ProductVariety)
+class ProductVarietyAdmin(admin.ModelAdmin):
+    list_display = ('name', 'product', 'description', 'is_enabled')
+    list_filter = ('product', 'is_enabled',)
+    search_fields = ('name', 'product__name', 'description')
+    inlines = [ProductVarietySizeInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['name'].widget = UppercaseTextInputWidget()
+        form.base_fields['description'].widget = AutoGrowingTextareaWidget()
+        return form
+
 
 
 class ProductProviderBenefactorInline(admin.TabularInline):
@@ -119,23 +152,6 @@ class ProductVarietyHarvestKindAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(ProductVariety)
-class ProductVarietyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'product', 'description', 'is_enabled')
-    list_filter = ('product', 'is_enabled',)
-    search_fields = ('name', 'product__name', 'description')
-    inlines = [ProductVarietySizeInline]
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        form.base_fields['name'].widget = UppercaseTextInputWidget()
-        form.base_fields['description'].widget = AutoGrowingTextareaWidget()
-        return form
-
-    class Media:
-        js = ('js/admin/forms/product_variety_inline_size.js',)
-
-
 @admin.register(ProductVarietySize)
 class ProductVarietySizeAdmin(admin.ModelAdmin):
     list_display = (
@@ -155,24 +171,13 @@ class ProductVarietySizeAdmin(admin.ModelAdmin):
 
     product_name.short_description = _('Product')
 
+    """
     form = ProductVarietySizeForm
 
     class Media:
         js = ('js/admin/forms/product_variety_size.js',)
+    """
 
-
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'is_enabled')
-    list_filter = ('is_enabled',)
-    search_fields = ('name', 'description')
-    inlines = [ProductVarietyInline]
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        form.base_fields['name'].widget = UppercaseTextInputWidget()
-        # form.base_fields['description'].widget = AutoGrowingTextareaWidget()
-        return form
 
 
 @admin.register(Bank)
