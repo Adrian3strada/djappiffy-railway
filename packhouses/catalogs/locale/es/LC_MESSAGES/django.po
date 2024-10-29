@@ -21,11 +21,11 @@ msgstr ""
 
 #: .\packhouses\catalogs\apps.py:8
 msgid "Catalogs"
-msgstr ""
+msgstr "Catálogos"
 
 #: .\packhouses\catalogs\forms.py:10
 msgid "Market Standard Product Sizes"
-msgstr ""
+msgstr "Tamaños estándar del producto en el mercado"
 
 #: .\packhouses\catalogs\forms.py:11
 msgid ""
@@ -58,13 +58,13 @@ msgstr "Nombre"
 #: .\packhouses\catalogs\models.py:207 .\packhouses\catalogs\models.py:943
 #: .\packhouses\catalogs\models.py:980
 msgid "Alias"
-msgstr ""
+msgstr "alias"
 
 #: .\packhouses\catalogs\models.py:24 .\packhouses\catalogs\models.py:317
 #: .\packhouses\catalogs\models.py:418 .\packhouses\catalogs\models.py:450
 #: .\packhouses\catalogs\models.py:478 .\packhouses\catalogs\models.py:511
 msgid "Country"
-msgstr ""
+msgstr "País"
 
 #: .\packhouses\catalogs\models.py:25
 msgid "Management cost per Kg"
@@ -161,122 +161,122 @@ msgstr "Mercado"
 
 #: .\packhouses\catalogs\models.py:35
 msgid "Markets"
-msgstr ""
+msgstr "Mercados"
 
 #: .\packhouses\catalogs\models.py:44
 msgid "Cost per Kg"
-msgstr ""
+msgstr "Costo por Kg"
 
 #: .\packhouses\catalogs\models.py:49
 msgid "Cost per Kg on Market"
-msgstr ""
+msgstr "Costo en el mercado por kg"
 
 #: .\packhouses\catalogs\models.py:50
 msgid "Costs per Kg on Market"
-msgstr ""
+msgstr "Costos en el mercado por kg"
 
 #: .\packhouses\catalogs\models.py:73 .\packhouses\catalogs\models.py:993
 msgid "Market class"
-msgstr ""
+msgstr "Clase de mercado"
 
 #: .\packhouses\catalogs\models.py:74
 msgid "Market classes"
-msgstr ""
+msgstr "Clases de mercado"
 
 #: .\packhouses\catalogs\models.py:87 .\packhouses\catalogs\models.py:174
 msgid "Order"
-msgstr ""
+msgstr "Orden"
 
 #: .\packhouses\catalogs\models.py:103
 msgid "Name must be unique, it already exists."
-msgstr ""
+msgstr "El nombre debe ser único, ya se encuentra en uso."
 
 #: .\packhouses\catalogs\models.py:113
 msgid "Market standard product size"
-msgstr ""
+msgstr "Tamaño estándar del producto en el mercado"
 
 #: .\packhouses\catalogs\models.py:114
 msgid "Market standard product sizes"
-msgstr ""
+msgstr "Tamaños estándar del producto en el mercado"
 
 #: .\packhouses\catalogs\models.py:123 .\packhouses\catalogs\models.py:137
 #: .\packhouses\catalogs\models.py:152 .\packhouses\catalogs\models.py:170
 #: .\packhouses\catalogs\models.py:541
 msgid "Description"
-msgstr ""
+msgstr "Descripción"
 
 #: .\packhouses\catalogs\models.py:128 .\packhouses\catalogs\models.py:139
 #: .\packhouses\catalogs\models.py:920 .\packhouses\catalogs\models.py:978
 msgid "Product"
-msgstr ""
+msgstr "Producto"
 
 #: .\packhouses\catalogs\models.py:129
 msgid "Products"
-msgstr ""
+msgstr "Productos"
 
 #: .\packhouses\catalogs\models.py:142 .\packhouses\catalogs\models.py:986
 msgid "Product variety"
-msgstr ""
+msgstr "Variedad de producto"
 
 #: .\packhouses\catalogs\models.py:143
 msgid "Product varieties"
-msgstr ""
+msgstr "Variedades de producto"
 
 #: .\packhouses\catalogs\models.py:156
 msgid "Product variety harvest Kind"
-msgstr ""
+msgstr "Variedad de producto por tipo de corte"
 
 #: .\packhouses\catalogs\models.py:157
 msgid "Product variety harvest kinds"
-msgstr ""
+msgstr "Variedad de producto por tipos de corte"
 
 #: .\packhouses\catalogs\models.py:163
 msgid "Variety"
-msgstr ""
+msgstr "Variedad"
 
 #: .\packhouses\catalogs\models.py:165
 msgid "Size name"
-msgstr ""
+msgstr "Nombre de calibre"
 
 #: .\packhouses\catalogs\models.py:167
 msgid "Quality kind"
-msgstr ""
+msgstr "Tipo de calidad"
 
 #: .\packhouses\catalogs\models.py:169
 msgid "Harvest kind"
-msgstr ""
+msgstr "Tipo de corte"
 
 #: .\packhouses\catalogs\models.py:171
 msgid "Product kind"
-msgstr ""
+msgstr "Tipo de producto"
 
 #: .\packhouses\catalogs\models.py:171
 msgid "To separate sizes by product kind in the mass volume report"
-msgstr ""
+msgstr "Separar tamaños por tipo de producto en el reporte de volumen masivo"
 
 #: .\packhouses\catalogs\models.py:172
 msgid "Requires corner protector"
-msgstr ""
+msgstr "Requiere esquinero protector"
 
 #: .\packhouses\catalogs\models.py:180 .\packhouses\catalogs\models.py:775
 #: .\packhouses\catalogs\models.py:987
 msgid "Product variety size"
-msgstr ""
+msgstr "Calibre variedad de producto"
 
 #: .\packhouses\catalogs\models.py:181
 msgid "Product variety sizes"
-msgstr ""
+msgstr "Calibres de variedad de producto"
 
 #: .\packhouses\catalogs\models.py:199 .\packhouses\catalogs\models.py:220
 #: .\packhouses\catalogs\models.py:237 .\packhouses\catalogs\models.py:268
 #: .\packhouses\catalogs\models.py:285 .\packhouses\catalogs\models.py:811
 #: .\packhouses\catalogs\models.py:828
 msgid "Bank"
-msgstr ""
+msgstr "Banco"
 
 #: .\packhouses\catalogs\models.py:200
 msgid "Banks"
-msgstr ""
+msgstr "Bancos"
 
 #: .\packhouses\catalogs\models.py:206 .\packhouses\catalogs\models.py:235
 #: .\packhouses\catalogs\models.py:254 .\packhouses\catalogs\models.py:313
@@ -284,7 +284,7 @@ msgstr ""
 #: .\packhouses\catalogs\models.py:474 .\packhouses\catalogs\models.py:507
 #: .\packhouses\catalogs\models.py:826
 msgid "Full name"
-msgstr ""
+msgstr "Nombre completo"
 
 #: .\packhouses\catalogs\models.py:208 .\packhouses\catalogs\models.py:255
 #: .\packhouses\catalogs\models.py:318 .\packhouses\catalogs\models.py:419
@@ -293,7 +293,7 @@ msgstr ""
 #: .\packhouses\catalogs\models.py:716 .\packhouses\catalogs\models.py:799
 #: .\packhouses\catalogs\models.py:893
 msgid "State"
-msgstr ""
+msgstr "Estado"
 
 #: .\packhouses\catalogs\models.py:209 .\packhouses\catalogs\models.py:256
 #: .\packhouses\catalogs\models.py:319 .\packhouses\catalogs\models.py:420
@@ -302,7 +302,7 @@ msgstr ""
 #: .\packhouses\catalogs\models.py:717 .\packhouses\catalogs\models.py:800
 #: .\packhouses\catalogs\models.py:894
 msgid "City"
-msgstr ""
+msgstr "Cuidad"
 
 #: .\packhouses\catalogs\models.py:210 .\packhouses\catalogs\models.py:257
 #: .\packhouses\catalogs\models.py:320 .\packhouses\catalogs\models.py:421
@@ -311,7 +311,7 @@ msgstr ""
 #: .\packhouses\catalogs\models.py:718 .\packhouses\catalogs\models.py:801
 #: .\packhouses\catalogs\models.py:895
 msgid "District"
-msgstr ""
+msgstr "Municipio"
 
 #: .\packhouses\catalogs\models.py:211 .\packhouses\catalogs\models.py:258
 #: .\packhouses\catalogs\models.py:321 .\packhouses\catalogs\models.py:422
@@ -319,7 +319,7 @@ msgstr ""
 #: .\packhouses\catalogs\models.py:515 .\packhouses\catalogs\models.py:719
 #: .\packhouses\catalogs\models.py:802 .\packhouses\catalogs\models.py:896
 msgid "Neighborhood"
-msgstr ""
+msgstr "Colonia"
 
 #: .\packhouses\catalogs\models.py:212 .\packhouses\catalogs\models.py:259
 #: .\packhouses\catalogs\models.py:322 .\packhouses\catalogs\models.py:423
@@ -327,7 +327,7 @@ msgstr ""
 #: .\packhouses\catalogs\models.py:516 .\packhouses\catalogs\models.py:720
 #: .\packhouses\catalogs\models.py:803 .\packhouses\catalogs\models.py:897
 msgid "Postal code"
-msgstr ""
+msgstr "Código Postal"
 
 #: .\packhouses\catalogs\models.py:213 .\packhouses\catalogs\models.py:260
 #: .\packhouses\catalogs\models.py:323 .\packhouses\catalogs\models.py:424
@@ -335,7 +335,7 @@ msgstr ""
 #: .\packhouses\catalogs\models.py:517 .\packhouses\catalogs\models.py:721
 #: .\packhouses\catalogs\models.py:804 .\packhouses\catalogs\models.py:898
 msgid "Address"
-msgstr ""
+msgstr "Domicilio"
 
 #: .\packhouses\catalogs\models.py:214 .\packhouses\catalogs\models.py:261
 #: .\packhouses\catalogs\models.py:324 .\packhouses\catalogs\models.py:425
@@ -343,7 +343,7 @@ msgstr ""
 #: .\packhouses\catalogs\models.py:518 .\packhouses\catalogs\models.py:722
 #: .\packhouses\catalogs\models.py:805 .\packhouses\catalogs\models.py:899
 msgid "External number"
-msgstr ""
+msgstr "Número exterior"
 
 #: .\packhouses\catalogs\models.py:215 .\packhouses\catalogs\models.py:262
 #: .\packhouses\catalogs\models.py:325 .\packhouses\catalogs\models.py:426
@@ -351,571 +351,571 @@ msgstr ""
 #: .\packhouses\catalogs\models.py:519 .\packhouses\catalogs\models.py:723
 #: .\packhouses\catalogs\models.py:806 .\packhouses\catalogs\models.py:900
 msgid "Internal number"
-msgstr ""
+msgstr "Número interior"
 
 #: .\packhouses\catalogs\models.py:216 .\packhouses\catalogs\models.py:263
 #: .\packhouses\catalogs\models.py:315 .\packhouses\catalogs\models.py:476
 #: .\packhouses\catalogs\models.py:509 .\packhouses\catalogs\models.py:715
 #: .\packhouses\catalogs\models.py:807
 msgid "Tax ID"
-msgstr ""
+msgstr "Número de identificación fiscal (RFC)"
 
 #: .\packhouses\catalogs\models.py:218 .\packhouses\catalogs\models.py:265
 #: .\packhouses\catalogs\models.py:326 .\packhouses\catalogs\models.py:427
 #: .\packhouses\catalogs\models.py:459 .\packhouses\catalogs\models.py:487
 #: .\packhouses\catalogs\models.py:520 .\packhouses\catalogs\models.py:809
 msgid "Phone number"
-msgstr ""
+msgstr "Número de teléfono"
 
 #: .\packhouses\catalogs\models.py:219 .\packhouses\catalogs\models.py:236
 #: .\packhouses\catalogs\models.py:267 .\packhouses\catalogs\models.py:284
 #: .\packhouses\catalogs\models.py:810 .\packhouses\catalogs\models.py:827
 msgid "Bank account number"
-msgstr ""
+msgstr "Número de cuenta bancaria"
 
 #: .\packhouses\catalogs\models.py:228 .\packhouses\catalogs\models.py:266
 #: .\packhouses\catalogs\models.py:819
 msgid "Product provider"
-msgstr ""
+msgstr "Proveedor de producto"
 
 #: .\packhouses\catalogs\models.py:229 .\packhouses\catalogs\models.py:820
 msgid "Product providers"
-msgstr ""
+msgstr "Proveedores de producto"
 
 #: .\packhouses\catalogs\models.py:244
 msgid "Product Provider Benefactor"
-msgstr ""
+msgstr "Beneficiario del Proveedor de producto"
 
 #: .\packhouses\catalogs\models.py:245
 msgid "Product Provider Benefactors"
-msgstr ""
+msgstr "Beneficiarios del Proveedor de producto"
 
 #: .\packhouses\catalogs\models.py:276 .\packhouses\catalogs\models.py:286
 msgid "Product producer"
-msgstr ""
+msgstr "Productor de producto"
 
 #: .\packhouses\catalogs\models.py:277
 msgid "Product producers"
-msgstr ""
+msgstr "Productores de producto"
 
 #: .\packhouses\catalogs\models.py:292
 msgid "Product producer benefactor"
-msgstr ""
+msgstr "Beneficiario del productor de productos"
 
 #: .\packhouses\catalogs\models.py:293
 msgid "Product producer benefactors"
-msgstr ""
+msgstr "Beneficiarios del productor de producto"
 
 #: .\packhouses\catalogs\models.py:306 .\packhouses\catalogs\models.py:333
 #: .\packhouses\catalogs\models.py:492 .\packhouses\catalogs\models.py:525
 #: .\packhouses\catalogs\models.py:724
 msgid "Payment kind"
-msgstr ""
+msgstr "Tipo de pago"
 
 #: .\packhouses\catalogs\models.py:307
 msgid "Payment kinds"
-msgstr ""
+msgstr "Tipos de pago"
 
 #: .\packhouses\catalogs\models.py:314 .\packhouses\catalogs\models.py:475
 #: .\packhouses\catalogs\models.py:508
 msgid "Legal entity category"
-msgstr ""
+msgstr "Régimen de capital"
 
 #: .\packhouses\catalogs\models.py:328
 msgid "FDA"
-msgstr ""
+msgstr "FDA"
 
 #: .\packhouses\catalogs\models.py:330 .\packhouses\catalogs\models.py:489
 #: .\packhouses\catalogs\models.py:522
 msgid "SWIFT"
-msgstr ""
+msgstr "SWIFT"
 
 #: .\packhouses\catalogs\models.py:331 .\packhouses\catalogs\models.py:490
 #: .\packhouses\catalogs\models.py:523
 msgid "ABA"
-msgstr ""
+msgstr "ABA"
 
 #: .\packhouses\catalogs\models.py:332 .\packhouses\catalogs\models.py:491
 #: .\packhouses\catalogs\models.py:524
 msgid "CLABE"
-msgstr ""
+msgstr "CLABE"
 
 #: .\packhouses\catalogs\models.py:334 .\packhouses\catalogs\models.py:493
 #: .\packhouses\catalogs\models.py:526
 msgid "Max money credit limit"
-msgstr ""
+msgstr "Límite máximo de crédito"
 
 #: .\packhouses\catalogs\models.py:335 .\packhouses\catalogs\models.py:494
 #: .\packhouses\catalogs\models.py:527
 msgid "Max days credit limit"
-msgstr ""
+msgstr "Límite máximo de días de crédito"
 
 #: .\packhouses\catalogs\models.py:343
 msgid "Client"
-msgstr ""
+msgstr "Cliente"
 
 #: .\packhouses\catalogs\models.py:344
 msgid "Clients"
-msgstr ""
+msgstr "Clientes"
 
 #: .\packhouses\catalogs\models.py:355
 msgid "Vehicle ownership kind"
-msgstr ""
+msgstr "Tipo de propiedad del vehículo"
 
 #: .\packhouses\catalogs\models.py:356
 msgid "Vehicle ownership kinds"
-msgstr ""
+msgstr "Tipos de propiedad de vehículo"
 
 #: .\packhouses\catalogs\models.py:368
 msgid "Vehicle kind"
-msgstr ""
+msgstr "Tipo de vehículo"
 
 #: .\packhouses\catalogs\models.py:369
 msgid "Vehicle kinds"
-msgstr ""
+msgstr "Tipos de vehículos"
 
 #: .\packhouses\catalogs\models.py:381
 msgid "Vehicle fuel kind"
-msgstr ""
+msgstr "Tipo de combustible para vehículo"
 
 #: .\packhouses\catalogs\models.py:382
 msgid "Vehicle fuel kinds"
-msgstr ""
+msgstr "Tipos de combustible para vehículo"
 
 #: .\packhouses\catalogs\models.py:388
 msgid "Model"
-msgstr ""
+msgstr "Modelo"
 
 #: .\packhouses\catalogs\models.py:389
 msgid "License plate"
-msgstr ""
+msgstr "Matrícula"
 
 #: .\packhouses\catalogs\models.py:390
 msgid "Serial number"
-msgstr ""
+msgstr "Número de serie"
 
 #: .\packhouses\catalogs\models.py:391
 msgid "Color"
-msgstr ""
+msgstr "Color"
 
 #: .\packhouses\catalogs\models.py:392
 msgid "Ownership kind"
-msgstr ""
+msgstr "Tipo de propiedad"
 
 #: .\packhouses\catalogs\models.py:393
 msgid "Fuel kind"
-msgstr ""
+msgstr "Tipo de combustible"
 
 #: .\packhouses\catalogs\models.py:395 .\packhouses\catalogs\models.py:728
 #: .\packhouses\catalogs\models.py:901 .\packhouses\catalogs\models.py:925
 msgid "Comments"
-msgstr ""
+msgstr "Comentarios"
 
 #: .\packhouses\catalogs\models.py:402
 msgid "Vehicle"
-msgstr ""
+msgstr "Vehículo"
 
 #: .\packhouses\catalogs\models.py:403
 msgid "Vehicles"
-msgstr ""
+msgstr "Vehículos"
 
 #: .\packhouses\catalogs\models.py:411 .\packhouses\catalogs\models.py:443
 msgid "Zone"
-msgstr ""
+msgstr "Zona"
 
 #: .\packhouses\catalogs\models.py:413 .\packhouses\catalogs\models.py:445
 msgid "Population registry code"
-msgstr ""
+msgstr "Clave única de registro de población"
 
 #: .\packhouses\catalogs\models.py:414 .\packhouses\catalogs\models.py:446
 msgid "Tax registry code"
-msgstr ""
+msgstr "Número de identificación fiscal"
 
 #: .\packhouses\catalogs\models.py:415 .\packhouses\catalogs\models.py:447
 msgid "Social number code"
-msgstr ""
+msgstr "Número de seguro social"
 
 #: .\packhouses\catalogs\models.py:416 .\packhouses\catalogs\models.py:448
 msgid "Birthday"
-msgstr ""
+msgstr "Fecha de Nacimiento"
 
 #: .\packhouses\catalogs\models.py:417 .\packhouses\catalogs\models.py:449
 msgid "Sex"
-msgstr ""
+msgstr "Sexo"
 
 #: .\packhouses\catalogs\models.py:417 .\packhouses\catalogs\models.py:449
 msgid "Male"
-msgstr ""
+msgstr "Masculino"
 
 #: .\packhouses\catalogs\models.py:417 .\packhouses\catalogs\models.py:449
 msgid "Female"
-msgstr ""
+msgstr "Femenino"
 
 #: .\packhouses\catalogs\models.py:430
 msgid "Is maquilador"
-msgstr ""
+msgstr "Es maquilador"
 
 #: .\packhouses\catalogs\models.py:438 .\packhouses\catalogs\models.py:496
 msgid "Collector"
-msgstr ""
+msgstr "Cobrador"
 
 #: .\packhouses\catalogs\models.py:439
 msgid "Collectors"
-msgstr ""
+msgstr "Cobradores"
 
 #: .\packhouses\catalogs\models.py:469 .\packhouses\catalogs\models.py:529
 msgid "Maquilador"
-msgstr ""
+msgstr "Maquilador"
 
 #: .\packhouses\catalogs\models.py:470
 msgid "Maquiladores"
-msgstr ""
+msgstr "Maquiladores"
 
 #: .\packhouses\catalogs\models.py:502
 msgid "Collector client"
-msgstr ""
+msgstr "Cliente de cobranza"
 
 #: .\packhouses\catalogs\models.py:503
 msgid "Collector clients"
-msgstr ""
+msgstr "Clientes de cobranza"
 
 #: .\packhouses\catalogs\models.py:535
 msgid "Maquilador client"
-msgstr ""
+msgstr "Cliente maquilador"
 
 #: .\packhouses\catalogs\models.py:536
 msgid "Maquilador clients"
-msgstr ""
+msgstr "Clientes maquiladores"
 
 #: .\packhouses\catalogs\models.py:548 .\packhouses\catalogs\models.py:562
 msgid "Product Classification"
-msgstr ""
+msgstr "Clasificación de Producto"
 
 #: .\packhouses\catalogs\models.py:549
 msgid "Product Classifications"
-msgstr ""
+msgstr "Clasificaciones de Producto"
 
 #: .\packhouses\catalogs\models.py:555
 msgid "Producer"
-msgstr ""
+msgstr "Productor"
 
 #: .\packhouses\catalogs\models.py:556
 msgid "Registration date"
-msgstr ""
+msgstr "Fecha de Registro"
 
 #: .\packhouses\catalogs\models.py:557
 msgid "Forest land use change"
-msgstr ""
+msgstr "Cambio en el uso del suelo forestal"
 
 #: .\packhouses\catalogs\models.py:561
 msgid "Hectares"
-msgstr ""
+msgstr "Hectarias"
 
 #: .\packhouses\catalogs\models.py:563
 msgid "Phytosanitary certificate"
-msgstr ""
+msgstr "Certificado Fitosanitario"
 
 #: .\packhouses\catalogs\models.py:571 .\packhouses\catalogs\models.py:613
 msgid "Orchard"
-msgstr ""
+msgstr "Huerta"
 
 #: .\packhouses\catalogs\models.py:572
 msgid "Orchards"
-msgstr ""
+msgstr "Huertas"
 
 #: .\packhouses\catalogs\models.py:586 .\packhouses\catalogs\models.py:608
 msgid "Orchard certification kind"
-msgstr ""
+msgstr "Tipo de certificación de huerta"
 
 #: .\packhouses\catalogs\models.py:587
 msgid "Orchard certification kinds"
-msgstr ""
+msgstr "Tipos de certificación de huerta"
 
 #: .\packhouses\catalogs\models.py:601 .\packhouses\catalogs\models.py:611
 msgid "Orchard certification verifier"
-msgstr ""
+msgstr "Verificador de certificación de huerta"
 
 #: .\packhouses\catalogs\models.py:602
 msgid "Orchard certification verifiers"
-msgstr ""
+msgstr "Verificadores de certificación de huerta"
 
 #: .\packhouses\catalogs\models.py:609
 msgid "Certification number"
-msgstr ""
+msgstr "Número de certificación"
 
 #: .\packhouses\catalogs\models.py:610
 msgid "Expiration date"
-msgstr ""
+msgstr "Fecha de vencimiento"
 
 #: .\packhouses\catalogs\models.py:619
 msgid "Orchard certification"
-msgstr ""
+msgstr "Certificación de huerta"
 
 #: .\packhouses\catalogs\models.py:620
 msgid "Orchard certifications"
-msgstr ""
+msgstr "Certificaciones de huerta"
 
 #: .\packhouses\catalogs\models.py:636
 msgid "Harvest crew"
-msgstr ""
+msgstr "Equipo de corte"
 
 #: .\packhouses\catalogs\models.py:637
 msgid "Harvest crews"
-msgstr ""
+msgstr "Equipos de corte"
 
 #: .\packhouses\catalogs\models.py:654
 msgid "Supply unit kind"
-msgstr ""
+msgstr "Tipo de unidad de suministro"
 
 #: .\packhouses\catalogs\models.py:655
 msgid "Supply unit kinds"
-msgstr ""
+msgstr "Tipos de unidad de suministro"
 
 #: .\packhouses\catalogs\models.py:669
 msgid "Supply kind"
-msgstr ""
+msgstr "Tipo de suministro"
 
 #: .\packhouses\catalogs\models.py:670
 msgid "Supply kinds"
-msgstr ""
+msgstr "Tipos de suministros"
 
 #: .\packhouses\catalogs\models.py:685
 msgid "Supply kind relation"
-msgstr ""
+msgstr "Relación de tipo de suministro"
 
 #: .\packhouses\catalogs\models.py:686
 msgid "Supply kind relations"
-msgstr ""
+msgstr "Relaciones de tipo de suministro"
 
 #: .\packhouses\catalogs\models.py:691 .\packhouses\catalogs\models.py:962
 msgid "Unit cost"
-msgstr ""
+msgstr "Costo unitario"
 
 #: .\packhouses\catalogs\models.py:692
 msgid "Unit price"
-msgstr ""
+msgstr "Precio unitario"
 
 #: .\packhouses\catalogs\models.py:693
 msgid "Unit quantity"
-msgstr ""
+msgstr "Cantidad por unidad"
 
 #: .\packhouses\catalogs\models.py:694
 msgid "Unit kind"
-msgstr ""
+msgstr "Tipo de unidad"
 
 #: .\packhouses\catalogs\models.py:695
 msgid "Minimum stock quantity"
-msgstr ""
+msgstr "Cantidad mínima de inventario"
 
 #: .\packhouses\catalogs\models.py:696
 msgid "Maximum stock quantity"
-msgstr ""
+msgstr "Cantidad máxima de inventario"
 
 #: .\packhouses\catalogs\models.py:697
 msgid "Kind"
-msgstr ""
+msgstr "Tipo"
 
 #: .\packhouses\catalogs\models.py:698
 msgid "Is tray"
-msgstr ""
+msgstr "Es bandeja"
 
 #: .\packhouses\catalogs\models.py:699
 msgid "Related supply"
-msgstr ""
+msgstr "Suministro relacionado"
 
 #: .\packhouses\catalogs\models.py:707 .\packhouses\catalogs\models.py:960
 #: .\packhouses\catalogs\models.py:989
 msgid "Supply"
-msgstr ""
+msgstr "Suministro"
 
 #: .\packhouses\catalogs\models.py:708 .\packhouses\catalogs\models.py:727
 msgid "Supplies"
-msgstr ""
+msgstr "Suministros"
 
 #: .\packhouses\catalogs\models.py:725
 msgid "Credit days"
-msgstr ""
+msgstr "Días de crédito"
 
 #: .\packhouses\catalogs\models.py:726
 msgid "Balance"
-msgstr ""
+msgstr "Balance"
 
 #: .\packhouses\catalogs\models.py:736
 msgid "Supplier"
-msgstr ""
+msgstr "Proveedor"
 
 #: .\packhouses\catalogs\models.py:737
 msgid "Suppliers"
-msgstr ""
+msgstr "Proveedores"
 
 #: .\packhouses\catalogs\models.py:753
 msgid "Mesh Bag Kind"
-msgstr ""
+msgstr "Tipo de bolsa de malla"
 
 #: .\packhouses\catalogs\models.py:754
 msgid "Mesh Bag Kinds"
-msgstr ""
+msgstr "Tipos de bolsa de malla"
 
 #: .\packhouses\catalogs\models.py:767 .\packhouses\catalogs\models.py:779
 msgid "Mesh bag film kind"
-msgstr ""
+msgstr "Tipo de material de bolsa de malla"
 
 #: .\packhouses\catalogs\models.py:768
 msgid "Mesh bag film kinds"
-msgstr ""
+msgstr "Tipos de materiales de bolsas de mallas"
 
 #: .\packhouses\catalogs\models.py:776
 msgid "Mesh bags per box"
-msgstr ""
+msgstr "Bolsas de malla por caja"
 
 #: .\packhouses\catalogs\models.py:777
 msgid "Pieces per mesh bags"
-msgstr ""
+msgstr "Piezas por bolsa de malla"
 
 #: .\packhouses\catalogs\models.py:778
 msgid "Mesh bag kind"
-msgstr ""
+msgstr "Tipo de bolsa de malla"
 
 #: .\packhouses\catalogs\models.py:780
 msgid "Mesh bag discount"
-msgstr ""
+msgstr "Descuento en bolsa de malla"
 
 #: .\packhouses\catalogs\models.py:781
 msgid "Mesh bag film discount"
-msgstr ""
+msgstr "Descuento en material de bolsa de malla"
 
 #: .\packhouses\catalogs\models.py:789
 msgid "Mesh bag"
-msgstr ""
+msgstr "Bolsa de malla"
 
 #: .\packhouses\catalogs\models.py:790
 msgid "Mesh bags"
-msgstr ""
+msgstr "Bolsas de malla"
 
 #: .\packhouses\catalogs\models.py:835
 msgid "Service provider benefactor"
-msgstr ""
+msgstr "Benefactor del proveedor de servicios"
 
 #: .\packhouses\catalogs\models.py:836
 msgid "Service provider benefactors"
-msgstr ""
+msgstr "Benefactores del proveedor de servicio"
 
 #: .\packhouses\catalogs\models.py:844
 msgid "Service provider"
-msgstr ""
+msgstr "Proveedor de servicio"
 
 #: .\packhouses\catalogs\models.py:850
 msgid "Service"
-msgstr ""
+msgstr "Servicio"
 
 #: .\packhouses\catalogs\models.py:851
 msgid "Services"
-msgstr ""
+msgstr "Servicios"
 
 #: .\packhouses\catalogs\models.py:867
 msgid "Authority box kind"
-msgstr ""
+msgstr "Tipo de caja autorizada"
 
 #: .\packhouses\catalogs\models.py:868
 msgid "Authority box kinds"
-msgstr ""
+msgstr "Tipos de cajas autorizadas"
 
 #: .\packhouses\catalogs\models.py:874 .\packhouses\catalogs\models.py:988
 msgid "Kg per box"
-msgstr ""
+msgstr "kg por caja"
 
 #: .\packhouses\catalogs\models.py:875
 msgid "Trays per box"
-msgstr ""
+msgstr "bandejas por caja"
 
 #: .\packhouses\catalogs\models.py:883 .\packhouses\catalogs\models.py:985
 msgid "Box kind"
-msgstr ""
+msgstr "Tipos de caja"
 
 #: .\packhouses\catalogs\models.py:884
 msgid "Box kinds"
-msgstr ""
+msgstr "Tipos de caja"
 
 #: .\packhouses\catalogs\models.py:892
 msgid "Number"
-msgstr ""
+msgstr "Número"
 
 #: .\packhouses\catalogs\models.py:909
 msgid "Weighing scale"
-msgstr ""
+msgstr "Báscula"
 
 #: .\packhouses\catalogs\models.py:910
 msgid "Weighing scales"
-msgstr ""
+msgstr "Básculas"
 
 #: .\packhouses\catalogs\models.py:922
 msgid "Pallet capacity"
-msgstr ""
+msgstr "Capacidad del pallet"
 
 #: .\packhouses\catalogs\models.py:923
 msgid "Freshness days warning"
-msgstr ""
+msgstr "Advertencia de días de frescura"
 
 #: .\packhouses\catalogs\models.py:924
 msgid "Freshness days alert"
-msgstr ""
+msgstr "Alerta de días de frescura"
 
 #: .\packhouses\catalogs\models.py:933
 msgid "Cold chamber"
-msgstr ""
+msgstr "Cámara fría"
 
 #: .\packhouses\catalogs\models.py:934
 msgid "Cold chambers"
-msgstr ""
+msgstr "Cámaras frías"
 
 #: .\packhouses\catalogs\models.py:944 .\packhouses\catalogs\models.py:981
 msgid "Boxes quantity"
-msgstr ""
+msgstr "Cantidad de cajas"
 
 #: .\packhouses\catalogs\models.py:945 .\packhouses\catalogs\models.py:982
 msgid "Kg amount"
-msgstr ""
+msgstr "Cantidad de kg"
 
 #: .\packhouses\catalogs\models.py:953 .\packhouses\catalogs\models.py:964
 msgid "Pallet"
-msgstr ""
+msgstr "Pallet"
 
 #: .\packhouses\catalogs\models.py:954
 msgid "Pallets"
-msgstr ""
+msgstr "Pallets"
 
 #: .\packhouses\catalogs\models.py:961
 msgid "Quantity"
-msgstr ""
+msgstr "Cantidad"
 
 #: .\packhouses\catalogs\models.py:970
 msgid "Pallet expense"
-msgstr ""
+msgstr "Gasto de pallet"
 
 #: .\packhouses\catalogs\models.py:971
 msgid "Pallet expenses"
-msgstr ""
+msgstr "Gastos de pallet"
 
 #: .\packhouses\catalogs\models.py:983
 msgid "Kg tare"
-msgstr ""
+msgstr "Tara en kg"
 
 #: .\packhouses\catalogs\models.py:990
 msgid "Is dark"
-msgstr ""
+msgstr "Está oscuro"
 
 #: .\packhouses\catalogs\models.py:991
 msgid "provisional cost"
-msgstr ""
+msgstr "Costo provicional"
 
 #: .\packhouses\catalogs\models.py:992
 msgid "provisional price"
-msgstr ""
+msgstr "Precio provisional"
 
 #: .\packhouses\catalogs\models.py:994
 msgid "Supply tray"
-msgstr ""
+msgstr "Bandeja de suministro"
 
 #: .\packhouses\catalogs\models.py:1003 .\packhouses\catalogs\models.py:1004
 msgid "Product Packaging"
-msgstr ""
+msgstr "Empaque de producto"

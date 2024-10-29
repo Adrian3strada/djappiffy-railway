@@ -20,55 +20,55 @@ msgstr ""
 "1 : 2;\n"
 #: .\packhouses\collection\models.py:16
 msgid "Status"
-msgstr ""
+msgstr "Estado"
 
 #: .\packhouses\collection\models.py:17
 msgid "Provider"
-msgstr ""
+msgstr "proveedor"
 
 #: .\packhouses\collection\models.py:19
-msgid "organization"
-msgstr ""
+msgid "Organization"
+msgstr "organización"
 
 #: .\packhouses\collection\models.py:20
-msgid "name"
-msgstr ""
+msgid "Name"
+msgstr "nombre"
 
 #: .\packhouses\collection\models.py:21
-msgid "description"
-msgstr ""
+msgid "Description"
+msgstr "Descripción"
 
 #: .\packhouses\collection\models.py:22
-msgid "city"
-msgstr ""
+msgid "City"
+msgstr "Ciudad"
 
 #: .\packhouses\collection\models.py:23
-msgid "country"
-msgstr ""
+msgid "Country"
+msgstr "País"
 
 #: .\packhouses\collection\models.py:24
-msgid "region"
-msgstr ""
+msgid "Region"
+msgstr "Estado"
 
 #: .\packhouses\collection\models.py:25
-msgid "address"
-msgstr ""
+msgid "Address"
+msgstr "Domicilio"
 
 #: .\packhouses\collection\models.py:26
-msgid "postal code"
-msgstr ""
+msgid "Postal code"
+msgstr "Código postal"
 
 #: .\packhouses\collection\models.py:27
-msgid "latitude"
-msgstr ""
+msgid "Latitude"
+msgstr "Latitud"
 
 #: .\packhouses\collection\models.py:28
-msgid "longitude"
-msgstr ""
+msgid "Longitude"
+msgstr "Longitud"
 
 #: .\packhouses\collection\models.py:29
-msgid "phone"
-msgstr ""
+msgid "Phone"
+msgstr "Teléfono"
 
 #: .\packhouses\collection\models.py:30
 msgid "email"
@@ -76,32 +76,32 @@ msgstr ""
 
 #: .\packhouses\collection\models.py:31
 msgid "website"
-msgstr ""
+msgstr "Sitio web"
 
 #: .\packhouses\collection\models.py:32
 msgid "tax regime"
-msgstr ""
+msgstr "Régimen fiscal"
 
 #: .\packhouses\collection\models.py:33
 msgid "legal entity category"
-msgstr ""
+msgstr "Régimen de capital"
 
 #: .\packhouses\collection\models.py:34
 msgid "created by"
-msgstr ""
+msgstr "Creado por"
 
 #: .\packhouses\collection\models.py:35
 msgid "created at"
-msgstr ""
+msgstr "Creado en"
 
 #: .\packhouses\collection\models.py:36
 msgid "updated at"
-msgstr ""
+msgstr "Actualizado en"
 
 #: .\packhouses\collection\models.py:39
-msgid "collection"
-msgstr ""
+msgid "Collection"
+msgstr "Colección"
 
 #: .\packhouses\collection\models.py:40
-msgid "collections"
-msgstr ""
+msgid "Collections"
+msgstr "Colecciones"

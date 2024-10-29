@@ -112,7 +112,7 @@ class MarketStandardProductSize(models.Model):
     class Meta:
         verbose_name = _('Market standard product size')
         verbose_name_plural = _('Market standard product sizes')
-        ordering = ['order']
+        ordering = ('market', 'order',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'market'], name='marketstandardproductsize_unique_name_market'),
         ]
@@ -141,25 +141,24 @@ class ProductVariety(CleanNameAndProductMixin, models.Model):
     class Meta:
         verbose_name = _('Product variety')
         verbose_name_plural = _('Product varieties')
-        ordering = ('name',)
+        ordering = ('product', 'name',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'], name='product_unique_name_product'),
         ]
 
 
-class ProductHarvestKind(CleanNameAndOrganizationMixin, models.Model):
+class ProductHarvestKind(CleanNameAndProductMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 
     class Meta:
         verbose_name = _('Product variety harvest Kind')
         verbose_name_plural = _('Product variety harvest kinds')
-        unique_together = ('name', 'organization')
-        ordering = ('order',)
+        ordering = ('product', 'order',)
         constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='productharvestkind_unique_name_organization'),
+            models.UniqueConstraint(fields=['name', 'product'], name='productharvestkind_unique_name_product'),
         ]
 
 
@@ -170,7 +169,7 @@ class ProductVarietySize(models.Model):
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
     quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Quality kind'), on_delete=models.PROTECT)  # Normal, roña, etc
-    harvest_kind = models.ForeignKey(ProductHarvestKind, verbose_name=_('Harvest kind'), on_delete=models.PROTECT)
+    harvest_kind = models.ForeignKey(ProductHarvestKind, verbose_name=_('Harvest kind'), on_delete=models.PROTECT)  # Tipos de corte
     product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product kind'), on_delete=models.PROTECT, help_text=_('To separate sizes by product kind in the mass volume report'))
     requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))

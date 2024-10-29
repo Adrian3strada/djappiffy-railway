@@ -20,7 +20,7 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.utils.html import format_html
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
-
+from .filters import ProductVarietySizeProductFilter
 admin.site.unregister(Country)
 admin.site.unregister(Region)
 admin.site.unregister(City)
@@ -55,6 +55,8 @@ class MarketStandardProductSizeInline(admin.TabularInline):
 class MarketAdmin(admin.ModelAdmin):
     list_display = ('name', 'alias', 'is_enabled')
     list_filter = ('is_enabled',)
+    search_fields = ('name', 'alias')
+
     inlines = [KGCostMarketInline, MarketClassInline, MarketStandardProductSizeInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -116,13 +118,22 @@ class ProductVarietyHarvestKindAdmin(admin.ModelAdmin):
 
 @admin.register(ProductVarietySize)
 class ProductVarietySizeAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'variety', 'market', 'quality_kind', 'harvest_kind', 'product_kind', 'is_enabled', 'order')
+    list_filter = ('market', ProductVarietySizeProductFilter, 'variety', 'quality_kind', 'harvest_kind', 'product_kind', 'is_enabled')
+    search_fields = ('name', 'variety__product__name', 'variety__name', 'market__name', 'quality_kind__name', 'harvest_kind__name', 'product_kind__name')
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['name'].widget = UppercaseTextInputWidget()
+        # form.base_fields['description'].widget = AutoGrowingTextareaWidget()
+        return form
 
 
 @admin.register(ProductVariety)
 class ProductVarietyAdmin(admin.ModelAdmin):
     list_display = ('name', 'product', 'description', 'is_enabled')
-    list_filter = (('product', admin.RelatedOnlyFieldListFilter), 'is_enabled',)
+    list_filter = ('product', 'is_enabled',)
+    search_fields = ('name', 'product__name', 'description')
     inlines = [ProductVarietySizeInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -139,6 +150,7 @@ class ProductVarietyAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'is_enabled')
     list_filter = ('is_enabled',)
+    search_fields = ('name', 'description')
     inlines = [ProductVarietyInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -146,8 +158,6 @@ class ProductAdmin(admin.ModelAdmin):
         form.base_fields['name'].widget = UppercaseTextInputWidget()
         # form.base_fields['description'].widget = AutoGrowingTextareaWidget()
         return form
-
-
 
 
 @admin.register(Bank)
