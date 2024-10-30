@@ -182,13 +182,19 @@ class ProductProviderBenefactorInline(admin.TabularInline):
     model = ProductProviderBenefactor
     extra = 0
 
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'name' in formset.form.base_fields:
+            formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return formset
+
 
 @admin.register(ProductProvider)
 class ProductProviderAdmin(admin.ModelAdmin):
     list_display = ('name', 'alias', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number', 'is_enabled')
     list_filter = ('state', 'city', 'bank', 'is_enabled')
     search_fields = ('name', 'alias', ProductProviderStateFilter, 'neighborhood', 'address', 'tax_id', 'phone_number')
-    fields = ('name', 'alias', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'tax_id', 'phone_number', 'bank_account_number', 'bank', 'is_enabled', 'organization')
+    fields = ('organization', 'name', 'alias', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'tax_id', 'phone_number', 'bank_account_number', 'bank', 'is_enabled')
     inlines = [ProductProviderBenefactorInline]
 
     def get_form(self, request, obj=None, **kwargs):

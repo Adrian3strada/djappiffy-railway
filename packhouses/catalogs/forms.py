@@ -65,3 +65,4 @@ class ProductVarietyInlineFormSet(BaseInlineFormSet):
                 form.fields['DELETE'].disabled = True
                 form.fields['DELETE'].widget.attrs.update({'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
 
+
