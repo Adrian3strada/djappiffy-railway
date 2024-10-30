@@ -9,6 +9,7 @@ from .models import (
     Supply, Supplier, MeshBagKind, MeshBagFilmKind, MeshBag, ServiceProvider, ServiceProviderBenefactor, Service,
     AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber, Pallet, PalletExpense, ProductPackaging
 )
+from packhouses.packhouse_settings.models import Bank
 from .forms import ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django_ckeditor_5.widgets import CKEditor5Widget
@@ -138,8 +139,6 @@ class ProductVarietyAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, **kwargs)
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
-        if 'description' in form.base_fields:
-            form.base_fields['description'].widget = AutoGrowingTextareaWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -189,7 +188,26 @@ class ProductProviderAdmin(admin.ModelAdmin):
     list_display = ('name', 'alias', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number', 'is_enabled')
     list_filter = ('state', 'city', 'bank', 'is_enabled')
     search_fields = ('name', 'alias', ProductProviderStateFilter, 'neighborhood', 'address', 'tax_id', 'phone_number')
+    fields = ('name', 'alias', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'tax_id', 'phone_number', 'bank_account_number', 'bank', 'is_enabled', 'organization')
     inlines = [ProductProviderBenefactorInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'alias' in form.base_fields:
+            form.base_fields['alias'].widget = UppercaseAlphanumericTextInputWidget()
+        if 'address' in form.base_fields:
+            form.base_fields['address'].widget = UppercaseTextInputWidget()
+        if 'tax_id' in form.base_fields:
+            form.base_fields['tax_id'].widget = UppercaseTextInputWidget()
+        return form
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[Region, City, Bank, ProductProviderBenefactor, Organization]):
+            readonly_fields.extend(['name', 'alias', 'organization'])
+        return readonly_fields
 
 
 class ProductProducerBenefactorInline(admin.TabularInline):

@@ -208,10 +208,7 @@ class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, models.
 
 # Proveedores de fruta:
 
-
-
-
-class ProductProvider(models.Model):
+class ProductProvider(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
@@ -221,9 +218,9 @@ class ProductProvider(models.Model):
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
     address = models.CharField(max_length=255, verbose_name=_('Address'))
     external_number = models.CharField(max_length=20, verbose_name=_('External number'))
-    internal_number = models.CharField(max_length=20, verbose_name=_('Internal number'))
+    internal_number = models.CharField(max_length=20, verbose_name=_('Internal number'), null=True, blank=True)
     tax_id = models.CharField(max_length=100, verbose_name=_('Tax ID'))
-    email = models.EmailField()
+    email = models.EmailField(null=True, blank=True)
     phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'))
     bank_account_number = models.CharField(max_length=20, verbose_name=_('Bank account number'))
     bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_('Bank'))
@@ -236,8 +233,11 @@ class ProductProvider(models.Model):
     class Meta:
         verbose_name = _('Product provider')
         verbose_name_plural = _('Product providers')
-        unique_together = ('name', 'organization')
         ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='productprovider_unique_name_organization'),
+            models.UniqueConstraint(fields=['alias', 'organization'], name='productprovider_unique_alias_organization')
+        ]
 
 
 class ProductProviderBenefactor(models.Model):
