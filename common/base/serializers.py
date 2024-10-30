@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.utils import translation
 from .models import Product
+from cities_light.models import City
 
 #
 
@@ -8,6 +9,12 @@ from .models import Product
 class CountrySerializer(serializers.Serializer):
     code = serializers.CharField()
     name = serializers.CharField()
+
+
+class CitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = '__all__'
 
 
 class ProductSerializer(serializers.ModelSerializer):

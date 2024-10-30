@@ -10,6 +10,7 @@ from .models import (
     AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber, Pallet, PalletExpense, ProductPackaging
 )
 from packhouses.packhouse_settings.models import Bank
+from common.profiles.models import UserProfile
 from .forms import ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django_ckeditor_5.widgets import CKEditor5Widget
@@ -214,6 +215,28 @@ class ProductProviderAdmin(admin.ModelAdmin):
         if obj and is_instance_used(obj, exclude=[Region, City, Bank, ProductProviderBenefactor, Organization]):
             readonly_fields.extend(['name', 'alias', 'organization'])
         return readonly_fields
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        user_profile = UserProfile.objects.get(user=request.user)
+        country = user_profile.country
+        if db_field.name == "state":
+            kwargs["queryset"] = Region.objects.filter(country=country)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        elif db_field.name == "city":
+            if 'state' in request.GET:
+                state_id = request.GET.get('state')
+                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = City.objects.filter(country=country)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/catalogs/product_provider.js',)
 
 
 class ProductProducerBenefactorInline(admin.TabularInline):
