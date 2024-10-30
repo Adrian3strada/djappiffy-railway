@@ -119,6 +119,11 @@ class ProductAdmin(admin.ModelAdmin):
         return readonly_fields
 
 
+@admin.register(ProductHarvestKind)
+class ProductVarietyHarvestKindAdmin(admin.ModelAdmin):
+    pass
+
+
 class ProductVarietySizeInline(admin.StackedInline):
     model = ProductVarietySize
     form = ProductVarietySizeInlineForm
@@ -195,7 +200,7 @@ class ProductProviderAdmin(admin.ModelAdmin):
     list_display = ('name', 'alias', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number', 'is_enabled')
     list_filter = ('state', 'city', 'bank', 'is_enabled')
     search_fields = ('name', 'alias', ProductProviderStateFilter, 'neighborhood', 'address', 'tax_id', 'phone_number')
-    fields = ('organization', 'name', 'alias', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'tax_id', 'phone_number', 'bank_account_number', 'bank', 'is_enabled')
+    fields = ('name', 'alias', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'tax_id', 'phone_number', 'bank_account_number', 'bank', 'is_enabled', 'organization')
     inlines = [ProductProviderBenefactorInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -243,6 +248,12 @@ class ProductProducerBenefactorInline(admin.TabularInline):
     model = ProductProducerBenefactor
     extra = 0
 
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'name' in formset.form.base_fields:
+            formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return formset
+
 
 class ServiceProviderBenefactorInline(admin.TabularInline):
     model = ServiceProviderBenefactor
@@ -260,15 +271,6 @@ class SupplyAdminForm(forms.ModelForm):
             allowed_kinds = SupplyKindRelation.objects.filter(from_kind=self.instance.volume_kind).values_list(
                 'to_kind', flat=True)
             self.fields['related_supply'].queryset = Supply.objects.filter(kind__in=allowed_kinds)
-
-
-@admin.register(ProductHarvestKind)
-class ProductVarietyHarvestKindAdmin(admin.ModelAdmin):
-    pass
-
-
-
-
 
 
 

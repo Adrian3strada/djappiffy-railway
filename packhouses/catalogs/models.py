@@ -62,7 +62,7 @@ class KGCostMarket(CleanNameAndMarketMixin, models.Model):
 
 class MarketClass(CleanNameAndMarketMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     @receiver(post_save, sender=Market)
@@ -89,7 +89,7 @@ class MarketStandardProductSize(models.Model):
     # a modo de autoridad en la materia
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.CASCADE)
     order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 
     def __str__(self):
@@ -159,8 +159,8 @@ class ProductHarvestKind(CleanNameAndProductMixin, models.Model):
     order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 
     class Meta:
-        verbose_name = _('Product variety harvest Kind')
-        verbose_name_plural = _('Product variety harvest kinds')
+        verbose_name = _('Product harvest Kind')
+        verbose_name_plural = _('Product harvest kinds')
         ordering = ('product', 'order',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'], name='productharvestkind_unique_name_product'),

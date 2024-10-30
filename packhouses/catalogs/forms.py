@@ -23,7 +23,7 @@ class ProductVarietySizeInlineForm(forms.ModelForm):
                   'description', 'volume_kind', 'requires_corner_protector', 'is_enabled', 'order']
 
     class Media:
-        js = ('js/admin/forms/product_variety_inline_size.js',)
+        js = ('js/admin/forms/catalogs/product_variety_inline_size.js',)
 
 
 class ProductVarietySizeForm(forms.ModelForm):
@@ -47,7 +47,7 @@ class ProductVarietySizeForm(forms.ModelForm):
         fields = '__all__'
 
     class Media:
-        js = ('js/admin/forms/product_variety_size.js',)
+        js = ('js/admin/forms/catalogs/product_variety_size.js',)
 
 
 class ProductVarietyInlineFormSet(BaseInlineFormSet):
