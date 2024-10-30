@@ -169,8 +169,7 @@ class ProductVarietySizeAdmin(admin.ModelAdmin):
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    class Media:
-        js = ('js/admin/forms/product_variety_size.js',)
+
 
 
 

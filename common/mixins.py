@@ -102,8 +102,7 @@ class CleanNameAndMarketMixin(models.Model):
             errors = e.message_dict
 
         if self.market_id:
-            if self.__class__.objects.filter(name=self.name, market=self.market).exclude(
-                pk=self.pk).exists():
+            if self.__class__.objects.filter(name=self.name, market=self.market).exclude(pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
 
         if errors:

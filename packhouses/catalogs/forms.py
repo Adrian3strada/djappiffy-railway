@@ -9,6 +9,7 @@ class ProductVarietySizeInlineForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['market_standard_size'].queryset = MarketStandardProductSize.objects.none()
         if self.instance and self.instance.pk:
             market = self.instance.market
             if market:
@@ -29,6 +30,7 @@ class ProductVarietySizeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['market_standard_size'].queryset = MarketStandardProductSize.objects.none()
         if 'market' in self.data:
             try:
                 market_id = int(self.data.get('market'))
@@ -43,6 +45,9 @@ class ProductVarietySizeForm(forms.ModelForm):
     class Meta:
         model = ProductVarietySize
         fields = '__all__'
+
+    class Media:
+        js = ('js/admin/forms/product_variety_size.js',)
 
 
 class ProductVarietyInlineFormSet(BaseInlineFormSet):
