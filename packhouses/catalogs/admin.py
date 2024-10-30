@@ -131,13 +131,22 @@ class ProductVarietyAdmin(admin.ModelAdmin):
     list_display = ('name', 'product', 'description', 'is_enabled')
     list_filter = ('product', 'is_enabled',)
     search_fields = ('name', 'product__name', 'description')
+    fields = ('product', 'name', 'description', 'is_enabled')
     inlines = [ProductVarietySizeInline]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        form.base_fields['name'].widget = UppercaseTextInputWidget()
-        form.base_fields['description'].widget = AutoGrowingTextareaWidget()
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'description' in form.base_fields:
+            form.base_fields['description'].widget = AutoGrowingTextareaWidget()
         return form
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[Product]):
+            readonly_fields.extend(['name', 'product'])
+        return readonly_fields
 
 
 @admin.register(ProductVarietySize)
