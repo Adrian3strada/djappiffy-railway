@@ -532,3 +532,4 @@ CKEDITOR_5_CONFIGS = {
 }
 
 CITIES_LIGHT_TRANSLATION_LANGUAGES = ['es', 'en', 'fr', 'de', 'pt']
+

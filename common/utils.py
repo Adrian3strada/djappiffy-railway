@@ -3,7 +3,7 @@ from django.apps import apps
 
 def is_instance_used(instance, exclude=None):
     if exclude is None:
-        exclude_classes = []
+        exclude = []
 
     related_classes = set()
 
@@ -13,6 +13,6 @@ def is_instance_used(instance, exclude=None):
                 if model.objects.filter(**{field.name: instance}).exists():
                     related_classes.add(model)
 
-    related_classes.difference_update(exclude_classes)
+    related_classes.difference_update(exclude)
 
     return len(related_classes) > 0

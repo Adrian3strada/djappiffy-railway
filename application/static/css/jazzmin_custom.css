@@ -1,5 +1,13 @@
 /* Cambiar el color de fondo de la barra lateral */
 
+.readonly-field {
+    background-color: #919191; /* Fondo gris claro para el campo deshabilitado */
+    color: #888888; /* Color de texto gris */
+    cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
+    pointer-events: none; /* Desactiva eventos de mouse, haciendo que parezca completamente deshabilitado */
+    opacity: 0.6; /* Opcional: hace que el campo se vea un poco translúcido */
+}
+
 
 #jazzy-actions .object-tools a[href*="/history/"] {
     display: none;

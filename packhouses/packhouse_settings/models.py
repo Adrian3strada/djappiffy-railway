@@ -9,10 +9,9 @@ from common.mixins import CleanNameAndOrganizationMixin, CleanNameAndMarketMixin
 
 class Status(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('name'))
-    description = models.TextField(verbose_name=_('description'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'))
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 
     class Meta:
         verbose_name = _('Status')

@@ -9,7 +9,7 @@ from .models import (
     Supply, Supplier, MeshBagKind, MeshBagFilmKind, MeshBag, ServiceProvider, ServiceProviderBenefactor, Service,
     AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber, Pallet, PalletExpense, ProductPackaging
 )
-from .forms import ProductVarietySizeInlineForm, ProductVarietySizeForm
+from .forms import ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
@@ -26,6 +26,7 @@ from .filters import ProductVarietySizeProductFilter
 from django.db.models.functions import Concat
 from django.db.models import Value
 from common.utils import is_instance_used
+from django.core.exceptions import ValidationError
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -64,7 +65,6 @@ class MarketAdmin(admin.ModelAdmin):
     search_fields = ('name', 'alias')
     fields = ('name', 'alias', 'country', 'management_cost_per_kg', 'is_foreign', 'is_mixable',
               'label_language', 'address_label', 'is_enabled', 'organization')
-
     inlines = [KGCostMarketInline, MarketClassInline, MarketStandardProductSizeInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -86,11 +86,13 @@ class MarketAdmin(admin.ModelAdmin):
 class ProductVarietyInline(admin.TabularInline):
     model = ProductVariety
     extra = 0
+    fields = ('name', 'description', 'is_enabled')
+    formset = ProductVarietyInlineFormSet
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
-        formset.form.base_fields['description'].widget = AutoGrowingTextareaWidget()
+        if 'name' in formset.form.base_fields:
+            formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
         return formset
 
 
@@ -99,12 +101,20 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'is_enabled')
     list_filter = ('is_enabled',)
     search_fields = ('name', 'description')
+    fields = ('name', 'description', 'is_enabled', 'organization')
     inlines = [ProductVarietyInline]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[Organization]):
+            readonly_fields.extend(['name', 'organization'])
+        return readonly_fields
 
 
 class ProductVarietySizeInline(admin.StackedInline):
