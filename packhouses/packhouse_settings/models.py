@@ -50,3 +50,18 @@ class MassVolumeKind(CleanNameAndOrganizationMixin, models.Model):
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='massvolumekind_unique_name_organization'),
         ]
+
+
+class Bank(models.Model):
+    name = models.CharField(max_length=120, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Bank')
+        verbose_name_plural = _('Banks')
+        unique_together = ('name', 'organization')
+        ordering = ('name',)

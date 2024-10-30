@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     Market, KGCostMarket, MarketClass, MarketStandardProductSize, Product, ProductVariety, ProductVarietySize,
-    ProductHarvestKind, Bank, ProductProvider, ProductProviderBenefactor,
+    ProductHarvestKind, ProductProvider, ProductProviderBenefactor,
     ProductProducer, ProductProducerBenefactor, PaymentKind, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
     Vehicle,
     Collector, Client, Maquilador, MaquiladorClient, OrchardProductClassification, Orchard, OrchardCertificationKind,
@@ -179,17 +179,15 @@ class ProductVarietySizeAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-
-
-
-
-
-
-
-
 class ProductProviderBenefactorInline(admin.TabularInline):
     model = ProductProviderBenefactor
     extra = 0
+
+
+@admin.register(ProductProvider)
+class ProductProviderAdmin(admin.ModelAdmin):
+    list_display = ('name', 'alias', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number', 'is_enabled')
+    inlines = [ProductProviderBenefactorInline]
 
 
 class ProductProducerBenefactorInline(admin.TabularInline):
@@ -220,14 +218,10 @@ class ProductVarietyHarvestKindAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Bank)
-class BankAdmin(admin.ModelAdmin):
-    pass
 
 
-@admin.register(ProductProvider)
-class ProductProviderAdmin(admin.ModelAdmin):
-    inlines = [ProductProviderBenefactorInline]
+
+
 
 
 @admin.register(ProductProducer)

@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from common.billing.models import TaxRegime, LegalEntityCategory
 from .utils import vehicle_year_choices, vehicle_validate_year
 from django.core.exceptions import ValidationError
-from packhouses.packhouse_settings.models import ProductSizeKind, MassVolumeKind
+from packhouses.packhouse_settings.models import ProductSizeKind, MassVolumeKind, Bank
 
 
 # Create your models here.
@@ -208,18 +208,7 @@ class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, models.
 
 # Proveedores de fruta:
 
-class Bank(models.Model):
-    name = models.CharField(max_length=120, verbose_name=_('Name'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Bank')
-        verbose_name_plural = _('Banks')
-        unique_together = ('name', 'organization')
-        ordering = ('name',)
 
 
 class ProductProvider(models.Model):
