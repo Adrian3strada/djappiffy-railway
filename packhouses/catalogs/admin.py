@@ -22,7 +22,7 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.utils.html import format_html
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
-from .filters import ProductVarietySizeProductFilter
+from .filters import ProductVarietySizeProductFilter, ProductProviderStateFilter
 from django.db.models.functions import Concat
 from django.db.models import Value
 from common.utils import is_instance_used
@@ -187,6 +187,8 @@ class ProductProviderBenefactorInline(admin.TabularInline):
 @admin.register(ProductProvider)
 class ProductProviderAdmin(admin.ModelAdmin):
     list_display = ('name', 'alias', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number', 'is_enabled')
+    list_filter = ('state', 'city', 'bank', 'is_enabled')
+    search_fields = ('name', 'alias', ProductProviderStateFilter, 'neighborhood', 'address', 'tax_id', 'phone_number')
     inlines = [ProductProviderBenefactorInline]
 
 
