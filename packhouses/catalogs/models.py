@@ -1,6 +1,6 @@
 from django.db import models
 from common.mixins import (CleanNameAndOrganizationMixin, CleanNameOrAliasAndOrganizationMixin,
-                           CleanNameAndMarketMixin, CleanNameAndProductMixin)
+                           CleanNameAndMarketMixin, CleanNameAndProductMixin, CleanNameAndVarietyAndMarketAndVolumeKindMixin)
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from django.utils.translation import gettext_lazy as _
@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from common.billing.models import TaxRegime, LegalEntityCategory
 from .utils import vehicle_year_choices, vehicle_validate_year
 from django.core.exceptions import ValidationError
-from packhouses.packhouse_settings.models import ProductQualityKind, ProductKind
+from packhouses.packhouse_settings.models import ProductSizeKind, MassVolumeKind
 
 
 # Create your models here.
@@ -104,8 +104,7 @@ class MarketStandardProductSize(models.Model):
             errors = e.message_dict
 
         if self.market_id:
-            if self.__class__.objects.filter(name=self.name, market=self.market).exclude(
-                pk=self.pk).exists():
+            if self.__class__.objects.filter(name=self.name, market=self.market).exclude(pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
 
         if errors:
@@ -168,7 +167,7 @@ class ProductHarvestKind(CleanNameAndProductMixin, models.Model):
         ]
 
 
-class ProductVarietySize(models.Model):
+class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, models.Model):
     variety = models.ForeignKey(ProductVariety, verbose_name=_('Variety'), on_delete=models.PROTECT)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     market_standard_size = models.ForeignKey(MarketStandardProductSize,
@@ -179,12 +178,12 @@ class ProductVarietySize(models.Model):
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
-    quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Quality kind'),
-                                     on_delete=models.PROTECT)  # Normal, roña, etc
+    size_kind = models.ForeignKey(ProductSizeKind, verbose_name=_('Size kind'),
+                                  on_delete=models.PROTECT)  # Normal, roña, etc
     harvest_kind = models.ForeignKey(ProductHarvestKind, verbose_name=_('Harvest kind'),
                                      on_delete=models.PROTECT)  # Tipos de corte
-    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product kind'), on_delete=models.PROTECT,
-                                     help_text=_('To separate sizes by product kind in the mass volume report'))
+    volume_kind = models.ForeignKey(MassVolumeKind, verbose_name=_('Volume kind'), on_delete=models.PROTECT,
+                                    help_text=_('To separate sizes by product kind in the mass volume report'))
     requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     order = models.PositiveIntegerField(default=0,
@@ -195,15 +194,15 @@ class ProductVarietySize(models.Model):
         return self.variety.product.name if self.variety and self.variety.product else None
 
     def __str__(self):
-        return f"{self.variety.product.name} : {self.variety.name} : {self.name}"
+        return f"{self.variety.product.name}: {self.variety.name} ({self.name})"
 
     class Meta:
         verbose_name = _('Product variety size')
         verbose_name_plural = _('Product variety sizes')
         ordering = ['variety', 'order']
         constraints = [
-            models.UniqueConstraint(fields=['name', 'variety', 'market'],
-                                    name='Productvarietysize_unique_name_variety_market'),
+            models.UniqueConstraint(fields=['name', 'variety', 'market', 'volume_kind'],
+                                    name='productvarietysize_unique_name_variety_market_volumekind'),
         ]
 
 

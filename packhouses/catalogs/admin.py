@@ -9,7 +9,7 @@ from .models import (
     Supply, Supplier, MeshBagKind, MeshBagFilmKind, MeshBag, ServiceProvider, ServiceProviderBenefactor, Service,
     AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber, Pallet, PalletExpense, ProductPackaging
 )
-from .forms import ProductVarietySizeInlineForm
+from .forms import ProductVarietySizeInlineForm, ProductVarietySizeForm
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
@@ -22,6 +22,8 @@ from django.urls import reverse
 from django.utils.html import format_html
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from .filters import ProductVarietySizeProductFilter
+from django.db.models.functions import Concat
+from django.db.models import Value
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -103,7 +105,6 @@ class ProductVarietySizeInline(admin.StackedInline):
         fields = '__all__'
 
 
-
 @admin.register(ProductVariety)
 class ProductVarietyAdmin(admin.ModelAdmin):
     list_display = ('name', 'product', 'description', 'is_enabled')
@@ -116,6 +117,44 @@ class ProductVarietyAdmin(admin.ModelAdmin):
         form.base_fields['name'].widget = UppercaseTextInputWidget()
         form.base_fields['description'].widget = AutoGrowingTextareaWidget()
         return form
+
+
+@admin.register(ProductVarietySize)
+class ProductVarietySizeAdmin(admin.ModelAdmin):
+    list_display = (
+        'name', 'product', 'variety', 'market', 'size_kind', 'harvest_kind', 'volume_kind', 'is_enabled',
+        'order')
+    list_filter = (
+        ProductVarietySizeProductFilter, 'variety', 'market', 'size_kind', 'harvest_kind', 'volume_kind',
+        'is_enabled'
+    )
+    search_fields = (
+        'name', 'variety__product__name', 'variety__name', 'market__name', 'size_kind__name', 'harvest_kind__name',
+        'volume_kind__name'
+    )
+
+    form = ProductVarietySizeForm
+
+    def product(self, obj):
+        return obj.variety.product.name
+    product.short_description = _('Product')
+    product.admin_order_field = 'variety__product__name'
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "variety":
+            kwargs["queryset"] = ProductVariety.objects.select_related('product').all()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: f"{obj.product.name}: {obj.name}"
+            return formfield
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/product_variety_size.js',)
+
+
+
+
+
 
 
 
@@ -141,8 +180,8 @@ class SupplyAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance and self.instance.product_kind:
-            allowed_kinds = SupplyKindRelation.objects.filter(from_kind=self.instance.product_kind).values_list(
+        if self.instance and self.instance.volume_kind:
+            allowed_kinds = SupplyKindRelation.objects.filter(from_kind=self.instance.volume_kind).values_list(
                 'to_kind', flat=True)
             self.fields['related_supply'].queryset = Supply.objects.filter(kind__in=allowed_kinds)
 
@@ -150,34 +189,6 @@ class SupplyAdminForm(forms.ModelForm):
 @admin.register(ProductHarvestKind)
 class ProductVarietyHarvestKindAdmin(admin.ModelAdmin):
     pass
-
-
-@admin.register(ProductVarietySize)
-class ProductVarietySizeAdmin(admin.ModelAdmin):
-    list_display = (
-        'name', 'product_name', 'variety', 'market', 'quality_kind', 'harvest_kind', 'product_kind', 'is_enabled',
-        'order')
-    list_filter = (
-        'market', ProductVarietySizeProductFilter, 'variety', 'quality_kind', 'harvest_kind', 'product_kind',
-        'is_enabled'
-    )
-    search_fields = (
-        'name', 'variety__product__name', 'variety__name', 'market__name', 'quality_kind__name', 'harvest_kind__name',
-        'product_kind__name'
-    )
-
-    def product_name(self, obj):
-        return obj.product_name
-
-    product_name.short_description = _('Product')
-
-    """
-    form = ProductVarietySizeForm
-
-    class Media:
-        js = ('js/admin/forms/product_variety_size.js',)
-    """
-
 
 
 @admin.register(Bank)

@@ -3,6 +3,7 @@ from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
+
 # Create your mixins here.
 
 
@@ -27,7 +28,7 @@ class CleanNameAndOrganizationMixin(models.Model):
 
         if self.organization_id:
             if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(
-                    pk=self.pk).exists():
+                pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
 
         if errors:
@@ -66,10 +67,10 @@ class CleanNameOrAliasAndOrganizationMixin(models.Model):
 
         if self.organization_id:
             if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(
-                    pk=self.pk).exists():
+                pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
             if self.__class__.objects.filter(alias=self.alias, organization=self.organization).exclude(
-                    pk=self.pk).exists():
+                pk=self.pk).exists():
                 errors['alias'] = _('Alias must be unique, it already exists.')
 
         if errors:
@@ -104,7 +105,7 @@ class CleanNameAndMarketMixin(models.Model):
 
         if self.market_id:
             if self.__class__.objects.filter(name=self.name, market=self.market).exclude(
-                    pk=self.pk).exists():
+                pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
 
         if errors:
@@ -138,8 +139,7 @@ class CleanNameAndProductMixin(models.Model):
             errors = e.message_dict
 
         if self.product_id:
-            if self.__class__.objects.filter(name=self.name, product=self.product).exclude(
-                    pk=self.pk).exists():
+            if self.__class__.objects.filter(name=self.name, product=self.product).exclude(pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
 
         if errors:
@@ -151,3 +151,43 @@ class CleanNameAndProductMixin(models.Model):
 
     class Meta:
         abstract = True
+
+
+class CleanNameAndVarietyAndMarketAndVolumeKindMixin(models.Model):
+    def __str__(self):
+        return f"{self.name}"
+
+    def clean(self):
+        self.name = getattr(self, 'name', None)
+        self.variety = getattr(self, 'variety', None)
+        self.variety_id = getattr(self, 'variety_id', None)
+        self.market = getattr(self, 'market', None)
+        self.market_id = getattr(self, 'market_id', None)
+        self.volume_kind = getattr(self, 'volume_kind', None)
+        self.volume_kind_id = getattr(self, 'volume_kind_id', None)
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.variety_id and self.market_id and self.volume_kind_id:
+            if self.__class__.objects.filter(name=self.name, variety=self.variety, market=self.market,
+                                             volume_kind=self.volume_kind).exclude(pk=self.pk).exists():
+                errors['name'] = _('Name, variety, market and volume kind must be unique together.')
+                errors['variety'] = _('Name, variety, market and volume kind must be unique together.')
+                errors['market'] = _('Name, variety, market and volume kind must be unique together.')
+                errors['volume_kind_id'] = _('Name, variety, market and volume kind must be unique together.')
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+

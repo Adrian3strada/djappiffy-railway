@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Status, ProductQualityKind, ProductKind
+from .models import Status, ProductSizeKind, MassVolumeKind
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 
 
@@ -11,7 +11,7 @@ class StatusAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(ProductQualityKind)
+@admin.register(ProductSizeKind)
 class ProductQualityKindAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
@@ -22,7 +22,7 @@ class ProductQualityKindAdmin(admin.ModelAdmin):
         return form
 
 
-@admin.register(ProductKind)
+@admin.register(MassVolumeKind)
 class ProductKindAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
