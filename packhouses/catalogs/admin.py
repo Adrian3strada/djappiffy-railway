@@ -15,6 +15,7 @@ from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
 from django.db import models
 
+from organizations.models import Organization
 from cities_light.models import Country, Region, City
 
 from django.utils.translation import gettext_lazy as _
@@ -24,6 +25,7 @@ from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextIn
 from .filters import ProductVarietySizeProductFilter
 from django.db.models.functions import Concat
 from django.db.models import Value
+from common.utils import is_instance_used
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -60,15 +62,25 @@ class MarketAdmin(admin.ModelAdmin):
     list_display = ('name', 'alias', 'is_enabled')
     list_filter = ('is_enabled',)
     search_fields = ('name', 'alias')
+    fields = ('name', 'alias', 'country', 'management_cost_per_kg', 'is_foreign', 'is_mixable',
+              'label_language', 'address_label', 'is_enabled', 'organization')
 
     inlines = [KGCostMarketInline, MarketClassInline, MarketStandardProductSizeInline]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        form.base_fields['name'].widget = UppercaseTextInputWidget()
-        form.base_fields['alias'].widget = UppercaseAlphanumericTextInputWidget()
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'alias' in form.base_fields:
+            form.base_fields['alias'].widget = UppercaseAlphanumericTextInputWidget()
         form.base_fields['address_label'].widget = CKEditor5Widget()
         return form
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[MarketClass, MarketStandardProductSize, Country, Organization]):
+            readonly_fields.extend(['name', 'alias', 'country', 'is_foreign', 'organization'])
+        return readonly_fields
 
 
 class ProductVarietyInline(admin.TabularInline):
@@ -92,7 +104,6 @@ class ProductAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['name'].widget = UppercaseTextInputWidget()
-        # form.base_fields['description'].widget = AutoGrowingTextareaWidget()
         return form
 
 

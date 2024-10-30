@@ -66,11 +66,9 @@ class CleanNameOrAliasAndOrganizationMixin(models.Model):
             errors = e.message_dict
 
         if self.organization_id:
-            if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(
-                pk=self.pk).exists():
+            if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
-            if self.__class__.objects.filter(alias=self.alias, organization=self.organization).exclude(
-                pk=self.pk).exists():
+            if self.__class__.objects.filter(alias=self.alias, organization=self.organization).exclude(pk=self.pk).exists():
                 errors['alias'] = _('Alias must be unique, it already exists.')
 
         if errors:
