@@ -351,7 +351,7 @@ JAZZMIN_SETTINGS = {
     # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
     "order_with_respect_to": ["packhouse_settings", "catalogs", "catalogs.Market", "catalogs.MarketClass",
                               "catalogs.Product", "catalogs.ProductHarvestKind", "catalogs.ProductVariety", "catalogs.ProductVarietySize",
-                              "catalogs.ProductProvider",],
+                              "catalogs.ProductProvider", "catalogs.Client"],
 
     # Custom links to append to app groups, keyed on app name
     "custom_links": {

@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from django.utils import translation
 from .models import Product
-from cities_light.models import City
+from cities_light.contrib.restframework3 import RegionSerializer as BaseRegionSerializer
+from cities_light.contrib.restframework3 import CitySerializer as BaseCitySerializer
 
 #
 
@@ -11,10 +12,15 @@ class CountrySerializer(serializers.Serializer):
     name = serializers.CharField()
 
 
-class CitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = City
-        fields = '__all__'
+class RegionSerializer(BaseRegionSerializer):
+    id = serializers.IntegerField()
+
+
+
+class CitySerializer(BaseCitySerializer):
+    id = serializers.IntegerField()
+
+
 
 
 class ProductSerializer(serializers.ModelSerializer):

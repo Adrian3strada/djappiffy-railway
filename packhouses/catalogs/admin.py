@@ -199,7 +199,7 @@ class ProductProviderBenefactorInline(admin.TabularInline):
 class ProductProviderAdmin(admin.ModelAdmin):
     list_display = ('name', 'alias', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number', 'is_enabled')
     list_filter = ('state', 'city', 'bank', 'is_enabled')
-    search_fields = ('name', 'alias', ProductProviderStateFilter, 'neighborhood', 'address', 'tax_id', 'phone_number')
+    search_fields = ('name', 'alias', 'neighborhood', 'address', 'tax_id', 'phone_number')
     fields = ('name', 'alias', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'tax_id', 'phone_number', 'bank_account_number', 'bank', 'is_enabled', 'organization')
     inlines = [ProductProviderBenefactorInline]
 
@@ -242,6 +242,51 @@ class ProductProviderAdmin(admin.ModelAdmin):
 
     class Media:
         js = ('js/admin/forms/catalogs/product_provider.js',)
+
+
+@admin.register(Client)
+class ClientAdmin(admin.ModelAdmin):
+    list_display = ('market', 'name', 'legal_category', 'tax_id', 'country', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number', 'is_enabled')
+    list_filter = ('market', 'legal_category', 'country', 'state', 'city', 'payment_kind', 'is_enabled')
+    search_fields = ('name', 'tax_id', 'phone_number')
+    fields = ('market', 'name', 'legal_category', 'tax_id', 'country', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'phone_number', 'email', 'fda', 'swift', 'aba', 'clabe', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'is_enabled', 'organization')
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'address' in form.base_fields:
+            form.base_fields['address'].widget = UppercaseTextInputWidget()
+        if 'tax_id' in form.base_fields:
+            form.base_fields['tax_id'].widget = UppercaseTextInputWidget()
+        return form
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+
+        if db_field.name == "state":
+            if 'country' in request.GET:
+                country_id = request.GET.get('country')
+                kwargs["queryset"] = Region.objects.filter(country_id=country_id)
+            else:
+                kwargs["queryset"] = Region.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        elif db_field.name == "city":
+            if 'state' in request.GET:
+                state_id = request.GET.get('state')
+                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = City.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/catalogs/client.js',)
+
+
 
 
 class ProductProducerBenefactorInline(admin.TabularInline):
@@ -321,9 +366,7 @@ class CollectorAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Client)
-class ClientAdmin(admin.ModelAdmin):
-    pass
+
 
 
 @admin.register(Maquilador)
