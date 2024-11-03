@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-28 02:46-0600\n"
+"POT-Creation-Date: 2024-11-01 11:22-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,90 +18,119 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
 "1 : 2;\n"
-#: .\packhouses\collection\models.py:16
+
+#: packhouses/collection/models.py:16
 msgid "Status"
 msgstr "Estado"
 
-#: .\packhouses\collection\models.py:17
+#: packhouses/collection/models.py:17
 msgid "Provider"
 msgstr "proveedor"
 
-#: .\packhouses\collection\models.py:19
-msgid "Organization"
+#: packhouses/collection/models.py:19
+#, fuzzy
+#| msgid "Organization"
+msgid "organization"
 msgstr "organización"
 
-#: .\packhouses\collection\models.py:20
-msgid "Name"
-msgstr "nombre"
+#: packhouses/collection/models.py:20
+msgid "name"
+msgstr ""
 
-#: .\packhouses\collection\models.py:21
-msgid "Description"
+#: packhouses/collection/models.py:21
+#, fuzzy
+#| msgid "Description"
+msgid "description"
 msgstr "Descripción"
 
-#: .\packhouses\collection\models.py:22
-msgid "City"
-msgstr "Ciudad"
+#: packhouses/collection/models.py:22
+msgid "city"
+msgstr ""
 
-#: .\packhouses\collection\models.py:23
-msgid "Country"
+#: packhouses/collection/models.py:23
+#, fuzzy
+#| msgid "Country"
+msgid "country"
 msgstr "País"
 
-#: .\packhouses\collection\models.py:24
-msgid "Region"
+#: packhouses/collection/models.py:24
+#, fuzzy
+#| msgid "Region"
+msgid "region"
 msgstr "Estado"
 
-#: .\packhouses\collection\models.py:25
-msgid "Address"
+#: packhouses/collection/models.py:25
+#, fuzzy
+#| msgid "Address"
+msgid "address"
 msgstr "Domicilio"
 
-#: .\packhouses\collection\models.py:26
-msgid "Postal code"
+#: packhouses/collection/models.py:26
+#, fuzzy
+#| msgid "Postal code"
+msgid "postal code"
 msgstr "Código postal"
 
-#: .\packhouses\collection\models.py:27
-msgid "Latitude"
+#: packhouses/collection/models.py:27
+#, fuzzy
+#| msgid "Latitude"
+msgid "latitude"
 msgstr "Latitud"
 
-#: .\packhouses\collection\models.py:28
-msgid "Longitude"
+#: packhouses/collection/models.py:28
+#, fuzzy
+#| msgid "Longitude"
+msgid "longitude"
 msgstr "Longitud"
 
-#: .\packhouses\collection\models.py:29
-msgid "Phone"
+#: packhouses/collection/models.py:29
+#, fuzzy
+#| msgid "Phone"
+msgid "phone"
 msgstr "Teléfono"
 
-#: .\packhouses\collection\models.py:30
+#: packhouses/collection/models.py:30
 msgid "email"
 msgstr ""
 
-#: .\packhouses\collection\models.py:31
+#: packhouses/collection/models.py:31
 msgid "website"
 msgstr "Sitio web"
 
-#: .\packhouses\collection\models.py:32
+#: packhouses/collection/models.py:32
 msgid "tax regime"
 msgstr "Régimen fiscal"
 
-#: .\packhouses\collection\models.py:33
+#: packhouses/collection/models.py:33
 msgid "legal entity category"
 msgstr "Régimen de capital"
 
-#: .\packhouses\collection\models.py:34
+#: packhouses/collection/models.py:34
 msgid "created by"
 msgstr "Creado por"
 
-#: .\packhouses\collection\models.py:35
+#: packhouses/collection/models.py:35
 msgid "created at"
 msgstr "Creado en"
 
-#: .\packhouses\collection\models.py:36
+#: packhouses/collection/models.py:36
 msgid "updated at"
 msgstr "Actualizado en"
 
-#: .\packhouses\collection\models.py:39
-msgid "Collection"
+#: packhouses/collection/models.py:39
+#, fuzzy
+#| msgid "Collection"
+msgid "collection"
 msgstr "Colección"
 
-#: .\packhouses\collection\models.py:40
-msgid "Collections"
+#: packhouses/collection/models.py:40
+#, fuzzy
+#| msgid "Collections"
+msgid "collections"
 msgstr "Colecciones"
+
+#~ msgid "Name"
+#~ msgstr "nombre"
+
+#~ msgid "City"
+#~ msgstr "Ciudad"

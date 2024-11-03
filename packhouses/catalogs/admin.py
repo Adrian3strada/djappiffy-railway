@@ -4,7 +4,8 @@ from .models import (
     ProductHarvestKind, ProductProvider, ProductProviderBenefactor,
     ProductProducer, ProductProducerBenefactor, PaymentKind, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
     Vehicle,
-    Collector, Client, Maquilador, MaquiladorClient, OrchardProductClassification, Orchard, OrchardCertificationKind,
+    Collector, Client, ClientShipAddress, Maquilador, MaquiladorClient, OrchardProductClassification, Orchard,
+    OrchardCertificationKind,
     OrchardCertificationVerifier, OrchardCertification, HarvestCrew, SupplyUnitKind, SupplyKind, SupplyKindRelation,
     Supply, Supplier, MeshBagKind, MeshBagFilmKind, MeshBag, ServiceProvider, ServiceProviderBenefactor, Service,
     AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber, Pallet, PalletExpense, ProductPackaging
@@ -80,7 +81,7 @@ class MarketAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[MarketClass, MarketStandardProductSize, Country, Organization]):
+        if obj and is_instance_used(obj, exclude=[MarketClass, KGCostMarket, MarketStandardProductSize, Country, Organization]):
             readonly_fields.extend(['name', 'alias', 'country', 'is_foreign', 'organization'])
         return readonly_fields
 
@@ -243,13 +244,19 @@ class ProductProviderAdmin(admin.ModelAdmin):
     class Media:
         js = ('js/admin/forms/catalogs/product_provider.js',)
 
+class ClientShipAddressInline(admin.StackedInline):
+    model = ClientShipAddress
+    extra = 1
+    min_num = 1
+    max_num = 1
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('market', 'name', 'legal_category', 'tax_id', 'country', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number', 'is_enabled')
+    list_display = ('market', 'name', 'legal_category', 'tax_id', 'country', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'contact_phone_number', 'is_enabled')
     list_filter = ('market', 'legal_category', 'country', 'state', 'city', 'payment_kind', 'is_enabled')
-    search_fields = ('name', 'tax_id', 'phone_number')
-    fields = ('market', 'name', 'legal_category', 'tax_id', 'country', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'phone_number', 'email', 'fda', 'swift', 'aba', 'clabe', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'is_enabled', 'organization')
+    search_fields = ('name', 'tax_id', 'contact_phone_number')
+    fields = ('market', 'name', 'legal_category', 'tax_id', 'country', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'same_ship_address', 'fda', 'swift', 'aba', 'clabe', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
+    inlines = [ClientShipAddressInline]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -257,8 +264,6 @@ class ClientAdmin(admin.ModelAdmin):
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         if 'address' in form.base_fields:
             form.base_fields['address'].widget = UppercaseTextInputWidget()
-        if 'tax_id' in form.base_fields:
-            form.base_fields['tax_id'].widget = UppercaseTextInputWidget()
         return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

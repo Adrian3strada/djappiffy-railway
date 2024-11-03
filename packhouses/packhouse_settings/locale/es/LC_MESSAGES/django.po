@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-28 02:46-0600\n"
+"POT-Creation-Date: 2024-11-01 11:22-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,59 +18,69 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
 "1 : 2;\n"
-#: .\packhouses\packhouse_settings\models.py:11
+
+#: packhouses/packhouse_settings/models.py:11
 msgid "name"
 msgstr ""
 
-#: .\packhouses\packhouse_settings\models.py:12
-msgid "description"
-msgstr ""
-
-#: .\packhouses\packhouse_settings\models.py:13
-#: .\packhouses\packhouse_settings\models.py:26
+#: packhouses/packhouse_settings/models.py:12
+#: packhouses/packhouse_settings/models.py:26
+#: packhouses/packhouse_settings/models.py:42
+#: packhouses/packhouse_settings/models.py:57
 msgid "Is enabled"
 msgstr ""
 
-#: .\packhouses\packhouse_settings\models.py:14
-#: .\packhouses\packhouse_settings\models.py:28
-msgid "Order"
-msgstr ""
-
-#: .\packhouses\packhouse_settings\models.py:15
-#: .\packhouses\packhouse_settings\models.py:27
-#: .\packhouses\packhouse_settings\models.py:43
+#: packhouses/packhouse_settings/models.py:13
+#: packhouses/packhouse_settings/models.py:27
+#: packhouses/packhouse_settings/models.py:43
+#: packhouses/packhouse_settings/models.py:58
 msgid "Organization"
 msgstr ""
 
-#: .\packhouses\packhouse_settings\models.py:18
+#: packhouses/packhouse_settings/models.py:14
+#: packhouses/packhouse_settings/models.py:28
+#: packhouses/packhouse_settings/models.py:44
+msgid "Order"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:17
 msgid "Status"
 msgstr ""
 
-#: .\packhouses\packhouse_settings\models.py:19
+#: packhouses/packhouse_settings/models.py:18
 msgid "Statuses"
 msgstr ""
 
-#: .\packhouses\packhouse_settings\models.py:25
-#: .\packhouses\packhouse_settings\models.py:41
+#: packhouses/packhouse_settings/models.py:24
+#: packhouses/packhouse_settings/models.py:41
+#: packhouses/packhouse_settings/models.py:56
 msgid "Name"
 msgstr ""
 
-#: .\packhouses\packhouse_settings\models.py:31
-msgid "Product quality kind"
+#: packhouses/packhouse_settings/models.py:25
+msgid "Take it for performance calculation"
 msgstr ""
 
-#: .\packhouses\packhouse_settings\models.py:32
-msgid "Product quality kinds"
+#: packhouses/packhouse_settings/models.py:31
+msgid "Product size kind"
 msgstr ""
 
-#: .\packhouses\packhouse_settings\models.py:42
-msgid "Description"
+#: packhouses/packhouse_settings/models.py:32
+msgid "Product size kinds"
 msgstr ""
 
-#: .\packhouses\packhouse_settings\models.py:46
-msgid "Product kind"
+#: packhouses/packhouse_settings/models.py:47
+msgid "Mass volume kind"
 msgstr ""
 
-#: .\packhouses\packhouse_settings\models.py:47
-msgid "Product kinds"
+#: packhouses/packhouse_settings/models.py:48
+msgid "Mass volume kinds"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:64
+msgid "Bank"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:65
+msgid "Banks"
 msgstr ""

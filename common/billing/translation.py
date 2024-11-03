@@ -14,6 +14,7 @@ class TaxRegimeTranslationOptions(TranslationOptions):
     fields = ('name',)
 
 
+"""
 @register(LegalEntityCategory)
 class LegalEntityCategoryTranslationOptions(TranslationOptions):
     fields = ('name',)
@@ -22,3 +23,4 @@ class LegalEntityCategoryTranslationOptions(TranslationOptions):
 @register(BillingSerieKind)
 class BillingSerieKindTranslationOptions(TranslationOptions):
     fields = ('name',)
+"""

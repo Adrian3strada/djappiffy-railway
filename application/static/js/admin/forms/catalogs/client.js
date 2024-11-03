@@ -3,6 +3,34 @@ document.addEventListener('DOMContentLoaded', function () {
     const countryField = $('#id_country');
     const stateField = $('#id_state');
     const cityField = $('#id_city');
+    const sameShipAddressCheckbox = $('#id_same_ship_address');
+    const clientFields = [
+        'country', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number'
+    ];
+
+    function toggleShipAddressFields(disable) {
+        clientFields.forEach(field => {
+            const shipField = document.querySelector(`#id_clientshipaddress_set-0-${field}`);
+            if (shipField) {
+                shipField.disabled = disable;
+                if (disable) {
+                    const clientField = document.querySelector(`#id_${field}`);
+                    if (clientField) {
+                        shipField.value = clientField.value;
+                    }
+                }
+            }
+        });
+    }
+
+    if (sameShipAddressCheckbox) {
+        sameShipAddressCheckbox.addEventListener('change', function() {
+            toggleShipAddressFields(this.checked);
+        });
+
+        // Initial check on page load
+        toggleShipAddressFields(sameShipAddressCheckbox.checked);
+    }
 
     function updateCountry() {
         const marketId = marketField.val();
@@ -25,7 +53,6 @@ document.addEventListener('DOMContentLoaded', function () {
             fetch(`/rest/v1/cities/region/?country=${countryId}`)
                 .then(response => response.json())
                 .then(data => {
-                  console.log(data);
                     stateField.empty().append(new Option('---------', '', true, true));
                     data.forEach(state => {
                         const option = new Option(state.name, state.id, false, false);
@@ -46,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
             fetch(`/rest/v1/cities/city/?region=${stateId}`)
                 .then(response => response.json())
                 .then(data => {
-                  console.log(data);
                     cityField.empty().append(new Option('---------', '', true, true));
                     data.forEach(city => {
                         const option = new Option(city.name, city.id, false, false);
