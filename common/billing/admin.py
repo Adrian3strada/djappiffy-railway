@@ -5,7 +5,13 @@ from .models import TaxRegime, LegalEntityCategory, LegalEntity, BillingSerie
 
 
 admin.site.register(TaxRegime)
-admin.site.register(LegalEntityCategory)
+
+
+@admin.register(LegalEntityCategory)
+class LegalEntityCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'country']
+    search_fields = ['name',]
+    list_filter = ['country']
 
 
 class BillingSerieInline(admin.TabularInline):

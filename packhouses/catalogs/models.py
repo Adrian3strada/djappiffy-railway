@@ -22,7 +22,7 @@ from packhouses.packhouse_settings.models import ProductSizeKind, MassVolumeKind
 class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='markets_country')
+    # country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='markets_country')
     countries = models.ManyToManyField(Country, verbose_name=_('Countries'))
     management_cost_per_kg = models.FloatField(verbose_name=_('Management cost per Kg'),
                                                validators=[MinValueValidator(0.01)], help_text=_(
@@ -320,11 +320,12 @@ class PaymentKind(models.Model):
 
 class Client(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT, help_text=_('Country of the client, must have a market selected to show the market countries.'))
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
-                                       on_delete=models.PROTECT)
+                                       on_delete=models.PROTECT, help_text=_('Legal category of the client, must have a country selected to show that country legal categories.'))
     tax_id = models.CharField(max_length=30, verbose_name=_('Client tax ID'))
-    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)  # TODO: verificar si se necesita país, pues ya el mercado tiene país
+
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)

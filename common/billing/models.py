@@ -43,7 +43,7 @@ class TaxRegime(Orderable):
 
 class LegalEntityCategory(Orderable):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='legal_entity_categories')
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.name}"

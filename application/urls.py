@@ -22,6 +22,7 @@ urlpatterns = [
     path("", include("common.importers.urls")),
     path("", include("common.exporters.urls")),
     path("", include("common.government.urls")),
+    path("", include("common.billing.urls")),
     path("", include('packhouses.catalogs.urls')),
 ]
 

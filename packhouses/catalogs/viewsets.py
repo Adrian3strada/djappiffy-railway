@@ -26,7 +26,7 @@ class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
 
 class MarketViewSet(viewsets.ModelViewSet):
     serializer_class = MarketSerializer
-    filterset_fields = ['country', 'is_enabled']
+    filterset_fields = ['countries', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):

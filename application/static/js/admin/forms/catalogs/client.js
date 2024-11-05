@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const countryField = $('#id_country');
   const stateField = $('#id_state');
   const cityField = $('#id_city');
-  const sameShipAddressCheckbox = $('#id_same_ship_address');
+  const sameShipAddressCheckboxField = $('#id_same_ship_address');
+  const legalEntityCategoryField = $('#id_legal_category');
   const clientAddressFields = [
     'country', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number'
   ];
@@ -30,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function syncAddressFields() {
-    if (sameShipAddressCheckbox.prop('checked')) {
+    if (sameShipAddressCheckboxField.prop('checked')) {
       clientAddressFields.forEach(field => {
         const clientField = $(`#id_${field}`);
         const shipField = $(`#id_clientshipaddress-0-${field}`);
@@ -51,19 +52,37 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(countries => {
-          console.log('Countries:', countries);
           countryField.empty().append(new Option('---------', '', true, true));
           countries.forEach(country => {
-            console.log('Country:', country);
             const option = new Option(country.name, country.id, false, false);
             countryField.append(option);
           });
           countryField.trigger('change');
+          updateLegalEntityCategory();
           updateState();
         });
     } else {
       countryField.empty().append(new Option('---------', '', true, true)).trigger('change');
       updateState();
+    }
+  }
+
+  function updateLegalEntityCategory() {
+    const countryId = countryField.val();
+    if (countryId) {
+      fetch(`/rest/v1/billing/legal-entity-category/?country=${countryId}`)
+        .then(response => response.json())
+        .then(data => {
+          legalEntityCategoryField.empty().append(new Option('---------', '', true, true));
+          data.forEach(item => {
+            console.log("item", item);
+            const option = new Option(item.name, item.id, false, false);
+            legalEntityCategoryField.append(option);
+          });
+          legalEntityCategoryField.trigger('change');
+        });
+    } else {
+      legalEntityCategoryField.empty().append(new Option('---------', '', true, true)).trigger('change');
     }
   }
 
@@ -106,11 +125,14 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   marketField.on('change', updateCountry);
-  countryField.on('change', updateState);
+  countryField.on('change', () => {
+    updateState();
+    updateLegalEntityCategory();
+  });
   stateField.on('change', updateCity);
 
-  sameShipAddressCheckbox.on('change', function () {
-    const same_address_check = sameShipAddressCheckbox.prop('checked');
+  sameShipAddressCheckboxField.on('change', function () {
+    const same_address_check = sameShipAddressCheckboxField.prop('checked');
     updateShipAddress(same_address_check);
   });
 
@@ -123,4 +145,5 @@ document.addEventListener('DOMContentLoaded', function () {
   countryField.select2();
   stateField.select2();
   cityField.select2();
+  legalEntityCategoryField.select2();
 });

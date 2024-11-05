@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+from common.billing.models import LegalEntityCategory
 from .models import (
     Market, KGCostMarket, MarketClass, MarketStandardProductSize, Product, ProductVariety, ProductVarietySize,
     ProductHarvestKind, ProductProvider, ProductProviderBenefactor,
@@ -66,7 +68,7 @@ class MarketAdmin(admin.ModelAdmin):
     list_display = ('name', 'alias', 'is_enabled')
     list_filter = ('is_enabled',)
     search_fields = ('name', 'alias')
-    fields = ('name', 'alias', 'country', 'countries', 'management_cost_per_kg', 'is_foreign', 'is_mixable',
+    fields = ('name', 'alias', 'countries', 'management_cost_per_kg', 'is_foreign', 'is_mixable',
               'label_language', 'address_label', 'is_enabled', 'organization')
     inlines = [KGCostMarketInline, MarketClassInline, MarketStandardProductSizeInline]
 
@@ -82,7 +84,7 @@ class MarketAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj, exclude=[MarketClass, KGCostMarket, MarketStandardProductSize, Country, Organization]):
-            readonly_fields.extend(['name', 'alias', 'country', 'countries', 'is_foreign', 'organization'])
+            readonly_fields.extend(['name', 'alias', 'countries', 'is_foreign', 'organization'])
         return readonly_fields
 
 
@@ -322,6 +324,15 @@ class ClientAdmin(admin.ModelAdmin):
                 market_id = request.GET.get('market')
                 market_countries_id = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
                 kwargs["queryset"] = Country.objects.filter(id__in=market_countries_id)
+            else:
+                kwargs["queryset"] = Country.objects.none()
+        elif db_field.name == "legal_category":
+            if 'market' in request.GET:
+                market_id = request.GET.get('market')
+                market_countries_id = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
+                kwargs["queryset"] = LegalEntityCategory.objects.filter(country__id__in=market_countries_id)
+            else:
+                kwargs["queryset"] = LegalEntityCategory.objects.none()
         elif db_field.name == "state":
             if 'country' in request.GET:
                 country_id = request.GET.get('country')
