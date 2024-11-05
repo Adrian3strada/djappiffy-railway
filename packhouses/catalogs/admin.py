@@ -87,6 +87,11 @@ class MarketAdmin(admin.ModelAdmin):
             readonly_fields.extend(['name', 'alias', 'countries', 'is_foreign', 'organization'])
         return readonly_fields
 
+    def save_model(self, request, obj, form, change):
+        if 'address_label' in form.cleaned_data and form.cleaned_data['address_label'] == '<p>&nbsp;</p>':
+            obj.address_label = None
+        super().save_model(request, obj, form, change)
+
 
 class ProductVarietyInline(admin.TabularInline):
     model = ProductVariety

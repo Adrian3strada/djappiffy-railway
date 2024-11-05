@@ -5,9 +5,25 @@ document.addEventListener('DOMContentLoaded', function () {
   const cityField = $('#id_city');
   const sameShipAddressCheckboxField = $('#id_same_ship_address');
   const legalEntityCategoryField = $('#id_legal_category');
+
+  const inlineCountryField = $('#id_clientshipaddress-0-country');
+  const inlineStateField = $('#id_clientshipaddress-0-state');
+
   const clientAddressFields = [
     'country', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number'
   ];
+
+  function updateFieldOptions(field, options) {
+    field.empty().append(new Option('---------', '', true, true));
+    options.forEach(option => {
+      field.append(new Option(option.name, option.id, false, false));
+    });
+    field.trigger('change').select2();
+  }
+
+  function fetchOptions(url) {
+    return fetch(url).then(response => response.json());
+  }
 
   function updateShipAddress(same_address_check) {
     clientAddressFields.forEach(field => {
@@ -16,8 +32,9 @@ document.addEventListener('DOMContentLoaded', function () {
         shipField.prop('disabled', same_address_check);
         if (same_address_check) {
           const clientField = $(`#id_${field}`);
+          console.log("clientField", clientField);
           if (clientField.length) {
-            shipField.val(clientField.val());
+            shipField.val(clientField.val()).trigger('change');
           }
           shipField.addClass('disabled-field');
         } else {
@@ -35,8 +52,8 @@ document.addEventListener('DOMContentLoaded', function () {
       clientAddressFields.forEach(field => {
         const clientField = $(`#id_${field}`);
         const shipField = $(`#id_clientshipaddress-0-${field}`);
-        if (clientField) {
-          shipField.val(clientField.val());
+        if (clientField.length && shipField.length) {
+          shipField.val(clientField.val()).trigger('change');
         }
       });
     }
@@ -45,63 +62,41 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateCountry() {
     const marketId = marketField.val();
     if (marketId) {
-      fetch(`/rest/v1/catalogs/market/${marketId}/`)
-        .then(response => response.json())
-        .then(marketData => {
-          return fetch(`/rest/v1/cities/country/?id=${marketData.countries.join(',')}`);
-        })
-        .then(response => response.json())
+      fetchOptions(`/rest/v1/catalogs/market/${marketId}/`)
+        .then(marketData => fetchOptions(`/rest/v1/cities/country/?id=${marketData.countries.join(',')}`))
         .then(countries => {
-          countryField.empty().append(new Option('---------', '', true, true));
-          countries.forEach(country => {
-            const option = new Option(country.name, country.id, false, false);
-            countryField.append(option);
-          });
-          countryField.trigger('change');
+          updateFieldOptions(countryField, countries);
           updateLegalEntityCategory();
           updateState();
+          updateInlineCountry();
         });
     } else {
-      countryField.empty().append(new Option('---------', '', true, true)).trigger('change');
+      updateFieldOptions(countryField, []);
       updateState();
+      updateInlineCountry();
     }
   }
 
   function updateLegalEntityCategory() {
     const countryId = countryField.val();
     if (countryId) {
-      fetch(`/rest/v1/billing/legal-entity-category/?country=${countryId}`)
-        .then(response => response.json())
-        .then(data => {
-          legalEntityCategoryField.empty().append(new Option('---------', '', true, true));
-          data.forEach(item => {
-            console.log("item", item);
-            const option = new Option(item.name, item.id, false, false);
-            legalEntityCategoryField.append(option);
-          });
-          legalEntityCategoryField.trigger('change');
-        });
+      fetchOptions(`/rest/v1/billing/legal-entity-category/?country=${countryId}`)
+        .then(data => updateFieldOptions(legalEntityCategoryField, data));
     } else {
-      legalEntityCategoryField.empty().append(new Option('---------', '', true, true)).trigger('change');
+      updateFieldOptions(legalEntityCategoryField, []);
     }
   }
 
   function updateState() {
     const countryId = countryField.val();
     if (countryId) {
-      fetch(`/rest/v1/cities/region/?country=${countryId}`)
-        .then(response => response.json())
+      fetchOptions(`/rest/v1/cities/region/?country=${countryId}`)
         .then(data => {
-          stateField.empty().append(new Option('---------', '', true, true));
-          data.forEach(state => {
-            const option = new Option(state.name, state.id, false, false);
-            stateField.append(option);
-          });
-          stateField.trigger('change');
+          updateFieldOptions(stateField, data);
           updateCity();
         });
     } else {
-      stateField.empty().append(new Option('---------', '', true, true)).trigger('change');
+      updateFieldOptions(stateField, []);
       updateCity();
     }
   }
@@ -109,27 +104,69 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateCity() {
     const stateId = stateField.val();
     if (stateId) {
-      fetch(`/rest/v1/cities/city/?region=${stateId}`)
-        .then(response => response.json())
+      fetchOptions(`/rest/v1/cities/city/?region=${stateId}`)
         .then(data => {
-          cityField.empty().append(new Option('---------', '', true, true));
-          data.forEach(city => {
-            const option = new Option(city.name, city.id, false, false);
-            cityField.append(option);
-          });
-          cityField.trigger('change');
+          updateFieldOptions(cityField, data);
         });
     } else {
-      cityField.empty().append(new Option('---------', '', true, true)).trigger('change');
+      updateFieldOptions(cityField, []);
     }
   }
 
-  marketField.on('change', updateCountry);
+  function updateInlineCountry() {
+    const marketId = marketField.val();
+    if (marketId) {
+      fetchOptions(`/rest/v1/catalogs/market/${marketId}/`)
+        .then(marketData => fetchOptions(`/rest/v1/cities/country/?id=${marketData.countries.join(',')}`))
+        .then(countries => {
+          updateFieldOptions(inlineCountryField, countries);
+          updateInlineState(); // Llamar a updateInlineState después de actualizar el campo country
+        });
+    } else {
+      updateFieldOptions(inlineCountryField, []);
+      updateInlineState(); // Llamar a updateInlineState después de actualizar el campo country
+    }
+  }
+
+  function updateInlineState() {
+    const countryId = inlineCountryField.val();
+
+    if (countryId) {
+      fetchOptions(`/rest/v1/cities/region/?country=${countryId}`)
+        .then(data => {
+          updateFieldOptions(inlineStateField, data);
+          updateInlineCity(); // Llamar a updateInlineCity después de actualizar el campo state
+        });
+    } else {
+      updateFieldOptions(inlineStateField, []);
+      updateInlineCity(); // Llamar a updateInlineCity después de actualizar el campo state
+    }
+  }
+
+  function updateInlineCity() {
+    const stateId = inlineStateField.val();
+    const inlineCityField = $('#id_clientshipaddress-0-city');
+    if (stateId) {
+      fetchOptions(`/rest/v1/cities/city/?region=${stateId}`)
+        .then(data => {
+          updateFieldOptions(inlineCityField, data);
+        });
+    } else {
+      updateFieldOptions(inlineCityField, []);
+    }
+  }
+
+  marketField.on('change', () => {
+    updateCountry();
+    updateInlineCountry();
+  });
   countryField.on('change', () => {
     updateState();
     updateLegalEntityCategory();
   });
-  stateField.on('change', updateCity);
+  stateField.on('change', () => {
+    updateCity();
+  });
 
   sameShipAddressCheckboxField.on('change', function () {
     const same_address_check = sameShipAddressCheckboxField.prop('checked');
@@ -137,13 +174,18 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   clientAddressFields.forEach(field => {
-    $(`#id_${field}`).on('input', syncAddressFields);
+    $(`#id_${field}`).on('input', function () {
+      if (sameShipAddressCheckboxField.prop('checked')) {
+        syncAddressFields();
+      }
+    });
   });
 
+  // Eventos para actualizar los inlines
+  inlineCountryField.on('change', updateInlineState);
+  inlineStateField.on('change', updateInlineCity);
+
+
   // Inicializar select2 en los campos
-  marketField.select2();
-  countryField.select2();
-  stateField.select2();
-  cityField.select2();
-  legalEntityCategoryField.select2();
+  [marketField, countryField, stateField, cityField, legalEntityCategoryField].forEach(field => field.select2());
 });
