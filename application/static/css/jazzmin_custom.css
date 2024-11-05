@@ -8,6 +8,14 @@
     opacity: 0.6; /* Opcional: hace que el campo se vea un poco translúcido */
 }
 
+.disabled-field {
+  background-color: #c6c6c6 !important; /* Color de fondo para indicar que está deshabilitado */
+  color: #1c1c1c !important; /* Color de texto */
+  cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
+  opacity: 0.6;
+}
+
+
 
 #jazzy-actions .object-tools a[href*="/history/"] {
     display: none;

@@ -1,7 +1,7 @@
 from django.urls import path, include
 from common.base.router import drf_router
 # from .views import CountryListView
-from .viewsets import ProductViewSet, CityViewSet, RegionViewSet
+from .viewsets import ProductViewSet, CityViewSet, RegionViewSet, CountryViewSet
 
 # write your urls here
 
@@ -12,8 +12,8 @@ urlpatterns = [
 ]
 
 drf_router.register(r'rest/v1/base/products', ProductViewSet, basename='base_product')
-drf_router.register(r'rest/v1/cities/city', CityViewSet, basename='cities_city')
+drf_router.register(r'rest/v1/cities/country', CountryViewSet, basename='cities_country')
 drf_router.register(r'rest/v1/cities/region', RegionViewSet, basename='cities_region')
-
+drf_router.register(r'rest/v1/cities/city', CityViewSet, basename='cities_city')
 
 # urlpatterns += drf_router.urls

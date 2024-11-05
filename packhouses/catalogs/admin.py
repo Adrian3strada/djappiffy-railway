@@ -66,7 +66,7 @@ class MarketAdmin(admin.ModelAdmin):
     list_display = ('name', 'alias', 'is_enabled')
     list_filter = ('is_enabled',)
     search_fields = ('name', 'alias')
-    fields = ('name', 'alias', 'country', 'management_cost_per_kg', 'is_foreign', 'is_mixable',
+    fields = ('name', 'alias', 'country', 'countries', 'management_cost_per_kg', 'is_foreign', 'is_mixable',
               'label_language', 'address_label', 'is_enabled', 'organization')
     inlines = [KGCostMarketInline, MarketClassInline, MarketStandardProductSizeInline]
 
@@ -82,7 +82,7 @@ class MarketAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj, exclude=[MarketClass, KGCostMarket, MarketStandardProductSize, Country, Organization]):
-            readonly_fields.extend(['name', 'alias', 'country', 'is_foreign', 'organization'])
+            readonly_fields.extend(['name', 'alias', 'country', 'countries', 'is_foreign', 'organization'])
         return readonly_fields
 
 
@@ -244,31 +244,85 @@ class ProductProviderAdmin(admin.ModelAdmin):
     class Media:
         js = ('js/admin/forms/catalogs/product_provider.js',)
 
+
 class ClientShipAddressInline(admin.StackedInline):
     model = ClientShipAddress
     extra = 1
     min_num = 1
     max_num = 1
 
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'district' in formset.form.base_fields:
+            formset.form.base_fields['district'].widget = UppercaseTextInputWidget()
+        if 'neighborhood' in formset.form.base_fields:
+            formset.form.base_fields['neighborhood'].widget = UppercaseTextInputWidget()
+        if 'address' in formset.form.base_fields:
+            formset.form.base_fields['address'].widget = UppercaseTextInputWidget()
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "country":
+            if 'market' in request.GET:
+                market_id = request.GET.get('market')
+            elif request.resolver_match.kwargs.get('object_id'):
+                client_id = request.resolver_match.kwargs.get('object_id')
+                market_id = Client.objects.get(id=client_id).market_id
+            else:
+                market_id = None
+            if market_id:
+                market_countries_id = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
+                kwargs["queryset"] = Country.objects.filter(id__in=market_countries_id)
+            else:
+                kwargs["queryset"] = Country.objects.none()
+        elif db_field.name == "state":
+            if 'country' in request.GET:
+                country_id = request.GET.get('country')
+                kwargs["queryset"] = Region.objects.filter(country_id=country_id)
+            else:
+                kwargs["queryset"] = Region.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        elif db_field.name == "city":
+            if 'state' in request.GET:
+                state_id = request.GET.get('state')
+                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = City.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('market', 'name', 'legal_category', 'tax_id', 'country', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'contact_phone_number', 'is_enabled')
     list_filter = ('market', 'legal_category', 'country', 'state', 'city', 'payment_kind', 'is_enabled')
     search_fields = ('name', 'tax_id', 'contact_phone_number')
-    fields = ('market', 'name', 'legal_category', 'tax_id', 'country', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'same_ship_address', 'fda', 'swift', 'aba', 'clabe', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
+    fields = ('market', 'country', 'name', 'legal_category', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'same_ship_address', 'tax_id', 'fda', 'swift', 'aba', 'clabe', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
     inlines = [ClientShipAddressInline]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'district' in form.base_fields:
+            form.base_fields['district'].widget = UppercaseTextInputWidget()
+        if 'neighborhood' in form.base_fields:
+            form.base_fields['neighborhood'].widget = UppercaseTextInputWidget()
         if 'address' in form.base_fields:
             form.base_fields['address'].widget = UppercaseTextInputWidget()
         return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-
-        if db_field.name == "state":
+        if db_field.name == "country":
+            if 'market' in request.GET:
+                market_id = request.GET.get('market')
+                market_countries_id = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
+                kwargs["queryset"] = Country.objects.filter(id__in=market_countries_id)
+        elif db_field.name == "state":
             if 'country' in request.GET:
                 country_id = request.GET.get('country')
                 kwargs["queryset"] = Region.objects.filter(country_id=country_id)
@@ -290,8 +344,6 @@ class ClientAdmin(admin.ModelAdmin):
 
     class Media:
         js = ('js/admin/forms/catalogs/client.js',)
-
-
 
 
 class ProductProducerBenefactorInline(admin.TabularInline):

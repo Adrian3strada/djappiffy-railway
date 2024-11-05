@@ -1,10 +1,11 @@
 from rest_framework import viewsets
 from django.utils import translation
-from .serializers import ProductSerializer, CitySerializer, RegionSerializer
+from .serializers import ProductSerializer, CitySerializer, RegionSerializer, CountrySerializer
 from .models import Product
 from cities_light.models import City
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
 from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
+from cities_light.contrib.restframework3 import CountryModelViewSet as BaseCountryModelViewSet
 
 #
 
@@ -14,23 +15,20 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
 
 
-    """
-    def list(self, request, *args, **kwargs):
-        # Detectar el idioma desde el parámetro de consulta o URL
-        lang = request.query_params.get('lang', None)  # Alternativamente, puedes extraerlo de kwargs si está en la URL
-        if lang:
-            translation.activate(lang)
+class CountryViewSet(BaseCountryModelViewSet):
+    serializer_class = CountrySerializer
+    pagination_class = None
 
-        return super().list(request, *args, **kwargs)
-
-    def retrieve(self, request, *args, **kwargs):
-        # Para la vista detallada de un producto
-        lang = request.query_params.get('lang', None)
-        if lang:
-            translation.activate(lang)
-
-        return super().retrieve(request, *args, **kwargs)
-    """
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        country_ids = self.request.GET.get('id')
+        print('country_ids', country_ids)
+        if country_ids:
+            ids_list = country_ids.split(',')
+            print('ids_list', ids_list)
+            queryset = queryset.filter(id__in=ids_list)
+            print('queryset', queryset)
+        return queryset
 
 
 class RegionViewSet(BaseRegionModelViewSet):
