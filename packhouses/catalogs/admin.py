@@ -362,6 +362,27 @@ class ClientAdmin(admin.ModelAdmin):
         js = ('js/admin/forms/catalogs/client.js',)
 
 
+
+@admin.register(VehicleOwnershipKind)
+class VehicleOwnershipAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(VehicleKind)
+class VehicleKindAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(VehicleFuelKind)
+class VehicleFuelAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Vehicle)
+class VehicleAdmin(admin.ModelAdmin):
+    pass
+
+
 class ProductProducerBenefactorInline(admin.TabularInline):
     model = ProductProducerBenefactor
     extra = 0
@@ -371,6 +392,11 @@ class ProductProducerBenefactorInline(admin.TabularInline):
         if 'name' in formset.form.base_fields:
             formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
         return formset
+
+
+@admin.register(ProductProducer)
+class ProductProducerAdmin(admin.ModelAdmin):
+    inlines = [ProductProducerBenefactorInline]
 
 
 class ServiceProviderBenefactorInline(admin.TabularInline):
@@ -393,9 +419,6 @@ class SupplyAdminForm(forms.ModelForm):
 
 
 
-@admin.register(ProductProducer)
-class ProductProducerAdmin(admin.ModelAdmin):
-    inlines = [ProductProducerBenefactorInline]
 
 
 @admin.register(Supply)
@@ -413,25 +436,6 @@ class SupplyKindRelationAdmin(admin.ModelAdmin):
 class PaymentKindAdmin(admin.ModelAdmin):
     pass
 
-
-@admin.register(VehicleOwnershipKind)
-class VehicleOwnershipAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(VehicleKind)
-class VehicleKindAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(VehicleFuelKind)
-class VehicleFuelAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Vehicle)
-class VehicleAdmin(admin.ModelAdmin):
-    pass
 
 
 @admin.register(Collector)

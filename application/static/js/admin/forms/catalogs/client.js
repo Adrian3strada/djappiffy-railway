@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const inlineCountryField = $('#id_clientshipaddress-0-country');
   const inlineStateField = $('#id_clientshipaddress-0-state');
+  const inlineCityField = $('#id_clientshipaddress-0-city');
 
   const clientAddressFields = [
     'country', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number'
@@ -28,11 +29,11 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateShipAddress(same_address_check) {
     clientAddressFields.forEach(field => {
       const shipField = $(`#id_clientshipaddress-0-${field}`);
+      console.log("shipField", shipField);
       if (shipField.length) {
         shipField.prop('disabled', same_address_check);
         if (same_address_check) {
           const clientField = $(`#id_${field}`);
-          console.log("clientField", clientField);
           if (clientField.length) {
             shipField.val(clientField.val()).trigger('change');
           }
@@ -56,6 +57,16 @@ document.addEventListener('DOMContentLoaded', function () {
           shipField.val(clientField.val()).trigger('change');
         }
       });
+      inlineStateField.val(stateField.val()).trigger('change');
+      inlineCityField.val(cityField.val()).trigger('change');
+      setTimeout(() => {
+        // Esperar un segundo para forzar que visualmente se actualicen el campo state
+        inlineStateField.val(stateField.val()).trigger('change');
+        setTimeout(() => {
+          // Esperar un segundo para forzar que visualmente se actualicen el campo city
+          inlineCityField.val(cityField.val()).trigger('change');
+        }, 200);
+      }, 200);
     }
   }
 
@@ -120,32 +131,38 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(marketData => fetchOptions(`/rest/v1/cities/country/?id=${marketData.countries.join(',')}`))
         .then(countries => {
           updateFieldOptions(inlineCountryField, countries);
-          updateInlineState(); // Llamar a updateInlineState después de actualizar el campo country
+          if (!sameShipAddressCheckboxField.prop('checked')) {
+            updateInlineState();
+          }
         });
     } else {
       updateFieldOptions(inlineCountryField, []);
-      updateInlineState(); // Llamar a updateInlineState después de actualizar el campo country
+      if (!sameShipAddressCheckboxField.prop('checked')) {
+        updateInlineState(); // Llamar a updateInlineState solo si el campo no está deshabilitado
+      }
     }
   }
 
   function updateInlineState() {
     const countryId = inlineCountryField.val();
-
     if (countryId) {
       fetchOptions(`/rest/v1/cities/region/?country=${countryId}`)
         .then(data => {
           updateFieldOptions(inlineStateField, data);
-          updateInlineCity(); // Llamar a updateInlineCity después de actualizar el campo state
+          if (!sameShipAddressCheckboxField.prop('checked')) {
+            updateInlineCity(); // Llamar a updateInlineCity solo si el campo no está deshabilitado
+          }
         });
     } else {
       updateFieldOptions(inlineStateField, []);
-      updateInlineCity(); // Llamar a updateInlineCity después de actualizar el campo state
+      if (!sameShipAddressCheckboxField.prop('checked')) {
+        updateInlineCity(); // Llamar a updateInlineCity solo si el campo no está deshabilitado
+      }
     }
   }
 
   function updateInlineCity() {
     const stateId = inlineStateField.val();
-    const inlineCityField = $('#id_clientshipaddress-0-city');
     if (stateId) {
       fetchOptions(`/rest/v1/cities/city/?region=${stateId}`)
         .then(data => {
@@ -184,7 +201,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // Eventos para actualizar los inlines
   inlineCountryField.on('change', updateInlineState);
   inlineStateField.on('change', updateInlineCity);
-
 
   // Inicializar select2 en los campos
   [marketField, countryField, stateField, cityField, legalEntityCategoryField].forEach(field => field.select2());

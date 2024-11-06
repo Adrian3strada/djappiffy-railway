@@ -5,7 +5,7 @@ import datetime
 # Función para generar el rango de años desde 1888 hasta el año actual
 def vehicle_year_choices():
     current_year = datetime.date.today().year
-    return [(str(year), str(year)) for year in range(1888, current_year)]
+    return [(str(year), str(year)) for year in range(1888, current_year + 2)]
 
 
 # Validador para asegurarse de que el año esté dentro del rango
