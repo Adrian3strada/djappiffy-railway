@@ -1,7 +1,8 @@
 from django.db import models
 from common.mixins import (CleanNameAndOrganizationMixin, CleanNameOrAliasAndOrganizationMixin,
                            CleanNameAndMarketMixin, CleanNameAndProductMixin,
-                           CleanNameAndProviderMixin, CleanNameAndVarietyAndMarketAndVolumeKindMixin)
+                           CleanNameAndProductProviderMixin, CleanNameAndProductProducerMixin,
+                           CleanNameAndVarietyAndMarketAndVolumeKindMixin)
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from django.utils.translation import gettext_lazy as _
@@ -13,7 +14,8 @@ from django.dispatch import receiver
 from common.billing.models import TaxRegime, LegalEntityCategory
 from .utils import vehicle_year_choices, vehicle_validate_year
 from django.core.exceptions import ValidationError
-from packhouses.packhouse_settings.models import ProductSizeKind, MassVolumeKind, Bank
+from packhouses.packhouse_settings.models import (ProductSizeKind, MassVolumeKind, Bank, VehicleOwnershipKind,
+                                                  PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand)
 
 
 # Create your models here.
@@ -241,7 +243,7 @@ class ProductProvider(CleanNameOrAliasAndOrganizationMixin, models.Model):
         ]
 
 
-class ProductProviderBenefactor(CleanNameAndProviderMixin, models.Model):
+class ProductProviderBenefactor(CleanNameAndProductProviderMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     bank_account_number = models.CharField(max_length=20, verbose_name=_('Bank account number'))
     bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_('Bank'))
@@ -259,8 +261,9 @@ class ProductProviderBenefactor(CleanNameAndProviderMixin, models.Model):
 # Productores
 
 
-class ProductProducer(models.Model):
+class ProductProducer(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
+    alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
@@ -278,54 +281,41 @@ class ProductProducer(models.Model):
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
-    def __str__(self):
-        return f"{self.name}"
-
     class Meta:
         verbose_name = _('Product producer')
         verbose_name_plural = _('Product producers')
-        unique_together = ('name', 'organization')
-        ordering = ('name',)
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='productproducer_unique_name_organization'),
+            models.UniqueConstraint(fields=['alias', 'organization'], name='productproducer_unique_alias_organization')
+        ]
 
 
-class ProductProducerBenefactor(models.Model):
+class ProductProducerBenefactor(CleanNameAndProductProducerMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     bank_account_number = models.CharField(max_length=20, verbose_name=_('Bank account number'))
     bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_('Bank'))
-    product_producer = models.ForeignKey(ProductProducer, on_delete=models.CASCADE, verbose_name=_('Product producer'))
-
-    def __str__(self):
-        return f"{self.name}"
+    producer = models.ForeignKey(ProductProducer, on_delete=models.CASCADE, verbose_name=_('Product producer'))
 
     class Meta:
         verbose_name = _('Product producer benefactor')
         verbose_name_plural = _('Product producer benefactors')
-        unique_together = ('name', 'product_producer')
-        ordering = ('name',)
+        ordering = ('producer', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'producer'], name='productproducerbenefactor_unique_name_producer'),
+        ]
 
 
-class PaymentKind(models.Model):
-    name = models.CharField(max_length=120, verbose_name=_('Name'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Payment kind')
-        verbose_name_plural = _('Payment kinds')
-        unique_together = ('name', 'organization')
-        ordering = ('name',)
+# Clientes
 
 
-class Client(models.Model):
+class Client(CleanNameAndOrganizationMixin, models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT, help_text=_('Country of the client, must have a market selected to show the market countries.'))
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
                                        on_delete=models.PROTECT, help_text=_('Legal category of the client, must have a country selected to show that country legal categories.'))
     tax_id = models.CharField(max_length=30, verbose_name=_('Client tax ID'))
-
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
@@ -348,12 +338,13 @@ class Client(models.Model):
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
-    def __str__(self):
-        return f"{self.name}"
-
     class Meta:
         verbose_name = _('Client')
         verbose_name_plural = _('Clients')
+        ordering = ('organization', 'market', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='client_unique_name_organization'),
+        ]
 
 
 class ClientShipAddress(models.Model):
@@ -369,47 +360,10 @@ class ClientShipAddress(models.Model):
     client = models.OneToOneField(Client, on_delete=models.CASCADE, verbose_name=_('Client'))
 
 
-class VehicleOwnershipKind(models.Model):
+class Vehicle(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Vehicle ownership kind')
-        verbose_name_plural = _('Vehicle ownership kinds')
-        unique_together = ('name', 'organization')
-
-
-class VehicleKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Vehicle kind')
-        verbose_name_plural = _('Vehicle kinds')
-        unique_together = ('name', 'organization')
-
-
-class VehicleFuelKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Vehicle fuel kind')
-        verbose_name_plural = _('Vehicle fuel kinds')
-        unique_together = ('name', 'organization')
-
-
-class Vehicle(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    kind = models.ForeignKey(VehicleKind, verbose_name=_('Vehicle Kind'), on_delete=models.PROTECT)
+    brand = models.ForeignKey(VehicleBrand, verbose_name=_('Brand'), on_delete=models.PROTECT)
     model = models.CharField(max_length=4, verbose_name=_('Model'), choices=vehicle_year_choices(),
                              validators=[vehicle_validate_year])
     license_plate = models.CharField(max_length=15, verbose_name=_('License plate'))
@@ -417,19 +371,18 @@ class Vehicle(models.Model):
     color = models.CharField(max_length=50, verbose_name=_('Color'))
     ownership = models.ForeignKey(VehicleOwnershipKind, verbose_name=_('Ownership kind'), on_delete=models.PROTECT)
     fuel = models.ForeignKey(VehicleFuelKind, verbose_name=_('Fuel kind'), on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'), )
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Vehicle')
         verbose_name_plural = _('Vehicles')
+        ordering = ('organization', 'name',)
         constraints = [
-            models.UniqueConstraint(fields=['license_plate', 'organization'], name='unique_license_plate_org'),
-            models.UniqueConstraint(fields=['serial_number', 'organization'], name='unique_serial_number_org')
+            models.UniqueConstraint(fields=['name', 'organization'], name='Vehicle_unique_name_organization'),
+            models.UniqueConstraint(fields=['license_plate', 'organization'], name='Vehicle_unique_licenseplate_organization'),
+            models.UniqueConstraint(fields=['serial_number', 'organization'], name='Vehicle_unique_serialnumber_organization')
         ]
 
 

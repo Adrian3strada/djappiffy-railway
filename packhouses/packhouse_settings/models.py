@@ -16,7 +16,10 @@ class Status(CleanNameAndOrganizationMixin, models.Model):
     class Meta:
         verbose_name = _('Status')
         verbose_name_plural = _('Statuses')
-        ordering = ['order']
+        ordering = ['organization', 'order']
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='status_unique_name_organization'),
+        ]
 
 
 class ProductSizeKind(CleanNameAndOrganizationMixin, models.Model):
@@ -30,8 +33,7 @@ class ProductSizeKind(CleanNameAndOrganizationMixin, models.Model):
     class Meta:
         verbose_name = _('Product size kind')
         verbose_name_plural = _('Product size kinds')
-        unique_together = ('name', 'organization')
-        ordering = ('order',)
+        ordering = ('organization', 'order',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='productkind_unique_name_organization'),
         ]
@@ -46,7 +48,7 @@ class MassVolumeKind(CleanNameAndOrganizationMixin, models.Model):
     class Meta:
         verbose_name = _('Mass volume kind')
         verbose_name_plural = _('Mass volume kinds')
-        ordering = ('order',)
+        ordering = ('organization', 'order',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='massvolumekind_unique_name_organization'),
         ]
@@ -63,5 +65,92 @@ class Bank(models.Model):
     class Meta:
         verbose_name = _('Bank')
         verbose_name_plural = _('Banks')
-        unique_together = ('name', 'organization')
-        ordering = ('name',)
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='bank_unique_name_organization'),
+        ]
+
+
+class VehicleOwnershipKind(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Vehicle ownership kind')
+        verbose_name_plural = _('Vehicle ownership kinds')
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='vehicleownershipkind_unique_name_organization'),
+        ]
+
+
+class VehicleKind(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Vehicle kind')
+        verbose_name_plural = _('Vehicle kinds')
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='vehiclekind_unique_name_organization'),
+        ]
+
+
+class VehicleFuelKind(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Vehicle fuel kind')
+        verbose_name_plural = _('Vehicle fuel kinds')
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='vehiclefuelkind_unique_name_organization'),
+        ]
+
+
+class PaymentKind(models.Model):
+    name = models.CharField(max_length=120, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Payment kind')
+        verbose_name_plural = _('Payment kinds')
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='paymentkind_unique_name_organization'),
+        ]
+
+
+class VehicleBrand(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Vehicle brand')
+        verbose_name_plural = _('Vehicle brands')
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='vehiclebrand_unique_name_organization'),
+        ]

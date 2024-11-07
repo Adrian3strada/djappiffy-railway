@@ -252,6 +252,66 @@ class ProductProviderAdmin(admin.ModelAdmin):
         js = ('js/admin/forms/catalogs/product_provider.js',)
 
 
+class ProductProducerBenefactorInline(admin.TabularInline):
+    model = ProductProducerBenefactor
+    extra = 0
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'name' in formset.form.base_fields:
+            formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return formset
+
+
+@admin.register(ProductProducer)
+class ProductProducerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'alias', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number', 'is_enabled')
+    list_filter = ('state', 'city', 'bank', 'is_enabled')
+    search_fields = ('name', 'alias', 'neighborhood', 'address', 'tax_id', 'phone_number')
+    fields = ('name', 'alias', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'tax_id', 'phone_number', 'bank_account_number', 'bank', 'is_enabled', 'organization')
+    inlines = [ProductProducerBenefactorInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'alias' in form.base_fields:
+            form.base_fields['alias'].widget = UppercaseAlphanumericTextInputWidget()
+        if 'address' in form.base_fields:
+            form.base_fields['address'].widget = UppercaseTextInputWidget()
+        if 'tax_id' in form.base_fields:
+            form.base_fields['tax_id'].widget = UppercaseTextInputWidget()
+        return form
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[Region, City, Bank, ProductProducerBenefactor, Organization]):
+            readonly_fields.extend(['name', 'alias', 'organization'])
+        return readonly_fields
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        user_profile = UserProfile.objects.get(user=request.user)
+        country = user_profile.country
+        if db_field.name == "state":
+            kwargs["queryset"] = Region.objects.filter(country=country)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        elif db_field.name == "city":
+            if 'state' in request.GET:
+                state_id = request.GET.get('state')
+                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = City.objects.filter(country=country)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/catalogs/product_producer.js',)
+
+
 class ClientShipAddressInline(admin.StackedInline):
     model = ClientShipAddress
     extra = 1
@@ -362,41 +422,27 @@ class ClientAdmin(admin.ModelAdmin):
         js = ('js/admin/forms/catalogs/client.js',)
 
 
-
-@admin.register(VehicleOwnershipKind)
-class VehicleOwnershipAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(VehicleKind)
-class VehicleKindAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(VehicleFuelKind)
-class VehicleFuelAdmin(admin.ModelAdmin):
-    pass
-
-
 @admin.register(Vehicle)
 class VehicleAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'ownership', 'fuel', 'is_enabled')
+    list_filter = ('kind', 'brand', 'ownership', 'fuel', 'is_enabled')
+    search_fields = ('name', 'model', 'license_plate', 'serial_number', 'comments')
+    fields = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'ownership', 'fuel', 'comments', 'is_enabled', 'organization')
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[Organization]):
+            readonly_fields.extend(['name', 'organization'])
+        return readonly_fields
 
 
-class ProductProducerBenefactorInline(admin.TabularInline):
-    model = ProductProducerBenefactor
-    extra = 0
 
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        if 'name' in formset.form.base_fields:
-            formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
-        return formset
-
-
-@admin.register(ProductProducer)
-class ProductProducerAdmin(admin.ModelAdmin):
-    inlines = [ProductProducerBenefactorInline]
 
 
 class ServiceProviderBenefactorInline(admin.TabularInline):
@@ -430,12 +476,6 @@ class SupplyAdmin(admin.ModelAdmin):
 class SupplyKindRelationAdmin(admin.ModelAdmin):
     list_display = ('from_kind', 'to_kind', 'is_enabled')
     list_filter = ('from_kind', 'to_kind', 'is_enabled')
-
-
-@admin.register(PaymentKind)
-class PaymentKindAdmin(admin.ModelAdmin):
-    pass
-
 
 
 @admin.register(Collector)
