@@ -2,7 +2,7 @@ from django.db import models
 from common.mixins import (CleanNameAndOrganizationMixin, CleanNameOrAliasAndOrganizationMixin,
                            CleanNameAndMarketMixin, CleanNameAndProductMixin,
                            CleanNameAndProductProviderMixin, CleanNameAndProductProducerMixin,
-                           CleanNameAndVarietyAndMarketAndVolumeKindMixin)
+                           CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanNameAndMaquiladoraMixin)
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from django.utils.translation import gettext_lazy as _
@@ -160,9 +160,9 @@ class ProductVariety(CleanNameAndProductMixin, models.Model):
 
 class ProductHarvestKind(CleanNameAndProductMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    order = models.IntegerField(default=0, verbose_name=_('Order'))
 
     class Meta:
         verbose_name = _('Product harvest Kind')
@@ -219,8 +219,8 @@ class ProductProvider(CleanNameOrAliasAndOrganizationMixin, models.Model):
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
+    district = models.CharField(max_length=255, verbose_name=_('District'))
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
     address = models.CharField(max_length=255, verbose_name=_('Address'))
     external_number = models.CharField(max_length=20, verbose_name=_('External number'))
@@ -266,8 +266,8 @@ class ProductProducer(CleanNameOrAliasAndOrganizationMixin, models.Model):
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
+    district = models.CharField(max_length=255, verbose_name=_('District'))
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
     address = models.CharField(max_length=255, verbose_name=_('Address'))
     external_number = models.CharField(max_length=20, verbose_name=_('External number'))
@@ -360,6 +360,8 @@ class ClientShipAddress(models.Model):
     client = models.OneToOneField(Client, on_delete=models.CASCADE, verbose_name=_('Client'))
 
 
+# Vehículos
+
 class Vehicle(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     kind = models.ForeignKey(VehicleKind, verbose_name=_('Vehicle Kind'), on_delete=models.PROTECT)
@@ -380,92 +382,90 @@ class Vehicle(CleanNameAndOrganizationMixin, models.Model):
         verbose_name_plural = _('Vehicles')
         ordering = ('organization', 'name',)
         constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='Vehicle_unique_name_organization'),
-            models.UniqueConstraint(fields=['license_plate', 'organization'], name='Vehicle_unique_licenseplate_organization'),
-            models.UniqueConstraint(fields=['serial_number', 'organization'], name='Vehicle_unique_serialnumber_organization')
+            models.UniqueConstraint(fields=['name', 'organization'], name='vehicle_unique_name_organization'),
+            models.UniqueConstraint(fields=['license_plate', 'organization'], name='vehicle_unique_licenseplate_organization'),
+            models.UniqueConstraint(fields=['serial_number', 'organization'], name='vehicle_unique_serialnumber_organization')
         ]
 
 
-class Collector(models.Model):
-    zone = models.CharField(max_length=200, verbose_name=_('Zone'))
+# Acopiadores
+
+
+class Gatherer(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
-    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'))
+    zone = models.CharField(max_length=200, verbose_name=_('Zone'))
     tax_registry_code = models.CharField(max_length=20, verbose_name=_('Tax registry code'))
-    social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'))
-    birthday = models.DateField(verbose_name=_('Birthday'))
-    sex = models.CharField(max_length=1, choices=[('', _('Sex')), ('M', _('Male')), ('F', _('Female'))])
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
+    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True, blank=True)
+    social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
     neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
-    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'), null=True, blank=True)
     address = models.CharField(max_length=255, verbose_name=_('Address'), null=True, blank=True)
-    ext_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
-    int_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    phone = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
+    external_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
+    internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
+    phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT)
-    is_maquilador = models.BooleanField(default=False, verbose_name=_('Is maquilador'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
-    def __str__(self):
-        return f"{self.name}"
-
     class Meta:
-        verbose_name = _('Collector')
-        verbose_name_plural = _('Collectors')
+        verbose_name = _('Gatherer')
+        verbose_name_plural = _('Gatherers')
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='gatherer_unique_name_organization'),
+        ]
 
 
-class Maquilador(models.Model):
+class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Full name'))
     zone = models.CharField(max_length=200, verbose_name=_('Zone'))
-    name = models.CharField(max_length=255, verbose_name=_('Full name'))
-    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'))
     tax_registry_code = models.CharField(max_length=20, verbose_name=_('Tax registry code'))
-    social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'))
-    birthday = models.DateField(verbose_name=_('Birthday'))
-    sex = models.CharField(max_length=1, choices=[('', _('Sex')), ('M', _('Male')), ('F', _('Female'))])
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
+    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True, blank=True)
+    social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
     neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
     address = models.CharField(max_length=255, verbose_name=_('Address'), null=True, blank=True)
-    ext_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
-    int_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    phone = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
-    email = models.EmailField()
+    external_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
+    internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
-    def __str__(self):
-        return f"{self.name}"
-
     class Meta:
-        verbose_name = _('Maquilador')
-        verbose_name_plural = _('Maquiladores')
+        verbose_name = _('Maquiladora')
+        verbose_name_plural = _('Maquiladoras')
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='maquiladora_unique_name_organization'),
+        ]
 
 
-class CollectorClient(models.Model):
+class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
                                        on_delete=models.PROTECT)
     tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
     neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
-    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'), null=True, blank=True)
     address = models.CharField(max_length=255, verbose_name=_('Address'), null=True, blank=True)
-    ext_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
-    int_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    phone = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
+    external_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
+    internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
     email = models.EmailField()
+    phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
     swift = models.CharField(max_length=20, verbose_name=_('SWIFT'), null=True, blank=True)
     aba = models.CharField(max_length=20, verbose_name=_('ABA'), null=True, blank=True)
     clabe = models.CharField(max_length=18, verbose_name=_('CLABE'), null=True, blank=True)
@@ -473,48 +473,15 @@ class CollectorClient(models.Model):
     max_money_credit_limit = models.FloatField(verbose_name=_('Max money credit limit'), null=True, blank=True)
     max_days_credit_limit = models.FloatField(verbose_name=_('Max days credit limit'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    collector = models.ForeignKey(Collector, verbose_name=_('Collector'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Collector client')
-        verbose_name_plural = _('Collector clients')
-
-
-class MaquiladorClient(models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('Full name'))
-    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
-                                       on_delete=models.PROTECT)
-    tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
-    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
-    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
-    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
-    address = models.CharField(max_length=255, verbose_name=_('Address'), null=True, blank=True)
-    ext_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
-    int_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    phone = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
-    email = models.EmailField()
-    swift = models.CharField(max_length=20, verbose_name=_('SWIFT'), null=True, blank=True)
-    aba = models.CharField(max_length=20, verbose_name=_('ABA'), null=True, blank=True)
-    clabe = models.CharField(max_length=18, verbose_name=_('CLABE'), null=True, blank=True)
-    payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
-    max_money_credit_limit = models.FloatField(verbose_name=_('Max money credit limit'), null=True, blank=True)
-    max_days_credit_limit = models.FloatField(verbose_name=_('Max days credit limit'), null=True, blank=True)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    maquilador = models.ForeignKey(Maquilador, verbose_name=_('Maquilador'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
+    maquiladora = models.ForeignKey(Maquiladora, verbose_name=_('Maquiladora'), on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = _('Maquilador client')
         verbose_name_plural = _('Maquilador clients')
+        ordering = ('maquiladora', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'maquiladora'], name='maquiladoraclient_unique_name_maquiladora'),
+        ]
 
 
 class OrchardProductClassification(models.Model):

@@ -353,7 +353,7 @@ JAZZMIN_SETTINGS = {
                               "catalogs.Product", "catalogs.ProductHarvestKind", "catalogs.ProductVariety",
                               "catalogs.ProductVarietySize", "catalogs.ProductProvider", "catalogs.ProductProducer",
                               "catalogs.Client",
-                              "catalogs.Vehicle",],
+                              "catalogs.Vehicle", "catalogs.Gatherer", "catalogs.Maquiladora",],
 
     # Custom links to append to app groups, keyed on app name
     "custom_links": {

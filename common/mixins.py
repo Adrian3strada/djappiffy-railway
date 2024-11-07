@@ -255,3 +255,36 @@ class CleanNameAndVarietyAndMarketAndVolumeKindMixin(models.Model):
     class Meta:
         abstract = True
 
+
+class CleanNameAndMaquiladoraMixin(models.Model):
+    def __str__(self):
+        return f"{self.name}"
+
+    def clean(self):
+        self.name = getattr(self, 'name', None)
+        self.maquiladora = getattr(self, 'maquiladora', None)
+        self.maquiladora_id = getattr(self, 'maquiladora_id', None)
+
+        if self.name:
+            self.name = self.name.upper()
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.maquiladora_id:
+            if self.__class__.objects.filter(name=self.name, maquiladora=self.maquiladora).exclude(pk=self.pk).exists():
+                errors['name'] = _('Name must be unique, it already exists.')
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True

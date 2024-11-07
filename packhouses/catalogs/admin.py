@@ -6,7 +6,7 @@ from .models import (
     ProductHarvestKind, ProductProvider, ProductProviderBenefactor,
     ProductProducer, ProductProducerBenefactor, PaymentKind, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
     Vehicle,
-    Collector, Client, ClientShipAddress, Maquilador, MaquiladorClient, OrchardProductClassification, Orchard,
+    Gatherer, Client, ClientShipAddress, Maquiladora, MaquiladoraClient, OrchardProductClassification, Orchard,
     OrchardCertificationKind,
     OrchardCertificationVerifier, OrchardCertification, HarvestCrew, SupplyUnitKind, SupplyKind, SupplyKindRelation,
     Supply, Supplier, MeshBagKind, MeshBagFilmKind, MeshBag, ServiceProvider, ServiceProviderBenefactor, Service,
@@ -32,6 +32,8 @@ from django.db.models.functions import Concat
 from django.db.models import Value
 from common.utils import is_instance_used
 from django.core.exceptions import ValidationError
+from adminsortable2.admin import SortableAdminMixin
+
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -128,8 +130,12 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProductHarvestKind)
-class ProductVarietyHarvestKindAdmin(admin.ModelAdmin):
-    pass
+class ProductVarietyHarvestKindAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ('name', 'product', 'is_enabled', 'order')
+    list_filter = ('product', 'is_enabled')
+    search_fields = ('name', 'product__name')
+    fields = ('name', 'product', 'is_enabled')
+    ordering = ['order']
 
 
 class ProductVarietySizeInline(admin.StackedInline):
@@ -442,6 +448,104 @@ class VehicleAdmin(admin.ModelAdmin):
         return readonly_fields
 
 
+@admin.register(Gatherer)
+class GathererAdmin(admin.ModelAdmin):
+    list_display = ('name', 'zone', 'tax_registry_code', 'state', 'city', 'postal_code', 'address', 'email', 'phone_number', 'vehicle', 'is_enabled')
+    list_filter = ('state', 'city', 'vehicle', 'is_enabled')
+    search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
+    fields = ('name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle', 'is_enabled', 'organization')
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'zone' in form.base_fields:
+            form.base_fields['zone'].widget = UppercaseTextInputWidget()
+        if 'address' in form.base_fields:
+            form.base_fields['address'].widget = UppercaseTextInputWidget()
+        return form
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[Region, City, Organization]):
+            readonly_fields.extend(['name', 'organization'])
+        return readonly_fields
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        user_profile = UserProfile.objects.get(user=request.user)
+        country = user_profile.country
+        if db_field.name == "state":
+            kwargs["queryset"] = Region.objects.filter(country=country)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        elif db_field.name == "city":
+            if 'state' in request.GET:
+                state_id = request.GET.get('state')
+                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = City.objects.filter(country=country)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/catalogs/gatherer.js',)
+
+
+class MaquiladoraClientInline(admin.StackedInline):
+    model = MaquiladoraClient
+    extra = 0
+
+
+@admin.register(Maquiladora)
+class MaquiladoraAdmin(admin.ModelAdmin):
+    list_display = ('name', 'zone', 'tax_registry_code', 'state', 'city', 'postal_code', 'address', 'email', 'phone_number', 'vehicle', 'is_enabled')
+    list_filter = ('state', 'city', 'vehicle', 'is_enabled')
+    search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
+    fields = ('name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle', 'is_enabled', 'organization')
+    inlines = [MaquiladoraClientInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'zone' in form.base_fields:
+            form.base_fields['zone'].widget = UppercaseTextInputWidget()
+        if 'address' in form.base_fields:
+            form.base_fields['address'].widget = UppercaseTextInputWidget()
+        return form
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[Region, City, Organization]):
+            readonly_fields.extend(['name', 'organization'])
+        return readonly_fields
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        user_profile = UserProfile.objects.get(user=request.user)
+        country = user_profile.country
+        if db_field.name == "state":
+            kwargs["queryset"] = Region.objects.filter(country=country)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        elif db_field.name == "city":
+            if 'state' in request.GET:
+                state_id = request.GET.get('state')
+                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = City.objects.filter(country=country)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/catalogs/maquiladora.js',)
+
+
 
 
 
@@ -476,24 +580,6 @@ class SupplyAdmin(admin.ModelAdmin):
 class SupplyKindRelationAdmin(admin.ModelAdmin):
     list_display = ('from_kind', 'to_kind', 'is_enabled')
     list_filter = ('from_kind', 'to_kind', 'is_enabled')
-
-
-@admin.register(Collector)
-class CollectorAdmin(admin.ModelAdmin):
-    pass
-
-
-
-
-
-@admin.register(Maquilador)
-class MaquiladoraAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(MaquiladorClient)
-class MaquiladoraClientAdmin(admin.ModelAdmin):
-    pass
 
 
 @admin.register(OrchardProductClassification)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-28 02:46-0600\n"
+"POT-Creation-Date: 2024-11-07 11:29-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,13 +19,18 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
 "1 : 2;\n"
 
-#: .\common\mixins.py:31 .\common\mixins.py:70 .\common\mixins.py:108
-#: .\common\mixins.py:143
+#: .\common\mixins.py:31 .\common\mixins.py:69 .\common\mixins.py:105
+#: .\common\mixins.py:139 .\common\mixins.py:173 .\common\mixins.py:207
 msgid "Name must be unique, it already exists."
 msgstr ""
 
-#: .\common\mixins.py:73
+#: .\common\mixins.py:71
 msgid "Alias must be unique, it already exists."
+msgstr ""
+
+#: .\common\mixins.py:243 .\common\mixins.py:244 .\common\mixins.py:245
+#: .\common\mixins.py:246
+msgid "Name, variety, market and volume kind must be unique together."
 msgstr ""
 
 #: .\venv\Lib\site-packages\IPython\core\tests\test_completer.py:434

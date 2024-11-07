@@ -42,6 +42,3 @@ class Collection(models.Model):
 
     def __str__(self):
         return self.name
-
-    def get_absolute_url(self):
-        return reverse('packhouses:collection_detail', args=[self.pk])

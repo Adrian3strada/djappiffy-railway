@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-01 11:22-0600\n"
+"POT-Creation-Date: 2024-11-07 11:29-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,68 +19,123 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
 "1 : 2;\n"
 
-#: packhouses/packhouse_settings/models.py:11
+#: .\packhouses\packhouse_settings\models.py:11
 msgid "name"
 msgstr ""
 
-#: packhouses/packhouse_settings/models.py:12
-#: packhouses/packhouse_settings/models.py:26
-#: packhouses/packhouse_settings/models.py:42
-#: packhouses/packhouse_settings/models.py:57
+#: .\packhouses\packhouse_settings\models.py:12
+#: .\packhouses\packhouse_settings\models.py:29
+#: .\packhouses\packhouse_settings\models.py:44
+#: .\packhouses\packhouse_settings\models.py:59
+#: .\packhouses\packhouse_settings\models.py:76
+#: .\packhouses\packhouse_settings\models.py:93
+#: .\packhouses\packhouse_settings\models.py:110
+#: .\packhouses\packhouse_settings\models.py:127
+#: .\packhouses\packhouse_settings\models.py:144
 msgid "Is enabled"
 msgstr ""
 
-#: packhouses/packhouse_settings/models.py:13
-#: packhouses/packhouse_settings/models.py:27
-#: packhouses/packhouse_settings/models.py:43
-#: packhouses/packhouse_settings/models.py:58
+#: .\packhouses\packhouse_settings\models.py:13
+#: .\packhouses\packhouse_settings\models.py:30
+#: .\packhouses\packhouse_settings\models.py:45
+#: .\packhouses\packhouse_settings\models.py:60
+#: .\packhouses\packhouse_settings\models.py:77
+#: .\packhouses\packhouse_settings\models.py:94
+#: .\packhouses\packhouse_settings\models.py:111
+#: .\packhouses\packhouse_settings\models.py:128
+#: .\packhouses\packhouse_settings\models.py:145
 msgid "Organization"
 msgstr ""
 
-#: packhouses/packhouse_settings/models.py:14
-#: packhouses/packhouse_settings/models.py:28
-#: packhouses/packhouse_settings/models.py:44
+#: .\packhouses\packhouse_settings\models.py:14
+#: .\packhouses\packhouse_settings\models.py:31
+#: .\packhouses\packhouse_settings\models.py:46
 msgid "Order"
 msgstr ""
 
-#: packhouses/packhouse_settings/models.py:17
+#: .\packhouses\packhouse_settings\models.py:17
 msgid "Status"
 msgstr ""
 
-#: packhouses/packhouse_settings/models.py:18
+#: .\packhouses\packhouse_settings\models.py:18
 msgid "Statuses"
 msgstr ""
 
-#: packhouses/packhouse_settings/models.py:24
-#: packhouses/packhouse_settings/models.py:41
-#: packhouses/packhouse_settings/models.py:56
+#: .\packhouses\packhouse_settings\models.py:27
+#: .\packhouses\packhouse_settings\models.py:43
+#: .\packhouses\packhouse_settings\models.py:58
+#: .\packhouses\packhouse_settings\models.py:75
+#: .\packhouses\packhouse_settings\models.py:92
+#: .\packhouses\packhouse_settings\models.py:109
+#: .\packhouses\packhouse_settings\models.py:126
+#: .\packhouses\packhouse_settings\models.py:143
 msgid "Name"
 msgstr ""
 
-#: packhouses/packhouse_settings/models.py:25
+#: .\packhouses\packhouse_settings\models.py:28
 msgid "Take it for performance calculation"
 msgstr ""
 
-#: packhouses/packhouse_settings/models.py:31
+#: .\packhouses\packhouse_settings\models.py:34
 msgid "Product size kind"
 msgstr ""
 
-#: packhouses/packhouse_settings/models.py:32
+#: .\packhouses\packhouse_settings\models.py:35
 msgid "Product size kinds"
 msgstr ""
 
-#: packhouses/packhouse_settings/models.py:47
+#: .\packhouses\packhouse_settings\models.py:49
 msgid "Mass volume kind"
 msgstr ""
 
-#: packhouses/packhouse_settings/models.py:48
+#: .\packhouses\packhouse_settings\models.py:50
 msgid "Mass volume kinds"
 msgstr ""
 
-#: packhouses/packhouse_settings/models.py:64
+#: .\packhouses\packhouse_settings\models.py:66
 msgid "Bank"
 msgstr ""
 
-#: packhouses/packhouse_settings/models.py:65
+#: .\packhouses\packhouse_settings\models.py:67
 msgid "Banks"
+msgstr ""
+
+#: .\packhouses\packhouse_settings\models.py:83
+msgid "Vehicle ownership kind"
+msgstr ""
+
+#: .\packhouses\packhouse_settings\models.py:84
+msgid "Vehicle ownership kinds"
+msgstr ""
+
+#: .\packhouses\packhouse_settings\models.py:100
+msgid "Vehicle kind"
+msgstr ""
+
+#: .\packhouses\packhouse_settings\models.py:101
+msgid "Vehicle kinds"
+msgstr ""
+
+#: .\packhouses\packhouse_settings\models.py:117
+msgid "Vehicle fuel kind"
+msgstr ""
+
+#: .\packhouses\packhouse_settings\models.py:118
+msgid "Vehicle fuel kinds"
+msgstr ""
+
+#: .\packhouses\packhouse_settings\models.py:134
+msgid "Payment kind"
+msgstr ""
+
+#: .\packhouses\packhouse_settings\models.py:135
+msgid "Payment kinds"
+msgstr ""
+
+#: .\packhouses\packhouse_settings\models.py:151
+msgid "Vehicle brand"
+msgstr ""
+
+#: .\packhouses\packhouse_settings\models.py:152
+msgid "Vehicle brands"
 msgstr ""
