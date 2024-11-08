@@ -23,7 +23,7 @@ class ProductVarietySizeInlineForm(forms.ModelForm):
                   'description', 'volume_kind', 'requires_corner_protector', 'is_enabled', 'order']
 
     class Media:
-        js = ('js/admin/forms/catalogs/product_variety_inline_size.js',)
+        js = ('js/admin/forms/catalogs/product_variety_size_inline.js',)
 
 
 class ProductVarietySizeForm(forms.ModelForm):
@@ -64,5 +64,3 @@ class ProductVarietyInlineFormSet(BaseInlineFormSet):
                 form.fields['DELETE'].initial = False
                 form.fields['DELETE'].disabled = True
                 form.fields['DELETE'].widget.attrs.update({'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
-
-

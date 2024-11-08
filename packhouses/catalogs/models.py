@@ -67,8 +67,8 @@ class KGCostMarket(CleanNameAndMarketMixin, models.Model):
 
 class MarketClass(CleanNameAndMarketMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.CASCADE)
 
     @receiver(post_save, sender=Market)
     def create_market_classes(sender, instance, created, **kwargs):
@@ -328,6 +328,7 @@ class Client(CleanNameAndOrganizationMixin, models.Model):
     swift = models.CharField(max_length=20, verbose_name=_('SWIFT'), null=True, blank=True)
     aba = models.CharField(max_length=20, verbose_name=_('ABA'), null=True, blank=True)
     clabe = models.CharField(max_length=18, verbose_name=_('CLABE'), null=True, blank=True)
+    bank = models.ForeignKey(Bank, verbose_name=_('Bank'), on_delete=models.PROTECT, null=True, blank=True)
     payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
     max_money_credit_limit = models.FloatField(verbose_name=_('Max money credit limit'), null=True, blank=True)
     max_days_credit_limit = models.FloatField(verbose_name=_('Max days credit limit'), null=True, blank=True)
@@ -430,13 +431,13 @@ class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
     neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
-    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'), null=True, blank=True)
     address = models.CharField(max_length=255, verbose_name=_('Address'), null=True, blank=True)
     external_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
     internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT, null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -464,20 +465,19 @@ class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
     address = models.CharField(max_length=255, verbose_name=_('Address'), null=True, blank=True)
     external_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
     internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    email = models.EmailField()
+    email = models.EmailField(null=True, blank=True)
     phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
     swift = models.CharField(max_length=20, verbose_name=_('SWIFT'), null=True, blank=True)
     aba = models.CharField(max_length=20, verbose_name=_('ABA'), null=True, blank=True)
     clabe = models.CharField(max_length=18, verbose_name=_('CLABE'), null=True, blank=True)
+    bank = models.ForeignKey(Bank, verbose_name=_('Bank'), on_delete=models.PROTECT, null=True, blank=True)
     payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
-    max_money_credit_limit = models.FloatField(verbose_name=_('Max money credit limit'), null=True, blank=True)
-    max_days_credit_limit = models.FloatField(verbose_name=_('Max days credit limit'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     maquiladora = models.ForeignKey(Maquiladora, verbose_name=_('Maquiladora'), on_delete=models.PROTECT)
 
     class Meta:
-        verbose_name = _('Maquilador client')
-        verbose_name_plural = _('Maquilador clients')
+        verbose_name = _('Maquiladora client')
+        verbose_name_plural = _('Maquiladora clients')
         ordering = ('maquiladora', 'name',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'maquiladora'], name='maquiladoraclient_unique_name_maquiladora'),

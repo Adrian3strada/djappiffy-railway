@@ -374,7 +374,7 @@ class ClientAdmin(admin.ModelAdmin):
     list_display = ('market', 'name', 'legal_category', 'tax_id', 'country', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'contact_phone_number', 'is_enabled')
     list_filter = ('market', 'legal_category', 'country', 'state', 'city', 'payment_kind', 'is_enabled')
     search_fields = ('name', 'tax_id', 'contact_phone_number')
-    fields = ('market', 'country', 'name', 'legal_category', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'same_ship_address', 'tax_id', 'fda', 'swift', 'aba', 'clabe', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
+    fields = ('market', 'country', 'name', 'legal_category', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'same_ship_address', 'tax_id', 'fda', 'swift', 'aba', 'clabe', 'bank', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
     inlines = [ClientShipAddressInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -498,10 +498,63 @@ class MaquiladoraClientInline(admin.StackedInline):
     model = MaquiladoraClient
     extra = 0
 
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'name' in formset.form.base_fields:
+            formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'zone' in formset.form.base_fields:
+            formset.form.base_fields['zone'].widget = AutoGrowingTextareaWidget()
+        if 'district' in formset.form.base_fields:
+            formset.form.base_fields['district'].widget = UppercaseTextInputWidget()
+        if 'neighborhood' in formset.form.base_fields:
+            formset.form.base_fields['neighborhood'].widget = UppercaseTextInputWidget()
+        if 'address' in formset.form.base_fields:
+            formset.form.base_fields['address'].widget = UppercaseTextInputWidget()
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "country":
+            if 'market' in request.GET:
+                market_id = request.GET.get('market')
+                """
+                elif request.resolver_match.kwargs.get('object_id'):
+                    maquiladora_id = request.resolver_match.kwargs.get('object_id')
+                    market_id = Maquiladora.objects.get(id=maquiladora_id).market_id
+                """
+            else:
+                market_id = None
+            if market_id:
+                market_countries_id = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
+                kwargs["queryset"] = Country.objects.filter(id__in=market_countries_id)
+            else:
+                kwargs["queryset"] = Country.objects.none()
+        elif db_field.name == "state":
+            if 'country' in request.GET:
+                country_id = request.GET.get('country')
+                kwargs["queryset"] = Region.objects.filter(country_id=country_id)
+            else:
+                kwargs["queryset"] = Region.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        elif db_field.name == "city":
+            if 'state' in request.GET:
+                state_id = request.GET.get('state')
+                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = City.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/catalogs/maquiladora_client_inline.js',)
+
 
 @admin.register(Maquiladora)
 class MaquiladoraAdmin(admin.ModelAdmin):
-    list_display = ('name', 'zone', 'tax_registry_code', 'state', 'city', 'postal_code', 'address', 'email', 'phone_number', 'vehicle', 'is_enabled')
+    list_display = ('name', 'zone', 'tax_registry_code', 'state', 'city', 'email', 'phone_number', 'vehicle', 'is_enabled')
     list_filter = ('state', 'city', 'vehicle', 'is_enabled')
     search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
     fields = ('name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle', 'is_enabled', 'organization')
@@ -511,6 +564,12 @@ class MaquiladoraAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, **kwargs)
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'tax_registry_code' in form.base_fields:
+            form.base_fields['tax_registry_code'].widget = UppercaseTextInputWidget()
+        if 'population_registry_code' in form.base_fields:
+            form.base_fields['population_registry_code'].widget = UppercaseTextInputWidget()
+        if 'social_number_code' in form.base_fields:
+            form.base_fields['social_number_code'].widget = UppercaseTextInputWidget()
         if 'zone' in form.base_fields:
             form.base_fields['zone'].widget = UppercaseTextInputWidget()
         if 'address' in form.base_fields:
@@ -519,7 +578,7 @@ class MaquiladoraAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Region, City, Organization]):
+        if obj and is_instance_used(obj, exclude=[Region, City, Vehicle, Organization]):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
 
