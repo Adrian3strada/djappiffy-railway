@@ -32,11 +32,19 @@ class UserProfile(models.Model):
             UserProfile.objects.create(user=instance)
 
 
+class OrganizationKind(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+
+    def __str__(self):
+        return self.name
+
+
 class OrganizationProfile(models.Model):
-    kind = models.CharField(max_length=20, choices=ORGANIZATION_TYPES)
+    # kind = models.CharField(max_length=20, choices=ORGANIZATION_TYPES)
+    kind = models.ForeignKey(OrganizationKind, on_delete=models.PROTECT)
     name = models.CharField(max_length=255)
     logo = models.ImageField(upload_to='logos/', blank=True, null=True)
-    idf = models.CharField(max_length=100)  # TODO: determinar si el id fiscal debe ser único, es decir, si solo puede haber un solo registro con el mismo idf
+    tax_id = models.CharField(max_length=50)
     address = models.TextField()
     phone_number = models.CharField(max_length=20)
     url = models.URLField(blank=True, null=True)
@@ -46,4 +54,4 @@ class OrganizationProfile(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return f"{self.name} ({self.kind}: {self.idf}, {self.country})"
+        return f"{self.name} ({self.kind}: {self.tax_id}, {self.country})"
