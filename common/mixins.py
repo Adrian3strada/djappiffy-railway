@@ -7,6 +7,30 @@ from django.core.exceptions import ValidationError
 # Create your mixins here.
 
 
+class CleanKindAndOrganizationMixin(models.Model):
+    def __str__(self):
+        return f"{self.kind.name}"
+
+    def clean(self):
+        self.kind = getattr(self, 'kind', None)
+        self.organization = getattr(self, 'organization', None)
+        self.organization_id = getattr(self, 'organization_id', None)
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.organization_id:
+            if self.__class__.objects.filter(kind=self.kind, organization=self.organization).exclude(pk=self.pk).exists():
+                errors['kind'] = _('Kind must be unique, it already exists.')
+
+        if errors:
+            raise ValidationError(errors)
+
+
 class CleanNameAndOrganizationMixin(models.Model):
     def __str__(self):
         return f"{self.name}"

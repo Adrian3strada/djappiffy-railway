@@ -110,22 +110,16 @@ class ProductVarietyInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'is_enabled')
+    list_display = ('kind', 'description', 'is_enabled')
     list_filter = ('is_enabled',)
-    search_fields = ('name', 'description')
-    fields = ('name', 'description', 'is_enabled', 'organization')
+    search_fields = ('kind__name', 'description')
+    fields = ('kind', 'description', 'is_enabled', 'organization')
     inlines = [ProductVarietyInline]
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
-        return form
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj, exclude=[Organization]):
-            readonly_fields.extend(['name', 'organization'])
+            readonly_fields.extend(['kind', 'organization'])
         return readonly_fields
 
 
@@ -133,7 +127,7 @@ class ProductAdmin(admin.ModelAdmin):
 class ProductVarietyHarvestKindAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'product', 'is_enabled', 'order')
     list_filter = ('product', 'is_enabled')
-    search_fields = ('name', 'product__name')
+    search_fields = ('name', 'product__kind__name')
     fields = ('name', 'product', 'is_enabled')
     ordering = ['order']
 
@@ -151,7 +145,7 @@ class ProductVarietySizeInline(admin.StackedInline):
 class ProductVarietyAdmin(admin.ModelAdmin):
     list_display = ('name', 'product', 'description', 'is_enabled')
     list_filter = ('product', 'is_enabled',)
-    search_fields = ('name', 'product__name', 'description')
+    search_fields = ('name', 'product__kind__name', 'description')
     fields = ('product', 'name', 'description', 'is_enabled')
     inlines = [ProductVarietySizeInline]
 
@@ -178,7 +172,7 @@ class ProductVarietySizeAdmin(admin.ModelAdmin):
         'is_enabled'
     )
     search_fields = (
-        'name', 'variety__product__name', 'variety__name', 'market__name', 'size_kind__name', 'harvest_kind__name',
+        'name', 'variety__product__kind__name', 'variety__name', 'market__name', 'size_kind__name', 'harvest_kind__name',
         'volume_kind__name'
     )
 
@@ -187,7 +181,7 @@ class ProductVarietySizeAdmin(admin.ModelAdmin):
     def product(self, obj):
         return obj.variety.product.name
     product.short_description = _('Product')
-    product.admin_order_field = 'variety__product__name'
+    product.admin_order_field = 'variety__product__kind__name'
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "variety":

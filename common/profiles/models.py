@@ -2,7 +2,7 @@ from django.db import models
 from organizations.models import Organization, OrganizationOwner
 # from django_countries.fields import CountryField
 from cities_light.models import Country
-from common.base.models import Product
+from common.base.models import ProductKind
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save, post_delete
@@ -48,7 +48,7 @@ class OrganizationProfile(models.Model):
     address = models.TextField()
     phone_number = models.CharField(max_length=20)
     url = models.URLField(blank=True, null=True)
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    product = models.ForeignKey(ProductKind, on_delete=models.PROTECT)
     country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT,
                                 related_name='organization_profiles')
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)

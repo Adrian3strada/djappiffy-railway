@@ -1,6 +1,6 @@
 from django.db import models
-from common.mixins import (CleanNameAndOrganizationMixin, CleanNameOrAliasAndOrganizationMixin,
-                           CleanNameAndMarketMixin, CleanNameAndProductMixin,
+from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizationMixin,
+                           CleanNameOrAliasAndOrganizationMixin, CleanNameAndMarketMixin, CleanNameAndProductMixin,
                            CleanNameAndProductProviderMixin, CleanNameAndProductProducerMixin,
                            CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanNameAndMaquiladoraMixin)
 from organizations.models import Organization
@@ -14,6 +14,7 @@ from django.dispatch import receiver
 from common.billing.models import TaxRegime, LegalEntityCategory
 from .utils import vehicle_year_choices, vehicle_validate_year
 from django.core.exceptions import ValidationError
+from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (ProductSizeKind, MassVolumeKind, Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand)
 
@@ -128,8 +129,8 @@ class MarketStandardProductSize(models.Model):
         ]
 
 
-class Product(CleanNameAndOrganizationMixin, models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Product name'))
+class Product(CleanKindAndOrganizationMixin, models.Model):
+    kind = models.ForeignKey(ProductKind, verbose_name=_('Product kind'), on_delete=models.PROTECT)
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -137,9 +138,9 @@ class Product(CleanNameAndOrganizationMixin, models.Model):
     class Meta:
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
-        ordering = ('organization', 'name')
+        ordering = ('organization', 'kind')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='product_unique_name_organization'),
+            models.UniqueConstraint(fields=['kind', 'organization'], name='product_unique_kind_organization'),
         ]
 
 
@@ -873,6 +874,7 @@ class WeighingScale(models.Model):
 class ColdChamber(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     pallet_capacity = models.PositiveIntegerField(verbose_name=_('Pallet capacity'))
     freshness_days_warning = models.PositiveIntegerField(verbose_name=_('Freshness days warning'))

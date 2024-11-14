@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from django.utils import translation
 from .serializers import ProductSerializer, CitySerializer, RegionSerializer, CountrySerializer
-from .models import Product
+from .models import ProductKind
 from cities_light.models import City
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
 from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
@@ -12,7 +12,7 @@ from cities_light.contrib.restframework3 import CountryModelViewSet as BaseCount
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
-    queryset = Product.objects.all()
+    queryset = ProductKind.objects.all()
 
 
 class CountryViewSet(BaseCountryModelViewSet):

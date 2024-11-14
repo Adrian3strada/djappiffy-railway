@@ -1,7 +1,7 @@
 from modeltranslation.translator import register, TranslationOptions
-from .models import Product
+from .models import ProductKind
 
 
-@register(Product)
+@register(ProductKind)
 class ProductTranslationOptions(TranslationOptions):
     fields = ('name',)

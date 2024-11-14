@@ -4,9 +4,8 @@ from django.db import models
 # Create your models here.
 
 
-class Product(models.Model):
+class ProductKind(models.Model):
     name = models.CharField(max_length=255)
-    in_due_diligence = models.BooleanField(default=False)
     for_packaging = models.BooleanField(default=False)
     for_orchad = models.BooleanField(default=False)
     for_eudd = models.BooleanField(default=False)

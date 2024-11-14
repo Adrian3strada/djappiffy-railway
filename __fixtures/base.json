@@ -1,6 +1,6 @@
 [
 {
-  "model": "base.product",
+  "model": "base.productkind",
   "pk": 1,
   "fields": {
     "name": "Café",
@@ -9,11 +9,12 @@
     "name_fr": "Café",
     "name_de": "Kaffee",
     "name_es": "Café",
-    "image": ""
+    "image": "",
+    "is_enabled": true
   }
 },
 {
-  "model": "base.product",
+  "model": "base.productkind",
   "pk": 2,
   "fields": {
     "name": "Cacao",
@@ -22,11 +23,12 @@
     "name_fr": "Cacao",
     "name_de": "Kakao",
     "name_es": "Cacao",
-    "image": ""
+    "image": "",
+    "is_enabled": true
   }
 },
 {
-  "model": "base.product",
+  "model": "base.productkind",
   "pk": 3,
   "fields": {
     "name": "Caucho",
@@ -35,11 +37,12 @@
     "name_fr": "Caoutchouc",
     "name_de": "Gummi",
     "name_es": "Caucho",
-    "image": ""
+    "image": "",
+    "is_enabled": true
   }
 },
 {
-  "model": "base.product",
+  "model": "base.productkind",
   "pk": 4,
   "fields": {
     "name": "Ganado",
@@ -48,11 +51,12 @@
     "name_fr": "Bétail",
     "name_de": "Vieh",
     "name_es": "Ganado",
-    "image": ""
+    "image": "",
+    "is_enabled": true
   }
 },
 {
-  "model": "base.product",
+  "model": "base.productkind",
   "pk": 5,
   "fields": {
     "name": "Madera",
@@ -61,11 +65,12 @@
     "name_fr": "Bois",
     "name_de": "Holz",
     "name_es": "Madera",
-    "image": ""
+    "image": "",
+    "is_enabled": true
   }
 },
 {
-  "model": "base.product",
+  "model": "base.productkind",
   "pk": 6,
   "fields": {
     "name": "Aceite de palma",
@@ -74,11 +79,12 @@
     "name_fr": "Huile de palme",
     "name_de": "Palmöl",
     "name_es": "Aceite de palma",
-    "image": ""
+    "image": "",
+    "is_enabled": true
   }
 },
 {
-  "model": "base.product",
+  "model": "base.productkind",
   "pk": 7,
   "fields": {
     "name": "Soja",
@@ -87,7 +93,8 @@
     "name_fr": "Soja",
     "name_de": "Soja",
     "name_es": "Soja",
-    "image": ""
+    "image": "",
+    "is_enabled": true
   }
 }
 ]
