@@ -8,6 +8,46 @@ from common.base.serializers import CountrySerializer
 #
 
 
+class BaseOrganizationProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.context['request'].user.is_superuser:
+            self.fields['organization'].read_only = True
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        user = request.user
+
+        # Crear la organización
+        organization = Organization.objects.create(
+            name=validated_data['name'],
+            is_active=True
+        )
+
+        # Crear un OrganizationUser asociado al usuario y la organización
+        organization_user = OrganizationUser.objects.create(
+            organization=organization,
+            user=user,
+            is_admin=True
+        )
+
+        # Crear OrganizationOwner usando la instancia de OrganizationUser
+        OrganizationOwner.objects.create(
+            organization=organization,
+            organization_user=organization_user
+        )
+
+        validated_data['organization'] = organization
+
+        # Crear el perfil y asociarlo a la organización
+        profile = self.Meta.model.objects.create(**validated_data)
+
+        return profile
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     # country = serializers.ChoiceField(choices=countries, required=False)
     # country_value = CountrySerializer(source='country', read_only=True)
@@ -62,191 +102,26 @@ class UserProfileSerializer(serializers.ModelSerializer):
     """
 
 
-class OrganizationProfileSerializer(serializers.ModelSerializer):
-    class Meta:
+class OrganizationProfileSerializer(BaseOrganizationProfileSerializer):
+    class Meta(BaseOrganizationProfileSerializer.Meta):
         model = OrganizationProfile
-        fields = "__all__"
-
-    def create(self, validated_data):
-        request = self.context.get('request')
-        user = request.user
-
-        # Crear la organización
-        organization = Organization.objects.create(
-            name=validated_data['name'],
-            is_active=True
-        )
-
-        # Crear un OrganizationUser asociado al usuario y la organización
-        organization_user = OrganizationUser.objects.create(
-            organization=organization,
-            user=user,
-            is_admin=True
-        )
-
-        # Crear OrganizationOwner usando la instancia de OrganizationUser
-        OrganizationOwner.objects.create(
-            organization=organization,
-            organization_user=organization_user
-        )
-
-        validated_data['organization'] = organization
-
-        # Crear el OrganizationProfile y asociarlo a la organización
-        organization_profile = OrganizationProfile.objects.create(
-            **validated_data
-        )
-
-        return organization_profile
 
 
-class ProducerProfileSerializer(serializers.ModelSerializer):
-    class Meta:
+class ProducerProfileSerializer(BaseOrganizationProfileSerializer):
+    class Meta(BaseOrganizationProfileSerializer.Meta):
         model = ProducerProfile
-        fields = "__all__"
-
-    def create(self, validated_data):
-        request = self.context.get('request')
-        user = request.user
-
-        # Crear la organización
-        organization = Organization.objects.create(
-            name=validated_data['name'],
-            is_active=True
-        )
-
-        # Crear un OrganizationUser asociado al usuario y la organización
-        organization_user = OrganizationUser.objects.create(
-            organization=organization,
-            user=user,
-            is_admin=True
-        )
-
-        # Crear OrganizationOwner usando la instancia de OrganizationUser
-        OrganizationOwner.objects.create(
-            organization=organization,
-            organization_user=organization_user
-        )
-
-        validated_data['organization'] = organization
-
-        # Crear el ProducerProfile y asociarlo a la organización
-        producer_profile = ProducerProfile.objects.create(
-            **validated_data
-        )
-
-        return producer_profile
 
 
-class ImporterProfileSerializer(serializers.ModelSerializer):
-    class Meta:
+class ImporterProfileSerializer(BaseOrganizationProfileSerializer):
+    class Meta(BaseOrganizationProfileSerializer.Meta):
         model = ImporterProfile
-        fields = "__all__"
-
-    def create(self, validated_data):
-        request = self.context.get('request')
-        user = request.user
-
-        # Crear la organización
-        organization = Organization.objects.create(
-            name=validated_data['name'],
-            is_active=True
-        )
-
-        # Crear un OrganizationUser asociado al usuario y la organización
-        organization_user = OrganizationUser.objects.create(
-            organization=organization,
-            user=user,
-            is_admin=True
-        )
-
-        # Crear OrganizationOwner usando la instancia de OrganizationUser
-        OrganizationOwner.objects.create(
-            organization=organization,
-            organization_user=organization_user
-        )
-
-        validated_data['organization'] = organization
-
-        # Crear el ImporterProfile y asociarlo a la organización
-        importer_profile = ImporterProfile.objects.create(
-            **validated_data
-        )
-
-        return importer_profile
 
 
-class PackhouseExporterProfileSerializer(serializers.ModelSerializer):
-    class Meta:
+class PackhouseExporterProfileSerializer(BaseOrganizationProfileSerializer):
+    class Meta(BaseOrganizationProfileSerializer.Meta):
         model = PackhouseExporterProfile
-        fields = "__all__"
-
-    def create(self, validated_data):
-        request = self.context.get('request')
-        user = request.user
-
-        # Crear la organización
-        organization = Organization.objects.create(
-            name=validated_data['name'],
-            is_active=True
-        )
-
-        # Crear un OrganizationUser asociado al usuario y la organización
-        organization_user = OrganizationUser.objects.create(
-            organization=organization,
-            user=user,
-            is_admin=True
-        )
-
-        # Crear OrganizationOwner usando la instancia de OrganizationUser
-        OrganizationOwner.objects.create(
-            organization=organization,
-            organization_user=organization_user
-        )
-
-        validated_data['organization'] = organization
-
-        # Crear el PackhouseExporterProfile y asociarlo a la organización
-        packhouse_exporter_profile = PackhouseExporterProfile.objects.create(
-            **validated_data
-        )
-
-        return packhouse_exporter_profile
 
 
-class TradeExporterProfileSerializer(serializers.ModelSerializer):
-    class Meta:
+class TradeExporterProfileSerializer(BaseOrganizationProfileSerializer):
+    class Meta(BaseOrganizationProfileSerializer.Meta):
         model = TradeExporterProfile
-        fields = "__all__"
-
-    def create(self, validated_data):
-        request = self.context.get('request')
-        user = request.user
-
-        # Crear la organización
-        organization = Organization.objects.create(
-            name=validated_data['name'],
-            is_active=True
-        )
-
-        # Crear un OrganizationUser asociado al usuario y la organización
-        organization_user = OrganizationUser.objects.create(
-            organization=organization,
-            user=user,
-            is_admin=True
-        )
-
-        # Crear OrganizationOwner usando la instancia de OrganizationUser
-        OrganizationOwner.objects.create(
-            organization=organization,
-            organization_user=organization_user
-        )
-
-        validated_data['organization'] = organization
-
-        # Crear el TradeExporterProfile y asociarlo a la organización
-        trade_exporter_profile = TradeExporterProfile.objects.create(
-            **validated_data
-        )
-
-        return trade_exporter_profile
