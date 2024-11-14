@@ -52,7 +52,7 @@ class OrganizationProfile(PolymorphicModel):
     email = models.EmailField()
     phone_number = models.CharField(max_length=20)
     url = models.URLField(blank=True, null=True)
-    products = models.ManyToManyField(ProductKind)
+    products = models.ManyToManyField(ProductKind, blank=False)
     logo = models.ImageField(upload_to='organization_logos/', blank=True, null=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
 
@@ -79,7 +79,18 @@ class ImporterProfile(OrganizationProfile):
 
 
 class PackhouseExporterProfile(OrganizationProfile):
+    packhouse_number = models.CharField(max_length=50, verbose_name=_('Packhouse number'))
+    registry_number = models.CharField(max_length=50, verbose_name=_('Registry number'))
+    sanitary_registry = models.CharField(max_length=50, verbose_name=_('Sanitary registry'))
+    chain_of_custody = models.CharField(max_length=150, verbose_name=_('Chain of custody'))
 
     class Meta:
         verbose_name = _('Packhouse exporter profile')
         verbose_name_plural = _('Packhouse exporter profiles')
+
+
+class TradeExporterProfile(OrganizationProfile):
+
+    class Meta:
+        verbose_name = _('Trade exporter profile')
+        verbose_name_plural = _('Trade exporter profiles')
