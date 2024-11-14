@@ -19,10 +19,11 @@ django-guardian
 django-allauth
 django-polymorphic
 django-modelcluster
-djoser
+django-filter
+django-rest-polymorphic
 djangorestframework
 djangorestframework-gis
-django-filter
+djoser
 earthengine-api
 httpx
 python-dotenv[cli]

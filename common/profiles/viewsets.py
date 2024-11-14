@@ -1,9 +1,11 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets
 from .models import (UserProfile, OrganizationProfile, ProducerProfile, ImporterProfile, PackhouseExporterProfile,
                      TradeExporterProfile)
 from .serializers import (UserProfileSerializer, OrganizationProfileSerializer, ProducerProfileSerializer,
-                          ImporterProfileSerializer, PackhouseExporterProfileSerializer, TradeExporterProfileSerializer)
+                          ImporterProfileSerializer, PackhouseExporterProfileSerializer, TradeExporterProfileSerializer,
+                          OrganizationProfilePolymorphicSerializer)
 from .permissions import IsOrganizationMember
+from organizations.models import OrganizationUser
 
 
 class BaseOrganizationProfileViewSet(viewsets.ModelViewSet):
@@ -13,7 +15,7 @@ class BaseOrganizationProfileViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user.is_superuser:
             return self.queryset
-        return self.queryset.filter(organization__organizationuser__user=user)
+        return self.queryset.filter(organization__organization_users__in=OrganizationUser.objects.filter(user=user))
 
     def perform_create(self, serializer):
         serializer.save()
@@ -37,7 +39,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
 class OrganizationProfileViewSet(BaseOrganizationProfileViewSet):
     queryset = OrganizationProfile.objects.all()
-    serializer_class = OrganizationProfileSerializer
+    serializer_class = OrganizationProfilePolymorphicSerializer
 
 
 class ProducerProfileViewSet(BaseOrganizationProfileViewSet):

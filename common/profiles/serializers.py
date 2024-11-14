@@ -1,5 +1,6 @@
 from organizations.templatetags.org_tags import is_admin
 from rest_framework import serializers
+from rest_polymorphic.serializers import PolymorphicSerializer
 from .models import (UserProfile, OrganizationProfile, ProducerProfile, ImporterProfile, PackhouseExporterProfile,
                      TradeExporterProfile)
 from organizations.models import Organization, OrganizationOwner, OrganizationUser
@@ -125,3 +126,13 @@ class PackhouseExporterProfileSerializer(BaseOrganizationProfileSerializer):
 class TradeExporterProfileSerializer(BaseOrganizationProfileSerializer):
     class Meta(BaseOrganizationProfileSerializer.Meta):
         model = TradeExporterProfile
+
+
+class OrganizationProfilePolymorphicSerializer(PolymorphicSerializer):
+    model_serializer_mapping = {
+        OrganizationProfile: OrganizationProfileSerializer,
+        ProducerProfile: ProducerProfileSerializer,
+        ImporterProfile: ImporterProfileSerializer,
+        PackhouseExporterProfile: PackhouseExporterProfileSerializer,
+        TradeExporterProfile: TradeExporterProfileSerializer,
+    }
