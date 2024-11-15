@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from django.utils import translation
-from .serializers import ProductSerializer, CitySerializer, RegionSerializer, CountrySerializer
+from .serializers import ProductKindSerializer, CitySerializer, RegionSerializer, CountrySerializer
 from .models import ProductKind
 from cities_light.models import City
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
@@ -10,9 +10,10 @@ from cities_light.contrib.restframework3 import CountryModelViewSet as BaseCount
 #
 
 
-class ProductViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductSerializer
+class ProductKindViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductKindSerializer
     queryset = ProductKind.objects.all()
+    filterset_fields = ['for_packaging', 'for_orchard', 'for_eudr']
 
 
 class CountryViewSet(BaseCountryModelViewSet):
@@ -22,12 +23,9 @@ class CountryViewSet(BaseCountryModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         country_ids = self.request.GET.get('id')
-        print('country_ids', country_ids)
         if country_ids:
             ids_list = country_ids.split(',')
-            print('ids_list', ids_list)
             queryset = queryset.filter(id__in=ids_list)
-            print('queryset', queryset)
         return queryset
 
 

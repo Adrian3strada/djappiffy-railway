@@ -37,10 +37,11 @@ class UserProfile(models.Model):
 
 class OrganizationProfile(PolymorphicModel):
     name = models.CharField(max_length=255)
-    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
-                                       on_delete=models.PROTECT, help_text=_('Legal category, must have a country selected to show that country legal categories.'))
-    tax_id = models.CharField(max_length=50)
     country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT, help_text=_('Country'))
+    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
+                                       null=True, blank=True, on_delete=models.PROTECT,
+                                       help_text=_('Legal category, must have a country selected to show that country legal categories.'))
+    tax_id = models.CharField(max_length=50)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)

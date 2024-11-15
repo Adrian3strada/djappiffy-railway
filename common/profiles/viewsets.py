@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from .models import (UserProfile, OrganizationProfile, ProducerProfile, ImporterProfile, PackhouseExporterProfile,
                      TradeExporterProfile)
-from .serializers import (UserProfileSerializer, OrganizationProfileSerializer, ProducerProfileSerializer,
+from .serializers import (UserProfileSerializer, ProducerProfileSerializer,
                           ImporterProfileSerializer, PackhouseExporterProfileSerializer, TradeExporterProfileSerializer,
                           OrganizationProfilePolymorphicSerializer)
 from .permissions import IsOrganizationMember

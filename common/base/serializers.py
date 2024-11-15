@@ -20,7 +20,7 @@ class CitySerializer(BaseCitySerializer):
     id = serializers.IntegerField()
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductKindSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
