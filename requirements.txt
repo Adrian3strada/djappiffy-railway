@@ -20,18 +20,16 @@ django-allauth
 django-polymorphic
 django-modelcluster
 django-filter
+django-organizations
+django-extensions
+django-modeltranslation
 django-rest-polymorphic
 djangorestframework
 djangorestframework-gis
 djoser
-earthengine-api
 httpx
 python-dotenv[cli]
 gunicorn
-django-organizations
-django-extensions
-# django-countries
-django-modeltranslation
 ipython
 redis
 django-axes[ipware]
@@ -54,3 +52,8 @@ django-admin-sortable2
 django-nested-admin
 django-modeladmin-reorder
 setuptools
+
+geopandas
+numpy
+matplotlib
+earthengine-api

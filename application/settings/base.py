@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     # Third party apps
     'rest_framework',
     'rest_framework_gis',
+    'django.contrib.gis',
     'storages',
     'corsheaders',
     'organizations',
@@ -87,6 +88,8 @@ INSTALLED_APPS = [
     "packhouses.packhouse_settings",
     "packhouses.catalogs",
     "packhouses.collection",
+
+    "eudr.parcels",
 
 ]
 
@@ -536,3 +539,4 @@ CKEDITOR_5_CONFIGS = {
 
 CITIES_LIGHT_TRANSLATION_LANGUAGES = ['es', 'en', 'fr', 'de', 'pt']
 
+EUDR_DATA_FEATURES_SRID = 4326
