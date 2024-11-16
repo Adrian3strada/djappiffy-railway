@@ -26,7 +26,7 @@ class Parcel(models.Model):
     """
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=100)
     file = models.FileField(upload_to=uuid_file_path, validators=[validate_geom_vector_file], null=True, blank=True)
@@ -46,6 +46,7 @@ class Parcel(models.Model):
 
     @receiver(pre_save, sender='parcels.Parcel')
     def check_file_change(sender, instance, **kwargs):
+        print("check_file_change")
         if instance.pk:
             try:
                 old_instance = sender.objects.get(pk=instance.pk)
