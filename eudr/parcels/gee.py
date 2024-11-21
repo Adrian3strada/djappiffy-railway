@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.views import View
 import ee
+import datetime
 from django.utils import timezone
 import httpx
 from shapely.geometry import shape, Polygon as ShapelyPolygon, MultiPolygon as ShapelyMultiPolygon
@@ -130,7 +131,7 @@ def vectorize_ndvi_difference_areas(ndvi_difference, threshold, geom, bbox):
 
 
 def get_rgb_image(bbox, multipolygon, date):
-    past = date - timezone.timedelta(days=30)
+    past = date - datetime.timedelta(days=30)
     ee.Geometry.MultiPolygon(multipolygon)
     region = ee.Geometry.Rectangle(*bbox)
     bands = ['B4', 'B3', 'B2']
@@ -159,7 +160,7 @@ def get_rgb_image(bbox, multipolygon, date):
 
 
 def get_ndvi_image(bbox, multipolygon, date):
-    past = date - timezone.timedelta(days=20)
+    past = date - datetime.timedelta(days=20)
     ee.Geometry.MultiPolygon(multipolygon)
     region = ee.Geometry.Rectangle(*bbox)
     palette = ['red', 'orange', 'yellow', 'green', 'darkgreen']
@@ -201,10 +202,10 @@ def plot_multipolygon(multipolygon, bbox):
 
 
 def get_ndvi_difference_image(bbox, geom):
-    base = settings.START_DATE_BASE
-    past_base = base - timezone.timedelta(days=20)
+    base = settings.EUDR_START_DATE_BASE
+    past_base = base - datetime.timedelta(days=20)
     today = timezone.now()
-    past_today = today - timezone.timedelta(days=20)
+    past_today = today - datetime.timedelta(days=20)
 
     region = ee.Geometry.Rectangle(*bbox)
     palette = ['#d7191c ', '#fdae61', '#fcfbbf', '#43a2ca', '#0868ac']

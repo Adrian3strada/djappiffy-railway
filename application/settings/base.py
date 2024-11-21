@@ -16,6 +16,7 @@ import ast
 import dj_database_url
 from dotenv import load_dotenv
 import logging
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -540,3 +541,11 @@ CKEDITOR_5_CONFIGS = {
 CITIES_LIGHT_TRANSLATION_LANGUAGES = ['es', 'en', 'fr', 'de', 'pt']
 
 EUDR_DATA_FEATURES_SRID = 4326
+
+EUDR_START_DATE_BASE = datetime.datetime(2020, 6, 10)
+CLOUDY_PIXEL_PERCENTAGE = 5
+
+FIREBASE_AUTH_PROJECTS = ast.literal_eval(os.getenv("FIREBASE_AUTH_PROJECTS", "[]"))
+
+EE_SERVICE_ACCOUNT_EMAIL = os.getenv("EE_SERVICE_ACCOUNT_EMAIL", "")
+EE_SERVICE_ACCOUNT_DATA = ast.literal_eval(os.getenv("EE_SERVICE_ACCOUNT_DATA", "{}"))

@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .models import Parcel
 from django.contrib.gis.db import models as geomodels
-from django.contrib.gis.forms import OSMWidget
+# from django.contrib.gis.forms import OSMWidget
+from .forms import OLGoogleMapsSatelliteWidget
 
 # Register your models here.
 
@@ -25,7 +26,7 @@ class ParcelAdmin(admin.ModelAdmin):
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         if isinstance(db_field, geomodels.GeometryField):
-            kwargs['widget'] = OSMWidget()
+            kwargs['widget'] = OLGoogleMapsSatelliteWidget()
         return super().formfield_for_dbfield(db_field, **kwargs)
 
     class Media:
