@@ -47,3 +47,7 @@ if DJANGO_STORAGE_BACKEND == "google":
         "custom_endpoint": os.getenv("GS_CUSTOM_ENDPOINT", None),
         "location": os.getenv("GS_LOCATION", ""),
     }
+    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+else:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    STORAGES_DEFAULT_BACKEND = 'django.core.files.storage.FileSystemStorage'

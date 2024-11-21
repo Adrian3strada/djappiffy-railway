@@ -78,13 +78,12 @@ class Parcel(models.Model):
                 print("Updating")
                 fix_format(instance)
                 fix_crs(instance)
-                to_polygon(instance)
-                to_multipolygon(instance)
+                # to_polygon(instance)
+                # to_multipolygon(instance)
 
-                instance.geom = get_geom_from_file(instance)
+                # instance.geom = get_geom_from_file(instance)
                 instance.save_due_to_update_geom = False
                 instance.save()
-
 
         except Exception as e:
             instance.file.close()
