@@ -31,7 +31,7 @@ class Parcel(models.Model):
     code = models.CharField(max_length=100)
     file = models.FileField(upload_to=uuid_file_path, validators=[validate_geom_vector_file], null=True, blank=True)
     geom = models.MultiPolygonField(srid=settings.EUDR_DATA_FEATURES_SRID, null=True, blank=True)
-    buffer_extent = models.JSONField(null=True, blank=True, editable=False)
+    buffer_extent = models.JSONField(null=True, blank=True)
     producer = models.ForeignKey(ProducerProfile, on_delete=models.PROTECT)
 
     delete_due_to_exception = False
@@ -39,6 +39,11 @@ class Parcel(models.Model):
 
     def __str__(self):
         return f"{self.uuid}: {self.name}"
+
+    def geom_extent(self):
+        if self.geom:
+            return str(list(self.geom.extent))
+        return None
 
     def clean(self):
         if self.pk is None and bool(self.file) == bool(self.geom):
@@ -71,18 +76,20 @@ class Parcel(models.Model):
 
                 if instance.save_due_to_update_geom:
                     instance.geom = get_geom_from_file(instance)
-                    # buffer_extent = GEOSGeometry(instance.geom).buffer(0.002)
-                    # instance.buffer_extent = str(list(buffer_extent.extent))
+                    buffer_extent = GEOSGeometry(instance.geom).buffer(0.002)
+                    instance.buffer_extent = str(list(buffer_extent.extent))
                     instance.save()
             elif not created and instance.file and instance.save_due_to_update_geom:
                 print("Updating")
                 fix_format(instance)
                 fix_crs(instance)
-                # to_polygon(instance)
-                # to_multipolygon(instance)
+                to_polygon(instance)
+                to_multipolygon(instance)
 
-                # instance.geom = get_geom_from_file(instance)
+                instance.geom = get_geom_from_file(instance)
                 instance.save_due_to_update_geom = False
+                buffer_extent = GEOSGeometry(instance.geom).buffer(0.002)
+                instance.buffer_extent = str(list(buffer_extent.extent))
                 instance.save()
 
         except Exception as e:

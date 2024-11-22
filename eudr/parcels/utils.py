@@ -1,19 +1,19 @@
 from django.core.exceptions import ValidationError
 import fiona
+from django.core.files.base import ContentFile
 from fiona.transform import transform_geom
 from fiona.crs import from_epsg
 from django.conf import settings
 import os
+import shutil
 from shapely.geometry import shape
 from functools import wraps
 from fiona.io import ZipMemoryFile
 from django.core.files.storage import default_storage
 from django.core.exceptions import ValidationError
-from django.core.files.base import ContentFile
 
 
 def validate_geom_vector_file(value):
-    print("value", value)
     try:
         file_content = value.read()
         if value.name.split('.')[-1] in ['gpkg', 'geojson']:
@@ -29,31 +29,30 @@ def validate_geom_vector_file(value):
         else:
             raise ValidationError("El archivo no tiene formato válido")
     except Exception as e:
-        print("Exception", e)
         try:
             if e.args and e.args[0] == "Geometría inválida":
                 ex = "Geometría inválida"
             else:
                 ex = "Formato inválido"
-        except Exception as ee:
-            ex = ee
-        print("ex", ex)
+        except Exception as eee:
+            ex = eee
         raise ValidationError(f"El archivo no es un archivo espacial válido: {ex}")
 
 
 def to_multipolygon(instance):
     try:
-        # Leer el archivo desde el almacenamiento
         file_content = default_storage.open(instance.file.name).read()
 
         with fiona.BytesCollection(file_content) as src:
             schema = src.schema.copy()
             schema['geometry'] = 'MultiPolygon'
-            with fiona.BytesCollection() as dst:
-                dst.driver = src.driver
-                dst.schema = schema
-                dst.crs = src.crs
-
+            with fiona.open(
+                instance.file.path + '.fix',
+                mode="w",
+                driver=src.driver,
+                schema=schema,
+                crs=src.crs
+            ) as dst:
                 single_feature = {
                     'type': 'Feature',
                     'properties': {},
@@ -74,17 +73,8 @@ def to_multipolygon(instance):
                 else:
                     dst.write(single_feature)
 
-                # Leer el contenido del archivo en memoria
-                new_file_content = dst.read()
-
-                # Guardar el nuevo archivo en GCS
-                new_file_name = os.path.join('parcel_vector_files', f"{instance.uuid}.gpkg")
-                default_storage.save(new_file_name, ContentFile(new_file_content))
-
-                # Actualizar la instancia
-                instance.file.name = new_file_name
-                instance.save_due_to_update_geom = True
-                instance.save()
+        os.remove(instance.file.path)
+        shutil.move(instance.file.path + '.fix', instance.file.path)
 
     except fiona.errors.DriverError as e:
         raise ValidationError("Error al abrir el archivo con Fiona: {}".format(str(e)))
@@ -94,17 +84,18 @@ def to_multipolygon(instance):
 
 def to_polygon(instance):
     try:
-        # Leer el archivo desde el almacenamiento
         file_content = default_storage.open(instance.file.name).read()
 
         with fiona.BytesCollection(file_content) as src:
             schema = src.schema.copy()
             schema['geometry'] = 'Polygon'
-            with fiona.BytesCollection() as dst:
-                dst.driver = src.driver
-                dst.schema = schema
-                dst.crs = src.crs
-
+            with fiona.open(
+                instance.file.path + '.fix',
+                mode="w",
+                driver=src.driver,
+                schema=schema,
+                crs=src.crs
+            ) as dst:
                 for feature in src:
                     if feature['geometry']['type'] == 'Polygon':
                         dst.write(feature)
@@ -121,17 +112,8 @@ def to_polygon(instance):
                     else:
                         raise ValidationError("Geometría inválida")
 
-                # Leer el contenido del archivo en memoria
-                new_file_content = dst.read()
-
-                # Guardar el nuevo archivo en GCS
-                new_file_name = os.path.join('parcel_vector_files', f"{instance.uuid}.gpkg")
-                default_storage.save(new_file_name, ContentFile(new_file_content))
-
-                # Actualizar la instancia
-                instance.file.name = new_file_name
-                instance.save_due_to_update_geom = True
-                instance.save()
+        os.remove(instance.file.path)
+        shutil.move(instance.file.path + '.fix', instance.file.path)
 
     except fiona.errors.DriverError as e:
         raise ValidationError("Error al abrir el archivo con Fiona: {}".format(str(e)))
@@ -141,99 +123,71 @@ def to_polygon(instance):
 
 def fix_format(instance):
     try:
-        # Leer el archivo desde el almacenamiento
-        # file_content = default_storage.open(instance.file.name).read()
-        file_content = instance.file.read()
+        file_content = default_storage.open(instance.file.name).read()
+        print("instance.file.name", instance.file.name)
 
         if instance.file.name.split('.')[-1] == 'zip':
             with ZipMemoryFile(file_content) as src:
                 layers = src.listlayers()
                 layer = src.open(layer=layers[0])
+                gpkg = "".join(instance.file.path.split('.')[:-1]) + '.gpkg'
+                print("layer", layer)
+                print("gpkg", gpkg)
 
                 # Crear un nuevo archivo en memoria
                 with fiona.open(
-                        '/vsimem/temp.gpkg',
+                        gpkg,
                         mode="w",
                         driver="GPKG",
                         schema=layer.schema,
                         crs=layer.crs
                 ) as dst:
+                    print("dst", dst)
                     for feature in layer:
                         dst.write(feature)
 
-                # Leer el contenido del archivo en memoria
-                with open('/vsimem/temp.gpkg', 'rb') as temp_file:
-                    new_file_content = temp_file.read()
+            new_file_path = instance.file.path.replace('.zip', '.gpkg')
+            new_file_path = default_storage.get_available_name(new_file_path)
+            print("file_path", instance.file.path)
+            print("new_file_path", new_file_path)
 
-                # Guardar el nuevo archivo en GCS
-                new_file_name = os.path.join('parcel_vector_files', f"{instance.uuid}.gpkg")
-                default_storage.save(new_file_name, ContentFile(new_file_content))
+            os.remove(instance.file.path)
+            default_storage.save(new_file_path, ContentFile(open(gpkg, 'rb').read()))
+            instance.file.name = new_file_path
+            instance.save_due_to_update_geom = True
+            instance.save()
 
-                # Actualizar la instancia
-                instance.file.name = new_file_name
-                instance.save_due_to_update_geom = True
-                instance.save()
     except Exception as e:
         raise ValidationError("fix_format Error al procesar el formato: {}".format(str(e)))
 
 
-import fiona
-from fiona.transform import transform_geom
-from fiona.crs import from_epsg
-from django.conf import settings
-from django.core.exceptions import ValidationError
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-import os
-from io import BytesIO
-
-
 def fix_crs(instance):
-    print("fix_crs")
     try:
-        # Leer el archivo desde el almacenamiento
         file_content = default_storage.open(instance.file.name).read()
 
         with fiona.BytesCollection(file_content) as src:
-            print("src", src)
-            print("src driver", src.driver)
-            print("src schema", src.schema)
+            crs_dst = from_epsg(settings.EUDR_DATA_FEATURES_SRID)
 
-            # Crear un archivo en memoria usando BytesIO
-            with BytesIO() as memfile:
-                with fiona.open(
-                            memfile,
-                            mode='w',
-                            driver=src.driver,
-                            schema=src.schema.copy(),
-                            crs=from_epsg(settings.EUDR_DATA_FEATURES_SRID)
-                        ) as dst:
-                    print("dst", dst)
+            with fiona.open(
+                instance.file.path+'.fix',
+                mode="w",
+                driver=src.driver,
+                schema=src.schema.copy(),
+                crs=crs_dst
+            ) as dst:
+                for feature in src:
+                    geometry = feature['geometry']
+                    reprojected_geometry = transform_geom(src.crs, crs_dst, geometry)
+                    feature['geometry'] = reprojected_geometry
+                    dst.write(feature)
 
-                    for feature in src:
-                        print("feature", feature)
-                        geometry = feature['geometry']
-                        reprojected_geometry = transform_geom(src.crs, dst.crs, geometry)
-                        feature['geometry'] = reprojected_geometry
-                        dst.write(feature)
-
-                # Obtener el contenido del archivo en memoria
-                memfile.seek(0)
-                new_file_content = memfile.read()
-
-            # Guardar el nuevo archivo en GCS
-            new_file_name = os.path.join('parcel_vector_files', f"{instance.uuid}.gpkg")
-            default_storage.save(new_file_name, ContentFile(new_file_content))
-
-            # Actualizar la instancia
-            instance.file.name = new_file_name
-            instance.save_due_to_update_geom = True
-            instance.save()
+        os.remove(instance.file.path)
+        shutil.move(instance.file.path + '.fix', instance.file.path)
 
     except fiona.errors.DriverError as e:
-        raise ValidationError("fix_crs Error al abrir el archivo con Fiona: {}".format(str(e)))
+        raise ValidationError("Error al abrir el archivo con Fiona: {}".format(str(e)))
     except Exception as e:
-        raise ValidationError("fix_crs Error al procesar el archivo: {}".format(str(e)))
+        raise ValidationError("Error al procesar el archivo: {}".format(str(e)))
 
 
 def get_geom_from_file(instance):
@@ -261,7 +215,6 @@ def uuid_file_path(instance, filename):
         raise ValidationError("El archivo debe tener extensión")
     filename = f"{instance.uuid}.{ext}"
     file_path = os.path.join('parcel_vector_files', filename)
-    print("file_path", file_path)
     return file_path
 
 
