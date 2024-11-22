@@ -26,6 +26,7 @@ class Parcel(models.Model):
     """
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    oid = models.PositiveIntegerField(null=True, blank=True)
     created_at = models.DateField(auto_now_add=True)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=100)
@@ -42,12 +43,18 @@ class Parcel(models.Model):
 
     def geom_extent(self):
         if self.geom:
-            return str(list(self.geom.extent))
+            return json.dumps(str(list(self.geom.extent)))
         return None
 
     def clean(self):
         if self.pk is None and bool(self.file) == bool(self.geom):
             raise ValidationError("Must provide either a file or a geometry. Not both or none.")
+
+        if not self.oid:
+            # Obtener el último pseudo_id del mismo producer
+            last_oid = Parcel.objects.filter(producer=self.producer).aggregate(models.Max('oid'))[
+                'oid__max']
+            self.oid = (last_oid or 0) + 1
 
     @receiver(pre_save, sender='parcels.Parcel')
     def check_file_change(sender, instance, **kwargs):
@@ -102,3 +109,4 @@ class Parcel(models.Model):
     class Meta:
         verbose_name = "Parcel"
         verbose_name_plural = "Parcels"
+        ordering = ('producer', 'oid')
