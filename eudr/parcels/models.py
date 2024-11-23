@@ -11,7 +11,7 @@ from .utils import (uuid_file_path, validate_geom_vector_file, set_image_path, f
 from .gee import get_rgb_image, get_ndvi_image, get_ndvi_difference_image
 from django.contrib.gis.geos import GEOSGeometry
 from common.profiles.models import ProducerProfile
-from django.core.files.temp import NamedTemporaryFile
+from cities_light.models import City, Region, Country
 
 
 # Create your models here.
@@ -27,10 +27,12 @@ class Parcel(models.Model):
     created_at = models.DateField(auto_now_add=True)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=100)
+    country = models.ForeignKey(Country, on_delete=models.PROTECT)
+    state = models.ForeignKey(Region, on_delete=models.PROTECT)
+    city = models.ForeignKey(City, on_delete=models.PROTECT)
     file = models.FileField(upload_to=uuid_file_path, validators=[validate_geom_vector_file], null=True, blank=True)
     geom = models.MultiPolygonField(srid=settings.EUDR_DATA_FEATURES_SRID, null=True, blank=True)
     buffer_extent = models.JSONField(null=True, blank=True)
-    is_updating = models.BooleanField(default=False)
     producer = models.ForeignKey(ProducerProfile, on_delete=models.PROTECT)
 
     delete_due_to_exception = False
