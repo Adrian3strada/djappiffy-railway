@@ -5,12 +5,11 @@ from fiona.transform import transform_geom
 from fiona.crs import from_epsg
 from django.conf import settings
 import os
-import shutil
 from shapely.geometry import shape
 from functools import wraps
 from fiona.io import ZipMemoryFile
 from django.core.files.storage import default_storage
-from django.core.exceptions import ValidationError
+from django.core.files.temp import NamedTemporaryFile
 
 
 def validate_geom_vector_file(value):
@@ -46,35 +45,41 @@ def to_multipolygon(instance):
         with fiona.BytesCollection(file_content) as src:
             schema = src.schema.copy()
             schema['geometry'] = 'MultiPolygon'
-            with fiona.open(
-                instance.file.path + '.fix',
-                mode="w",
-                driver=src.driver,
-                schema=schema,
-                crs=src.crs
-            ) as dst:
-                single_feature = {
-                    'type': 'Feature',
-                    'properties': {},
-                    'geometry': {
-                        'type': 'MultiPolygon',
-                        'coordinates': []
-                    }
-                }
-                for index, feature in enumerate(src):
-                    if index == 0:
-                        single_feature['properties'] = feature['properties']
-                    if feature['geometry']['type'] == 'Polygon':
-                        single_feature['geometry']['coordinates'].append(feature['geometry']['coordinates'])
-                    else:
-                        raise ValidationError("Geometría inválida")
-                if len(single_feature['geometry']['coordinates']) == 0:
-                    raise ValidationError("No se encontraron polígonos")
-                else:
-                    dst.write(single_feature)
+            with NamedTemporaryFile(suffix='.fix') as temp_file:
+                temp_file_path = temp_file.name
 
-        os.remove(instance.file.path)
-        shutil.move(instance.file.path + '.fix', instance.file.path)
+            try:
+                with fiona.open(
+                    temp_file_path,
+                    mode="w",
+                    driver=src.driver,
+                    schema=schema,
+                    crs=src.crs
+                ) as dst:
+                    single_feature = {
+                        'type': 'Feature',
+                        'properties': {},
+                        'geometry': {
+                            'type': 'MultiPolygon',
+                            'coordinates': []
+                        }
+                    }
+                    for index, feature in enumerate(src):
+                        if index == 0:
+                            single_feature['properties'] = feature['properties']
+                        if feature['geometry']['type'] == 'Polygon':
+                            single_feature['geometry']['coordinates'].append(feature['geometry']['coordinates'])
+                        else:
+                            raise ValidationError("Geometría inválida")
+                    if len(single_feature['geometry']['coordinates']) == 0:
+                        raise ValidationError("No se encontraron polígonos")
+                    else:
+                        dst.write(single_feature)
+
+                with open(temp_file_path, 'rb') as temp_file_content:
+                    default_storage.save(instance.file.name, ContentFile(temp_file_content.read()))
+            finally:
+                os.remove(temp_file_path)
 
     except fiona.errors.DriverError as e:
         raise ValidationError("Error al abrir el archivo con Fiona: {}".format(str(e)))
@@ -89,31 +94,37 @@ def to_polygon(instance):
         with fiona.BytesCollection(file_content) as src:
             schema = src.schema.copy()
             schema['geometry'] = 'Polygon'
-            with fiona.open(
-                instance.file.path + '.fix',
-                mode="w",
-                driver=src.driver,
-                schema=schema,
-                crs=src.crs
-            ) as dst:
-                for feature in src:
-                    if feature['geometry']['type'] == 'Polygon':
-                        dst.write(feature)
-                    elif feature['geometry']['type'] == 'MultiPolygon':
-                        for coordinates in feature['geometry']['coordinates']:
-                            dst.write({
-                                'type': 'Feature',
-                                'properties': feature['properties'],
-                                'geometry': {
-                                    'type': 'Polygon',
-                                    'coordinates': coordinates
-                                }
-                            })
-                    else:
-                        raise ValidationError("Geometría inválida")
+            with NamedTemporaryFile(suffix='.fix') as temp_file:
+                temp_file_path = temp_file.name
 
-        os.remove(instance.file.path)
-        shutil.move(instance.file.path + '.fix', instance.file.path)
+            try:
+                with fiona.open(
+                    temp_file_path,
+                    mode="w",
+                    driver=src.driver,
+                    schema=schema,
+                    crs=src.crs
+                ) as dst:
+                    for feature in src:
+                        if feature['geometry']['type'] == 'Polygon':
+                            dst.write(feature)
+                        elif feature['geometry']['type'] == 'MultiPolygon':
+                            for coordinates in feature['geometry']['coordinates']:
+                                dst.write({
+                                    'type': 'Feature',
+                                    'properties': feature['properties'],
+                                    'geometry': {
+                                        'type': 'Polygon',
+                                        'coordinates': coordinates
+                                    }
+                                })
+                        else:
+                            raise ValidationError("Geometría inválida")
+
+                with open(temp_file_path, 'rb') as temp_file_content:
+                    default_storage.save(instance.file.name, ContentFile(temp_file_content.read()))
+            finally:
+                os.remove(temp_file_path)
 
     except fiona.errors.DriverError as e:
         raise ValidationError("Error al abrir el archivo con Fiona: {}".format(str(e)))
@@ -130,32 +141,31 @@ def fix_format(instance):
             with ZipMemoryFile(file_content) as src:
                 layers = src.listlayers()
                 layer = src.open(layer=layers[0])
-                gpkg = "".join(instance.file.path.split('.')[:-1]) + '.gpkg'
-                print("layer", layer)
-                print("gpkg", gpkg)
 
-                # Crear un nuevo archivo en memoria
-                with fiona.open(
-                        gpkg,
+                with NamedTemporaryFile(suffix='.gpkg') as temp_file:
+                    temp_file_path = temp_file.name
+
+                try:
+                    with fiona.open(
+                        temp_file_path,
                         mode="w",
                         driver="GPKG",
                         schema=layer.schema,
                         crs=layer.crs
-                ) as dst:
-                    print("dst", dst)
-                    for feature in layer:
-                        dst.write(feature)
+                    ) as dst:
+                        print("dst", dst)
+                        for feature in layer:
+                            dst.write(feature)
 
-            new_file_path = instance.file.path.replace('.zip', '.gpkg')
-            new_file_path = default_storage.get_available_name(new_file_path)
-            print("file_path", instance.file.path)
-            print("new_file_path", new_file_path)
-
-            os.remove(instance.file.path)
-            default_storage.save(new_file_path, ContentFile(open(gpkg, 'rb').read()))
-            instance.file.name = new_file_path
-            instance.save_due_to_update_geom = True
-            instance.save()
+                    new_file_path = instance.file.name.replace('.zip', '.gpkg')
+                    new_file_path = default_storage.get_available_name(new_file_path)
+                    with open(temp_file_path, 'rb') as temp_file_content:
+                        default_storage.save(new_file_path, ContentFile(temp_file_content.read()))
+                    instance.file.name = new_file_path
+                    instance.save_due_to_update_geom = True
+                    instance.save()
+                finally:
+                    os.remove(temp_file_path)
 
     except Exception as e:
         raise ValidationError("fix_format Error al procesar el formato: {}".format(str(e)))
@@ -168,21 +178,27 @@ def fix_crs(instance):
         with fiona.BytesCollection(file_content) as src:
             crs_dst = from_epsg(settings.EUDR_DATA_FEATURES_SRID)
 
-            with fiona.open(
-                instance.file.path+'.fix',
-                mode="w",
-                driver=src.driver,
-                schema=src.schema.copy(),
-                crs=crs_dst
-            ) as dst:
-                for feature in src:
-                    geometry = feature['geometry']
-                    reprojected_geometry = transform_geom(src.crs, crs_dst, geometry)
-                    feature['geometry'] = reprojected_geometry
-                    dst.write(feature)
+            with NamedTemporaryFile(suffix='.fix') as temp_file:
+                temp_file_path = temp_file.name
 
-        os.remove(instance.file.path)
-        shutil.move(instance.file.path + '.fix', instance.file.path)
+            try:
+                with fiona.open(
+                    temp_file_path,
+                    mode="w",
+                    driver=src.driver,
+                    schema=src.schema.copy(),
+                    crs=crs_dst
+                ) as dst:
+                    for feature in src:
+                        geometry = feature['geometry']
+                        reprojected_geometry = transform_geom(src.crs, crs_dst, geometry)
+                        feature['geometry'] = reprojected_geometry
+                        dst.write(feature)
+
+                with open(temp_file_path, 'rb') as temp_file_content:
+                    default_storage.save(instance.file.name, ContentFile(temp_file_content.read()))
+            finally:
+                os.remove(temp_file_path)
 
     except fiona.errors.DriverError as e:
         raise ValidationError("Error al abrir el archivo con Fiona: {}".format(str(e)))
@@ -192,7 +208,6 @@ def fix_crs(instance):
 
 def get_geom_from_file(instance):
     try:
-        # Leer el archivo desde el almacenamiento
         file_content = default_storage.open(instance.file.name).read()
 
         with fiona.BytesCollection(file_content) as src:
@@ -206,10 +221,6 @@ def get_geom_from_file(instance):
 
 
 def uuid_file_path(instance, filename):
-    """
-    Devuelve la ruta del archivo para el parámetro upload_to de FileField,
-    usando el UUID de la instancia como nombre de archivo.
-    """
     ext = filename.split('.')[-1]
     if not ext:
         raise ValidationError("El archivo debe tener extensión")
@@ -217,8 +228,6 @@ def uuid_file_path(instance, filename):
     file_path = os.path.join('parcel_vector_files', filename)
     return file_path
 
-
-# .............................................................................
 
 def set_year_path(path):
     def decorator(func):
@@ -237,10 +246,6 @@ def set_year_path(path):
 
 
 def set_rgb_2020_image_path(instance, filename):
-    """
-    Devuelve la ruta del archivo para el parámetro upload_to de FileField,
-    usando el UUID de la instancia como nombre de archivo.
-    """
     ext = filename.split('.')[-1]
     if not ext:
         raise ValidationError("El archivo debe tener extensión")
@@ -251,10 +256,6 @@ def set_rgb_2020_image_path(instance, filename):
 
 @set_year_path("2021")
 def set_rgb_2021_image_path(instance, filename):
-    """
-    Devuelve la ruta del archivo para el parámetro upload_to de FileField,
-    usando el UUID de la instancia como nombre de archivo.
-    """
     ext = filename.split('.')[-1]
     if not ext:
         raise ValidationError("El archivo debe tener extensión")
@@ -264,13 +265,10 @@ def set_rgb_2021_image_path(instance, filename):
 
 
 def set_image_path(instance, filename, path):
-    """
-    Devuelve la ruta del archivo para el parámetro upload_to de FileField,
-    usando el UUID de la instancia como nombre de archivo.
-    """
     ext = filename.split('.')[-1]
     if not ext:
         raise ValidationError("El archivo debe tener extensión")
     filename = f"{instance.uuid}.{ext}"
     file_path = os.path.join('forestiffy', path, filename)
     return file_path
+

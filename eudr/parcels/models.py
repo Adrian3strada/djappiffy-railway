@@ -8,15 +8,11 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save
 from .utils import (uuid_file_path, validate_geom_vector_file, set_image_path, fix_format, fix_crs, to_polygon,
                     to_multipolygon, get_geom_from_file)
-from django.utils import timezone
 from .gee import get_rgb_image, get_ndvi_image, get_ndvi_difference_image
-import tempfile
-from django.core.files import File
 from django.contrib.gis.geos import GEOSGeometry
-from .gee import plot_multipolygon
-from PIL import Image
-import io
 from common.profiles.models import ProducerProfile
+from django.core.files.temp import NamedTemporaryFile
+
 # Create your models here.
 
 
@@ -73,7 +69,6 @@ class Parcel(models.Model):
         Update the geom field of the RawVector instance with the geometry
         from the uploaded file.
         """
-
         try:
             if created and instance.file:
                 fix_format(instance)
@@ -82,10 +77,14 @@ class Parcel(models.Model):
                 to_multipolygon(instance)
 
                 if instance.save_due_to_update_geom:
-                    instance.geom = get_geom_from_file(instance)
-                    buffer_extent = GEOSGeometry(instance.geom).buffer(0.002)
-                    instance.buffer_extent = str(list(buffer_extent.extent))
-                    instance.save()
+                    with NamedTemporaryFile(delete=False) as temp_file:
+                        for chunk in instance.file.chunks():
+                            temp_file.write(chunk)
+                        temp_file.flush()
+                        instance.geom = get_geom_from_file(temp_file.name)
+                        buffer_extent = GEOSGeometry(instance.geom).buffer(0.002)
+                        instance.buffer_extent = str(list(buffer_extent.extent))
+                        instance.save()
             elif not created and instance.file and instance.save_due_to_update_geom:
                 print("Updating")
                 fix_format(instance)
@@ -93,11 +92,15 @@ class Parcel(models.Model):
                 to_polygon(instance)
                 to_multipolygon(instance)
 
-                instance.geom = get_geom_from_file(instance)
-                instance.save_due_to_update_geom = False
-                buffer_extent = GEOSGeometry(instance.geom).buffer(0.002)
-                instance.buffer_extent = str(list(buffer_extent.extent))
-                instance.save()
+                with NamedTemporaryFile(delete=False) as temp_file:
+                    for chunk in instance.file.chunks():
+                        temp_file.write(chunk)
+                    temp_file.flush()
+                    instance.geom = get_geom_from_file(temp_file.name)
+                    instance.save_due_to_update_geom = False
+                    buffer_extent = GEOSGeometry(instance.geom).buffer(0.002)
+                    instance.buffer_extent = str(list(buffer_extent.extent))
+                    instance.save()
 
         except Exception as e:
             instance.file.close()
