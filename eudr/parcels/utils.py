@@ -9,7 +9,8 @@ from shapely.geometry import shape
 from functools import wraps
 from fiona.io import ZipMemoryFile
 from django.core.files.storage import default_storage
-from django.core.files.temp import NamedTemporaryFile
+from tempfile import mkstemp, NamedTemporaryFile
+from fiona.io import MemoryFile
 
 
 def validate_geom_vector_file(value):
@@ -45,12 +46,9 @@ def to_multipolygon(instance):
         with fiona.BytesCollection(file_content) as src:
             schema = src.schema.copy()
             schema['geometry'] = 'MultiPolygon'
-            with NamedTemporaryFile(suffix='.fix') as temp_file:
-                temp_file_path = temp_file.name
 
-            try:
-                with fiona.open(
-                    temp_file_path,
+            with MemoryFile() as memfile:
+                with memfile.open(
                     mode="w",
                     driver=src.driver,
                     schema=schema,
@@ -76,10 +74,11 @@ def to_multipolygon(instance):
                     else:
                         dst.write(single_feature)
 
-                with open(temp_file_path, 'rb') as temp_file_content:
-                    default_storage.save(instance.file.name, ContentFile(temp_file_content.read()))
-            finally:
-                os.remove(temp_file_path)
+                generated_file = memfile.read()
+                new_file_path = default_storage.get_available_name(instance.file.name)
+                default_storage.save(new_file_path, ContentFile(generated_file))
+
+                instance.file.name = new_file_path
 
     except fiona.errors.DriverError as e:
         raise ValidationError("Error al abrir el archivo con Fiona: {}".format(str(e)))
@@ -94,12 +93,9 @@ def to_polygon(instance):
         with fiona.BytesCollection(file_content) as src:
             schema = src.schema.copy()
             schema['geometry'] = 'Polygon'
-            with NamedTemporaryFile(suffix='.fix') as temp_file:
-                temp_file_path = temp_file.name
 
-            try:
-                with fiona.open(
-                    temp_file_path,
+            with MemoryFile() as memfile:
+                with memfile.open(
                     mode="w",
                     driver=src.driver,
                     schema=schema,
@@ -121,54 +117,49 @@ def to_polygon(instance):
                         else:
                             raise ValidationError("Geometría inválida")
 
-                with open(temp_file_path, 'rb') as temp_file_content:
-                    default_storage.save(instance.file.name, ContentFile(temp_file_content.read()))
-            finally:
-                os.remove(temp_file_path)
+                generated_file = memfile.read()
+                new_file_path = default_storage.get_available_name(instance.file.name)
+                default_storage.save(new_file_path, ContentFile(generated_file))
+
+                print("polygon new_file_path", new_file_path)
+
+                instance.file.name = new_file_path
 
     except fiona.errors.DriverError as e:
-        raise ValidationError("Error al abrir el archivo con Fiona: {}".format(str(e)))
+        raise ValidationError("to_polygon() fiona DriverError: {}".format(str(e)))
     except Exception as e:
-        raise ValidationError("Error al procesar el archivo: {}".format(str(e)))
+        raise ValidationError("to_polygon() Error al procesar el archivo: {}".format(str(e)))
 
 
 def fix_format(instance):
     try:
+        # Leer el contenido del archivo original
         file_content = default_storage.open(instance.file.name).read()
         print("instance.file.name", instance.file.name)
 
+        # Verificar si el archivo es un ZIP
         if instance.file.name.split('.')[-1] == 'zip':
             with ZipMemoryFile(file_content) as src:
                 layers = src.listlayers()
                 layer = src.open(layer=layers[0])
 
-                with NamedTemporaryFile(suffix='.gpkg') as temp_file:
-                    temp_file_path = temp_file.name
-
-                try:
-                    with fiona.open(
-                        temp_file_path,
-                        mode="w",
+                with MemoryFile() as memfile:
+                    with memfile.open(
                         driver="GPKG",
                         schema=layer.schema,
                         crs=layer.crs
                     ) as dst:
-                        print("dst", dst)
                         for feature in layer:
                             dst.write(feature)
 
-                    new_file_path = instance.file.name.replace('.zip', '.gpkg')
-                    new_file_path = default_storage.get_available_name(new_file_path)
-                    with open(temp_file_path, 'rb') as temp_file_content:
-                        default_storage.save(new_file_path, ContentFile(temp_file_content.read()))
+                    generated_file = memfile.read()
+                    new_file_path = default_storage.get_available_name(instance.file.name.replace('.zip', '.gpkg'))
+                    default_storage.save(new_file_path, ContentFile(generated_file))
+
                     instance.file.name = new_file_path
-                    instance.save_due_to_update_geom = True
-                    instance.save()
-                finally:
-                    os.remove(temp_file_path)
 
     except Exception as e:
-        raise ValidationError("fix_format Error al procesar el formato: {}".format(str(e)))
+        raise ValidationError(f"fix_format Error al procesar el formato: {str(e)}")
 
 
 def fix_crs(instance):
@@ -178,12 +169,8 @@ def fix_crs(instance):
         with fiona.BytesCollection(file_content) as src:
             crs_dst = from_epsg(settings.EUDR_DATA_FEATURES_SRID)
 
-            with NamedTemporaryFile(suffix='.fix') as temp_file:
-                temp_file_path = temp_file.name
-
-            try:
-                with fiona.open(
-                    temp_file_path,
+            with MemoryFile() as memfile:
+                with memfile.open(
                     mode="w",
                     driver=src.driver,
                     schema=src.schema.copy(),
@@ -195,15 +182,16 @@ def fix_crs(instance):
                         feature['geometry'] = reprojected_geometry
                         dst.write(feature)
 
-                with open(temp_file_path, 'rb') as temp_file_content:
-                    default_storage.save(instance.file.name, ContentFile(temp_file_content.read()))
-            finally:
-                os.remove(temp_file_path)
+                generated_file = memfile.read()
+                new_file_path = default_storage.get_available_name(instance.file.name)
+                default_storage.save(new_file_path, ContentFile(generated_file))
+
+                instance.file.name = new_file_path
 
     except fiona.errors.DriverError as e:
-        raise ValidationError("Error al abrir el archivo con Fiona: {}".format(str(e)))
+        raise ValidationError("fix_crs() fiona DriverError: {}".format(str(e)))
     except Exception as e:
-        raise ValidationError("Error al procesar el archivo: {}".format(str(e)))
+        raise ValidationError("fix_crs() Error al procesar el archivo: {}".format(str(e)))
 
 
 def get_geom_from_file(instance):
@@ -215,6 +203,7 @@ def get_geom_from_file(instance):
                 fiona_geometry = feature['geometry']
                 shapely_geometry = shape(fiona_geometry)
                 wkt_representation = shapely_geometry.wkt
+                print("wkt_representation", wkt_representation)
                 return wkt_representation
     except Exception as e:
         raise ValidationError("Error al leer archivo: {}".format(str(e)))

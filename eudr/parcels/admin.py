@@ -12,8 +12,8 @@ class ParcelAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'uuid', 'created_at', 'producer_name')
     search_fields = ('name', 'code', 'producer__name')
     list_filter = ('producer', )
-    readonly_fields = ('uuid', 'oid', 'created_at', 'geom_extent', 'buffer_extent')
-    fields = ('uuid', 'oid', 'created_at', 'name', 'code', 'file', 'geom', 'geom_extent', 'buffer_extent', 'producer')
+    readonly_fields = ('uuid', 'ooid', 'created_at', 'geom_extent', 'buffer_extent')
+    fields = ('uuid', 'ooid', 'created_at', 'name', 'code', 'file', 'geom', 'geom_extent', 'buffer_extent', 'producer')
 
     def producer_name(self, obj):
         return obj.producer.name

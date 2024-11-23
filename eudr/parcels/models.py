@@ -13,6 +13,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from common.profiles.models import ProducerProfile
 from django.core.files.temp import NamedTemporaryFile
 
+
 # Create your models here.
 
 
@@ -22,13 +23,14 @@ class Parcel(models.Model):
     """
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    oid = models.PositiveIntegerField(null=True, blank=True)
+    ooid = models.PositiveIntegerField(null=True, blank=True)
     created_at = models.DateField(auto_now_add=True)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=100)
     file = models.FileField(upload_to=uuid_file_path, validators=[validate_geom_vector_file], null=True, blank=True)
     geom = models.MultiPolygonField(srid=settings.EUDR_DATA_FEATURES_SRID, null=True, blank=True)
     buffer_extent = models.JSONField(null=True, blank=True)
+    is_updating = models.BooleanField(default=False)
     producer = models.ForeignKey(ProducerProfile, on_delete=models.PROTECT)
 
     delete_due_to_exception = False
@@ -46,22 +48,11 @@ class Parcel(models.Model):
         if self.pk is None and bool(self.file) == bool(self.geom):
             raise ValidationError("Must provide either a file or a geometry. Not both or none.")
 
-        if not self.oid:
+        if not self.ooid:
             # Obtener el último pseudo_id del mismo producer
-            last_oid = Parcel.objects.filter(producer=self.producer).aggregate(models.Max('oid'))[
-                'oid__max']
-            self.oid = (last_oid or 0) + 1
-
-    @receiver(pre_save, sender='parcels.Parcel')
-    def check_file_change(sender, instance, **kwargs):
-        print("check_file_change")
-        if instance.pk:
-            try:
-                old_instance = sender.objects.get(pk=instance.pk)
-                if old_instance.file != instance.file:
-                    instance.save_due_to_update_geom = True
-            except sender.DoesNotExist:
-                pass
+            last_ooid = Parcel.objects.filter(producer=self.producer).aggregate(models.Max('ooid'))[
+                'ooid__max']
+            self.ooid = (last_ooid or 0) + 1
 
     @receiver(post_save, sender='parcels.Parcel')
     def set_geom_from_file(sender, instance, created, **kwargs):
@@ -69,38 +60,25 @@ class Parcel(models.Model):
         Update the geom field of the RawVector instance with the geometry
         from the uploaded file.
         """
+        if getattr(instance, 'save_due_to_update_geom', False):
+            print("instance.save_due_to_update_geom", instance.save_due_to_update_geom)
+            return
+
         try:
-            if created and instance.file:
+            if not instance.save_due_to_update_geom:
                 fix_format(instance)
                 fix_crs(instance)
                 to_polygon(instance)
                 to_multipolygon(instance)
 
-                if instance.save_due_to_update_geom:
-                    with NamedTemporaryFile(delete=False) as temp_file:
-                        for chunk in instance.file.chunks():
-                            temp_file.write(chunk)
-                        temp_file.flush()
-                        instance.geom = get_geom_from_file(temp_file.name)
-                        buffer_extent = GEOSGeometry(instance.geom).buffer(0.002)
-                        instance.buffer_extent = str(list(buffer_extent.extent))
-                        instance.save()
-            elif not created and instance.file and instance.save_due_to_update_geom:
-                print("Updating")
-                fix_format(instance)
-                fix_crs(instance)
-                to_polygon(instance)
-                to_multipolygon(instance)
-
-                with NamedTemporaryFile(delete=False) as temp_file:
-                    for chunk in instance.file.chunks():
-                        temp_file.write(chunk)
-                    temp_file.flush()
-                    instance.geom = get_geom_from_file(temp_file.name)
-                    instance.save_due_to_update_geom = False
-                    buffer_extent = GEOSGeometry(instance.geom).buffer(0.002)
-                    instance.buffer_extent = str(list(buffer_extent.extent))
-                    instance.save()
+                instance.geom = get_geom_from_file(instance)
+                buffer_extent = GEOSGeometry(instance.geom).buffer(0.002)
+                instance.buffer_extent = str(list(buffer_extent.extent))
+                print("instance.geom", instance.geom)
+                instance.save_due_to_update_geom = True
+                instance.save()
+            else:
+                print("instance.save_due_to_update_geom", instance.save_due_to_update_geom)
 
         except Exception as e:
             instance.file.close()
@@ -112,4 +90,4 @@ class Parcel(models.Model):
     class Meta:
         verbose_name = "Parcel"
         verbose_name_plural = "Parcels"
-        ordering = ('producer', 'oid')
+        ordering = ('producer', 'ooid')
