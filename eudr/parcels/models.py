@@ -67,7 +67,7 @@ class Parcel(models.Model):
             return
 
         try:
-            if not instance.save_due_to_update_geom:
+            if instance.file and not instance.save_due_to_update_geom:
                 fix_format(instance)
                 fix_crs(instance)
                 to_polygon(instance)
