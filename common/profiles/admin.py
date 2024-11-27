@@ -1,13 +1,15 @@
 from django.contrib import admin
-from .models import (UserProfile, OrganizationProfile, ProducerProfile, ImporterProfile, PackhouseExporterProfile,
-                     TradeExporterProfile)
 
-# Register your models here.
+from .models import (UserProfile, OrganizationProfile, ProducerProfile,
+                     ImporterProfile, PackhouseExporterProfile,
+                     TradeExporterProfile)
 
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["user", "first_name", "last_name", "phone_number",
+                    "country"]
+    ordering = ["user"]
 
 
 @admin.register(OrganizationProfile)
