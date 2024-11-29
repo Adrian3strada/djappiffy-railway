@@ -53,6 +53,7 @@ class OrganizationProfile(PolymorphicModel):
     email = models.EmailField()
     phone_number = models.CharField(max_length=20)
     url = models.URLField(blank=True, null=True)
+    host_full_name = models.CharField(max_length=50, unique=True, default="", verbose_name=_('host full name'))
     products = models.ManyToManyField(ProductKind, blank=False)
     logo = models.ImageField(upload_to='organization_logos/', blank=True, null=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
