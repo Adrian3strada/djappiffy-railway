@@ -1,29 +1,67 @@
-from django.db import models
-from polymorphic.models import PolymorphicModel
-from organizations.models import Organization, OrganizationOwner
-# from django_countries.fields import CountryField
-from cities_light.models import Country
-from common.base.models import ProductKind
-from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from common.billing.models import LegalEntityCategory
+from django.utils.translation import gettext_lazy as _
+
 from cities_light.models import City, Country, Region
+from organizations.models import Organization, OrganizationOwner
+from polymorphic.models import PolymorphicModel
 
-# Create your models here.
+from common.base.models import ProductKind
+from common.billing.models import LegalEntityCategory
 
-ORGANIZATION_TYPES = (('', 'Organization type'), ("producer", "Producer"), ("marketer", "Marketer"), ("exporter", "Exporter"), ("importer", "Importer"), ("government", "Government"))
+
+ORGANIZATION_TYPES = (
+    ('', 'Organization type'),
+    ("producer", "Producer"),
+    ("marketer", "Marketer"),
+    ("exporter", "Exporter"),
+    ("importer", "Importer"),
+    ("government", "Government")
+)
 User = get_user_model()
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.PROTECT, primary_key=True, related_name='user_profile')
-    first_name = models.CharField(max_length=255,default="")
-    last_name = models.CharField(max_length=255, default="")
-    phone_number = models.CharField(max_length=20, default="")
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT,
-                                null=True, blank=True, related_name='user_profiles')
+    ### Related User model
+    user = models.OneToOneField(
+        User,
+        primary_key=True,
+        on_delete=models.PROTECT,
+        verbose_name=_('User profile'),
+        related_name='user_profile',
+    )
+
+    ### User's Name
+    first_name = models.CharField(
+        max_length=255,
+        default="",
+        verbose_name=_('First name'),
+    )
+    last_name = models.CharField(
+        max_length=255,
+        default="",
+        verbose_name=_('Last name'),
+    )
+
+    ### User's Country
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.PROTECT,
+        default=158,    # Mexico's ID from 'cities_light'
+        blank=True,
+        null=True,
+        verbose_name=_('Country'),
+        related_name='user_profiles',
+    )
+
+    ### Contact info
+    phone_number = models.CharField(
+        max_length=20,
+        default="",
+        verbose_name=_('Phone number'),
+        )
 
     def __str__(self):
         full_name = ' '.join(filter(None, [self.first_name.strip(), self.last_name.strip()]))
@@ -36,27 +74,119 @@ class UserProfile(models.Model):
 
 
 class OrganizationProfile(PolymorphicModel):
-    name = models.CharField(max_length=255)
-    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT, help_text=_('Country'))
-    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
-                                       null=True, blank=True, on_delete=models.PROTECT,
-                                       help_text=_('Legal category, must have a country selected to show that country legal categories.'))
-    tax_id = models.CharField(max_length=50)
-    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
-    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
-    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
-    address = models.CharField(max_length=255, verbose_name=_('Address'))
-    external_number = models.CharField(max_length=10, verbose_name=_('External number'))
-    internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    email = models.EmailField()
-    phone_number = models.CharField(max_length=20)
-    url = models.URLField(blank=True, null=True)
-    host_full_name = models.CharField(max_length=50, unique=True, default="", verbose_name=_('host full name'))
-    products = models.ManyToManyField(ProductKind, blank=False)
-    logo = models.ImageField(upload_to='organization_logos/', blank=True, null=True)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
+    ### Identification Fields
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('Name'),
+        help_text=_('Name of the Organization.'),
+    )
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name=_('Organization'),
+        help_text=_('Linked Organization to this profile.'),
+    )
+
+    ### Legals
+    legal_category = models.ForeignKey(
+        LegalEntityCategory,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        verbose_name=_('Legal entity category'),
+        help_text=_('Legal category, must have a country selected to show that country legal categories.'),
+    )
+    tax_id = models.CharField(
+        max_length=50,
+    )
+
+    ### Referenced fields about localization
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.PROTECT,
+        verbose_name=_('Country'),
+        help_text=_('Country'),
+    )
+    state = models.ForeignKey(
+        Region,
+        on_delete=models.PROTECT,
+        verbose_name=_('State'),
+        help_text=_('State'),
+    )
+    city = models.ForeignKey(
+        City,
+        on_delete=models.PROTECT,
+        verbose_name=_('City'),
+        help_text=_('City'),
+    )
+
+    ### Non-referenced fields about localization
+    district = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name=_('District'),
+    )
+    neighborhood = models.CharField(
+        max_length=255,
+        verbose_name=_('Neighborhood'),
+    )
+    postal_code = models.CharField(
+        max_length=10,
+        verbose_name=_('Postal code'),
+    )
+    address = models.CharField(
+        max_length=255,
+        verbose_name=_('Address'),
+    )
+    external_number = models.CharField(
+        max_length=10,
+        verbose_name=_('External number'),
+    )
+    internal_number = models.CharField(
+        max_length=10,
+        blank=True,
+        null=True,
+        verbose_name=_('Internal number'),
+    )
+
+    ### Contact fields
+    email = models.EmailField(
+        # TO-DO?: Check non-duplication with other Organization
+        #           and other Users
+        verbose_name=_('Email address'),
+    )
+    phone_number = models.CharField(
+        max_length=20,
+        verbose_name=_('Phone number'),
+    )
+    url = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name=_('URL'),
+    )
+
+    ### Subdomain
+    host_full_name = models.CharField(
+        max_length=50,
+        unique=True,
+        default="",
+        verbose_name=_('host full name'),
+    )
+
+    ### Logo
+    logo = models.ImageField(
+        blank=True,
+        null=True,
+        upload_to='organization_logos/',
+    )
+
+    ### Products
+    products = models.ManyToManyField(
+        ProductKind,
+        blank=False,
+    )
 
     def __str__(self):
         return f"{self.name} ({self.country.name} {self.tax_id})"
