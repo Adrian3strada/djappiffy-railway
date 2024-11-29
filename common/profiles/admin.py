@@ -14,7 +14,8 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 @admin.register(OrganizationProfile)
 class OrganizationProfileAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["id", "name", "host_full_name", "organization"]
+    ordering = ["id"]
 
 
 @admin.register(ProducerProfile)
