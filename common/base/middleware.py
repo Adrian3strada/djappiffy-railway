@@ -4,6 +4,8 @@ from django.utils import translation
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.shortcuts import redirect
+import re
 
 from organizations.models import Organization, OrganizationUser
 
@@ -48,24 +50,30 @@ class SubdomainDetectionMiddleware:
     def __call__(self, request):
         request_host = self._get_request_host(request)
 
-        try:
-            # Verificar si existe OrganizationProfile asociada al HOST
-            requested_organization_profile = OrganizationProfile.objects.get(host_full_name=request_host)
+        if re.match(r'/dadmin/*', request.path):
             try:
-                # Verificar si existe Organization asociada al OrganizationProfile
-                requested_organization = Organization.objects.get(id=requested_organization_profile.organization_id)
-            except Organization.DoesNotExist:
+                # Verificar si existe OrganizationProfile asociada al HOST
+                requested_organization_profile = OrganizationProfile.objects.get(
+                    host_full_name=request_host,
+                )
+                try:
+                    # Verificar si existe Organization asociada al OrganizationProfile
+                    requested_organization = Organization.objects.get(
+                        id=requested_organization_profile.organization_id,
+                    )
+                except Organization.DoesNotExist:
+                    raise Http404
+            except OrganizationProfile.DoesNotExist:
                 raise Http404
-        except OrganizationProfile.DoesNotExist:
-            raise Http404
-
-        if request.user.is_authenticated:
-            if self._is_user_in_organization(request.user, requested_organization) or request.user.is_staff :
-                pass
+            
+            if request.user.is_authenticated:
+                if (self._is_user_in_organization(request.user, requested_organization) or
+                        request.user.is_superuser ):
+                    pass
+                else:
+                    raise PermissionDenied
             else:
-                raise PermissionDenied
-        else:
-            raise PermissionDenied
+                redirect("dadmin/")
 
         response = self.get_response(request)
 
