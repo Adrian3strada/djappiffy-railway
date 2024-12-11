@@ -106,6 +106,7 @@ MIDDLEWARE = [
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 
     'django.middleware.locale.LocaleMiddleware',
+    'common.base.middleware.SubdomainDetectionMiddleware',
 ]
 
 ROOT_URLCONF = "application.urls"
