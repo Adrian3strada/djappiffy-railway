@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const cityField = $('#id_city');
   const sameShipAddressCheckboxField = $('#id_same_ship_address');
   const legalEntityCategoryField = $('#id_legal_category');
-
   const inlineCountryField = $('#id_clientshipaddress-0-country');
   const inlineStateField = $('#id_clientshipaddress-0-state');
   const inlineCityField = $('#id_clientshipaddress-0-city');

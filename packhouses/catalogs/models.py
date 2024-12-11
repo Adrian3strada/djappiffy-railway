@@ -345,7 +345,7 @@ class Client(CleanNameAndOrganizationMixin, models.Model):
         verbose_name_plural = _('Clients')
         ordering = ('organization', 'market', 'name',)
         constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='client_unique_name_organization'),
+            models.UniqueConstraint(fields=('name', 'organization',), name='client_unique_name_organization'),
         ]
 
 
