@@ -249,7 +249,7 @@ class ProductProviderAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/catalogs/product_provider.js',)
+        js = ('js/admin/forms/packhouses/catalogs/product_provider.js',)
 
 
 class ProductProducerBenefactorInline(admin.TabularInline):
@@ -309,7 +309,7 @@ class ProductProducerAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/catalogs/product_producer.js',)
+        js = ('js/admin/forms/packhouses/catalogs/product_producer.js',)
 
 
 class ClientShipAddressInline(admin.StackedInline):
@@ -368,7 +368,7 @@ class ClientAdmin(admin.ModelAdmin):
     list_display = ('market', 'name', 'legal_category', 'tax_id', 'country', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'contact_phone_number', 'is_enabled')
     list_filter = ('market', 'legal_category', 'country', 'state', 'city', 'payment_kind', 'is_enabled')
     search_fields = ('name', 'tax_id', 'contact_phone_number')
-    fields = ('market', 'country', 'name', 'legal_category', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'same_ship_address', 'tax_id', 'fda', 'swift', 'aba', 'clabe', 'bank', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
+    fields = ('market', 'name', 'country', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'same_ship_address', 'tax_id', 'legal_category', 'fda', 'swift', 'aba', 'clabe', 'bank', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
     inlines = [ClientShipAddressInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -384,42 +384,25 @@ class ClientAdmin(admin.ModelAdmin):
         return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "country":
-            if 'market' in request.GET:
-                market_id = request.GET.get('market')
-                market_countries_id = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
+        if db_field.name in ["country", "state", "city"]:
+            market_id = request.GET.get('market') or request.POST.get('market')
+            country_id = request.GET.get('country') or request.POST.get('country')
+            state_id = request.GET.get('state') or request.POST.get('state')
+
+            if db_field.name == "country" and market_id:
+                market_countries_id = Market.objects.get(id=market_id).countries.values_list('id', flat=True)
                 kwargs["queryset"] = Country.objects.filter(id__in=market_countries_id)
-            else:
-                kwargs["queryset"] = Country.objects.none()
-        elif db_field.name == "legal_category":
-            if 'market' in request.GET:
-                market_id = request.GET.get('market')
-                market_countries_id = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
-                kwargs["queryset"] = LegalEntityCategory.objects.filter(country__id__in=market_countries_id)
-            else:
-                kwargs["queryset"] = LegalEntityCategory.objects.none()
-        elif db_field.name == "state":
-            if 'country' in request.GET:
-                country_id = request.GET.get('country')
+            elif db_field.name == "state" and country_id:
                 kwargs["queryset"] = Region.objects.filter(country_id=country_id)
-            else:
-                kwargs["queryset"] = Region.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda obj: obj.name
-            return formfield
-        elif db_field.name == "city":
-            if 'state' in request.GET:
-                state_id = request.GET.get('state')
+            elif db_field.name == "city" and state_id:
                 kwargs["queryset"] = City.objects.filter(region_id=state_id)
             else:
-                kwargs["queryset"] = City.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda obj: obj.name
-            return formfield
+                kwargs["queryset"] = db_field.related_model.objects.none()
+
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/catalogs/client.js',)
+        js = ('js/admin/forms/packhouses/catalogs/client.js',)
 
 
 @admin.register(Vehicle)
@@ -433,6 +416,12 @@ class VehicleAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, **kwargs)
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'license_plate' in form.base_fields:
+            form.base_fields['license_plate'].widget = UppercaseTextInputWidget()
+        if 'serial_number' in form.base_fields:
+            form.base_fields['serial_number'].widget = UppercaseTextInputWidget()
+        if 'color' in form.base_fields:
+            form.base_fields['color'].widget = UppercaseTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -485,7 +474,7 @@ class GathererAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/catalogs/gatherer.js',)
+        js = ('js/admin/forms/packhouses/catalogs/gatherer.js',)
 
 
 class MaquiladoraClientInline(admin.StackedInline):
@@ -496,6 +485,8 @@ class MaquiladoraClientInline(admin.StackedInline):
         formset = super().get_formset(request, obj, **kwargs)
         if 'name' in formset.form.base_fields:
             formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'tax_id' in formset.form.base_fields:
+            formset.form.base_fields['tax_id'].widget = UppercaseTextInputWidget()
         if 'zone' in formset.form.base_fields:
             formset.form.base_fields['zone'].widget = AutoGrowingTextareaWidget()
         if 'district' in formset.form.base_fields:
@@ -508,15 +499,9 @@ class MaquiladoraClientInline(admin.StackedInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "country":
+            market_id = None
             if 'market' in request.GET:
                 market_id = request.GET.get('market')
-                """
-                elif request.resolver_match.kwargs.get('object_id'):
-                    maquiladora_id = request.resolver_match.kwargs.get('object_id')
-                    market_id = Maquiladora.objects.get(id=maquiladora_id).market_id
-                """
-            else:
-                market_id = None
             if market_id:
                 market_countries_id = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
                 kwargs["queryset"] = Country.objects.filter(id__in=market_countries_id)
@@ -543,7 +528,7 @@ class MaquiladoraClientInline(admin.StackedInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/catalogs/maquiladora_client_inline.js',)
+        js = ('js/admin/forms/packhouses/catalogs/maquiladora_client_inline.js',)
 
 
 @admin.register(Maquiladora)
@@ -596,7 +581,7 @@ class MaquiladoraAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/catalogs/maquiladora.js',)
+        js = ('js/admin/forms/packhouses/catalogs/maquiladora.js',)
 
 
 

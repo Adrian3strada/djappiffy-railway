@@ -315,6 +315,7 @@ class Client(CleanNameAndOrganizationMixin, models.Model):
     country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT, help_text=_('Country of the client, must have a market selected to show the market countries.'))
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
+                                       null=True, blank=True,
                                        on_delete=models.PROTECT, help_text=_('Legal category of the client, must have a country selected to show that country legal categories.'))
     tax_id = models.CharField(max_length=30, verbose_name=_('Client tax ID'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
@@ -345,7 +346,7 @@ class Client(CleanNameAndOrganizationMixin, models.Model):
         verbose_name_plural = _('Clients')
         ordering = ('organization', 'market', 'name',)
         constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='client_unique_name_organization'),
+            models.UniqueConstraint(fields=('name', 'organization',), name='client_unique_name_organization'),
         ]
 
 
@@ -456,7 +457,8 @@ class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
     country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
-                                       on_delete=models.PROTECT)
+                                       null=True, blank=True,
+                                       on_delete = models.PROTECT, help_text = _('Legal category of the client, must have a country selected to show that country legal categories.'))
     tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
@@ -483,7 +485,6 @@ class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
         constraints = [
             models.UniqueConstraint(fields=['name', 'maquiladora'], name='maquiladoraclient_unique_name_maquiladora'),
         ]
-
 
 class OrchardProductClassification(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))

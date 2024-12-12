@@ -13,4 +13,6 @@ class ParcelViewSet(viewsets.ModelViewSet):
         if self.request.user.is_superuser:
             return Parcel.objects.all()
         else:
+
             return Parcel.objects.filter(producer__organization__organization_users__user=self.request.user)
+

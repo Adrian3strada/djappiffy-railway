@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const cityField = $('#id_city');
   const sameShipAddressCheckboxField = $('#id_same_ship_address');
   const legalEntityCategoryField = $('#id_legal_category');
-
   const inlineCountryField = $('#id_clientshipaddress-0-country');
   const inlineStateField = $('#id_clientshipaddress-0-state');
   const inlineCityField = $('#id_clientshipaddress-0-city');
@@ -17,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateFieldOptions(field, options) {
     field.empty().append(new Option('---------', '', true, true));
     options.forEach(option => {
+      console.log("client option", option)
       field.append(new Option(option.name, option.id, false, false));
     });
     field.trigger('change').select2();
