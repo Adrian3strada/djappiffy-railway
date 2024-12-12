@@ -249,7 +249,7 @@ class ProductProviderAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/catalogs/product_provider.js',)
+        js = ('js/admin/forms/packhouses/catalogs/product_provider.js',)
 
 
 class ProductProducerBenefactorInline(admin.TabularInline):
@@ -309,7 +309,7 @@ class ProductProducerAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/catalogs/product_producer.js',)
+        js = ('js/admin/forms/packhouses/catalogs/product_producer.js',)
 
 
 class ClientShipAddressInline(admin.StackedInline):
@@ -419,7 +419,7 @@ class ClientAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/catalogs/client.js',)
+        js = ('js/admin/forms/packhouses/catalogs/client.js',)
 
 
 @admin.register(Vehicle)
@@ -433,6 +433,12 @@ class VehicleAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, **kwargs)
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'license_plate' in form.base_fields:
+            form.base_fields['license_plate'].widget = UppercaseTextInputWidget()
+        if 'serial_number' in form.base_fields:
+            form.base_fields['serial_number'].widget = UppercaseTextInputWidget()
+        if 'color' in form.base_fields:
+            form.base_fields['color'].widget = UppercaseTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -485,7 +491,7 @@ class GathererAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/catalogs/gatherer.js',)
+        js = ('js/admin/forms/packhouses/catalogs/gatherer.js',)
 
 
 class MaquiladoraClientInline(admin.StackedInline):
@@ -496,6 +502,8 @@ class MaquiladoraClientInline(admin.StackedInline):
         formset = super().get_formset(request, obj, **kwargs)
         if 'name' in formset.form.base_fields:
             formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'tax_id' in formset.form.base_fields:
+            formset.form.base_fields['tax_id'].widget = UppercaseTextInputWidget()
         if 'zone' in formset.form.base_fields:
             formset.form.base_fields['zone'].widget = AutoGrowingTextareaWidget()
         if 'district' in formset.form.base_fields:
@@ -543,7 +551,7 @@ class MaquiladoraClientInline(admin.StackedInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/catalogs/maquiladora_client_inline.js',)
+        js = ('js/admin/forms/packhouses/catalogs/maquiladora_client_inline.js',)
 
 
 @admin.register(Maquiladora)
@@ -596,7 +604,7 @@ class MaquiladoraAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/catalogs/maquiladora.js',)
+        js = ('js/admin/forms/packhouses/catalogs/maquiladora.js',)
 
 
 
