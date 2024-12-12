@@ -329,37 +329,21 @@ class ClientShipAddressInline(admin.StackedInline):
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "country":
-            if 'market' in request.GET:
-                market_id = request.GET.get('market')
-            elif request.resolver_match.kwargs.get('object_id'):
-                client_id = request.resolver_match.kwargs.get('object_id')
-                market_id = Client.objects.get(id=client_id).market_id
-            else:
-                market_id = None
-            if market_id:
-                market_countries_id = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
+        if db_field.name in ["country", "state", "city"]:
+            market_id = request.GET.get('market') or request.POST.get('market')
+            country_id = request.GET.get('country') or request.POST.get('country')
+            state_id = request.GET.get('state') or request.POST.get('state')
+
+            if db_field.name == "country" and market_id:
+                market_countries_id = Market.objects.get(id=market_id).countries.values_list('id', flat=True)
                 kwargs["queryset"] = Country.objects.filter(id__in=market_countries_id)
-            else:
-                kwargs["queryset"] = Country.objects.none()
-        elif db_field.name == "state":
-            if 'country' in request.GET:
-                country_id = request.GET.get('country')
+            elif db_field.name == "state" and country_id:
                 kwargs["queryset"] = Region.objects.filter(country_id=country_id)
-            else:
-                kwargs["queryset"] = Region.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda obj: obj.name
-            return formfield
-        elif db_field.name == "city":
-            if 'state' in request.GET:
-                state_id = request.GET.get('state')
+            elif db_field.name == "city" and state_id:
                 kwargs["queryset"] = City.objects.filter(region_id=state_id)
             else:
-                kwargs["queryset"] = City.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda obj: obj.name
-            return formfield
+                kwargs["queryset"] = db_field.related_model.objects.none()
+
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -381,6 +365,8 @@ class ClientAdmin(admin.ModelAdmin):
             form.base_fields['neighborhood'].widget = UppercaseTextInputWidget()
         if 'address' in form.base_fields:
             form.base_fields['address'].widget = UppercaseTextInputWidget()
+        if 'contact_name' in form.base_fields:
+            form.base_fields['contact_name'].widget = UppercaseTextInputWidget()
         return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
