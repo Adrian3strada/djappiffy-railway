@@ -486,7 +486,6 @@ class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
             models.UniqueConstraint(fields=['name', 'maquiladora'], name='maquiladoraclient_unique_name_maquiladora'),
         ]
 
-
 class OrchardProductClassification(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))

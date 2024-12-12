@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateFieldOptions(field, options) {
     field.empty().append(new Option('---------', '', true, true));
     options.forEach(option => {
+      console.log("client option", option)
       field.append(new Option(option.name, option.id, false, false));
     });
     field.trigger('change').select2();
