@@ -50,7 +50,8 @@ class SubdomainDetectionMiddleware:
     def __call__(self, request):
         requested_hostname = self._get_request_hostname(request)
 
-        if re.match(r'^/dadmin/', request.path):
+        if ( re.match(r'^/dadmin/', request.path) and
+                (not request.user.is_superuser) ):
             try:
                 # Verificar si existe OrganizationProfile asociada al HOST
                 requested_organization_profile = OrganizationProfile.objects.get(
@@ -65,7 +66,7 @@ class SubdomainDetectionMiddleware:
                     raise Http404
             except OrganizationProfile.DoesNotExist:
                 raise Http404
-            
+
             if request.user.is_authenticated:
                 if not self._is_user_allowed(request.user, requested_organization):
                     raise PermissionDenied
