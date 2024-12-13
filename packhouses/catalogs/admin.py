@@ -375,6 +375,15 @@ class ClientAdmin(admin.ModelAdmin):
             country_id = request.GET.get('country') or request.POST.get('country')
             state_id = request.GET.get('state') or request.POST.get('state')
 
+            print("request", dir(request))
+
+            if not market_id and hasattr(request, 'obj') and request.obj:
+                market_id = getattr(request.obj, 'market_id', None)
+            if not country_id and hasattr(request, 'obj') and request.obj:
+                country_id = getattr(request.obj, 'country_id', None)
+            if not state_id and hasattr(request, 'obj') and request.obj:
+                state_id = getattr(request.obj, 'state_id', None)
+
             if db_field.name == "country" and market_id:
                 market_countries_id = Market.objects.get(id=market_id).countries.values_list('id', flat=True)
                 kwargs["queryset"] = Country.objects.filter(id__in=market_countries_id)
