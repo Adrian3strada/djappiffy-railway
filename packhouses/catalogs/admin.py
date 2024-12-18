@@ -20,7 +20,7 @@ from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
 from django.db import models
 
-from organizations.models import Organization
+from organizations.models import Organization, OrganizationUser
 from cities_light.models import Country, Region, City
 
 from django.utils.translation import gettext_lazy as _
@@ -317,6 +317,7 @@ class ClientShipAddressInline(admin.StackedInline):
     extra = 1
     min_num = 1
     max_num = 1
+    can_delete = False
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -329,32 +330,61 @@ class ClientShipAddressInline(admin.StackedInline):
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name in ["country", "state", "city"]:
-            market_id = request.GET.get('market') or request.POST.get('market')
-            country_id = request.GET.get('country') or request.POST.get('country')
-            state_id = request.GET.get('state') or request.POST.get('state')
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = Client.objects.get(id=object_id) if object_id else None
 
-            if db_field.name == "country" and market_id:
+        if db_field.name == "country":
+            if request.POST:
+                market_id = request.POST.get('market')
+            else:
+                market_id = obj.market_id if obj else None
+            if market_id:
                 market_countries_id = Market.objects.get(id=market_id).countries.values_list('id', flat=True)
                 kwargs["queryset"] = Country.objects.filter(id__in=market_countries_id)
-            elif db_field.name == "state" and country_id:
+            else:
+                kwargs["queryset"] = Country.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "state":
+            if request.POST:
+                country_id = request.POST.get('country')
+            else:
+                country_id = obj.country_id if obj else None
+            if country_id:
                 kwargs["queryset"] = Region.objects.filter(country_id=country_id)
-            elif db_field.name == "city" and state_id:
+            else:
+                kwargs["queryset"] = Region.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "city":
+            if request.POST:
+                state_id = request.POST.get('state')
+            else:
+                state_id = obj.state_id if obj else None
+            if state_id:
                 kwargs["queryset"] = City.objects.filter(region_id=state_id)
             else:
-                kwargs["queryset"] = db_field.related_model.objects.none()
+                kwargs["queryset"] = City.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('market', 'name', 'legal_category', 'tax_id', 'country', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'contact_phone_number', 'is_enabled')
+    list_display = ('name', 'legal_category', 'tax_id', 'market', 'country', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'contact_phone_number', 'is_enabled')
     # list_filter = ('market', 'legal_category', 'country', 'state', 'city', 'payment_kind', 'is_enabled')
     list_filter = ('market', 'legal_category', 'payment_kind', 'is_enabled')
     search_fields = ('name', 'tax_id', 'contact_phone_number')
-    fields = ('market', 'name', 'country', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'same_ship_address', 'tax_id', 'legal_category', 'fda', 'swift', 'aba', 'clabe', 'bank', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
+    fields = ('name', 'market', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number', 'internal_number', 'same_ship_address', 'legal_category', 'tax_id', 'fda', 'swift', 'aba', 'clabe', 'bank', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
     inlines = [ClientShipAddressInline]
+
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -370,49 +400,61 @@ class ClientAdmin(admin.ModelAdmin):
             form.base_fields['contact_name'].widget = UppercaseTextInputWidget()
         return form
 
-    """
-    if db_field.name == "state":
-        kwargs["queryset"] = Region.objects.filter(country=country)
-        formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-        formfield.label_from_instance = lambda obj: obj.name
-        return formfield
-
-                    if 'state' in request.GET:
-                state_id = request.GET.get('state')
-                kwargs["queryset"] = City.objects.filter(region_id=state_id)
-    """
-
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name in ["country", "state", "city"]:
-            print("if", db_field.name)
-            if 'market' in request.GET:
-                market_id = request.GET.get('market')
-                print("market_id", market_id)
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = Client.objects.get(id=object_id) if object_id else None
 
-            market_id = request.GET.get('market') or request.POST.get('market')
-            country_id = request.GET.get('country') or request.POST.get('country')
-            state_id = request.GET.get('state') or request.POST.get('state')
-            city_id = request.GET.get('city') or request.POST.get('city')
+        if db_field.name == "market":
+            kwargs["queryset"] = Market.objects.filter(is_enabled=True)  # TODO: Filtrar por organización
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
 
-            if not market_id and hasattr(request, 'obj') and request.obj:
-                market_id = getattr(request.obj, 'market_id', None)
-            if not country_id and hasattr(request, 'obj') and request.obj:
-                country_id = getattr(request.obj, 'country_id', None)
-            if not state_id and hasattr(request, 'obj') and request.obj:
-                state_id = getattr(request.obj, 'state_id', None)
-            if not city_id and hasattr(request, 'obj') and request.obj:
-                city_id = getattr(request.obj, 'city_id', None)
-
-            if db_field.name == "country" and market_id:
+        if db_field.name == "country":
+            if request.POST:
+                market_id = request.POST.get('market')
+            else:
+                market_id = obj.market_id if obj else None
+            if market_id:
                 market_countries_id = Market.objects.get(id=market_id).countries.values_list('id', flat=True)
-                print("market_countries_id", market_countries_id)
                 kwargs["queryset"] = Country.objects.filter(id__in=market_countries_id)
-            elif db_field.name == "state" and country_id:
+            else:
+                kwargs["queryset"] = Country.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "state":
+            if request.POST:
+                country_id = request.POST.get('country')
+            else:
+                country_id = obj.country_id if obj else None
+            if country_id:
                 kwargs["queryset"] = Region.objects.filter(country_id=country_id)
-            elif db_field.name == "city" and state_id:
+            else:
+                kwargs["queryset"] = Region.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "city":
+            if request.POST:
+                state_id = request.POST.get('state')
+            else:
+                state_id = obj.state_id if obj else None
+            if state_id:
                 kwargs["queryset"] = City.objects.filter(region_id=state_id)
             else:
-                kwargs["queryset"] = db_field.related_model.objects.none()
+                kwargs["queryset"] = City.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "legal_category":
+            kwargs["queryset"] = LegalEntityCategory.objects.all()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
