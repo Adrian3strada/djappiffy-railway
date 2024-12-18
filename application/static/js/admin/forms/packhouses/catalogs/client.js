@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const clientAddressFields = [
     'country', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number'
   ];
-document.
-  const API_BASE_URL = `/rest/v1`;
+
+  const API_BASE_URL = '/rest/v1';
 
   function updateFieldOptions(field, options) {
     field.empty().append(new Option('---------', '', true, true));
@@ -90,7 +90,14 @@ document.
           shipField.val(clientField.val()).trigger('change');
         }
       });
-
+      inlineStateField.val(stateField.val()).trigger('change');
+      inlineCityField.val(cityField.val()).trigger('change');
+      setTimeout(() => {
+        inlineStateField.val(stateField.val()).trigger('change');
+        setTimeout(() => {
+          inlineCityField.val(cityField.val()).trigger('change');
+        }, 300);
+      }, 300);
       setTimeout(() => {
         inlineCountryField.next('.select2-container').addClass('disabled-field');
         inlineStateField.next('.select2-container').addClass('disabled-field');
@@ -233,7 +240,6 @@ document.
   [marketField, countryField, stateField, cityField, legalEntityCategoryField, inlineCountryField, inlineStateField, inlineCityField].forEach(field => field.select2());
 
   if (sameShipAddressCheckboxField.prop('checked')) {
-    updateShipAddress(true);
     disableInlineFields();
   }
 });
