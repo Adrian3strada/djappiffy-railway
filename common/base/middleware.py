@@ -50,8 +50,7 @@ class SubdomainDetectionMiddleware:
     def __call__(self, request):
         requested_hostname = self._get_request_hostname(request)
 
-        if ( re.match(r'^/dadmin/', request.path) and
-                (not request.user.is_superuser) ):
+        if re.match(r'^/dadmin/', request.path) and (not request.user.is_superuser):
             try:
                 # Verificar si existe OrganizationProfile asociada al HOST
                 requested_organization_profile = OrganizationProfile.objects.get(
@@ -71,7 +70,7 @@ class SubdomainDetectionMiddleware:
                 if not self._is_user_allowed(request.user, requested_organization):
                     raise PermissionDenied
             else:
-                redirect("dadmin/")
+                redirect("/dadmin/")
 
         response = self.get_response(request)
 
@@ -85,6 +84,8 @@ class SubdomainDetectionMiddleware:
         """
         request_host = request.get_host()
         request_hostname = request_host.split(':')[0]
+        print("Request host: ", request_host)
+        print("Request hostname: ", request_hostname)
 
         return request_hostname
 
@@ -97,7 +98,7 @@ class SubdomainDetectionMiddleware:
         return OrganizationUser.objects.filter(
             organization=organization,
             user=user,
-            ).exists()
+        ).exists()
 
     def _is_user_allowed(self, user, organization):
         """
@@ -109,5 +110,5 @@ class SubdomainDetectionMiddleware:
         - Allowed if: (A and B and C) or (D)
         - Denied if: not(A and B and C) and not(D)
         """
-        return ( self._is_user_in_organization(user, organization) and
-                    user.is_active and user.is_staff ) or user.is_superuser
+        return (self._is_user_in_organization(user, organization) and
+                user.is_active and user.is_staff) or user.is_superuser
