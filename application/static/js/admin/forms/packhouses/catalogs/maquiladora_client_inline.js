@@ -1,8 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const marketField = $('select[name$="-market"]');
-  const countryField = $('select[name$="-country"]');
-  const stateField = $('select[name$="-state"]');
-  const cityField = $('select[name$="-city"]');
 
   function updateFieldOptions(field, options) {
     field.empty().append(new Option('---------', '', true, true));

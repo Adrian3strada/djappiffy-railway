@@ -1,0 +1,3 @@
+GDAL_LIBRARY_PATH = '/opt/homebrew/lib/libgdal.dylib'
+SPATIALITE_LIBRARY_PATH = '/opt/homebrew/lib/mod_spatialite.dylib'
+GEOS_LIBRARY_PATH = '/opt/homebrew/lib/libgeos_c.dylib'
