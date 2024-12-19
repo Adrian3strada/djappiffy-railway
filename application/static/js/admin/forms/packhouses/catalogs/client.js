@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+$(document).ready(function () {
   const marketField = $('#id_market');
   const countryField = $('#id_country');
   const stateField = $('#id_state');
@@ -24,14 +24,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function fetchOptions(url) {
-    return fetch(url)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .catch(error => console.error('Fetch error:', error));
+    return $.ajax({
+      url: url,
+      method: 'GET',
+      dataType: 'json'
+    }).fail(error => console.error('Fetch error:', error));
   }
 
   function updateShipAddress(same_address_check) {
@@ -209,15 +206,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  marketField.on('change', () => {
+  marketField.on('change', function () {
     updateCountry();
     updateInlineCountry();
   });
-  countryField.on('change', () => {
+
+  countryField.on('change', function () {
     updateState();
     updateLegalEntityCategory();
   });
-  stateField.on('change', () => {
+
+  stateField.on('change', function () {
     updateCity();
   });
 
@@ -242,4 +241,8 @@ document.addEventListener('DOMContentLoaded', function () {
   if (sameShipAddressCheckboxField.prop('checked')) {
     disableInlineFields();
   }
+
+  const same_address_check = sameShipAddressCheckboxField.prop('checked');
+  updateShipAddress(same_address_check);
+
 });
