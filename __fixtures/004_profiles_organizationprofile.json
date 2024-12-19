@@ -3,14 +3,23 @@
     "model": "profiles.organizationprofile",
     "pk": 1,
     "fields": {
-        "polymorphic_ctype": 58,
+        "polymorphic_ctype": [
+            "profiles",
+            "organizationprofile"
+        ],
         "name": "Tezil S.A. de C.V",
         "organization": 1,
         "legal_category": null,
         "tax_id": "TAX_TEZIL",
-        "country": 158,
-        "state": 2282,
-        "city": 17107,
+        "country": [
+            3996063
+        ],
+        "state": [
+            3995955
+        ],
+        "city": [
+            3995402
+        ],
         "district": null,
         "neighborhood": "Nueva Chapultepec",
         "postal_code": "58280",
@@ -31,14 +40,23 @@
     "model": "profiles.organizationprofile",
     "pk": 2,
     "fields": {
-        "polymorphic_ctype": 58,
+        "polymorphic_ctype": [
+            "profiles",
+            "organizationprofile"
+        ],
         "name": "Red Field Packers, LLC",
         "organization": 2,
         "legal_category": null,
         "tax_id": "TAX_RFP",
-        "country": 234,
-        "state": 3626,
-        "city": 23754,
+        "country": [
+            6252001
+        ],
+        "state": [
+            4398678
+        ],
+        "city": [
+            4393217
+        ],
         "district": null,
         "neighborhood": "Kansas City Neighborhood",
         "postal_code": "64129",
@@ -59,14 +77,23 @@
     "model": "profiles.organizationprofile",
     "pk": 3,
     "fields": {
-        "polymorphic_ctype": 58,
+        "polymorphic_ctype": [
+            "profiles",
+            "organizationprofile"
+        ],
         "name": "Green Bay Packers, Inc.",
         "organization": 3,
         "legal_category": null,
         "tax_id": "TAX_GBP",
-        "country": 234,
-        "state": 3649,
-        "city": 25384,
+        "country": [
+            6252001
+        ],
+        "state": [
+            5279468
+        ],
+        "city": [
+            5254962
+        ],
         "district": null,
         "neighborhood": "Green Bay Neighborhood",
         "postal_code": "54304",
@@ -87,14 +114,23 @@
     "model": "profiles.organizationprofile",
     "pk": 4,
     "fields": {
-        "polymorphic_ctype": 58,
+        "polymorphic_ctype": [
+            "profiles",
+            "organizationprofile"
+        ],
         "name": "Blue Coast Packers, Inc.",
         "organization": 4,
         "legal_category": null,
         "tax_id": "TAX_BCP",
-        "country": 234,
-        "state": 3650,
-        "city": 25627,
+        "country": [
+            6252001
+        ],
+        "state": [
+            5332921
+        ],
+        "city": [
+            5359488
+        ],
         "district": null,
         "neighborhood": "Inglewood Neighborhood",
         "postal_code": "90301",
