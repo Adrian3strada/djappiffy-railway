@@ -32,7 +32,7 @@ RUN pip install -r /requirements.txt
 
 # Use /app folder as a directory where the source code is stored.
 WORKDIR /app
-RUN mkdir -p /app/.config/matplotlib
+RUN mkdir -p /app/wagtail/.config/matplotlib
 
 # Set this directory to be owned by the "wagtail" user. This Wagtail project
 # uses SQLite, the folder needs to be owned by the user that
@@ -59,4 +59,4 @@ RUN python manage.py collectstatic --noinput --clear
 #   phase facilities of your hosting platform. This is used only so the
 #   Wagtail instance can be started with a simple "docker run" command.
 # CMD set -xe; python manage.py migrate --noinput; gunicorn application.wsgi:application
-CMD gunicorn application.wsgi:application --workers 2 --worker-class gthread --threads 2 --timeout 180 --log-level=info --access-logfile - --access-logformat '%({x-forwarded-for}i)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
+CMD gunicorn application.wsgi:application --workers 2 --worker-class gthread --threads 2 --timeout 300 --log-level=info --access-logfile - --access-logformat '%({x-forwarded-for}i)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
