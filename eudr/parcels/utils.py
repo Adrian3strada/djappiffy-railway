@@ -19,6 +19,8 @@ def validate_geom_vector_file(value):
     try:
         file_content = value.read()
         file_extension = value.name.split('.')[-1].lower()
+        print("file_extension", file_extension)
+        print("file_name", value.name)
 
         if file_extension in ['gpkg', 'geojson']:
             with fiona.BytesCollection(file_content) as file:
