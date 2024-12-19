@@ -56,14 +56,18 @@ class SubdomainDetectionMiddleware:
                 requested_organization_profile = OrganizationProfile.objects.get(
                     hostname=requested_hostname,
                 )
+                print("Requested organization profile: ", requested_organization_profile)
                 try:
                     # Verificar si existe Organization asociada al OrganizationProfile
                     requested_organization = Organization.objects.get(
                         id=requested_organization_profile.organization_id,
                     )
+                    print("Requested organization: ", requested_organization)
                 except Organization.DoesNotExist:
+                    print("Organization does not exist")
                     raise Http404
             except OrganizationProfile.DoesNotExist:
+                print("OrganizationProfile does not exist")
                 raise Http404
 
             if request.user.is_authenticated:
