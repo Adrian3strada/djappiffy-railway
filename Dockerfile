@@ -33,7 +33,7 @@ RUN pip install -r /requirements.txt
 
 # Use /app folder as a directory where the source code is stored.
 WORKDIR /app
-# RUN mkdir -p /home/wagtail/.config/matplotlib
+RUN mkdir -p /home/wagtail
 
 # Set this directory to be owned by the "wagtail" user. This Wagtail project
 # uses SQLite, the folder needs to be owned by the user that
