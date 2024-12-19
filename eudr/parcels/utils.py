@@ -16,6 +16,7 @@ fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
 
 def validate_geom_vector_file(value):
+    print("validate_geom_vector_file", value.name.split('.')[-1].lower(), value.name)
     try:
         file_content = value.read()
         file_extension = value.name.split('.')[-1].lower()
@@ -51,7 +52,8 @@ def validate_geom_vector_file(value):
             if e.args and e.args[0] == "Geometría inválida":
                 ex = "Geometría inválida"
             else:
-                ex = "Formato inválido"
+                # ex = "Formato inválido"
+                ex = e.args[0]
         except Exception as eee:
             ex = eee
         raise ValidationError(f"El archivo no es un archivo espacial válido: {ex}")
