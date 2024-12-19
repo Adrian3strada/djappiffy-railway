@@ -1,7 +1,6 @@
 [
 {
     "model": "users.user",
-    "pk": "01.tezil.01.owner",
     "fields": {
         "password": "pbkdf2_sha256$720000$NLssLHPljrZ03I82OyyLfy$DzMmXwZeL3uvdMKYmZJtUAsg9CoPP+jzr1/M3/bpj9k=",
         "last_login": "2024-12-12T03:40:16.420Z",
@@ -18,7 +17,6 @@
 },
 {
     "model": "users.user",
-    "pk": "01.tezil.02.worker",
     "fields": {
         "password": "pbkdf2_sha256$720000$A6AL2wmFCRwp6G9bNYpKfJ$8DHjUwGQvAWTG2LNMmE+uwAGpIexifreftevokAoKII=",
         "last_login": "2024-12-12T03:40:56.860Z",
@@ -35,7 +33,6 @@
 },
 {
     "model": "users.user",
-    "pk": "02.red.01.owner",
     "fields": {
         "password": "pbkdf2_sha256$720000$CkK09gVZppZur4otEHfxKk$6aR4z7h9Lb1deJuXle2ESkAAOG5GkK2rIi0L0YvhhXY=",
         "last_login": "2024-12-12T03:41:23.989Z",
@@ -52,7 +49,6 @@
 },
 {
     "model": "users.user",
-    "pk": "02.red.02.worker",
     "fields": {
         "password": "pbkdf2_sha256$720000$ZUfdxbdWTc1RSPu7ExcEN7$ss7dF9xPxmoD8jWDN0wPwcobEbnNDznpaJO180h/9IE=",
         "last_login": "2024-12-12T03:41:44.987Z",
@@ -69,7 +65,6 @@
 },
 {
     "model": "users.user",
-    "pk": "03.green.01.owner",
     "fields": {
         "password": "pbkdf2_sha256$720000$1oQxHEStUnw4jXzm1jisH6$LKbB7/gBXPoBhS71jXqXvCEXT4u+mGJpRZi+u3CGU5w=",
         "last_login": "2024-12-12T03:42:13.459Z",
@@ -86,7 +81,6 @@
 },
 {
     "model": "users.user",
-    "pk": "03.green.02.worker",
     "fields": {
         "password": "pbkdf2_sha256$720000$ir6mFyXDhdGdPkAYn3kWhx$wN3wro4Nbu/Zlb79/qSWHTtQFOeawi0WK0UxwaZDPdc=",
         "last_login": "2024-12-12T03:43:13.465Z",
@@ -103,7 +97,6 @@
 },
 {
     "model": "users.user",
-    "pk": "04.blue.01.owner",
     "fields": {
         "password": "pbkdf2_sha256$720000$hCN7FtIzF49exvGCluCIEU$4wRxlx0VflbEAB1hL+JkwZ9LXbikeoZWriKUcF9yxzs=",
         "last_login": "2024-12-12T03:43:36.202Z",
@@ -120,7 +113,6 @@
 },
 {
     "model": "users.user",
-    "pk": "04.blue.02.worker",
     "fields": {
         "password": "pbkdf2_sha256$720000$ymo8vHlEfaduTOzR6re2He$WqHiH8wLGtUO+OiEPOdJYvKG111gARCIXKoMwlDEta4=",
         "last_login": "2024-12-12T03:44:14.177Z",
@@ -137,7 +129,6 @@
 },
 {
     "model": "users.user",
-    "pk": "admin",
     "fields": {
         "password": "pbkdf2_sha256$720000$WcmvucYzG2fHcVzX1hcSGP$4FZ0tRcSgRQPAZ892Vr08YNdjqrJooYWyHVrzUzcVjY=",
         "last_login": "2024-12-12T03:39:11.090Z",
@@ -154,7 +145,6 @@
 },
 {
     "model": "users.user",
-    "pk": "su0.st0.act0",
     "fields": {
         "password": "pbkdf2_sha256$720000$PDmbL0B6H9qs8k2eJHmFpi$gfnlu/4kwdh3M5CcTurlVQuVQDg1XELuCl7XEcW2C8g=",
         "last_login": null,
@@ -171,7 +161,6 @@
 },
 {
     "model": "users.user",
-    "pk": "su0.st0.act1",
     "fields": {
         "password": "pbkdf2_sha256$720000$2tPtx6HD14B4Q1A8cq9EEO$XVdHIuQgNRb3Zz/jaGwJaZIHKcc5XMKLS80sWIBAD2U=",
         "last_login": null,
@@ -188,7 +177,6 @@
 },
 {
     "model": "users.user",
-    "pk": "su0.st1.act0",
     "fields": {
         "password": "pbkdf2_sha256$720000$XUMGMvDhKP6kmluBf1O4cQ$NGhV1G6lRFtqgstwziCdJLoTSn7UHdEBrD3yk6gzAgM=",
         "last_login": null,
@@ -205,7 +193,6 @@
 },
 {
     "model": "users.user",
-    "pk": "su0.st1.act1",
     "fields": {
         "password": "pbkdf2_sha256$720000$YGMIKShVuoKBuS1dR5tMOC$41IoBtmVt2wwnB6fEVTubeoVjOwn8Dtm1VH54C8uMXo=",
         "last_login": "2024-12-12T03:33:40.934Z",
@@ -222,7 +209,6 @@
 },
 {
     "model": "users.user",
-    "pk": "su1.st0.act0",
     "fields": {
         "password": "pbkdf2_sha256$720000$UWdvCq1IsYkSeQhK0LxrLQ$IE+xu3F4+HpVFOfjwc+HCK60QQl0GkVbL6Hld36sk68=",
         "last_login": null,
@@ -239,7 +225,6 @@
 },
 {
     "model": "users.user",
-    "pk": "su1.st0.act1",
     "fields": {
         "password": "pbkdf2_sha256$720000$5YJtyJ27QoF6PFRJfX3u5z$Q/1psaESikKTanFSPps+luAgnymwstfHQJ9WVaBMJGs=",
         "last_login": null,
@@ -256,7 +241,6 @@
 },
 {
     "model": "users.user",
-    "pk": "su1.st1.act0",
     "fields": {
         "password": "pbkdf2_sha256$720000$FjgxyApDkpQOiYCRGbJ1IF$/0sPhjCSQLyctk3L8dxmPsTt8+l/Ji1Pi9YaZX54cl0=",
         "last_login": null,
@@ -273,7 +257,6 @@
 },
 {
     "model": "users.user",
-    "pk": "su1.st1.act1",
     "fields": {
         "password": "pbkdf2_sha256$720000$ttnZZ6B4KshqpZE0wggun7$anb0DYH6Fx3Rxyx2/3OHQCoSMJaWc8H8R/lP5ZMpp44=",
         "last_login": "2024-12-12T03:36:46.336Z",
