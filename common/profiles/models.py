@@ -170,8 +170,8 @@ class OrganizationProfile(PolymorphicModel):
     ### Subdomain
     host_full_name = models.CharField(
         max_length=50,
-        unique=True,
-        default="",
+        null=True,
+        blank=True,
         verbose_name=_('host full name'),
     )
 
