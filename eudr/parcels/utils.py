@@ -14,6 +14,7 @@ from fiona.io import MemoryFile
 fiona.drvsupport.supported_drivers['KML'] = 'rw'
 fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
+
 def validate_geom_vector_file(value):
     try:
         file_content = value.read()
