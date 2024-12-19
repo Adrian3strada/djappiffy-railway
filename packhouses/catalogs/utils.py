@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 import datetime
 
 
@@ -12,4 +13,18 @@ def vehicle_year_choices():
 def vehicle_validate_year(value):
     current_year = datetime.date.today().year
     if int(value) < 1888 or int(value) > current_year + 1:
-        raise ValidationError(f'{value} no está dentro del rango permitido (1888 - {current_year}).')
+        raise ValidationError(f'{value} no está dentro del rango permitido (1980 - {current_year}).')
+
+# Función para generar tipo región dinámicamente
+def get_type_choices():
+    return [
+        ('local', _('Local')),
+        ('exportacion', _('Export')),
+    ]
+
+# Función para generar tipos de pago dinámicamente
+def get_payment_choices():
+    return [
+        ('percentage', _('Percentage')),
+        ('fixed_amount', _('Fixed amount')),
+    ]

@@ -8,7 +8,9 @@ from .models import (
     Vehicle,
     Gatherer, Client, ClientShipAddress, Maquiladora, MaquiladoraClient, OrchardProductClassification, Orchard,
     OrchardCertificationKind,
-    OrchardCertificationVerifier, OrchardCertification, HarvestCrew, SupplyUnitKind, SupplyKind, SupplyKindRelation,
+    OrchardCertificationVerifier, OrchardCertification,
+    HarvestingCrewProvider, CrewChief, HarvestingCrew, HarvestingCrewBeneficiary, HarvestingPaymentSetting,
+    SupplyUnitKind, SupplyKind, SupplyKindRelation,
     Supply, Supplier, MeshBagKind, MeshBagFilmKind, MeshBag, ServiceProvider, ServiceProviderBenefactor, Service,
     AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber, Pallet, PalletExpense, ProductPackaging
 )
@@ -701,11 +703,53 @@ class OrchardCertificationVerifierAdmin(admin.ModelAdmin):
 class OrchardCertificationAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(CrewChief)
+class CrewChiefAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
 
-@admin.register(HarvestCrew)
-class HarvestCrewAdmin(admin.ModelAdmin):
-    pass
+class HarvestingCrewBeneficiaryInline(admin.TabularInline):
+    model = HarvestingCrewBeneficiary
+    extra = 0
 
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return formset
+
+class HarvestingPaymentSettingInline(admin.StackedInline):
+    model = HarvestingPaymentSetting
+    extra = 0
+
+@admin.register(HarvestingCrew)
+class HarvestingCrewAdmin(admin.ModelAdmin):
+    list_display = ('name', 'harvesting_crew_provider', 'crew_chief', 'certification_name', 'persons_number', 'is_enabled')
+    list_filter = ('is_enabled',)
+    fields = ('harvesting_crew_provider', 'name', 'certification_name', 'crew_chief', 'persons_number', 'comments', 'is_enabled', 'organization',)
+    inlines = [HarvestingPaymentSettingInline,]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'certification_name' in form.base_fields:
+            form.base_fields['certification_name'].widget = UppercaseTextInputWidget()
+        return form
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[HarvestingCrewProvider, CrewChief, HarvestingCrewBeneficiary, Bank, HarvestingPaymentSetting, Organization]):
+            readonly_fields.extend(['name', 'certification_name', 'harvesting_crew_provider', 'organization'])
+        return readonly_fields
+
+@admin.register(HarvestingCrewProvider)
+class HarvestingCrewProviderAdmin(admin.ModelAdmin):
+    inlines = [HarvestingCrewBeneficiaryInline,]
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
 
 @admin.register(SupplyUnitKind)
 class SupplyUnitKindAdmin(admin.ModelAdmin):
