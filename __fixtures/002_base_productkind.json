@@ -96,5 +96,19 @@
     "image": "",
     "is_enabled": true
   }
+},
+{
+    "model": "base.productkind",
+    "pk": 8,
+    "fields": {
+        "name": "Aguacate",
+        "name_en": "Avocado",
+        "name_pt": "Abacate",
+        "name_fr": "Avocat",
+        "name_de": "Avocado",
+        "name_es": "Aguacate",
+        "image": "",
+        "is_enabled": true
+    }
 }
 ]

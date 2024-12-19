@@ -4,6 +4,8 @@ from django.utils import translation
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.shortcuts import redirect
+import re
 
 from organizations.models import Organization, OrganizationUser
 
@@ -46,43 +48,71 @@ class SubdomainDetectionMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        request_host = self._get_request_host(request)
+        requested_hostname = self._get_request_hostname(request)
 
-        try:
-            # Verificar si existe OrganizationProfile asociada al HOST
-            requested_organization_profile = OrganizationProfile.objects.get(host_full_name=request_host)
+        if re.match(r'^/dadmin/', request.path) and (not request.user.is_superuser):
             try:
-                # Verificar si existe Organization asociada al OrganizationProfile
-                requested_organization = Organization.objects.get(id=requested_organization_profile.organization_id)
-            except Organization.DoesNotExist:
+                # Verificar si existe OrganizationProfile asociada al HOST
+                requested_organization_profile = OrganizationProfile.objects.get(
+                    hostname=requested_hostname,
+                )
+                print("Requested organization profile: ", requested_organization_profile)
+                try:
+                    # Verificar si existe Organization asociada al OrganizationProfile
+                    requested_organization = Organization.objects.get(
+                        id=requested_organization_profile.organization_id,
+                    )
+                    print("Requested organization: ", requested_organization)
+                except Organization.DoesNotExist:
+                    print("Organization does not exist")
+                    raise Http404
+            except OrganizationProfile.DoesNotExist:
+                print("OrganizationProfile does not exist")
                 raise Http404
-        except OrganizationProfile.DoesNotExist:
-            raise Http404
 
-        if request.user.is_authenticated:
-            if self._is_user_in_organization(request.user, requested_organization) or request.user.is_staff :
-                pass
+            if request.user.is_authenticated:
+                if not self._is_user_allowed(request.user, requested_organization):
+                    raise PermissionDenied
             else:
-                raise PermissionDenied
-        else:
-            raise PermissionDenied
+                redirect("/dadmin/")
 
         response = self.get_response(request)
 
         return response
 
-    def _get_request_host(self, request):
+    def _get_request_hostname(self, request):
         """
-        Extract URL host from request without port.
-        """
-        request_full_host = request.get_host()
-        request_host_only = request_full_host.split(':')[0]
+        Extract URL hostname from request.
 
-        return request_host_only
+            NOTE: host = hostname + port
+        """
+        request_host = request.get_host()
+        request_hostname = request_host.split(':')[0]
+        print("Request host: ", request_host)
+        print("Request hostname: ", request_hostname)
+
+        return request_hostname
 
     def _is_user_in_organization(self, user, organization):
         """
-        Query if an User is member of some Organization.
+        Query if the 'User' is member of the 'Organization'
+            using 'OrganizationUser' information.
         """
 
-        return OrganizationUser.objects.filter(organization_id=organization.id, user_id=user.username).exists()
+        return OrganizationUser.objects.filter(
+            organization=organization,
+            user=user,
+        ).exists()
+
+    def _is_user_allowed(self, user, organization):
+        """
+        A: self._is_user_in_organization(user, organization)
+        B: user.is_active
+        C: user.is_staff
+        D: user.is_superuser
+
+        - Allowed if: (A and B and C) or (D)
+        - Denied if: not(A and B and C) and not(D)
+        """
+        return (self._is_user_in_organization(user, organization) and
+                user.is_active and user.is_staff) or user.is_superuser

@@ -168,11 +168,10 @@ class OrganizationProfile(PolymorphicModel):
     )
 
     ### Subdomain
-    host_full_name = models.CharField(
-        max_length=50,
-        null=True,
-        blank=True,
-        verbose_name=_('host full name'),
+    hostname = models.CharField(
+        max_length=255,
+        unique=True,
+        verbose_name=_('Hostname'),
     )
 
     ### Logo

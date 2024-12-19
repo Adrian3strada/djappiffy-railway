@@ -7,15 +7,15 @@ from .models import (UserProfile, OrganizationProfile, ProducerProfile,
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ["user", "first_name", "last_name", "phone_number",
-                    "country"]
-    ordering = ["user"]
+    list_display = ("user", "first_name", "last_name", "phone_number",
+                    "country")
+    ordering = ("user",)
 
 
 @admin.register(OrganizationProfile)
 class OrganizationProfileAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "host_full_name", "organization"]
-    ordering = ["id"]
+    list_display = ("id", "name", "hostname", "organization")
+    ordering = ("id",)
 
 
 @admin.register(ProducerProfile)

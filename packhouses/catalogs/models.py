@@ -311,21 +311,24 @@ class ProductProducerBenefactor(CleanNameAndProductProducerMixin, models.Model):
 
 
 class Client(CleanNameAndOrganizationMixin, models.Model):
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT, help_text=_('Country of the client, must have a market selected to show the market countries.'))
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
-    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
-                                       null=True, blank=True,
-                                       on_delete=models.PROTECT, help_text=_('Legal category of the client, must have a country selected to show that country legal categories.'))
-    tax_id = models.CharField(max_length=30, verbose_name=_('Client tax ID'))
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT, help_text=_(
+        'Country of the client, must have a market selected to show the market countries.'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
     address = models.CharField(max_length=255, verbose_name=_('Address'))
     external_number = models.CharField(max_length=10, verbose_name=_('External number'))
     internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
+    same_ship_address = models.BooleanField(default=False)
+    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
+                                       null=True, blank=True,
+                                       on_delete=models.PROTECT, help_text=_(
+            'Legal category of the client, must have a country selected to show that country legal categories.'))
+    tax_id = models.CharField(max_length=30, verbose_name=_('Client tax ID'))
     fda = models.CharField(max_length=20, verbose_name=_('FDA'), null=True, blank=True)
     swift = models.CharField(max_length=20, verbose_name=_('SWIFT'), null=True, blank=True)
     aba = models.CharField(max_length=20, verbose_name=_('ABA'), null=True, blank=True)
@@ -337,7 +340,6 @@ class Client(CleanNameAndOrganizationMixin, models.Model):
     contact_name = models.CharField(max_length=255, verbose_name=_('Contact person full name'))
     contact_email = models.EmailField()
     contact_phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'))
-    same_ship_address = models.BooleanField(default=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -355,8 +357,8 @@ class ClientShipAddress(models.Model):
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
     address = models.CharField(max_length=255, verbose_name=_('Address'))
     external_number = models.CharField(max_length=10, verbose_name=_('External number'))
     internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
