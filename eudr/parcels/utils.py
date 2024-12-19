@@ -11,19 +11,34 @@ from fiona.io import ZipMemoryFile
 from django.core.files.storage import default_storage
 from tempfile import mkstemp, NamedTemporaryFile
 from fiona.io import MemoryFile
-
+fiona.drvsupport.supported_drivers['KML'] = 'rw'
+fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
 def validate_geom_vector_file(value):
     try:
         file_content = value.read()
-        if value.name.split('.')[-1] in ['gpkg', 'geojson']:
+        file_extension = value.name.split('.')[-1].lower()
+
+        if file_extension in ['gpkg', 'geojson']:
             with fiona.BytesCollection(file_content) as file:
                 if file.schema['geometry'] not in ['Polygon', 'MultiPolygon']:
                     raise ValidationError("Geometría inválida")
-        elif value.name.split('.')[-1] in ['zip']:
+        elif file_extension == 'zip':
             with fiona.io.ZipMemoryFile(file_content) as memfile:
                 layers = memfile.listlayers()
                 layer = memfile.open(layer=layers[0])
+                if layer.schema['geometry'] not in ['Polygon', 'MultiPolygon']:
+                    raise ValidationError("Geometría inválida")
+        elif file_extension == 'kml':
+            print("kml")
+            with fiona.BytesCollection(file_content, driver='LIBKML') as file:
+                print("file", file)
+                if file.schema['geometry'] not in ['Polygon', 'MultiPolygon']:
+                    raise ValidationError("Geometría inválida")
+        elif file_extension == 'kmz':
+            with ZipMemoryFile(file_content) as memfile:
+                layers = memfile.listlayers()
+                layer = memfile.open(layer=layers[0], driver='LIBKML')
                 if layer.schema['geometry'] not in ['Polygon', 'MultiPolygon']:
                     raise ValidationError("Geometría inválida")
         else:
@@ -135,10 +150,10 @@ def fix_format(instance):
     try:
         # Leer el contenido del archivo original
         file_content = default_storage.open(instance.file.name).read()
-        print("instance.file.name", instance.file.name)
+        file_extension = instance.file.name.split('.')[-1].lower()
 
         # Verificar si el archivo es un ZIP
-        if instance.file.name.split('.')[-1] == 'zip':
+        if file_extension == 'zip':
             with ZipMemoryFile(file_content) as src:
                 layers = src.listlayers()
                 layer = src.open(layer=layers[0])
@@ -154,6 +169,43 @@ def fix_format(instance):
 
                     generated_file = memfile.read()
                     new_file_path = default_storage.get_available_name(instance.file.name.replace('.zip', '.gpkg'))
+                    default_storage.save(new_file_path, ContentFile(generated_file))
+
+                    instance.file.name = new_file_path
+
+        elif file_extension == 'kml':
+            with fiona.BytesCollection(file_content, driver='LIBKML') as src:
+                with MemoryFile() as memfile:
+                    with memfile.open(
+                        driver="GPKG",
+                        schema=src.schema,
+                        crs=src.crs
+                    ) as dst:
+                        for feature in src:
+                            dst.write(feature)
+
+                    generated_file = memfile.read()
+                    new_file_path = default_storage.get_available_name(instance.file.name.replace('.kml', '.gpkg'))
+                    default_storage.save(new_file_path, ContentFile(generated_file))
+
+                    instance.file.name = new_file_path
+
+        elif file_extension == 'kmz':
+            with ZipMemoryFile(file_content) as src:
+                layers = src.listlayers()
+                layer = src.open(layer=layers[0], driver='LIBKML')
+
+                with MemoryFile() as memfile:
+                    with memfile.open(
+                        driver="GPKG",
+                        schema=layer.schema,
+                        crs=layer.crs
+                    ) as dst:
+                        for feature in layer:
+                            dst.write(feature)
+
+                    generated_file = memfile.read()
+                    new_file_path = default_storage.get_available_name(instance.file.name.replace('.kmz', '.gpkg'))
                     default_storage.save(new_file_path, ContentFile(generated_file))
 
                     instance.file.name = new_file_path
