@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
@@ -207,6 +208,22 @@ class PackhouseExporterProfile(OrganizationProfile):
     registry_number = models.CharField(max_length=50, verbose_name=_('Registry number'))
     sanitary_registry = models.CharField(max_length=50, verbose_name=_('Sanitary registry'))
     chain_of_custody = models.CharField(max_length=150, verbose_name=_('Chain of custody'))
+    hostname = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        unique=True,
+        verbose_name=_('Hostname'),
+    )
+
+    def clean(self):
+        """
+        Override the clean method to ensure uniqueness only if hostname is set.
+        """
+        if self.hostname:
+            if PackhouseExporterProfile.objects.filter(hostname=self.hostname).exclude(id=self.id).exists():
+                raise ValidationError(f"The hostname '{self.hostname}' is already taken.")
+        super().clean()
 
     class Meta:
         verbose_name = _('Packhouse exporter profile')
