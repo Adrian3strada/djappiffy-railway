@@ -6,18 +6,18 @@ from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizati
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from django.utils.translation import gettext_lazy as _
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django_ckeditor_5.fields import CKEditor5Field
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from common.billing.models import TaxRegime, LegalEntityCategory
-from .utils import vehicle_year_choices, vehicle_validate_year
+from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices
 from django.core.exceptions import ValidationError
 from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (ProductSizeKind, MassVolumeKind, Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand)
-
+from django.db.models import Max
 
 # Create your models here.
 
@@ -577,23 +577,114 @@ class OrchardCertification(models.Model):
         unique_together = ('orchard', 'certification_kind')
         ordering = ('orchard', 'certification_kind')
 
-
-# Cuadrillas de cosecha
-
-class HarvestCrew(models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('Name'))
-
+class HarvestingCrewProvider(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name / Legal name'))
+    tax_id = models.CharField(max_length=100, verbose_name=_('Tax ID'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Harvest crew')
-        verbose_name_plural = _('Harvest crews')
-        unique_together = ('name', 'organization')
-        ordering = ('name',)
+        verbose_name = _('Harvesting Crew Provider')
+        verbose_name_plural = _('Harvesting Crew Providers')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='harvesting_crew_provider_unique_name_organization'),
+        ]
 
+class CrewChief(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, verbose_name=_('Harvesting Crew Provider'),
+                                                 on_delete=models.PROTECT)
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Crew Chief')
+        verbose_name_plural = _('Crew Chiefs')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'harvesting_crew_provider'], name='crew_chief_unique_name_harvesting_crew_provider'),
+        ]
+
+class HarvestingCrew(models.Model):
+    harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, verbose_name=_('Harvesting Crew Provider'),
+                                                 on_delete=models.PROTECT)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    certification_name = models.CharField(max_length=100, verbose_name=_('Certification Name'), blank=True, null=True)
+    crew_chief = models.ForeignKey(CrewChief, verbose_name=_('Crew Chief'), on_delete=models.PROTECT)
+    persons_number = models.IntegerField(verbose_name=_('Persons Number'),validators=[MinValueValidator(1), MaxValueValidator(9999)])
+    comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True )
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    ooid = models.IntegerField(verbose_name=_('OOID'), editable=False)
+
+
+    def __str__(self):
+        return f"{self.name}"
+
+    # Asignar un consecutivo único para cada organización independiente a la llave primaria
+    def clean(self):
+        if not self.pk:
+            last_ooid = (
+                HarvestingCrew.objects.filter(organization=self.organization)
+                .aggregate(Max('ooid'))['ooid__max']
+                or 0
+            )
+            self.ooid = last_ooid + 1
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('Harvesting crew')
+        verbose_name_plural = _('Harvesting crews')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='harversting_name_unique_organization'),
+        ]
+
+class HarvestingCrewBeneficiary(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_('Bank'))
+    bank_account_number = models.CharField(max_length=18, verbose_name=_('Bank account number / CLABE'))
+    harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, on_delete=models.CASCADE, verbose_name=_('Harvesting Crew Provider'))
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Harvesting crew beneficiary')
+        verbose_name_plural = _('Harvesting crew beneficiaries')
+        constraints = [
+            models.UniqueConstraint(fields=['bank_account_number', 'harvesting_crew_provider'], name='bank_account_number_unique_harvesting_crew_provider'),
+        ]
+
+class HarvestingPaymentSetting(models.Model):
+    type_harvest = models.CharField(max_length=20, choices=get_type_choices(), default='local', verbose_name=_('Type of harvest'))
+    more_than_kg = models.FloatField(verbose_name=_('Kg of full truck'), help_text="From how many KG will the full truck payment be considered?" , validators=[MinValueValidator(0.01)])
+
+    pay_per_box_complete = models.FloatField(verbose_name=_('Pay per box (full truck)'), help_text="Payment per box in case of full truck" , validators=[MinValueValidator(0.01)])
+    pay_per_kg_complete = models.FloatField(verbose_name=_('Pay per kg (full truck)'), help_text="Payment per kg in case of full truck" , validators=[MinValueValidator(0.01)])
+    pay_per_day_complete = models.FloatField(verbose_name=_('Pay per day (full truck)'), help_text="Payment per day in case of full truck" , validators=[MinValueValidator(0.01)])
+
+    pay_per_box_incomplete = models.FloatField(verbose_name=_('Pay per box (incomplete truck)'), help_text="Payment per box in case of incomplete truck" , validators=[MinValueValidator(0.01)])
+    pay_per_kg_incomplete = models.FloatField(verbose_name=_('Pay per kg (incomplete truck)'), help_text="Payment per kg in case of incomplete truck" , validators=[MinValueValidator(0.01)])
+    pay_per_day_incomplete = models.FloatField(verbose_name=_('Pay per day (incomplete truck)'), help_text="Payment per day in case of incomplete truck" , validators=[MinValueValidator(0.01)])
+
+    type_payment_for_false_out = models.CharField(max_length=20, choices=get_payment_choices(), default='fixed_amount', verbose_name=_('Type of Payment for false out'))
+    amount_for_false_out = models.FloatField(verbose_name=_('Amount for false out'), validators=[MinValueValidator(0.01)])
+
+    harvesting_crew = models.ForeignKey(HarvestingCrew, on_delete=models.CASCADE, verbose_name=_('Harvesting Crew'))
+
+    def __str__(self):
+        return f"{self.type_harvest}"
+
+    class Meta:
+        verbose_name = _('Payment Setting')
+        verbose_name_plural = _('Payment Settings')
+        constraints = [
+            models.UniqueConstraint(fields=['type_harvest', 'harvesting_crew'], name='type_harvest_unique_harvesting_crew'),
+        ]
 
 #  Proveedores de insumos
 
