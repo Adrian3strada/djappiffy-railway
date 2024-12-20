@@ -167,13 +167,6 @@ class OrganizationProfile(PolymorphicModel):
         verbose_name=_('URL'),
     )
 
-    ### Subdomain
-    hostname = models.CharField(
-        max_length=255,
-        unique=True,
-        verbose_name=_('Hostname'),
-    )
-
     ### Logo
     logo = models.ImageField(
         blank=True,
