@@ -268,7 +268,7 @@ class ProductProducerAdmin(admin.ModelAdmin):
     list_display = ('name', 'alias', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number', 'is_enabled')
     list_filter = ('state', 'city', 'bank', 'is_enabled')
     search_fields = ('name', 'alias', 'neighborhood', 'address', 'tax_id', 'phone_number')
-    fields = ('name', 'alias', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'tax_id', 'phone_number', 'bank_account_number', 'bank', 'is_enabled', 'organization')
+    fields = ('name', 'alias', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number', 'internal_number', 'tax_id', 'email', 'phone_number', 'product_provider', 'bank_account_number', 'bank', 'is_enabled', 'organization')
     inlines = [ProductProducerBenefactorInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -277,6 +277,10 @@ class ProductProducerAdmin(admin.ModelAdmin):
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         if 'alias' in form.base_fields:
             form.base_fields['alias'].widget = UppercaseAlphanumericTextInputWidget()
+        if 'district' in form.base_fields:
+            form.base_fields['district'].widget = UppercaseTextInputWidget()
+        if 'neighborhood' in form.base_fields:
+            form.base_fields['neighborhood'].widget = UppercaseTextInputWidget()
         if 'address' in form.base_fields:
             form.base_fields['address'].widget = UppercaseTextInputWidget()
         if 'tax_id' in form.base_fields:
@@ -285,7 +289,7 @@ class ProductProducerAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Region, City, Bank, ProductProducerBenefactor, Organization]):
+        if obj and is_instance_used(obj, exclude=[Region, City, ProductProvider, Bank, Organization, ProductProducerBenefactor]):
             readonly_fields.extend(['name', 'alias', 'organization'])
         return readonly_fields
 
@@ -646,6 +650,10 @@ class MaquiladoraAdmin(admin.ModelAdmin):
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/maquiladora.js',)
 
+class OrchardCertificationInline(admin.TabularInline):
+    model = OrchardCertification
+    extra = 0
+
 
 @admin.register(Orchard)
 class OrchardAdmin(admin.ModelAdmin):
@@ -653,6 +661,7 @@ class OrchardAdmin(admin.ModelAdmin):
     list_filter = ('product_classification_kind', 'safety_authority_registration_date', 'is_enabled')
     search_fields = ('name', 'code', 'producer__name')
     fields = ('name', 'code', 'producer', 'safety_authority_registration_date', 'state', 'city', 'district', 'ha', 'product_classification_kind', 'phytosanitary_certificate', 'is_enabled', 'organization')
+    inlines = [OrchardCertificationInline]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -668,7 +677,7 @@ class OrchardAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
-        obj = Client.objects.get(id=object_id) if object_id else None
+        obj = Orchard.objects.get(id=object_id) if object_id else None
 
         user_profile = UserProfile.objects.get(user=request.user)
         country = user_profile.country
@@ -696,6 +705,10 @@ class OrchardAdmin(admin.ModelAdmin):
             return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/orchard.js',)
+
 
 
 class ServiceProviderBenefactorInline(admin.TabularInline):

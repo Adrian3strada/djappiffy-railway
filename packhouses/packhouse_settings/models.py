@@ -193,7 +193,7 @@ class OrchardCertificationVerifier(models.Model):
 class OrchardCertificationKind(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     verifiers = models.ManyToManyField(OrchardCertificationVerifier, verbose_name=_('Verifiers'), blank=False)
-    extra_code = models.CharField(max_length=20, verbose_name=_('Extra code'), null=True, blank=True)
+    extra_code_name = models.CharField(max_length=20, verbose_name=_('Extra code name'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 

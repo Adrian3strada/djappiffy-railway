@@ -216,8 +216,8 @@ class OrchardCertificationKindAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, **kwargs)
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
-        if 'extra_code' in form.base_fields:
-            form.base_fields['extra_code'].widget = UppercaseAlphanumericTextInputWidget()
+        if 'extra_code_name' in form.base_fields:
+            form.base_fields['extra_code_name'].widget = UppercaseAlphanumericTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):

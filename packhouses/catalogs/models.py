@@ -269,16 +269,16 @@ class ProductProducer(CleanNameOrAliasAndOrganizationMixin, models.Model):
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.CharField(max_length=255, verbose_name=_('District'))
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
+    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
     address = models.CharField(max_length=255, verbose_name=_('Address'))
     external_number = models.CharField(max_length=20, verbose_name=_('External number'))
-    internal_number = models.CharField(max_length=20, verbose_name=_('Internal number'))
+    internal_number = models.CharField(max_length=20, verbose_name=_('Internal number'), null=True, blank=True)
     tax_id = models.CharField(max_length=100, verbose_name=_('Tax ID'))
-    email = models.EmailField()
+    email = models.EmailField(null=True, blank=True)
     phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'))
-    product_provider = models.ForeignKey(ProductProvider, on_delete=models.PROTECT, verbose_name=_('Product provider'))
+    product_provider = models.ForeignKey(ProductProvider, on_delete=models.PROTECT, verbose_name=_('Product provider'), null=True, blank=True)
     bank_account_number = models.CharField(max_length=20, verbose_name=_('Bank account number'))
     bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_('Bank'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -495,7 +495,7 @@ class Orchard(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     code = models.CharField(max_length=100, verbose_name=_('Registry code'))
     producer = models.ForeignKey(ProductProducer, verbose_name=_('Producer'), on_delete=models.PROTECT)
-    safety_authority_registration_date = models.DateField(verbose_name=_('Registration date'))
+    safety_authority_registration_date = models.DateField(verbose_name=_('Safety authority registration date'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
@@ -512,8 +512,11 @@ class Orchard(models.Model):
     class Meta:
         verbose_name = _('Orchard')
         verbose_name_plural = _('Orchards')
-        unique_together = ('name', 'organization')
-        ordering = ('name',)
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='orchard_unique_name_organization'),
+            models.UniqueConstraint(fields=['code', 'organization'], name='orchard_unique_code_organization')
+        ]
 
 
 
@@ -524,6 +527,7 @@ class OrchardCertification(models.Model):
     expiration_date = models.DateField(verbose_name=_('Expiration date'))
     verifier = models.ForeignKey(OrchardCertificationVerifier, verbose_name=_('Orchard certification verifier'),
                                  on_delete=models.PROTECT)
+    extra_code = models.CharField(max_length=100, verbose_name=_('Extra code'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.PROTECT)
 
