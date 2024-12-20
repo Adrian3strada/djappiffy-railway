@@ -154,3 +154,56 @@ class VehicleBrand(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='vehiclebrand_unique_name_organization'),
         ]
+
+
+class OrchardProductClassificationKind(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Product Classification')
+        verbose_name_plural = _('Product Classifications')
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='orchardproductclassificationkind_unique_name_organization'),
+        ]
+
+
+class OrchardCertificationVerifier(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Orchard certification verifier')
+        verbose_name_plural = _('Orchard certification verifiers')
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='orchardcertificationverifier_unique_name_organization'),
+        ]
+
+
+class OrchardCertificationKind(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    verifiers = models.ManyToManyField(OrchardCertificationVerifier, verbose_name=_('Verifiers'), blank=False)
+    extra_code = models.CharField(max_length=20, verbose_name=_('Extra code'), null=True, blank=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Orchard certification kind')
+        verbose_name_plural = _('Orchard certification kinds')
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='orchardcertificationkind_unique_name_organization'),
+        ]

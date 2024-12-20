@@ -16,7 +16,9 @@ from .utils import vehicle_year_choices, vehicle_validate_year
 from django.core.exceptions import ValidationError
 from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (ProductSizeKind, MassVolumeKind, Bank, VehicleOwnershipKind,
-                                                  PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand)
+                                                  PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
+                                                  OrchardProductClassificationKind, OrchardCertificationVerifier,
+                                                  OrchardCertificationKind)
 
 
 # Create your models here.
@@ -488,32 +490,18 @@ class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
             models.UniqueConstraint(fields=['name', 'maquiladora'], name='maquiladoraclient_unique_name_maquiladora'),
         ]
 
-class OrchardProductClassification(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Product Classification')
-        verbose_name_plural = _('Product Classifications')
-        unique_together = ('name', 'organization')
-
 
 class Orchard(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
+    code = models.CharField(max_length=100, verbose_name=_('Registry code'))
     producer = models.ForeignKey(ProductProducer, verbose_name=_('Producer'), on_delete=models.PROTECT)
-    registration_date = models.DateField(verbose_name=_('Registration date'))
-    forest_land_use_change = models.CharField(max_length=100, verbose_name=_('Forest land use change'), null=True,
-                                              blank=True)
+    safety_authority_registration_date = models.DateField(verbose_name=_('Registration date'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
     ha = models.FloatField(verbose_name=_('Hectares'))
-    product_classification = models.ForeignKey(OrchardProductClassification, verbose_name=_('Product Classification'),
-                                               on_delete=models.PROTECT)
+    product_classification_kind = models.ForeignKey(OrchardProductClassificationKind, verbose_name=_('Product Classification'),
+                                                    on_delete=models.PROTECT)
     phytosanitary_certificate = models.CharField(max_length=100, verbose_name=_('Phytosanitary certificate'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -527,35 +515,6 @@ class Orchard(models.Model):
         unique_together = ('name', 'organization')
         ordering = ('name',)
 
-
-class OrchardCertificationKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Orchard certification kind')
-        verbose_name_plural = _('Orchard certification kinds')
-        unique_together = ('name', 'organization')
-        ordering = ('name',)
-
-
-class OrchardCertificationVerifier(models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Orchard certification verifier')
-        verbose_name_plural = _('Orchard certification verifiers')
-        unique_together = ('name', 'organization')
-        ordering = ('name',)
 
 
 class OrchardCertification(models.Model):

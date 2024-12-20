@@ -57,3 +57,8 @@ geopandas
 numpy
 matplotlib
 earthengine-api
+
+pyasyncore; python_version>="3.12"
+aiosmtpd; python_version>="3.12"
+standard-smtpd; python_version>="3.12"
+distutils; python_version>="3.12"

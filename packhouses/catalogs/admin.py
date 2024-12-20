@@ -6,7 +6,7 @@ from .models import (
     ProductHarvestKind, ProductProvider, ProductProviderBenefactor,
     ProductProducer, ProductProducerBenefactor, PaymentKind, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
     Vehicle,
-    Gatherer, Client, ClientShipAddress, Maquiladora, MaquiladoraClient, OrchardProductClassification, Orchard,
+    Gatherer, Client, ClientShipAddress, Maquiladora, MaquiladoraClient, OrchardProductClassificationKind, Orchard,
     OrchardCertificationKind,
     OrchardCertificationVerifier, OrchardCertification, HarvestCrew, SupplyUnitKind, SupplyKind, SupplyKindRelation,
     Supply, Supplier, MeshBagKind, MeshBagFilmKind, MeshBag, ServiceProvider, ServiceProviderBenefactor, Service,
@@ -385,7 +385,6 @@ class ClientAdmin(admin.ModelAdmin):
     fields = ('name', 'market', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number', 'internal_number', 'same_ship_address', 'legal_category', 'tax_id', 'fda', 'swift', 'aba', 'clabe', 'bank', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
     inlines = [ClientShipAddressInline]
 
-
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if 'name' in form.base_fields:
@@ -399,6 +398,13 @@ class ClientAdmin(admin.ModelAdmin):
         if 'contact_name' in form.base_fields:
             form.base_fields['contact_name'].widget = UppercaseTextInputWidget()
         return form
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[Market, Country, Region, City, LegalEntityCategory, Bank, PaymentKind,
+                                                  Organization]):
+            readonly_fields.extend(['name', 'organization'])
+        return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
@@ -641,7 +647,55 @@ class MaquiladoraAdmin(admin.ModelAdmin):
         js = ('js/admin/forms/packhouses/catalogs/maquiladora.js',)
 
 
+@admin.register(Orchard)
+class OrchardAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code', 'producer', 'product_classification_kind', 'is_enabled')
+    list_filter = ('product_classification_kind', 'safety_authority_registration_date', 'is_enabled')
+    search_fields = ('name', 'code', 'producer__name')
+    fields = ('name', 'code', 'producer', 'safety_authority_registration_date', 'state', 'city', 'district', 'ha', 'product_classification_kind', 'phytosanitary_certificate', 'is_enabled', 'organization')
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[ProductProducer, Region, City, OrchardProductClassificationKind, Organization]):
+            readonly_fields.extend(['name', 'organization'])
+        return readonly_fields
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = Client.objects.get(id=object_id) if object_id else None
+
+        user_profile = UserProfile.objects.get(user=request.user)
+        country = user_profile.country
+
+        if db_field.name == "state":
+            if country:
+                kwargs["queryset"] = Region.objects.filter(country=country)
+            else:
+                kwargs["queryset"] = Region.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "city":
+            if request.POST:
+                state_id = request.POST.get('state')
+            else:
+                state_id = obj.state_id if obj else None
+            if state_id:
+                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = City.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class ServiceProviderBenefactorInline(admin.TabularInline):
@@ -662,10 +716,6 @@ class SupplyAdminForm(forms.ModelForm):
             self.fields['related_supply'].queryset = Supply.objects.filter(kind__in=allowed_kinds)
 
 
-
-
-
-
 @admin.register(Supply)
 class SupplyAdmin(admin.ModelAdmin):
     form = SupplyAdminForm
@@ -675,26 +725,6 @@ class SupplyAdmin(admin.ModelAdmin):
 class SupplyKindRelationAdmin(admin.ModelAdmin):
     list_display = ('from_kind', 'to_kind', 'is_enabled')
     list_filter = ('from_kind', 'to_kind', 'is_enabled')
-
-
-@admin.register(OrchardProductClassification)
-class OrchardProductClassificationAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Orchard)
-class OrchardAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(OrchardCertificationKind)
-class OrchardCertificationKindAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(OrchardCertificationVerifier)
-class OrchardCertificationVerifierAdmin(admin.ModelAdmin):
-    pass
 
 
 @admin.register(OrchardCertification)
