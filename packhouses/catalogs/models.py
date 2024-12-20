@@ -1058,3 +1058,139 @@ class ProductPackaging(models.Model):
         verbose_name = _('Product Packaging')
         verbose_name_plural = _('Product Packaging')
         unique_together = ('name', 'organization')
+
+# Catálogos de exportación
+class ExportingCompany(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
+    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
+    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
+    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
+    address = models.CharField(max_length=255, verbose_name=_('Address'))
+    external_number = models.CharField(max_length=10, verbose_name=_('External number'))
+    internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
+    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
+                                       null=True, blank=True,
+                                       on_delete=models.PROTECT, help_text=_(
+            'Legal category of the exporting company, must have a country selected to show that country legal categories.'))
+    tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
+    clabe = models.CharField(max_length=18, verbose_name=_('CLABE'), null=True, blank=True)
+    bank = models.ForeignKey(Bank, verbose_name=_('Bank'), on_delete=models.PROTECT, null=True, blank=True)
+    payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
+    contact_name = models.CharField(max_length=255, verbose_name=_('Contact person full name'))
+    contact_email = models.EmailField()
+    contact_phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = _('Exporting Company')
+        verbose_name_plural = _('Exporting Companies')
+        constraints = [
+            models.UniqueConstraint(fields=('name', 'organization',), name='exporting_company_unique_name_organization'),
+        ]
+
+class Transfer(CleanNameAndOrganizationMixin,models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
+    caat = models.CharField(max_length=100, verbose_name=_('CAAT'))
+    scac = models.CharField(max_length=100, verbose_name=_('SCAC'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Transfer')
+        verbose_name_plural = _('Transfers')
+        unique_together = ('name', 'organization')
+
+class LocalTransporter(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Local Transporter')
+        verbose_name_plural = _('Local Transporters')
+        unique_together = ('name', 'organization')
+
+class BorderToDestinationTransporter(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
+    tax_id = models.CharField(max_length=100, verbose_name=_('Tax ID'))
+    caat = models.CharField(max_length=100, verbose_name=_('CAAT'))
+    irs = models.CharField(max_length=100, verbose_name=_('IRS'))
+    scac = models.CharField(max_length=100, verbose_name=_('SCAC'))
+    us_custom_bond = models.CharField(max_length=100, verbose_name=_('US Custom Bond'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Border To Destination Transporter')
+        verbose_name_plural = _('Border To Destination Transporters')
+        unique_together = ('name', 'organization')
+
+class CustomsBroker(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
+    broker_number = models.CharField(max_length=100, verbose_name=_('Broker number'))
+    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Customs Broker')
+        verbose_name_plural = _('Customs Brokers')
+        unique_together = ('name', 'organization')
+
+class Vessel(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
+    vessel_number = models.CharField(max_length=100, verbose_name=_('Vessel number'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Vessel')
+        verbose_name_plural = _('Vessels')
+        unique_together = ('name', 'organization')
+
+class Airline(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
+    airline_number = models.CharField(max_length=100, verbose_name=_('Airline number'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Airline')
+        verbose_name_plural = _('Airlines')
+        unique_together = ('name', 'organization')
+
+class InsuranceCompany(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
+    insurance_number = models.CharField(max_length=100, verbose_name=_('Insurance company number'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Insurance Company')
+        verbose_name_plural = _('Insurance Companies')
+        unique_together = ('name', 'organization')

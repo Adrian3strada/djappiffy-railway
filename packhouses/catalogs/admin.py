@@ -12,7 +12,9 @@ from .models import (
     HarvestingCrewProvider, CrewChief, HarvestingCrew, HarvestingCrewBeneficiary, HarvestingPaymentSetting,
     SupplyUnitKind, SupplyKind, SupplyKindRelation,
     Supply, Supplier, MeshBagKind, MeshBagFilmKind, MeshBag, ServiceProvider, ServiceProviderBenefactor, Service,
-    AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber, Pallet, PalletExpense, ProductPackaging
+    AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber, Pallet, PalletExpense, ProductPackaging,
+    ExportingCompany, Transfer, LocalTransporter, BorderToDestinationTransporter, CustomsBroker, Vessel, Airline,
+    InsuranceCompany
 )
 from packhouses.packhouse_settings.models import Bank
 from common.profiles.models import UserProfile
@@ -824,3 +826,132 @@ class PalletExpenseAdmin(admin.ModelAdmin):
 @admin.register(ProductPackaging)
 class ProductPackagingAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(ExportingCompany)
+class ExportingCompanyAdmin(admin.ModelAdmin):
+    list_display = ('name', 'legal_category', 'tax_id', 'city', 'address', 'external_number', 'contact_phone_number', 'is_enabled')
+    list_filter = ('country', 'legal_category', 'payment_kind', 'is_enabled')
+    search_fields = ('name', 'tax_id', 'contact_phone_number')
+    fields = ('name', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number', 'internal_number', 'legal_category', 'tax_id', 'clabe', 'bank', 'payment_kind', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
+
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'district' in form.base_fields:
+            form.base_fields['district'].widget = UppercaseTextInputWidget()
+        if 'neighborhood' in form.base_fields:
+            form.base_fields['neighborhood'].widget = UppercaseTextInputWidget()
+        if 'address' in form.base_fields:
+            form.base_fields['address'].widget = UppercaseTextInputWidget()
+        if 'contact_name' in form.base_fields:
+            form.base_fields['contact_name'].widget = UppercaseTextInputWidget()
+        return form
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = ExportingCompany.objects.get(id=object_id) if object_id else None
+
+        # Lógica para el campo "country"
+        if db_field.name == "country":
+            kwargs["queryset"] = Country.objects.all()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        # Lógica para el campo "state"
+        if db_field.name == "state":
+            if request.POST:
+                country_id = request.POST.get('country')
+            else:
+                country_id = obj.country_id if obj else None
+            if country_id:
+                kwargs["queryset"] = Region.objects.filter(country_id=country_id)
+            else:
+                kwargs["queryset"] = Region.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        # Lógica para el campo "city"
+        if db_field.name == "city":
+            if request.POST:
+                state_id = request.POST.get('state')
+            else:
+                state_id = obj.state_id if obj else None
+            if state_id:
+                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = City.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        # Lógica para campo "legal_category"
+        if db_field.name == "legal_category":
+            kwargs["queryset"] = LegalEntityCategory.objects.all()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/country-state-city.js',)
+
+@admin.register(Transfer)
+class TransferAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
+
+@admin.register(LocalTransporter)
+class LocalTransporterAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
+
+@admin.register(BorderToDestinationTransporter)
+class BorderToDestinationTransporterAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
+
+@admin.register(CustomsBroker)
+class CustomsBrokerAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
+
+@admin.register(Vessel)
+class VesselAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
+
+@admin.register(Airline)
+class AirlineAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
+
+@admin.register(InsuranceCompany)
+class InsuranceCompanyAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
