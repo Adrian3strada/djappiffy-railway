@@ -70,3 +70,30 @@
     color: #fff; /* Color del texto al pasar el mouse */
     text-decoration: none; /* Sin subrayado al pasar el mouse */
 }
+
+body.jazzmin-login-page{
+  background-color: #0e1f40 !important;
+}
+
+.login-logo > h1 > picture > img {
+  width: 250px !important;
+}
+
+.brand-link .brand-image {
+  opacity: 1 !important;
+}
+
+
+[class*=sidebar-dark-] .nav-treeview>.nav-item>.nav-link.active, [class*=sidebar-dark-] .nav-treeview>.nav-item>.nav-link.active:focus, [class*=sidebar-dark-] .nav-treeview>.nav-item>.nav-link.active:hover {
+  background-color: #eba907 !important;
+  color: #FFF;
+}
+
+[class*=sidebar-dark-] .nav-sidebar>.nav-item.menu-open>.nav-link, [class*=sidebar-dark-] .nav-sidebar>.nav-item:hover>.nav-link, [class*=sidebar-dark-] .nav-sidebar>.nav-item>.nav-link:focus {
+  background-color: #eba907 !important;
+  color: #fff;
+}
+
+#jazzy-logo > .brand-text {
+  color: #ffc107 !important;
+}
