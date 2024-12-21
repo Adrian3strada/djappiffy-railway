@@ -9,7 +9,7 @@ import re
 
 from organizations.models import Organization, OrganizationUser
 
-from common.profiles.models import OrganizationProfile
+from common.profiles.models import PackhouseExporterProfile
 
 
 class LanguageDetectionMiddleware:
@@ -52,13 +52,13 @@ class SubdomainDetectionMiddleware:
 
         if re.match(r'^/dadmin/', request.path) and (not request.user.is_superuser):
             try:
-                # Verificar si existe OrganizationProfile asociada al HOST
-                requested_organization_profile = OrganizationProfile.objects.get(
+                # Verificar si existe PackhouseExporterProfile asociada al HOST
+                requested_organization_profile = PackhouseExporterProfile.objects.get(
                     hostname=requested_hostname,
                 )
-                print("Requested organization profile: ", requested_organization_profile)
+                print("Requested packhouse profile: ", requested_organization_profile)
                 try:
-                    # Verificar si existe Organization asociada al OrganizationProfile
+                    # Verificar si existe Organization asociada al PackhouseExporterProfile
                     requested_organization = Organization.objects.get(
                         id=requested_organization_profile.organization_id,
                     )
@@ -66,8 +66,8 @@ class SubdomainDetectionMiddleware:
                 except Organization.DoesNotExist:
                     print("Organization does not exist")
                     raise Http404
-            except OrganizationProfile.DoesNotExist:
-                print("OrganizationProfile does not exist")
+            except PackhouseExporterProfile.DoesNotExist:
+                print("PackhouseExporterProfile does not exist")
                 raise Http404
 
             if request.user.is_authenticated:
