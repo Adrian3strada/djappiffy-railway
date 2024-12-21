@@ -187,7 +187,7 @@ class ProductVarietySizeAdmin(admin.ModelAdmin):
         if db_field.name == "variety":
             kwargs["queryset"] = ProductVariety.objects.select_related('product').all()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda obj: f"{obj.product.name}: {obj.name}"
+            formfield.label_from_instance = lambda obj: f"{obj.product.kind.name}: {obj.name}"
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -653,6 +653,10 @@ class MaquiladoraAdmin(admin.ModelAdmin):
 class OrchardCertificationInline(admin.TabularInline):
     model = OrchardCertification
     extra = 0
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/orchard_certification_inline.js',)
+
 
 
 @admin.register(Orchard)
