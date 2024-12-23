@@ -19,9 +19,7 @@ from packhouses.packhouse_settings.models import (ProductSizeKind, MassVolumeKin
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   OrchardProductClassificationKind, OrchardCertificationVerifier,
                                                   OrchardCertificationKind)
-
-                                                  PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand)
-from django.db.models import Max
+from django.db.models import Max, Min
 
 # Create your models here.
 
