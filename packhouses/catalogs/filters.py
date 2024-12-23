@@ -11,7 +11,7 @@ class ProductVarietySizeProductFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         # Opciones para el filtro, basadas en los productos disponibles
         products = Product.objects.all()
-        return [(product.id, product.name) for product in products]
+        return [(product.id, product.kind.name) for product in products]
 
     def queryset(self, request, queryset):
         # Filtra el queryset de `ProductVarietySize` basado en el producto seleccionado

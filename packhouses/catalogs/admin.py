@@ -6,7 +6,7 @@ from .models import (
     ProductHarvestKind, ProductProvider, ProductProviderBenefactor,
     ProductProducer, ProductProducerBenefactor, PaymentKind, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
     Vehicle,
-    Gatherer, Client, ClientShipAddress, Maquiladora, MaquiladoraClient, OrchardProductClassification, Orchard,
+    Gatherer, Client, ClientShipAddress, Maquiladora, MaquiladoraClient, OrchardProductClassificationKind, Orchard,
     OrchardCertificationKind,
     OrchardCertificationVerifier, OrchardCertification,
     HarvestingCrewProvider, CrewChief, HarvestingCrew, HarvestingCrewBeneficiary, HarvestingPaymentSetting,
@@ -18,7 +18,8 @@ from .models import (
 )
 from packhouses.packhouse_settings.models import Bank
 from common.profiles.models import UserProfile
-from .forms import ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet
+from .forms import (ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet,
+                    OrchardCertificationForm)
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
@@ -191,7 +192,7 @@ class ProductVarietySizeAdmin(admin.ModelAdmin):
         if db_field.name == "variety":
             kwargs["queryset"] = ProductVariety.objects.select_related('product').all()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda obj: f"{obj.product.name}: {obj.name}"
+            formfield.label_from_instance = lambda obj: f"{obj.product.kind.name}: {obj.name}"
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -272,7 +273,7 @@ class ProductProducerAdmin(admin.ModelAdmin):
     list_display = ('name', 'alias', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number', 'is_enabled')
     list_filter = ('state', 'city', 'bank', 'is_enabled')
     search_fields = ('name', 'alias', 'neighborhood', 'address', 'tax_id', 'phone_number')
-    fields = ('name', 'alias', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'tax_id', 'phone_number', 'bank_account_number', 'bank', 'is_enabled', 'organization')
+    fields = ('name', 'alias', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number', 'internal_number', 'tax_id', 'email', 'phone_number', 'product_provider', 'bank_account_number', 'bank', 'is_enabled', 'organization')
     inlines = [ProductProducerBenefactorInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -281,6 +282,10 @@ class ProductProducerAdmin(admin.ModelAdmin):
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         if 'alias' in form.base_fields:
             form.base_fields['alias'].widget = UppercaseAlphanumericTextInputWidget()
+        if 'district' in form.base_fields:
+            form.base_fields['district'].widget = UppercaseTextInputWidget()
+        if 'neighborhood' in form.base_fields:
+            form.base_fields['neighborhood'].widget = UppercaseTextInputWidget()
         if 'address' in form.base_fields:
             form.base_fields['address'].widget = UppercaseTextInputWidget()
         if 'tax_id' in form.base_fields:
@@ -289,7 +294,7 @@ class ProductProducerAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Region, City, Bank, ProductProducerBenefactor, Organization]):
+        if obj and is_instance_used(obj, exclude=[Region, City, ProductProvider, Bank, Organization, ProductProducerBenefactor]):
             readonly_fields.extend(['name', 'alias', 'organization'])
         return readonly_fields
 
@@ -389,7 +394,6 @@ class ClientAdmin(admin.ModelAdmin):
     fields = ('name', 'market', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number', 'internal_number', 'same_ship_address', 'legal_category', 'tax_id', 'fda', 'swift', 'aba', 'clabe', 'bank', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
     inlines = [ClientShipAddressInline]
 
-
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if 'name' in form.base_fields:
@@ -403,6 +407,13 @@ class ClientAdmin(admin.ModelAdmin):
         if 'contact_name' in form.base_fields:
             form.base_fields['contact_name'].widget = UppercaseTextInputWidget()
         return form
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[Market, Country, Region, City, LegalEntityCategory, Bank, PaymentKind,
+                                                  Organization]):
+            readonly_fields.extend(['name', 'organization'])
+        return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
@@ -644,7 +655,69 @@ class MaquiladoraAdmin(admin.ModelAdmin):
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/maquiladora.js',)
 
+class OrchardCertificationInline(admin.TabularInline):
+    model = OrchardCertification
+    form = OrchardCertificationForm
+    extra = 0
 
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/orchard_certification_inline.js',)
+
+
+
+@admin.register(Orchard)
+class OrchardAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code', 'producer', 'product_classification_kind', 'is_enabled')
+    list_filter = ('product_classification_kind', 'safety_authority_registration_date', 'is_enabled')
+    search_fields = ('name', 'code', 'producer__name')
+    fields = ('name', 'code', 'producer', 'safety_authority_registration_date', 'state', 'city', 'district', 'ha', 'product_classification_kind', 'phytosanitary_certificate', 'is_enabled', 'organization')
+    inlines = [OrchardCertificationInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[ProductProducer, Region, City, OrchardProductClassificationKind, Organization]):
+            readonly_fields.extend(['name', 'organization'])
+        return readonly_fields
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = Orchard.objects.get(id=object_id) if object_id else None
+
+        user_profile = UserProfile.objects.get(user=request.user)
+        country = user_profile.country
+
+        if db_field.name == "state":
+            if country:
+                kwargs["queryset"] = Region.objects.filter(country=country)
+            else:
+                kwargs["queryset"] = Region.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "city":
+            if request.POST:
+                state_id = request.POST.get('state')
+            else:
+                state_id = obj.state_id if obj else None
+            if state_id:
+                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = City.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/orchard.js',)
 
 
 
@@ -666,10 +739,6 @@ class SupplyAdminForm(forms.ModelForm):
             self.fields['related_supply'].queryset = Supply.objects.filter(kind__in=allowed_kinds)
 
 
-
-
-
-
 @admin.register(Supply)
 class SupplyAdmin(admin.ModelAdmin):
     form = SupplyAdminForm
@@ -679,26 +748,6 @@ class SupplyAdmin(admin.ModelAdmin):
 class SupplyKindRelationAdmin(admin.ModelAdmin):
     list_display = ('from_kind', 'to_kind', 'is_enabled')
     list_filter = ('from_kind', 'to_kind', 'is_enabled')
-
-
-@admin.register(OrchardProductClassification)
-class OrchardProductClassificationAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Orchard)
-class OrchardAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(OrchardCertificationKind)
-class OrchardCertificationKindAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(OrchardCertificationVerifier)
-class OrchardCertificationVerifierAdmin(admin.ModelAdmin):
-    pass
 
 
 @admin.register(OrchardCertification)

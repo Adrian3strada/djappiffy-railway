@@ -24,6 +24,7 @@ urlpatterns = [
     path("", include("common.government.urls")),
     path("", include("common.billing.urls")),
     path("", include('packhouses.catalogs.urls')),
+    path("", include('packhouses.packhouse_settings.urls')),
     path("", include('eudr.parcels.urls')),
 ]
 

@@ -1,6 +1,4 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.exceptions import NotAuthenticated
 from .serializers import MarketStandardProductSizeSerializer, MarketSerializer
 from .models import MarketStandardProductSize, Market
@@ -20,7 +18,7 @@ class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
         if user.is_superuser:
             return MarketStandardProductSize.objects.all()
 
-        user_organizations = user.organizations_organization.all()
+        user_organizations = user.organizations_organization.all()  # TODO: cambiar query a contexto por dominio
         return MarketStandardProductSize.objects.filter(market__organization__in=user_organizations)
 
 
