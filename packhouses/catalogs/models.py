@@ -629,7 +629,7 @@ class HarvestingCrew(models.Model):
             last_ooid = (
                 HarvestingCrew.objects.filter(organization=self.organization)
                 .aggregate(Max('ooid'))['ooid__max']
-                or 0
+                or 1
             )
             self.ooid = last_ooid + 1
 
