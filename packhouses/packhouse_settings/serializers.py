@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import OrchardCertificationKind
+from .models import OrchardCertificationKind, OrchardCertificationVerifier
 
 
 class OrchardCertificationKindSerializer(serializers.ModelSerializer):
@@ -7,3 +7,8 @@ class OrchardCertificationKindSerializer(serializers.ModelSerializer):
         model = OrchardCertificationKind
         fields = '__all__'
 
+
+class OrchardCertificationVerifierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrchardCertificationVerifier
+        fields = '__all__'
