@@ -1,8 +1,7 @@
 from django import forms
-from .models import Product, ProductVarietySize, MarketStandardProductSize
+from .models import Product, ProductVarietySize, MarketStandardProductSize, OrchardCertification
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
-from django.forms.widgets import RadioSelect
 
 
 class ProductVarietySizeInlineForm(forms.ModelForm):
@@ -64,3 +63,21 @@ class ProductVarietyInlineFormSet(BaseInlineFormSet):
                 form.fields['DELETE'].initial = False
                 form.fields['DELETE'].disabled = True
                 form.fields['DELETE'].widget.attrs.update({'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
+
+
+class OrchardCertificationForm(forms.ModelForm):
+    class Meta:
+        model = OrchardCertification
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        certification_kind = cleaned_data.get('certification_kind')
+        extra_code = cleaned_data.get('extra_code')
+
+        if certification_kind and certification_kind.extra_code_name and not extra_code:
+            raise forms.ValidationError({
+                'extra_code': _('This field is required.')
+            })
+
+        return cleaned_data

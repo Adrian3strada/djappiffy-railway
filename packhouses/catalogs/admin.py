@@ -14,7 +14,8 @@ from .models import (
 )
 from packhouses.packhouse_settings.models import Bank
 from common.profiles.models import UserProfile
-from .forms import ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet
+from .forms import (ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet,
+                    OrchardCertificationForm)
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
@@ -652,6 +653,7 @@ class MaquiladoraAdmin(admin.ModelAdmin):
 
 class OrchardCertificationInline(admin.TabularInline):
     model = OrchardCertification
+    form = OrchardCertificationForm
     extra = 0
 
     class Media:

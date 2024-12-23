@@ -1,10 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   function updateFieldOptions(field, options) {
+    const selectedValue = field.val();
     field.empty().append(new Option('---------', '', true, true));
     options.forEach(option => {
       field.append(new Option(option.name, option.id, false, false));
     });
+    if (selectedValue) {
+      field.val(selectedValue);
+    }
     field.trigger('change').select2();
   }
 
@@ -14,49 +18,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('formset:added', (event) => {
     if (event.detail.formsetName === 'orchardcertification_set') {
-
       const newForm = $(event.target);
-      const extraCodeField = newForm.find('input[name$="-extra_code"]');
       const certificationKindField = newForm.find('select[name$="-certification_kind"]');
+      const extraCodeField = newForm.find('input[name$="-extra_code"]');
       extraCodeField.prop('disabled', true);
       extraCodeField.attr('placeholder', 'n/a');
 
       certificationKindField.on('change', () => {
-        console.log('Certification kind changed:', certificationKindField.val());
+        const certificationKindID = certificationKindField.val();
         extraCodeField.val(null);
-        extraCodeField.prop('disabled', certificationKindField.val() !== 1);
-        // updateCountry(certificationKind.val(), newForm);
-        fetch(`/rest/v1/packhouse-settings/orchard-certification-kind/${certificationKindField.val()}/`)
-          .then(response => response.json())
+        extraCodeField.prop('disabled', true);
+        if (certificationKindID) {
+          fetchOptions(`/rest/v1/packhouse-settings/orchard-certification-kind/${certificationKindField.val()}/`)
+            .then(data => {
+              extraCodeField.prop('disabled', !data.extra_code_name);
+              extraCodeField.attr('placeholder', data.extra_code_name || 'n/a');
+              fetchOptions(`/rest/v1/packhouse-settings/orchard-certification-verifier/?id=${data.verifiers.join(',')}`)
+                .then(verifiers => {
+                  updateFieldOptions(newForm.find('select[name$="-verifier"]'), verifiers);
+                });
+            })
+            .catch(error => {
+              console.error('Error fetching certification kind data:', error);
+            })
+        }
       });
-
-
     }
   });
 
-  const existingForms = $('div[id^="maquiladoraclient_set-"]');
+  const existingForms = $('tr[id^="orchardcertification_set-"]');
   existingForms.each((index, form) => {
-    const marketField = $(form).find('select[name$="-market"]');
-    const countryField = $(form).find('select[name$="-country"]');
-    const stateField = $(form).find('select[name$="-state"]');
-    const cityField = $(form).find('select[name$="-city"]');
+    console.log("form", form);
 
-    marketField.on('change', () => {
-      updateCountry(marketField.val(), $(form));
-    });
+    const certificationKindField = $(form).find('select[name$="-certification_kind"]');
+    const extraCodeField = $(form).find('input[name$="-extra_code"]');
+    const verifierField = $(form).find('select[name$="-verifier"]');
+    extraCodeField.prop('disabled', true);
+    extraCodeField.attr('placeholder', 'n/a');
 
-    countryField.on('change', () => {
-      updateState($(form));
-    });
+    const certificationKindID = certificationKindField.val();
 
-    stateField.on('change', () => {
-      updateCity($(form));
-    });
-
-    if (marketField.val()) {
-      updateCountry(marketField.val(), $(form));
+    if (certificationKindID) {
+      fetchOptions(`/rest/v1/packhouse-settings/orchard-certification-kind/${certificationKindField.val()}/`)
+        .then(data => {
+          extraCodeField.prop('disabled', !data.extra_code_name);
+          extraCodeField.attr('placeholder', data.extra_code_name || 'n/a');
+          fetchOptions(`/rest/v1/packhouse-settings/orchard-certification-verifier/?id=${data.verifiers.join(',')}`)
+            .then(verifiers => {
+              updateFieldOptions(verifierField, verifiers);
+              verifierField.val(verifierField.val()).trigger('change');
+            });
+        })
+        .catch(error => {
+          console.error('Error fetching certification kind data:', error);
+        })
     }
-  });
 
+    certificationKindField.on('change', () => {
+      extraCodeField.val(null);
+      extraCodeField.prop('disabled', true);
+      if (certificationKindID) {
+        fetchOptions(`/rest/v1/packhouse-settings/orchard-certification-kind/${certificationKindField.val()}/`)
+          .then(data => {
+            extraCodeField.prop('disabled', !data.extra_code_name);
+            extraCodeField.attr('placeholder', data.extra_code_name || 'n/a');
+            fetchOptions(`/rest/v1/packhouse-settings/orchard-certification-verifier/?id=${data.verifiers.join(',')}`)
+              .then(verifiers => {
+                console.log("verifiers", verifiers);
+                updateFieldOptions(verifierField, verifiers);
+              });
+          })
+          .catch(error => {
+            console.error('Error fetching certification kind data:', error);
+          })
+      }
+    });
+  });
 
 });
