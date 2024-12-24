@@ -32,7 +32,7 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.utils.html import format_html
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
-from .filters import ProductVarietySizeProductFilter, ProductProviderStateFilter
+from .filters import ProductVarietySizeProductFilter, ProductProviderStateFilter, StateFilterUserCountry
 from django.db.models.functions import Concat
 from django.db.models import Value
 from common.utils import is_instance_used
@@ -481,7 +481,7 @@ class ClientAdmin(admin.ModelAdmin):
 @admin.register(Gatherer)
 class GathererAdmin(admin.ModelAdmin):
     list_display = ('name', 'zone', 'tax_registry_code', 'state', 'city', 'postal_code', 'address', 'email', 'phone_number', 'vehicle', 'is_enabled')
-    list_filter = ('state', 'city', 'is_enabled')
+    list_filter = (StateFilterUserCountry, 'is_enabled')
     search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
     fields = ('name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle', 'is_enabled', 'organization')
 
@@ -497,22 +497,22 @@ class GathererAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Region, City, Organization]):
+        if obj and is_instance_used(obj, exclude=[Region, Vehicle, City, Organization]):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        user_profile = UserProfile.objects.get(user=request.user)
+        user_profile = UserProfile.objects.get(user=request.user) #TODO: Obtener el país de la organización en lugar del país del usuario
         country = user_profile.country
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = Gatherer.objects.get(id=object_id) if object_id else None
 
         # Lógica para el campo "state"
         if db_field.name == "state":
-            if request.POST:
-                country_id = request.POST.get('country')
+            if obj:
+                country_id = obj.state.country_id
             else:
-                country_id = obj.state.country_id if obj else country.id
+                country_id = country.id
             if country_id:
                 kwargs["queryset"] = Region.objects.filter(country_id=country_id)
             else:
@@ -540,7 +540,7 @@ class GathererAdmin(admin.ModelAdmin):
     class Media:
         js = (
                 'js/admin/forms/packhouses/catalogs/gatherer.js',
-                'js/admin/forms/packhouses/catalogs/country-state-city.js'
+                'js/admin/forms/packhouses/catalogs/state-city.js',
             )
 
 

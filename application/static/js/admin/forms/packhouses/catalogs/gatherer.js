@@ -4,11 +4,23 @@ document.addEventListener('DOMContentLoaded', function () {
   getVehicle();
 
   function updateFieldOptions(field, options) {
-    field.empty().append(new Option('---------', '', true, true));
-    options.forEach(option => {
-      field.append(new Option(option.name, option.id, false, false));
-    });
-    field.trigger('change').select2();
+    const currentValue = field.val();
+    field.empty().append(new Option("---------", "", true, true));
+
+    if (options && !Array.isArray(options)) {
+      options = [options];
+    }
+
+    if (options && options.length) {
+      options.forEach((option) => {
+        const isSelected = option.id == currentValue;
+        field.append(
+          new Option(option.name, option.id, isSelected, isSelected)
+        );
+      });
+    }
+
+    field.trigger("change").select2();
   }
 
   function fetchOptions(url) {
