@@ -12,7 +12,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from common.billing.models import TaxRegime, LegalEntityCategory
-from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices
+from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, vehicle_scope_choices
 from django.core.exceptions import ValidationError
 from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (ProductSizeKind, MassVolumeKind, Bank, VehicleOwnershipKind,
@@ -369,6 +369,22 @@ class ClientShipAddress(models.Model):
 
 # Vehículos
 
+class HarvestingCrewProvider(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name / Legal name'))
+    tax_id = models.CharField(max_length=100, verbose_name=_('Tax ID'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Harvesting Crew Provider')
+        verbose_name_plural = _('Harvesting Crew Providers')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='harvesting_crew_provider_unique_name_organization'),
+        ]
+
 class Vehicle(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     kind = models.ForeignKey(VehicleKind, verbose_name=_('Vehicle Kind'), on_delete=models.PROTECT)
@@ -378,20 +394,20 @@ class Vehicle(CleanNameAndOrganizationMixin, models.Model):
     license_plate = models.CharField(max_length=15, verbose_name=_('License plate'))
     serial_number = models.CharField(max_length=100, verbose_name=_('Serial number'))
     color = models.CharField(max_length=50, verbose_name=_('Color'))
+    scope = models.CharField(max_length=15, verbose_name=_('Scope'), choices=vehicle_scope_choices())
     ownership = models.ForeignKey(VehicleOwnershipKind, verbose_name=_('Ownership kind'), on_delete=models.PROTECT)
     fuel = models.ForeignKey(VehicleFuelKind, verbose_name=_('Fuel kind'), on_delete=models.PROTECT)
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
+    harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, on_delete=models.CASCADE, verbose_name=_('Harvesting Crew Provider'))
     class Meta:
         verbose_name = _('Vehicle')
         verbose_name_plural = _('Vehicles')
-        ordering = ('organization', 'name',)
+        ordering = ('name',)
         constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='vehicle_unique_name_organization'),
-            models.UniqueConstraint(fields=['license_plate', 'organization'], name='vehicle_unique_licenseplate_organization'),
-            models.UniqueConstraint(fields=['serial_number', 'organization'], name='vehicle_unique_serialnumber_organization')
+            models.UniqueConstraint(fields=['name', 'harvesting_crew_provider'], name='vehicle_unique_name_harvesting_crew_provider'),
+            models.UniqueConstraint(fields=['license_plate', 'harvesting_crew_provider'], name='vehicle_unique_licenseplate_harvesting_crew_provider'),
+            models.UniqueConstraint(fields=['serial_number', 'harvesting_crew_provider'], name='vehicle_unique_serialnumber_harvesting_crew_provider')
         ]
 
 
@@ -540,22 +556,6 @@ class OrchardCertification(models.Model):
         unique_together = ('orchard', 'certification_kind')
         ordering = ('orchard', 'certification_kind')
 
-class HarvestingCrewProvider(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name / Legal name'))
-    tax_id = models.CharField(max_length=100, verbose_name=_('Tax ID'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Harvesting Crew Provider')
-        verbose_name_plural = _('Harvesting Crew Providers')
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='harvesting_crew_provider_unique_name_organization'),
-        ]
-
 class CrewChief(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, verbose_name=_('Harvesting Crew Provider'),
@@ -579,8 +579,6 @@ class HarvestingCrew(models.Model):
     persons_number = models.IntegerField(verbose_name=_('Persons Number'),validators=[MinValueValidator(1), MaxValueValidator(9999)])
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True )
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-    ooid = models.IntegerField(verbose_name=_('OOID'), editable=False)
 
 
     def __str__(self):
@@ -604,7 +602,7 @@ class HarvestingCrew(models.Model):
         verbose_name = _('Harvesting crew')
         verbose_name_plural = _('Harvesting crews')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='harversting_name_unique_organization'),
+            models.UniqueConstraint(fields=['name', 'harvesting_crew_provider'], name='harversting_name_unique_harvesting_crew_provider'),
         ]
 
 class HarvestingCrewBeneficiary(models.Model):

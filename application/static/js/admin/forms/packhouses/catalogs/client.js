@@ -1,4 +1,4 @@
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function () {
   const marketField = $('#id_market');
   const countryField = $('#id_country');
   const stateField = $('#id_state');
