@@ -19,18 +19,17 @@ django-guardian
 django-allauth
 django-polymorphic
 django-modelcluster
-djoser
+django-filter
+django-organizations
+django-extensions
+django-modeltranslation
+django-rest-polymorphic
 djangorestframework
 djangorestframework-gis
-django-filter
-earthengine-api
+djoser
 httpx
 python-dotenv[cli]
 gunicorn
-django-organizations
-django-extensions
-django-countries
-django-modeltranslation
 ipython
 redis
 django-axes[ipware]
@@ -47,3 +46,19 @@ django-cors-headers
 dj-database-url
 firebase_admin
 django-jazzmin
+django-cities-light
+django-ckeditor-5
+django-admin-sortable2
+django-nested-admin
+django-modeladmin-reorder
+setuptools
+
+geopandas
+numpy
+matplotlib
+earthengine-api
+
+pyasyncore; python_version>="3.12"
+aiosmtpd; python_version>="3.12"
+standard-smtpd; python_version>="3.12"
+distutils; python_version>="3.12"

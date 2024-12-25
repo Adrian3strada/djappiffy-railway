@@ -1,27 +1,58 @@
 from rest_framework import viewsets
 from django.utils import translation
-from .serializers import ProductSerializer
-from .models import Product
+from .serializers import ProductKindSerializer, CitySerializer, RegionSerializer, CountrySerializer
+from .models import ProductKind
+from cities_light.models import City
+from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
+from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
+from cities_light.contrib.restframework3 import CountryModelViewSet as BaseCountryModelViewSet
 
 #
 
 
-class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+class ProductKindViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductKindSerializer
+    queryset = ProductKind.objects.all()
+    filterset_fields = ['for_packaging', 'for_orchard', 'for_eudr']
 
-    def list(self, request, *args, **kwargs):
-        # Detectar el idioma desde el parámetro de consulta o URL
-        lang = request.query_params.get('lang', None)  # Alternativamente, puedes extraerlo de kwargs si está en la URL
-        if lang:
-            translation.activate(lang)
 
-        return super().list(request, *args, **kwargs)
+class CountryViewSet(BaseCountryModelViewSet):
+    serializer_class = CountrySerializer
+    pagination_class = None
 
-    def retrieve(self, request, *args, **kwargs):
-        # Para la vista detallada de un producto
-        lang = request.query_params.get('lang', None)
-        if lang:
-            translation.activate(lang)
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        country_ids = self.request.GET.get('id')
+        if country_ids:
+            ids_list = country_ids.split(',')
+            queryset = queryset.filter(id__in=ids_list)
+        return queryset
 
-        return super().retrieve(request, *args, **kwargs)
+
+class RegionViewSet(BaseRegionModelViewSet):
+    serializer_class = RegionSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        country = self.request.GET.get('country')
+        if country:
+            queryset = queryset.filter(country_id=country)
+        return queryset
+
+
+class CityViewSet(BaseCityModelViewSet):
+    serializer_class = CitySerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        region = self.request.GET.get('region')
+        country = self.request.GET.get('country')
+        if country:
+            queryset = queryset.filter(country_id=country)
+        if region:
+            queryset = queryset.filter(region_id=region)
+        return queryset
+
+

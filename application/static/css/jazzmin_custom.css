@@ -1,0 +1,72 @@
+/* Cambiar el color de fondo de la barra lateral */
+
+.readonly-field {
+    background-color: #919191; /* Fondo gris claro para el campo deshabilitado */
+    color: #888888; /* Color de texto gris */
+    cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
+    pointer-events: none; /* Desactiva eventos de mouse, haciendo que parezca completamente deshabilitado */
+    opacity: 0.6; /* Opcional: hace que el campo se vea un poco translúcido */
+}
+
+.select2-container.disabled-field .select2-selection {
+    background-color: #919191; /* Fondo gris claro para el campo deshabilitado */
+    color: #888888; /* Color de texto gris */
+    cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
+    pointer-events: none; /* Desactiva eventos de mouse, haciendo que parezca completamente deshabilitado */
+    opacity: 0.6; /* Opcional: hace que el campo se vea un poco translúcido */
+}
+
+.disabled-field {
+  background-color: #c6c6c6 !important; /* Color de fondo para indicar que está deshabilitado */
+  color: #1c1c1c !important; /* Color de texto */
+  cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
+  pointer-events: none;
+  opacity: 0.6;
+  user-select: none;
+}
+
+
+
+#jazzy-actions .object-tools a[href*="/history/"] {
+    display: none;
+}
+
+.layout-navbar-fixed .wrapper .sidebar-dark-warning .brand-link:not([class*="navbar"]) {
+	background-color: #0e1e3f !important;
+}
+
+.main-sidebar {
+    background-color: #0e1e3f !important;
+}
+
+/* Cambiar el color del texto de los enlaces de la barra lateral */
+.main-sidebar a {
+    color: #ffffff !important;
+
+}
+
+/* Cambiar el color de los enlaces activos en la barra lateral */
+.main-sidebar .active a {
+    background-color: #0e1e3f !important;
+    color: #ffffff !important;
+}
+
+/* Estilo global para todos los botones de agregar inlines */
+.inline-group1 .add-row {
+    background-color: #bebebe; /* Cambia esto al color que desees */
+    color: #3884a5; /* Color del texto */
+    border: 1px solid transparent; /* Borde */
+    border-radius: 0.25rem; /* Bordes redondeados */
+    padding: 0.375rem 0.75rem; /* Espaciado interno */
+    text-align: center; /* Alineación del texto */
+    text-decoration: none; /* Sin subrayado */
+    display: inline-block; /* Mostrar como bloque en línea */
+    font-weight: 500; /* Peso del texto */
+    cursor: pointer; /* Cambia el cursor al pasar sobre él */
+}
+
+.inline-group1 .add-row:hover {
+    background-color: #0056b3; /* Color de fondo al pasar el mouse */
+    color: #fff; /* Color del texto al pasar el mouse */
+    text-decoration: none; /* Sin subrayado al pasar el mouse */
+}

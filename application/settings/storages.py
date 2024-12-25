@@ -47,3 +47,6 @@ if DJANGO_STORAGE_BACKEND == "google":
         "custom_endpoint": os.getenv("GS_CUSTOM_ENDPOINT", None),
         "location": os.getenv("GS_LOCATION", ""),
     }
+
+else:
+    STORAGES_DEFAULT_BACKEND = 'django.core.files.storage.FileSystemStorage'

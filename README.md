@@ -8,46 +8,48 @@ Code for site at: http://www.forestiffy.com
 Make sure Python 3.5 or higher is installed on your system.
 Open this directory in a command prompt, then:
 
-1. Install the software, and the dev tooling:
+1. Create a development environment.
+
+2. Install the software, and the dev tooling:
    ```
    pip install -r requirements.txt -r requirements-dev.txt
    ```
+   __Note:__ If you are using MacOs we recommend install `gdal==3.9.3` using Conda to manage it.
 
-2. Build the Sass:
+3. Set the environment variables `GDAL_LIBRARY_PATH`, `GEOS_LIBRARY_PATH` and `SPATIALITE_LIBRARY_PATH` to the location which are installed.
+
+4. Propagate the models used in this project for the database schema.
    ```
-   python manage.py sass -g website/static/website/src/custom.scss website/static/website/css/
+   python manage.py makemigrations
+   python manage.py migrate
    ```
 
-   To build the Sass automatically whenever you change a file, add the `--watch`
-   option and run it in a separate terminal. To build a compressed/minified
-   production version, add the `-t compressed` option. For more options, see
-   [django-sass](https://github.com/coderedcorp/django-sass/).
+5. Include the `django-cities-light` add-on using:
+   ```
+   python manage.py cities_light
+   ```
+   __Note:__ This process could take a long time _(20 min aprox)_.
 
-3. Run the development server:
+6. Load the __admin__ user configuration.
+   ```
+   python manage.py loaddata __fixtures/users.json
+   python manage.py loaddata __fixtures/base.json
+   ```
+
+7. Run the development server:
    ```
    python manage.py runserver
    ```
 
-4. Go to http://localhost:8000/ in your browser, or http://localhost:8000/admin/
-   to log in and get to work!
+8. Go to http://localhost:8000/dadmin in your browser
+   to log in.
+
+8. Access using the __admin__ credentials.
 
 
 ## Linting / pre-deployment
 
-To check for errors, run the following commands:
-
-```
-ruff check --fix .
-ruff format .
-mypy .
-pytest .
-```
-
-Before deploying, be sure to build the sass:
-
-```
-python manage.py sass -t compressed website/static/website/src/custom.scss website/static/website/css/
-```
+_Building!_
 
 
 ## Documentation links

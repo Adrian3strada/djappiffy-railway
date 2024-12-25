@@ -1,16 +1,26 @@
 from rest_framework import serializers
 from django.utils import translation
-from .models import Product
+from .models import ProductKind
+from cities_light.contrib.restframework3 import CountrySerializer as BaseCountrySerializer
+from cities_light.contrib.restframework3 import RegionSerializer as BaseRegionSerializer
+from cities_light.contrib.restframework3 import CitySerializer as BaseCitySerializer
 
 #
 
 
-class CountrySerializer(serializers.Serializer):
-    code = serializers.CharField()
-    name = serializers.CharField()
+class CountrySerializer(BaseCountrySerializer):
+    id = serializers.IntegerField()
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class RegionSerializer(BaseRegionSerializer):
+    id = serializers.IntegerField()
+
+
+class CitySerializer(BaseCitySerializer):
+    id = serializers.IntegerField()
+
+
+class ProductKindSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -29,6 +39,6 @@ class ProductSerializer(serializers.ModelSerializer):
         return representation
 
     class Meta:
-        model = Product
+        model = ProductKind
         fields = "__all__"
 

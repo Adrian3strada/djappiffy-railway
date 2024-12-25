@@ -16,6 +16,7 @@ import ast
 import dj_database_url
 from dotenv import load_dotenv
 import logging
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -59,27 +60,36 @@ INSTALLED_APPS = [
     # Third party apps
     'rest_framework',
     'rest_framework_gis',
+    'django.contrib.gis',
     'storages',
     'corsheaders',
     'organizations',
     'django_filters',
     'django_extensions',
-    'django_countries',
     'modeltranslation',
+    'cities_light',
+    'django_ckeditor_5',
+    'adminsortable2',
+    'polymorphic',
 
-    # Forestiffy apps
+    # djappiffy apps
+    "common",
     "common.base",
     "common.users",
     "common.firebase_auth",
-
+    "common.profiles",
+    "common.billing",
     "common.producers",
     "common.brokers",
     "common.exporters",
     "common.importers",
     "common.government",
 
-    "common.profiles",
+    "packhouses",
+    "packhouses.packhouse_settings",
+    "packhouses.catalogs",
 
+    "eudr.parcels",
 
 ]
 
@@ -94,8 +104,8 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 
-    # 'base.middleware.LanguageDetectionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'common.base.middleware.SubdomainDetectionMiddleware',
 ]
 
 ROOT_URLCONF = "application.urls"
@@ -120,7 +130,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "application.wsgi.application"
 
-# Database
+# brew install spatialite-toolsse
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASE_URL = os.getenv('DATABASE_URL', 'spatialite:///db.spatialite')
@@ -152,7 +162,7 @@ AUTH_USER_MODEL = "users.User"
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "es-es"
+LANGUAGE_CODE = "es"
 
 TIME_ZONE = "America/Mexico_City"
 
@@ -260,22 +270,22 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 JAZZMIN_SETTINGS = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)
-    "site_title": "Certiffy Admin",
+    "site_title": "djappiffy Admin",
 
     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_header": "Certiffy",
+    "site_header": "djappiffy",
 
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_brand": "Certiffy",
+    "site_brand": "djappiffy",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
-    "site_logo": "img/logo.png",
+    # "site_logo": "img/logo-certiffy.png",
 
     # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
-    "login_logo": True,
+    "login_logo": False,
 
     # Logo to use for login form in dark themes (defaults to login_logo)
-    "login_logo_dark": None,
+    "login_logo_dark": False,
 
     # CSS classes that are applied to the logo above
     "site_logo_classes": "img-circle",
@@ -291,7 +301,7 @@ JAZZMIN_SETTINGS = {
 
     # List of model admins to search from the search bar, search bar omitted if excluded
     # If you want to use a single search field you dont need to use a list, you can use a simple string
-    "search_model": ["auth.User", "auth.Group"],
+    "search_model": ["users.User", "users.Group"],
 
     # Field name on user model that contains avatar ImageField/URLField/Charfield or a callable that receives the user
     "user_avatar": None,
@@ -304,16 +314,16 @@ JAZZMIN_SETTINGS = {
     "topmenu_links": [
 
         # Url that gets reversed (Permissions can be added)
-        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
 
         # external url that opens in a new window (Permissions can be added)
         {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
 
         # model admin to link to (Permissions checked against model)
-        {"model": "auth.User"},
+        {"model": "users.User"},
 
         # App with dropdown menu to all its models pages (Permissions checked against models)
-        {"app": "books"},
+        {"app": "catalogs"},
     ],
 
     #############
@@ -343,13 +353,17 @@ JAZZMIN_SETTINGS = {
     "hide_models": [],
 
     # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
-    "order_with_respect_to": ["auth", "books", "books.author", "books.book"],
+    "order_with_respect_to": ["packhouse_settings", "catalogs", "catalogs.Market", "catalogs.MarketClass",
+                              "catalogs.Product", "catalogs.ProductHarvestKind", "catalogs.ProductVariety",
+                              "catalogs.ProductVarietySize", "catalogs.ProductProvider", "catalogs.ProductProducer",
+                              "catalogs.Client",
+                              "catalogs.Vehicle", "catalogs.Gatherer", "catalogs.Maquiladora", "catalogs.Orchard"],
 
     # Custom links to append to app groups, keyed on app name
     "custom_links": {
-        "books": [{
+        "MiGrupoPersonalizado": [{
             "name": "Make Messages",
-            "url": "make_messages",
+            "model": "catalogs.Market",
             "icon": "fas fa-comments",
             "permissions": ["books.view_book"]
         }]
@@ -358,9 +372,9 @@ JAZZMIN_SETTINGS = {
     # Custom icons for side menu apps/models See https://fontawesome.com/icons?d=gallery&m=free&v=5.0.0,5.0.1,5.0.10,5.0.11,5.0.12,5.0.13,5.0.2,5.0.3,5.0.4,5.0.5,5.0.6,5.0.7,5.0.8,5.0.9,5.1.0,5.1.1,5.2.0,5.3.0,5.3.1,5.4.0,5.4.1,5.4.2,5.13.0,5.12.0,5.11.2,5.11.1,5.10.0,5.9.0,5.8.2,5.8.1,5.7.2,5.7.1,5.7.0,5.6.3,5.5.0,5.4.2
     # for the full list of 5.13.0 free icon classes
     "icons": {
-        "auth": "fas fa-users-cog",
-        "auth.user": "fas fa-user",
-        "auth.Group": "fas fa-users",
+        "users": "fas fa-users-cog",
+        "users.user": "fas fa-user",
+        "users.Group": "fas fa-users",
     },
     # Icons that are used when one is not manually specified
     "default_icon_parents": "fas fa-chevron-circle-right",
@@ -376,7 +390,7 @@ JAZZMIN_SETTINGS = {
     # UI Tweaks #
     #############
     # Relative paths to custom CSS/JS scripts (must be present in static files)
-    "custom_css": None,
+    "custom_css": 'css/jazzmin_custom.css',
     "custom_js": None,
     # Whether to link font from fonts.googleapis.com (use custom_css to supply font otherwise)
     "use_google_fonts_cdn": True,
@@ -394,9 +408,10 @@ JAZZMIN_SETTINGS = {
     # - carousel
     "changeform_format": "horizontal_tabs",
     # override change forms on a per modeladmin basis
-    "changeform_format_overrides": {"auth.user": "collapsible", "auth.group": "vertical_tabs"},
+    "changeform_format_overrides": {"users": "collapsible", "auth.group": "vertical_tabs"},
     # Add a language dropdown into the admin
     "language_chooser": True,
+
 }
 
 JAZZMIN_UI_TWEAKS = {
@@ -430,5 +445,112 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success"
     },
     "actions_sticky_top": False,
-    "custom_css": "css/custom_jazzmin.css",
+    "custom_css": "css/jazzmin_custom.css",
 }
+
+customColorPalette = [
+    {
+        'color': 'hsl(4, 90%, 58%)',
+        'label': 'Red'
+    },
+    {
+        'color': 'hsl(340, 82%, 52%)',
+        'label': 'Pink'
+    },
+    {
+        'color': 'hsl(291, 64%, 42%)',
+        'label': 'Purple'
+    },
+    {
+        'color': 'hsl(262, 52%, 47%)',
+        'label': 'Deep Purple'
+    },
+    {
+        'color': 'hsl(231, 48%, 48%)',
+        'label': 'Indigo'
+    },
+    {
+        'color': 'hsl(207, 90%, 54%)',
+        'label': 'Blue'
+    },
+]
+
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': ['undo', 'redo', '|', 'heading', '|', 'bold', 'italic', 'underline', 'strikethrough', '|',
+                    'subscript', 'superscript', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'fontSize',
+                    'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight', 'removeFormat', 'sourceEditing',
+                    ],
+
+    },
+    'extends': {
+        'blockToolbar': [
+            'paragraph', 'heading1', 'heading2', 'heading3',
+            '|',
+            'bulletedList', 'numberedList',
+            '|',
+            'blockQuote',
+        ],
+        'toolbar': ['heading', '|', 'outdent', 'indent', '|', 'bold', 'italic', 'link', 'underline', 'strikethrough',
+                    'code', 'subscript', 'superscript', 'highlight', '|', 'codeBlock', 'sourceEditing', 'insertImage',
+                    'bulletedList', 'numberedList', 'todoList', '|', 'blockQuote', 'imageUpload', '|',
+                    'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'mediaEmbed', 'removeFormat',
+                    'insertTable', ],
+        'image': {
+            'toolbar': ['imageTextAlternative', '|', 'imageStyle:alignLeft',
+                        'imageStyle:alignRight', 'imageStyle:alignCenter', 'imageStyle:side', '|'],
+            'styles': [
+                'full',
+                'side',
+                'alignLeft',
+                'alignRight',
+                'alignCenter',
+            ]
+
+        },
+        'table': {
+            'contentToolbar': ['tableColumn', 'tableRow', 'mergeTableCells',
+                               'tableProperties', 'tableCellProperties'],
+            'tableProperties': {
+                'borderColors': customColorPalette,
+                'backgroundColors': customColorPalette
+            },
+            'tableCellProperties': {
+                'borderColors': customColorPalette,
+                'backgroundColors': customColorPalette
+            }
+        },
+        'heading': {
+            'options': [
+                {'model': 'paragraph', 'title': 'Paragraph', 'class': 'ck-heading_paragraph'},
+                {'model': 'heading1', 'view': 'h1', 'title': 'Heading 1', 'class': 'ck-heading_heading1'},
+                {'model': 'heading2', 'view': 'h2', 'title': 'Heading 2', 'class': 'ck-heading_heading2'},
+                {'model': 'heading3', 'view': 'h3', 'title': 'Heading 3', 'class': 'ck-heading_heading3'}
+            ]
+        }
+    },
+    'list': {
+        'properties': {
+            'styles': 'true',
+            'startIndex': 'true',
+            'reversed': 'true',
+        }
+    }
+}
+
+CITIES_LIGHT_TRANSLATION_LANGUAGES = ['es', 'en', 'fr', 'de', 'pt']
+CITIES_LIGHT_INCLUDE_CITY_TYPES = [
+    'PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA4', 'PPLC',
+    'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT',
+]
+CITIES_LIGHT_CITY_SOURCES = ['https://download.geonames.org/export/dump/cities500.zip']
+
+EUDR_DATA_FEATURES_SRID = 4326
+
+EUDR_START_DATE_BASE = datetime.datetime(2020, 6, 10)
+CLOUDY_PIXEL_PERCENTAGE = 5
+
+FIREBASE_AUTH_PROJECTS = ast.literal_eval(os.getenv("FIREBASE_AUTH_PROJECTS", "[]"))
+
+EE_SERVICE_ACCOUNT_EMAIL = os.getenv("EE_SERVICE_ACCOUNT_EMAIL", "")
+EE_SERVICE_ACCOUNT_DATA = os.getenv("EE_SERVICE_ACCOUNT_DATA", "")

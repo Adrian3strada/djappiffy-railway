@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import Group as OriginalGroup
+from django.utils.translation import gettext_lazy as _
+
 from .models import User, Group, Permission
 
 
@@ -12,12 +13,23 @@ class CustomUserAdmin(UserAdmin):
     as the identifier, instead of username.
     """
 
-    list_display = ["email", "first_name", "last_name", "is_staff"]
+    list_display = ["username", "email",
+                    "first_name", "last_name",
+                    "is_superuser", "is_staff", "is_active",
+                    "date_joined", "last_login"]
     search_fields = ["email", "first_name", "last_name"]
     ordering = ["email"]
     filter_horizontal = ["groups", "user_permissions"]
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
+        (
+            None,
+            {
+                "fields": (
+                    "email",
+                    "password",
+                ),
+            },
+        ),
         (
             _("Personal info"),
             {
@@ -39,14 +51,22 @@ class CustomUserAdmin(UserAdmin):
                 ),
             },
         ),
-        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+        (
+            _("Important dates"),
+            {
+                "fields": (
+                    "last_login",
+                    "date_joined",
+                ),
+            },
+        ),
     )
     add_fieldsets = (
         (
             None,
             {
                 "classes": ("wide",),
-                "fields": ("email", "password1", "password2"),
+                "fields": ("email", "password1", "password2",),
             },
         ),
     )

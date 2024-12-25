@@ -1,0 +1,7 @@
+.readonly-field {
+    background-color: #f0f0f0; /* Fondo gris claro para el campo deshabilitado */
+    color: #888888; /* Color de texto gris */
+    cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
+    pointer-events: none; /* Desactiva eventos de mouse, haciendo que parezca completamente deshabilitado */
+    opacity: 0.6; /* Opcional: hace que el campo se vea un poco translúcido */
+}
