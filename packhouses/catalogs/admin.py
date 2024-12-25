@@ -32,7 +32,7 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.utils.html import format_html
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
-from .filters import ProductVarietySizeProductFilter, ProductProviderStateFilter
+from .filters import ProductVarietySizeProductFilter, ProductProviderStateFilter, StateFilterUserCountry
 from django.db.models.functions import Concat
 from django.db.models import Value
 from common.utils import is_instance_used
@@ -477,36 +477,11 @@ class ClientAdmin(admin.ModelAdmin):
         js = ('js/admin/forms/packhouses/catalogs/client.js',)
 
 
-@admin.register(Vehicle)
-class VehicleAdmin(admin.ModelAdmin):
-    list_display = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'ownership', 'fuel', 'is_enabled')
-    list_filter = ('kind', 'brand', 'ownership', 'fuel', 'is_enabled')
-    search_fields = ('name', 'model', 'license_plate', 'serial_number', 'comments')
-    fields = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'ownership', 'fuel', 'comments', 'is_enabled', 'organization')
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
-        if 'license_plate' in form.base_fields:
-            form.base_fields['license_plate'].widget = UppercaseTextInputWidget()
-        if 'serial_number' in form.base_fields:
-            form.base_fields['serial_number'].widget = UppercaseTextInputWidget()
-        if 'color' in form.base_fields:
-            form.base_fields['color'].widget = UppercaseTextInputWidget()
-        return form
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Organization]):
-            readonly_fields.extend(['name', 'organization'])
-        return readonly_fields
-
 
 @admin.register(Gatherer)
 class GathererAdmin(admin.ModelAdmin):
     list_display = ('name', 'zone', 'tax_registry_code', 'state', 'city', 'postal_code', 'address', 'email', 'phone_number', 'vehicle', 'is_enabled')
-    list_filter = ('state', 'city', 'vehicle', 'is_enabled')
+    list_filter = (StateFilterUserCountry, 'is_enabled')
     search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
     fields = ('name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle', 'is_enabled', 'organization')
 
@@ -522,31 +497,51 @@ class GathererAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Region, City, Organization]):
+        if obj and is_instance_used(obj, exclude=[Region, Vehicle, City, Organization]):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        user_profile = UserProfile.objects.get(user=request.user)
+        user_profile = UserProfile.objects.get(user=request.user) #TODO: Obtener el país de la organización en lugar del país del usuario
         country = user_profile.country
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = Gatherer.objects.get(id=object_id) if object_id else None
+
+        # Lógica para el campo "state"
         if db_field.name == "state":
-            kwargs["queryset"] = Region.objects.filter(country=country)
+            if obj:
+                country_id = obj.state.country_id
+            else:
+                country_id = country.id
+            if country_id:
+                kwargs["queryset"] = Region.objects.filter(country_id=country_id)
+            else:
+                kwargs["queryset"] = Region.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda obj: obj.name
+            formfield.label_from_instance = lambda item: item.name
             return formfield
-        elif db_field.name == "city":
-            if 'state' in request.GET:
-                state_id = request.GET.get('state')
+
+        # Lógica para el campo "city"
+        if db_field.name == "city":
+            if request.POST:
+                state_id = request.POST.get('state')
+            else:
+                state_id = obj.state.id if obj else None
+            if state_id:
                 kwargs["queryset"] = City.objects.filter(region_id=state_id)
             else:
-                kwargs["queryset"] = City.objects.filter(country=country)
+                kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda obj: obj.name
+            formfield.label_from_instance = lambda item: item.name
             return formfield
+
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/gatherer.js',)
+        js = (
+                'js/admin/forms/packhouses/catalogs/gatherer.js',
+                'js/admin/forms/packhouses/catalogs/state-city.js',
+            )
 
 
 class MaquiladoraClientInline(admin.StackedInline):
@@ -754,12 +749,13 @@ class SupplyKindRelationAdmin(admin.ModelAdmin):
 class OrchardCertificationAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(CrewChief)
-class CrewChiefAdmin(admin.ModelAdmin):
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        form.base_fields['name'].widget = UppercaseTextInputWidget()
-        return form
+class CrewChiefInline(admin.TabularInline):
+    model = CrewChief
+    extra = 0
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return formset
 
 class HarvestingCrewBeneficiaryInline(admin.TabularInline):
     model = HarvestingCrewBeneficiary
@@ -770,33 +766,86 @@ class HarvestingCrewBeneficiaryInline(admin.TabularInline):
         formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
         return formset
 
+class VehicleInline(admin.StackedInline):
+    model = Vehicle
+    extra = 0
+
+    list_display = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'ownership', 'fuel', 'is_enabled')
+    list_filter = ('kind', 'brand', 'ownership', 'fuel', 'is_enabled')
+    search_fields = ('name', 'model', 'license_plate', 'serial_number', 'comments')
+    fields = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'scope', 'ownership', 'fuel', 'comments', 'is_enabled')
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'name' in formset.form.base_fields:
+            formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'license_plate' in formset.form.base_fields:
+            formset.form.base_fields['license_plate'].widget = UppercaseTextInputWidget()
+        if 'serial_number' in formset.form.base_fields:
+            formset.form.base_fields['serial_number'].widget = UppercaseTextInputWidget()
+        if 'color' in formset.form.base_fields:
+            formset.form.base_fields['color'].widget = UppercaseTextInputWidget()
+        return formset
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[HarvestingCrewProvider, Organization]):
+            readonly_fields.extend(['name'])
+        return readonly_fields
+
 class HarvestingPaymentSettingInline(admin.StackedInline):
     model = HarvestingPaymentSetting
-    extra = 0
+    extra = 1
+    min_num = 1
+    max_num = 2
 
 @admin.register(HarvestingCrew)
 class HarvestingCrewAdmin(admin.ModelAdmin):
     list_display = ('name', 'harvesting_crew_provider', 'crew_chief', 'certification_name', 'persons_number', 'is_enabled')
     list_filter = ('is_enabled',)
-    fields = ('harvesting_crew_provider', 'name', 'certification_name', 'crew_chief', 'persons_number', 'comments', 'is_enabled', 'organization',)
+    fields = ('harvesting_crew_provider', 'name', 'certification_name', 'crew_chief', 'persons_number', 'comments', 'is_enabled')
     inlines = [HarvestingPaymentSettingInline,]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+
+        if obj:
+            form.base_fields['harvesting_crew_provider'].widget.attrs['data-object-id'] = obj.pk
+
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         if 'certification_name' in form.base_fields:
             form.base_fields['certification_name'].widget = UppercaseTextInputWidget()
+
         return form
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[HarvestingCrewProvider, CrewChief, HarvestingCrewBeneficiary, Bank, HarvestingPaymentSetting, Organization]):
-            readonly_fields.extend(['name', 'certification_name', 'harvesting_crew_provider', 'organization'])
-        return readonly_fields
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = HarvestingCrew.objects.get(id=obj_id) if obj_id else None
+
+        if db_field.name == "crew_chief":
+            if request.POST:
+                harvesting_crew_provider_id = request.POST.get('harvesting_crew_provider')
+            else:
+                harvesting_crew_provider_id = obj.harvesting_crew_provider_id if obj else None
+
+            if harvesting_crew_provider_id:
+                kwargs["queryset"] = CrewChief.objects.filter(harvesting_crew_provider_id=harvesting_crew_provider_id)
+            else:
+                kwargs["queryset"] = CrewChief.objects.none()
+
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/harvesting_crew.js',)
 
 @admin.register(HarvestingCrewProvider)
 class HarvestingCrewProviderAdmin(admin.ModelAdmin):
-    inlines = [HarvestingCrewBeneficiaryInline,]
+    inlines = [HarvestingCrewBeneficiaryInline,VehicleInline, CrewChiefInline]
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['name'].widget = UppercaseTextInputWidget()

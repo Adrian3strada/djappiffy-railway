@@ -28,3 +28,9 @@ def get_payment_choices():
         ('percentage', _('Percentage')),
         ('fixed_amount', _('Fixed amount')),
     ]
+
+def vehicle_scope_choices():
+    return [
+        ('packhouse', _('Packhouse')),
+        ('harvesting_crew', _('Harvesting crew')),
+    ]

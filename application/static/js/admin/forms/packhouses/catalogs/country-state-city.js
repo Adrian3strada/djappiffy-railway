@@ -1,4 +1,4 @@
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function () {
   const countryField = $('#id_country');
   const stateField = $('#id_state');
   const cityField = $('#id_city');

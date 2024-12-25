@@ -1,23 +1,50 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const stateField = $('#id_state');
-    const cityField = $('#id_city');
+  const API_BASE_URL = '/rest/v1';
+  const vehicleField = $('#id_vehicle');
+  getVehicle();
 
-    if (stateField.length) {
-        stateField.on('change', function () {
-            const stateId = stateField.val();
-            const url = `/rest/v1/cities/city/?region=${stateId}`;
+  function updateFieldOptions(field, options) {
+    const currentValue = field.val();
+    field.empty().append(new Option("---------", "", true, true));
 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    cityField.empty();
-                    cityField.append(new Option('---------', '', true, true));
-                    data.forEach(city => {
-                        const option = new Option(city.name, city.id, false, false);
-                        cityField.append(option);
-                    });
-                    cityField.trigger('change'); // Notify select2 of changes
-                });
-        });
+    if (options && !Array.isArray(options)) {
+      options = [options];
     }
+
+    if (options && options.length) {
+      options.forEach((option) => {
+        const isSelected = option.id == currentValue;
+        field.append(
+          new Option(option.name, option.id, isSelected, isSelected)
+        );
+      });
+    }
+
+    field.trigger("change").select2();
+  }
+
+  function fetchOptions(url) {
+    return fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error fetching data');
+        }
+        return response.json();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+
+  function getVehicle() {
+    fetchOptions(`${API_BASE_URL}/catalogs/vehicle/?scope=packhouse&is_enabled=true`)
+      .then(data => {
+        if (data && Array.isArray(data)) {
+          updateFieldOptions(vehicleField, data);
+        } else {
+          console.error('Invalid data format:', data);
+        }
+      });
+  }
+
 });

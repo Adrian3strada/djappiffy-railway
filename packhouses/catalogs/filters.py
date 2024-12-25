@@ -1,6 +1,6 @@
 from django.contrib import admin
-from cities_light.models import Region
-
+from cities_light.models import Country, Region, City
+from common.profiles.models import UserProfile, OrganizationProfile
 from .models import Product, ProductProvider
 
 
@@ -35,3 +35,21 @@ class ProductProviderStateFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(state__id=self.value())
         return queryset
+
+class StateFilterUserCountry(admin.SimpleListFilter):
+    title = 'State'
+    parameter_name = 'state'
+
+    def lookups(self, request, model_admin):
+        user_profile = UserProfile.objects.get(user=request.user)
+        country = user_profile.country
+
+        states = Region.objects.filter(country_id=country.id)
+        return [(state.id, state.display_name) for state in states]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(state__id=self.value())
+        return queryset
+
+
