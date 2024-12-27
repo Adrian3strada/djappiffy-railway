@@ -1,7 +1,11 @@
 from django import forms
-from .models import Product, ProductVarietySize, MarketStandardProductSize, OrchardCertification
+from .models import (
+            Product, ProductVarietySize, MarketStandardProductSize, OrchardCertification, HarvestingCrew,
+            HarvestingPaymentSetting
+            )
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 
 class ProductVarietySizeInlineForm(forms.ModelForm):
@@ -81,3 +85,45 @@ class OrchardCertificationForm(forms.ModelForm):
             })
 
         return cleaned_data
+
+class HarvestingCrewForm(forms.ModelForm):
+    class Meta:
+        model = HarvestingCrew
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        return cleaned_data
+
+class HarvestingPaymentSettingInlineFormSet(BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.type_harvests = []
+
+    def clean(self):
+        # Llamamos al clean original
+        super().clean()
+
+        for form in self.forms:
+            # Validamos que el formulario sea válido y que no esté marcado para eliminar
+            if not form.is_valid() or form.cleaned_data.get('DELETE', False):
+                continue
+
+            type_harvest = form.cleaned_data.get('type_harvest')
+
+            if type_harvest:
+                # Verifica si ya existe el type_harvest en la lista
+                if type_harvest in self.type_harvests:
+                    raise forms.ValidationError({
+                        'type_harvest': _(f'Type harvest "{type_harvest}" is already selected. Only one of each type is allowed.')
+                    })
+                else:
+                    self.type_harvests.append(type_harvest)
+
+        # Lanza una validación general si hay errores
+        if any(form.errors for form in self.forms):
+            raise forms.ValidationError(
+                _(f'Type harvest "{type_harvest}" is already selected. Only one of each type is allowed.')
+            )
+
+

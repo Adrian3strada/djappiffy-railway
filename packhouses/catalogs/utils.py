@@ -31,6 +31,6 @@ def get_payment_choices():
 
 def vehicle_scope_choices():
     return [
-        ('packhouse', _('Packhouse')),
-        ('harvesting_crew', _('Harvesting crew')),
+        ('packhouse', _('PACKHOUSE')),
+        ('harvesting_crew', _('HARVESTING CREW')),
     ]
