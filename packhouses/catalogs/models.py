@@ -394,8 +394,8 @@ class Vehicle(CleanNameAndOrganizationMixin, models.Model):
     license_plate = models.CharField(max_length=15, verbose_name=_('License plate'))
     serial_number = models.CharField(max_length=100, verbose_name=_('Serial number'))
     color = models.CharField(max_length=50, verbose_name=_('Color'))
-    scope = models.CharField(max_length=15, verbose_name=_('Scope'), choices=vehicle_scope_choices())
     ownership = models.ForeignKey(VehicleOwnershipKind, verbose_name=_('Ownership kind'), on_delete=models.PROTECT)
+    scope = models.CharField(max_length=15, verbose_name=_('Scope'), choices=vehicle_scope_choices())
     fuel = models.ForeignKey(VehicleFuelKind, verbose_name=_('Fuel kind'), on_delete=models.PROTECT)
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -580,23 +580,8 @@ class HarvestingCrew(models.Model):
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True )
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
-
     def __str__(self):
         return f"{self.name}"
-
-    # Asignar un consecutivo único para cada organización independiente a la llave primaria
-    def clean(self):
-        if not self.pk:
-            last_ooid = (
-                HarvestingCrew.objects.filter(organization=self.organization)
-                .aggregate(Max('ooid'))['ooid__max']
-                or 1
-            )
-            self.ooid = last_ooid + 1
-
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Harvesting crew')

@@ -19,7 +19,7 @@ from .models import (
 from packhouses.packhouse_settings.models import Bank
 from common.profiles.models import UserProfile
 from .forms import (ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet,
-                    OrchardCertificationForm)
+                    OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet)
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
@@ -787,20 +787,21 @@ class VehicleInline(admin.StackedInline):
             formset.form.base_fields['color'].widget = UppercaseTextInputWidget()
         return formset
 
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[HarvestingCrewProvider, Organization]):
-            readonly_fields.extend(['name'])
-        return readonly_fields
+
 
 class HarvestingPaymentSettingInline(admin.StackedInline):
     model = HarvestingPaymentSetting
-    extra = 1
     min_num = 1
     max_num = 2
+    formset = HarvestingPaymentSettingInlineFormSet
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
 
 @admin.register(HarvestingCrew)
 class HarvestingCrewAdmin(admin.ModelAdmin):
+    form = HarvestingCrewForm
     list_display = ('name', 'harvesting_crew_provider', 'crew_chief', 'certification_name', 'persons_number', 'is_enabled')
     list_filter = ('is_enabled',)
     fields = ('harvesting_crew_provider', 'name', 'certification_name', 'crew_chief', 'persons_number', 'comments', 'is_enabled')
