@@ -1,150 +1,146 @@
 [
 {
-    "model": "profiles.organizationprofile",
-    "pk": 1,
-    "fields": {
-        "polymorphic_ctype": [
-            "profiles",
-            "organizationprofile"
-        ],
-        "name": "Tezil S.A. de C.V",
-        "organization": 1,
-        "legal_category": null,
-        "tax_id": "TAX_TEZIL",
-        "country": [
-            3996063
-        ],
-        "state": [
-            3995955
-        ],
-        "city": [
-            3995402
-        ],
-        "district": null,
-        "neighborhood": "Nueva Chapultepec",
-        "postal_code": "58280",
-        "address": "Gob. Juan B. Ceballos",
-        "external_number": "845",
-        "internal_number": null,
-        "email": "tezil@localhost",
-        "phone_number": "+524438227028",
-        "url": "http://certiffy.net",
-        "hostname": "uno.dev.certiffy.net",
-        "logo": "",
-        "products": [
-            1
-        ]
-    }
+  "model": "profiles.organizationprofile",
+  "pk": 1,
+  "fields": {
+    "polymorphic_ctype": [
+      "profiles",
+      "packhouseexporterprofile"
+    ],
+    "name": "Tezil S.A. de C.V",
+    "organization": 1,
+    "legal_category": null,
+    "tax_id": "TAX_TEZIL",
+    "country": [
+      3996063
+    ],
+    "state": [
+      3995955
+    ],
+    "city": [
+      3995402
+    ],
+    "district": null,
+    "neighborhood": "Nueva Chapultepec",
+    "postal_code": "58280",
+    "address": "Gob. Juan B. Ceballos",
+    "external_number": "845",
+    "internal_number": null,
+    "email": "tezil@localhost",
+    "phone_number": "+524438227028",
+    "url": null,
+    "logo": "",
+    "products": [
+      1
+    ]
+  }
 },
 {
-    "model": "profiles.organizationprofile",
-    "pk": 2,
-    "fields": {
-        "polymorphic_ctype": [
-            "profiles",
-            "organizationprofile"
-        ],
-        "name": "Red Field Packers, LLC",
-        "organization": 2,
-        "legal_category": null,
-        "tax_id": "TAX_RFP",
-        "country": [
-            6252001
-        ],
-        "state": [
-            4398678
-        ],
-        "city": [
-            4393217
-        ],
-        "district": null,
-        "neighborhood": "Kansas City Neighborhood",
-        "postal_code": "64129",
-        "address": "Arrowhead Drive",
-        "external_number": "1",
-        "internal_number": null,
-        "email": "red-field-packers@localhost",
-        "phone_number": "+1-816-920-4237",
-        "url": "http://www.chiefs.com",
-        "hostname": "dos.dev.certiffy.net",
-        "logo": "",
-        "products": [
-            1
-        ]
-    }
+  "model": "profiles.organizationprofile",
+  "pk": 2,
+  "fields": {
+    "polymorphic_ctype": [
+      "profiles",
+      "packhouseexporterprofile"
+    ],
+    "name": "Red Field Packers, LLC",
+    "organization": 2,
+    "legal_category": null,
+    "tax_id": "TAX_RFP",
+    "country": [
+      6252001
+    ],
+    "state": [
+      4398678
+    ],
+    "city": [
+      4393217
+    ],
+    "district": null,
+    "neighborhood": "Kansas City Neighborhood",
+    "postal_code": "64129",
+    "address": "Arrowhead Drive",
+    "external_number": "1",
+    "internal_number": null,
+    "email": "red-field-packers@localhost",
+    "phone_number": "+1-816-920-4237",
+    "url": "http://www.chiefs.com",
+    "logo": "",
+    "products": [
+      8
+    ]
+  }
 },
 {
-    "model": "profiles.organizationprofile",
-    "pk": 3,
-    "fields": {
-        "polymorphic_ctype": [
-            "profiles",
-            "organizationprofile"
-        ],
-        "name": "Green Bay Packers, Inc.",
-        "organization": 3,
-        "legal_category": null,
-        "tax_id": "TAX_GBP",
-        "country": [
-            6252001
-        ],
-        "state": [
-            5279468
-        ],
-        "city": [
-            5254962
-        ],
-        "district": null,
-        "neighborhood": "Green Bay Neighborhood",
-        "postal_code": "54304",
-        "address": "Lombardi Avenue",
-        "external_number": "1265",
-        "internal_number": null,
-        "email": "green-bay-packers@localhost",
-        "phone_number": "+1 920-569-7500",
-        "url": "http://www.packers.com",
-        "hostname": "tres.dev.certiffy.net",
-        "logo": "",
-        "products": [
-            1
-        ]
-    }
+  "model": "profiles.organizationprofile",
+  "pk": 3,
+  "fields": {
+    "polymorphic_ctype": [
+      "profiles",
+      "packhouseexporterprofile"
+    ],
+    "name": "Green Bay Packers, Inc.",
+    "organization": 3,
+    "legal_category": null,
+    "tax_id": "TAX_GBP",
+    "country": [
+      6252001
+    ],
+    "state": [
+      5279468
+    ],
+    "city": [
+      5254962
+    ],
+    "district": null,
+    "neighborhood": "Green Bay Neighborhood",
+    "postal_code": "54304",
+    "address": "Lombardi Avenue",
+    "external_number": "1265",
+    "internal_number": null,
+    "email": "green-bay-packers@localhost",
+    "phone_number": "+1 920-569-7500",
+    "url": "http://www.packers.com",
+    "logo": "",
+    "products": [
+      8
+    ]
+  }
 },
 {
-    "model": "profiles.organizationprofile",
-    "pk": 4,
-    "fields": {
-        "polymorphic_ctype": [
-            "profiles",
-            "organizationprofile"
-        ],
-        "name": "Blue Coast Packers, Inc.",
-        "organization": 4,
-        "legal_category": null,
-        "tax_id": "TAX_BCP",
-        "country": [
-            6252001
-        ],
-        "state": [
-            5332921
-        ],
-        "city": [
-            5359488
-        ],
-        "district": null,
-        "neighborhood": "Inglewood Neighborhood",
-        "postal_code": "90301",
-        "address": "Stadium Drive",
-        "external_number": "1001",
-        "internal_number": null,
-        "email": "blue-coast-packers@localhost",
-        "phone_number": "+1 424-541-9100",
-        "url": null,
-        "hostname": "cuatro.dev.certiffy.net",
-        "logo": "",
-        "products": [
-            1
-        ]
-    }
+  "model": "profiles.organizationprofile",
+  "pk": 4,
+  "fields": {
+    "polymorphic_ctype": [
+      "profiles",
+      "packhouseexporterprofile"
+    ],
+    "name": "Blue Coast Packers, Ltd.",
+    "organization": 4,
+    "legal_category": null,
+    "tax_id": "TAX_BCP",
+    "country": [
+      6252001
+    ],
+    "state": [
+      5332921
+    ],
+    "city": [
+      5359488
+    ],
+    "district": null,
+    "neighborhood": "Inglewood Neighborhood",
+    "postal_code": "90301",
+    "address": "Stadium Drive",
+    "external_number": "1001",
+    "internal_number": null,
+    "email": "blue-coast-packers@localhost",
+    "phone_number": "+1 424-541-9100",
+    "url": null,
+    "logo": "",
+    "products": [
+      8
+    ]
+  }
 }
 ]

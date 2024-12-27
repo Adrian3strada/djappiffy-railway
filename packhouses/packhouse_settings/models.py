@@ -207,3 +207,32 @@ class OrchardCertificationKind(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='orchardcertificationkind_unique_name_organization'),
         ]
+
+
+class SupplyKind(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    is_container = models.BooleanField(default=False, verbose_name=_('Is container'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = _('Supply kind')
+        verbose_name_plural = _('Supply kinds')
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='supplykind_unique_name_organization'),
+        ]
+
+
+class SupplyPresentationKind(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = _('Supply presentation kind')
+        verbose_name_plural = _('Supply presentation kinds')
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='supplypresentationkind_unique_name_organization'),
+        ]
