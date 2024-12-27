@@ -3,40 +3,28 @@ from django.contrib import admin
 from common.billing.models import LegalEntityCategory
 from .models import (
     Market, KGCostMarket, MarketClass, MarketStandardProductSize, Product, ProductVariety, ProductVarietySize,
-    ProductHarvestKind, ProductProvider, ProductProviderBenefactor,
-    ProductProducer, ProductProducerBenefactor, PaymentKind, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
-    Vehicle,
-    Gatherer, Client, ClientShipAddress, Maquiladora, MaquiladoraClient, OrchardProductClassificationKind, Orchard,
-    OrchardCertificationKind,
-    OrchardCertificationVerifier, OrchardCertification,
-    HarvestingCrewProvider, CrewChief, HarvestingCrew, HarvestingCrewBeneficiary, HarvestingPaymentSetting,
-    SupplyUnitKind, SupplyKind, SupplyKindRelation,
-    Supply, Supplier, MeshBagKind, MeshBagFilmKind, MeshBag, ServiceProvider, ServiceProviderBenefactor, Service,
-    AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber, Pallet, PalletExpense, ProductPackaging,
-    ExportingCompany, Transfer, LocalTransporter, BorderToDestinationTransporter, CustomsBroker, Vessel, Airline,
-    InsuranceCompany
+    ProductHarvestKind, ProductProvider, ProductProviderBenefactor, ProductProducer, ProductProducerBenefactor,
+    PaymentKind, Vehicle, Gatherer, Client, ClientShipAddress, Maquiladora, MaquiladoraClient,
+    OrchardProductClassificationKind, Orchard, OrchardCertification, HarvestingCrewProvider, CrewChief, HarvestingCrew,
+    HarvestingCrewBeneficiary, HarvestingPaymentSetting, Supply, Supplier, MeshBagKind, MeshBagFilmKind,
+    MeshBag, ServiceProvider, ServiceProviderBenefactor, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
+    Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
+    BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany
 )
 from packhouses.packhouse_settings.models import Bank
 from common.profiles.models import UserProfile
 from .forms import (ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet,
                     OrchardCertificationForm)
-from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django import forms
-from django.db import models
 
 from organizations.models import Organization, OrganizationUser
 from cities_light.models import Country, Region, City
 
 from django.utils.translation import gettext_lazy as _
-from django.urls import reverse
-from django.utils.html import format_html
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from .filters import ProductVarietySizeProductFilter, ProductProviderStateFilter
-from django.db.models.functions import Concat
-from django.db.models import Value
 from common.utils import is_instance_used
-from django.core.exceptions import ValidationError
 from adminsortable2.admin import SortableAdminMixin
 
 
@@ -726,33 +714,17 @@ class ServiceProviderBenefactorInline(admin.TabularInline):
     extra = 0
 
 
-class SupplyAdminForm(forms.ModelForm):
-    class Meta:
-        model = Supply
-        fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance and self.instance.volume_kind:
-            allowed_kinds = SupplyKindRelation.objects.filter(from_kind=self.instance.volume_kind).values_list(
-                'to_kind', flat=True)
-            self.fields['related_supply'].queryset = Supply.objects.filter(kind__in=allowed_kinds)
-
-
 @admin.register(Supply)
 class SupplyAdmin(admin.ModelAdmin):
-    form = SupplyAdminForm
+    list_display = ('name', 'kind', 'is_enabled')
+    list_filter = ('kind', 'is_enabled')
 
-
-@admin.register(SupplyKindRelation)
-class SupplyKindRelationAdmin(admin.ModelAdmin):
-    list_display = ('from_kind', 'to_kind', 'is_enabled')
-    list_filter = ('from_kind', 'to_kind', 'is_enabled')
 
 
 @admin.register(OrchardCertification)
 class OrchardCertificationAdmin(admin.ModelAdmin):
     pass
+
 
 @admin.register(CrewChief)
 class CrewChiefAdmin(admin.ModelAdmin):
@@ -801,15 +773,6 @@ class HarvestingCrewProviderAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
-
-@admin.register(SupplyUnitKind)
-class SupplyUnitKindAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(SupplyKind)
-class SupplyKindAdmin(admin.ModelAdmin):
-    pass
 
 
 @admin.register(Supplier)

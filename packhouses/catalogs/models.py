@@ -18,8 +18,10 @@ from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (ProductSizeKind, MassVolumeKind, Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   OrchardProductClassificationKind, OrchardCertificationVerifier,
-                                                  OrchardCertificationKind)
+                                                  OrchardCertificationKind, SupplyKind, SupplyPresentationKind)
 from django.db.models import Max, Min
+from django.db.models import Q, F
+
 
 # Create your models here.
 
@@ -571,6 +573,7 @@ class CrewChief(models.Model):
         ]
 
 class HarvestingCrew(models.Model):
+    ooid = models.IntegerField(verbose_name=_('OOID'), editable=False)
     harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, verbose_name=_('Harvesting Crew Provider'),
                                                  on_delete=models.PROTECT)
     name = models.CharField(max_length=100, verbose_name=_('Name'))
@@ -580,7 +583,6 @@ class HarvestingCrew(models.Model):
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True )
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-    ooid = models.IntegerField(verbose_name=_('OOID'), editable=False)
 
 
     def __str__(self):
@@ -622,6 +624,7 @@ class HarvestingCrewBeneficiary(models.Model):
             models.UniqueConstraint(fields=['bank_account_number', 'harvesting_crew_provider'], name='bank_account_number_unique_harvesting_crew_provider'),
         ]
 
+
 class HarvestingPaymentSetting(models.Model):
     type_harvest = models.CharField(max_length=20, choices=get_type_choices(), default='local', verbose_name=_('Type of harvest'))
     more_than_kg = models.FloatField(verbose_name=_('Kg of full truck'), help_text="From how many KG will the full truck payment be considered?" , validators=[MinValueValidator(0.01)])
@@ -649,37 +652,10 @@ class HarvestingPaymentSetting(models.Model):
             models.UniqueConstraint(fields=['type_harvest', 'harvesting_crew'], name='type_harvest_unique_harvesting_crew'),
         ]
 
+
 #  Proveedores de insumos
 
 
-class SupplyUnitKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Supply unit kind')
-        verbose_name_plural = _('Supply unit kinds')
-        unique_together = ('name', 'organization')
-        ordering = ('name',)
-
-
-class SupplyKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Supply kind')
-        verbose_name_plural = _('Supply kinds')
-        unique_together = ('name', 'organization')
-        ordering = ('name',)
 
 
 class SupplyKindRelation(models.Model):
@@ -690,35 +666,37 @@ class SupplyKindRelation(models.Model):
     def __str__(self):
         return f"{self.from_kind} -> {self.to_kind}"
 
+    def clean(self):
+        super().clean()
+        if self.from_kind.organization != self.to_kind.organization:
+            raise ValidationError(_('The organizations of from_kind and to_kind must be the same.'))
+
     class Meta:
-        unique_together = ('from_kind', 'to_kind')
         verbose_name = _('Supply kind relation')
         verbose_name_plural = _('Supply kind relations')
 
 
-class Supply(models.Model):
+class Supply(CleanNameAndOrganizationMixin, models.Model):
+    kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    unit_cost = models.FloatField(verbose_name=_('Unit cost'))
-    unit_price = models.FloatField(verbose_name=_('Unit price'))
-    unit_quantity = models.PositiveIntegerField(verbose_name=_('Unit quantity'))
-    unit_kind = models.ForeignKey(SupplyUnitKind, verbose_name=_('Unit kind'), on_delete=models.PROTECT)
+    unit_quantity = models.PositiveIntegerField(verbose_name=_('Unit quantity'), help_text=_('Quantity of units per unit kind to discunt when a supply is used'))
+    presentation = models.ForeignKey(SupplyPresentationKind, verbose_name=_('Unit kind'), on_delete=models.PROTECT)
     minimum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Minimum stock quantity'))
     maximum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Maximum stock quantity'))
-    kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
-    is_tray = models.BooleanField(default=False, verbose_name=_('Is tray'))
-    related_supply = models.ForeignKey('self', verbose_name=_('Related supply'), null=True, blank=True,
-                                       on_delete=models.SET_NULL, related_name='related_supplies')
+    # parent = models.ForeignKey('self', verbose_name=_('Parent'), null=True, blank=True, on_delete=models.SET_NULL)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.kind.name}: {self.name}"
 
     class Meta:
         verbose_name = _('Supply')
         verbose_name_plural = _('Supplies')
-        unique_together = ('name', 'organization')
-        ordering = ('name',)
+        ordering = ('organization', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='supply_unique_name_organization'),
+        ]
 
 
 class Supplier(models.Model):
@@ -1143,6 +1121,7 @@ class Airline(CleanNameAndOrganizationMixin, models.Model):
         verbose_name = _('Airline')
         verbose_name_plural = _('Airlines')
         unique_together = ('name', 'organization')
+
 
 class InsuranceCompany(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
