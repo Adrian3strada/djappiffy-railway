@@ -9,7 +9,7 @@ admin.site.register(TaxRegime)
 
 @admin.register(LegalEntityCategory)
 class LegalEntityCategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'country']
+    list_display = ['name', 'code', 'country']
     search_fields = ['name',]
     list_filter = ['country']
 

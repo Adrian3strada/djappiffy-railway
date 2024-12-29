@@ -4,11 +4,9 @@ from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
-
 from cities_light.models import City, Country, Region
 from organizations.models import Organization, OrganizationOwner
 from polymorphic.models import PolymorphicModel
-
 from common.base.models import ProductKind
 from common.billing.models import LegalEntityCategory
 
@@ -229,7 +227,7 @@ class PackhouseExporterProfile(OrganizationProfile):
 
 class PackhouseExporterSetting(models.Model):
     profile = models.OneToOneField(PackhouseExporterProfile, on_delete=models.CASCADE, verbose_name=_('Packhouse exporter profile'))
-    products = models.ManyToManyField(ProductKind, blank=False)
+    products = models.ManyToManyField(ProductKind, blank=True)
 
     class Meta:
         verbose_name = _('Packhouse exporter settings')

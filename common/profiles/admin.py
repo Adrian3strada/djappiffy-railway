@@ -77,6 +77,12 @@ class PackhouseExporterSettingInline(admin.StackedInline):
     can_delete = False
     verbose_name = _("Platform setting")
 
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+        if db_field.name == 'products':
+            formfield.required = True
+        return formfield
+
 
 @admin.register(PackhouseExporterProfile)
 class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
@@ -87,6 +93,14 @@ class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
         if not request.user.is_superuser:
             fields.remove('products')
         return fields
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'legal_category' in form.base_fields:
+            form.base_fields['legal_category'].required = True
+        if 'hostname' in form.base_fields and request.user.is_superuser:
+            form.base_fields['hostname'].required = True
+        return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")

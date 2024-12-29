@@ -26,6 +26,7 @@ class TaxRegime(Orderable):
 
 
 class LegalEntityCategory(Orderable):
+    code = models.CharField(max_length=30, verbose_name=_('Code'))
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
 
@@ -33,12 +34,12 @@ class LegalEntityCategory(Orderable):
         return f"{self.name}"
 
     class Meta:
-        # verbose_name = 'Regimen Capital'
-        # verbose_name_plural = 'Regímenes Capitales'
         verbose_name = _('Legal Entity Category')
         verbose_name_plural = _('Legal Entity Categories')
-        unique_together = ('name', 'country')
-
+        ordering = ['country', 'code', 'name']
+        constraints = [
+            models.UniqueConstraint(fields=['code', 'name', 'country'], name='legalentitycategory_unique_code_name_country')
+        ]
 
 class LegalEntity(Orderable):
     tax_regime = models.ForeignKey(TaxRegime, verbose_name=_('Tax regime'), on_delete=models.PROTECT)
