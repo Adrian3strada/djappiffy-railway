@@ -90,9 +90,9 @@ class CleanNameOrAliasAndOrganizationMixin(models.Model):
 
         if self.organization_id:
             if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(pk=self.pk).exists():
-                errors['name'] = _('Name must be unique, it already exists.')
+                errors['name'] = _('Must be unique, it already exists.')
             if self.__class__.objects.filter(alias=self.alias, organization=self.organization).exclude(pk=self.pk).exists():
-                errors['alias'] = _('Alias must be unique, it already exists.')
+                errors['alias'] = _('Must be unique, it already exists.')
 
         if errors:
             raise ValidationError(errors)

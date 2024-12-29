@@ -89,37 +89,21 @@ class OrganizationProfile(PolymorphicModel):
         help_text=_('Linked Organization to this profile.'),
     )
 
-    ### Legals
-    legal_category = models.ForeignKey(
-        LegalEntityCategory,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        verbose_name=_('Legal entity category'),
-        help_text=_('Legal category, must have a country selected to show that country legal categories.'),
-    )
-    tax_id = models.CharField(
-        max_length=50,
-    )
-
     ### Referenced fields about localization
     country = models.ForeignKey(
         Country,
         on_delete=models.PROTECT,
         verbose_name=_('Country'),
-        help_text=_('Country'),
     )
     state = models.ForeignKey(
         Region,
         on_delete=models.PROTECT,
         verbose_name=_('State'),
-        help_text=_('State'),
     )
     city = models.ForeignKey(
         City,
         on_delete=models.PROTECT,
         verbose_name=_('City'),
-        help_text=_('City'),
     )
 
     ### Non-referenced fields about localization
@@ -150,6 +134,19 @@ class OrganizationProfile(PolymorphicModel):
         blank=True,
         null=True,
         verbose_name=_('Internal number'),
+    )
+
+    ### Legals
+    legal_category = models.ForeignKey(
+        LegalEntityCategory,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        verbose_name=_('Legal entity category'),
+        help_text=_('Legal category, must have a country selected to show that country legal categories.'),
+    )
+    tax_id = models.CharField(
+        max_length=50,
     )
 
     ### Contact fields
@@ -214,6 +211,7 @@ class PackhouseExporterProfile(OrganizationProfile):
         null=True,
         verbose_name=_('Hostname'),
     )
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def clean(self):
         """
@@ -227,6 +225,15 @@ class PackhouseExporterProfile(OrganizationProfile):
     class Meta:
         verbose_name = _('Packhouse exporter profile')
         verbose_name_plural = _('Packhouse exporter profiles')
+
+
+class PackhouseExporterSetting(models.Model):
+    profile = models.OneToOneField(PackhouseExporterProfile, on_delete=models.CASCADE, verbose_name=_('Packhouse exporter profile'))
+    products = models.ManyToManyField(ProductKind, blank=False)
+
+    class Meta:
+        verbose_name = _('Packhouse exporter settings')
+        verbose_name_plural = _('Packhouse exporter settings')
 
 
 class TradeExporterProfile(OrganizationProfile):

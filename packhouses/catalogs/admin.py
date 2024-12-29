@@ -99,6 +99,10 @@ class MarketAdmin(admin.ModelAdmin):
             obj.organization = request.organization
         super().save_model(request, obj, form, change)
 
+# /Markets
+
+
+# Products
 
 class ProductVarietyInline(admin.TabularInline):
     model = ProductVariety

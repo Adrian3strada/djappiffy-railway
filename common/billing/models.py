@@ -8,22 +8,6 @@ from django.utils.translation import gettext_lazy as _
 # Create your models here.
 
 
-"""
-class TaxRegimeCategory(Orderable):
-    name = models.CharField(max_length=255, verbose_name=_('Name'))
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='tax_regime_categories')
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        # verbose_name = _('Categoría de Regimen Fiscal')
-        # verbose_name_plural = _('Categorías de Regímenes Fiscales')
-        verbose_name = _('Tax Regime Category')
-        verbose_name_plural = _('Tax Regime Categories')
-"""
-
-
 class TaxRegime(Orderable):
     code = models.CharField(max_length=30, verbose_name=_('Code'))
     name = models.CharField(max_length=255, verbose_name=_('Name'))

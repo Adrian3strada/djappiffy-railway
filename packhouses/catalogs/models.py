@@ -26,10 +26,11 @@ from django.db.models import Q, F
 # Create your models here.
 
 
+# Markets
+
 class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
-    # country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='markets_country')
     countries = models.ManyToManyField(Country, verbose_name=_('Countries'))
     management_cost_per_kg = models.FloatField(verbose_name=_('Management cost per Kg'),
                                                validators=[MinValueValidator(0.01)], help_text=_(
@@ -115,7 +116,7 @@ class MarketStandardProductSize(models.Model):
 
         if self.market_id:
             if self.__class__.objects.filter(name=self.name, market=self.market).exclude(pk=self.pk).exists():
-                errors['name'] = _('Name must be unique, it already exists.')
+                errors['name'] = _('Must be unique, it already exists.')
 
         if errors:
             raise ValidationError(errors)
@@ -132,6 +133,9 @@ class MarketStandardProductSize(models.Model):
             models.UniqueConstraint(fields=['name', 'market'], name='marketstandardproductsize_unique_name_market'),
         ]
 
+# /Markets
+
+# Products
 
 class Product(CleanKindAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(ProductKind, verbose_name=_('Product kind'), on_delete=models.PROTECT)
