@@ -127,7 +127,7 @@ class MarketStandardProductSize(models.Model):
     class Meta:
         verbose_name = _('Market standard product size')
         verbose_name_plural = _('Market standard product sizes')
-        ordering = ('market', 'order',)
+        ordering = ('market', 'order', 'name')
         constraints = [
             models.UniqueConstraint(fields=['name', 'market'], name='marketstandardproductsize_unique_name_market'),
         ]
@@ -667,7 +667,6 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
     presentation = models.ForeignKey(SupplyPresentationKind, verbose_name=_('Unit kind'), on_delete=models.PROTECT)
     minimum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Minimum stock quantity'))
     maximum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Maximum stock quantity'))
-    # parent = models.ForeignKey('self', verbose_name=_('Parent'), null=True, blank=True, on_delete=models.SET_NULL)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -683,7 +682,7 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-class Supplier(models.Model):
+class SupplyProvider(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     tax_id = models.CharField(max_length=100, verbose_name=_('Tax ID'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
@@ -697,17 +696,54 @@ class Supplier(models.Model):
     payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
     credit_days = models.PositiveIntegerField(verbose_name=_('Credit days'))
     balance = models.FloatField(verbose_name=_('Balance'))
+    contact_name = models.CharField(max_length=255, verbose_name=_('Contact person full name'))
+    contact_email = models.EmailField()
+    contact_phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'))
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
+    class Meta:
+        verbose_name = _('Supply provider')
+        verbose_name_plural = _('Supply providers')
+        ordering = ('organization', 'name')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='supplyprovider_unique_name_organization'),
+        ]
+
+
+class SupplyProviderSupply(models.Model):
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.CASCADE)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    provider = models.ForeignKey(SupplyProvider, verbose_name=_('Provider'), on_delete=models.CASCADE)
+
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.supply.name} ({self.provider.name})"
 
     class Meta:
-        verbose_name = _('Supplier')
-        verbose_name_plural = _('Suppliers')
-        unique_together = ('name', 'organization')
+        verbose_name = _('Supply from provider')
+        verbose_name_plural = _('Supplies from providers')
+        ordering = ('provider', 'supply')
+        constraints = [
+            models.UniqueConstraint(fields=['supply', 'provider'], name='supplyprovidersupply_unique_supply_provider'),
+        ]
+
+
+class SupplyProviderPaymentAccount(models.Model):
+    bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_('Bank'))
+    bank_account_number = models.CharField(max_length=20, verbose_name=_('Bank account number'))
+    interbank_account_number = models.CharField(max_length=20, verbose_name=_('Interbank account number'))
+    provider = models.ForeignKey(SupplyProvider, on_delete=models.CASCADE, verbose_name=_('Provider'))
+
+    def __str__(self):
+        return f"{self.bank_account_number} ({self.provider.name})"
+
+    class Meta:
+        verbose_name = _('Supply provider payment account')
+        verbose_name_plural = _('Supply provider payment accounts')
+        constraints = [
+            models.UniqueConstraint(fields=['bank', 'provider'], name='supplyproviderpaymentaccount_unique_bank_provider'),
+        ]
 
 
 # Presentaciones de mallas

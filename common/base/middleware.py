@@ -49,8 +49,11 @@ class SubdomainDetectionMiddleware:
 
     def __call__(self, request):
         requested_hostname = self._get_request_hostname(request)
+        print("Requested hostname: ", requested_hostname)
+        print("Request path: ", request.path)
 
-        if re.match(r'^/dadmin/', request.path) and (not request.user.is_superuser):
+        # if re.match(r'^/dadmin/', request.path) and (not request.user.is_superuser):
+        if re.match(r'^/dadmin/', request.path):
             try:
                 # Verificar si existe PackhouseExporterProfile asociada al HOST
                 requested_organization_profile = PackhouseExporterProfile.objects.get(
@@ -62,6 +65,8 @@ class SubdomainDetectionMiddleware:
                     requested_organization = Organization.objects.get(
                         id=requested_organization_profile.organization_id,
                     )
+                    request.session['organization_id'] = requested_organization.id
+                    request.organization = requested_organization
                     print("Requested organization: ", requested_organization)
                 except Organization.DoesNotExist:
                     print("Organization does not exist")
@@ -73,8 +78,7 @@ class SubdomainDetectionMiddleware:
             if request.user.is_authenticated:
                 if not self._is_user_allowed(request.user, requested_organization):
                     raise PermissionDenied
-            else:
-                redirect("/dadmin/")
+                print("User is allowed")
 
         response = self.get_response(request)
 
@@ -83,13 +87,12 @@ class SubdomainDetectionMiddleware:
     def _get_request_hostname(self, request):
         """
         Extract URL hostname from request.
-
-            NOTE: host = hostname + port
+        NOTE: host = hostname + port
         """
+
         request_host = request.get_host()
         request_hostname = request_host.split(':')[0]
-        print("Request host: ", request_host)
-        print("Request hostname: ", request_hostname)
+        print("_get_request_hostname request_hostname: ", request_hostname)
 
         return request_hostname
 

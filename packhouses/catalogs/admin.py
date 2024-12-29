@@ -6,7 +6,7 @@ from .models import (
     ProductHarvestKind, ProductProvider, ProductProviderBenefactor, ProductProducer, ProductProducerBenefactor,
     PaymentKind, Vehicle, Gatherer, Client, ClientShipAddress, Maquiladora, MaquiladoraClient,
     OrchardProductClassificationKind, Orchard, OrchardCertification, HarvestingCrewProvider, CrewChief, HarvestingCrew,
-    HarvestingCrewBeneficiary, HarvestingPaymentSetting, Supply, Supplier, MeshBagKind, MeshBagFilmKind,
+    HarvestingCrewBeneficiary, HarvestingPaymentSetting, Supply, SupplyProvider, MeshBagKind, MeshBagFilmKind,
     MeshBag, ServiceProvider, ServiceProviderBenefactor, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany
@@ -15,35 +15,35 @@ from packhouses.packhouse_settings.models import Bank
 from common.profiles.models import UserProfile
 from .forms import (ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet)
-from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django_ckeditor_5.widgets import CKEditor5Widget
-from django import forms
-from django.db import models
-
 from organizations.models import Organization, OrganizationUser
 from cities_light.models import Country, Region, City
 
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from .filters import ProductVarietySizeProductFilter, ProductProviderStateFilter, StateFilterUserCountry
-from django.db.models.functions import Concat
-from django.db.models import Value
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin
 
+from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
+from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
 admin.site.unregister(City)
 
 
+# Markets
+
 class KGCostMarketInline(admin.TabularInline):
     model = KGCostMarket
     extra = 0
 
+    # TODO: Revisar si este inline si se va a usar en Market
+
+    @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
         return formset
 
 
@@ -51,15 +51,21 @@ class MarketClassInline(admin.TabularInline):
     model = MarketClass
     extra = 0
 
+    @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
         return formset
 
 
 class MarketStandardProductSizeInline(admin.TabularInline):
     model = MarketStandardProductSize
+    ordering = ('market', 'order', 'name')
     extra = 0
+
+    @uppercase_formset_charfield('name')
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
 
 
 @admin.register(Market)
@@ -68,27 +74,29 @@ class MarketAdmin(admin.ModelAdmin):
     list_filter = ('is_enabled',)
     search_fields = ('name', 'alias')
     fields = ('name', 'alias', 'countries', 'management_cost_per_kg', 'is_foreign', 'is_mixable',
-              'label_language', 'address_label', 'is_enabled', 'organization')
+              'label_language', 'address_label', 'is_enabled')
     inlines = [KGCostMarketInline, MarketClassInline, MarketStandardProductSizeInline]
 
+    # TODO: revisar si KGCostMarketInline si va en Market o va por variedad o donde?
+
+    @uppercase_form_charfield('name')
+    @uppercase_alphanumeric_form_charfield('alias')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
-        if 'alias' in form.base_fields:
-            form.base_fields['alias'].widget = UppercaseAlphanumericTextInputWidget()
         form.base_fields['address_label'].widget = CKEditor5Widget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[MarketClass, KGCostMarket, MarketStandardProductSize, Country, Organization]):
+        if obj and is_instance_used(obj, exclude=[KGCostMarket, MarketClass, MarketStandardProductSize, Country, Organization]):
             readonly_fields.extend(['name', 'alias', 'countries', 'is_foreign', 'organization'])
         return readonly_fields
 
     def save_model(self, request, obj, form, change):
         if 'address_label' in form.cleaned_data and form.cleaned_data['address_label'] == '<p>&nbsp;</p>':
             obj.address_label = None
+        if not obj.pk:
+            obj.organization = request.organization
         super().save_model(request, obj, form, change)
 
 
@@ -794,7 +802,6 @@ class HarvestingCrewAdmin(admin.ModelAdmin):
 
         if obj:
             form.base_fields['harvesting_crew_provider'].widget.attrs['data-object-id'] = obj.pk
-
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         if 'certification_name' in form.base_fields:
@@ -835,8 +842,8 @@ class HarvestingCrewProviderAdmin(admin.ModelAdmin):
         return form
 
 
-@admin.register(Supplier)
-class SupplierAdmin(admin.ModelAdmin):
+@admin.register(SupplyProvider)
+class SupplyProviderAdmin(admin.ModelAdmin):
     pass
 
 

@@ -212,7 +212,6 @@ class PackhouseExporterProfile(OrganizationProfile):
         max_length=255,
         blank=True,
         null=True,
-        unique=True,
         verbose_name=_('Hostname'),
     )
 

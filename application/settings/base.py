@@ -361,8 +361,8 @@ JAZZMIN_SETTINGS = {
     "order_with_respect_to": ["packhouse_settings", "catalogs", "catalogs.Market", "catalogs.MarketClass",
                               "catalogs.Product", "catalogs.ProductHarvestKind", "catalogs.ProductVariety",
                               "catalogs.ProductVarietySize", "catalogs.ProductProvider", "catalogs.ProductProducer",
-                              "catalogs.Client",
-                              "catalogs.Vehicle", "catalogs.Gatherer", "catalogs.Maquiladora", "catalogs.Orchard"],
+                              "catalogs.Client", "catalogs.Vehicle", "catalogs.Gatherer", "catalogs.Maquiladora",
+                              "catalogs.Orchard", "catalogs.Crew", "catalogs.Supply", "catalogs.SupplyProvider",],
 
     # Custom links to append to app groups, keyed on app name
     "custom_links": {
