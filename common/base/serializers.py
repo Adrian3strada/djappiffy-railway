@@ -3,6 +3,7 @@ from django.utils import translation
 from .models import ProductKind
 from cities_light.contrib.restframework3 import CountrySerializer as BaseCountrySerializer
 from cities_light.contrib.restframework3 import RegionSerializer as BaseRegionSerializer
+from cities_light.contrib.restframework3 import SubRegionSerializer as BaseSubRegionSerializer
 from cities_light.contrib.restframework3 import CitySerializer as BaseCitySerializer
 
 #
@@ -13,6 +14,10 @@ class CountrySerializer(BaseCountrySerializer):
 
 
 class RegionSerializer(BaseRegionSerializer):
+    id = serializers.IntegerField()
+
+
+class SubRegionSerializer(BaseSubRegionSerializer):
     id = serializers.IntegerField()
 
 

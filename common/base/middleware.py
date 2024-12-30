@@ -53,7 +53,7 @@ class SubdomainDetectionMiddleware:
         print("Request path: ", request.path)
 
         # if re.match(r'^/dadmin/', request.path) and (not request.user.is_superuser):
-        if re.match(r'^/dadmin/', request.path):
+        if re.match(r'^/dadmin/.+', request.path):
             try:
                 # Verificar si existe PackhouseExporterProfile asociada al HOST
                 requested_organization_profile = PackhouseExporterProfile.objects.get(

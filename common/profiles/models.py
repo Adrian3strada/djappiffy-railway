@@ -4,8 +4,8 @@ from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
-from cities_light.models import City, Country, Region
-from organizations.models import Organization, OrganizationOwner
+from cities_light.models import Country, Region, SubRegion, City
+from organizations.models import Organization
 from polymorphic.models import PolymorphicModel
 from common.base.models import ProductKind
 from common.billing.models import LegalEntityCategory
@@ -99,25 +99,22 @@ class OrganizationProfile(PolymorphicModel):
         verbose_name=_('State'),
     )
     city = models.ForeignKey(
-        City,
+        SubRegion,
         on_delete=models.PROTECT,
         verbose_name=_('City'),
     )
-
-    ### Non-referenced fields about localization
-    district = models.CharField(
-        max_length=255,
-        blank=True,
-        null=True,
+    district = models.ForeignKey(
+        City,
+        on_delete=models.PROTECT,
         verbose_name=_('District'),
-    )
-    neighborhood = models.CharField(
-        max_length=255,
-        verbose_name=_('Neighborhood'),
     )
     postal_code = models.CharField(
         max_length=10,
         verbose_name=_('Postal code'),
+    )
+    neighborhood = models.CharField(
+        max_length=255,
+        verbose_name=_('Neighborhood'),
     )
     address = models.CharField(
         max_length=255,
@@ -209,7 +206,6 @@ class PackhouseExporterProfile(OrganizationProfile):
         null=True,
         verbose_name=_('Hostname'),
     )
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def clean(self):
         """
@@ -228,6 +224,10 @@ class PackhouseExporterProfile(OrganizationProfile):
 class PackhouseExporterSetting(models.Model):
     profile = models.OneToOneField(PackhouseExporterProfile, on_delete=models.CASCADE, verbose_name=_('Packhouse exporter profile'))
     products = models.ManyToManyField(ProductKind, blank=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.profile}"
 
     class Meta:
         verbose_name = _('Packhouse exporter settings')

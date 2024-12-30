@@ -44,7 +44,8 @@ except ImportError:
 
 DJANGO_STORAGE_BACKEND = os.getenv("DJANGO_STORAGE_BACKEND", "local")
 if DJANGO_STORAGE_BACKEND == "local":
-    logger.info("Using local storage")
+    # logger.info("Using local storage")
+    pass
 else:
     logger.info(f"Using Django Storages backend: {DJANGO_STORAGE_BACKEND}")
     try:

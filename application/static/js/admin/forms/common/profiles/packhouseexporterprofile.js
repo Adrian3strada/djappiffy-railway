@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
   const countryField = $('#id_country');
-  const stateField = $('#id_state');
-  const cityField = $('#id_city');
   const legalEntityCategoryField = $('#id_legal_category');
 
   const API_BASE_URL = '/rest/v1';
@@ -22,32 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }).fail(error => console.error('Fetch error:', error));
   }
 
-  function updateState() {
-    const countryId = countryField.val();
-    if (countryId) {
-      fetchOptions(`${API_BASE_URL}/cities/region/?country=${countryId}`)
-        .then(data => {
-          updateFieldOptions(stateField, data);
-          updateCity();
-        });
-    } else {
-      updateFieldOptions(stateField, []);
-      updateCity();
-    }
-  }
-
-  function updateCity() {
-    const stateId = stateField.val();
-    if (stateId) {
-      fetchOptions(`${API_BASE_URL}/cities/city/?region=${stateId}`)
-        .then(data => {
-          updateFieldOptions(cityField, data);
-        });
-    } else {
-      updateFieldOptions(cityField, []);
-    }
-  }
-
   function updateLegalEntityCategory() {
     const countryId = countryField.val();
     if (countryId) {
@@ -59,17 +31,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   countryField.on('change', function () {
-    updateState();
-    if (legalEntityCategoryField.length) {
+    if(legalEntityCategoryField.length){
       updateLegalEntityCategory();
     }
   });
 
-  stateField.on('change', function () {
-    updateCity();
-  });
-
-
-  [countryField, stateField, cityField].forEach(field => field.select2());
+  [countryField, legalEntityCategoryField].forEach(field => field.select2());
 
 });

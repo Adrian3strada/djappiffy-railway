@@ -1,9 +1,8 @@
 from rest_framework import viewsets
-from django.utils import translation
-from .serializers import ProductKindSerializer, CitySerializer, RegionSerializer, CountrySerializer
+from .serializers import ProductKindSerializer, CitySerializer, SubRegionSerializer, RegionSerializer, CountrySerializer
 from .models import ProductKind
-from cities_light.models import City
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
+from cities_light.contrib.restframework3 import SubRegionModelViewSet as BaseSubRegionModelViewSet
 from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
 from cities_light.contrib.restframework3 import CountryModelViewSet as BaseCountryModelViewSet
 
@@ -41,6 +40,18 @@ class RegionViewSet(BaseRegionModelViewSet):
         return queryset
 
 
+class SubRegionViewSet(BaseSubRegionModelViewSet):
+    serializer_class = SubRegionSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        state = self.request.GET.get('region')
+        if state:
+            queryset = queryset.filter(region_id=state)
+        return queryset
+
+
 class CityViewSet(BaseCityModelViewSet):
     serializer_class = CitySerializer
     pagination_class = None
@@ -48,11 +59,14 @@ class CityViewSet(BaseCityModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         region = self.request.GET.get('region')
+        subregion = self.request.GET.get('subregion')
         country = self.request.GET.get('country')
         if country:
             queryset = queryset.filter(country_id=country)
         if region:
             queryset = queryset.filter(region_id=region)
+        if subregion:
+            queryset = queryset.filter(subregion_id=subregion)
         return queryset
 
 

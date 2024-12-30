@@ -1,3 +1,5 @@
+from faulthandler import is_enabled
+
 from django.contrib import admin
 
 from common.billing.models import LegalEntityCategory
@@ -11,25 +13,26 @@ from .models import (
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany
 )
+from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import Bank
-from common.profiles.models import UserProfile
+from common.profiles.models import UserProfile, PackhouseExporterProfile
 from .forms import (ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet)
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization, OrganizationUser
-from cities_light.models import Country, Region, City
+from cities_light.models import Country, Region, SubRegion, City
 
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from .filters import ProductVarietySizeProductFilter, ProductProviderStateFilter, StateFilterUserCountry
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin
-
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
+admin.site.unregister(SubRegion)
 admin.site.unregister(City)
 
 
@@ -123,13 +126,23 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('is_enabled',)
     search_fields = ('kind__name', 'description')
     fields = ('kind', 'description', 'is_enabled', 'organization')
-    inlines = [ProductVarietyInline]
+    # inlines = [ProductVarietyInline]
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Organization]):
+        print("readonly fields", readonly_fields)
+        if obj and is_instance_used(obj, exclude=[ProductKind, Organization]):
             readonly_fields.extend(['kind', 'organization'])
+            print("sí: readonly fields", readonly_fields)
         return readonly_fields
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "kind":
+            packhouse_exporter_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+            kwargs["queryset"] = packhouse_exporter_profile.packhouseexportersetting.products.filter(is_enabled=True)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(ProductHarvestKind)

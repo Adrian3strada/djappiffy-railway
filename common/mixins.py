@@ -30,6 +30,9 @@ class CleanKindAndOrganizationMixin(models.Model):
         if errors:
             raise ValidationError(errors)
 
+    class Meta:
+        abstract = True
+
 
 class CleanNameAndOrganizationMixin(models.Model):
     def __str__(self):

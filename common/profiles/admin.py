@@ -3,8 +3,11 @@ from .models import (UserProfile, OrganizationProfile, ProducerProfile,
                      ImporterProfile, PackhouseExporterProfile,
                      TradeExporterProfile, PackhouseExporterSetting)
 from django.utils.translation import gettext_lazy as _
-from cities_light.models import Country, Region, City
+from cities_light.models import Country, Region, SubRegion, City
 from organizations.models import Organization
+from common.billing.models import LegalEntityCategory
+from common.base.models import ProductKind
+
 
 # Register your Admin classes here.
 
@@ -13,8 +16,8 @@ from organizations.models import Organization
 
 class OrganizationProfileMixin:
     list_display = ("name", "country_name", "state_name", "city_name", "email", "phone_number", "is_enabled")
-    list_filter = ("country", "state", "city", "is_enabled")
-    search_fields = ("name", "tax_id", "district", "neighborhood", "postal_code", "email", "phone_number")
+    list_filter = ("country", "state", "city", "district", "is_enabled")
+    search_fields = ("name", "tax_id", "neighborhood", "postal_code", "email", "phone_number")
 
     def country_name(self, obj):
         return obj.country.name
@@ -37,8 +40,9 @@ class OrganizationProfileMixin:
     class Media:
         js = [
             'js/admin/forms/common/country-state-city.js',
-            'js/admin/forms/common/profiles/organizationprofile.js',
+            'js/admin/forms/common/profiles/packhouseexporterprofile.js',
         ]
+
 
 # /Admin Mixins
 
@@ -47,17 +51,9 @@ class OrganizationProfileMixin:
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "first_name", "last_name", "phone_number",
-                    "country")
+    list_display = ("user", "first_name", "last_name", "phone_number", "country")
     ordering = ("user",)
 
-"""
-# This model is abstract, so it doesn't need to be registered.
-@admin.register(OrganizationProfile)
-class OrganizationProfileAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "organization")
-    ordering = ("id",)
-"""
 
 @admin.register(ProducerProfile)
 class ProducerProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
@@ -77,11 +73,14 @@ class PackhouseExporterSettingInline(admin.StackedInline):
     can_delete = False
     verbose_name = _("Platform setting")
 
-    def formfield_for_dbfield(self, db_field, request, **kwargs):
-        formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == 'products':
+            kwargs['queryset'] = ProductKind.objects.filter(for_packaging=True, is_enabled=True)
+            formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
             formfield.required = True
-        return formfield
+            return formfield
+
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 
 @admin.register(PackhouseExporterProfile)
@@ -125,11 +124,38 @@ class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
             else:
                 state_id = obj.state_id if obj else None
             if state_id:
-                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = SubRegion.objects.none()
+            print("city", kwargs["queryset"])
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
             else:
                 kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "legal_category":
+            if request.POST:
+                country_id = request.POST.get('country')
+            else:
+                country_id = obj.country_id if obj else None
+            if country_id:
+                kwargs["queryset"] = LegalEntityCategory.objects.filter(country_id=country_id)
+            else:
+                kwargs["queryset"] = LegalEntityCategory.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: f"{item.code}: {item.name}"
             return formfield
 
         if db_field.name == "organization":
@@ -143,6 +169,15 @@ class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+
+        if db_field.name == 'products':
+            kwargs['queryset'] = ProductKind.objects.filter(for_packaging=True, is_enabled=True)
+            formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
+            formfield.required = True
+            return formfield
+
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 
 @admin.register(TradeExporterProfile)

@@ -106,7 +106,7 @@ MIDDLEWARE = [
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 
     'django.middleware.locale.LocaleMiddleware',
-    'common.base.middleware.SubdomainDetectionMiddleware',
+    # 'common.base.middleware.SubdomainDetectionMiddleware',
 ]
 
 ROOT_URLCONF = "application.urls"
@@ -559,7 +559,8 @@ CKEDITOR_5_CONFIGS = {
 CITIES_LIGHT_TRANSLATION_LANGUAGES = ['es', 'en', 'fr', 'de', 'pt']
 CITIES_LIGHT_INCLUDE_CITY_TYPES = [
     'PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA4', 'PPLC',
-    'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT',
+    # 'PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA4', 'PPLC',
+    # 'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT',
 ]
 CITIES_LIGHT_CITY_SOURCES = ['https://download.geonames.org/export/dump/cities1000.zip']
 
