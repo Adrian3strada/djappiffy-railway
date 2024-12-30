@@ -103,7 +103,7 @@ class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
-        obj = OrganizationProfile.objects.get(id=object_id) if object_id else None
+        obj = PackhouseExporterProfile.objects.get(id=object_id) if object_id else None
 
         if db_field.name == "state":
             if request.POST:
