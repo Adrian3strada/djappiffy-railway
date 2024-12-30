@@ -8,20 +8,20 @@
     "organization": 1,
     "country": 158,
     "state": 2282,
-    "city": 87365,
-    "district": "Morelia",
+    "city": 25743,
+    "district": 25743,
     "neighborhood": "Nueva Chapultepec",
     "postal_code": "58280",
     "address": "Juan B. Ceballos",
     "external_number": "845",
     "internal_number": null,
-    "legal_category": 1,
+    "legal_category": null,
     "tax_id": "TAXIDTEZIL",
     "email": "tezil@localhost",
     "phone_number": "+524438227028",
     "url": null,
     "logo": "",
-    "products": [
+    "product_kinds": [
       8
     ]
   }
