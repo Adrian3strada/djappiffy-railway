@@ -13,7 +13,7 @@ from .models import (
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany
 )
-from common.base.models import ProductKind
+
 from packhouses.packhouse_settings.models import Bank
 from common.profiles.models import UserProfile, PackhouseExporterProfile
 from .forms import (ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet,
@@ -27,8 +27,10 @@ from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextIn
 from .filters import ProductVarietySizeProductFilter, ProductProviderStateFilter, StateFilterUserCountry
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin
+from common.base.models import ProductKind
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
+from common.base.mixins import OrganizationAdminMixin
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -72,7 +74,7 @@ class MarketStandardProductSizeInline(admin.TabularInline):
 
 
 @admin.register(Market)
-class MarketAdmin(admin.ModelAdmin):
+class MarketAdmin(OrganizationAdminMixin):
     list_display = ('name', 'alias', 'is_enabled')
     list_filter = ('is_enabled',)
     search_fields = ('name', 'alias')
@@ -98,9 +100,8 @@ class MarketAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if 'address_label' in form.cleaned_data and form.cleaned_data['address_label'] == '<p>&nbsp;</p>':
             obj.address_label = None
-        if not obj.pk:
-            obj.organization = request.organization
         super().save_model(request, obj, form, change)
+
 
 # /Markets
 
@@ -121,25 +122,28 @@ class ProductVarietyInline(admin.TabularInline):
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    list_display = ('kind', 'description', 'is_enabled')
+class ProductAdmin(OrganizationAdminMixin):
+    list_display = ('name', 'kind', 'description', 'is_enabled')
     list_filter = ('is_enabled',)
     search_fields = ('kind__name', 'description')
-    fields = ('kind', 'description', 'is_enabled', 'organization')
+    fields = ('kind', 'name', 'description', 'is_enabled')
     # inlines = [ProductVarietyInline]
+
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        print("readonly fields", readonly_fields)
         if obj and is_instance_used(obj, exclude=[ProductKind, Organization]):
-            readonly_fields.extend(['kind', 'organization'])
-            print("sí: readonly fields", readonly_fields)
+            readonly_fields.extend(['kind', 'name', 'organization'])
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "kind":
             packhouse_exporter_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
-            kwargs["queryset"] = packhouse_exporter_profile.packhouseexportersetting.products.filter(is_enabled=True)
+            kwargs["queryset"] = packhouse_exporter_profile.packhouseexportersetting.product_kinds.filter(is_enabled=True)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)

@@ -137,8 +137,9 @@ class MarketStandardProductSize(models.Model):
 
 # Products
 
-class Product(CleanKindAndOrganizationMixin, models.Model):
+class Product(CleanNameAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(ProductKind, verbose_name=_('Product kind'), on_delete=models.PROTECT)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -146,9 +147,9 @@ class Product(CleanKindAndOrganizationMixin, models.Model):
     class Meta:
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
-        ordering = ('organization', 'kind')
+        ordering = ('organization', 'kind', 'name')
         constraints = [
-            models.UniqueConstraint(fields=['kind', 'organization'], name='product_unique_kind_organization'),
+            models.UniqueConstraint(fields=['name', 'organization'], name='product_unique_name_organization'),
         ]
 
 

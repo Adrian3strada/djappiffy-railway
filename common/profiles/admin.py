@@ -74,7 +74,7 @@ class PackhouseExporterSettingInline(admin.StackedInline):
     verbose_name = _("Platform setting")
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
-        if db_field.name == 'products':
+        if db_field.name == 'product_kinds':
             kwargs['queryset'] = ProductKind.objects.filter(for_packaging=True, is_enabled=True)
             formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
             formfield.required = True
@@ -90,7 +90,7 @@ class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
     def get_fields(self, request, obj=None):
         fields = list(super().get_fields(request, obj))
         if not request.user.is_superuser:
-            fields.remove('products')
+            fields.remove('product_kinds')
         return fields
 
     def get_form(self, request, obj=None, **kwargs):
@@ -171,7 +171,7 @@ class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
 
-        if db_field.name == 'products':
+        if db_field.name == 'product_kinds':
             kwargs['queryset'] = ProductKind.objects.filter(for_packaging=True, is_enabled=True)
             formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
             formfield.required = True

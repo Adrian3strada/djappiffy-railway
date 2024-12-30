@@ -16,5 +16,5 @@ for item in orgs:
     newp = PackhouseExporterProfile(**fields)
     newp.save()
     for i in products:
-       newp.products.add(i)
+       newp.product_kinds.add(i)
     print("newp", newp)

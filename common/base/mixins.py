@@ -1,9 +1,8 @@
 # admin_mixins.py
+from django.contrib import admin
 
-from django.shortcuts import get_object_or_404
-from organizations.models import Organization
 
-class OrganizationAdminMixin:
+class OrganizationAdminMixin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if hasattr(request, 'organization'):
@@ -11,6 +10,7 @@ class OrganizationAdminMixin:
         return qs
 
     def save_model(self, request, obj, form, change):
-        if hasattr(request, 'organization'):
-            obj.organization = request.organization
+        if not obj.pk:
+            if hasattr(request, 'organization'):
+                obj.organization = request.organization
         super().save_model(request, obj, form, change)

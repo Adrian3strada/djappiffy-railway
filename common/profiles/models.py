@@ -168,9 +168,10 @@ class OrganizationProfile(PolymorphicModel):
     )
 
     ### Products
-    products = models.ManyToManyField(
+    product_kinds = models.ManyToManyField(
         ProductKind,
         blank=False,
+        verbose_name=_('Product kinds'),
     )
 
     def __str__(self):
@@ -223,7 +224,7 @@ class PackhouseExporterProfile(OrganizationProfile):
 
 class PackhouseExporterSetting(models.Model):
     profile = models.OneToOneField(PackhouseExporterProfile, on_delete=models.CASCADE, verbose_name=_('Packhouse exporter profile'))
-    products = models.ManyToManyField(ProductKind, blank=True)
+    product_kinds = models.ManyToManyField(ProductKind, blank=True, verbose_name=_('Product kinds'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
