@@ -5,7 +5,7 @@ from .models import (Status, ProductSizeKind, MassVolumeKind, Bank, VehicleOwner
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget
 from organizations.models import Organization
 from common.utils import is_instance_used
-from common.base.mixins import OrganizationAdminMixin
+from common.base.mixins import ByOrganizationAdminMixin
 
 
 # Register your models here.
@@ -66,7 +66,7 @@ class MassVolumeKindAdmin(admin.ModelAdmin):
 
 
 @admin.register(Bank)
-class BankAdmin(OrganizationAdminMixin):
+class BankAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
     fields = ('name', 'is_enabled')
@@ -85,7 +85,7 @@ class BankAdmin(OrganizationAdminMixin):
 
 
 @admin.register(VehicleOwnershipKind)
-class VehicleOwnershipAdmin(OrganizationAdminMixin):
+class VehicleOwnershipAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
     fields = ('name', 'is_enabled')
@@ -104,7 +104,7 @@ class VehicleOwnershipAdmin(OrganizationAdminMixin):
 
 
 @admin.register(VehicleKind)
-class VehicleKindAdmin(OrganizationAdminMixin):
+class VehicleKindAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
     fields = ('name', 'is_enabled')
@@ -123,7 +123,7 @@ class VehicleKindAdmin(OrganizationAdminMixin):
 
 
 @admin.register(VehicleFuelKind)
-class VehicleFuelAdmin(OrganizationAdminMixin):
+class VehicleFuelAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
     fields = ('name', 'is_enabled')
@@ -160,7 +160,7 @@ class PaymentKindAdmin(admin.ModelAdmin):
 
 
 @admin.register(VehicleBrand)
-class VehicleBrandAdmin(OrganizationAdminMixin):
+class VehicleBrandAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
     fields = ('name', 'is_enabled')
