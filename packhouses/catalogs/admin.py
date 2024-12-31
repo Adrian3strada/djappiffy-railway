@@ -28,7 +28,7 @@ from adminsortable2.admin import SortableAdminMixin
 from common.base.models import ProductKind
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
-from common.base.mixins import OrganizationAdminMixin
+from common.base.mixins import ByOrganizationAdminMixin, ByProductAdminMixin
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -72,7 +72,7 @@ class MarketStandardProductSizeInline(admin.TabularInline):
 
 
 @admin.register(Market)
-class MarketAdmin(OrganizationAdminMixin):
+class MarketAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'alias', 'is_enabled')
     list_filter = ('is_enabled',)
     search_fields = ('name', 'alias')
@@ -100,7 +100,6 @@ class MarketAdmin(OrganizationAdminMixin):
             obj.address_label = None
         super().save_model(request, obj, form, change)
 
-
 # /Markets
 
 
@@ -120,7 +119,7 @@ class ProductVarietyInline(admin.TabularInline):
 
 
 @admin.register(Product)
-class ProductAdmin(OrganizationAdminMixin):
+class ProductAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'kind', 'description', 'is_enabled')
     list_filter = (ProductKindForPackagingFilter, 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
@@ -147,15 +146,7 @@ class ProductAdmin(OrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(ProductHarvestKind)
-class ProductHarvestKindAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('name', 'product', 'is_enabled', 'order')
-    list_filter = ('product', 'is_enabled')
-    search_fields = ('name', 'product__kind__name')
-    fields = ('name', 'product', 'order', 'is_enabled')
-    ordering = ['order']
-
-
+"""
 class ProductVarietySizeInline(admin.StackedInline):
     model = ProductVarietySize
     form = ProductVarietySizeInlineForm
@@ -163,15 +154,16 @@ class ProductVarietySizeInline(admin.StackedInline):
 
     class Meta:
         fields = '__all__'
+"""
 
 
 @admin.register(ProductVariety)
-class ProductVarietyAdmin(admin.ModelAdmin):
+class ProductVarietyAdmin(ByProductAdminMixin):
     list_display = ('name', 'product', 'description', 'is_enabled')
     list_filter = ('product', 'is_enabled',)
     search_fields = ('name', 'product__kind__name', 'description')
     fields = ('product', 'name', 'description', 'is_enabled')
-    inlines = [ProductVarietySizeInline]
+    # inlines = [ProductVarietySizeInline]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -184,6 +176,23 @@ class ProductVarietyAdmin(admin.ModelAdmin):
         if obj and is_instance_used(obj, exclude=[Product]):
             readonly_fields.extend(['name', 'product'])
         return readonly_fields
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "product":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = Product.objects.filter(organization=request.organization, is_enabled=True)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+@admin.register(ProductHarvestKind)
+class ProductHarvestKindAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ('name', 'product', 'is_enabled', 'order')
+    list_filter = ('product', 'is_enabled')
+    search_fields = ('name', 'product__kind__name')
+    fields = ('name', 'product', 'order', 'is_enabled')
+    ordering = ['order']
 
 
 @admin.register(ProductVarietySize)
