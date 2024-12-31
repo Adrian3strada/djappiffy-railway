@@ -22,7 +22,7 @@ class ProductVarietySizeInlineForm(forms.ModelForm):
 
     class Meta:
         model = ProductVarietySize
-        fields = ['market', 'market_standard_size', 'name', 'alias', 'size_kind', 'harvest_kind',
+        fields = ['market', 'market_standard_size', 'name', 'alias', 'size_kind',
                   'description', 'volume_kind', 'requires_corner_protector', 'is_enabled', 'order']
 
     class Media:

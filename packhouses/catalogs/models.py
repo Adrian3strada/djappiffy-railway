@@ -168,23 +168,9 @@ class ProductVariety(CleanNameAndProductMixin, models.Model):
         ]
 
 
-class ProductHarvestKind(CleanProductMixin, models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    order = models.IntegerField(default=0, verbose_name=_('Order'), editable=False)
-
-    class Meta:
-        verbose_name = _('Product harvest Kind')
-        verbose_name_plural = _('Product harvest kinds')
-        ordering = ('product', 'order',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'product'], name='productharvestkind_unique_name_product'),
-        ]
-
-
 class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, models.Model):
-    variety = models.ForeignKey(ProductVariety, verbose_name=_('Variety'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Variety'), on_delete=models.PROTECT)
+    product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Variety'), on_delete=models.PROTECT)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     market_standard_size = models.ForeignKey(MarketStandardProductSize,
                                              verbose_name=_('Market standard product size'),
@@ -196,8 +182,6 @@ class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, models.
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
     size_kind = models.ForeignKey(ProductSizeKind, verbose_name=_('Size kind'),
                                   on_delete=models.PROTECT)  # Normal, roña, etc
-    harvest_kind = models.ForeignKey(ProductHarvestKind, verbose_name=_('Harvest kind'),
-                                     on_delete=models.PROTECT)  # Tipos de corte
     volume_kind = models.ForeignKey(MassVolumeKind, verbose_name=_('Volume kind'), on_delete=models.PROTECT,
                                     help_text=_('To separate sizes by product kind in the mass volume report'))
     requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
@@ -207,18 +191,34 @@ class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, models.
 
     @property
     def product_name(self):
-        return self.variety.product.name if self.variety and self.variety.product else None
+        return self.product_variety.product.name if self.product_variety and self.product_variety.product else None
 
     def __str__(self):
-        return f"{self.variety.product.name}: {self.variety.name} ({self.name})"
+        return f"{self.product_variety.product.name}: {self.product_variety.name} ({self.name})"
 
     class Meta:
         verbose_name = _('Product variety size')
         verbose_name_plural = _('Product variety sizes')
-        ordering = ['variety', 'order']
+        ordering = ['product_variety', 'order']
         constraints = [
-            models.UniqueConstraint(fields=['name', 'variety', 'market', 'volume_kind'],
-                                    name='productvarietysize_unique_name_variety_market_volumekind'),
+            models.UniqueConstraint(fields=['name', 'product_variety', 'market', 'volume_kind'],
+                                    name='productvarietysize_unique_name_productvariety_market_volumekind'),
+        ]
+
+
+class ProductVarietySizeHarvestKind(CleanProductMixin, models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    product_variety_size = models.ForeignKey(ProductVarietySize, verbose_name=_('Product variety'), on_delete=models.PROTECT)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    order = models.IntegerField(default=0, verbose_name=_('Order'), editable=False)
+
+
+    class Meta:
+        verbose_name = _('Product harvest Kind')
+        verbose_name_plural = _('Product harvest kinds')
+        ordering = ('product_variety_size', 'order',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product_variety_size'], name='productharvestkind_unique_name_product'),
         ]
 
 

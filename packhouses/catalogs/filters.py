@@ -1,6 +1,6 @@
 from django.contrib import admin
 from cities_light.models import Country, Region, City
-from common.profiles.models import UserProfile, OrganizationProfile
+from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import Product, ProductProvider
 from common.base.models import ProductKind
 from django.utils.translation import gettext_lazy as _
@@ -11,12 +11,29 @@ class ProductKindForPackagingFilter(admin.SimpleListFilter):
     parameter_name = 'kind'
 
     def lookups(self, request, model_admin):
-        kinds = ProductKind.objects.filter(for_packaging=True, is_enabled=True)
-        return [(kind.id, kind.name) for kind in kinds]
+        product_kinds = ProductKind.objects.filter(for_packaging=True, is_enabled=True)
+        if hasattr(request, 'organization'):
+            packhouse_exporter_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+            product_kinds = packhouse_exporter_profile.packhouseexportersetting.product_kinds.filter(is_enabled=True)
+        return [(kind.id, kind.name) for kind in product_kinds]
 
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(kind__id=self.value())
+        return queryset
+
+
+class ProductByOrganizationFilter(admin.SimpleListFilter):
+    title = _('Product')
+    parameter_name = 'product'
+
+    def lookups(self, request, model_admin):
+        products = Product.objects.filter(organization=request.organization, is_enabled=True)
+        return [(product.id, product.name) for product in products]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(product__id=self.value())
         return queryset
 
 

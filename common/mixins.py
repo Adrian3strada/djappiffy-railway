@@ -147,7 +147,7 @@ class CleanProductMixin(models.Model):
         return f"{self.name}"
 
     def clean(self):
-        self.product = getattr(self, 'product', None)
+        self.product_variety = getattr(self, 'product', None)
         self.product_id = getattr(self, 'product_id', None)
 
         errors = {}
@@ -158,7 +158,7 @@ class CleanProductMixin(models.Model):
             errors = e.message_dict
 
         if self.product_id:
-            if self.__class__.objects.filter(name=self.name, product=self.product).exclude(pk=self.pk).exists():
+            if self.__class__.objects.filter(name=self.name, product=self.product_variety).exclude(pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
 
         if errors:
@@ -282,7 +282,7 @@ class CleanNameAndVarietyAndMarketAndVolumeKindMixin(models.Model):
 
     def clean(self):
         self.name = getattr(self, 'name', None)
-        self.variety = getattr(self, 'variety', None)
+        self.product_variety = getattr(self, 'variety', None)
         self.variety_id = getattr(self, 'variety_id', None)
         self.market = getattr(self, 'market', None)
         self.market_id = getattr(self, 'market_id', None)
@@ -297,7 +297,7 @@ class CleanNameAndVarietyAndMarketAndVolumeKindMixin(models.Model):
             errors = e.message_dict
 
         if self.variety_id and self.market_id and self.volume_kind_id:
-            if self.__class__.objects.filter(name=self.name, variety=self.variety, market=self.market,
+            if self.__class__.objects.filter(name=self.name, variety=self.product_variety, market=self.market,
                                              volume_kind=self.volume_kind).exclude(pk=self.pk).exists():
                 errors['name'] = _('Name, variety, market and volume kind must be unique together.')
                 errors['variety'] = _('Name, variety, market and volume kind must be unique together.')

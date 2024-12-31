@@ -2,7 +2,7 @@ from django.contrib import admin
 from common.billing.models import LegalEntityCategory
 from .models import (
     Market, KGCostMarket, MarketClass, MarketStandardProductSize, Product, ProductVariety, ProductVarietySize,
-    ProductHarvestKind, ProductProvider, ProductProviderBenefactor, ProductProducer, ProductProducerBenefactor,
+    ProductVarietySizeHarvestKind, ProductProvider, ProductProviderBenefactor, ProductProducer, ProductProducerBenefactor,
     PaymentKind, Vehicle, Gatherer, Client, ClientShipAddress, Maquiladora, MaquiladoraClient,
     OrchardProductClassificationKind, Orchard, OrchardCertification, HarvestingCrewProvider, CrewChief, HarvestingCrew,
     HarvestingCrewBeneficiary, HarvestingPaymentSetting, Supply, SupplyProvider, MeshBagKind, MeshBagFilmKind,
@@ -22,13 +22,14 @@ from cities_light.models import Country, Region, SubRegion, City
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from .filters import (ProductVarietySizeProductFilter, ProductProviderStateFilter, StateFilterUserCountry,
+                      ProductByOrganizationFilter,
                       ProductKindForPackagingFilter)
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin
 from common.base.models import ProductKind
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
-from common.base.mixins import ByOrganizationAdminMixin, ByProductAdminMixin
+from common.base.mixins import ByOrganizationAdminMixin, ByProductOrganizationAdminMixin
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -124,7 +125,7 @@ class ProductAdmin(ByOrganizationAdminMixin):
     list_filter = (ProductKindForPackagingFilter, 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
     fields = ('kind', 'name', 'description', 'is_enabled')
-    # inlines = [ProductVarietyInline]
+    inlines = [ProductVarietyInline]
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
@@ -139,8 +140,11 @@ class ProductAdmin(ByOrganizationAdminMixin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "kind":
-            packhouse_exporter_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
-            kwargs["queryset"] = packhouse_exporter_profile.packhouseexportersetting.product_kinds.filter(is_enabled=True)
+            product_kinds = ProductKind.objects.filter(for_packaging=True, is_enabled=True)
+            kwargs["queryset"] = product_kinds
+            if hasattr(request, 'organization'):
+                packhouse_exporter_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+                kwargs["queryset"] = packhouse_exporter_profile.packhouseexportersetting.product_kinds.filter(is_enabled=True)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -158,17 +162,16 @@ class ProductVarietySizeInline(admin.StackedInline):
 
 
 @admin.register(ProductVariety)
-class ProductVarietyAdmin(ByProductAdminMixin):
+class ProductVarietyAdminProduct(ByProductOrganizationAdminMixin):
     list_display = ('name', 'product', 'description', 'is_enabled')
-    list_filter = ('product', 'is_enabled',)
-    search_fields = ('name', 'product__kind__name', 'description')
+    list_filter = (ProductByOrganizationFilter, 'is_enabled',)
+    search_fields = ('name', 'product__name', 'product__kind__name', 'description')
     fields = ('product', 'name', 'description', 'is_enabled')
     # inlines = [ProductVarietySizeInline]
 
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -186,41 +189,40 @@ class ProductVarietyAdmin(ByProductAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(ProductHarvestKind)
-class ProductHarvestKindAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('name', 'product', 'is_enabled', 'order')
-    list_filter = ('product', 'is_enabled')
-    search_fields = ('name', 'product__kind__name')
-    fields = ('name', 'product', 'order', 'is_enabled')
+@admin.register(ProductVarietySizeHarvestKind)
+class ProductVarietySizeHarvestKindAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ('name', 'product_variety_size', 'is_enabled', 'order')
+    list_filter = ('product_variety_size', 'is_enabled')
+    search_fields = ('name', )
+    fields = ('name', 'product_variety_size', 'order', 'is_enabled')
     ordering = ['order']
 
 
 @admin.register(ProductVarietySize)
 class ProductVarietySizeAdmin(admin.ModelAdmin):
     list_display = (
-        'name', 'product', 'variety', 'market', 'size_kind', 'harvest_kind', 'volume_kind', 'is_enabled',
+        'name', 'product', 'product_variety', 'market', 'size_kind', 'volume_kind', 'is_enabled',
         'order')
     list_filter = (
-        ProductVarietySizeProductFilter, 'variety', 'market', 'size_kind', 'harvest_kind', 'volume_kind',
+        ProductVarietySizeProductFilter, 'product_variety', 'market', 'size_kind', 'volume_kind',
         'is_enabled'
     )
     search_fields = (
-        'name', 'variety__product__kind__name', 'variety__name', 'market__name', 'size_kind__name', 'harvest_kind__name',
-        'volume_kind__name'
+        'name', 'variety__name', 'market__name', 'size_kind__name', 'volume_kind__name'
     )
 
     form = ProductVarietySizeForm
 
     def product(self, obj):
-        return obj.variety.product.name
+        return obj.product_variety.product_variety.name
     product.short_description = _('Product')
-    product.admin_order_field = 'variety__product__kind__name'
+    product.admin_order_field = 'variety__product__name'
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "variety":
             kwargs["queryset"] = ProductVariety.objects.select_related('product').all()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda obj: f"{obj.product.kind.name}: {obj.name}"
+            formfield.label_from_instance = lambda obj: f"{obj.product_variety.kind.name}: {obj.name}"
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

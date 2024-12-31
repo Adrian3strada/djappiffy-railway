@@ -16,10 +16,9 @@ class ByOrganizationAdminMixin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-# TODO: creo que esta puede estar mal... revisar
-class ByProductAdminMixin(admin.ModelAdmin):
+class ByProductOrganizationAdminMixin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        if hasattr(request, 'product'):
-            return qs.filter(product=request.product, is_enabled=True)
+        if hasattr(request, 'organization'):
+            return qs.filter(product__organization=request.organization)
         return qs
