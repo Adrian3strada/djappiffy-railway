@@ -14,8 +14,8 @@ from .models import (
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany
 )
 
-from packhouses.packhouse_settings.models import Bank
-from common.profiles.models import UserProfile, PackhouseExporterProfile
+from packhouses.packhouse_settings.models import Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,VehicleBrand
+from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet)
 from django_ckeditor_5.widgets import CKEditor5Widget
@@ -763,19 +763,44 @@ class CrewChiefInline(admin.TabularInline):
 
 @admin.register(CrewChief)
 class CrewChiefAdmin(admin.ModelAdmin):
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 class HarvestingCrewBeneficiaryInline(admin.TabularInline):
     model = HarvestingCrewBeneficiary
     extra = 0
 
+    @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
         return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = OrganizationProfile.objects.get(id=object_id) if object_id else None
+        organization_id = None
+
+        if request.POST:
+            organization_id = request.POST.get('organization')
+        elif obj:
+            organization_id = obj.organization.id if obj.organization else None
+
+        if not organization_id:
+            organization_id = request.organization.id
+
+        if db_field.name == "bank":
+            kwargs["queryset"] = Bank.objects.filter(organization_id=organization_id) if organization_id else VehicleKind.objects.all()
+
+        if "queryset" in kwargs:
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
 
 class VehicleInline(admin.StackedInline):
     model = Vehicle
@@ -786,17 +811,44 @@ class VehicleInline(admin.StackedInline):
     search_fields = ('name', 'model', 'license_plate', 'serial_number', 'comments')
     fields = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'scope', 'ownership', 'fuel', 'comments', 'is_enabled')
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = OrganizationProfile.objects.get(id=object_id) if object_id else None
+        organization_id = None
+
+        if request.POST:
+            organization_id = request.POST.get('organization')
+        elif obj:
+            organization_id = obj.organization.id if obj.organization else None
+
+        if not organization_id:
+            organization_id = request.organization.id
+
+        if db_field.name == "kind":
+            kwargs["queryset"] = VehicleKind.objects.filter(organization_id=organization_id) if organization_id else VehicleKind.objects.all()
+        if db_field.name == "brand":
+            kwargs["queryset"] = VehicleBrand.objects.filter(organization_id=organization_id) if organization_id else VehicleBrand.objects.all()
+        if db_field.name == "ownership":
+            kwargs["queryset"] = VehicleOwnershipKind.objects.filter(organization_id=organization_id) if organization_id else VehicleBrand.objects.all()
+        if db_field.name == "fuel":
+            kwargs["queryset"] = VehicleFuelKind.objects.filter(organization_id=organization_id) if organization_id else VehicleBrand.objects.all()
+
+        if "queryset" in kwargs:
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    @uppercase_formset_charfield('name')
+    @uppercase_formset_charfield('license_plate')
+    @uppercase_formset_charfield('serial_number')
+    @uppercase_formset_charfield('color')
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        if 'name' in formset.form.base_fields:
-            formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
-        if 'license_plate' in formset.form.base_fields:
-            formset.form.base_fields['license_plate'].widget = UppercaseTextInputWidget()
-        if 'serial_number' in formset.form.base_fields:
-            formset.form.base_fields['serial_number'].widget = UppercaseTextInputWidget()
-        if 'color' in formset.form.base_fields:
-            formset.form.base_fields['color'].widget = UppercaseTextInputWidget()
         return formset
+
+
 
 
 
@@ -818,16 +870,10 @@ class HarvestingCrewAdmin(admin.ModelAdmin):
     fields = ('harvesting_crew_provider', 'name', 'certification_name', 'crew_chief', 'persons_number', 'comments', 'is_enabled')
     inlines = [HarvestingPaymentSettingInline,]
 
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('certification_name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-
-        if obj:
-            form.base_fields['harvesting_crew_provider'].widget.attrs['data-object-id'] = obj.pk
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
-        if 'certification_name' in form.base_fields:
-            form.base_fields['certification_name'].widget = UppercaseTextInputWidget()
-
         return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -855,11 +901,13 @@ class HarvestingCrewAdmin(admin.ModelAdmin):
         js = ('js/admin/forms/packhouses/catalogs/harvesting_crew.js',)
 
 @admin.register(HarvestingCrewProvider)
-class HarvestingCrewProviderAdmin(admin.ModelAdmin):
+class HarvestingCrewProviderAdmin(OrganizationAdminMixin):
     inlines = [HarvestingCrewBeneficiaryInline,VehicleInline, CrewChiefInline]
+    fields = ('name', 'tax_id', 'is_enabled')
+
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 

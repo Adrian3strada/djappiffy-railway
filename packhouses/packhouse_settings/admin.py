@@ -5,6 +5,8 @@ from .models import (Status, ProductSizeKind, MassVolumeKind, Bank, VehicleOwner
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget
 from organizations.models import Organization
 from common.utils import is_instance_used
+from common.base.mixins import OrganizationAdminMixin
+
 
 # Register your models here.
 
@@ -64,9 +66,10 @@ class MassVolumeKindAdmin(admin.ModelAdmin):
 
 
 @admin.register(Bank)
-class BankAdmin(admin.ModelAdmin):
+class BankAdmin(OrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    fields = ('name', 'is_enabled')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -82,9 +85,10 @@ class BankAdmin(admin.ModelAdmin):
 
 
 @admin.register(VehicleOwnershipKind)
-class VehicleOwnershipAdmin(admin.ModelAdmin):
+class VehicleOwnershipAdmin(OrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    fields = ('name', 'is_enabled')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -100,9 +104,10 @@ class VehicleOwnershipAdmin(admin.ModelAdmin):
 
 
 @admin.register(VehicleKind)
-class VehicleKindAdmin(admin.ModelAdmin):
+class VehicleKindAdmin(OrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    fields = ('name', 'is_enabled')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -118,9 +123,10 @@ class VehicleKindAdmin(admin.ModelAdmin):
 
 
 @admin.register(VehicleFuelKind)
-class VehicleFuelAdmin(admin.ModelAdmin):
+class VehicleFuelAdmin(OrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    fields = ('name', 'is_enabled')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -154,9 +160,10 @@ class PaymentKindAdmin(admin.ModelAdmin):
 
 
 @admin.register(VehicleBrand)
-class VehicleBrandAdmin(admin.ModelAdmin):
+class VehicleBrandAdmin(OrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    fields = ('name', 'is_enabled')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
