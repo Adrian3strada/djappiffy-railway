@@ -142,6 +142,38 @@ class CleanNameAndMarketMixin(models.Model):
         abstract = True
 
 
+class CleanProductMixin(models.Model):
+    def __str__(self):
+        return f"{self.name}"
+
+    def clean(self):
+        self.product = getattr(self, 'product', None)
+        self.product_id = getattr(self, 'product_id', None)
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.product_id:
+            if self.__class__.objects.filter(name=self.name, product=self.product).exclude(pk=self.pk).exists():
+                errors['name'] = _('Name must be unique, it already exists.')
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
+
+
+
 class CleanNameAndProductMixin(models.Model):
     def __str__(self):
         return f"{self.name}"
