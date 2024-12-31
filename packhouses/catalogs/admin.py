@@ -908,7 +908,7 @@ class HarvestingCrewAdmin(admin.ModelAdmin):
         js = ('js/admin/forms/packhouses/catalogs/harvesting_crew.js',)
 
 @admin.register(HarvestingCrewProvider)
-class HarvestingCrewProviderAdmin(OrganizationAdminMixin):
+class HarvestingCrewProviderAdmin(ByOrganizationAdminMixin):
     inlines = [HarvestingCrewBeneficiaryInline,VehicleInline, CrewChiefInline]
     fields = ('name', 'tax_id', 'is_enabled')
 
