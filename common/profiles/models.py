@@ -79,7 +79,7 @@ class OrganizationProfile(PolymorphicModel):
         verbose_name=_('Name'),
         help_text=_('Name of the Organization.'),
     )
-    organization = models.ForeignKey(
+    organization = models.OneToOneField(
         Organization,
         on_delete=models.CASCADE,
         null=True,
