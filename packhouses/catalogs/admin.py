@@ -1,7 +1,4 @@
-from faulthandler import is_enabled
-
 from django.contrib import admin
-
 from common.billing.models import LegalEntityCategory
 from .models import (
     Market, KGCostMarket, MarketClass, MarketStandardProductSize, Product, ProductVariety, ProductVarietySize,
@@ -24,7 +21,8 @@ from cities_light.models import Country, Region, SubRegion, City
 
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
-from .filters import ProductVarietySizeProductFilter, ProductProviderStateFilter, StateFilterUserCountry
+from .filters import (ProductVarietySizeProductFilter, ProductProviderStateFilter, StateFilterUserCountry,
+                      ProductKindForPackagingFilter)
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin
 from common.base.models import ProductKind
@@ -80,7 +78,7 @@ class MarketAdmin(OrganizationAdminMixin):
     search_fields = ('name', 'alias')
     fields = ('name', 'alias', 'countries', 'management_cost_per_kg', 'is_foreign', 'is_mixable',
               'label_language', 'address_label', 'is_enabled')
-    inlines = [KGCostMarketInline, MarketClassInline, MarketStandardProductSizeInline]
+    inlines = [MarketClassInline, MarketStandardProductSizeInline]
 
     # TODO: revisar si KGCostMarketInline si va en Market o va por variedad o donde?
 
@@ -124,8 +122,8 @@ class ProductVarietyInline(admin.TabularInline):
 @admin.register(Product)
 class ProductAdmin(OrganizationAdminMixin):
     list_display = ('name', 'kind', 'description', 'is_enabled')
-    list_filter = ('is_enabled',)
-    search_fields = ('kind__name', 'description')
+    list_filter = (ProductKindForPackagingFilter, 'is_enabled',)
+    search_fields = ('name', 'kind__name', 'description')
     fields = ('kind', 'name', 'description', 'is_enabled')
     # inlines = [ProductVarietyInline]
 
@@ -150,11 +148,11 @@ class ProductAdmin(OrganizationAdminMixin):
 
 
 @admin.register(ProductHarvestKind)
-class ProductVarietyHarvestKindAdmin(SortableAdminMixin, admin.ModelAdmin):
+class ProductHarvestKindAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'product', 'is_enabled', 'order')
     list_filter = ('product', 'is_enabled')
     search_fields = ('name', 'product__kind__name')
-    fields = ('name', 'product', 'is_enabled')
+    fields = ('name', 'product', 'order', 'is_enabled')
     ordering = ['order']
 
 

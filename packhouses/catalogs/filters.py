@@ -2,6 +2,22 @@ from django.contrib import admin
 from cities_light.models import Country, Region, City
 from common.profiles.models import UserProfile, OrganizationProfile
 from .models import Product, ProductProvider
+from common.base.models import ProductKind
+from django.utils.translation import gettext_lazy as _
+
+
+class ProductKindForPackagingFilter(admin.SimpleListFilter):
+    title = _('Product Kind')
+    parameter_name = 'kind'
+
+    def lookups(self, request, model_admin):
+        kinds = ProductKind.objects.filter(for_packaging=True, is_enabled=True)
+        return [(kind.id, kind.name) for kind in kinds]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(kind__id=self.value())
+        return queryset
 
 
 class ProductVarietySizeProductFilter(admin.SimpleListFilter):

@@ -1,5 +1,5 @@
 from django.db import models
-from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizationMixin,
+from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizationMixin, CleanProductMixin,
                            CleanNameOrAliasAndOrganizationMixin, CleanNameAndMarketMixin, CleanNameAndProductMixin,
                            CleanNameAndProductProviderMixin, CleanNameAndProductProducerMixin,
                            CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanNameAndMaquiladoraMixin)
@@ -168,11 +168,11 @@ class ProductVariety(CleanNameAndProductMixin, models.Model):
         ]
 
 
-class ProductHarvestKind(CleanNameAndProductMixin, models.Model):
+class ProductHarvestKind(CleanProductMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    order = models.IntegerField(default=0, verbose_name=_('Order'))
+    order = models.IntegerField(default=0, verbose_name=_('Order'), editable=False)
 
     class Meta:
         verbose_name = _('Product harvest Kind')
