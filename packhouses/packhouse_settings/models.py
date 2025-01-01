@@ -39,7 +39,7 @@ class ProductSizeKind(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-class MassVolumeKind(CleanNameAndOrganizationMixin, models.Model):
+class ProductMassVolumeKind(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)

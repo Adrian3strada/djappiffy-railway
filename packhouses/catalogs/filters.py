@@ -1,7 +1,8 @@
 from django.contrib import admin
 from cities_light.models import Country, Region, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
-from .models import Product, ProductProvider
+from .models import Product, ProductVariety, Market
+from ..packhouse_settings.models import ProductSizeKind, ProductMassVolumeKind
 from common.base.models import ProductKind
 from django.utils.translation import gettext_lazy as _
 
@@ -23,7 +24,7 @@ class ProductKindForPackagingFilter(admin.SimpleListFilter):
         return queryset
 
 
-class ProductByOrganizationFilter(admin.SimpleListFilter):
+class ByProductForOrganizationFilter(admin.SimpleListFilter):
     title = _('Product')
     parameter_name = 'product'
 
@@ -37,37 +38,60 @@ class ProductByOrganizationFilter(admin.SimpleListFilter):
         return queryset
 
 
-class ProductVarietySizeProductFilter(admin.SimpleListFilter):
-    title = 'Product'  # Nombre que se muestra en el admin
-    parameter_name = 'product'
+class ByProductVarietyForOrganizationFilter(admin.SimpleListFilter):
+    title = _('Product Variety')
+    parameter_name = 'product_variety'
 
     def lookups(self, request, model_admin):
-        # Opciones para el filtro, basadas en los productos disponibles
-        products = Product.objects.all()
-        return [(product.id, product.kind.name) for product in products]
+        product_varieties = ProductVariety.objects.filter(product__organization=request.organization, is_enabled=True)
+        return [(product_variety.id, product_variety.name) for product_variety in product_varieties]
 
     def queryset(self, request, queryset):
-        # Filtra el queryset de `ProductVarietySize` basado en el producto seleccionado
         if self.value():
-            return queryset.filter(variety__product__id=self.value())
+            return queryset.filter(product_variety__id=self.value())
+        return queryset
+
+class ByMarketForOrganizationFilter(admin.SimpleListFilter):
+    title = _('Market')
+    parameter_name = 'market'
+
+    def lookups(self, request, model_admin):
+        markets = Market.objects.filter(organization=request.organization, is_enabled=True)
+        return [(market.id, market.name) for market in markets]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(market__id=self.value())
         return queryset
 
 
-class ProductProviderStateFilter(admin.SimpleListFilter):
-    title = 'Provider state'  # Nombre que se muestra en el admin
-    parameter_name = 'provider_state'
+class ByProductSizeKindForOrganizationFilter(admin.SimpleListFilter):
+    title = _('Size Kind')
+    parameter_name = 'size_kind'
 
     def lookups(self, request, model_admin):
-        # Opciones para el filtro, basadas en los estados de proveedor disponibles
-        states = Region.objects.all()
-        # return [(state.id, state.name) for state in states]
-        return [(state.id, state.display_name) for state in states]
+        product_size_kinds = ProductSizeKind.objects.filter(organization=request.organization, is_enabled=True)
+        return [(product_size_kind.id, product_size_kind.name) for product_size_kind in product_size_kinds]
 
     def queryset(self, request, queryset):
-        # Filtra el queryset de `ProductProvider` basado en el estado de proveedor seleccionado
         if self.value():
-            return queryset.filter(state__id=self.value())
+            return queryset.filter(size_kind=self.value())
         return queryset
+
+
+class ByProductMassVolumeKindForOrganizationFilter(admin.SimpleListFilter):
+    title = _('Mass volume Kind')
+    parameter_name = 'product_mass_volume_kind'
+
+    def lookups(self, request, model_admin):
+        product_mass_volume_kinds = ProductMassVolumeKind.objects.filter(organization=request.organization, is_enabled=True)
+        return [(product_mass_volume_kind.id, product_mass_volume_kind.name) for product_mass_volume_kind in product_mass_volume_kinds]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(product_mass_volume_kind=self.value())
+        return queryset
+
 
 class StateFilterUserCountry(admin.SimpleListFilter):
     title = 'State'
@@ -75,10 +99,13 @@ class StateFilterUserCountry(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         user_profile = UserProfile.objects.get(user=request.user)
-        country = user_profile.country
+        if hasattr(request, 'organization'):
+            organization_profile = OrganizationProfile.objects.get(organization=request.organization)
+            country = organization_profile.country
 
-        states = Region.objects.filter(country_id=country.id)
-        return [(state.id, state.display_name) for state in states]
+            states = Region.objects.filter(country_id=country.id)
+            return [(state.id, state.display_name) for state in states]
+        return Region.objects.none()
 
     def queryset(self, request, queryset):
         if self.value():

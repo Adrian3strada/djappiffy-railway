@@ -2,7 +2,8 @@ from django.contrib import admin
 from common.billing.models import LegalEntityCategory
 from .models import (
     Market, KGCostMarket, MarketClass, MarketStandardProductSize, Product, ProductVariety, ProductVarietySize,
-    ProductVarietySizeHarvestKind, ProductProvider, ProductProviderBenefactor, ProductProducer, ProductProducerBenefactor,
+    ProductVarietySizeHarvestKind, ProductProvider, ProductProviderBenefactor, ProductProducer,
+    ProductProducerBenefactor,
     PaymentKind, Vehicle, Gatherer, Client, ClientShipAddress, Maquiladora, MaquiladoraClient,
     OrchardProductClassificationKind, Orchard, OrchardCertification, HarvestingCrewProvider, CrewChief, HarvestingCrew,
     HarvestingCrewBeneficiary, HarvestingPaymentSetting, Supply, SupplyProvider, MeshBagKind, MeshBagFilmKind,
@@ -11,9 +12,9 @@ from .models import (
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany
 )
 
-from packhouses.packhouse_settings.models import Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,VehicleBrand
+from packhouses.packhouse_settings.models import Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind, VehicleBrand
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
-from .forms import (ProductVarietySizeInlineForm, ProductVarietySizeForm, ProductVarietyInlineFormSet,
+from .forms import (ProductVarietyInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet)
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization, OrganizationUser
@@ -21,15 +22,17 @@ from cities_light.models import Country, Region, SubRegion, City
 
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
-from .filters import (ProductVarietySizeProductFilter, ProductProviderStateFilter, StateFilterUserCountry,
-                      ProductByOrganizationFilter,
+from .filters import (StateFilterUserCountry,
+                      ByProductForOrganizationFilter, ByProductVarietyForOrganizationFilter,
+                      ByMarketForOrganizationFilter, ByProductSizeKindForOrganizationFilter,
+                      ByProductMassVolumeKindForOrganizationFilter,
                       ProductKindForPackagingFilter)
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin
 from common.base.models import ProductKind
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
-from common.base.mixins import ByOrganizationAdminMixin, ByProductOrganizationAdminMixin
+from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -92,7 +95,8 @@ class MarketAdmin(ByOrganizationAdminMixin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[KGCostMarket, MarketClass, MarketStandardProductSize, Country, Organization]):
+        if obj and is_instance_used(obj, exclude=[KGCostMarket, MarketClass, MarketStandardProductSize, Country,
+                                                  Organization]):
             readonly_fields.extend(['name', 'alias', 'countries', 'is_foreign', 'organization'])
         return readonly_fields
 
@@ -100,6 +104,7 @@ class MarketAdmin(ByOrganizationAdminMixin):
         if 'address_label' in form.cleaned_data and form.cleaned_data['address_label'] == '<p>&nbsp;</p>':
             obj.address_label = None
         super().save_model(request, obj, form, change)
+
 
 # /Markets
 
@@ -144,7 +149,8 @@ class ProductAdmin(ByOrganizationAdminMixin):
             kwargs["queryset"] = product_kinds
             if hasattr(request, 'organization'):
                 packhouse_exporter_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
-                kwargs["queryset"] = packhouse_exporter_profile.packhouseexportersetting.product_kinds.filter(is_enabled=True)
+                kwargs["queryset"] = packhouse_exporter_profile.packhouseexportersetting.product_kinds.filter(
+                    is_enabled=True)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -162,11 +168,12 @@ class ProductVarietySizeInline(admin.StackedInline):
 
 
 @admin.register(ProductVariety)
-class ProductVarietyAdminProduct(ByProductOrganizationAdminMixin):
+class ProductVarietyAdmin(ByProductForOrganizationAdminMixin):
     list_display = ('name', 'product', 'description', 'is_enabled')
-    list_filter = (ProductByOrganizationFilter, 'is_enabled',)
+    list_filter = (ByProductForOrganizationFilter, 'is_enabled',)
     search_fields = ('name', 'product__name', 'product__kind__name', 'description')
     fields = ('product', 'name', 'description', 'is_enabled')
+
     # inlines = [ProductVarietySizeInline]
 
     @uppercase_form_charfield('name')
@@ -189,34 +196,17 @@ class ProductVarietyAdminProduct(ByProductOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(ProductVarietySizeHarvestKind)
-class ProductVarietySizeHarvestKindAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('name', 'product_variety_size', 'is_enabled', 'order')
-    list_filter = ('product_variety_size', 'is_enabled')
-    search_fields = ('name', )
-    fields = ('name', 'product_variety_size', 'order', 'is_enabled')
-    ordering = ['order']
-
-
 @admin.register(ProductVarietySize)
-class ProductVarietySizeAdmin(admin.ModelAdmin):
+class ProductVarietySizeAdmin(ByProductForOrganizationAdminMixin):
     list_display = (
-        'name', 'product', 'product_variety', 'market', 'size_kind', 'volume_kind', 'is_enabled',
+        'name', 'product', 'product_variety', 'market', 'product_size_kind', 'product_mass_volume_kind', 'is_enabled',
         'order')
     list_filter = (
-        ProductVarietySizeProductFilter, 'product_variety', 'market', 'size_kind', 'volume_kind',
-        'is_enabled'
+        ByProductForOrganizationFilter, ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
+        ByProductSizeKindForOrganizationFilter, ByProductMassVolumeKindForOrganizationFilter,
+        'requires_corner_protector', 'is_enabled'
     )
-    search_fields = (
-        'name', 'variety__name', 'market__name', 'size_kind__name', 'volume_kind__name'
-    )
-
-    form = ProductVarietySizeForm
-
-    def product(self, obj):
-        return obj.product_variety.product_variety.name
-    product.short_description = _('Product')
-    product.admin_order_field = 'variety__product__name'
+    search_fields = ('name', 'alias', 'product__name', 'product_variety__name')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "variety":
@@ -225,6 +215,18 @@ class ProductVarietySizeAdmin(admin.ModelAdmin):
             formfield.label_from_instance = lambda obj: f"{obj.product_variety.kind.name}: {obj.name}"
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/catalogs/product_variety_size.js',)
+
+
+@admin.register(ProductVarietySizeHarvestKind)
+class ProductVarietySizeHarvestKindAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ('name', 'product_variety_size', 'is_enabled', 'order')
+    list_filter = ('product_variety_size', 'is_enabled')
+    search_fields = ('name',)
+    fields = ('name', 'product_variety_size', 'order', 'is_enabled')
+    ordering = ['order']
 
 
 class ProductProviderBenefactorInline(admin.TabularInline):
@@ -240,10 +242,13 @@ class ProductProviderBenefactorInline(admin.TabularInline):
 
 @admin.register(ProductProvider)
 class ProductProviderAdmin(admin.ModelAdmin):
-    list_display = ('name', 'alias', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number', 'is_enabled')
+    list_display = (
+    'name', 'alias', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number',
+    'is_enabled')
     list_filter = ('state', 'city', 'bank', 'is_enabled')
     search_fields = ('name', 'alias', 'neighborhood', 'address', 'tax_id', 'phone_number')
-    fields = ('name', 'alias', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'tax_id', 'phone_number', 'bank_account_number', 'bank', 'is_enabled', 'organization')
+    fields = ('name', 'alias', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number',
+              'internal_number', 'tax_id', 'phone_number', 'bank_account_number', 'bank', 'is_enabled', 'organization')
     inlines = [ProductProviderBenefactorInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -300,10 +305,14 @@ class ProductProducerBenefactorInline(admin.TabularInline):
 
 @admin.register(ProductProducer)
 class ProductProducerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'alias', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number', 'is_enabled')
+    list_display = (
+    'name', 'alias', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'phone_number',
+    'is_enabled')
     list_filter = ('state', 'city', 'bank', 'is_enabled')
     search_fields = ('name', 'alias', 'neighborhood', 'address', 'tax_id', 'phone_number')
-    fields = ('name', 'alias', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number', 'internal_number', 'tax_id', 'email', 'phone_number', 'product_provider', 'bank_account_number', 'bank', 'is_enabled', 'organization')
+    fields = ('name', 'alias', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number',
+              'internal_number', 'tax_id', 'email', 'phone_number', 'product_provider', 'bank_account_number', 'bank',
+              'is_enabled', 'organization')
     inlines = [ProductProducerBenefactorInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -324,7 +333,8 @@ class ProductProducerAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Region, City, ProductProvider, Bank, Organization, ProductProducerBenefactor]):
+        if obj and is_instance_used(obj, exclude=[Region, City, ProductProvider, Bank, Organization,
+                                                  ProductProducerBenefactor]):
             readonly_fields.extend(['name', 'alias', 'organization'])
         return readonly_fields
 
@@ -417,11 +427,15 @@ class ClientShipAddressInline(admin.StackedInline):
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'legal_category', 'tax_id', 'market', 'country', 'state', 'city', 'neighborhood', 'address', 'external_number', 'tax_id', 'contact_phone_number', 'is_enabled')
+    list_display = ('name', 'legal_category', 'tax_id', 'market', 'country', 'state', 'city', 'neighborhood', 'address',
+                    'external_number', 'tax_id', 'contact_phone_number', 'is_enabled')
     # list_filter = ('market', 'legal_category', 'country', 'state', 'city', 'payment_kind', 'is_enabled')
     list_filter = ('market', 'legal_category', 'payment_kind', 'is_enabled')
     search_fields = ('name', 'tax_id', 'contact_phone_number')
-    fields = ('name', 'market', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number', 'internal_number', 'same_ship_address', 'legal_category', 'tax_id', 'fda', 'swift', 'aba', 'clabe', 'bank', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
+    fields = ('name', 'market', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address',
+              'external_number', 'internal_number', 'same_ship_address', 'legal_category', 'tax_id', 'fda', 'swift',
+              'aba', 'clabe', 'bank', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'contact_name',
+              'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
     inlines = [ClientShipAddressInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -507,13 +521,17 @@ class ClientAdmin(admin.ModelAdmin):
         js = ('js/admin/forms/packhouses/catalogs/client.js',)
 
 
-
 @admin.register(Gatherer)
 class GathererAdmin(admin.ModelAdmin):
-    list_display = ('name', 'zone', 'tax_registry_code', 'state', 'city', 'postal_code', 'address', 'email', 'phone_number', 'vehicle', 'is_enabled')
+    list_display = (
+    'name', 'zone', 'tax_registry_code', 'state', 'city', 'postal_code', 'address', 'email', 'phone_number', 'vehicle',
+    'is_enabled')
     list_filter = (StateFilterUserCountry, 'is_enabled')
     search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
-    fields = ('name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle', 'is_enabled', 'organization')
+    fields = (
+    'name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district',
+    'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle',
+    'is_enabled', 'organization')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -532,7 +550,8 @@ class GathererAdmin(admin.ModelAdmin):
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        user_profile = UserProfile.objects.get(user=request.user) #TODO: Obtener el país de la organización en lugar del país del usuario
+        user_profile = UserProfile.objects.get(
+            user=request.user)  # TODO: Obtener el país de la organización en lugar del país del usuario
         country = user_profile.country
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = Gatherer.objects.get(id=object_id) if object_id else None
@@ -569,9 +588,9 @@ class GathererAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-                'js/admin/forms/packhouses/catalogs/gatherer.js',
-                'js/admin/forms/packhouses/catalogs/state-city.js',
-            )
+            'js/admin/forms/packhouses/catalogs/gatherer.js',
+            'js/admin/forms/packhouses/catalogs/state-city.js',
+        )
 
 
 class MaquiladoraClientInline(admin.StackedInline):
@@ -630,10 +649,14 @@ class MaquiladoraClientInline(admin.StackedInline):
 
 @admin.register(Maquiladora)
 class MaquiladoraAdmin(admin.ModelAdmin):
-    list_display = ('name', 'zone', 'tax_registry_code', 'state', 'city', 'email', 'phone_number', 'vehicle', 'is_enabled')
+    list_display = (
+    'name', 'zone', 'tax_registry_code', 'state', 'city', 'email', 'phone_number', 'vehicle', 'is_enabled')
     list_filter = ('state', 'city', 'vehicle', 'is_enabled')
     search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
-    fields = ('name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle', 'is_enabled', 'organization')
+    fields = (
+    'name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district',
+    'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle',
+    'is_enabled', 'organization')
     inlines = [MaquiladoraClientInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -680,6 +703,7 @@ class MaquiladoraAdmin(admin.ModelAdmin):
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/maquiladora.js',)
 
+
 class OrchardCertificationInline(admin.TabularInline):
     model = OrchardCertification
     form = OrchardCertificationForm
@@ -689,13 +713,13 @@ class OrchardCertificationInline(admin.TabularInline):
         js = ('js/admin/forms/packhouses/catalogs/orchard_certification_inline.js',)
 
 
-
 @admin.register(Orchard)
 class OrchardAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'producer', 'product_classification_kind', 'is_enabled')
     list_filter = ('product_classification_kind', 'safety_authority_registration_date', 'is_enabled')
     search_fields = ('name', 'code', 'producer__name')
-    fields = ('name', 'code', 'producer', 'safety_authority_registration_date', 'state', 'city', 'district', 'ha', 'product_classification_kind', 'phytosanitary_certificate', 'is_enabled', 'organization')
+    fields = ('name', 'code', 'producer', 'safety_authority_registration_date', 'state', 'city', 'district', 'ha',
+              'product_classification_kind', 'phytosanitary_certificate', 'is_enabled', 'organization')
     inlines = [OrchardCertificationInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -706,7 +730,8 @@ class OrchardAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[ProductProducer, Region, City, OrchardProductClassificationKind, Organization]):
+        if obj and is_instance_used(obj, exclude=[ProductProducer, Region, City, OrchardProductClassificationKind,
+                                                  Organization]):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
 
@@ -745,7 +770,6 @@ class OrchardAdmin(admin.ModelAdmin):
         js = ('js/admin/forms/packhouses/catalogs/orchard.js',)
 
 
-
 class ServiceProviderBenefactorInline(admin.TabularInline):
     model = ServiceProviderBenefactor
     extra = 0
@@ -757,18 +781,20 @@ class SupplyAdmin(admin.ModelAdmin):
     list_filter = ('kind', 'is_enabled')
 
 
-
 @admin.register(OrchardCertification)
 class OrchardCertificationAdmin(admin.ModelAdmin):
     pass
 
+
 class CrewChiefInline(admin.TabularInline):
     model = CrewChief
     extra = 0
+
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
         return formset
+
 
 @admin.register(CrewChief)
 class CrewChiefAdmin(admin.ModelAdmin):
@@ -776,6 +802,7 @@ class CrewChiefAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
+
 
 class HarvestingCrewBeneficiaryInline(admin.TabularInline):
     model = HarvestingCrewBeneficiary
@@ -800,7 +827,8 @@ class HarvestingCrewBeneficiaryInline(admin.TabularInline):
             organization_id = request.organization.id
 
         if db_field.name == "bank":
-            kwargs["queryset"] = Bank.objects.filter(organization_id=organization_id) if organization_id else VehicleKind.objects.all()
+            kwargs["queryset"] = Bank.objects.filter(
+                organization_id=organization_id) if organization_id else VehicleKind.objects.all()
 
         if "queryset" in kwargs:
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -810,15 +838,16 @@ class HarvestingCrewBeneficiaryInline(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-
 class VehicleInline(admin.StackedInline):
     model = Vehicle
     extra = 0
 
-    list_display = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'ownership', 'fuel', 'is_enabled')
+    list_display = (
+    'name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'ownership', 'fuel', 'is_enabled')
     list_filter = ('kind', 'brand', 'ownership', 'fuel', 'is_enabled')
     search_fields = ('name', 'model', 'license_plate', 'serial_number', 'comments')
-    fields = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'scope', 'ownership', 'fuel', 'comments', 'is_enabled')
+    fields = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'scope', 'ownership', 'fuel',
+              'comments', 'is_enabled')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
@@ -834,13 +863,17 @@ class VehicleInline(admin.StackedInline):
             organization_id = request.organization.id
 
         if db_field.name == "kind":
-            kwargs["queryset"] = VehicleKind.objects.filter(organization_id=organization_id) if organization_id else VehicleKind.objects.all()
+            kwargs["queryset"] = VehicleKind.objects.filter(
+                organization_id=organization_id) if organization_id else VehicleKind.objects.all()
         if db_field.name == "brand":
-            kwargs["queryset"] = VehicleBrand.objects.filter(organization_id=organization_id) if organization_id else VehicleBrand.objects.all()
+            kwargs["queryset"] = VehicleBrand.objects.filter(
+                organization_id=organization_id) if organization_id else VehicleBrand.objects.all()
         if db_field.name == "ownership":
-            kwargs["queryset"] = VehicleOwnershipKind.objects.filter(organization_id=organization_id) if organization_id else VehicleBrand.objects.all()
+            kwargs["queryset"] = VehicleOwnershipKind.objects.filter(
+                organization_id=organization_id) if organization_id else VehicleBrand.objects.all()
         if db_field.name == "fuel":
-            kwargs["queryset"] = VehicleFuelKind.objects.filter(organization_id=organization_id) if organization_id else VehicleBrand.objects.all()
+            kwargs["queryset"] = VehicleFuelKind.objects.filter(
+                organization_id=organization_id) if organization_id else VehicleBrand.objects.all()
 
         if "queryset" in kwargs:
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -858,9 +891,6 @@ class VehicleInline(admin.StackedInline):
         return formset
 
 
-
-
-
 class HarvestingPaymentSettingInline(admin.StackedInline):
     model = HarvestingPaymentSetting
     min_num = 1
@@ -871,13 +901,16 @@ class HarvestingPaymentSettingInline(admin.StackedInline):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
 
+
 @admin.register(HarvestingCrew)
 class HarvestingCrewAdmin(admin.ModelAdmin):
     form = HarvestingCrewForm
-    list_display = ('name', 'harvesting_crew_provider', 'crew_chief', 'certification_name', 'persons_number', 'is_enabled')
+    list_display = (
+    'name', 'harvesting_crew_provider', 'crew_chief', 'certification_name', 'persons_number', 'is_enabled')
     list_filter = ('is_enabled',)
-    fields = ('harvesting_crew_provider', 'name', 'certification_name', 'crew_chief', 'persons_number', 'comments', 'is_enabled')
-    inlines = [HarvestingPaymentSettingInline,]
+    fields = (
+    'harvesting_crew_provider', 'name', 'certification_name', 'crew_chief', 'persons_number', 'comments', 'is_enabled')
+    inlines = [HarvestingPaymentSettingInline, ]
 
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('certification_name')
@@ -909,9 +942,10 @@ class HarvestingCrewAdmin(admin.ModelAdmin):
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/harvesting_crew.js',)
 
+
 @admin.register(HarvestingCrewProvider)
 class HarvestingCrewProviderAdmin(ByOrganizationAdminMixin):
-    inlines = [HarvestingCrewBeneficiaryInline,VehicleInline, CrewChiefInline]
+    inlines = [HarvestingCrewBeneficiaryInline, VehicleInline, CrewChiefInline]
     fields = ('name', 'tax_id', 'is_enabled')
 
     @uppercase_form_charfield('name')
@@ -984,13 +1018,17 @@ class PalletExpenseAdmin(admin.ModelAdmin):
 class ProductPackagingAdmin(admin.ModelAdmin):
     pass
 
+
 @admin.register(ExportingCompany)
 class ExportingCompanyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'legal_category', 'tax_id', 'city', 'address', 'external_number', 'contact_phone_number', 'is_enabled')
+    list_display = (
+    'name', 'legal_category', 'tax_id', 'city', 'address', 'external_number', 'contact_phone_number', 'is_enabled')
     list_filter = ('country', 'legal_category', 'payment_kind', 'is_enabled')
     search_fields = ('name', 'tax_id', 'contact_phone_number')
-    fields = ('name', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number', 'internal_number', 'legal_category', 'tax_id', 'clabe', 'bank', 'payment_kind', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled', 'organization')
-
+    fields = (
+    'name', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number',
+    'internal_number', 'legal_category', 'tax_id', 'clabe', 'bank', 'payment_kind', 'contact_name', 'contact_email',
+    'contact_phone_number', 'is_enabled', 'organization')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -1057,6 +1095,7 @@ class ExportingCompanyAdmin(admin.ModelAdmin):
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/country-state-city.js',)
 
+
 @admin.register(Transfer)
 class TransferAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
@@ -1064,6 +1103,7 @@ class TransferAdmin(admin.ModelAdmin):
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
+
 
 @admin.register(LocalTransporter)
 class LocalTransporterAdmin(admin.ModelAdmin):
@@ -1073,6 +1113,7 @@ class LocalTransporterAdmin(admin.ModelAdmin):
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
+
 @admin.register(BorderToDestinationTransporter)
 class BorderToDestinationTransporterAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
@@ -1080,6 +1121,7 @@ class BorderToDestinationTransporterAdmin(admin.ModelAdmin):
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
+
 
 @admin.register(CustomsBroker)
 class CustomsBrokerAdmin(admin.ModelAdmin):
@@ -1089,6 +1131,7 @@ class CustomsBrokerAdmin(admin.ModelAdmin):
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
+
 @admin.register(Vessel)
 class VesselAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
@@ -1097,6 +1140,7 @@ class VesselAdmin(admin.ModelAdmin):
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
+
 @admin.register(Airline)
 class AirlineAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
@@ -1104,6 +1148,7 @@ class AirlineAdmin(admin.ModelAdmin):
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
+
 
 @admin.register(InsuranceCompany)
 class InsuranceCompanyAdmin(admin.ModelAdmin):

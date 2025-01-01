@@ -16,7 +16,7 @@ class ByOrganizationAdminMixin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-class ByProductOrganizationAdminMixin(admin.ModelAdmin):
+class ByProductForOrganizationAdminMixin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if hasattr(request, 'organization'):

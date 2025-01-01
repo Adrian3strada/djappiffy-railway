@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (Status, ProductSizeKind, MassVolumeKind, Bank, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
+from .models import (Status, ProductSizeKind, ProductMassVolumeKind, Bank, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
                      PaymentKind, VehicleBrand, OrchardProductClassificationKind, OrchardCertificationVerifier,
                      OrchardCertificationKind, SupplyKind, SupplyPresentationKind)
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget
@@ -47,7 +47,7 @@ class ProductSizeKindAdmin(admin.ModelAdmin):
         return readonly_fields
 
 
-@admin.register(MassVolumeKind)
+@admin.register(ProductMassVolumeKind)
 class MassVolumeKindAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
