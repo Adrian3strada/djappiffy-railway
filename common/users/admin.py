@@ -74,4 +74,4 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.unregister(OriginalGroup)
 admin.site.register(Group)
-admin.site.register(Permission)
+# admin.site.register(Permission)
