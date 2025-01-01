@@ -54,13 +54,10 @@ class ProductMassVolumeKind(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-class Bank(models.Model):
+class Bank(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=120, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Bank')
@@ -71,13 +68,10 @@ class Bank(models.Model):
         ]
 
 
-class VehicleOwnershipKind(models.Model):
+class VehicleOwnershipKind(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Vehicle ownership kind')
@@ -88,13 +82,10 @@ class VehicleOwnershipKind(models.Model):
         ]
 
 
-class VehicleKind(models.Model):
+class VehicleKind(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Vehicle kind')
@@ -105,13 +96,10 @@ class VehicleKind(models.Model):
         ]
 
 
-class VehicleFuelKind(models.Model):
+class VehicleFuelKind(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Vehicle fuel kind')
@@ -122,13 +110,10 @@ class VehicleFuelKind(models.Model):
         ]
 
 
-class PaymentKind(models.Model):
+class PaymentKind(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=120, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Payment kind')
@@ -139,13 +124,10 @@ class PaymentKind(models.Model):
         ]
 
 
-class VehicleBrand(models.Model):
+class VehicleBrand(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Vehicle brand')
@@ -156,30 +138,24 @@ class VehicleBrand(models.Model):
         ]
 
 
-class OrchardProductClassificationKind(models.Model):
+class OrchardProductClassificationKind(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
-    def __str__(self):
-        return f"{self.name}"
-
     class Meta:
-        verbose_name = _('Product Classification')
-        verbose_name_plural = _('Product Classifications')
+        verbose_name = _('Orchard product classification')
+        verbose_name_plural = _('Orchard product classifications')
         ordering = ('organization', 'name',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='orchardproductclassificationkind_unique_name_organization'),
         ]
 
 
-class OrchardCertificationVerifier(models.Model):
+class OrchardCertificationVerifier(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Orchard certification verifier')
@@ -190,15 +166,12 @@ class OrchardCertificationVerifier(models.Model):
         ]
 
 
-class OrchardCertificationKind(models.Model):
+class OrchardCertificationKind(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     verifiers = models.ManyToManyField(OrchardCertificationVerifier, verbose_name=_('Verifiers'), blank=False)
     extra_code_name = models.CharField(max_length=20, verbose_name=_('Extra code name'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Orchard certification kind')
