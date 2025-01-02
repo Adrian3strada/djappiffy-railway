@@ -1,12 +1,13 @@
 from django import forms
 from .models import (
-            Product, ProductVarietySize, MarketStandardProductSize, OrchardCertification, HarvestingCrew,
-            HarvestingPaymentSetting
-            )
+    Product, ProductVarietySize, MarketStandardProductSize, OrchardCertification, HarvestingCrew,
+    ProductHarvestSizeKind,
+    HarvestingPaymentSetting
+)
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
-
+from common.utils import is_instance_used
 
 class ProductVarietySizeInlineForm(forms.ModelForm):
 
@@ -33,17 +34,36 @@ class ProductVarietySizeInlineForm(forms.ModelForm):
 class ProductVarietyInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Itera sobre cada formulario en el formset
+
         for form in self.forms:
             instance = form.instance
             # Verifica si la instancia de ProductVariety está en uso
             if instance.pk and ProductVarietySize.objects.filter(product_variety=instance).exists():
-                # Si está en uso, establece 'name' como readonly
                 form.fields['name'].disabled = True
-                form.fields['name'].widget.attrs.update({'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
+                form.fields['name'].widget.attrs.update(
+                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
                 form.fields['DELETE'].initial = False
                 form.fields['DELETE'].disabled = True
-                form.fields['DELETE'].widget.attrs.update({'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
+                form.fields['DELETE'].widget.attrs.update(
+                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
+
+
+class ProductHarvestSizeKindInlineFormSet(BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for form in self.forms:
+            instance = form.instance
+
+            # Verifica si la instancia de ProductVariety está en uso
+            if instance.pk and ProductVarietySize.objects.filter(product_variety_size_harvest_kind=instance).exists():
+                form.fields['name'].disabled = True
+                form.fields['name'].widget.attrs.update(
+                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
+                form.fields['DELETE'].initial = False
+                form.fields['DELETE'].disabled = True
+                form.fields['DELETE'].widget.attrs.update(
+                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
 
 
 class OrchardCertificationForm(forms.ModelForm):
@@ -63,6 +83,7 @@ class OrchardCertificationForm(forms.ModelForm):
 
         return cleaned_data
 
+
 class HarvestingCrewForm(forms.ModelForm):
     class Meta:
         model = HarvestingCrew
@@ -71,6 +92,7 @@ class HarvestingCrewForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         return cleaned_data
+
 
 class HarvestingPaymentSettingInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
@@ -92,7 +114,8 @@ class HarvestingPaymentSettingInlineFormSet(BaseInlineFormSet):
                 # Verifica si ya existe el type_harvest en la lista
                 if type_harvest in self.type_harvests:
                     raise forms.ValidationError({
-                        'type_harvest': _(f'Type harvest "{type_harvest}" is already selected. Only one of each type is allowed.')
+                        'type_harvest': _(
+                            f'Type harvest "{type_harvest}" is already selected. Only one of each type is allowed.')
                     })
                 else:
                     self.type_harvests.append(type_harvest)
@@ -102,5 +125,3 @@ class HarvestingPaymentSettingInlineFormSet(BaseInlineFormSet):
             raise forms.ValidationError(
                 _(f'Type harvest "{type_harvest}" is already selected. Only one of each type is allowed.')
             )
-
-

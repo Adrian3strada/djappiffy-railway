@@ -171,19 +171,19 @@ class ProductVariety(CleanNameAndProductMixin, models.Model):
         ]
 
 
-class ProductVarietySizeHarvestKind(CleanProductMixin, models.Model):
+class ProductHarvestSizeKind(CleanProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    order = models.IntegerField(default=0, verbose_name=_('Order'), editable=False)
+    order = models.IntegerField(default=0, verbose_name=_('Order'))
 
     class Meta:
-        verbose_name = _('Product variety harvest Kind')
-        verbose_name_plural = _('Product variety harvest kinds')
+        verbose_name = _('Product harvest size kind')
+        verbose_name_plural = _('Product harvest size kinds')
         ordering = ('order',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'],
-                                    name='productvarietysizeharvestkind_unique_name_product'),
+                                    name='productharvestsizekind_unique_name_product'),
         ]
 
 
@@ -199,7 +199,7 @@ class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanPr
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
-    product_variety_size_harvest_kind = models.ForeignKey(ProductVarietySizeHarvestKind,
+    product_variety_size_harvest_kind = models.ForeignKey(ProductHarvestSizeKind,
                                                           verbose_name=_('Product variety size harvest kind'),
                                                           on_delete=models.PROTECT)
     product_size_kind = models.ForeignKey(ProductSizeKind, verbose_name=_('Size kind'),

@@ -2,7 +2,7 @@ from django.contrib import admin
 from common.billing.models import LegalEntityCategory
 from .models import (
     Market, KGCostMarket, MarketClass, MarketStandardProductSize, Product, ProductVariety, ProductVarietySize,
-    ProductVarietySizeHarvestKind, ProductProvider, ProductProviderBenefactor, ProductProducer,
+    ProductHarvestSizeKind, ProductProvider, ProductProviderBenefactor, ProductProducer,
     ProductProducerBenefactor,
     PaymentKind, Vehicle, Gatherer, Client, ClientShipAddress, Maquiladora, MaquiladoraClient,
     OrchardProductClassificationKind, Orchard, OrchardCertification, HarvestingCrewProvider, CrewChief, HarvestingCrew,
@@ -15,7 +15,7 @@ from .models import (
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   ProductSizeKind, ProductMassVolumeKind)
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
-from .forms import (ProductVarietyInlineFormSet,
+from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet)
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization, OrganizationUser
@@ -29,7 +29,7 @@ from .filters import (StateFilterUserCountry,
                       ByProductMassVolumeKindForOrganizationFilter,
                       ProductKindForPackagingFilter)
 from common.utils import is_instance_used
-from adminsortable2.admin import SortableAdminMixin
+from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
 from common.base.models import ProductKind
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
@@ -105,7 +105,6 @@ class MarketAdmin(ByOrganizationAdminMixin):
             obj.address_label = None
         super().save_model(request, obj, form, change)
 
-
 # /Markets
 
 
@@ -117,10 +116,21 @@ class ProductVarietyInline(admin.TabularInline):
     fields = ('name', 'description', 'is_enabled')
     formset = ProductVarietyInlineFormSet
 
+    @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        if 'name' in formset.form.base_fields:
-            formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return formset
+
+
+class ProductHarvestSizeKindInline(admin.TabularInline):
+    model = ProductHarvestSizeKind
+    extra = 0
+    fields = ('name', 'product', 'is_enabled', 'order')
+    ordering = ['order']
+    formset = ProductHarvestSizeKindInlineFormSet
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
         return formset
 
 
@@ -130,7 +140,7 @@ class ProductAdmin(ByOrganizationAdminMixin):
     list_filter = (ProductKindForPackagingFilter, 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
     fields = ('kind', 'name', 'description', 'is_enabled')
-    inlines = [ProductVarietyInline]
+    inlines = [ProductVarietyInline, ProductHarvestSizeKindInline]
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
@@ -155,16 +165,6 @@ class ProductAdmin(ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-"""
-class ProductVarietySizeInline(admin.StackedInline):
-    model = ProductVarietySize
-    extra = 0
-
-    class Meta:
-        fields = '__all__'
-"""
-
-
 @admin.register(ProductVariety)
 class ProductVarietyAdmin(ByProductForOrganizationAdminMixin):
     list_display = ('name', 'product', 'description', 'is_enabled')
@@ -172,22 +172,6 @@ class ProductVarietyAdmin(ByProductForOrganizationAdminMixin):
     search_fields = ('name', 'product__name', 'product__kind__name', 'description')
     fields = ('product', 'name', 'description', 'is_enabled')
     # inlines = [ProductVarietySizeInline]
-
-    """
-    def organization_name(self, obj):
-        name = PackhouseExporterProfile.objects.get(organization=obj.product.organization).organization.name
-        return name
-
-    def get_list_display(self, request):
-        list_display = list(super().get_list_display(request))
-        if request.user.is_superuser:
-            list_display.append('organization_name')
-        return list_display
-
-    def description(self, obj):
-        desc = obj.description if obj.description else ''
-        return desc[:20] + '...' if len(desc) > 20 else desc
-    """
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
@@ -209,7 +193,7 @@ class ProductVarietyAdmin(ByProductForOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(ProductVarietySizeHarvestKind)
+@admin.register(ProductHarvestSizeKind)
 class ProductVarietySizeHarvestKindAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'product', 'is_enabled', 'order')
     list_filter = (ByProductForOrganizationFilter, ByProductVarietyForOrganizationFilter, 'is_enabled')
@@ -295,8 +279,8 @@ class ProductVarietySizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminM
 
         if db_field.name == "product_variety_size_harvest_kind":
             if hasattr(request, 'organization'):
-                kwargs["queryset"] = ProductVarietySizeHarvestKind.objects.filter(product_variety__product__organization=request.organization,
-                                                                             is_enabled=True)
+                kwargs["queryset"] = ProductHarvestSizeKind.objects.filter(product_variety__product__organization=request.organization,
+                                                                           is_enabled=True)
                 if request.POST:
                     product_variety_id = request.POST.get('product_variety')
                 else:
