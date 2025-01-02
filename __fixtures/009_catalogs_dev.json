@@ -46,10 +46,28 @@
     "is_mixable": true,
     "label_language": "es",
     "address_label": null,
-    "is_enabled": true,
+    "is_enabled": false,
     "organization": 1,
     "countries": [
       49
+    ]
+  }
+},
+{
+  "model": "catalogs.market",
+  "pk": 4,
+  "fields": {
+    "name": "CUBA",
+    "alias": "CU",
+    "management_cost_per_kg": 12.0,
+    "is_foreign": true,
+    "is_mixable": true,
+    "label_language": "es",
+    "address_label": null,
+    "is_enabled": true,
+    "organization": 1,
+    "countries": [
+      51
     ]
   }
 },
@@ -135,10 +153,38 @@
   }
 },
 {
+  "model": "catalogs.marketclass",
+  "pk": 10,
+  "fields": {
+    "name": "A",
+    "is_enabled": true,
+    "market": 4
+  }
+},
+{
+  "model": "catalogs.marketclass",
+  "pk": 11,
+  "fields": {
+    "name": "B",
+    "is_enabled": true,
+    "market": 4
+  }
+},
+{
+  "model": "catalogs.marketclass",
+  "pk": 12,
+  "fields": {
+    "name": "C",
+    "is_enabled": false,
+    "market": 4
+  }
+},
+{
   "model": "catalogs.marketstandardproductsize",
   "pk": 1,
   "fields": {
     "name": "MX1.1",
+    "code": "1",
     "is_enabled": true,
     "market": 1,
     "order": 0
@@ -149,6 +195,7 @@
   "pk": 2,
   "fields": {
     "name": "MX1.2",
+    "code": "1",
     "is_enabled": true,
     "market": 1,
     "order": 0
@@ -159,6 +206,7 @@
   "pk": 3,
   "fields": {
     "name": "MX2.1",
+    "code": "1",
     "is_enabled": true,
     "market": 2,
     "order": 0
@@ -169,6 +217,7 @@
   "pk": 4,
   "fields": {
     "name": "MX2.2",
+    "code": "1",
     "is_enabled": true,
     "market": 2,
     "order": 0
@@ -179,9 +228,10 @@
   "pk": 5,
   "fields": {
     "name": "CO1",
+    "code": "1",
     "is_enabled": true,
     "market": 3,
-    "order": 0
+    "order": 2
   }
 },
 {
@@ -189,9 +239,10 @@
   "pk": 6,
   "fields": {
     "name": "CO2",
+    "code": "1",
     "is_enabled": true,
     "market": 3,
-    "order": 0
+    "order": 3
   }
 },
 {
@@ -199,9 +250,76 @@
   "pk": 7,
   "fields": {
     "name": "MX1.3",
+    "code": "1",
     "is_enabled": false,
     "market": 1,
     "order": 0
+  }
+},
+{
+  "model": "catalogs.marketstandardproductsize",
+  "pk": 8,
+  "fields": {
+    "name": "120",
+    "code": "1",
+    "is_enabled": true,
+    "market": 3,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.marketstandardproductsize",
+  "pk": 9,
+  "fields": {
+    "name": "85",
+    "code": "1",
+    "is_enabled": true,
+    "market": 3,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.marketstandardproductsize",
+  "pk": 10,
+  "fields": {
+    "name": "40",
+    "code": "1",
+    "is_enabled": true,
+    "market": 1,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.marketstandardproductsize",
+  "pk": 11,
+  "fields": {
+    "name": "48",
+    "code": "1",
+    "is_enabled": true,
+    "market": 1,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.marketstandardproductsize",
+  "pk": 12,
+  "fields": {
+    "name": "32",
+    "code": "1",
+    "is_enabled": true,
+    "market": 1,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.marketstandardproductsize",
+  "pk": 13,
+  "fields": {
+    "name": "68",
+    "code": "1",
+    "is_enabled": true,
+    "market": 1,
+    "order": 2
   }
 },
 {
@@ -232,6 +350,39 @@
   "fields": {
     "kind": 8,
     "name": "PALTA",
+    "description": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.product",
+  "pk": 4,
+  "fields": {
+    "kind": 9,
+    "name": "LIMÓN AMARILLO",
+    "description": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.product",
+  "pk": 5,
+  "fields": {
+    "kind": 8,
+    "name": "VERDE",
+    "description": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.product",
+  "pk": 6,
+  "fields": {
+    "kind": 8,
+    "name": "UNO",
     "description": null,
     "is_enabled": true,
     "organization": 1
@@ -308,6 +459,126 @@
   }
 },
 {
+  "model": "catalogs.productvariety",
+  "pk": 8,
+  "fields": {
+    "name": "A1",
+    "description": null,
+    "is_enabled": true,
+    "product": 4
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "name": "210 g +",
+    "is_enabled": true,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 2,
+  "fields": {
+    "product": 1,
+    "name": "180 g +",
+    "is_enabled": true,
+    "order": 4
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 4,
+  "fields": {
+    "product": 1,
+    "name": "mdz 210 g +",
+    "is_enabled": true,
+    "order": 3
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 5,
+  "fields": {
+    "product": 1,
+    "name": "aaa",
+    "is_enabled": true,
+    "order": 2
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 6,
+  "fields": {
+    "product": 1,
+    "name": "aaa1",
+    "is_enabled": true,
+    "order": 6
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 7,
+  "fields": {
+    "product": 3,
+    "name": "200 g +",
+    "is_enabled": true,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 8,
+  "fields": {
+    "product": 3,
+    "name": "210 g +",
+    "is_enabled": true,
+    "order": 2
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 9,
+  "fields": {
+    "product": 3,
+    "name": "180 g +",
+    "is_enabled": true,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 10,
+  "fields": {
+    "product": 3,
+    "name": "250 g +",
+    "is_enabled": true,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 11,
+  "fields": {
+    "product": 3,
+    "name": "120 g +",
+    "is_enabled": true,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 12,
+  "fields": {
+    "product": 3,
+    "name": "85 g +",
+    "is_enabled": true,
+    "order": 0
+  }
+},
+{
   "model": "catalogs.productvarietysize",
   "pk": 1,
   "fields": {
@@ -318,11 +589,12 @@
     "name": "a1",
     "alias": "a1",
     "description": null,
+    "product_variety_size_harvest_kind": 1,
     "product_size_kind": 1,
     "product_mass_volume_kind": 2,
     "requires_corner_protector": false,
     "is_enabled": true,
-    "order": 0
+    "order": 1
   }
 },
 {
@@ -330,17 +602,18 @@
   "pk": 2,
   "fields": {
     "product": 1,
-    "product_variety": 1,
+    "product_variety": 2,
     "market": 1,
     "market_standard_product_size": 1,
     "name": "a2",
     "alias": "a2",
     "description": null,
+    "product_variety_size_harvest_kind": 4,
     "product_size_kind": 1,
     "product_mass_volume_kind": 1,
     "requires_corner_protector": false,
     "is_enabled": true,
-    "order": 1
+    "order": 0
   }
 }
 ]
