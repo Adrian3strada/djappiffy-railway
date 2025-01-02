@@ -1,0 +1,240 @@
+[
+{
+  "model": "catalogs.market",
+  "pk": 1,
+  "fields": {
+    "name": "MEXICO",
+    "alias": "MX1",
+    "management_cost_per_kg": 11.0,
+    "is_foreign": false,
+    "is_mixable": true,
+    "label_language": "es",
+    "address_label": null,
+    "is_enabled": true,
+    "organization": 1,
+    "countries": [
+      158
+    ]
+  }
+},
+{
+  "model": "catalogs.market",
+  "pk": 2,
+  "fields": {
+    "name": "MEXICO DOS",
+    "alias": "MX2",
+    "management_cost_per_kg": 12.0,
+    "is_foreign": false,
+    "is_mixable": true,
+    "label_language": "es",
+    "address_label": null,
+    "is_enabled": true,
+    "organization": 2,
+    "countries": [
+      158
+    ]
+  }
+},
+{
+  "model": "catalogs.marketclass",
+  "pk": 1,
+  "fields": {
+    "name": "A",
+    "is_enabled": true,
+    "market": 1
+  }
+},
+{
+  "model": "catalogs.marketclass",
+  "pk": 2,
+  "fields": {
+    "name": "B",
+    "is_enabled": true,
+    "market": 1
+  }
+},
+{
+  "model": "catalogs.marketclass",
+  "pk": 3,
+  "fields": {
+    "name": "C",
+    "is_enabled": true,
+    "market": 1
+  }
+},
+{
+  "model": "catalogs.marketclass",
+  "pk": 4,
+  "fields": {
+    "name": "A",
+    "is_enabled": true,
+    "market": 2
+  }
+},
+{
+  "model": "catalogs.marketclass",
+  "pk": 5,
+  "fields": {
+    "name": "B",
+    "is_enabled": true,
+    "market": 2
+  }
+},
+{
+  "model": "catalogs.marketclass",
+  "pk": 6,
+  "fields": {
+    "name": "C",
+    "is_enabled": true,
+    "market": 2
+  }
+},
+{
+  "model": "catalogs.marketstandardproductsize",
+  "pk": 1,
+  "fields": {
+    "name": "MX1.1",
+    "is_enabled": true,
+    "market": 1,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.marketstandardproductsize",
+  "pk": 2,
+  "fields": {
+    "name": "MX1.2",
+    "is_enabled": true,
+    "market": 1,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.marketstandardproductsize",
+  "pk": 3,
+  "fields": {
+    "name": "MX2.1",
+    "is_enabled": true,
+    "market": 2,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.marketstandardproductsize",
+  "pk": 4,
+  "fields": {
+    "name": "MX2.2",
+    "is_enabled": true,
+    "market": 2,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.product",
+  "pk": 1,
+  "fields": {
+    "kind": 8,
+    "name": "AGUACATE",
+    "description": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.product",
+  "pk": 2,
+  "fields": {
+    "kind": 8,
+    "name": "AGUACATE DOS",
+    "description": null,
+    "is_enabled": true,
+    "organization": 2
+  }
+},
+{
+  "model": "catalogs.productvariety",
+  "pk": 1,
+  "fields": {
+    "name": "HASS",
+    "description": null,
+    "is_enabled": true,
+    "product": 1
+  }
+},
+{
+  "model": "catalogs.productvariety",
+  "pk": 2,
+  "fields": {
+    "name": "MENDEZ",
+    "description": null,
+    "is_enabled": true,
+    "product": 1
+  }
+},
+{
+  "model": "catalogs.productvariety",
+  "pk": 3,
+  "fields": {
+    "name": "CRIOLLO",
+    "description": null,
+    "is_enabled": false,
+    "product": 1
+  }
+},
+{
+  "model": "catalogs.productvariety",
+  "pk": 4,
+  "fields": {
+    "name": "HASS DOS",
+    "description": null,
+    "is_enabled": true,
+    "product": 2
+  }
+},
+{
+  "model": "catalogs.productvariety",
+  "pk": 5,
+  "fields": {
+    "name": "MENDEZ DOS",
+    "description": null,
+    "is_enabled": true,
+    "product": 2
+  }
+},
+{
+  "model": "catalogs.productvarietysize",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "product_variety": 2,
+    "market": 1,
+    "market_standard_size": 1,
+    "name": "a1",
+    "alias": "a1",
+    "description": null,
+    "product_size_kind": 1,
+    "product_mass_volume_kind": 2,
+    "requires_corner_protector": false,
+    "is_enabled": true,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productvarietysize",
+  "pk": 2,
+  "fields": {
+    "product": 1,
+    "product_variety": 1,
+    "market": 1,
+    "market_standard_size": 1,
+    "name": "a2",
+    "alias": "a2",
+    "description": null,
+    "product_size_kind": 2,
+    "product_mass_volume_kind": 1,
+    "requires_corner_protector": false,
+    "is_enabled": true,
+    "order": 0
+  }
+}
+]

@@ -183,7 +183,7 @@ class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, models.
     product_size_kind = models.ForeignKey(ProductSizeKind, verbose_name=_('Size kind'),
                                           on_delete=models.PROTECT)  # Normal, roña, etc
     product_mass_volume_kind = models.ForeignKey(ProductMassVolumeKind, verbose_name=_('Mass volume kind'), on_delete=models.PROTECT,
-                                                 help_text=_('To separate sizes by product kind in the mass volume report'))
+                                                 help_text=_('To separate sizes by product kind in the mass volume report'))  # Estandar, enmallado, orgánico...
     requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     order = models.PositiveIntegerField(default=0,

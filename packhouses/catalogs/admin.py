@@ -159,7 +159,6 @@ class ProductAdmin(ByOrganizationAdminMixin):
 """
 class ProductVarietySizeInline(admin.StackedInline):
     model = ProductVarietySize
-    form = ProductVarietySizeInlineForm
     extra = 0
 
     class Meta:
@@ -173,8 +172,23 @@ class ProductVarietyAdmin(ByProductForOrganizationAdminMixin):
     list_filter = (ByProductForOrganizationFilter, 'is_enabled',)
     search_fields = ('name', 'product__name', 'product__kind__name', 'description')
     fields = ('product', 'name', 'description', 'is_enabled')
-
     # inlines = [ProductVarietySizeInline]
+
+    """
+    def organization_name(self, obj):
+        name = PackhouseExporterProfile.objects.get(organization=obj.product.organization).organization.name
+        return name
+
+    def get_list_display(self, request):
+        list_display = list(super().get_list_display(request))
+        if request.user.is_superuser:
+            list_display.append('organization_name')
+        return list_display
+
+    def description(self, obj):
+        desc = obj.description if obj.description else ''
+        return desc[:20] + '...' if len(desc) > 20 else desc
+    """
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):

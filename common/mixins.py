@@ -286,8 +286,8 @@ class CleanNameAndVarietyAndMarketAndVolumeKindMixin(models.Model):
         self.product_variety_id = getattr(self, 'product_variety_id', None)
         self.market = getattr(self, 'market', None)
         self.market_id = getattr(self, 'market_id', None)
-        self.product_mass_volume_kind = getattr(self, 'volume_kind', None)
-        self.volume_kind_id = getattr(self, 'volume_kind_id', None)
+        self.product_mass_volume_kind = getattr(self, 'product_mass_volume_kind', None)
+        self.product_mass_volume_kind_id = getattr(self, 'product_mass_volume_kind_id', None)
 
         errors = {}
 
@@ -296,13 +296,13 @@ class CleanNameAndVarietyAndMarketAndVolumeKindMixin(models.Model):
         except ValidationError as e:
             errors = e.message_dict
 
-        if self.product_variety_id and self.market_id and self.volume_kind_id:
+        if self.product_variety_id and self.market_id and self.product_mass_volume_kind_id:
             if self.__class__.objects.filter(name=self.name, product_variety=self.product_variety, market=self.market,
-                                             volume_kind=self.product_mass_volume_kind).exclude(pk=self.pk).exists():
+                                             product_mass_volume_kind=self.product_mass_volume_kind).exclude(pk=self.pk).exists():
                 errors['name'] = _('Name, variety, market and volume kind must be unique together.')
                 errors['product_variety'] = _('Name, variety, market and volume kind must be unique together.')
                 errors['market'] = _('Name, variety, market and volume kind must be unique together.')
-                errors['volume_kind'] = _('Name, variety, market and volume kind must be unique together.')
+                errors['product_mass_volume_kind'] = _('Name, variety, market and volume kind must be unique together.')
 
         if errors:
             raise ValidationError(errors)

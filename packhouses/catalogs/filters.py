@@ -67,10 +67,12 @@ class ByMarketForOrganizationFilter(admin.SimpleListFilter):
 
 class ByProductSizeKindForOrganizationFilter(admin.SimpleListFilter):
     title = _('Size Kind')
-    parameter_name = 'size_kind'
+    parameter_name = 'product_size_kind'
 
     def lookups(self, request, model_admin):
+        print("request.organization", request.organization)
         product_size_kinds = ProductSizeKind.objects.filter(organization=request.organization, is_enabled=True)
+        print("product_size_kinds", product_size_kinds)
         return [(product_size_kind.id, product_size_kind.name) for product_size_kind in product_size_kinds]
 
     def queryset(self, request, queryset):
