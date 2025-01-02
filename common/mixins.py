@@ -147,7 +147,7 @@ class CleanProductMixin(models.Model):
         return f"{self.name}"
 
     def clean(self):
-        self.product_variety = getattr(self, 'product', None)
+        self.product = getattr(self, 'product', None)
         self.product_id = getattr(self, 'product_id', None)
 
         errors = {}
@@ -158,7 +158,7 @@ class CleanProductMixin(models.Model):
             errors = e.message_dict
 
         if self.product_id:
-            if self.__class__.objects.filter(name=self.name, product=self.product_variety).exclude(pk=self.pk).exists():
+            if self.__class__.objects.filter(name=self.name, product=self.product).exclude(pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
 
         if errors:
@@ -172,6 +172,35 @@ class CleanProductMixin(models.Model):
         abstract = True
 
 
+
+class CleanProductVarietyMixin(models.Model):
+    def __str__(self):
+        return f"{self.name}"
+
+    def clean(self):
+        self.product_variety = getattr(self, 'product_variety', None)
+        self.product_variety_id = getattr(self, 'product_variety_id', None)
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.product_variety_id:
+            if self.__class__.objects.filter(name=self.name, product_variety=self.product_variety).exclude(pk=self.pk).exists():
+                errors['name'] = _('Name must be unique, it already exists.')
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
 
 
 class CleanNameAndProductMixin(models.Model):

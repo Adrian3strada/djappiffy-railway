@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const productVarietyField = $('#id_product_variety');
   const marketField = $('#id_market');
   const marketStandardProductSizeField = $('#id_market_standard_product_size');
+  const productVarietySizeHarvestKindField = $('#id_product_variety_size_harvest_kind');
   const nameField = $('#id_name');
   const aliasField = $('#id_alias');
 
@@ -29,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateProductVariety() {
     const productId = productField.val();
     if (productId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_variety/?product=${productId}`)
+      fetchOptions(`${API_BASE_URL}/catalogs/product_variety/?product=${productId}&is_enabled=1`)
         .then(data => {
           updateFieldOptions(productVarietyField, data);
         });
@@ -50,8 +51,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  function updateProductVarietySizeHarvestKind() {
+    const productVarietyId = productVarietyField.val();
+    if (productVarietyId) {
+      fetchOptions(`${API_BASE_URL}/catalogs/product_variety_size_harvest_kind/?product_variety=${productVarietyId}`)
+        .then(data => {
+          updateFieldOptions(productVarietySizeHarvestKindField, data);
+        });
+    } else {
+      updateFieldOptions(productVarietySizeHarvestKindField, []);
+    }
+  }
+
   productField.on('change', updateProductVariety);
   marketField.on('change', updateMarketStandardProductSize);
+  productVarietyField.on('change', updateProductVarietySizeHarvestKind);
   nameField.on('input', function () {
     aliasField.val(transformTextForAlias(nameField.val()));
   });
@@ -68,4 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   [productField, productVarietyField, marketField, marketStandardProductSizeField].forEach(field => field.select2());
+  if (!productField.val()) updateProductVariety();
+  if (!marketField.val()) updateMarketStandardProductSize();
+  if (!productVarietyField.val()) updateProductVarietySizeHarvestKind();
 });

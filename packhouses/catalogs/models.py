@@ -2,6 +2,7 @@ from django.db import models
 from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizationMixin, CleanProductMixin,
                            CleanNameOrAliasAndOrganizationMixin, CleanNameAndMarketMixin, CleanNameAndProductMixin,
                            CleanNameAndProductProviderMixin, CleanNameAndProductProducerMixin,
+                           CleanProductVarietyMixin,
                            CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanNameAndMaquiladoraMixin)
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
@@ -12,7 +13,8 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from common.billing.models import TaxRegime, LegalEntityCategory
-from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, vehicle_scope_choices
+from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
+    vehicle_scope_choices
 from django.core.exceptions import ValidationError
 from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (ProductSizeKind, ProductMassVolumeKind, Bank, VehicleOwnershipKind,
@@ -133,6 +135,7 @@ class MarketStandardProductSize(models.Model):
             models.UniqueConstraint(fields=['name', 'market'], name='marketstandardproductsize_unique_name_market'),
         ]
 
+
 # /Markets
 
 # Products
@@ -168,22 +171,44 @@ class ProductVariety(CleanNameAndProductMixin, models.Model):
         ]
 
 
-class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, models.Model):
+class ProductVarietySizeHarvestKind(CleanProductVarietyMixin, models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    order = models.IntegerField(default=0, verbose_name=_('Order'), editable=False)
+
+    class Meta:
+        verbose_name = _('Product variety harvest Kind')
+        verbose_name_plural = _('Product variety harvest kinds')
+        ordering = ('product_variety', 'order',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product_variety'],
+                                    name='productvarietysizeharvestkind_unique_name_product_variety'),
+        ]
+
+
+class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanProductVarietyMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     market_standard_product_size = models.ForeignKey(MarketStandardProductSize,
                                                      verbose_name=_('Market standard product size'),
                                                      help_text=_(
-                                                 'Choose a Standard Product Size per Market (optional), it will put its name in the size name field.'),
+                                                         'Choose a Standard Product Size per Market (optional), it will put its name in the size name field.'),
                                                      on_delete=models.PROTECT, null=True, blank=True)
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
+    product_variety_size_harvest_kind = models.ForeignKey(ProductVarietySizeHarvestKind,
+                                                          verbose_name=_('Product variety size harvest kind'),
+                                                          on_delete=models.PROTECT)
     product_size_kind = models.ForeignKey(ProductSizeKind, verbose_name=_('Size kind'),
                                           on_delete=models.PROTECT)  # Normal, roña, etc
-    product_mass_volume_kind = models.ForeignKey(ProductMassVolumeKind, verbose_name=_('Mass volume kind'), on_delete=models.PROTECT,
-                                                 help_text=_('To separate sizes by product kind in the mass volume report'))  # Estandar, enmallado, orgánico...
+    product_mass_volume_kind = models.ForeignKey(ProductMassVolumeKind, verbose_name=_('Mass volume kind'),
+                                                 on_delete=models.PROTECT,
+                                                 help_text=_(
+                                                     'To separate sizes by product kind in the mass volume report'))  # Estandar, enmallado, orgánico...
     requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     order = models.PositiveIntegerField(default=0,
@@ -201,26 +226,12 @@ class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, models.
         verbose_name_plural = _('Product variety sizes')
         ordering = ['product_variety', 'order']
         constraints = [
-            models.UniqueConstraint(fields=['name', 'product_variety', 'market',],
-                                    name='productvarietysize_unique_name_productvariety_market'),
+            models.UniqueConstraint(fields=['name', 'product', 'product_variety', 'market', ],
+                                    name='productvarietysize_unique_name_product_product_variety_market'),
         ]
 
 
-class ProductVarietySizeHarvestKind(CleanProductMixin, models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    product_variety_size = models.ForeignKey(ProductVarietySize, verbose_name=_('Product variety'), on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    order = models.IntegerField(default=0, verbose_name=_('Order'), editable=False)
-
-
-    class Meta:
-        verbose_name = _('Product harvest Kind')
-        verbose_name_plural = _('Product harvest kinds')
-        ordering = ('product_variety_size', 'order',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'product_variety_size'], name='productharvestkind_unique_name_product'),
-        ]
-
+# /Products
 
 # Proveedores de fruta:
 
@@ -285,7 +296,8 @@ class ProductProducer(CleanNameOrAliasAndOrganizationMixin, models.Model):
     tax_id = models.CharField(max_length=100, verbose_name=_('Tax ID'))
     email = models.EmailField(null=True, blank=True)
     phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'))
-    product_provider = models.ForeignKey(ProductProvider, on_delete=models.PROTECT, verbose_name=_('Product provider'), null=True, blank=True)
+    product_provider = models.ForeignKey(ProductProvider, on_delete=models.PROTECT, verbose_name=_('Product provider'),
+                                         null=True, blank=True)
     bank_account_number = models.CharField(max_length=20, verbose_name=_('Bank account number'))
     bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_('Bank'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -362,7 +374,8 @@ class Client(CleanNameAndOrganizationMixin, models.Model):
 
 
 class ClientShipAddress(models.Model):
-    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)  # TODO: verificar si se necesita país, pues ya el mercado tiene país
+    country = models.ForeignKey(Country, verbose_name=_('Country'),
+                                on_delete=models.PROTECT)  # TODO: verificar si se necesita país, pues ya el mercado tiene país
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
@@ -389,8 +402,10 @@ class HarvestingCrewProvider(models.Model):
         verbose_name = _('Harvesting Crew Provider')
         verbose_name_plural = _('Harvesting Crew Providers')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='harvesting_crew_provider_unique_name_organization'),
+            models.UniqueConstraint(fields=['name', 'organization'],
+                                    name='harvesting_crew_provider_unique_name_organization'),
         ]
+
 
 class Vehicle(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
@@ -406,15 +421,20 @@ class Vehicle(CleanNameAndOrganizationMixin, models.Model):
     fuel = models.ForeignKey(VehicleFuelKind, verbose_name=_('Fuel kind'), on_delete=models.PROTECT)
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, on_delete=models.CASCADE, verbose_name=_('Harvesting Crew Provider'))
+    harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, on_delete=models.CASCADE,
+                                                 verbose_name=_('Harvesting Crew Provider'))
+
     class Meta:
         verbose_name = _('Vehicle')
         verbose_name_plural = _('Vehicles')
         ordering = ('name',)
         constraints = [
-            models.UniqueConstraint(fields=['name', 'harvesting_crew_provider'], name='vehicle_unique_name_harvesting_crew_provider'),
-            models.UniqueConstraint(fields=['license_plate', 'harvesting_crew_provider'], name='vehicle_unique_licenseplate_harvesting_crew_provider'),
-            models.UniqueConstraint(fields=['serial_number', 'harvesting_crew_provider'], name='vehicle_unique_serialnumber_harvesting_crew_provider')
+            models.UniqueConstraint(fields=['name', 'harvesting_crew_provider'],
+                                    name='vehicle_unique_name_harvesting_crew_provider'),
+            models.UniqueConstraint(fields=['license_plate', 'harvesting_crew_provider'],
+                                    name='vehicle_unique_licenseplate_harvesting_crew_provider'),
+            models.UniqueConstraint(fields=['serial_number', 'harvesting_crew_provider'],
+                                    name='vehicle_unique_serialnumber_harvesting_crew_provider')
         ]
 
 
@@ -425,7 +445,8 @@ class Gatherer(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     zone = models.CharField(max_length=200, verbose_name=_('Zone'))
     tax_registry_code = models.CharField(max_length=20, verbose_name=_('Tax registry code'))
-    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True, blank=True)
+    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True,
+                                                blank=True)
     social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
@@ -454,7 +475,8 @@ class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     zone = models.CharField(max_length=200, verbose_name=_('Zone'))
     tax_registry_code = models.CharField(max_length=20, verbose_name=_('Tax registry code'))
-    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True, blank=True)
+    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True,
+                                                blank=True)
     social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
@@ -485,7 +507,8 @@ class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
                                        null=True, blank=True,
-                                       on_delete = models.PROTECT, help_text = _('Legal category of the client, must have a country selected to show that country legal categories.'))
+                                       on_delete=models.PROTECT, help_text=_(
+            'Legal category of the client, must have a country selected to show that country legal categories.'))
     tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
@@ -523,7 +546,8 @@ class Orchard(models.Model):
     city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
     ha = models.FloatField(verbose_name=_('Hectares'))
-    product_classification_kind = models.ForeignKey(OrchardProductClassificationKind, verbose_name=_('Product Classification'),
+    product_classification_kind = models.ForeignKey(OrchardProductClassificationKind,
+                                                    verbose_name=_('Product Classification'),
                                                     on_delete=models.PROTECT)
     phytosanitary_certificate = models.CharField(max_length=100, verbose_name=_('Phytosanitary certificate'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -540,7 +564,6 @@ class Orchard(models.Model):
             models.UniqueConstraint(fields=['name', 'organization'], name='orchard_unique_name_organization'),
             models.UniqueConstraint(fields=['code', 'organization'], name='orchard_unique_code_organization')
         ]
-
 
 
 class OrchardCertification(models.Model):
@@ -563,10 +586,12 @@ class OrchardCertification(models.Model):
         unique_together = ('orchard', 'certification_kind')
         ordering = ('orchard', 'certification_kind')
 
+
 class CrewChief(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, verbose_name=_('Harvesting Crew Provider'),
                                                  on_delete=models.PROTECT)
+
     def __str__(self):
         return f"{self.name}"
 
@@ -574,8 +599,10 @@ class CrewChief(models.Model):
         verbose_name = _('Crew Chief')
         verbose_name_plural = _('Crew Chiefs')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'harvesting_crew_provider'], name='crew_chief_unique_name_harvesting_crew_provider'),
+            models.UniqueConstraint(fields=['name', 'harvesting_crew_provider'],
+                                    name='crew_chief_unique_name_harvesting_crew_provider'),
         ]
+
 
 class HarvestingCrew(models.Model):
     ooid = models.IntegerField(verbose_name=_('OOID'), editable=False)
@@ -584,8 +611,9 @@ class HarvestingCrew(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     certification_name = models.CharField(max_length=100, verbose_name=_('Certification Name'), blank=True, null=True)
     crew_chief = models.ForeignKey(CrewChief, verbose_name=_('Crew Chief'), on_delete=models.PROTECT)
-    persons_number = models.IntegerField(verbose_name=_('Persons Number'),validators=[MinValueValidator(1), MaxValueValidator(9999)])
-    comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True )
+    persons_number = models.IntegerField(verbose_name=_('Persons Number'),
+                                         validators=[MinValueValidator(1), MaxValueValidator(9999)])
+    comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
@@ -595,14 +623,18 @@ class HarvestingCrew(models.Model):
         verbose_name = _('Harvesting crew')
         verbose_name_plural = _('Harvesting crews')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'harvesting_crew_provider'], name='harversting_name_unique_harvesting_crew_provider'),
+            models.UniqueConstraint(fields=['name', 'harvesting_crew_provider'],
+                                    name='harversting_name_unique_harvesting_crew_provider'),
         ]
+
 
 class HarvestingCrewBeneficiary(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_('Bank'))
     bank_account_number = models.CharField(max_length=18, verbose_name=_('Bank account number / CLABE'))
-    harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, on_delete=models.CASCADE, verbose_name=_('Harvesting Crew Provider'))
+    harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, on_delete=models.CASCADE,
+                                                 verbose_name=_('Harvesting Crew Provider'))
+
     def __str__(self):
         return f"{self.name}"
 
@@ -610,24 +642,42 @@ class HarvestingCrewBeneficiary(models.Model):
         verbose_name = _('Harvesting crew beneficiary')
         verbose_name_plural = _('Harvesting crew beneficiaries')
         constraints = [
-            models.UniqueConstraint(fields=['bank_account_number', 'harvesting_crew_provider'], name='bank_account_number_unique_harvesting_crew_provider'),
+            models.UniqueConstraint(fields=['bank_account_number', 'harvesting_crew_provider'],
+                                    name='bank_account_number_unique_harvesting_crew_provider'),
         ]
 
 
 class HarvestingPaymentSetting(models.Model):
-    type_harvest = models.CharField(max_length=20, choices=get_type_choices(), default='local', verbose_name=_('Type of harvest'))
-    more_than_kg = models.FloatField(verbose_name=_('Kg of full truck'), help_text="From how many KG will the full truck payment be considered?" , validators=[MinValueValidator(0.01)])
+    type_harvest = models.CharField(max_length=20, choices=get_type_choices(), default='local',
+                                    verbose_name=_('Type of harvest'))
+    more_than_kg = models.FloatField(verbose_name=_('Kg of full truck'),
+                                     help_text="From how many KG will the full truck payment be considered?",
+                                     validators=[MinValueValidator(0.01)])
 
-    pay_per_box_complete = models.FloatField(verbose_name=_('Pay per box (full truck)'), help_text="Payment per box in case of full truck" , validators=[MinValueValidator(0.01)])
-    pay_per_kg_complete = models.FloatField(verbose_name=_('Pay per kg (full truck)'), help_text="Payment per kg in case of full truck" , validators=[MinValueValidator(0.01)])
-    pay_per_day_complete = models.FloatField(verbose_name=_('Pay per day (full truck)'), help_text="Payment per day in case of full truck" , validators=[MinValueValidator(0.01)])
+    pay_per_box_complete = models.FloatField(verbose_name=_('Pay per box (full truck)'),
+                                             help_text="Payment per box in case of full truck",
+                                             validators=[MinValueValidator(0.01)])
+    pay_per_kg_complete = models.FloatField(verbose_name=_('Pay per kg (full truck)'),
+                                            help_text="Payment per kg in case of full truck",
+                                            validators=[MinValueValidator(0.01)])
+    pay_per_day_complete = models.FloatField(verbose_name=_('Pay per day (full truck)'),
+                                             help_text="Payment per day in case of full truck",
+                                             validators=[MinValueValidator(0.01)])
 
-    pay_per_box_incomplete = models.FloatField(verbose_name=_('Pay per box (incomplete truck)'), help_text="Payment per box in case of incomplete truck" , validators=[MinValueValidator(0.01)])
-    pay_per_kg_incomplete = models.FloatField(verbose_name=_('Pay per kg (incomplete truck)'), help_text="Payment per kg in case of incomplete truck" , validators=[MinValueValidator(0.01)])
-    pay_per_day_incomplete = models.FloatField(verbose_name=_('Pay per day (incomplete truck)'), help_text="Payment per day in case of incomplete truck" , validators=[MinValueValidator(0.01)])
+    pay_per_box_incomplete = models.FloatField(verbose_name=_('Pay per box (incomplete truck)'),
+                                               help_text="Payment per box in case of incomplete truck",
+                                               validators=[MinValueValidator(0.01)])
+    pay_per_kg_incomplete = models.FloatField(verbose_name=_('Pay per kg (incomplete truck)'),
+                                              help_text="Payment per kg in case of incomplete truck",
+                                              validators=[MinValueValidator(0.01)])
+    pay_per_day_incomplete = models.FloatField(verbose_name=_('Pay per day (incomplete truck)'),
+                                               help_text="Payment per day in case of incomplete truck",
+                                               validators=[MinValueValidator(0.01)])
 
-    type_payment_for_false_out = models.CharField(max_length=20, choices=get_payment_choices(), default='fixed_amount', verbose_name=_('Type of Payment for false out'))
-    amount_for_false_out = models.FloatField(verbose_name=_('Amount for false out'), validators=[MinValueValidator(0.01)])
+    type_payment_for_false_out = models.CharField(max_length=20, choices=get_payment_choices(), default='fixed_amount',
+                                                  verbose_name=_('Type of Payment for false out'))
+    amount_for_false_out = models.FloatField(verbose_name=_('Amount for false out'),
+                                             validators=[MinValueValidator(0.01)])
 
     harvesting_crew = models.ForeignKey(HarvestingCrew, on_delete=models.CASCADE, verbose_name=_('Harvesting Crew'))
 
@@ -638,13 +688,12 @@ class HarvestingPaymentSetting(models.Model):
         verbose_name = _('Payment Setting')
         verbose_name_plural = _('Payment Settings')
         constraints = [
-            models.UniqueConstraint(fields=['type_harvest', 'harvesting_crew'], name='type_harvest_unique_harvesting_crew'),
+            models.UniqueConstraint(fields=['type_harvest', 'harvesting_crew'],
+                                    name='type_harvest_unique_harvesting_crew'),
         ]
 
 
 #  Proveedores de insumos
-
-
 
 
 class SupplyKindRelation(models.Model):
@@ -668,7 +717,8 @@ class SupplyKindRelation(models.Model):
 class Supply(CleanNameAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    unit_quantity = models.PositiveIntegerField(verbose_name=_('Unit quantity'), help_text=_('Quantity of units per unit kind to discunt when a supply is used'))
+    unit_quantity = models.PositiveIntegerField(verbose_name=_('Unit quantity'), help_text=_(
+        'Quantity of units per unit kind to discunt when a supply is used'))
     presentation = models.ForeignKey(SupplyPresentationKind, verbose_name=_('Unit kind'), on_delete=models.PROTECT)
     minimum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Minimum stock quantity'))
     maximum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Maximum stock quantity'))
@@ -747,7 +797,8 @@ class SupplyProviderPaymentAccount(models.Model):
         verbose_name = _('Supply provider payment account')
         verbose_name_plural = _('Supply provider payment accounts')
         constraints = [
-            models.UniqueConstraint(fields=['bank', 'provider'], name='supplyproviderpaymentaccount_unique_bank_provider'),
+            models.UniqueConstraint(fields=['bank', 'provider'],
+                                    name='supplyproviderpaymentaccount_unique_bank_provider'),
         ]
 
 
@@ -1024,6 +1075,7 @@ class ProductPackaging(models.Model):
         verbose_name_plural = _('Product Packaging')
         unique_together = ('name', 'organization')
 
+
 # Catálogos de exportación
 class ExportingCompany(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
@@ -1054,10 +1106,12 @@ class ExportingCompany(CleanNameAndOrganizationMixin, models.Model):
         verbose_name = _('Exporting Company')
         verbose_name_plural = _('Exporting Companies')
         constraints = [
-            models.UniqueConstraint(fields=('name', 'organization',), name='exporting_company_unique_name_organization'),
+            models.UniqueConstraint(fields=('name', 'organization',),
+                                    name='exporting_company_unique_name_organization'),
         ]
 
-class Transfer(CleanNameAndOrganizationMixin,models.Model):
+
+class Transfer(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
     caat = models.CharField(max_length=100, verbose_name=_('CAAT'))
     scac = models.CharField(max_length=100, verbose_name=_('SCAC'))
@@ -1072,6 +1126,7 @@ class Transfer(CleanNameAndOrganizationMixin,models.Model):
         verbose_name_plural = _('Transfers')
         unique_together = ('name', 'organization')
 
+
 class LocalTransporter(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -1084,6 +1139,7 @@ class LocalTransporter(CleanNameAndOrganizationMixin, models.Model):
         verbose_name = _('Local Transporter')
         verbose_name_plural = _('Local Transporters')
         unique_together = ('name', 'organization')
+
 
 class BorderToDestinationTransporter(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
@@ -1103,6 +1159,7 @@ class BorderToDestinationTransporter(CleanNameAndOrganizationMixin, models.Model
         verbose_name_plural = _('Border To Destination Transporters')
         unique_together = ('name', 'organization')
 
+
 class CustomsBroker(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
     broker_number = models.CharField(max_length=100, verbose_name=_('Broker number'))
@@ -1118,6 +1175,7 @@ class CustomsBroker(CleanNameAndOrganizationMixin, models.Model):
         verbose_name_plural = _('Customs Brokers')
         unique_together = ('name', 'organization')
 
+
 class Vessel(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
     vessel_number = models.CharField(max_length=100, verbose_name=_('Vessel number'))
@@ -1131,6 +1189,7 @@ class Vessel(CleanNameAndOrganizationMixin, models.Model):
         verbose_name = _('Vessel')
         verbose_name_plural = _('Vessels')
         unique_together = ('name', 'organization')
+
 
 class Airline(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))

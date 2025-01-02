@@ -3,7 +3,7 @@
   "model": "catalogs.market",
   "pk": 1,
   "fields": {
-    "name": "MEXICO",
+    "name": "MEXICO UNO",
     "alias": "MX1",
     "management_cost_per_kg": 11.0,
     "is_foreign": false,
@@ -21,7 +21,7 @@
   "model": "catalogs.market",
   "pk": 2,
   "fields": {
-    "name": "MEXICO DOS",
+    "name": "MEXICO 2",
     "alias": "MX2",
     "management_cost_per_kg": 12.0,
     "is_foreign": false,
@@ -32,6 +32,24 @@
     "organization": 2,
     "countries": [
       158
+    ]
+  }
+},
+{
+  "model": "catalogs.market",
+  "pk": 3,
+  "fields": {
+    "name": "COLOMBIA",
+    "alias": "CO",
+    "management_cost_per_kg": 12.0,
+    "is_foreign": true,
+    "is_mixable": true,
+    "label_language": "es",
+    "address_label": null,
+    "is_enabled": true,
+    "organization": 1,
+    "countries": [
+      49
     ]
   }
 },
@@ -90,6 +108,33 @@
   }
 },
 {
+  "model": "catalogs.marketclass",
+  "pk": 7,
+  "fields": {
+    "name": "A",
+    "is_enabled": true,
+    "market": 3
+  }
+},
+{
+  "model": "catalogs.marketclass",
+  "pk": 8,
+  "fields": {
+    "name": "B",
+    "is_enabled": true,
+    "market": 3
+  }
+},
+{
+  "model": "catalogs.marketclass",
+  "pk": 9,
+  "fields": {
+    "name": "C",
+    "is_enabled": true,
+    "market": 3
+  }
+},
+{
   "model": "catalogs.marketstandardproductsize",
   "pk": 1,
   "fields": {
@@ -130,11 +175,41 @@
   }
 },
 {
+  "model": "catalogs.marketstandardproductsize",
+  "pk": 5,
+  "fields": {
+    "name": "CO1",
+    "is_enabled": true,
+    "market": 3,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.marketstandardproductsize",
+  "pk": 6,
+  "fields": {
+    "name": "CO2",
+    "is_enabled": true,
+    "market": 3,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.marketstandardproductsize",
+  "pk": 7,
+  "fields": {
+    "name": "MX1.3",
+    "is_enabled": false,
+    "market": 1,
+    "order": 0
+  }
+},
+{
   "model": "catalogs.product",
   "pk": 1,
   "fields": {
     "kind": 8,
-    "name": "AGUACATE",
+    "name": "AGUACATE UNO",
     "description": null,
     "is_enabled": true,
     "organization": 1
@@ -152,10 +227,21 @@
   }
 },
 {
+  "model": "catalogs.product",
+  "pk": 3,
+  "fields": {
+    "kind": 8,
+    "name": "PALTA",
+    "description": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
   "model": "catalogs.productvariety",
   "pk": 1,
   "fields": {
-    "name": "HASS",
+    "name": "HASS UNO",
     "description": null,
     "is_enabled": true,
     "product": 1
@@ -165,7 +251,7 @@
   "model": "catalogs.productvariety",
   "pk": 2,
   "fields": {
-    "name": "MENDEZ",
+    "name": "MENDEZ UNO",
     "description": null,
     "is_enabled": true,
     "product": 1
@@ -175,7 +261,7 @@
   "model": "catalogs.productvariety",
   "pk": 3,
   "fields": {
-    "name": "CRIOLLO",
+    "name": "CRIOLLO UNO",
     "description": null,
     "is_enabled": false,
     "product": 1
@@ -202,13 +288,33 @@
   }
 },
 {
+  "model": "catalogs.productvariety",
+  "pk": 6,
+  "fields": {
+    "name": "AZUL",
+    "description": null,
+    "is_enabled": true,
+    "product": 3
+  }
+},
+{
+  "model": "catalogs.productvariety",
+  "pk": 7,
+  "fields": {
+    "name": "VERDE",
+    "description": null,
+    "is_enabled": true,
+    "product": 3
+  }
+},
+{
   "model": "catalogs.productvarietysize",
   "pk": 1,
   "fields": {
     "product": 1,
-    "product_variety": 2,
-    "market": 1,
-    "market_standard_size": 1,
+    "product_variety": 1,
+    "market": 3,
+    "market_standard_product_size": 5,
     "name": "a1",
     "alias": "a1",
     "description": null,
@@ -226,15 +332,15 @@
     "product": 1,
     "product_variety": 1,
     "market": 1,
-    "market_standard_size": 1,
+    "market_standard_product_size": 1,
     "name": "a2",
     "alias": "a2",
     "description": null,
-    "product_size_kind": 2,
+    "product_size_kind": 1,
     "product_mass_volume_kind": 1,
     "requires_corner_protector": false,
     "is_enabled": true,
-    "order": 0
+    "order": 1
   }
 }
 ]
