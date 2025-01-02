@@ -359,7 +359,7 @@ JAZZMIN_SETTINGS = {
 
     # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
     "order_with_respect_to": ["packhouse_settings", "catalogs", "catalogs.Market", "catalogs.MarketClass",
-                              "catalogs.Product", "catalogs.ProductHarvestSizeKind", "catalogs.ProductVariety",
+                              "catalogs.Product", "catalogs.ProductVariety",
                               "catalogs.ProductVarietySize", "catalogs.ProductProvider", "catalogs.ProductProducer",
                               "catalogs.Client", "catalogs.Vehicle", "catalogs.Gatherer", "catalogs.Maquiladora",
                               "catalogs.Orchard", "catalogs.Crew", "catalogs.Supply", "catalogs.SupplyProvider",],

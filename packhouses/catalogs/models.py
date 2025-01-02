@@ -101,6 +101,7 @@ class MarketStandardProductSize(models.Model):
     # En caso de que se necesite poner "apeam" o algo similar, ver la posibilidad de ponerlo en el Market como atributo
     # a modo de autoridad en la materia
     name = models.CharField(max_length=100, verbose_name=_('Name'))
+    code = models.CharField(max_length=20, verbose_name=_('Code'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.CASCADE)
     order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
@@ -130,7 +131,7 @@ class MarketStandardProductSize(models.Model):
     class Meta:
         verbose_name = _('Market standard product size')
         verbose_name_plural = _('Market standard product sizes')
-        ordering = ('market', 'order', 'name')
+        ordering = ('order', 'name')
         constraints = [
             models.UniqueConstraint(fields=['name', 'market'], name='marketstandardproductsize_unique_name_market'),
         ]
@@ -180,7 +181,7 @@ class ProductHarvestSizeKind(CleanProductMixin, models.Model):
     class Meta:
         verbose_name = _('Product harvest size kind')
         verbose_name_plural = _('Product harvest size kinds')
-        ordering = ('order',)
+        ordering = ('order', '-name')
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'],
                                     name='productharvestsizekind_unique_name_product'),

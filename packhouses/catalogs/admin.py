@@ -67,7 +67,7 @@ class MarketClassInline(admin.TabularInline):
 
 class MarketStandardProductSizeInline(admin.TabularInline):
     model = MarketStandardProductSize
-    ordering = ('market', 'order', 'name')
+    ordering = ('order', 'name')
     extra = 0
 
     @uppercase_formset_charfield('name')
@@ -126,7 +126,7 @@ class ProductHarvestSizeKindInline(admin.TabularInline):
     model = ProductHarvestSizeKind
     extra = 0
     fields = ('name', 'product', 'is_enabled', 'order')
-    ordering = ['order']
+    ordering = ['order', '-name']
     formset = ProductHarvestSizeKindInlineFormSet
 
     def get_formset(self, request, obj=None, **kwargs):
@@ -279,7 +279,7 @@ class ProductVarietySizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminM
 
         if db_field.name == "product_variety_size_harvest_kind":
             if hasattr(request, 'organization'):
-                kwargs["queryset"] = ProductHarvestSizeKind.objects.filter(product_variety__product__organization=request.organization,
+                kwargs["queryset"] = ProductHarvestSizeKind.objects.filter(product__organization=request.organization,
                                                                            is_enabled=True)
                 if request.POST:
                     product_variety_id = request.POST.get('product_variety')
