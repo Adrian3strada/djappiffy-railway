@@ -12,7 +12,8 @@ from .models import (
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany
 )
 
-from packhouses.packhouse_settings.models import Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind, VehicleBrand
+from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind, VehicleBrand,
+                                                  ProductSizeKind, ProductMassVolumeKind)
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet)
@@ -95,8 +96,7 @@ class MarketAdmin(ByOrganizationAdminMixin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[KGCostMarket, MarketClass, MarketStandardProductSize, Country,
-                                                  Organization]):
+        if obj and is_instance_used(obj, exclude=[KGCostMarket, MarketClass, MarketStandardProductSize, Country, Organization]):
             readonly_fields.extend(['name', 'alias', 'countries', 'is_foreign', 'organization'])
         return readonly_fields
 
@@ -149,8 +149,7 @@ class ProductAdmin(ByOrganizationAdminMixin):
             kwargs["queryset"] = product_kinds
             if hasattr(request, 'organization'):
                 packhouse_exporter_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
-                kwargs["queryset"] = packhouse_exporter_profile.packhouseexportersetting.product_kinds.filter(
-                    is_enabled=True)
+                kwargs["queryset"] = packhouse_exporter_profile.packhouseexportersetting.product_kinds.filter(is_enabled=True)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -211,7 +210,7 @@ class ProductVarietyAdmin(ByProductForOrganizationAdminMixin):
 
 
 @admin.register(ProductVarietySize)
-class ProductVarietySizeAdmin(ByProductForOrganizationAdminMixin):
+class ProductVarietySizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
     list_display = (
         'name', 'product', 'product_variety', 'market', 'product_size_kind', 'product_mass_volume_kind', 'is_enabled',
         'order')
@@ -221,13 +220,61 @@ class ProductVarietySizeAdmin(ByProductForOrganizationAdminMixin):
         'requires_corner_protector', 'is_enabled'
     )
     search_fields = ('name', 'alias', 'product__name', 'product_variety__name')
+    ordering = ['order']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "variety":
-            kwargs["queryset"] = ProductVariety.objects.select_related('product').all()
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = ProductVarietySize.objects.get(id=object_id) if object_id else None
+
+        if db_field.name == "product":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = Product.objects.filter(organization=request.organization, is_enabled=True)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda obj: f"{obj.product_variety.kind.name}: {obj.name}"
             return formfield
+
+        if db_field.name == "product_variety":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = ProductVariety.objects.filter(product__organization=request.organization, is_enabled=True)
+                if request.POST:
+                    product_id = request.POST.get('product')
+                else:
+                    product_id = obj.product_id if obj else None
+                if product_id:
+                    kwargs["queryset"] = kwargs["queryset"].filter(product_id=product_id)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+
+        if db_field.name == "market":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = Market.objects.filter(organization=request.organization, is_enabled=True)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+
+        if db_field.name == "market_standard_size":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = MarketStandardProductSize.objects.filter(market__organization=request.organization,
+                                                                             is_enabled=True)
+                if request.POST:
+                    market_id = request.POST.get('market')
+                else:
+                    market_id = obj.market_id if obj else None
+                if market_id:
+                    kwargs["queryset"] = kwargs["queryset"].filter(market_id=market_id)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+
+        if db_field.name == "product_size_kind":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = ProductSizeKind.objects.filter(organization=request.organization, is_enabled=True)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+
+        if db_field.name == "product_mass_volume_kind":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = ProductMassVolumeKind.objects.filter(organization=request.organization, is_enabled=True)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
