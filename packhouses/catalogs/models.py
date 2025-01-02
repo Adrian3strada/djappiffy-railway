@@ -200,9 +200,9 @@ class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanPr
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
-    product_variety_size_harvest_kind = models.ForeignKey(ProductHarvestSizeKind,
-                                                          verbose_name=_('Product variety size harvest kind'),
-                                                          on_delete=models.PROTECT)
+    product_harvest_size_kind = models.ForeignKey(ProductHarvestSizeKind,
+                                                  verbose_name=_('Product harvest size kind'),
+                                                  on_delete=models.PROTECT)
     product_size_kind = models.ForeignKey(ProductSizeKind, verbose_name=_('Size kind'),
                                           on_delete=models.PROTECT)  # Normal, roña, etc
     product_mass_volume_kind = models.ForeignKey(ProductMassVolumeKind, verbose_name=_('Mass volume kind'),

@@ -56,7 +56,7 @@ class ProductHarvestSizeKindInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductVarietySize.objects.filter(product_variety_size_harvest_kind=instance).exists():
+            if instance.pk and ProductVarietySize.objects.filter(product_harvest_size_kind=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})

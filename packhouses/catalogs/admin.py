@@ -277,7 +277,7 @@ class ProductVarietySizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminM
             return formfield
 
 
-        if db_field.name == "product_variety_size_harvest_kind":
+        if db_field.name == "product_harvest_kind":
             if hasattr(request, 'organization'):
                 kwargs["queryset"] = ProductHarvestSizeKind.objects.filter(product__organization=request.organization,
                                                                            is_enabled=True)
