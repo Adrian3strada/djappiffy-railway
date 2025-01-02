@@ -1,9 +1,9 @@
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer, VehicleSerializer,
+                          ProductVarietySerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer)
-from .models import MarketStandardProductSize, Market, Vehicle, HarvestingCrewProvider, CrewChief
-filterset_fields = ['market', 'is_enabled']
+from .models import MarketStandardProductSize, Market, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety
 
 
 class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
@@ -16,11 +16,7 @@ class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        if user.is_superuser:
-            return MarketStandardProductSize.objects.all()
-
-        user_organizations = user.organizations_organization.all()  # TODO: cambiar query a contexto por dominio
-        return MarketStandardProductSize.objects.filter(market__organization__in=user_organizations)
+        return MarketStandardProductSize.objects.filter(market__organization=self.request.organization)
 
 
 class MarketViewSet(viewsets.ModelViewSet):
@@ -33,11 +29,21 @@ class MarketViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        if user.is_superuser:
-            return Market.objects.all()
+        return Market.objects.filter(organization=self.request.organization)
 
-        user_organizations = user.organizations_organization.all()
-        return Market.objects.filter(organization__in=user_organizations)
+
+class ProductVarietyViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductVarietySerializer
+    filterset_fields = ['product', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return ProductVariety.objects.filter(product__organization=self.request.organization)
+
 
 class VehicleViewSet(viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
@@ -49,11 +55,8 @@ class VehicleViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        if user.is_superuser:
-            return Vehicle.objects.all()
+        return Vehicle.objects.filter(organization=self.request.organization)
 
-        user_organizations = user.organizations_organization.all()
-        return Vehicle.objects.filter(organization__in=user_organizations)
 
 class HarvestingCrewProviderViewSet(viewsets.ModelViewSet):
     serializer_class = HarvestingCrewProviderSerializer
@@ -65,15 +68,12 @@ class HarvestingCrewProviderViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        if user.is_superuser:
-            return HarvestingCrewProvider.objects.all()
+        return HarvestingCrewProvider.objects.filter(organization=self.request.organization)
 
-        user_organizations = user.organizations_organization.all()
-        return HarvestingCrewProvider.objects.filter(organization__in=user_organizations)
 
 class CrewChiefViewSet(viewsets.ModelViewSet):
     serializer_class = CrewChiefSerializer
-    filterset_fields = ['harvesting_crew_provider',]
+    filterset_fields = ['harvesting_crew_provider', ]
     pagination_class = None
 
     def get_queryset(self):
@@ -81,8 +81,4 @@ class CrewChiefViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        if user.is_superuser:
-            return CrewChief.objects.all()
-
-        user_organizations = user.organizations_organization.all()
-        return CrewChief.objects.filter(organization__in=user_organizations)
+        return CrewChief.objects.filter(organization=self.request.organization)

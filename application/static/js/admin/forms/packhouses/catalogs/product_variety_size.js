@@ -1,66 +1,60 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const marketField = document.getElementById('id_market');
-  const marketStandardSizeField = document.getElementById('id_market_standard_size');
 
-  if (marketField) {
-    const updateMarketStandardSizes = function (resetSelection = false) {
-      const selectedValue = marketStandardSizeField.value;
-      const marketId = marketField.value;
-      const url = `/rest/v1/catalogs/market_standard_product_size/?market=${marketId}&is_enabled=1`;
 
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          marketStandardSizeField.innerHTML = '';
-          const emptyOption = new Option('---------', '', true, true);
-          marketStandardSizeField.appendChild(emptyOption);
-          data.forEach(item => {
-            const option = new Option(item.name, item.id, false, false);
-            marketStandardSizeField.appendChild(option);
-          });
-          marketStandardSizeField.value = resetSelection ? '' : selectedValue;
-        });
-    };
+  const productField = $('#id_product');
+  const productVarietyField = $('#id_product_variety');
+  const marketField = $('#id_market');
+  const marketStandardProductSizeField = $('#id_market_standard_product_size');
+  const nameField = $('#id_name');
+  const aliasField = $('#id_alias');
 
-    // Inicializar select2
-    $(marketField).select2();
-    $(marketStandardSizeField).select2();
+  const API_BASE_URL = '/rest/v1';
 
-    // Actualizar al cargar la página si hay un valor seleccionado
-    if (marketField.value) {
-      updateMarketStandardSizes();
-    }
-
-    // Actualizar al cambiar el valor del campo market
-    $(marketField).on('select2:select', function () {
-      updateMarketStandardSizes(true);
-      const nameField = document.querySelector('input[name="name"]');
-      const aliasField = document.querySelector('input[name="alias"]');
-
-      if (nameField) {
-        nameField.value = '';
-      }
-
-      if (aliasField) {
-        aliasField.value = '';
-      }
+  function updateFieldOptions(field, options) {
+    field.empty().append(new Option('---------', '', true, true));
+    options.forEach(option => {
+      field.append(new Option(option.name, option.id, false, false));
     });
-
-    // Actualizar los campos name y alias al seleccionar un size
-    $(marketStandardSizeField).on('select2:select', function (e) {
-      const selectedText = e.params.data.text;
-      const nameField = document.querySelector('input[name="name"]');
-      const aliasField = document.querySelector('input[name="alias"]');
-
-      if (nameField) {
-        nameField.value = selectedText;
-      }
-
-      if (aliasField) {
-        aliasField.value = transformTextForAlias(selectedText);
-      }
-    });
+    field.trigger('change').select2();
   }
+
+  function fetchOptions(url) {
+    return $.ajax({
+      url: url,
+      method: 'GET',
+      dataType: 'json'
+    }).fail(error => console.error('Fetch error:', error));
+  }
+
+  function updateProductVariety() {
+    const productId = productField.val();
+    if (productId) {
+      fetchOptions(`${API_BASE_URL}/catalogs/product_variety/?product=${productId}`)
+        .then(data => {
+          updateFieldOptions(productVarietyField, data);
+        });
+    } else {
+      updateFieldOptions(productVarietyField, []);
+    }
+  }
+
+  function updateMarketStandardProductSize() {
+    const marketId = marketField.val();
+    if (marketId) {
+      fetchOptions(`${API_BASE_URL}/catalogs/market_standard_product_size/?market=${marketId}&is_enabled=1`)
+        .then(data => {
+          updateFieldOptions(marketStandardProductSizeField, data);
+        });
+    } else {
+      updateFieldOptions(marketStandardProductSizeField, []);
+    }
+  }
+
+  productField.on('change', updateProductVariety);
+  marketField.on('change', updateMarketStandardProductSize);
+  nameField.on('input', function () {
+    aliasField.val(transformTextForAlias(nameField.val()));
+  });
 
   // Función para transformar el texto para el campo alias
   function transformTextForAlias(text) {
@@ -72,4 +66,6 @@ document.addEventListener('DOMContentLoaded', function () {
       .replace(/[áéíóúÁÉÍÓÚ]/g, match => accentsMap[match])
       .replace(/[^a-zA-Z0-9]/g, '');
   }
+
+  [productField, productVarietyField, marketField, marketStandardProductSizeField].forEach(field => field.select2());
 });

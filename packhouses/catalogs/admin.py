@@ -250,7 +250,7 @@ class ProductVarietySizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminM
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
 
-        if db_field.name == "market_standard_size":
+        if db_field.name == "market_standard_product_size":
             if hasattr(request, 'organization'):
                 kwargs["queryset"] = MarketStandardProductSize.objects.filter(market__organization=request.organization,
                                                                              is_enabled=True)
@@ -278,7 +278,7 @@ class ProductVarietySizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminM
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/catalogs/product_variety_size.js',)
+        js = ('js/admin/forms/packhouses/catalogs/product_variety_size.js',)
 
 
 @admin.register(ProductVarietySizeHarvestKind)

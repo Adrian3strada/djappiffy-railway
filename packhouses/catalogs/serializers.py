@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from packhouses.catalogs.models import (
-                                        MarketStandardProductSize, Market, Vehicle, HarvestingCrewProvider,
-                                        CrewChief
-                                        )
+    MarketStandardProductSize, Market, Vehicle, HarvestingCrewProvider,
+    ProductVariety,
+    CrewChief
+)
 
 
 class MarketStandardProductSizeSerializer(serializers.ModelSerializer):
@@ -16,15 +17,24 @@ class MarketSerializer(serializers.ModelSerializer):
         model = Market
         fields = '__all__'
 
+
+class ProductVarietySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductVariety
+        fields = '__all__'
+
+
 class VehicleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehicle
         fields = '__all__'
 
+
 class HarvestingCrewProviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = HarvestingCrewProvider
         fields = '__all__'
+
 
 class CrewChiefSerializer(serializers.ModelSerializer):
     class Meta:

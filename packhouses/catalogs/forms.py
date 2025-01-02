@@ -12,17 +12,18 @@ class ProductVarietySizeInlineForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['market_standard_size'].queryset = MarketStandardProductSize.objects.none()
+        self.fields['market_standard_product_size'].queryset = MarketStandardProductSize.objects.none()
         if self.instance and self.instance.pk:
             market = self.instance.market
             if market:
-                self.fields['market_standard_size'].queryset = MarketStandardProductSize.objects.filter(market=market)
+                self.fields[
+                    'market_standard_product_size'].queryset = MarketStandardProductSize.objects.filter(market=market)
             else:
-                self.fields['market_standard_size'].queryset = MarketStandardProductSize.objects.none()
+                self.fields['market_standard_product_size'].queryset = MarketStandardProductSize.objects.none()
 
     class Meta:
         model = ProductVarietySize
-        fields = ['market', 'market_standard_size', 'name', 'alias', 'product_size_kind',
+        fields = ['market', 'market_standard_product_size', 'name', 'alias', 'product_size_kind',
                   'description', 'product_mass_volume_kind', 'requires_corner_protector', 'is_enabled', 'order']
 
     class Media:

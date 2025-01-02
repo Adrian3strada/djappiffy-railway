@@ -172,11 +172,11 @@ class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, models.
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    market_standard_size = models.ForeignKey(MarketStandardProductSize,
-                                             verbose_name=_('Market standard product size'),
-                                             help_text=_(
+    market_standard_product_size = models.ForeignKey(MarketStandardProductSize,
+                                                     verbose_name=_('Market standard product size'),
+                                                     help_text=_(
                                                  'Choose a Standard Product Size per Market (optional), it will put its name in the size name field.'),
-                                             on_delete=models.PROTECT, null=True, blank=True)
+                                                     on_delete=models.PROTECT, null=True, blank=True)
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
