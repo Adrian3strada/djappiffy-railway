@@ -171,9 +171,8 @@ class ProductVariety(CleanNameAndProductMixin, models.Model):
         ]
 
 
-class ProductVarietySizeHarvestKind(CleanProductVarietyMixin, models.Model):
+class ProductVarietySizeHarvestKind(CleanProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     order = models.IntegerField(default=0, verbose_name=_('Order'), editable=False)
@@ -181,10 +180,10 @@ class ProductVarietySizeHarvestKind(CleanProductVarietyMixin, models.Model):
     class Meta:
         verbose_name = _('Product variety harvest Kind')
         verbose_name_plural = _('Product variety harvest kinds')
-        ordering = ('product_variety', 'order',)
+        ordering = ('order',)
         constraints = [
-            models.UniqueConstraint(fields=['name', 'product_variety'],
-                                    name='productvarietysizeharvestkind_unique_name_product_variety'),
+            models.UniqueConstraint(fields=['name', 'product'],
+                                    name='productvarietysizeharvestkind_unique_name_product'),
         ]
 
 

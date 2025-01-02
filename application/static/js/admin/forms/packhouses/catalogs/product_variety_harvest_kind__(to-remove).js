@@ -20,20 +20,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }).fail(error => console.error('Fetch error:', error));
   }
 
-  function updateProductVariety() {
-    const productId = productField.val();
-    if (productId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_variety/?product=${productId}&is_enabled=true`)
-        .then(data => {
-          updateFieldOptions(productVarietyField, data);
-        });
-    } else {
-      updateFieldOptions(productVarietyField, []);
-    }
-  }
-
-  productField.on('change', updateProductVariety);
-
   [productField, productVarietyField].forEach(field => field.select2());
-  if (! productField.val()) updateProductVariety();
 });

@@ -211,25 +211,23 @@ class ProductVarietyAdmin(ByProductForOrganizationAdminMixin):
 
 @admin.register(ProductVarietySizeHarvestKind)
 class ProductVarietySizeHarvestKindAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('name', 'product', 'product_variety', 'is_enabled', 'order')
+    list_display = ('name', 'product', 'is_enabled', 'order')
     list_filter = (ByProductForOrganizationFilter, ByProductVarietyForOrganizationFilter, 'is_enabled')
     search_fields = ('name',)
-    fields = ('product', 'product_variety', 'name', 'is_enabled', 'order')
+    fields = ('product', 'name', 'is_enabled', 'order')
     ordering = ['order']
 
-    def get_form(self, request, obj = ..., change = ..., **kwargs):
-        form = super().get_form(request, obj, change, **kwargs)
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
         return form
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj, exclude=[Product, ProductVariety]):
-            readonly_fields.extend(['product', 'product_variety', 'name'])
+            readonly_fields.extend(['product', 'name'])
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        object_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductVarietySizeHarvestKind.objects.get(id=object_id) if object_id else None
 
         if db_field.name == "product":
             if hasattr(request, 'organization'):
@@ -237,22 +235,7 @@ class ProductVarietySizeHarvestKindAdmin(SortableAdminMixin, admin.ModelAdmin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
 
-        if db_field.name == "product_variety":
-            if hasattr(request, 'organization'):
-                kwargs["queryset"] = ProductVariety.objects.filter(product__organization=request.organization, is_enabled=True)
-                if request.POST:
-                    product_id = request.POST.get('product')
-                else:
-                    product_id = obj.product_id if obj else None
-                if product_id:
-                    kwargs["queryset"] = kwargs["queryset"].filter(product_id=product_id)
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            return formfield
-
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    class Media:
-        js = ('js/admin/forms/packhouses/catalogs/product_variety_harvest_kind.js',)
 
 
 @admin.register(ProductVarietySize)
