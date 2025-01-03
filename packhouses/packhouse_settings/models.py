@@ -28,7 +28,7 @@ class ProductSizeKind(CleanNameAndOrganizationMixin, models.Model):
     has_performance = models.BooleanField(default=True, verbose_name=_('Take it for performance calculation'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))  # TODO: implementar ordenamiento con drag and drop
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 
     class Meta:
         verbose_name = _('Product size kind')

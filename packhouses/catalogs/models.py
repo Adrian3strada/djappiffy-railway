@@ -190,10 +190,10 @@ class ProductHarvestSizeKind(CleanProductMixin, models.Model):
         ]
 
 
-class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanProductVarietyMixin, models.Model):
+class ProductVarietySize(CleanNameAndAliasProductMixin, CleanProductVarietyMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    product_varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Product variety'), blank=False)
+    markets = models.ManyToManyField(Market, verbose_name=_('Market'), blank=False)
     market_standard_product_size = models.ForeignKey(MarketStandardProductSize,
                                                      verbose_name=_('Market standard product size'),
                                                      help_text=_(
@@ -213,23 +213,18 @@ class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanPr
                                                      'To separate sizes by product kind in the mass volume report'))  # Estandar, enmallado, orgánico...
     requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    order = models.PositiveIntegerField(default=0,
-                                        verbose_name=_('Order'))  # TODO: implementar ordenamiento con drag and drop
-
-    @property
-    def product_name(self):
-        return self.product_variety.product.name if self.product_variety and self.product_variety.product else None
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 
     def __str__(self):
-        return f"{self.product_variety.product.name}: {self.product_variety.name} ({self.name})"
+        return f"{self.name} ({self.product.name})"
 
     class Meta:
         verbose_name = _('Product variety size')
         verbose_name_plural = _('Product variety sizes')
-        ordering = ['product_variety', 'order']
+        ordering = ['product', 'order']
         constraints = [
-            models.UniqueConstraint(fields=['name', 'product', 'product_variety', 'market', ],
-                                    name='productvarietysize_unique_name_product_product_variety_market'),
+            models.UniqueConstraint(fields=['name', 'product'], name='productvarietysize_unique_name_product'),
+            models.UniqueConstraint(fields=['alias', 'product'], name='productvarietysize_unique_alias_product'),
         ]
 
 

@@ -51,6 +51,7 @@ class ByProductVarietyForOrganizationFilter(admin.SimpleListFilter):
             return queryset.filter(product_variety__id=self.value())
         return queryset
 
+
 class ByMarketForOrganizationFilter(admin.SimpleListFilter):
     title = _('Market')
     parameter_name = 'market'
