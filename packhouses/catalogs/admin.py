@@ -10,7 +10,7 @@ from .models import (
     MeshBag, ServiceProvider, ServiceProviderBenefactor, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    Provider
+    Provider, ProviderBeneficiary
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind, VehicleBrand,
@@ -1239,7 +1239,32 @@ class InsuranceCompanyAdmin(admin.ModelAdmin):
         return form
 
 
+# Providers
+
+class ProviderBeneficiaryInline(admin.StackedInline):
+    model = ProviderBeneficiary
+    extra = 1
+    min_num = 1
+    can_delete = True
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+
 @admin.register(Provider)
 class ProviderAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_enabled', 'organization')
     list_filter = ('is_enabled',)
+    inlines = (ProviderBeneficiaryInline,)
+
+
+@admin.register(ProviderBeneficiary)
+class ProviderBeneficiaryAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
+
+# /Providers
