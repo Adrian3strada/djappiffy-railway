@@ -5,7 +5,7 @@ from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizati
                            CleanProductVarietyMixin,
                            CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanNameAndMaquiladoraMixin)
 from organizations.models import Organization
-from cities_light.models import City, Country, Region
+from cities_light.models import City, Country, Region, SubRegion
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django_ckeditor_5.fields import CKEditor5Field
@@ -1219,3 +1219,40 @@ class InsuranceCompany(CleanNameAndOrganizationMixin, models.Model):
         verbose_name = _('Insurance Company')
         verbose_name_plural = _('Insurance Companies')
         unique_together = ('name', 'organization')
+
+
+class Provider(CleanNameAndOrganizationMixin, models.Model):
+    ### Identification fields
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+
+    ### Localization fields
+    country = models.ForeignKey(Country, on_delete=models.PROTECT, verbose_name=_('Country'))
+    state = models.ForeignKey(Region, on_delete=models.PROTECT, verbose_name=_('State'))
+    city = models.ForeignKey(SubRegion, on_delete=models.PROTECT, verbose_name=_('City'))
+    district = models.ForeignKey(City, on_delete=models.PROTECT, verbose_name=_('District'))
+
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
+    address = models.CharField(max_length=255, verbose_name=_('Address'))
+    external_number = models.CharField(max_length=10, verbose_name=_('External number'))
+    internal_number = models.CharField(max_length=10, blank=True, null=True, verbose_name=_('Internal number'))
+
+    ### Legal fields
+    tax_id = models.CharField(max_length=100, verbose_name=_('Tax ID'))
+
+    ### Contact fields
+    email = models.EmailField(max_length=255, verbose_name=_('Email'))
+    phone_number = models.CharField(max_length=10, blank=True, null=True, verbose_name=_('Phone number'))
+
+    ### Status fields
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    ### Organization fields
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"[PROVIDER]: {self.name}"
+
+    class Meta:
+        verbose_name = _('Provider')
+        verbose_name_plural = _('Providers')
