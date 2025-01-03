@@ -1275,7 +1275,7 @@ class ProviderBeneficiary(CleanNameAndProviderMixin, models.Model):
         verbose_name_plural = _("Provider's beneficiaries")
 
 
-class ProviderBalance(CleanNameAndProviderMixin, models.Model):
+class ProviderBalance(models.Model):
     ### Financial details
     financial_balance = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Financial balance'))
     credit_days = models.PositiveIntegerField(default=0, verbose_name=_('Credit days'))
