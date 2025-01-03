@@ -1253,7 +1253,7 @@ class ProviderBeneficiaryInline(admin.StackedInline):
 
 
 @admin.register(Provider)
-class ProviderAdmin(admin.ModelAdmin):
+class ProviderAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled', 'organization')
     list_filter = ('is_enabled',)
     inlines = (ProviderBeneficiaryInline,)
