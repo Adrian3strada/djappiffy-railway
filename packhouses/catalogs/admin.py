@@ -10,7 +10,7 @@ from .models import (
     MeshBag, ServiceProvider, ServiceProviderBenefactor, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    Provider, ProviderBeneficiary
+    Provider, ProviderBeneficiary, ProviderBalance,
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind, VehicleBrand,
@@ -1252,11 +1252,22 @@ class ProviderBeneficiaryInline(admin.StackedInline):
         return formset
 
 
+class ProviderBalanceInline(admin.StackedInline):
+    model = ProviderBalance
+    min_num = 1
+    max_num = 1
+    can_delete = False
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+
 @admin.register(Provider)
 class ProviderAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled', 'organization')
     list_filter = ('is_enabled',)
-    inlines = (ProviderBeneficiaryInline,)
+    inlines = (ProviderBeneficiaryInline, ProviderBalanceInline)
 
 
 @admin.register(ProviderBeneficiary)
@@ -1265,6 +1276,13 @@ class ProviderBeneficiaryAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, **kwargs)
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
+
+
+@admin.register(ProviderBalance)
+class ProviderBalanceAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
         return form
 
 # /Providers
