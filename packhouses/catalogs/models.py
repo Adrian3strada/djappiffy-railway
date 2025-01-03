@@ -81,11 +81,11 @@ class MarketClass(CleanNameAndMarketMixin, models.Model):
     @receiver(post_save, sender=Market)
     def create_market_classes(sender, instance, created, **kwargs):
         if created:
-            if not MarketClass.objects.filter(market=instance).exists():
+            existing_classes = MarketClass.objects.filter(market=instance).values_list('name', flat=True)
+            classes_to_create = [name for name in ['A', 'B', 'C'] if name not in existing_classes]
+            if classes_to_create:
                 MarketClass.objects.bulk_create([
-                    MarketClass(name='A', market=instance),
-                    MarketClass(name='B', market=instance),
-                    MarketClass(name='C', market=instance),
+                    MarketClass(name=name, market=instance) for name in classes_to_create
                 ])
 
     class Meta:
@@ -190,7 +190,7 @@ class ProductHarvestSizeKind(CleanProductMixin, models.Model):
         ]
 
 
-class ProductVarietySize(CleanNameAndAliasProductMixin, CleanProductVarietyMixin, models.Model):
+class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Product variety'), blank=False)
     markets = models.ManyToManyField(Market, verbose_name=_('Market'), blank=False)
@@ -219,14 +219,13 @@ class ProductVarietySize(CleanNameAndAliasProductMixin, CleanProductVarietyMixin
         return f"{self.name} ({self.product.name})"
 
     class Meta:
-        verbose_name = _('Product variety size')
-        verbose_name_plural = _('Product variety sizes')
+        verbose_name = _('Product size')
+        verbose_name_plural = _('Product sizes')
         ordering = ['product', 'order']
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'], name='productvarietysize_unique_name_product'),
             models.UniqueConstraint(fields=['alias', 'product'], name='productvarietysize_unique_alias_product'),
         ]
-
 
 # /Products
 
@@ -833,7 +832,7 @@ class MeshBagFilmKind(models.Model):
 class MeshBag(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    product_variety_size = models.ForeignKey(ProductVarietySize, verbose_name=_('Product variety size'),
+    product_variety_size = models.ForeignKey(ProductSize, verbose_name=_('Product variety size'),
                                              on_delete=models.PROTECT)
     mesh_bags_per_box = models.PositiveIntegerField(verbose_name=_('Mesh bags per box'))
     pieces_per_mesh_bag = models.PositiveIntegerField(verbose_name=_('Pieces per mesh bags'))
@@ -1049,7 +1048,7 @@ class ProductPackaging(models.Model):
     box_kind = models.ForeignKey(BoxKind, verbose_name=_('Box kind'),
                                  on_delete=models.PROTECT)  # TODO: detallar tipos de caja por tipo de producto?
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
-    product_variety_size = models.ForeignKey(ProductVarietySize, verbose_name=_('Product variety size'),
+    product_variety_size = models.ForeignKey(ProductSize, verbose_name=_('Product variety size'),
                                              on_delete=models.PROTECT)
     kg_per_box = models.FloatField(verbose_name=_('Kg per box'))
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT,

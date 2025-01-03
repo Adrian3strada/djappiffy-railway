@@ -1,7 +1,7 @@
 from django.contrib import admin
 from common.billing.models import LegalEntityCategory
 from .models import (
-    Market, KGCostMarket, MarketClass, MarketStandardProductSize, Product, ProductVariety, ProductVarietySize,
+    Market, KGCostMarket, MarketClass, MarketStandardProductSize, Product, ProductVariety, ProductSize,
     ProductHarvestSizeKind, ProductProvider, ProductProviderBenefactor, ProductProducer,
     ProductProducerBenefactor,
     PaymentKind, Vehicle, Gatherer, Client, ClientShipAddress, Maquiladora, MaquiladoraClient,
@@ -195,8 +195,8 @@ class ProductVarietyAdmin(ByProductForOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(ProductVarietySize)
-class ProductVarietySizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
+@admin.register(ProductSize)
+class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
     list_display = (
         'name', 'alias', 'product', 'get_product_varieties', 'get_markets', 'product_harvest_size_kind', 'product_size_kind', 'product_mass_volume_kind', 'is_enabled',
         'order')
@@ -225,7 +225,7 @@ class ProductVarietySizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminM
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductVarietySize.objects.get(id=object_id) if object_id else None
+        obj = ProductSize.objects.get(id=object_id) if object_id else None
 
         if db_field.name == "product_varieties":
             if hasattr(request, 'organization'):
@@ -250,7 +250,7 @@ class ProductVarietySizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminM
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductVarietySize.objects.get(id=object_id) if object_id else None
+        obj = ProductSize.objects.get(id=object_id) if object_id else None
 
         if db_field.name == "product":
             if hasattr(request, 'organization'):
@@ -267,7 +267,7 @@ class ProductVarietySizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminM
                 else:
                     markets_id = obj.markets.all().values_list('id', flat=True) if obj else None
                 if markets_id:
-                    kwargs["queryset"] = kwargs["queryset"].filter(markets__in=markets_id)
+                    kwargs["queryset"] = kwargs["queryset"].filter(market__in=markets_id)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
 

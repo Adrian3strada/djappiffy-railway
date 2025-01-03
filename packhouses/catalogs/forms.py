@@ -1,6 +1,6 @@
 from django import forms
 from .models import (
-    Product, ProductVarietySize, MarketStandardProductSize, OrchardCertification, HarvestingCrew,
+    Product, ProductSize, MarketStandardProductSize, OrchardCertification, HarvestingCrew,
     ProductHarvestSizeKind,
     HarvestingPaymentSetting
 )
@@ -23,7 +23,7 @@ class ProductVarietySizeInlineForm(forms.ModelForm):
                 self.fields['market_standard_product_size'].queryset = MarketStandardProductSize.objects.none()
 
     class Meta:
-        model = ProductVarietySize
+        model = ProductSize
         fields = ['markets', 'market_standard_product_size', 'name', 'alias', 'product_size_kind',
                   'description', 'product_mass_volume_kind', 'requires_corner_protector', 'is_enabled', 'order']
 
@@ -38,7 +38,7 @@ class ProductVarietyInlineFormSet(BaseInlineFormSet):
         for form in self.forms:
             instance = form.instance
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductVarietySize.objects.filter(product_variety=instance).exists():
+            if instance.pk and ProductSize.objects.filter(product_varieties=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
@@ -56,7 +56,7 @@ class ProductHarvestSizeKindInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductVarietySize.objects.filter(product_harvest_size_kind=instance).exists():
+            if instance.pk and ProductSize.objects.filter(product_harvest_size_kind=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
