@@ -141,6 +141,37 @@ class CleanNameAndMarketMixin(models.Model):
     class Meta:
         abstract = True
 
+class CleanNameAndAliasProductMixin(models.Model):
+    def __str__(self):
+        return f"{self.name}"
+
+    def clean(self):
+        self.name = getattr(self, 'name', None)
+        self.alias = getattr(self, 'alias', None)
+
+        if self.name:
+            self.name = self.name.upper()
+
+        if self.alias:
+            self.alias = self.alias.upper()
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
 
 class CleanProductMixin(models.Model):
     def __str__(self):

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from cities_light.models import Country, Region, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
-from .models import Product, ProductVariety, Market
+from .models import Product, ProductVariety, Market, ProductHarvestSizeKind
 from ..packhouse_settings.models import ProductSizeKind, ProductMassVolumeKind
 from common.base.models import ProductKind
 from django.utils.translation import gettext_lazy as _
@@ -44,7 +44,7 @@ class ByProductVarietyForOrganizationFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         product_varieties = ProductVariety.objects.filter(product__organization=request.organization, is_enabled=True)
-        return [(product_variety.id, product_variety.name) for product_variety in product_varieties]
+        return [(product_variety.id, f"{product_variety.product.name}: {product_variety.name}") for product_variety in product_varieties]
 
     def queryset(self, request, queryset):
         if self.value():
@@ -62,6 +62,20 @@ class ByMarketForOrganizationFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(market__id=self.value())
+        return queryset
+
+
+class ByProductHarvestSizeKindForOrganizationFilter(admin.SimpleListFilter):
+    title = _('Product harvest size kind')
+    parameter_name = 'product_harvest_size_kind'
+
+    def lookups(self, request, model_admin):
+        product_harvest_size_kinds = ProductHarvestSizeKind.objects.filter(product__organization=request.organization, is_enabled=True)
+        return [(product_harvest_size_kind.id, f"{product_harvest_size_kind.product.name}: {product_harvest_size_kind.name}") for product_harvest_size_kind in product_harvest_size_kinds]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(product_harvest_size_kind=self.value())
         return queryset
 
 

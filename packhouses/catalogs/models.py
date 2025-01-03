@@ -2,7 +2,7 @@ from django.db import models
 from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizationMixin, CleanProductMixin,
                            CleanNameOrAliasAndOrganizationMixin, CleanNameAndMarketMixin, CleanNameAndProductMixin,
                            CleanNameAndProductProviderMixin, CleanNameAndProductProducerMixin,
-                           CleanProductVarietyMixin,
+                           CleanProductVarietyMixin, CleanNameAndAliasProductMixin,
                            CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanNameAndMaquiladoraMixin)
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
@@ -157,8 +157,9 @@ class Product(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-class ProductVariety(CleanNameAndProductMixin, models.Model):
+class ProductVariety(CleanNameAndAliasProductMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Variety name'))
+    alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
@@ -169,6 +170,7 @@ class ProductVariety(CleanNameAndProductMixin, models.Model):
         ordering = ('product', 'name',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'], name='product_unique_name_product'),
+            models.UniqueConstraint(fields=['alias', 'product'], name='product_unique_alias_product'),
         ]
 
 
@@ -181,7 +183,7 @@ class ProductHarvestSizeKind(CleanProductMixin, models.Model):
     class Meta:
         verbose_name = _('Product harvest size kind')
         verbose_name_plural = _('Product harvest size kinds')
-        ordering = ('order', '-name')
+        ordering = ('product', 'order', '-name')
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'],
                                     name='productharvestsizekind_unique_name_product'),

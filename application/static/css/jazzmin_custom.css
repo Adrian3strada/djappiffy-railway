@@ -1,23 +1,23 @@
 /* Cambiar el color de fondo de la barra lateral */
 
 .readonly-field {
-    background-color: #919191; /* Fondo gris claro para el campo deshabilitado */
-    color: #888888; /* Color de texto gris */
+    background-color: #bababa !important; /* Fondo gris claro para el campo deshabilitado */
+    color: #1c1c1c !important; /* Color de texto gris */
     cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
     pointer-events: none; /* Desactiva eventos de mouse, haciendo que parezca completamente deshabilitado */
     opacity: 0.6; /* Opcional: hace que el campo se vea un poco translúcido */
 }
 
 .select2-container.disabled-field .select2-selection {
-    background-color: #919191; /* Fondo gris claro para el campo deshabilitado */
-    color: #888888; /* Color de texto gris */
+    background-color: #bababa; /* Fondo gris claro para el campo deshabilitado */
+    color: #1c1c1c; /* Color de texto gris */
     cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
     pointer-events: none; /* Desactiva eventos de mouse, haciendo que parezca completamente deshabilitado */
     opacity: 0.6; /* Opcional: hace que el campo se vea un poco translúcido */
 }
 
 .disabled-field {
-  background-color: #c6c6c6 !important; /* Color de fondo para indicar que está deshabilitado */
+  background-color: #bababa !important; /* Color de fondo para indicar que está deshabilitado */
   color: #1c1c1c !important; /* Color de texto */
   cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
   pointer-events: none;
