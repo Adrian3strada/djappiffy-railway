@@ -1243,8 +1243,7 @@ class InsuranceCompanyAdmin(admin.ModelAdmin):
 
 class ProviderBeneficiaryInline(admin.StackedInline):
     model = ProviderBeneficiary
-    extra = 1
-    min_num = 1
+    extra = 0
     can_delete = True
 
     def get_formset(self, request, obj=None, **kwargs):
@@ -1268,6 +1267,70 @@ class ProviderAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled', 'organization')
     list_filter = ('is_enabled',)
     inlines = (ProviderBeneficiaryInline, ProviderBalanceInline)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = Provider.objects.get(id=object_id) if object_id else None
+
+        if db_field.name == "country":
+            kwargs["queryset"] = Country.objects.all()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "state":
+            if request.POST:
+                country_id = request.POST.get('country')
+            else:
+                country_id = obj.country_id if obj else None
+            if country_id:
+                kwargs["queryset"] = Region.objects.filter(country_id=country_id)
+            else:
+                kwargs["queryset"] = Region.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "city":
+            if request.POST:
+                state_id = request.POST.get('state')
+            else:
+                state_id = obj.state_id if obj else None
+            if state_id:
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = SubRegion.objects.none()
+            print("city", kwargs["queryset"])
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
+            else:
+                kwargs["queryset"] = City.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "organization":
+            queryset = Organization.objects.filter(organizationprofile__isnull=True)
+            if obj:
+                queryset = queryset | Organization.objects.filter(id=obj.organization_id)
+            if not request.user.is_superuser:
+                queryset = queryset.filter(id=obj.organization_id)
+            kwargs["queryset"] = queryset
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/common/country-state-city.js',)
 
 
 @admin.register(ProviderBeneficiary)
