@@ -1273,3 +1273,19 @@ class ProviderBeneficiary(CleanNameAndProviderMixin, models.Model):
     class Meta:
         verbose_name = _("Provider's beneficiary")
         verbose_name_plural = _("Provider's beneficiaries")
+
+
+class ProviderBalance(CleanNameAndProviderMixin, models.Model):
+    ### Financial details
+    financial_balance = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Financial balance'))
+    credit_days = models.PositiveIntegerField(default=0, verbose_name=_('Credit days'))
+
+    ### Extra fields
+    comments = models.TextField(blank=True, null=True, verbose_name=_('Comments'))
+
+    ### Reference to implied Provider
+    provider = models.OneToOneField(Provider, on_delete=models.PROTECT, verbose_name=_('Provider'))
+
+    class Meta:
+        verbose_name = _('Provider balance')
+        verbose_name_plural = _('Provider balances')
