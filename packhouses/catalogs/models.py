@@ -2,6 +2,7 @@ from django.db import models
 from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizationMixin, CleanProductMixin,
                            CleanNameOrAliasAndOrganizationMixin, CleanNameAndMarketMixin, CleanNameAndProductMixin,
                            CleanNameAndProductProviderMixin, CleanNameAndProductProducerMixin,
+                           CleanNameAndProviderMixin,
                            CleanProductVarietyMixin,
                            CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanNameAndMaquiladoraMixin)
 from organizations.models import Organization
@@ -1256,3 +1257,19 @@ class Provider(CleanNameAndOrganizationMixin, models.Model):
     class Meta:
         verbose_name = _('Provider')
         verbose_name_plural = _('Providers')
+
+
+class ProviderBeneficiary(CleanNameAndProviderMixin, models.Model):
+    ### Identification fields
+    name = models.CharField(max_length=255, verbose_name=_("Name"))
+
+    ### Bank details fields
+    bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_("Bank"))
+    bank_account_number = models.CharField(max_length=25, verbose_name=_("Bank account number"))
+
+    ### Reference to implied Provider
+    provider = models.ForeignKey(Provider, on_delete=models.PROTECT, verbose_name=_("Provider"))
+
+    class Meta:
+        verbose_name = _("Provider's beneficiary")
+        verbose_name_plural = _("Provider's beneficiaries")
