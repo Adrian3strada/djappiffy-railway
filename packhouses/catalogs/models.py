@@ -15,7 +15,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from common.billing.models import TaxRegime, LegalEntityCategory
 from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
-    vehicle_scope_choices
+    vehicle_scope_choices, get_provider_categories_choices
 from django.core.exceptions import ValidationError
 from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (ProductSizeKind, ProductMassVolumeKind, Bank, VehicleOwnershipKind,
@@ -1225,6 +1225,9 @@ class InsuranceCompany(CleanNameAndOrganizationMixin, models.Model):
 class Provider(CleanNameAndOrganizationMixin, models.Model):
     ### Identification fields
     name = models.CharField(max_length=255, verbose_name=_('Name'))
+
+    ### Provider Category
+    category = models.CharField(max_length=255, choices=get_provider_categories_choices(), verbose_name=_('Category'))
 
     ### Localization fields
     country = models.ForeignKey(Country, on_delete=models.PROTECT, verbose_name=_('Country'))

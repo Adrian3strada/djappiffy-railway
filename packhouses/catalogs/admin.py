@@ -1264,8 +1264,8 @@ class ProviderBalanceInline(admin.StackedInline):
 
 @admin.register(Provider)
 class ProviderAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'is_enabled')
-    list_filter = ('is_enabled',)
+    list_display = ('name', 'category', 'is_enabled')
+    list_filter = ('category', 'is_enabled',)
     inlines = (ProviderBeneficiaryInline, ProviderBalanceInline)
 
     @uppercase_form_charfield('name')
