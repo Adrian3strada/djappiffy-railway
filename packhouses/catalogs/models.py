@@ -593,7 +593,7 @@ class CrewChief(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, verbose_name=_('Harvesting Crew Provider'),
                                                  on_delete=models.PROTECT)
-
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     def __str__(self):
         return f"{self.name}"
 
@@ -607,7 +607,6 @@ class CrewChief(models.Model):
 
 
 class HarvestingCrew(models.Model):
-    ooid = models.IntegerField(verbose_name=_('OOID'), editable=False)
     harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, verbose_name=_('Harvesting Crew Provider'),
                                                  on_delete=models.PROTECT)
     name = models.CharField(max_length=100, verbose_name=_('Name'))
@@ -634,6 +633,7 @@ class HarvestingCrewBeneficiary(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_('Bank'))
     bank_account_number = models.CharField(max_length=18, verbose_name=_('Bank account number / CLABE'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, on_delete=models.CASCADE,
                                                  verbose_name=_('Harvesting Crew Provider'))
 

@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
 
+
 # Create your mixins here.
 
 
@@ -404,6 +405,38 @@ class CleanNameAndMaquiladoraMixin(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
+class IncotermsAndLocalDeliveryMarketMixin(models.Model):
+    def clean(self):
+        super().clean()
+
+        market = getattr(self, 'market', None)
+        if market:
+            is_foreign = getattr(market, 'is_foreign', False)
+
+            incoterms = getattr(self, 'incoterms', None)
+            local_delivery = getattr(self, 'local_delivery', None)
+
+            errors = {}
+
+            # Verifica los campos según el valor de is_foreign
+            if is_foreign:
+                if not incoterms:
+                    errors['incoterms'] = _('Incoterms is required when the market is foreign.')
+                # Si es extranjero, asegúrate de que local_delivery sea None
+                self.local_delivery = None
+            else:
+                if not local_delivery:
+                    errors['local_delivery'] = _('Local delivery is required when the market is not foreign.')
+                # Si no es extranjero, asegúrate de que incoterms sea None
+                self.incoterms = None
+
+            # Lanza errores de validación si es necesario
+            if errors:
+                raise ValidationError(errors)
 
     class Meta:
         abstract = True

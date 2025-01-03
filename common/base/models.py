@@ -14,3 +14,17 @@ class ProductKind(models.Model):
 
     def __str__(self):
         return self.name
+
+class Incoterm(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return self.name
+
+class LocalDelivery(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return self.name

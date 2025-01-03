@@ -2,9 +2,9 @@ from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer,
-                          HarvestingCrewProviderSerializer, CrewChiefSerializer)
+                          HarvestingCrewProviderSerializer, CrewChiefSerializer,ClientSerializer)
 from .models import (MarketStandardProductSize, Market, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
-                     ProductHarvestSizeKind)
+                     ProductHarvestSizeKind, Client)
 
 
 class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
@@ -96,3 +96,15 @@ class CrewChiefViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return CrewChief.objects.filter(organization=self.request.organization)
+
+class ClientViewSet(viewsets.ModelViewSet):
+    serializer_class = ClientSerializer
+    filterset_fields = ['organization', 'is_enabled', 'country']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return Client.objects.filter(organization=self.request.organization)

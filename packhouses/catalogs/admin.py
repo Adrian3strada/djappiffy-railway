@@ -34,7 +34,7 @@ from common.base.models import ProductKind
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin
-from common.forms import SelectWidgetWithAlias
+from common.forms import SelectWidgetWithData
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -237,14 +237,14 @@ class ProductVarietySizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminM
                 if product_id:
                     kwargs["queryset"] = kwargs["queryset"].filter(product_id=product_id)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.widget = SelectWidgetWithAlias(ProductVariety, 'alias')
+            formfield.widget = SelectWidgetWithData(ProductVariety, 'alias')
             return formfield
 
         if db_field.name == "market":
             if hasattr(request, 'organization'):
                 kwargs["queryset"] = Market.objects.filter(organization=request.organization, is_enabled=True)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.widget = SelectWidgetWithAlias(Market, 'alias')
+            formfield.widget = SelectWidgetWithData(Market, 'alias')
             return formfield
 
         if db_field.name == "market_standard_product_size":
@@ -869,7 +869,7 @@ class CrewChiefAdmin(admin.ModelAdmin):
         return form
 
 
-class HarvestingCrewBeneficiaryInline(admin.TabularInline):
+class HarvestingCrewBeneficiaryInline(admin.StackedInline):
     model = HarvestingCrewBeneficiary
     extra = 0
 
@@ -879,22 +879,36 @@ class HarvestingCrewBeneficiaryInline(admin.TabularInline):
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        # Obtener el objeto de la URL si existe
         object_id = request.resolver_match.kwargs.get("object_id")
-        obj = OrganizationProfile.objects.get(id=object_id) if object_id else None
+        obj = None
         organization_id = None
 
-        if request.POST:
-            organization_id = request.POST.get('organization')
-        elif obj:
-            organization_id = obj.organization.id if obj.organization else None
+        if object_id:
+            obj = OrganizationProfile.objects.filter(id=object_id).first()
 
-        if not organization_id:
+        # Priorizar el valor de POST, luego el objeto y finalmente la organización del request
+        if request.POST.get('organization'):
+            organization_id = request.POST.get('organization')
+        elif obj and obj.organization:
+            organization_id = obj.organization.id
+        else:
+            organization_id = getattr(request.organization, 'id', None)
+
+        # Si la organización está disponible, se realiza el filtro
+        if hasattr(request, 'organization') and request.organization:
             organization_id = request.organization.id
 
+        # Filtro para el campo "bank"
         if db_field.name == "bank":
             kwargs["queryset"] = Bank.objects.filter(
-                organization_id=organization_id) if organization_id else VehicleKind.objects.all()
+                organization_id=organization_id,
+                is_enabled=True
+            ) if organization_id else Bank.objects.filter(is_enabled=True)
 
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+        # Configuración adicional para otros campos
         if "queryset" in kwargs:
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
@@ -915,30 +929,27 @@ class VehicleInline(admin.StackedInline):
               'comments', 'is_enabled')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        object_id = request.resolver_match.kwargs.get("object_id")
-        obj = OrganizationProfile.objects.get(id=object_id) if object_id else None
-        organization_id = None
+        # Obtener la organización del request
+        organization = getattr(request, 'organization', None)
 
-        if request.POST:
-            organization_id = request.POST.get('organization')
-        elif obj:
-            organization_id = obj.organization.id if obj.organization else None
+        # Mapeo de campos a modelos
+        model_map = {
+            "kind": VehicleKind,
+            "brand": VehicleBrand,
+            "ownership": VehicleOwnershipKind,
+            "fuel": VehicleFuelKind,
+        }
 
-        if not organization_id:
-            organization_id = request.organization.id
+        if db_field.name in model_map:
+            Model = model_map[db_field.name]
+            kwargs["queryset"] = Model.objects.filter(is_enabled=True)
 
-        if db_field.name == "kind":
-            kwargs["queryset"] = VehicleKind.objects.filter(
-                organization_id=organization_id) if organization_id else VehicleKind.objects.all()
-        if db_field.name == "brand":
-            kwargs["queryset"] = VehicleBrand.objects.filter(
-                organization_id=organization_id) if organization_id else VehicleBrand.objects.all()
-        if db_field.name == "ownership":
-            kwargs["queryset"] = VehicleOwnershipKind.objects.filter(
-                organization_id=organization_id) if organization_id else VehicleBrand.objects.all()
-        if db_field.name == "fuel":
-            kwargs["queryset"] = VehicleFuelKind.objects.filter(
-                organization_id=organization_id) if organization_id else VehicleBrand.objects.all()
+            # Si la organización está disponible, filtramos por ella aquellos habilitados
+            if organization:
+                kwargs["queryset"] = Model.objects.filter(
+                    organization=organization,
+                    is_enabled=True
+                )
 
         if "queryset" in kwargs:
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -970,12 +981,10 @@ class HarvestingPaymentSettingInline(admin.StackedInline):
 @admin.register(HarvestingCrew)
 class HarvestingCrewAdmin(admin.ModelAdmin):
     form = HarvestingCrewForm
-    list_display = (
-    'name', 'harvesting_crew_provider', 'crew_chief', 'certification_name', 'persons_number', 'is_enabled')
-    list_filter = ('is_enabled',)
-    fields = (
-    'harvesting_crew_provider', 'name', 'certification_name', 'crew_chief', 'persons_number', 'comments', 'is_enabled')
-    inlines = [HarvestingPaymentSettingInline, ]
+    list_display = ('name', 'harvesting_crew_provider', 'crew_chief', 'certification_name', 'persons_number', 'is_enabled')
+    list_filter = ('harvesting_crew_provider', 'crew_chief', 'is_enabled', 'certification_name')
+    fields = ('harvesting_crew_provider', 'name', 'certification_name', 'crew_chief', 'persons_number', 'comments', 'is_enabled')
+    inlines = [HarvestingPaymentSettingInline,]
 
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('certification_name')
@@ -1012,6 +1021,8 @@ class HarvestingCrewAdmin(admin.ModelAdmin):
 class HarvestingCrewProviderAdmin(ByOrganizationAdminMixin):
     inlines = [HarvestingCrewBeneficiaryInline, VehicleInline, CrewChiefInline]
     fields = ('name', 'tax_id', 'is_enabled')
+    list_display = ('name', 'is_enabled')
+    list_filter = ('is_enabled',)
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):

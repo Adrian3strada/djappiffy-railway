@@ -49,7 +49,7 @@ class ProductSizeKindAdmin(ByOrganizationAdminMixin):
 
 
 @admin.register(ProductMassVolumeKind)
-class MassVolumeKindAdmin(ByOrganizationAdminMixin):
+class ProductMassVolumeKindAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
     fields = ('name', 'is_enabled', 'order')

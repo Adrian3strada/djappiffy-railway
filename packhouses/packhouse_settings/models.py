@@ -50,7 +50,7 @@ class ProductMassVolumeKind(CleanNameAndOrganizationMixin, models.Model):
         verbose_name_plural = _('Mass volume kinds')
         ordering = ('organization', 'order',)
         constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='massvolumekind_unique_name_organization'),
+            models.UniqueConstraint(fields=['name', 'organization'], name='productmassvolumekind_unique_name_organization'),
         ]
 
 
