@@ -1264,9 +1264,16 @@ class ProviderBalanceInline(admin.StackedInline):
 
 @admin.register(Provider)
 class ProviderAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'is_enabled', 'organization')
+    list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
     inlines = (ProviderBeneficiaryInline, ProviderBalanceInline)
+
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('neighborhood')
+    @uppercase_form_charfield('address')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
@@ -1317,15 +1324,6 @@ class ProviderAdmin(ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
-
-        if db_field.name == "organization":
-            queryset = Organization.objects.filter(organizationprofile__isnull=True)
-            if obj:
-                queryset = queryset | Organization.objects.filter(id=obj.organization_id)
-            if not request.user.is_superuser:
-                queryset = queryset.filter(id=obj.organization_id)
-            kwargs["queryset"] = queryset
-            return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
