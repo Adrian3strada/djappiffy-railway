@@ -9,7 +9,8 @@ from .models import (
     HarvestingCrewBeneficiary, HarvestingPaymentSetting, Supply, SupplyProvider, MeshBagKind, MeshBagFilmKind,
     MeshBag, ServiceProvider, ServiceProviderBenefactor, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
-    BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany
+    BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
+    Provider
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind, VehicleBrand,
@@ -1236,3 +1237,9 @@ class InsuranceCompanyAdmin(admin.ModelAdmin):
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
+
+
+@admin.register(Provider)
+class ProviderAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_enabled', 'organization')
+    list_filter = ('is_enabled',)
