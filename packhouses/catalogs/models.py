@@ -3,7 +3,6 @@ from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizati
                            CleanNameOrAliasAndOrganizationMixin, CleanNameAndMarketMixin, CleanNameAndProductMixin,
                            CleanNameAndProductProviderMixin, CleanNameAndProductProducerMixin,
                            CleanNameAndProviderMixin,
-                           CleanProductVarietyMixin,
                            CleanProductVarietyMixin, CleanNameAndAliasProductMixin,
                            CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanNameAndMaquiladoraMixin)
 from organizations.models import Organization
