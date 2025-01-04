@@ -1,5 +1,153 @@
 [
 {
+  "model": "catalogs.productqualitykind",
+  "pk": 1,
+  "fields": {
+    "name": "NORMAL",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 1,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 2,
+  "fields": {
+    "name": "DESECHO",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 1,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 3,
+  "fields": {
+    "name": "ROÑA",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 1,
+    "order": 2
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 4,
+  "fields": {
+    "name": "MATERIA ORGÁNICA",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 1,
+    "order": 3
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 5,
+  "fields": {
+    "name": "NORMAL",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 2,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 6,
+  "fields": {
+    "name": "DESECHO",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 2,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 7,
+  "fields": {
+    "name": "ROÑA",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 2,
+    "order": 2
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 8,
+  "fields": {
+    "name": "MATERIA ORGÁNICA",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 2,
+    "order": 3
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 1,
+  "fields": {
+    "name": "ESTANDAR",
+    "is_enabled": true,
+    "product": 1,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 2,
+  "fields": {
+    "name": "ENMALLADO",
+    "is_enabled": true,
+    "product": 1,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 3,
+  "fields": {
+    "name": "ORGÁNICO",
+    "is_enabled": true,
+    "product": 1,
+    "order": 2
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 4,
+  "fields": {
+    "name": "ESTANDAR",
+    "is_enabled": true,
+    "product": 2,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 5,
+  "fields": {
+    "name": "ENMALLADO",
+    "is_enabled": true,
+    "product": 2,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 6,
+  "fields": {
+    "name": "ORGÁNICO",
+    "is_enabled": true,
+    "product": 2,
+    "order": 2
+  }
+},
+{
   "model": "catalogs.market",
   "pk": 1,
   "fields": {
@@ -187,7 +335,7 @@
     "code": "1",
     "is_enabled": true,
     "market": 1,
-    "order": 0
+    "order": 2
   }
 },
 {
@@ -198,7 +346,7 @@
     "code": "1",
     "is_enabled": true,
     "market": 1,
-    "order": 0
+    "order": 3
   }
 },
 {
@@ -253,7 +401,7 @@
     "code": "1",
     "is_enabled": false,
     "market": 1,
-    "order": 0
+    "order": 4
   }
 },
 {
@@ -283,7 +431,7 @@
   "pk": 10,
   "fields": {
     "name": "40",
-    "code": "1",
+    "code": "40.1",
     "is_enabled": true,
     "market": 1,
     "order": 0
@@ -294,7 +442,7 @@
   "pk": 11,
   "fields": {
     "name": "48",
-    "code": "1",
+    "code": "48.1",
     "is_enabled": true,
     "market": 1,
     "order": 1
@@ -305,7 +453,7 @@
   "pk": 12,
   "fields": {
     "name": "32",
-    "code": "1",
+    "code": "32.1",
     "is_enabled": true,
     "market": 1,
     "order": 0
@@ -316,7 +464,7 @@
   "pk": 13,
   "fields": {
     "name": "68",
-    "code": "1",
+    "code": "68.c",
     "is_enabled": true,
     "market": 1,
     "order": 2
@@ -327,7 +475,7 @@
   "pk": 1,
   "fields": {
     "kind": 8,
-    "name": "AGUACATE UNO",
+    "name": "AGUACATE",
     "description": null,
     "is_enabled": true,
     "organization": 1
@@ -393,6 +541,7 @@
   "pk": 1,
   "fields": {
     "name": "HASS UNO",
+    "alias": "HAS",
     "description": null,
     "is_enabled": true,
     "product": 1
@@ -403,6 +552,7 @@
   "pk": 2,
   "fields": {
     "name": "MENDEZ UNO",
+    "alias": "MEN",
     "description": null,
     "is_enabled": true,
     "product": 1
@@ -413,6 +563,7 @@
   "pk": 3,
   "fields": {
     "name": "CRIOLLO UNO",
+    "alias": "CR1",
     "description": null,
     "is_enabled": false,
     "product": 1
@@ -423,6 +574,7 @@
   "pk": 4,
   "fields": {
     "name": "HASS DOS",
+    "alias": "H2",
     "description": null,
     "is_enabled": true,
     "product": 2
@@ -433,6 +585,7 @@
   "pk": 5,
   "fields": {
     "name": "MENDEZ DOS",
+    "alias": "M2",
     "description": null,
     "is_enabled": true,
     "product": 2
@@ -443,6 +596,7 @@
   "pk": 6,
   "fields": {
     "name": "AZUL",
+    "alias": "A1",
     "description": null,
     "is_enabled": true,
     "product": 3
@@ -453,6 +607,7 @@
   "pk": 7,
   "fields": {
     "name": "VERDE",
+    "alias": "V1",
     "description": null,
     "is_enabled": true,
     "product": 3
@@ -463,6 +618,7 @@
   "pk": 8,
   "fields": {
     "name": "A1",
+    "alias": "A1",
     "description": null,
     "is_enabled": true,
     "product": 4
@@ -574,44 +730,6 @@
   "fields": {
     "product": 3,
     "name": "85 g +",
-    "is_enabled": true,
-    "order": 0
-  }
-},
-{
-  "model": "catalogs.productvarietysize",
-  "pk": 1,
-  "fields": {
-    "product": 1,
-    "product_variety": 1,
-    "market": 3,
-    "market_standard_product_size": 5,
-    "name": "a1",
-    "alias": "a1",
-    "description": null,
-    "product_variety_size_harvest_kind": 1,
-    "product_size_kind": 1,
-    "product_mass_volume_kind": 2,
-    "requires_corner_protector": false,
-    "is_enabled": true,
-    "order": 1
-  }
-},
-{
-  "model": "catalogs.productvarietysize",
-  "pk": 2,
-  "fields": {
-    "product": 1,
-    "product_variety": 2,
-    "market": 1,
-    "market_standard_product_size": 1,
-    "name": "a2",
-    "alias": "a2",
-    "description": null,
-    "product_variety_size_harvest_kind": 4,
-    "product_size_kind": 1,
-    "product_mass_volume_kind": 1,
-    "requires_corner_protector": false,
     "is_enabled": true,
     "order": 0
   }

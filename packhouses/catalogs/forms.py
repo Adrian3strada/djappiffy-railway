@@ -1,6 +1,6 @@
 from django import forms
 from .models import (
-    Product, ProductVarietySize, MarketStandardProductSize, OrchardCertification, HarvestingCrew,
+    Product, ProductSize, MarketStandardProductSize, OrchardCertification, HarvestingCrew,
     ProductHarvestSizeKind,
     HarvestingPaymentSetting
 )
@@ -9,26 +9,44 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from common.utils import is_instance_used
 
-class ProductVarietySizeInlineForm(forms.ModelForm):
 
+class ProductQualityKindInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['market_standard_product_size'].queryset = MarketStandardProductSize.objects.none()
-        if self.instance and self.instance.pk:
-            market = self.instance.market
-            if market:
-                self.fields[
-                    'market_standard_product_size'].queryset = MarketStandardProductSize.objects.filter(market=market)
-            else:
-                self.fields['market_standard_product_size'].queryset = MarketStandardProductSize.objects.none()
 
-    class Meta:
-        model = ProductVarietySize
-        fields = ['market', 'market_standard_product_size', 'name', 'alias', 'product_size_kind',
-                  'description', 'product_mass_volume_kind', 'requires_corner_protector', 'is_enabled', 'order']
+        for form in self.forms:
+            instance = form.instance
 
-    class Media:
-        js = ('js/admin/forms/catalogs/product_variety_size_inline.js',)
+            # Verifica si la instancia de ProductVariety está en uso
+            if instance.pk and ProductSize.objects.filter(product_quality_kind=instance).exists():
+                form.fields['name'].disabled = True
+                form.fields['name'].widget.attrs.update(
+                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
+                form.fields['has_performance'].disabled = True
+                form.fields['has_performance'].widget.attrs.update(
+                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
+                form.fields['DELETE'].initial = False
+                form.fields['DELETE'].disabled = True
+                form.fields['DELETE'].widget.attrs.update(
+                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
+
+
+class ProductMassVolumeKindInlineFormSet(BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for form in self.forms:
+            instance = form.instance
+
+            # Verifica si la instancia de ProductVariety está en uso
+            if instance.pk and ProductSize.objects.filter(product_mass_volume_kind=instance).exists():
+                form.fields['name'].disabled = True
+                form.fields['name'].widget.attrs.update(
+                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
+                form.fields['DELETE'].initial = False
+                form.fields['DELETE'].disabled = True
+                form.fields['DELETE'].widget.attrs.update(
+                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
 
 
 class ProductVarietyInlineFormSet(BaseInlineFormSet):
@@ -37,10 +55,14 @@ class ProductVarietyInlineFormSet(BaseInlineFormSet):
 
         for form in self.forms:
             instance = form.instance
+
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductVarietySize.objects.filter(product_variety=instance).exists():
+            if instance.pk and ProductSize.objects.filter(product_varieties=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
+                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
+                form.fields['alias'].disabled = True
+                form.fields['alias'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
                 form.fields['DELETE'].initial = False
                 form.fields['DELETE'].disabled = True
@@ -56,7 +78,7 @@ class ProductHarvestSizeKindInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductVarietySize.objects.filter(product_harvest_size_kind=instance).exists():
+            if instance.pk and ProductSize.objects.filter(product_harvest_size_kind=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})

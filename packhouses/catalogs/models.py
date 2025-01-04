@@ -17,7 +17,7 @@ from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices
     vehicle_scope_choices
 from django.core.exceptions import ValidationError
 from common.base.models import ProductKind
-from packhouses.packhouse_settings.models import (ProductSizeKind, ProductMassVolumeKind, Bank, VehicleOwnershipKind,
+from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   OrchardProductClassificationKind, OrchardCertificationVerifier,
                                                   OrchardCertificationKind, SupplyKind, SupplyPresentationKind)
@@ -81,11 +81,11 @@ class MarketClass(CleanNameAndMarketMixin, models.Model):
     @receiver(post_save, sender=Market)
     def create_market_classes(sender, instance, created, **kwargs):
         if created:
-            if not MarketClass.objects.filter(market=instance).exists():
+            existing_classes = MarketClass.objects.filter(market=instance).values_list('name', flat=True)
+            classes_to_create = [name for name in ['A', 'B', 'C'] if name not in existing_classes]
+            if classes_to_create:
                 MarketClass.objects.bulk_create([
-                    MarketClass(name='A', market=instance),
-                    MarketClass(name='B', market=instance),
-                    MarketClass(name='C', market=instance),
+                    MarketClass(name=name, market=instance) for name in classes_to_create
                 ])
 
     class Meta:
@@ -131,7 +131,7 @@ class MarketStandardProductSize(models.Model):
     class Meta:
         verbose_name = _('Market standard product size')
         verbose_name_plural = _('Market standard product sizes')
-        ordering = ('order', 'name')
+        ordering = ('market', 'order', 'name')
         constraints = [
             models.UniqueConstraint(fields=['name', 'market'], name='marketstandardproductsize_unique_name_market'),
         ]
@@ -190,10 +190,42 @@ class ProductHarvestSizeKind(CleanProductMixin, models.Model):
         ]
 
 
-class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanProductVarietyMixin, models.Model):
+class ProductQualityKind(CleanNameAndProductMixin, models.Model):
+    # Normal, roña, etc
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    has_performance = models.BooleanField(default=True, verbose_name=_('Take it for performance calculation'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
+
+    class Meta:
+        verbose_name = _('Product quality kind')
+        verbose_name_plural = _('Product quality kinds')
+        ordering = ('product', 'order',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product'], name='productqualitykind_unique_name_product'),
+        ]
+
+
+class ProductMassVolumeKind(CleanNameAndProductMixin, models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
+
+    class Meta:
+        verbose_name = _('Product mass volume kind')
+        verbose_name_plural = _('Product mass volume kinds')
+        ordering = ('product', 'order',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product'], name='productmassvolumekind_unique_name_product'),
+        ]
+
+
+class ProductSize(CleanNameAndAliasProductMixin, models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product_varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Product varieties'), blank=False)
+    markets = models.ManyToManyField(Market, verbose_name=_('Markets'), blank=False)
     market_standard_product_size = models.ForeignKey(MarketStandardProductSize,
                                                      verbose_name=_('Market standard product size'),
                                                      help_text=_(
@@ -203,34 +235,30 @@ class ProductVarietySize(CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanPr
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
     product_harvest_size_kind = models.ForeignKey(ProductHarvestSizeKind,
-                                                  verbose_name=_('Product harvest size kind'),
+                                                  verbose_name=_('Harvest size kind'),
                                                   on_delete=models.PROTECT)
-    product_size_kind = models.ForeignKey(ProductSizeKind, verbose_name=_('Size kind'),
-                                          on_delete=models.PROTECT)  # Normal, roña, etc
+    product_quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Quality kind'),
+                                             on_delete=models.PROTECT)  # Normal, roña, etc
     product_mass_volume_kind = models.ForeignKey(ProductMassVolumeKind, verbose_name=_('Mass volume kind'),
                                                  on_delete=models.PROTECT,
                                                  help_text=_(
                                                      'To separate sizes by product kind in the mass volume report'))  # Estandar, enmallado, orgánico...
-    requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
+    # requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    order = models.PositiveIntegerField(default=0,
-                                        verbose_name=_('Order'))  # TODO: implementar ordenamiento con drag and drop
-
-    @property
-    def product_name(self):
-        return self.product_variety.product.name if self.product_variety and self.product_variety.product else None
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 
     def __str__(self):
-        return f"{self.product_variety.product.name}: {self.product_variety.name} ({self.name})"
+        return f"{self.name} ({self.product.name})"
 
     class Meta:
-        verbose_name = _('Product variety size')
-        verbose_name_plural = _('Product variety sizes')
-        ordering = ['product_variety', 'order']
+        verbose_name = _('Product size')
+        verbose_name_plural = _('Product sizes')
+        ordering = ['product', 'order']
         constraints = [
-            models.UniqueConstraint(fields=['name', 'product', 'product_variety', 'market', ],
-                                    name='productvarietysize_unique_name_product_product_variety_market'),
+            models.UniqueConstraint(fields=['name', 'product'], name='productvarietysize_unique_name_product'),
+            models.UniqueConstraint(fields=['alias', 'product'], name='productvarietysize_unique_alias_product'),
         ]
+
 
 
 # /Products
@@ -838,7 +866,7 @@ class MeshBagFilmKind(models.Model):
 class MeshBag(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    product_variety_size = models.ForeignKey(ProductVarietySize, verbose_name=_('Product variety size'),
+    product_variety_size = models.ForeignKey(ProductSize, verbose_name=_('Product variety size'),
                                              on_delete=models.PROTECT)
     mesh_bags_per_box = models.PositiveIntegerField(verbose_name=_('Mesh bags per box'))
     pieces_per_mesh_bag = models.PositiveIntegerField(verbose_name=_('Pieces per mesh bags'))
@@ -1054,7 +1082,7 @@ class ProductPackaging(models.Model):
     box_kind = models.ForeignKey(BoxKind, verbose_name=_('Box kind'),
                                  on_delete=models.PROTECT)  # TODO: detallar tipos de caja por tipo de producto?
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
-    product_variety_size = models.ForeignKey(ProductVarietySize, verbose_name=_('Product variety size'),
+    product_variety_size = models.ForeignKey(ProductSize, verbose_name=_('Product variety size'),
                                              on_delete=models.PROTECT)
     kg_per_box = models.FloatField(verbose_name=_('Kg per box'))
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT,

@@ -49,17 +49,13 @@ class SubdomainDetectionMiddleware:
 
     def __call__(self, request):
         requested_hostname = self._get_request_hostname(request)
-        print("Requested hostname: ", requested_hostname)
-        print("Request path: ", request.path)
 
-        # if re.match(r'^/dadmin/', request.path) and (not request.user.is_superuser):
         if re.match(r'^/(dadmin|rest)/.+', request.path):
             try:
                 # Verificar si existe PackhouseExporterProfile asociada al HOST
                 requested_organization_profile = PackhouseExporterProfile.objects.get(
                     hostname=requested_hostname,
                 )
-                print("Requested packhouse profile: ", requested_organization_profile)
                 try:
                     # Verificar si existe Organization asociada al PackhouseExporterProfile
                     requested_organization = Organization.objects.get(
@@ -67,9 +63,7 @@ class SubdomainDetectionMiddleware:
                     )
                     request.session['organization_id'] = requested_organization.id
                     request.organization = requested_organization
-                    print("Requested organization: ", requested_organization)
                 except Organization.DoesNotExist:
-                    print("Organization does not exist")
                     raise Http404
             except PackhouseExporterProfile.DoesNotExist:
                 print("PackhouseExporterProfile does not exist")
@@ -78,7 +72,7 @@ class SubdomainDetectionMiddleware:
             if request.user.is_authenticated:
                 if not self._is_user_allowed(request.user, requested_organization):
                     raise PermissionDenied
-                print("User is allowed")
+                # print("User is allowed")
 
         response = self.get_response(request)
 
@@ -92,8 +86,6 @@ class SubdomainDetectionMiddleware:
 
         request_host = request.get_host()
         request_hostname = request_host.split(':')[0]
-        print("_get_request_hostname request_hostname: ", request_hostname)
-
         return request_hostname
 
     def _is_user_in_organization(self, user, organization):

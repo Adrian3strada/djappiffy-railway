@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (Status, ProductSizeKind, ProductMassVolumeKind, Bank, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
+from .models import (Status, Bank, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
                      PaymentKind, VehicleBrand, OrchardProductClassificationKind, OrchardCertificationVerifier,
                      OrchardCertificationKind, SupplyKind, SupplyPresentationKind)
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget
@@ -27,42 +27,6 @@ class StatusAdmin(ByOrganizationAdminMixin):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj, exclude=[Organization]):
             readonly_fields.extend(['name', 'has_performance', 'organization'])
-        return readonly_fields
-
-
-@admin.register(ProductSizeKind)
-class ProductSizeKindAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'has_performance', 'is_enabled')
-    list_filter = ('has_performance', 'is_enabled',)
-    fields = ('name', 'has_performance', 'is_enabled', 'order')
-
-    @uppercase_form_charfield('name')
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        return form
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Organization]):
-            readonly_fields.extend(['name', 'has_performance', 'organization'])
-        return readonly_fields
-
-
-@admin.register(ProductMassVolumeKind)
-class ProductMassVolumeKindAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'is_enabled')
-    list_filter = ('is_enabled',)
-    fields = ('name', 'is_enabled', 'order')
-
-    @uppercase_form_charfield('name')
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        return form
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Organization]):
-            readonly_fields.extend(['name', 'organization'])
         return readonly_fields
 
 
