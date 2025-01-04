@@ -37,6 +37,21 @@ class ByProductForOrganizationFilter(admin.SimpleListFilter):
         return queryset
 
 
+
+class ByProductVarietiesForOrganizationFilter(admin.SimpleListFilter):
+    title = _('Product Variety')
+    parameter_name = 'product_varieties'
+
+    def lookups(self, request, model_admin):
+        product_varietieses = ProductVariety.objects.filter(product__organization=request.organization, is_enabled=True)
+        return [(product_variety.id, f"{product_variety.product.name}: {product_variety.name}") for product_variety in product_varietieses]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(product_varieties__id=self.value())
+        return queryset
+
+
 class ByProductVarietyForOrganizationFilter(admin.SimpleListFilter):
     title = _('Product Variety')
     parameter_name = 'product_variety'
@@ -48,6 +63,20 @@ class ByProductVarietyForOrganizationFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(product_variety__id=self.value())
+        return queryset
+
+
+class ByMarketsForOrganizationFilter(admin.SimpleListFilter):
+    title = _('Market')
+    parameter_name = 'markets'
+
+    def lookups(self, request, model_admin):
+        marketses = Market.objects.filter(organization=request.organization, is_enabled=True)
+        return [(market.id, market.name) for market in marketses]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(markets__id=self.value())
         return queryset
 
 
@@ -99,7 +128,7 @@ class ByProductMassVolumeKindForOrganizationFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         product_mass_volume_kinds = ProductMassVolumeKind.objects.filter(product__organization=request.organization, is_enabled=True)
-        return [(product_mass_volume_kind.id, product_mass_volume_kind.name) for product_mass_volume_kind in product_mass_volume_kinds]
+        return [(product_mass_volume_kind.id, f"{product_mass_volume_kind.product.name}: {product_mass_volume_kind.name}") for product_mass_volume_kind in product_mass_volume_kinds]
 
     def queryset(self, request, queryset):
         if self.value():

@@ -141,14 +141,30 @@ document.addEventListener('DOMContentLoaded', function () {
   })
 
   nameField.on('input', () => {
-    // set short alias
+    const value = nameField.val();
+    const hasLetters = /[a-zA-Z]/.test(value);
+
+    if (hasLetters) {
+      const sanitizedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // Remove accents
+      const letters = sanitizedValue.match(/[a-zA-Z]/g) || [];
+      const firstThreeLetters = letters.slice(0, 3).join('').toUpperCase();
+      const numbers = sanitizedValue.match(/[0-9]/g) || [];
+      aliasField.val(numbers.join('') + firstThreeLetters);
+    } else {
+      aliasField.val(value);
+    }
   });
 
-  marketsField.on('change', (event) => {
-    if (marketsField.val()) {
-      updateMarketStandardProductSize();
-      const selectedOption = event.target.options[event.target.selectedIndex];
-      console.log("selectedOption", selectedOption);
+  nameField.on('input', () => {
+    const value = nameField.val();
+    const isNumeric = /^\d+$/.test(value);
+
+    if (isNumeric) {
+      aliasField.val(value);
+    } else {
+      const sanitizedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // Remove accents
+      const firstThreeChars = sanitizedValue.replace(/[^a-zA-Z0-9]/g, '').substring(0, 3).toUpperCase();
+      aliasField.val(firstThreeChars);
     }
   });
 
@@ -164,8 +180,9 @@ document.addEventListener('DOMContentLoaded', function () {
     updateProductHarvestSizeKind();
     updateProductQualityKind();
     updateProductMassVolumeKind();
+    if (!marketStandardProductSizeField.val()) toggleFieldVisibility(marketStandardProductSizeField, true);
   }
 
   if (!marketsField.val()) updateMarketStandardProductSize();
-  if (!marketStandardProductSizeField.val()) toggleFieldVisibility(marketStandardProductSizeField, false);
+  if (!marketStandardProductSizeField.val()) toggleFieldVisibility(marketStandardProductSizeField, true);
 });

@@ -16,6 +16,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, Ve
                                                   )
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
+                    ProductQualityKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet)
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization, OrganizationUser
@@ -24,10 +25,12 @@ from cities_light.models import Country, Region, SubRegion, City
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from .filters import (StatesForOrganizationCountryFilter,
-                      ByProductForOrganizationFilter, ByProductVarietyForOrganizationFilter,
-                      ByMarketForOrganizationFilter, ByProductQualityKindForOrganizationFilter,
+                      ByProductForOrganizationFilter, ByProductQualityKindForOrganizationFilter,
+                      ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
+                      ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
-                      ProductKindForPackagingFilter)
+                      ProductKindForPackagingFilter
+                      )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
 from common.base.models import ProductKind
@@ -118,6 +121,7 @@ class ProductQualityKindInline(admin.TabularInline):
     ordering = ['order', 'name']
     verbose_name = _('Quality kind')
     verbose_name_plural = _('Quality kind')
+    formset = ProductQualityKindInlineFormSet
 
     @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
@@ -132,6 +136,7 @@ class ProductMassVolumeKindInline(admin.TabularInline):
     ordering = ['order', '-name']
     verbose_name = _('Mass volume kind')
     verbose_name_plural = _('Mass volume kinds')
+    formset = ProductMassVolumeKindInlineFormSet
 
     @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
@@ -149,6 +154,7 @@ class ProductVarietyInline(admin.TabularInline):
     formset = ProductVarietyInlineFormSet
 
     @uppercase_formset_charfield('name')
+    @uppercase_alphanumeric_formset_charfield('alias')
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
@@ -200,41 +206,13 @@ class ProductAdmin(ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(ProductVariety)
-class ProductVarietyAdmin(ByProductForOrganizationAdminMixin):
-    list_display = ('name', 'product', 'description', 'is_enabled')
-    list_filter = (ByProductForOrganizationFilter, 'is_enabled',)
-    search_fields = ('name', 'product__name', 'product__kind__name', 'description')
-    fields = ('product', 'name', 'alias', 'description', 'is_enabled')
-    # inlines = [ProductVarietySizeInline]
-
-    @uppercase_form_charfield('name')
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        return form
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Product]):
-            readonly_fields.extend(['name', 'product'])
-        return readonly_fields
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "product":
-            if hasattr(request, 'organization'):
-                kwargs["queryset"] = Product.objects.filter(organization=request.organization, is_enabled=True)
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            return formfield
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-
 @admin.register(ProductSize)
 class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
     list_display = (
         'name', 'alias', 'product', 'get_product_varieties', 'get_markets', 'product_harvest_size_kind',
         'product_quality_kind', 'product_mass_volume_kind', 'is_enabled', 'order')
     list_filter = (
-        ByProductForOrganizationFilter, ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
+        ByProductForOrganizationFilter, ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
         ByProductHarvestSizeKindForOrganizationFilter, ByProductQualityKindForOrganizationFilter,
         ByProductMassVolumeKindForOrganizationFilter, 'is_enabled'
     )
@@ -242,7 +220,7 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
     ordering = ['order']
 
     @uppercase_form_charfield('name')
-    @uppercase_form_charfield('alias')
+    @uppercase_alphanumeric_form_charfield('alias')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
@@ -294,15 +272,12 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
             if hasattr(request, 'organization'):
                 kwargs["queryset"] = MarketStandardProductSize.objects.filter(market__organization=request.organization,
                                                                              is_enabled=True)
-                print("queryset 1", kwargs["queryset"])
                 if request.POST:
                     markets_id = request.POST.get('markets')
                 else:
                     markets_id = obj.markets.all().values_list('id', flat=True) if obj else None
-                    print(markets_id)
                 if markets_id:
-                    kwargs["queryset"] = kwargs["queryset"].filter(market__in=markets_id)
-                    print("queryset 2", kwargs["queryset"])
+                    kwargs["queryset"] = kwargs["queryset"].filter(market__in=list(markets_id))
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: f"{item.market.name}: {item.name}"
             return formfield
