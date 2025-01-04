@@ -1,8 +1,7 @@
 from django.contrib import admin
 from cities_light.models import Country, Region, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
-from .models import Product, ProductVariety, Market, ProductHarvestSizeKind
-from ..packhouse_settings.models import ProductSizeKind, ProductMassVolumeKind
+from .models import Product, ProductVariety, Market, ProductHarvestSizeKind, ProductQualityKind, ProductMassVolumeKind
 from common.base.models import ProductKind
 from django.utils.translation import gettext_lazy as _
 
@@ -80,13 +79,13 @@ class ByProductHarvestSizeKindForOrganizationFilter(admin.SimpleListFilter):
         return queryset
 
 
-class ByProductSizeKindForOrganizationFilter(admin.SimpleListFilter):
+class ByProductQualityKindForOrganizationFilter(admin.SimpleListFilter):
     title = _('Size Kind')
     parameter_name = 'product_size_kind'
 
     def lookups(self, request, model_admin):
         print("request.organization", request.organization)
-        product_size_kinds = ProductSizeKind.objects.filter(organization=request.organization, is_enabled=True)
+        product_size_kinds = ProductQualityKind.objects.filter(product__organization=request.organization, is_enabled=True)
         print("product_size_kinds", product_size_kinds)
         return [(product_size_kind.id, product_size_kind.name) for product_size_kind in product_size_kinds]
 
@@ -101,7 +100,7 @@ class ByProductMassVolumeKindForOrganizationFilter(admin.SimpleListFilter):
     parameter_name = 'product_mass_volume_kind'
 
     def lookups(self, request, model_admin):
-        product_mass_volume_kinds = ProductMassVolumeKind.objects.filter(organization=request.organization, is_enabled=True)
+        product_mass_volume_kinds = ProductMassVolumeKind.objects.filter(product__organization=request.organization, is_enabled=True)
         return [(product_mass_volume_kind.id, product_mass_volume_kind.name) for product_mass_volume_kind in product_mass_volume_kinds]
 
     def queryset(self, request, queryset):

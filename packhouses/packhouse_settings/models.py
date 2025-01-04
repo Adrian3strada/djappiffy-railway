@@ -22,38 +22,6 @@ class Status(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-class ProductSizeKind(CleanNameAndOrganizationMixin, models.Model):
-    # Normal, roña, etc
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    has_performance = models.BooleanField(default=True, verbose_name=_('Take it for performance calculation'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
-
-    class Meta:
-        verbose_name = _('Product size kind')
-        verbose_name_plural = _('Product size kinds')
-        ordering = ('organization', 'order',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='productkind_unique_name_organization'),
-        ]
-
-
-class ProductMassVolumeKind(CleanNameAndOrganizationMixin, models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))  # TODO: implementar ordenamiento con drag and drop
-
-    class Meta:
-        verbose_name = _('Mass volume kind')
-        verbose_name_plural = _('Mass volume kinds')
-        ordering = ('organization', 'order',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='massvolumekind_unique_name_organization'),
-        ]
-
-
 class Bank(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=120, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))

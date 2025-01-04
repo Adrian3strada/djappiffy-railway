@@ -9,27 +9,6 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from common.utils import is_instance_used
 
-class ProductVarietySizeInlineForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['market_standard_product_size'].queryset = MarketStandardProductSize.objects.none()
-        if self.instance and self.instance.pk:
-            market = self.instance.market
-            if market:
-                self.fields[
-                    'market_standard_product_size'].queryset = MarketStandardProductSize.objects.filter(market=market)
-            else:
-                self.fields['market_standard_product_size'].queryset = MarketStandardProductSize.objects.none()
-
-    class Meta:
-        model = ProductSize
-        fields = ['markets', 'market_standard_product_size', 'name', 'alias', 'product_size_kind',
-                  'description', 'product_mass_volume_kind', 'requires_corner_protector', 'is_enabled', 'order']
-
-    class Media:
-        js = ('js/admin/forms/catalogs/product_variety_size_inline.js',)
-
 
 class ProductVarietyInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):

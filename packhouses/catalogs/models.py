@@ -17,7 +17,7 @@ from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices
     vehicle_scope_choices
 from django.core.exceptions import ValidationError
 from common.base.models import ProductKind
-from packhouses.packhouse_settings.models import (ProductSizeKind, ProductMassVolumeKind, Bank, VehicleOwnershipKind,
+from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   OrchardProductClassificationKind, OrchardCertificationVerifier,
                                                   OrchardCertificationKind, SupplyKind, SupplyPresentationKind)
@@ -190,6 +190,38 @@ class ProductHarvestSizeKind(CleanProductMixin, models.Model):
         ]
 
 
+class ProductQualityKind(CleanNameAndProductMixin, models.Model):
+    # Normal, roña, etc
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    has_performance = models.BooleanField(default=True, verbose_name=_('Take it for performance calculation'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
+
+    class Meta:
+        verbose_name = _('Product quality kind')
+        verbose_name_plural = _('Product quality kinds')
+        ordering = ('product', 'order',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product'], name='productqualitykind_unique_name_product'),
+        ]
+
+
+class ProductMassVolumeKind(CleanNameAndProductMixin, models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
+
+    class Meta:
+        verbose_name = _('Product mass volume kind')
+        verbose_name_plural = _('Product mass volume kinds')
+        ordering = ('product', 'order',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product'], name='productmassvolumekind_unique_name_product'),
+        ]
+
+
 class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Product variety'), blank=False)
@@ -205,8 +237,8 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     product_harvest_size_kind = models.ForeignKey(ProductHarvestSizeKind,
                                                   verbose_name=_('Product harvest size kind'),
                                                   on_delete=models.PROTECT)
-    product_size_kind = models.ForeignKey(ProductSizeKind, verbose_name=_('Size kind'),
-                                          on_delete=models.PROTECT)  # Normal, roña, etc
+    product_quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Size kind'),
+                                             on_delete=models.PROTECT)  # Normal, roña, etc
     product_mass_volume_kind = models.ForeignKey(ProductMassVolumeKind, verbose_name=_('Mass volume kind'),
                                                  on_delete=models.PROTECT,
                                                  help_text=_(
@@ -226,6 +258,8 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
             models.UniqueConstraint(fields=['name', 'product'], name='productvarietysize_unique_name_product'),
             models.UniqueConstraint(fields=['alias', 'product'], name='productvarietysize_unique_alias_product'),
         ]
+
+
 
 # /Products
 

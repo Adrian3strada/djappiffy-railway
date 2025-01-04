@@ -1,5 +1,153 @@
 [
 {
+  "model": "catalogs.productqualitykind",
+  "pk": 1,
+  "fields": {
+    "name": "NORMAL",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 1,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 2,
+  "fields": {
+    "name": "DESECHO",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 1,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 3,
+  "fields": {
+    "name": "ROÑA",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 1,
+    "order": 2
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 4,
+  "fields": {
+    "name": "MATERIA ORGÁNICA",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 1,
+    "order": 3
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 5,
+  "fields": {
+    "name": "NORMAL",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 2,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 6,
+  "fields": {
+    "name": "DESECHO",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 2,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 7,
+  "fields": {
+    "name": "ROÑA",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 2,
+    "order": 2
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 8,
+  "fields": {
+    "name": "MATERIA ORGÁNICA",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 2,
+    "order": 3
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 1,
+  "fields": {
+    "name": "ESTANDAR",
+    "is_enabled": true,
+    "product": 1,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 2,
+  "fields": {
+    "name": "ENMALLADO",
+    "is_enabled": true,
+    "product": 1,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 3,
+  "fields": {
+    "name": "ORGÁNICO",
+    "is_enabled": true,
+    "product": 1,
+    "order": 2
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 4,
+  "fields": {
+    "name": "ESTANDAR",
+    "is_enabled": true,
+    "product": 2,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 5,
+  "fields": {
+    "name": "ENMALLADO",
+    "is_enabled": true,
+    "product": 2,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 6,
+  "fields": {
+    "name": "ORGÁNICO",
+    "is_enabled": true,
+    "product": 2,
+    "order": 2
+  }
+},
+{
   "model": "catalogs.market",
   "pk": 1,
   "fields": {
