@@ -131,7 +131,7 @@ class MarketStandardProductSize(models.Model):
     class Meta:
         verbose_name = _('Market standard product size')
         verbose_name_plural = _('Market standard product sizes')
-        ordering = ('order', 'name')
+        ordering = ('market', 'order', 'name')
         constraints = [
             models.UniqueConstraint(fields=['name', 'market'], name='marketstandardproductsize_unique_name_market'),
         ]
@@ -224,8 +224,8 @@ class ProductMassVolumeKind(CleanNameAndProductMixin, models.Model):
 
 class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    product_varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Product variety'), blank=False)
-    markets = models.ManyToManyField(Market, verbose_name=_('Market'), blank=False)
+    product_varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Product varieties'), blank=False)
+    markets = models.ManyToManyField(Market, verbose_name=_('Markets'), blank=False)
     market_standard_product_size = models.ForeignKey(MarketStandardProductSize,
                                                      verbose_name=_('Market standard product size'),
                                                      help_text=_(
@@ -235,15 +235,15 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
     product_harvest_size_kind = models.ForeignKey(ProductHarvestSizeKind,
-                                                  verbose_name=_('Product harvest size kind'),
+                                                  verbose_name=_('Harvest size kind'),
                                                   on_delete=models.PROTECT)
-    product_quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Size kind'),
+    product_quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Quality kind'),
                                              on_delete=models.PROTECT)  # Normal, roña, etc
     product_mass_volume_kind = models.ForeignKey(ProductMassVolumeKind, verbose_name=_('Mass volume kind'),
                                                  on_delete=models.PROTECT,
                                                  help_text=_(
                                                      'To separate sizes by product kind in the mass volume report'))  # Estandar, enmallado, orgánico...
-    requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
+    # requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 

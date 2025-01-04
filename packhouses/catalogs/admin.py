@@ -23,7 +23,7 @@ from cities_light.models import Country, Region, SubRegion, City
 
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
-from .filters import (StateFilterUserCountry,
+from .filters import (StatesForOrganizationCountryFilter,
                       ByProductForOrganizationFilter, ByProductVarietyForOrganizationFilter,
                       ByMarketForOrganizationFilter, ByProductQualityKindForOrganizationFilter,
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
@@ -235,9 +235,8 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
         'product_quality_kind', 'product_mass_volume_kind', 'is_enabled', 'order')
     list_filter = (
         ByProductForOrganizationFilter, ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
-        ByProductHarvestSizeKindForOrganizationFilter,
-        ByProductQualityKindForOrganizationFilter, ByProductMassVolumeKindForOrganizationFilter,
-        'requires_corner_protector', 'is_enabled'
+        ByProductHarvestSizeKindForOrganizationFilter, ByProductQualityKindForOrganizationFilter,
+        ByProductMassVolumeKindForOrganizationFilter, 'is_enabled'
     )
     search_fields = ('name', 'alias', 'product__name')
     ordering = ['order']
@@ -295,47 +294,60 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
             if hasattr(request, 'organization'):
                 kwargs["queryset"] = MarketStandardProductSize.objects.filter(market__organization=request.organization,
                                                                              is_enabled=True)
+                print("queryset 1", kwargs["queryset"])
                 if request.POST:
                     markets_id = request.POST.get('markets')
                 else:
                     markets_id = obj.markets.all().values_list('id', flat=True) if obj else None
+                    print(markets_id)
                 if markets_id:
                     kwargs["queryset"] = kwargs["queryset"].filter(market__in=markets_id)
+                    print("queryset 2", kwargs["queryset"])
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: f"{item.market.name}: {item.name}"
             return formfield
 
         if db_field.name == "product_harvest_size_kind":
             if hasattr(request, 'organization'):
                 kwargs["queryset"] = ProductHarvestSizeKind.objects.filter(product__organization=request.organization,
                                                                            is_enabled=True)
-                print("kwargs[queryset]1", kwargs["queryset"])
                 if request.POST:
                     product_id = request.POST.get('product')
                 else:
                     product_id = obj.product_id if obj else None
                 if product_id:
                     kwargs["queryset"] = kwargs["queryset"].filter(product_id=product_id)
-                print("product_id", product_id)
-                print("kwargs[queryset]2", kwargs["queryset"])
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
 
         if db_field.name == "product_quality_kind":
             if hasattr(request, 'organization'):
-                kwargs["queryset"] = ProductQualityKind.objects.filter(organization=request.organization, is_enabled=True)
+                kwargs["queryset"] = ProductQualityKind.objects.filter(product__organization=request.organization, is_enabled=True)
+                if request.POST:
+                    product_id = request.POST.get('product')
+                else:
+                    product_id = obj.product_id if obj else None
+                if product_id:
+                    kwargs["queryset"] = kwargs["queryset"].filter(product_id=product_id)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
 
         if db_field.name == "product_mass_volume_kind":
             if hasattr(request, 'organization'):
-                kwargs["queryset"] = ProductMassVolumeKind.objects.filter(organization=request.organization, is_enabled=True)
+                kwargs["queryset"] = ProductMassVolumeKind.objects.filter(product__organization=request.organization, is_enabled=True)
+                if request.POST:
+                    product_id = request.POST.get('product')
+                else:
+                    product_id = obj.product_id if obj else None
+                if product_id:
+                    kwargs["queryset"] = kwargs["queryset"].filter(product_id=product_id)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/product_variety_size.js',)
+        js = ('js/admin/forms/packhouses/catalogs/product_size.js',)
 
 
 class ProductProviderBenefactorInline(admin.TabularInline):
@@ -635,7 +647,7 @@ class GathererAdmin(admin.ModelAdmin):
     list_display = (
     'name', 'zone', 'tax_registry_code', 'state', 'city', 'postal_code', 'address', 'email', 'phone_number', 'vehicle',
     'is_enabled')
-    list_filter = (StateFilterUserCountry, 'is_enabled')
+    list_filter = (StatesForOrganizationCountryFilter, 'is_enabled')
     search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
     fields = (
     'name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district',

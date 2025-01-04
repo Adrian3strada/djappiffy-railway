@@ -80,14 +80,12 @@ class ByProductHarvestSizeKindForOrganizationFilter(admin.SimpleListFilter):
 
 
 class ByProductQualityKindForOrganizationFilter(admin.SimpleListFilter):
-    title = _('Size Kind')
-    parameter_name = 'product_size_kind'
+    title = _('Quality Kind')
+    parameter_name = 'product_quality_kind'
 
     def lookups(self, request, model_admin):
-        print("request.organization", request.organization)
-        product_size_kinds = ProductQualityKind.objects.filter(product__organization=request.organization, is_enabled=True)
-        print("product_size_kinds", product_size_kinds)
-        return [(product_size_kind.id, product_size_kind.name) for product_size_kind in product_size_kinds]
+        product_quality_kinds = ProductQualityKind.objects.filter(product__organization=request.organization, is_enabled=True)
+        return [(product_quality_kind.id, f"{product_quality_kind.product.name}: {product_quality_kind.name}") for product_quality_kind in product_quality_kinds]
 
     def queryset(self, request, queryset):
         if self.value():
@@ -109,16 +107,14 @@ class ByProductMassVolumeKindForOrganizationFilter(admin.SimpleListFilter):
         return queryset
 
 
-class StateFilterUserCountry(admin.SimpleListFilter):
+class StatesForOrganizationCountryFilter(admin.SimpleListFilter):
     title = 'State'
     parameter_name = 'state'
 
     def lookups(self, request, model_admin):
-        user_profile = UserProfile.objects.get(user=request.user)
         if hasattr(request, 'organization'):
             organization_profile = OrganizationProfile.objects.get(organization=request.organization)
             country = organization_profile.country
-
             states = Region.objects.filter(country_id=country.id)
             return [(state.id, state.display_name) for state in states]
         return Region.objects.none()
