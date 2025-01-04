@@ -9,7 +9,8 @@ from .models import (
     HarvestingCrewBeneficiary, HarvestingPaymentSetting, Supply, SupplyProvider, MeshBagKind, MeshBagFilmKind,
     MeshBag, ServiceProvider, ServiceProviderBenefactor, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
-    BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany
+    BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
+    Provider, ProviderBeneficiary, ProviderBalance,
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind, VehicleBrand,
@@ -1264,3 +1265,113 @@ class InsuranceCompanyAdmin(admin.ModelAdmin):
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
+
+
+# Providers
+
+class ProviderBeneficiaryInline(admin.StackedInline):
+    model = ProviderBeneficiary
+    extra = 0
+    can_delete = True
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+
+class ProviderBalanceInline(admin.StackedInline):
+    model = ProviderBalance
+    min_num = 1
+    max_num = 1
+    can_delete = False
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+
+@admin.register(Provider)
+class ProviderAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'category', 'is_enabled')
+    list_filter = ('category', 'is_enabled',)
+    inlines = (ProviderBeneficiaryInline, ProviderBalanceInline)
+
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('neighborhood')
+    @uppercase_form_charfield('address')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = Provider.objects.get(id=object_id) if object_id else None
+
+        if db_field.name == "country":
+            kwargs["queryset"] = Country.objects.all()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "state":
+            if request.POST:
+                country_id = request.POST.get('country')
+            else:
+                country_id = obj.country_id if obj else None
+            if country_id:
+                kwargs["queryset"] = Region.objects.filter(country_id=country_id)
+            else:
+                kwargs["queryset"] = Region.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "city":
+            if request.POST:
+                state_id = request.POST.get('state')
+            else:
+                state_id = obj.state_id if obj else None
+            if state_id:
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = SubRegion.objects.none()
+            print("city", kwargs["queryset"])
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
+            else:
+                kwargs["queryset"] = City.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/common/country-state-city.js',)
+
+
+@admin.register(ProviderBeneficiary)
+class ProviderBeneficiaryAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
+
+
+@admin.register(ProviderBalance)
+class ProviderBalanceAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+
+# /Providers

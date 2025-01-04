@@ -34,3 +34,11 @@ def vehicle_scope_choices():
         ('packhouse', _('PACKHOUSE')),
         ('harvesting_crew', _('HARVESTING CREW')),
     ]
+
+def get_provider_categories_choices():
+    return [
+        ('harvesting_crew', _('Harvesting crew')),
+        ('product', _('Product')),
+        ('service', _('Service')),
+        ('supply', _('Supply')),
+    ]
