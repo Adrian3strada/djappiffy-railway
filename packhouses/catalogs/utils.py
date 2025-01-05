@@ -31,14 +31,15 @@ def get_payment_choices():
 
 def vehicle_scope_choices():
     return [
-        ('packhouse', _('PACKHOUSE')),
-        ('harvesting_crew', _('HARVESTING CREW')),
+        ('packhouse', _('Packhouse')),
+        ('harvesting_crew', _('Harvesting crew')),
     ]
 
 def get_provider_categories_choices():
     return [
-        ('harvesting_crew', _('Harvesting crew')),
-        ('product', _('Product')),
-        ('service', _('Service')),
-        ('supply', _('Supply')),
+        ('product_provider', _('Product provider')),
+        ('service_provider', _('Service provider')),
+        ('supply provider', _('Supply provider')),
+        ('harvesting_provider', _('Harvesting provider')),
+        ('product_producer', _('Product producer')),
     ]

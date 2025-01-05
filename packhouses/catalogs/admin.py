@@ -10,7 +10,7 @@ from .models import (
     MeshBag, ServiceProvider, ServiceProviderBenefactor, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    Provider, ProviderBeneficiary, ProviderBalance,
+    Provider, ProviderBeneficiary, ProviderFinancialBalance,
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind, VehicleBrand,
@@ -25,12 +25,13 @@ from cities_light.models import Country, Region, SubRegion, City
 
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
-from .filters import (StatesForOrganizationCountryFilter,
+from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizationMarketsFilter,
                       ByProductForOrganizationFilter, ByProductQualityKindForOrganizationFilter,
                       ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
                       ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
-                      ProductKindForPackagingFilter
+                      ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
+                      ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -83,14 +84,18 @@ class MarketStandardProductSizeInline(admin.TabularInline):
 
 @admin.register(Market)
 class MarketAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'alias', 'is_enabled')
-    list_filter = ('is_enabled',)
+    list_display = ('name', 'alias', 'get_countries', 'is_foreign', 'is_mixable', 'is_enabled')
+    list_filter = (ByCountryForOrganizationMarketsFilter, 'is_foreign', 'is_mixable', 'is_enabled',)
     search_fields = ('name', 'alias')
     fields = ('name', 'alias', 'countries', 'management_cost_per_kg', 'is_foreign', 'is_mixable',
               'label_language', 'address_label', 'is_enabled')
     inlines = [MarketClassInline, MarketStandardProductSizeInline]
 
     # TODO: revisar si KGCostMarketInline si va en Market o va por variedad o donde?
+
+    def get_countries(self, obj):
+        return ", ".join([m.name for m in obj.countries.all()])
+    get_countries.short_description = _('countries')
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
@@ -177,7 +182,7 @@ class ProductHarvestSizeKindInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'kind', 'description', 'is_enabled')
+    list_display = ('name', 'kind', 'is_enabled')
     list_filter = (ProductKindForPackagingFilter, 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
     fields = ('kind', 'name', 'description', 'is_enabled')
@@ -228,7 +233,7 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
 
     def get_product_varieties(self, obj):
         return ", ".join([pv.name for pv in obj.product_varieties.all()])
-    get_product_varieties.short_description = _('Product Varieties')
+    get_product_varieties.short_description = _('Varieties')
 
     def get_markets(self, obj):
         return ", ".join([m.name for m in obj.markets.all()])
@@ -1280,7 +1285,7 @@ class ProviderBeneficiaryInline(admin.StackedInline):
 
 
 class ProviderBalanceInline(admin.StackedInline):
-    model = ProviderBalance
+    model = ProviderFinancialBalance
     min_num = 1
     max_num = 1
     can_delete = False
@@ -1292,15 +1297,33 @@ class ProviderBalanceInline(admin.StackedInline):
 
 @admin.register(Provider)
 class ProviderAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'category', 'is_enabled')
-    list_filter = ('category', 'is_enabled',)
+    list_display = ('name', 'category', 'country', 'get_state_name', 'get_city_name', 'tax_id', 'email', 'is_enabled')
+    list_filter = ('category', ByCountryForOrganizationProvidersFilter, ByStateForOrganizationProvidersFilter,
+                   ByCityForOrganizationProvidersFilter, 'is_enabled',)
+    search_fields = ('name', 'neighborhood', 'address', 'tax_id', 'email')
     inlines = (ProviderBeneficiaryInline, ProviderBalanceInline)
+
+    def get_state_name(self, obj):
+        return obj.state.name
+    get_state_name.short_description = _('State')
+    get_state_name.admin_order_field = 'state__name'
+
+
+    def get_city_name(self, obj):
+        return obj.city.name
+    get_city_name.short_description = _('City')
+    get_city_name.admin_order_field = 'city__name'
 
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('neighborhood')
     @uppercase_form_charfield('address')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        if not obj:
+            if hasattr(request, 'organization'):
+                packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+                if packhouse_profile:
+                    form.base_fields['country'].initial = packhouse_profile.country
         return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -1322,6 +1345,10 @@ class ProviderAdmin(ByOrganizationAdminMixin):
                 kwargs["queryset"] = Region.objects.filter(country_id=country_id)
             else:
                 kwargs["queryset"] = Region.objects.none()
+                if hasattr(request, 'organization'):
+                    packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+                    if packhouse_profile:
+                        kwargs["queryset"] = Region.objects.filter(country=packhouse_profile.country)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
@@ -1368,7 +1395,7 @@ class ProviderBeneficiaryAdmin(admin.ModelAdmin):
         return form
 
 
-@admin.register(ProviderBalance)
+@admin.register(ProviderFinancialBalance)
 class ProviderBalanceAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)

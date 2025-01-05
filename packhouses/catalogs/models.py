@@ -1253,12 +1253,15 @@ class InsuranceCompany(CleanNameAndOrganizationMixin, models.Model):
         unique_together = ('name', 'organization')
 
 
-class Provider(CleanNameAndOrganizationMixin, models.Model):
+class Provider(models.Model):
     ### Identification fields
-    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    name = models.CharField(max_length=255, verbose_name=_('Full name'))
 
     ### Provider Category
     category = models.CharField(max_length=255, choices=get_provider_categories_choices(), verbose_name=_('Category'))
+
+    ### Reference to implied Provider (for producers)
+    provider_provider = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_('Provider'))
 
     ### Localization fields
     country = models.ForeignKey(Country, on_delete=models.PROTECT, verbose_name=_('Country'))
@@ -1277,7 +1280,10 @@ class Provider(CleanNameAndOrganizationMixin, models.Model):
 
     ### Contact fields
     email = models.EmailField(max_length=255, verbose_name=_('Email'))
-    phone_number = models.CharField(max_length=10, blank=True, null=True, verbose_name=_('Phone number'))
+    phone_number = models.CharField(max_length=20, blank=True, null=True, verbose_name=_('Phone number'))
+
+    ### Extra fields
+    comments = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('Comments'))
 
     ### Status fields
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -1286,11 +1292,44 @@ class Provider(CleanNameAndOrganizationMixin, models.Model):
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"[PROVIDER]: {self.name}"
+        return f"{self.name}"
+
+    def clean(self):
+        self.name = getattr(self, 'name', None)
+        self.category = getattr(self, 'category', None)
+        self.organization = getattr(self, 'organization', None)
+        self.organization_id = getattr(self, 'organization_id', None)
+
+        if self.name:
+            self.name = self.name.upper()
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.organization_id:
+            if self.__class__.objects.filter(name=self.name, category=self.category, organization=self.organization).exclude(
+                pk=self.pk).exists():
+                errors['name'] = _('Name and category must be unique, it already exists a registry with this data.')
+                errors['category'] = _('Name and category must be unique, it already exists a registry with this data.')
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Provider')
         verbose_name_plural = _('Providers')
+        ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'category', 'organization'], name='provider_unique_name_organization'),
+        ]
 
 
 class ProviderBeneficiary(CleanNameAndProviderMixin, models.Model):
@@ -1309,17 +1348,17 @@ class ProviderBeneficiary(CleanNameAndProviderMixin, models.Model):
         verbose_name_plural = _("Provider's beneficiaries")
 
 
-class ProviderBalance(models.Model):
+class ProviderFinancialBalance(models.Model):
     ### Financial details
-    financial_balance = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Financial balance'))
+    balance_due = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name=_('Balance due'))
     credit_days = models.PositiveIntegerField(default=0, verbose_name=_('Credit days'))
-
-    ### Extra fields
-    comments = models.TextField(blank=True, null=True, verbose_name=_('Comments'))
 
     ### Reference to implied Provider
     provider = models.OneToOneField(Provider, on_delete=models.PROTECT, verbose_name=_('Provider'))
 
+    def __str__(self):
+        return f"{self.provider.name}"
+
     class Meta:
-        verbose_name = _('Provider balance')
-        verbose_name_plural = _('Provider balances')
+        verbose_name = _('Provider financial balance')
+        verbose_name_plural = _('Provider financial balances')
