@@ -39,7 +39,7 @@ def get_provider_categories_choices():
     return [
         ('product_provider', _('Product provider')),
         ('service_provider', _('Service provider')),
-        ('supply provider', _('Supply provider')),
+        ('supply_provider', _('Supply provider')),
         ('harvesting_provider', _('Harvesting provider')),
         ('product_producer', _('Product producer')),
     ]

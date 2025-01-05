@@ -1,11 +1,11 @@
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer, VehicleSerializer,
-                          ProductVarietySerializer, ProductHarvestSizeKindSerializer,
+                          ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
                           ProductQualityKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer)
 from .models import (MarketStandardProductSize, Market, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
-                     ProductHarvestSizeKind, ProductQualityKind, ProductMassVolumeKind, Client)
+                     ProductHarvestSizeKind, ProductQualityKind, ProductMassVolumeKind, Client, Provider)
 
 
 class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
@@ -90,6 +90,27 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return ProductVariety.objects.filter(product__organization=self.request.organization)
+
+
+class ProviderViewSet(viewsets.ModelViewSet):
+    serializer_class = ProviderSerializer
+    filterset_fields = ['category', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = Provider.objects.filter(organization=self.request.organization)
+        categories = self.request.GET.get('categories')
+        if categories:
+            category_list = categories.split(',')
+            queryset = queryset.filter(category__in=category_list)
+
+        return queryset
+
+
 
 
 class VehicleViewSet(viewsets.ModelViewSet):

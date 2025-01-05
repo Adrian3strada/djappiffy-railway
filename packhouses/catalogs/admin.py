@@ -1,3 +1,5 @@
+from unicodedata import category
+
 from django.contrib import admin
 from common.billing.models import LegalEntityCategory
 from .models import (
@@ -1301,13 +1303,15 @@ class ProviderAdmin(ByOrganizationAdminMixin):
     list_filter = ('category', ByCountryForOrganizationProvidersFilter, ByStateForOrganizationProvidersFilter,
                    ByCityForOrganizationProvidersFilter, 'is_enabled',)
     search_fields = ('name', 'neighborhood', 'address', 'tax_id', 'email')
+    fields = ('name', 'category', 'provider_provider', 'country', 'state', 'city', 'district',  'postal_code',
+              'neighborhood', 'address', 'external_number', 'internal_number', 'tax_id', 'email', 'phone_number',
+              'comments', 'is_enabled')
     inlines = (ProviderBeneficiaryInline, ProviderBalanceInline)
 
     def get_state_name(self, obj):
         return obj.state.name
     get_state_name.short_description = _('State')
     get_state_name.admin_order_field = 'state__name'
-
 
     def get_city_name(self, obj):
         return obj.city.name
@@ -1329,6 +1333,30 @@ class ProviderAdmin(ByOrganizationAdminMixin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = Provider.objects.get(id=object_id) if object_id else None
+
+        if db_field.name == "provider_provider":
+            allowed_provider_provider_categories = {
+                'product_provider': [],
+                'service_provider': [],
+                'supply_provider': [],
+                'harvesting_provider': [],
+                'product_producer': ['product_provider', ]
+            }
+            if request.POST:
+                category_choice = request.POST.get('category')
+            else:
+                category_choice = obj.category if obj else None
+            if category_choice:
+                print("category_choice", category_choice)
+                kwargs["queryset"] = Provider.objects.filter(organization=request.organization,
+                                                             category__in=allowed_provider_provider_categories[category_choice],
+                                                             is_enabled=True)
+            else:
+                kwargs["queryset"] = Provider.objects.none()
+            print("queryset", kwargs["queryset"])
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
 
         if db_field.name == "country":
             kwargs["queryset"] = Country.objects.all()
@@ -1362,7 +1390,6 @@ class ProviderAdmin(ByOrganizationAdminMixin):
                 kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
             else:
                 kwargs["queryset"] = SubRegion.objects.none()
-            print("city", kwargs["queryset"])
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
@@ -1383,7 +1410,8 @@ class ProviderAdmin(ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/common/country-state-city.js',)
+        js = ('js/admin/forms/common/country-state-city.js',
+              'js/admin/forms/packhouses/catalogs/provider.js')
 
 
 @admin.register(ProviderBeneficiary)
