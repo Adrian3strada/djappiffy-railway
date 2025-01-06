@@ -39,7 +39,7 @@ class OrganizationProfileMixin:
 
     class Media:
         js = [
-            'js/admin/forms/common/country-state-city.js',
+            'js/admin/forms/common/country-state-city-district.js',
             'js/admin/forms/common/profiles/packhouseexporterprofile.js',
         ]
 
