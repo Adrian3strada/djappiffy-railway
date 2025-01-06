@@ -225,6 +225,7 @@ class PackhouseExporterProfile(OrganizationProfile):
 class PackhouseExporterSetting(models.Model):
     profile = models.OneToOneField(PackhouseExporterProfile, on_delete=models.CASCADE, verbose_name=_('Packhouse exporter profile'))
     product_kinds = models.ManyToManyField(ProductKind, blank=True, verbose_name=_('Product kinds'))
+    hostname = models.CharField(max_length=255, blank=False, null=False, verbose_name=_('Hostname'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
