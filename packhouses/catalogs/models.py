@@ -522,6 +522,8 @@ class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT, null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    clients = models.ManyToManyField('MaquiladoraClient', related_name='maquiladoras')
+
 
     class Meta:
         verbose_name = _('Maquiladora')

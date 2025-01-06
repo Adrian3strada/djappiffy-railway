@@ -145,7 +145,7 @@ class StatesForOrganizationCountryFilter(admin.SimpleListFilter):
             organization_profile = OrganizationProfile.objects.get(organization=request.organization)
             country = organization_profile.country
             states = Region.objects.filter(country_id=country.id)
-            return [(state.id, state.display_name) for state in states]
+            return [(state.id, state.name) for state in states]
         return Region.objects.none()
 
     def queryset(self, request, queryset):
@@ -162,14 +162,28 @@ class CityForOrganizationCountryFilter(admin.SimpleListFilter):
             organization_profile = OrganizationProfile.objects.get(organization=request.organization)
             country = organization_profile.country
             cities = SubRegion.objects.filter(country_id=country.id)
-            return [(city.id, city.display_name) for city in cities]
-        return SubRegion.objects.none()
+        return [(city.id, f"{city.name}, {city.region.name}") for city in cities]
 
-    def queryset(self, request, queryset):
+    def queryset(self, request, queryset):        
         if self.value():
             return queryset.filter(state__id=self.value())
         return queryset
 
+class DistrictForOrganizationCountryFilter(admin.SimpleListFilter):
+    title = 'District'
+    parameter_name = 'district'
+
+    def lookups(self, request, model_admin):
+        if hasattr(request, 'organization'):
+            organization_profile = OrganizationProfile.objects.get(organization=request.organization)
+            country = organization_profile.country
+            districts = City.objects.filter(country_id=country.id)
+        return [(district.id, f"{district.name}, {district.region.name}") for district in districts]
+
+    def queryset(self, request, queryset):        
+        if self.value():
+            return queryset.filter(state__id=self.value())
+        return queryset
 
 class ByCountryForOrganizationMarketsFilter(admin.SimpleListFilter):
     title = _('Country')
