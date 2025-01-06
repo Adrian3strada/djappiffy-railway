@@ -2,6 +2,7 @@ from django.db import models
 from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizationMixin, CleanProductMixin,
                            CleanNameOrAliasAndOrganizationMixin, CleanNameAndMarketMixin, CleanNameAndProductMixin,
                            CleanNameAndProductProviderMixin, CleanNameAndProductProducerMixin,
+                           CleanNameAndProviderMixin,
                            CleanProductVarietyMixin, CleanNameAndAliasProductMixin,
                            CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanNameAndMaquiladoraMixin)
 from organizations.models import Organization
@@ -14,7 +15,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from common.billing.models import TaxRegime, LegalEntityCategory
 from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
-    vehicle_scope_choices
+    vehicle_scope_choices, get_provider_categories_choices
 from django.core.exceptions import ValidationError
 from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
@@ -635,6 +636,7 @@ class CrewChief(models.Model):
 
 
 class HarvestingCrew(models.Model):
+    ooid = models.IntegerField(verbose_name=_('OOID'), editable=False)
     harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, verbose_name=_('Harvesting Crew Provider'),
                                                  on_delete=models.PROTECT)
     name = models.CharField(max_length=100, verbose_name=_('Name'))
@@ -1249,3 +1251,114 @@ class InsuranceCompany(CleanNameAndOrganizationMixin, models.Model):
         verbose_name = _('Insurance Company')
         verbose_name_plural = _('Insurance Companies')
         unique_together = ('name', 'organization')
+
+
+class Provider(models.Model):
+    ### Identification fields
+    name = models.CharField(max_length=255, verbose_name=_('Full name'))
+
+    ### Provider Category
+    category = models.CharField(max_length=255, choices=get_provider_categories_choices(), verbose_name=_('Category'))
+
+    ### Reference to implied Provider (for producers)
+    provider_provider = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_('Provider'))
+
+    ### Localization fields
+    country = models.ForeignKey(Country, on_delete=models.PROTECT, verbose_name=_('Country'))
+    state = models.ForeignKey(Region, on_delete=models.PROTECT, verbose_name=_('State'))
+    city = models.ForeignKey(SubRegion, on_delete=models.PROTECT, verbose_name=_('City'))
+    district = models.ForeignKey(City, on_delete=models.PROTECT, verbose_name=_('District'))
+
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
+    address = models.CharField(max_length=255, verbose_name=_('Address'))
+    external_number = models.CharField(max_length=10, verbose_name=_('External number'))
+    internal_number = models.CharField(max_length=10, blank=True, null=True, verbose_name=_('Internal number'))
+
+    ### Legal fields
+    tax_id = models.CharField(max_length=100, verbose_name=_('Tax ID'))
+
+    ### Contact fields
+    email = models.EmailField(max_length=255, verbose_name=_('Email'))
+    phone_number = models.CharField(max_length=20, blank=True, null=True, verbose_name=_('Phone number'))
+
+    ### Extra fields
+    comments = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('Comments'))
+
+    ### Status fields
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    ### Organization fields
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    def clean(self):
+        self.name = getattr(self, 'name', None)
+        self.category = getattr(self, 'category', None)
+        self.organization = getattr(self, 'organization', None)
+        self.organization_id = getattr(self, 'organization_id', None)
+
+        if self.name:
+            self.name = self.name.upper()
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.organization_id:
+            if self.__class__.objects.filter(name=self.name, category=self.category, organization=self.organization).exclude(
+                pk=self.pk).exists():
+                errors['name'] = _('Name and category must be unique, it already exists a registry with this data.')
+                errors['category'] = _('Name and category must be unique, it already exists a registry with this data.')
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('Provider')
+        verbose_name_plural = _('Providers')
+        ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'category', 'organization'], name='provider_unique_name_organization'),
+        ]
+
+
+class ProviderBeneficiary(CleanNameAndProviderMixin, models.Model):
+    ### Identification fields
+    name = models.CharField(max_length=255, verbose_name=_("Name"))
+
+    ### Bank details fields
+    bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_("Bank"))
+    bank_account_number = models.CharField(max_length=25, verbose_name=_("Bank account number"))
+
+    ### Reference to implied Provider
+    provider = models.ForeignKey(Provider, on_delete=models.PROTECT, verbose_name=_("Provider"))
+
+    class Meta:
+        verbose_name = _("Provider's beneficiary")
+        verbose_name_plural = _("Provider's beneficiaries")
+
+
+class ProviderFinancialBalance(models.Model):
+    ### Financial details
+    balance_due = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name=_('Balance due'))
+    credit_days = models.PositiveIntegerField(default=0, verbose_name=_('Credit days'))
+
+    ### Reference to implied Provider
+    provider = models.OneToOneField(Provider, on_delete=models.PROTECT, verbose_name=_('Provider'))
+
+    def __str__(self):
+        return f"{self.provider.name}"
+
+    class Meta:
+        verbose_name = _('Provider financial balance')
+        verbose_name_plural = _('Provider financial balances')

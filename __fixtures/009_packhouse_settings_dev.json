@@ -1,0 +1,38 @@
+[
+{
+  "model": "packhouse_settings.orchardcertificationverifier",
+  "pk": 1,
+  "fields": {
+    "name": "VERIFICADOR UNO 1",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationverifier",
+  "pk": 2,
+  "fields": {
+    "name": "VERIFICADOR DOS 1",
+    "is_enabled": true,
+    "organization": 2
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationverifier",
+  "pk": 3,
+  "fields": {
+    "name": "VERIFICADOR DOS 2",
+    "is_enabled": true,
+    "organization": 2
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationverifier",
+  "pk": 4,
+  "fields": {
+    "name": "VERIFICADOR UNO 2",
+    "is_enabled": true,
+    "organization": 1
+  }
+}
+]

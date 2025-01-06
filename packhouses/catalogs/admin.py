@@ -1,3 +1,5 @@
+from unicodedata import category
+
 from django.contrib import admin
 from common.billing.models import LegalEntityCategory
 from .models import (
@@ -9,7 +11,8 @@ from .models import (
     HarvestingCrewBeneficiary, HarvestingPaymentSetting, Supply, SupplyProvider, MeshBagKind, MeshBagFilmKind,
     MeshBag, ServiceProvider, ServiceProviderBenefactor, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
-    BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany
+    BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
+    Provider, ProviderBeneficiary, ProviderFinancialBalance,
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind, VehicleBrand,
@@ -24,12 +27,13 @@ from cities_light.models import Country, Region, SubRegion, City
 
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
-from .filters import (StatesForOrganizationCountryFilter,
+from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizationMarketsFilter,
                       ByProductForOrganizationFilter, ByProductQualityKindForOrganizationFilter,
                       ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
                       ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
-                      ProductKindForPackagingFilter
+                      ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
+                      ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -82,14 +86,18 @@ class MarketStandardProductSizeInline(admin.TabularInline):
 
 @admin.register(Market)
 class MarketAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'alias', 'is_enabled')
-    list_filter = ('is_enabled',)
+    list_display = ('name', 'alias', 'get_countries', 'is_foreign', 'is_mixable', 'is_enabled')
+    list_filter = (ByCountryForOrganizationMarketsFilter, 'is_foreign', 'is_mixable', 'is_enabled',)
     search_fields = ('name', 'alias')
     fields = ('name', 'alias', 'countries', 'management_cost_per_kg', 'is_foreign', 'is_mixable',
               'label_language', 'address_label', 'is_enabled')
     inlines = [MarketClassInline, MarketStandardProductSizeInline]
 
     # TODO: revisar si KGCostMarketInline si va en Market o va por variedad o donde?
+
+    def get_countries(self, obj):
+        return ", ".join([m.name for m in obj.countries.all()])
+    get_countries.short_description = _('countries')
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
@@ -176,7 +184,7 @@ class ProductHarvestSizeKindInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'kind', 'description', 'is_enabled')
+    list_display = ('name', 'kind', 'is_enabled')
     list_filter = (ProductKindForPackagingFilter, 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
     fields = ('kind', 'name', 'description', 'is_enabled')
@@ -227,7 +235,7 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
 
     def get_product_varieties(self, obj):
         return ", ".join([pv.name for pv in obj.product_varieties.all()])
-    get_product_varieties.short_description = _('Product Varieties')
+    get_product_varieties.short_description = _('Varieties')
 
     def get_markets(self, obj):
         return ", ".join([m.name for m in obj.markets.all()])
@@ -1360,3 +1368,161 @@ class InsuranceCompanyAdmin(admin.ModelAdmin):
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
+
+
+# Providers
+
+class ProviderBeneficiaryInline(admin.StackedInline):
+    model = ProviderBeneficiary
+    extra = 0
+    can_delete = True
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+
+class ProviderBalanceInline(admin.StackedInline):
+    model = ProviderFinancialBalance
+    min_num = 1
+    max_num = 1
+    can_delete = False
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+
+@admin.register(Provider)
+class ProviderAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'category', 'country', 'get_state_name', 'get_city_name', 'tax_id', 'email', 'is_enabled')
+    list_filter = ('category', ByCountryForOrganizationProvidersFilter, ByStateForOrganizationProvidersFilter,
+                   ByCityForOrganizationProvidersFilter, 'is_enabled',)
+    search_fields = ('name', 'neighborhood', 'address', 'tax_id', 'email')
+    fields = ('name', 'category', 'provider_provider', 'country', 'state', 'city', 'district',  'postal_code',
+              'neighborhood', 'address', 'external_number', 'internal_number', 'tax_id', 'email', 'phone_number',
+              'comments', 'is_enabled')
+    inlines = (ProviderBeneficiaryInline, ProviderBalanceInline)
+
+    def get_state_name(self, obj):
+        return obj.state.name
+    get_state_name.short_description = _('State')
+    get_state_name.admin_order_field = 'state__name'
+
+    def get_city_name(self, obj):
+        return obj.city.name
+    get_city_name.short_description = _('City')
+    get_city_name.admin_order_field = 'city__name'
+
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('neighborhood')
+    @uppercase_form_charfield('address')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if not obj:
+            if hasattr(request, 'organization'):
+                packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+                if packhouse_profile:
+                    form.base_fields['country'].initial = packhouse_profile.country
+        return form
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = Provider.objects.get(id=object_id) if object_id else None
+
+        if db_field.name == "provider_provider":
+            allowed_provider_provider_categories = {
+                'product_provider': [],
+                'service_provider': [],
+                'supply_provider': [],
+                'harvesting_provider': [],
+                'product_producer': ['product_provider', ]
+            }
+            if request.POST:
+                category_choice = request.POST.get('category')
+            else:
+                category_choice = obj.category if obj else None
+            if category_choice:
+                print("category_choice", category_choice)
+                kwargs["queryset"] = Provider.objects.filter(organization=request.organization,
+                                                             category__in=allowed_provider_provider_categories[category_choice],
+                                                             is_enabled=True)
+            else:
+                kwargs["queryset"] = Provider.objects.none()
+            print("queryset", kwargs["queryset"])
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "country":
+            kwargs["queryset"] = Country.objects.all()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "state":
+            if request.POST:
+                country_id = request.POST.get('country')
+            else:
+                country_id = obj.country_id if obj else None
+            if country_id:
+                kwargs["queryset"] = Region.objects.filter(country_id=country_id)
+            else:
+                kwargs["queryset"] = Region.objects.none()
+                if hasattr(request, 'organization'):
+                    packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+                    if packhouse_profile:
+                        kwargs["queryset"] = Region.objects.filter(country=packhouse_profile.country)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "city":
+            if request.POST:
+                state_id = request.POST.get('state')
+            else:
+                state_id = obj.state_id if obj else None
+            if state_id:
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = SubRegion.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
+            else:
+                kwargs["queryset"] = City.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/common/country-state-city.js',
+              'js/admin/forms/packhouses/catalogs/provider.js')
+
+
+@admin.register(ProviderBeneficiary)
+class ProviderBeneficiaryAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'name' in form.base_fields:
+            form.base_fields['name'].widget = UppercaseTextInputWidget()
+        return form
+
+
+@admin.register(ProviderFinancialBalance)
+class ProviderBalanceAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+
+# /Providers
