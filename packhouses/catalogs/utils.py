@@ -43,3 +43,4 @@ def get_provider_categories_choices():
         ('harvesting_provider', _('Harvesting provider')),
         ('product_producer', _('Product producer')),
     ]
+
