@@ -33,7 +33,8 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
-                      ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter
+                      ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
+                      CityForOrganizationCountryFilter, 
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -824,15 +825,15 @@ class MaquiladoraClientInline(admin.StackedInline):
 
 
 @admin.register(Maquiladora)
-class MaquiladoraAdmin(admin.ModelAdmin):
+class MaquiladoraAdmin(ByOrganizationAdminMixin):
     list_display = (
-    'name', 'zone', 'tax_registry_code', 'state', 'city', 'email', 'phone_number', 'vehicle', 'is_enabled')
-    list_filter = ('state', 'city', 'vehicle', 'is_enabled')
+    'name', 'zone', 'tax_registry_code', 'state', 'city', 'email', 'phone_number', 'vehicle', 'is_enabled', )
+    list_filter = (StatesForOrganizationCountryFilter, CityForOrganizationCountryFilter, 'vehicle', 'is_enabled')
     search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
     fields = (
     'name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district',
     'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle',
-    'is_enabled', 'organization')
+    'is_enabled',)
     inlines = [MaquiladoraClientInline]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -858,21 +859,31 @@ class MaquiladoraAdmin(admin.ModelAdmin):
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        user_profile = UserProfile.objects.get(user=request.user)
-        country = user_profile.country
+        user_organization = OrganizationProfile.objects.get(organization=request.organization)
+        country = user_organization.country
+
         if db_field.name == "state":
             kwargs["queryset"] = Region.objects.filter(country=country)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda obj: obj.name
+            formfield.label_from_instance = lambda item: item.name
             return formfield
-        elif db_field.name == "city":
+        if db_field.name == "city":
             if 'state' in request.GET:
                 state_id = request.GET.get('state')
-                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = SubRegion.objects.filter(country=country)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+        if db_field.name == "district":
+            if 'city' in request.GET:
+                city_id = request.GET.get('city')
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
             else:
                 kwargs["queryset"] = City.objects.filter(country=country)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda obj: obj.name
+            formfield.label_from_instance = lambda item: item.name
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
