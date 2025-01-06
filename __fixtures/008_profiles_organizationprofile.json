@@ -3,13 +3,24 @@
   "model": "profiles.organizationprofile",
   "pk": 1,
   "fields": {
-    "polymorphic_ctype": 60,
+    "polymorphic_ctype": [
+      "profiles",
+      "packhouseexporterprofile"
+    ],
     "name": "Tezil S.A. de C.V",
     "organization": 1,
-    "country": 158,
-    "state": 2282,
-    "city": 25743,
-    "district": 87096,
+    "country": [
+      3996063
+    ],
+    "state": [
+      3995955
+    ],
+    "city": [
+      8582311
+    ],
+    "district": [
+      3985570
+    ],
     "postal_code": "58280",
     "neighborhood": "Nueva Chapultepec",
     "address": "Juan B. Ceballos",
@@ -30,13 +41,24 @@
   "model": "profiles.organizationprofile",
   "pk": 2,
   "fields": {
-    "polymorphic_ctype": 60,
+    "polymorphic_ctype": [
+      "profiles",
+      "packhouseexporterprofile"
+    ],
     "name": "Red Field Packers, LLC",
     "organization": 2,
-    "country": 234,
-    "state": 3626,
-    "city": 42973,
-    "district": 128608,
+    "country": [
+      6252001
+    ],
+    "state": [
+      4398678
+    ],
+    "city": [
+      4392354
+    ],
+    "district": [
+      4350675
+    ],
     "postal_code": "64129",
     "neighborhood": "Kansas City Neighborhood",
     "address": "Arrowhead Drive",
@@ -57,13 +79,24 @@
   "model": "profiles.organizationprofile",
   "pk": 3,
   "fields": {
-    "polymorphic_ctype": 60,
+    "polymorphic_ctype": [
+      "profiles",
+      "packhouseexporterprofile"
+    ],
     "name": "Green Bay Packers, Inc.",
     "organization": 3,
-    "country": 234,
-    "state": 3649,
-    "city": 44597,
-    "district": 138070,
+    "country": [
+      6252001
+    ],
+    "state": [
+      5279468
+    ],
+    "city": [
+      5247108
+    ],
+    "district": [
+      5215373
+    ],
     "postal_code": "54304",
     "neighborhood": "Green Bay Neighborhood",
     "address": "Lombardi Avenue",
@@ -84,13 +117,24 @@
   "model": "profiles.organizationprofile",
   "pk": 4,
   "fields": {
-    "polymorphic_ctype": 60,
+    "polymorphic_ctype": [
+      "profiles",
+      "packhouseexporterprofile"
+    ],
     "name": "Blue Coast Packers, Ltd.",
     "organization": 4,
-    "country": 234,
-    "state": 3650,
-    "city": 44697,
-    "district": 138933,
+    "country": [
+      6252001
+    ],
+    "state": [
+      5332921
+    ],
+    "city": [
+      5369578
+    ],
+    "district": [
+      5308778
+    ],
     "postal_code": "90301",
     "neighborhood": "Inglewood Neighborhood",
     "address": "Stadium Drive",
