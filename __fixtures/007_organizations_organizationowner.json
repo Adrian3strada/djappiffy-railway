@@ -1,42 +1,42 @@
 [
 {
-    "model": "organizations.organizationowner",
-    "pk": 1,
-    "fields": {
-        "created": "2024-10-14T19:21:00Z",
-        "modified": "2024-12-12T04:04:26.567Z",
-        "organization_user": 1,
-        "organization": 1
-    }
+  "model": "organizations.organizationowner",
+  "pk": 1,
+  "fields": {
+    "created": "2024-10-14T19:21:00Z",
+    "modified": "2024-12-12T04:04:26.567Z",
+    "organization_user": 1,
+    "organization": 1
+  }
 },
 {
-    "model": "organizations.organizationowner",
-    "pk": 2,
-    "fields": {
-        "created": "2024-10-14T20:21:00Z",
-        "modified": "2024-12-12T04:04:34.105Z",
-        "organization_user": 3,
-        "organization": 2
-    }
+  "model": "organizations.organizationowner",
+  "pk": 2,
+  "fields": {
+    "created": "2024-10-14T20:21:00Z",
+    "modified": "2024-12-12T04:04:34.105Z",
+    "organization_user": 3,
+    "organization": 2
+  }
 },
 {
-    "model": "organizations.organizationowner",
-    "pk": 3,
-    "fields": {
-        "created": "2024-10-14T21:21:00Z",
-        "modified": "2024-12-12T04:04:45.749Z",
-        "organization_user": 5,
-        "organization": 3
-    }
+  "model": "organizations.organizationowner",
+  "pk": 3,
+  "fields": {
+    "created": "2024-10-14T21:21:00Z",
+    "modified": "2024-12-12T04:04:45.749Z",
+    "organization_user": 5,
+    "organization": 3
+  }
 },
 {
-    "model": "organizations.organizationowner",
-    "pk": 4,
-    "fields": {
-        "created": "2024-10-14T22:21:00Z",
-        "modified": "2024-12-12T04:04:59.028Z",
-        "organization_user": 7,
-        "organization": 4
-    }
+  "model": "organizations.organizationowner",
+  "pk": 4,
+  "fields": {
+    "created": "2024-10-14T22:21:00Z",
+    "modified": "2024-12-12T04:04:59.028Z",
+    "organization_user": 7,
+    "organization": 4
+  }
 }
 ]
