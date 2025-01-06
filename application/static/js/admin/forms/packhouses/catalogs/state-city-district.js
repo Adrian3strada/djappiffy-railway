@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   const stateField = $('#id_state');
   const cityField = $('#id_city');
+  const districtField = $('#id_district');
 
   const API_BASE_URL = '/rest/v1';
 
@@ -23,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateCity() {
     const stateId = stateField.val();
     if (stateId) {
-      fetchOptions(`${API_BASE_URL}/cities/city/?region=${stateId}`)
+      fetchOptions(`${API_BASE_URL}/cities/subregion/?region=${stateId}`)
         .then(data => {
           updateFieldOptions(cityField, data);
         });
@@ -32,9 +33,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  function updateDistrict() {
+    const cityId = cityField.val();
+    if (cityId) {
+      fetchOptions(`${API_BASE_URL}/cities/city/?subregion=${cityId}`)
+        .then(data => {
+          updateFieldOptions(districtField, data);
+        });
+    } else {
+      updateFieldOptions(districtField, []);
+    }
+  }
+
   stateField.on('change', function () {
     updateCity();
   });
+  cityField.on('change', function () {
+    updateDistrict();
+  });
 
-  [stateField, cityField].forEach(field => field.select2());
+  [stateField, cityField, districtField].forEach(field => field.select2());
 });

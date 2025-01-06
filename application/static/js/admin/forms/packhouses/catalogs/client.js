@@ -3,11 +3,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const countryField = $('#id_country');
   const stateField = $('#id_state');
   const cityField = $('#id_city');
+  const districtField = $('#id_district');
   const sameShipAddressCheckboxField = $('#id_same_ship_address');
   const legalEntityCategoryField = $('#id_legal_category');
   const inlineCountryField = $('#id_clientshipaddress-0-country');
   const inlineStateField = $('#id_clientshipaddress-0-state');
   const inlineCityField = $('#id_clientshipaddress-0-city');
+  const inlineDistrictField = $('#id_clientshipaddress-0-district');
 
   const clientAddressFields = [
     'country', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number'
@@ -148,12 +150,23 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateCity() {
     const stateId = stateField.val();
     if (stateId) {
-      fetchOptions(`${API_BASE_URL}/cities/city/?region=${stateId}`)
+      fetchOptions(`${API_BASE_URL}/cities/subregion/?region=${stateId}`)
         .then(data => {
           updateFieldOptions(cityField, data);
         });
     } else {
       updateFieldOptions(cityField, []);
+    }
+  }
+  function updateDistrict() {
+    const cityId = cityField.val();
+    if (cityId) {
+      fetchOptions(`${API_BASE_URL}/cities/city/?subregion=${cityId}`)
+        .then(data => {
+          updateFieldOptions(districtField, data);
+        });
+    } else {
+      updateFieldOptions(districtField, []);
     }
   }
 
@@ -197,12 +210,23 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateInlineCity() {
     const stateId = inlineStateField.val();
     if (stateId) {
-      fetchOptions(`${API_BASE_URL}/cities/city/?region=${stateId}`)
+      fetchOptions(`${API_BASE_URL}/cities/subregion/?region=${stateId}`)
         .then(data => {
           updateFieldOptions(inlineCityField, data);
         });
     } else {
       updateFieldOptions(inlineCityField, []);
+    }
+  }
+  function updateInlineDistrict() {
+    const cityId = inlineCityField.val();
+    if (cityId) {
+      fetchOptions(`${API_BASE_URL}/cities/city/?subregion=${cityId}`)
+        .then(data => {
+          updateFieldOptions(inlineDistrictField, data);
+        });
+    } else {
+      updateFieldOptions(inlineDistrictField, []);
     }
   }
 
@@ -220,6 +244,10 @@ document.addEventListener('DOMContentLoaded', function () {
     updateCity();
   });
 
+  cityField.on('change', function () {
+    updateDistrict();
+  });
+
   sameShipAddressCheckboxField.on('change', function () {
     const same_address_check = sameShipAddressCheckboxField.prop('checked');
     updateShipAddress(same_address_check);
@@ -235,8 +263,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   inlineCountryField.on('change', updateInlineState);
   inlineStateField.on('change', updateInlineCity);
+  inlineCityField.on('change', updateInlineDistrict);
 
-  [marketField, countryField, stateField, cityField, legalEntityCategoryField, inlineCountryField, inlineStateField, inlineCityField].forEach(field => field.select2());
+  [marketField, countryField, stateField, cityField, districtField, legalEntityCategoryField, inlineCountryField, inlineStateField, inlineCityField].forEach(field => field.select2());
 
   if (sameShipAddressCheckboxField.prop('checked')) {
     disableInlineFields();
