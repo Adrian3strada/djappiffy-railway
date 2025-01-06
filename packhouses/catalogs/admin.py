@@ -368,28 +368,35 @@ class ProductProviderAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         user_profile = UserProfile.objects.get(user=request.user)
         country = user_profile.country
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = ProductProvider.objects.get(id=object_id) if object_id else None
+
         if db_field.name == "state":
             kwargs["queryset"] = Region.objects.filter(country=country)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda obj: obj.name
             return formfield
-        elif db_field.name == "city":
-            if 'state' in request.GET:
-                state_id = request.GET.get('state')
-                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+        
+        if db_field.name == "city":
             if request.POST:
                 state_id = request.POST.get('state')
+            else:
+                state_id = obj.state_id if obj else None
+            if state_id:
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
             else:
                 kwargs["queryset"] = SubRegion.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda obj: obj.name
             return formfield
-        elif db_field.name == "district":
-            if 'city' in request.GET:
-                city_id = request.GET.get('city')
-                kwargs["queryset"] = City.objects.filter(region_id=city_id)
+       
+        if db_field.name == "district":
             if request.POST:
                 city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
             else:
                 kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -448,28 +455,35 @@ class ProductProducerAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         user_profile = UserProfile.objects.get(user=request.user)
         country = user_profile.country
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = ProductProducer.objects.get(id=object_id) if object_id else None
+
         if db_field.name == "state":
             kwargs["queryset"] = Region.objects.filter(country=country)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda obj: obj.name
             return formfield
-        elif db_field.name == "city":
-            if 'state' in request.GET:
-                state_id = request.GET.get('state')
-                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+        
+        if db_field.name == "city":
             if request.POST:
                 state_id = request.POST.get('state')
+            else:
+                state_id = obj.state_id if obj else None
+            if state_id:
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
             else:
                 kwargs["queryset"] = SubRegion.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda obj: obj.name
             return formfield
-        elif db_field.name == "district":
-            if 'district' in request.GET:
-                city_id = request.GET.get('city')
-                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
+        
+        if db_field.name == "district":
             if request.POST:
                 city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
             else:
                 kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
