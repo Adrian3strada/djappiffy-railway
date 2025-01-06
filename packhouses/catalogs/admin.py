@@ -564,52 +564,30 @@ class GathererAdmin(admin.ModelAdmin):
         organization = None
         if hasattr(request, 'organization'):
             organization = request.organization
-        organization_country = organization.country if organization else None
+        organization_country = PackhouseExporterProfile.objects.get(organization=organization).country if organization else None
 
-        if db_field.name == "state":
-            if organization_country:
-                kwargs["queryset"] = Region.objects.filter(country=organization_country)
-            else:
-                kwargs["queryset"] = Region.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda item: item.name
-            return formfield
+        field_mapping = {
+            "state": (Region, "country", organization_country),
+            "city": (SubRegion, "region", request.POST.get('state') if request.POST else obj.state.id if obj else None),
+            "district": (City, "subregion", request.POST.get('city') if request.POST else obj.city.id if obj else None)
+        }
 
-        if db_field.name == "city":
-            if request.POST:
-                state_id = request.POST.get('state')
+        if db_field.name in field_mapping:
+            Model, filter_field, filter_value = field_mapping[db_field.name]
+            if filter_value:
+                kwargs["queryset"] = Model.objects.filter(**{f"{filter_field}_id": filter_value})
             else:
-                state_id = obj.state.id if obj else None
-            if state_id:
-                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
-            else:
-                kwargs["queryset"] = SubRegion.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda item: item.name
-            return formfield
+                kwargs["queryset"] = Model.objects.none()
 
-        if db_field.name == "district":
-            if request.POST:
-                city_id = request.POST.get('city')
-            else:
-                city_id = obj.city.id if obj else None
-            if city_id:
-                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
-            else:
-                kwargs["queryset"] = City.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda item: item.name
-            return formfield
-
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+        formfield.label_from_instance = lambda item: item.name
+        return formfield
 
     class Media:
         js = (
-            'js/admin/forms/packhouses/catalogs/country-state-city-district.js'
+            'js/admin/forms/common/state-city-district.js',
             'js/admin/forms/packhouses/catalogs/gatherer.js',
-
         )
-        # 'js/admin/forms/packhouses/catalogs/state-city.js',
 
 
 class MaquiladoraClientInline(admin.StackedInline):
