@@ -107,8 +107,4 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   [marketField, countryField, stateField, cityField, districtField, legalCategoryField].forEach(field => field.select2());
-
-  if (marketField.val()) {
-    updateCountry();
-  }
 });

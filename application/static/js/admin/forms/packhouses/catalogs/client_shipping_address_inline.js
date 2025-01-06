@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     options.forEach(option => {
       field.append(new Option(option.name, option.id, false, false));
     });
-    field.trigger('change').select2();
   }
 
   function fetchOptions(url) {
@@ -27,9 +26,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const stateField = $(newForm).find('select[name$="-state"]');
       const cityField = $(newForm).find('select[name$="-city"]');
       const districtField = $(newForm).find('select[name$="-district"]');
+
+      if (countryField.val()) {
+        fetchOptions(`/rest/v1/cities/region/?country=${countryField.val()}`)
+          .then(data => {
+            updateFieldOptions(stateField, data);
+          });
+      }
+
       updateFieldOptions(cityField, []);
       updateFieldOptions(districtField, []);
-
 
       countryField.on('change', function () {
         const countryId = $(this).val();
@@ -68,4 +74,81 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   });
+
+  // Verificar formularios existentes al cargar
+  const existingForms = document.querySelectorAll('div[id^="clientshippingaddress_set-"]');
+  existingForms.forEach(form => {
+    const countryField = $(form).find('select[name$="-country"]');
+    const stateField = $(form).find('select[name$="-state"]');
+    const cityField = $(form).find('select[name$="-city"]');
+    const districtField = $(form).find('select[name$="-district"]');
+
+    const selectedState = stateField.val();
+    const selectedCity = cityField.val();
+    const selectedDistrict = districtField.val();
+
+    if (countryField.val()) {
+      fetchOptions(`/rest/v1/cities/region/?country=${countryField.val()}`)
+        .then(data => {
+          updateFieldOptions(stateField, data);
+          stateField.val(selectedState).trigger('change');
+        });
+    }
+
+    if (stateField.val()) {
+      fetchOptions(`/rest/v1/cities/subregion/?region=${stateField.val()}`)
+        .then(data => {
+          updateFieldOptions(cityField, data);
+          cityField.val(selectedCity).trigger('change');
+        });
+    }
+
+    if (cityField.val()) {
+      fetchOptions(`/rest/v1/cities/city/?subregion=${cityField.val()}`)
+        .then(data => {
+          updateFieldOptions(districtField, data);
+          districtField.val(selectedDistrict).trigger('change');
+        });
+    }
+
+    setTimeout(() => {
+      countryField.on('change', function () {
+        const countryId = $(this).val();
+        if (countryId) {
+          fetchOptions(`/rest/v1/cities/region/?country=${countryId}`)
+            .then(data => {
+              updateFieldOptions(stateField, data);
+            });
+        } else {
+          updateFieldOptions(stateField, []);
+        }
+      });
+
+      stateField.on('change', function () {
+        const stateId = $(this).val();
+        if (stateId) {
+          fetchOptions(`/rest/v1/cities/subregion/?region=${stateId}`)
+            .then(data => {
+              updateFieldOptions(cityField, data);
+            });
+        } else {
+          updateFieldOptions(cityField, []);
+        }
+      });
+
+      cityField.on('change', function () {
+        const cityId = $(this).val();
+        if (cityId) {
+          fetchOptions(`/rest/v1/cities/city/?subregion=${cityId}`)
+            .then(data => {
+              updateFieldOptions(districtField, data);
+            });
+        } else {
+          updateFieldOptions(districtField, []);
+        }
+      });
+    }, 200);
+
+  });
+
 });
