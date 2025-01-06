@@ -295,7 +295,7 @@ class Provider(CleanNameAndCategoryAndOrganizationMixin, models.Model):
 
     ### Contact fields
     email = models.EmailField(max_length=255, verbose_name=_('Email'))
-    phone_number = models.CharField(max_length=20, blank=True, null=True, verbose_name=_('Phone number'))
+    phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'))
 
     ### Extra fields
     comments = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('Comments'))
@@ -493,15 +493,15 @@ class Gatherer(CleanNameAndOrganizationMixin, models.Model):
                                                 blank=True)
     social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
-    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
-    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'), null=True, blank=True)
-    address = models.CharField(max_length=255, verbose_name=_('Address'), null=True, blank=True)
-    external_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
+    city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
+    district = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT, null=True, blank=True)
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
+    address = models.CharField(max_length=255, verbose_name=_('Address'))
+    external_number = models.CharField(max_length=10, verbose_name=_('External number'))
     internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    email = models.EmailField(null=True, blank=True)
-    phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'), null=True, blank=True)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)

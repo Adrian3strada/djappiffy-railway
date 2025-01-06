@@ -543,14 +543,12 @@ class GathererAdmin(admin.ModelAdmin):
     'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle',
     'is_enabled', 'organization')
 
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('zone')
+    @uppercase_form_charfield('address')
+    @uppercase_form_charfield('neighborhood')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
-        if 'zone' in form.base_fields:
-            form.base_fields['zone'].widget = UppercaseTextInputWidget()
-        if 'address' in form.base_fields:
-            form.base_fields['address'].widget = UppercaseTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -560,34 +558,43 @@ class GathererAdmin(admin.ModelAdmin):
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        user_profile = UserProfile.objects.get(
-            user=request.user)  # TODO: Obtener el país de la organización en lugar del país del usuario
-        country = user_profile.country
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = Gatherer.objects.get(id=object_id) if object_id else None
 
-        # Lógica para el campo "state"
+        organization = None
+        if hasattr(request, 'organization'):
+            organization = request.organization
+        organization_country = organization.country if organization else None
+
         if db_field.name == "state":
-            if obj:
-                country_id = obj.state.country_id
-            else:
-                country_id = country.id
-            if country_id:
-                kwargs["queryset"] = Region.objects.filter(country_id=country_id)
+            if organization_country:
+                kwargs["queryset"] = Region.objects.filter(country=organization_country)
             else:
                 kwargs["queryset"] = Region.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
 
-        # Lógica para el campo "city"
         if db_field.name == "city":
             if request.POST:
                 state_id = request.POST.get('state')
             else:
                 state_id = obj.state.id if obj else None
             if state_id:
-                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = SubRegion.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city.id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
             else:
                 kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -598,9 +605,11 @@ class GathererAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
+            'js/admin/forms/packhouses/catalogs/country-state-city-district.js'
             'js/admin/forms/packhouses/catalogs/gatherer.js',
-            'js/admin/forms/packhouses/catalogs/state-city.js',
+
         )
+        # 'js/admin/forms/packhouses/catalogs/state-city.js',
 
 
 class MaquiladoraClientInline(admin.StackedInline):
