@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       }
 
+      updateFieldOptions(stateField, []);
       updateFieldOptions(cityField, []);
       updateFieldOptions(districtField, []);
 

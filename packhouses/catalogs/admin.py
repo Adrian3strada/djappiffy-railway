@@ -416,11 +416,6 @@ class ClientAdmin(ByOrganizationAdminMixin):
     @uppercase_form_charfield('contact_name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if not obj:
-            if hasattr(request, 'organization'):
-                packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
-                if packhouse_profile:
-                    form.base_fields['country'].initial = packhouse_profile.country
         return form
 
     def get_readonly_fields(self, request, obj=None):
