@@ -376,9 +376,22 @@ class ProductProviderAdmin(admin.ModelAdmin):
         elif db_field.name == "city":
             if 'state' in request.GET:
                 state_id = request.GET.get('state')
-                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            if request.POST:
+                state_id = request.POST.get('state')
             else:
-                kwargs["queryset"] = City.objects.filter(country=country)
+                kwargs["queryset"] = SubRegion.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        elif db_field.name == "district":
+            if 'city' in request.GET:
+                city_id = request.GET.get('city')
+                kwargs["queryset"] = City.objects.filter(region_id=city_id)
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda obj: obj.name
             return formfield
@@ -417,8 +430,6 @@ class ProductProducerAdmin(admin.ModelAdmin):
             form.base_fields['name'].widget = UppercaseTextInputWidget()
         if 'alias' in form.base_fields:
             form.base_fields['alias'].widget = UppercaseAlphanumericTextInputWidget()
-        if 'district' in form.base_fields:
-            form.base_fields['district'].widget = UppercaseTextInputWidget()
         if 'neighborhood' in form.base_fields:
             form.base_fields['neighborhood'].widget = UppercaseTextInputWidget()
         if 'address' in form.base_fields:
@@ -445,9 +456,22 @@ class ProductProducerAdmin(admin.ModelAdmin):
         elif db_field.name == "city":
             if 'state' in request.GET:
                 state_id = request.GET.get('state')
-                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            if request.POST:
+                state_id = request.POST.get('state')
             else:
-                kwargs["queryset"] = City.objects.filter(country=country)
+                kwargs["queryset"] = SubRegion.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: obj.name
+            return formfield
+        elif db_field.name == "district":
+            if 'district' in request.GET:
+                city_id = request.GET.get('city')
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda obj: obj.name
             return formfield
@@ -466,8 +490,6 @@ class ClientShipAddressInline(admin.StackedInline):
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        if 'district' in formset.form.base_fields:
-            formset.form.base_fields['district'].widget = UppercaseTextInputWidget()
         if 'neighborhood' in formset.form.base_fields:
             formset.form.base_fields['neighborhood'].widget = UppercaseTextInputWidget()
         if 'address' in formset.form.base_fields:
@@ -511,7 +533,19 @@ class ClientShipAddressInline(admin.StackedInline):
             else:
                 state_id = obj.state_id if obj else None
             if state_id:
-                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = SubRegion.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
             else:
                 kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -538,8 +572,6 @@ class ClientAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, **kwargs)
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
-        if 'district' in form.base_fields:
-            form.base_fields['district'].widget = UppercaseTextInputWidget()
         if 'neighborhood' in form.base_fields:
             form.base_fields['neighborhood'].widget = UppercaseTextInputWidget()
         if 'address' in form.base_fields:
@@ -598,7 +630,20 @@ class ClientAdmin(admin.ModelAdmin):
             else:
                 state_id = obj.state_id if obj else None
             if state_id:
-                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = SubRegion.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+        
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
             else:
                 kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -673,7 +718,20 @@ class GathererAdmin(admin.ModelAdmin):
             else:
                 state_id = obj.state.id if obj else None
             if state_id:
-                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = SubRegion.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+        
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city.id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
             else:
                 kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -685,7 +743,7 @@ class GathererAdmin(admin.ModelAdmin):
     class Media:
         js = (
             'js/admin/forms/packhouses/catalogs/gatherer.js',
-            'js/admin/forms/packhouses/catalogs/state-city.js',
+            'js/admin/forms/packhouses/catalogs/state-city-district.js',
         )
 
 
@@ -853,7 +911,20 @@ class OrchardAdmin(admin.ModelAdmin):
             else:
                 state_id = obj.state_id if obj else None
             if state_id:
-                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = SubRegion.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+        
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
             else:
                 kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -1141,8 +1212,6 @@ class ExportingCompanyAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, **kwargs)
         if 'name' in form.base_fields:
             form.base_fields['name'].widget = UppercaseTextInputWidget()
-        if 'district' in form.base_fields:
-            form.base_fields['district'].widget = UppercaseTextInputWidget()
         if 'neighborhood' in form.base_fields:
             form.base_fields['neighborhood'].widget = UppercaseTextInputWidget()
         if 'address' in form.base_fields:
@@ -1183,7 +1252,20 @@ class ExportingCompanyAdmin(admin.ModelAdmin):
             else:
                 state_id = obj.state_id if obj else None
             if state_id:
-                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = SubRegion.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+        
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
             else:
                 kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -1200,7 +1282,7 @@ class ExportingCompanyAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/country-state-city.js',)
+        js = ('js/admin/forms/packhouses/catalogs/country-state-city-district.js',)
 
 
 @admin.register(Transfer)

@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const countryField = $('#id_country');
   const stateField = $('#id_state');
   const cityField = $('#id_city');
+  const districtField = $('#id_district');
   const legalEntityCategoryField = $('#id_legal_category');
 
   const API_BASE_URL = '/rest/v1';
@@ -39,12 +40,25 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateCity() {
     const stateId = stateField.val();
     if (stateId) {
-      fetchOptions(`${API_BASE_URL}/cities/city/?region=${stateId}`)
+      fetchOptions(`${API_BASE_URL}/cities/subregion/?region=${stateId}`)
         .then(data => {
           updateFieldOptions(cityField, data);
         });
     } else {
       updateFieldOptions(cityField, []);
+      updateDistrict();
+    }
+  }
+
+  function updateDistrict() {
+    const cityId = cityField.val();
+    if (cityId) {
+      fetchOptions(`${API_BASE_URL}/cities/city/?subregion=${cityId}`)
+        .then(data => {
+          updateFieldOptions(districtField, data);
+        });
+    } else {
+      updateFieldOptions(districtField, []);
     }
   }
 
@@ -69,7 +83,11 @@ document.addEventListener('DOMContentLoaded', function () {
     updateCity();
   });
 
+  cityField.on('change', function () {
+    updateDistrict();
+  });
 
-  [countryField, stateField, cityField].forEach(field => field.select2());
+
+  [countryField, stateField, cityField, districtField].forEach(field => field.select2());
 
 });

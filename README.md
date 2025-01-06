@@ -32,8 +32,16 @@ Open this directory in a command prompt, then:
 
 6. Load the __admin__ user configuration.
    ```
-   python manage.py loaddata __fixtures/users.json
-   python manage.py loaddata __fixtures/base.json
+   python manage.py loaddata __fixtures/000_users_user.json
+   python manage.py loaddata __fixtures/001_profiles_userprofile.json
+   python manage.py loaddata __fixtures/002_base_productkind.json
+   python manage.py loaddata __fixtures/003_billing_legalentitycategory.json
+   python manage.py loaddata __fixtures/004_organizations_organization.json
+   python manage.py loaddata __fixtures/005_organizations_organizationuser.json
+   python manage.py loaddata __fixtures/006_organizations_organizationowner.json
+   python manage.py loaddata __fixtures/007_profiles_organizationprofile.json
+   python manage.py loaddata __fixtures/008_packhouse_settings_dev.json
+   python manage.py loaddata __fixtures/009_catalogs_dev.json
    ```
 
 7. Run the development server:
