@@ -512,37 +512,6 @@ class Gatherer(CleanNameAndOrganizationMixin, models.Model):
             models.UniqueConstraint(fields=['name', 'organization'], name='gatherer_unique_name_organization'),
         ]
 
-
-class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('Full name'))
-    zone = models.CharField(max_length=200, verbose_name=_('Zone'))
-    tax_registry_code = models.CharField(max_length=20, verbose_name=_('Tax registry code'))
-    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True,
-                                                blank=True)
-    social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
-    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
-    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
-    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'), null=True, blank=True)
-    address = models.CharField(max_length=255, verbose_name=_('Address'), null=True, blank=True)
-    external_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
-    internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    email = models.EmailField(null=True, blank=True)
-    phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT, null=True, blank=True)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    class Meta:
-        verbose_name = _('Maquiladora')
-        verbose_name_plural = _('Maquiladoras')
-        ordering = ('organization', 'name',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='maquiladora_unique_name_organization'),
-        ]
-
-
 class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
@@ -568,14 +537,45 @@ class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
     bank = models.ForeignKey(Bank, verbose_name=_('Bank'), on_delete=models.PROTECT, null=True, blank=True)
     payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    maquiladora = models.ForeignKey(Maquiladora, verbose_name=_('Maquiladora'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Maquiladora client')
         verbose_name_plural = _('Maquiladora clients')
-        ordering = ('maquiladora', 'name',)
+        ordering = ('name',)
+        
+
+
+class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Full name'))
+    zone = models.CharField(max_length=200, verbose_name=_('Zone'))
+    tax_registry_code = models.CharField(max_length=20, verbose_name=_('Tax registry code'))
+    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True,
+                                                blank=True)
+    social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
+    city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
+    district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT)
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'), null=True, blank=True)
+    address = models.CharField(max_length=255, verbose_name=_('Address'), null=True, blank=True)
+    external_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
+    internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT, null=True, blank=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    maquiladora_client = models.ManyToManyField(Client, verbose_name=_('Maquiladora Client'), blank=True)
+
+    class Meta:
+        verbose_name = _('Maquiladora')
+        verbose_name_plural = _('Maquiladoras')
+        ordering = ('organization', 'name',)
         constraints = [
-            models.UniqueConstraint(fields=['name', 'maquiladora'], name='maquiladoraclient_unique_name_maquiladora'),
+            models.UniqueConstraint(fields=['name', 'organization'], name='maquiladora_unique_name_organization'),
         ]
 
 
