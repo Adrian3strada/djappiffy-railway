@@ -628,9 +628,9 @@ class OrchardCertification(models.Model):
 
 class CrewChief(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, verbose_name=_('Harvesting Crew Provider'),
-                                                 on_delete=models.PROTECT)
+    provider = models.ForeignKey(Provider, verbose_name=_('Harvesting Crew Provider'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
     def __str__(self):
         return f"{self.name}"
 
@@ -638,14 +638,11 @@ class CrewChief(models.Model):
         verbose_name = _('Crew Chief')
         verbose_name_plural = _('Crew Chiefs')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'harvesting_crew_provider'],
-                                    name='crew_chief_unique_name_harvesting_crew_provider'),
+            models.UniqueConstraint(fields=['name', 'provider'], name='crew_chief_unique_name_provider'),
         ]
 
-
 class HarvestingCrew(models.Model):
-    ooid = models.IntegerField(verbose_name=_('OOID'), editable=False)
-    harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, verbose_name=_('Harvesting Crew Provider'),
+    provider = models.ForeignKey(Provider, verbose_name=_('Harvesting Crew Provider'),
                                                  on_delete=models.PROTECT)
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     certification_name = models.CharField(max_length=100, verbose_name=_('Certification Name'), blank=True, null=True)
@@ -654,6 +651,7 @@ class HarvestingCrew(models.Model):
                                          validators=[MinValueValidator(1), MaxValueValidator(9999)])
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.name}"
@@ -662,28 +660,8 @@ class HarvestingCrew(models.Model):
         verbose_name = _('Harvesting crew')
         verbose_name_plural = _('Harvesting crews')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'harvesting_crew_provider'],
-                                    name='harversting_name_unique_harvesting_crew_provider'),
-        ]
-
-
-class HarvestingCrewBeneficiary(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_('Bank'))
-    bank_account_number = models.CharField(max_length=18, verbose_name=_('Bank account number / CLABE'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, on_delete=models.CASCADE,
-                                                 verbose_name=_('Harvesting Crew Provider'))
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Harvesting crew beneficiary')
-        verbose_name_plural = _('Harvesting crew beneficiaries')
-        constraints = [
-            models.UniqueConstraint(fields=['bank_account_number', 'harvesting_crew_provider'],
-                                    name='bank_account_number_unique_harvesting_crew_provider'),
+            models.UniqueConstraint(fields=['name', 'provider'],
+                                    name='harversting_name_unique_provider'),
         ]
 
 

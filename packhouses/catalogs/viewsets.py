@@ -141,7 +141,7 @@ class HarvestingCrewProviderViewSet(viewsets.ModelViewSet):
 
 class CrewChiefViewSet(viewsets.ModelViewSet):
     serializer_class = CrewChiefSerializer
-    filterset_fields = ['harvesting_crew_provider', ]
+    filterset_fields = ['provider', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -149,7 +149,7 @@ class CrewChiefViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return CrewChief.objects.filter(organization=self.request.organization)
+        return CrewChief.objects.filter(provider__organization=self.request.organization)
 
 class ClientViewSet(viewsets.ModelViewSet):
     serializer_class = ClientSerializer

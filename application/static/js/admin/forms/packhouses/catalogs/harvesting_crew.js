@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   const API_BASE_URL = "/rest/v1";
-  const harvestingCrewProviderField = $("#id_harvesting_crew_provider");
+  const harvestingCrewProviderField = $("#id_provider");
   const crewChiefField = $("#id_crew_chief");
 
   const objectId = harvestingCrewProviderField.data("object-id");
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    let url = `${API_BASE_URL}/catalogs/crew_chief/?harvesting_crew_provider=${id_harvesting_crew}`;
+    let url = `${API_BASE_URL}/catalogs/crew_chief/?provider=${id_harvesting_crew}`;
 
     if (objectId) {
       url += `&object_id=${objectId}`;

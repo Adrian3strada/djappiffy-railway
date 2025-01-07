@@ -128,23 +128,28 @@
     <script type="text/javascript" src="{% static 'jazzmin/js/related-modal.js' %}"></script>
     {% endif %}
     <script>
-      window.onload = function() {
-          var jazzyActionsDiv = document.querySelector('#jazzy-actions > div');
-            if (jazzyActionsDiv) {
-              jazzyActionsDiv.classList.add('row');
-          }
+      window.onload = function () {
+        // Añadir la clase 'row' al contenedor de acciones
+        var jazzyActionsDiv = document.querySelector('#jazzy-actions > div');
+        if (jazzyActionsDiv) {
+          jazzyActionsDiv.classList.add('row');
+        }
 
-          var formGroups = document.querySelectorAll('#jazzy-actions > div > .form-group');
+        // Seleccionar todos los elementos .form-group dentro del contenedor
+        var formGroups = document.querySelectorAll('#jazzy-actions > div > .form-group');
 
-          formGroups.forEach(function(formGroup) {
-              formGroup.classList.add('col-md-3');
-          });
-          formGroups[0].style.order = 0;
-          formGroups[1].style.order = 3;
-          formGroups[2].style.order = 1;
-          formGroups[3].style.order = 2;
+        // Añadir la clase 'col-md-3' a cada .form-group
+        formGroups.forEach(function (formGroup) {
+          formGroup.classList.add('col-md-3');
+        });
+
+        // Reordenar los elementos solo si existen
+        if (formGroups.length > 0) formGroups[0].style.order = 0;
+        if (formGroups.length > 1) formGroups[1].style.order = 3;
+        if (formGroups.length > 2) formGroups[2].style.order = 1;
+        if (formGroups.length > 3) formGroups[3].style.order = 2;
       };
-  </script>
+    </script>
 
 
 {% endblock %}

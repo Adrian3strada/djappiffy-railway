@@ -7,8 +7,8 @@ from .models import (
     ProductHarvestSizeKind,
     ProductQualityKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora, MaquiladoraClient,
-    OrchardProductClassificationKind, Orchard, OrchardCertification, HarvestingCrewProvider, CrewChief, HarvestingCrew,
-    HarvestingCrewBeneficiary, HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
+    OrchardProductClassificationKind, Orchard, OrchardCertification, CrewChief, HarvestingCrew,
+    HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
     MeshBag, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
@@ -796,67 +796,14 @@ class SupplyAdmin(admin.ModelAdmin):
 class CrewChiefInline(admin.TabularInline):
     model = CrewChief
     extra = 0
+    can_delete = True
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
+        if 'name' in formset.form.base_fields:
+            formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
         return formset
 
-
-@admin.register(CrewChief)
-class CrewChiefAdmin(admin.ModelAdmin):
-    @uppercase_form_charfield('name')
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        return form
-
-
-class HarvestingCrewBeneficiaryInline(admin.StackedInline):
-    model = HarvestingCrewBeneficiary
-    extra = 0
-
-    @uppercase_formset_charfield('name')
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        return formset
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        # Obtener el objeto de la URL si existe
-        object_id = request.resolver_match.kwargs.get("object_id")
-        obj = None
-        organization_id = None
-
-        if object_id:
-            obj = OrganizationProfile.objects.filter(id=object_id).first()
-
-        # Priorizar el valor de POST, luego el objeto y finalmente la organización del request
-        if request.POST.get('organization'):
-            organization_id = request.POST.get('organization')
-        elif obj and obj.organization:
-            organization_id = obj.organization.id
-        else:
-            organization_id = getattr(request.organization, 'id', None)
-
-        # Si la organización está disponible, se realiza el filtro
-        if hasattr(request, 'organization') and request.organization:
-            organization_id = request.organization.id
-
-        # Filtro para el campo "bank"
-        if db_field.name == "bank":
-            kwargs["queryset"] = Bank.objects.filter(
-                organization_id=organization_id,
-                is_enabled=True
-            ) if organization_id else Bank.objects.filter(is_enabled=True)
-
-            return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-        # Configuración adicional para otros campos
-        if "queryset" in kwargs:
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda item: item.name
-            return formfield
-
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(Vehicle)
 class VehicleAdmin(ByOrganizationAdminMixin):
@@ -917,11 +864,11 @@ class HarvestingPaymentSettingInline(admin.StackedInline):
 
 
 @admin.register(HarvestingCrew)
-class HarvestingCrewAdmin(admin.ModelAdmin):
+class HarvestingCrewAdmin(ByOrganizationAdminMixin):
     form = HarvestingCrewForm
-    list_display = ('name', 'harvesting_crew_provider', 'crew_chief', 'certification_name', 'persons_number', 'is_enabled')
-    list_filter = ('harvesting_crew_provider', 'crew_chief', 'is_enabled', 'certification_name')
-    fields = ('harvesting_crew_provider', 'name', 'certification_name', 'crew_chief', 'persons_number', 'comments', 'is_enabled')
+    list_display = ('name', 'provider', 'crew_chief', 'certification_name', 'persons_number', 'is_enabled')
+    list_filter = ('provider', 'crew_chief', 'is_enabled', 'certification_name')
+    fields = ('provider', 'name', 'certification_name', 'crew_chief', 'persons_number', 'comments', 'is_enabled')
     inlines = [HarvestingPaymentSettingInline,]
 
     @uppercase_form_charfield('name')
@@ -934,14 +881,20 @@ class HarvestingCrewAdmin(admin.ModelAdmin):
         obj_id = request.resolver_match.kwargs.get("object_id")
         obj = HarvestingCrew.objects.get(id=obj_id) if obj_id else None
 
+        if db_field.name == "provider":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = Provider.objects.filter(organization=request.organization, is_enabled=True, category='harvesting_provider')
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+
         if db_field.name == "crew_chief":
             if request.POST:
-                harvesting_crew_provider_id = request.POST.get('harvesting_crew_provider')
+                provider_id = request.POST.get('provider')
             else:
-                harvesting_crew_provider_id = obj.harvesting_crew_provider_id if obj else None
+                provider_id = obj.provider_id if obj else None
 
-            if harvesting_crew_provider_id:
-                kwargs["queryset"] = CrewChief.objects.filter(harvesting_crew_provider_id=harvesting_crew_provider_id)
+            if provider_id:
+                kwargs["queryset"] = CrewChief.objects.filter(provider_id=provider_id, is_enabled=True)
             else:
                 kwargs["queryset"] = CrewChief.objects.none()
 
@@ -953,19 +906,6 @@ class HarvestingCrewAdmin(admin.ModelAdmin):
 
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/harvesting_crew.js',)
-
-
-@admin.register(HarvestingCrewProvider)
-class HarvestingCrewProviderAdmin(ByOrganizationAdminMixin):
-    inlines = [HarvestingCrewBeneficiaryInline, CrewChiefInline]
-    fields = ('name', 'tax_id', 'is_enabled')
-    list_display = ('name', 'is_enabled')
-    list_filter = ('is_enabled',)
-
-    @uppercase_form_charfield('name')
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        return form
 
 
 @admin.register(MeshBagKind)
@@ -1195,7 +1135,7 @@ class ProviderAdmin(ByOrganizationAdminMixin):
     fields = ('name', 'category', 'provider_provider', 'vehicle_provider',  'country', 'state', 'city', 'district',  'postal_code',
               'neighborhood', 'address', 'external_number', 'internal_number', 'tax_id', 'email', 'phone_number',
               'comments', 'is_enabled')
-    inlines = (ProviderBeneficiaryInline, ProviderBalanceInline)
+    inlines = (ProviderBeneficiaryInline, ProviderBalanceInline, CrewChiefInline)
 
     def get_state_name(self, obj):
         return obj.state.name
@@ -1311,6 +1251,7 @@ class ProviderAdmin(ByOrganizationAdminMixin):
 
     class Media:
         js = ('js/admin/forms/common/country-state-city-district.js',
-              'js/admin/forms/packhouses/catalogs/provider.js')
+              'js/admin/forms/packhouses/catalogs/provider.js',
+              'js/admin/forms/packhouses/catalogs/harvesting_crew_provider.js')
 
 # /Providers

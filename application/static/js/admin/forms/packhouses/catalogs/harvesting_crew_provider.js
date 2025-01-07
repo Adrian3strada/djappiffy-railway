@@ -1,89 +1,79 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const isEnabledField = document.querySelector('#id_is_enabled');
-  const vehicleTab = document.querySelector('a[href="#vehicles-tab"]').closest('.nav-item');
+document.addEventListener("DOMContentLoaded", () => {
+  const categoryField = $("#id_category");
+  const CrewChiefTab = document.querySelector('a[href="#crew-chiefs-tab"]');
+  const allowedChiefProviderCategories = ["harvesting_provider"];
+  const vehicleField = $("#id_vehicle_provider");
 
-  let initialIsEnabledState = isEnabledField.checked;  // Guardar el estado inicial
+  let initialCategory = categoryField.val();
+  let initialVehicle = vehicleField.val();
 
-  function toggleVehicleTab() {
-      if (isEnabledField.checked) {
-          vehicleTab.classList.remove('d-none');
-          uncheckDeleteCheckboxes();
-      } else {
-          checkVehicleFormsBeforeDisabling();
-      }
-  }
+  const toggleCrewChiefTab = () => {
+    const categoryId = categoryField.val();
+    if (categoryId && allowedChiefProviderCategories.includes(categoryId)) {
+      CrewChiefTab?.classList.remove("d-none");
+      vehicleField.val(initialVehicle).select2().trigger('change');
+      uncheckDeleteCheckboxes();
+    } else {
+      checkChiefFormsBeforeDisabling();
+      vehicleField.val('').select2().trigger('change');
+    }
+  };
 
-  function checkVehicleFormsBeforeDisabling() {
-      const vehicleForms = document.querySelectorAll('.dynamic-vehicle_set');
-
-      if (vehicleForms.length > 0) {
-          // Si hay formularios, preguntar con SweetAlert
-          Swal.fire({
-              title: '¿Estás seguro?',
-              text: 'Si desactivas esta opción, se marcarán los vehículos vacíos para eliminar.',
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonText: 'Sí, desactivar',
-              cancelButtonText: 'Cancelar',
-              reverseButtons: false
-          }).then((result) => {
-              if (result.isConfirmed) {
-                  vehicleTab.classList.add('d-none');
-                  markEmptyVehicleFormsForDeletion();
-                  checkAllDeleteCheckboxes();
-                  initialIsEnabledState = false;  // Actualizar el estado
-              } else {
-                  isEnabledField.checked = true;  // Revertir el checkbox
-              }
-          });
-      } else {
-          vehicleTab.classList.add('d-none');
+  const checkChiefFormsBeforeDisabling = () => {
+    const chiefForms = document.querySelectorAll('.dynamic-crewchief_set');
+    if (chiefForms.length > 0) {
+      Swal.fire({
+        title: '',
+        text: 'Si cambias el tipo de proveedor, los jefes de cuadrilla serán removidos de este proveedor.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Cambiar tipo',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: false
+      }).then((result) => {
+        if (result.isConfirmed) {
+          CrewChiefTab?.classList.add('d-none');
+          markEmptyChiefFormsForDeletion();
           checkAllDeleteCheckboxes();
-          initialIsEnabledState = false;
+        } else {
+          categoryField.val(initialCategory).select2().trigger('change');
+        }
+      });
+    } else {
+      CrewChiefTab?.classList.add('d-none');
+      checkAllDeleteCheckboxes();
+    }
+  };
+
+  const markEmptyChiefFormsForDeletion = () => {
+    document.querySelectorAll(".dynamic-crewchief_set").forEach(form => {
+      const inputs = form.querySelectorAll('input[type="text"], input[type="number"], select');
+      const isEmpty = Array.from(inputs).every(input => input.value.trim() === "");
+      if (isEmpty) {
+        form.querySelector(".inline-deletelink")?.click();
       }
-  }
+    });
+  };
 
-  function markEmptyVehicleFormsForDeletion() {
-      const vehicleForms = document.querySelectorAll('.dynamic-vehicle_set');
+  const checkAllDeleteCheckboxes = () => {
+    document.querySelectorAll('input[type="checkbox"][name$="-DELETE"]').forEach(checkbox => {
+      checkbox.checked = true;
+    });
+  };
 
-      vehicleForms.forEach(form => {
-          const inputs = form.querySelectorAll('input[type="text"], input[type="number"], select');
-          let isEmpty = true;
+  const uncheckDeleteCheckboxes = () => {
+    document.querySelectorAll('input[type="checkbox"][name$="-DELETE"]').forEach(checkbox => {
+      checkbox.checked = false;
+    });
+  };
 
-          inputs.forEach(input => {
-              if (input.value.trim() !== '') {
-                  isEmpty = false;
-              }
-          });
+  toggleCrewChiefTab();
 
-          if (isEmpty) {
-              const deleteButton = form.querySelector('.inline-deletelink');
-              if (deleteButton) {
-                  deleteButton.click();  // Simular el clic en eliminar
-              }
-          }
-      });
-  }
+  categoryField.on("change", toggleCrewChiefTab);
 
-  function checkAllDeleteCheckboxes() {
-      const deleteCheckboxes = document.querySelectorAll('input[type="checkbox"][name$="-DELETE"]');
-      deleteCheckboxes.forEach(checkbox => {
-          checkbox.checked = true;
-      });
-  }
-
-  function uncheckDeleteCheckboxes() {
-      const deleteCheckboxes = document.querySelectorAll('input[type="checkbox"][name$="-DELETE"]');
-      deleteCheckboxes.forEach(checkbox => {
-          checkbox.checked = false;
-      });
-  }
-
-  // Inicializar el estado al cargar la página
-  toggleVehicleTab();
-
-  // Escuchar cambios en el checkbox de is_enabled
-  isEnabledField.addEventListener('change', function () {
-      toggleVehicleTab();
+  vehicleField.on("change", () => {
+    if (vehicleField.val().length > 0) {
+      initialVehicle = vehicleField.val();
+    }
   });
 });

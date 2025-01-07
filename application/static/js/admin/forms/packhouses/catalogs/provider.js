@@ -35,15 +35,15 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
           updateFieldOptions(providerProviderField, data);
           providerProviderField.closest('.form-group').fadeIn();
-          vehicleField.closest('.form-group').fadeOut();
+          vehicleField.closest('.form-group').hide();
         });
     } else if (categoryId && allowedVehicleProviderCategories.includes(categoryId)) {
-      vehicleField.closest('.form-group').fadeIn();
+      vehicleField.closest('.form-group').show();
       providerProviderField.closest('.form-group').fadeOut();
     }else {
       updateFieldOptions(providerProviderField, []);
       providerProviderField.closest('.form-group').fadeOut();
-      vehicleField.closest('.form-group').fadeOut();
+      vehicleField.closest('.form-group').hide();
     }
   }
 
@@ -59,4 +59,5 @@ document.addEventListener('DOMContentLoaded', function () {
   if (categoryField.val() && !mapAllowedProviderProviderCategories[categoryField.val()]) {
     providerProviderField.closest('.form-group').hide();
   }
+  updateProviderProviderField();
 });
