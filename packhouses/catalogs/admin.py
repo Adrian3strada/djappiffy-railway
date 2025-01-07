@@ -850,8 +850,8 @@ class HarvestingCrewBeneficiaryInline(admin.StackedInline):
 @admin.register(Vehicle)
 class VehicleAdmin(ByOrganizationAdminMixin):
     list_display = (
-    'name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'ownership', 'fuel', 'category', 'is_enabled')
-    fields = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'category', 'ownership', 'fuel',
+    'name', 'category', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'ownership', 'fuel', 'is_enabled')
+    fields = ('name',  'category', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'ownership', 'fuel',
               'comments', 'is_enabled')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

@@ -453,6 +453,7 @@ class HarvestingCrewProvider(models.Model):
 
 class Vehicle(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
+    category = models.CharField(max_length=15, verbose_name=_('Category'), choices=get_vehicle_category_choices())
     kind = models.ForeignKey(VehicleKind, verbose_name=_('Vehicle Kind'), on_delete=models.PROTECT)
     brand = models.ForeignKey(VehicleBrand, verbose_name=_('Brand'), on_delete=models.PROTECT)
     model = models.CharField(max_length=4, verbose_name=_('Model'), choices=vehicle_year_choices(),
@@ -461,7 +462,6 @@ class Vehicle(CleanNameAndOrganizationMixin, models.Model):
     serial_number = models.CharField(max_length=100, verbose_name=_('Serial number'))
     color = models.CharField(max_length=50, verbose_name=_('Color'))
     ownership = models.ForeignKey(VehicleOwnershipKind, verbose_name=_('Ownership kind'), on_delete=models.PROTECT)
-    category = models.CharField(max_length=15, verbose_name=_('Category'), choices=get_vehicle_category_choices())
     fuel = models.ForeignKey(VehicleFuelKind, verbose_name=_('Fuel kind'), on_delete=models.PROTECT)
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
