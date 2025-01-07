@@ -23,16 +23,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const extraCodeField = newForm.find('input[name$="-extra_code"]');
       extraCodeField.prop('disabled', true);
       extraCodeField.attr('placeholder', 'n/a');
+      extraCodeField.addClass('disabled-field')
 
       certificationKindField.on('change', () => {
         const certificationKindID = certificationKindField.val();
         extraCodeField.val(null);
-        extraCodeField.prop('disabled', true);
         if (certificationKindID) {
           fetchOptions(`/rest/v1/packhouse-settings/orchard-certification-kind/${certificationKindField.val()}/`)
             .then(data => {
               extraCodeField.prop('disabled', !data.extra_code_name);
               extraCodeField.attr('placeholder', data.extra_code_name || 'n/a');
+              data.extra_code_name ? extraCodeField.removeClass('disabled-field') : extraCodeField.addClass('disabled-field');
               fetchOptions(`/rest/v1/packhouse-settings/orchard-certification-verifier/?id=${data.verifiers.join(',')}`)
                 .then(verifiers => {
                   updateFieldOptions(newForm.find('select[name$="-verifier"]'), verifiers);
@@ -46,8 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  const existingForms = $('tr[id^="orchardcertification_set-"]');
-  existingForms.each((index, form) => {
+  const existingForms = document.querySelectorAll('div[id^="orchardcertification_set-"]');
+  existingForms.forEach(form => {
     console.log("form", form);
 
     const certificationKindField = $(form).find('select[name$="-certification_kind"]');
@@ -55,14 +56,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const verifierField = $(form).find('select[name$="-verifier"]');
     extraCodeField.prop('disabled', true);
     extraCodeField.attr('placeholder', 'n/a');
+    extraCodeField.addClass('disabled-field')
 
     const certificationKindID = certificationKindField.val();
 
     if (certificationKindID) {
       fetchOptions(`/rest/v1/packhouse-settings/orchard-certification-kind/${certificationKindField.val()}/`)
         .then(data => {
+          alert("aqui")
           extraCodeField.prop('disabled', !data.extra_code_name);
           extraCodeField.attr('placeholder', data.extra_code_name || 'n/a');
+          data.extra_code_name ? extraCodeField.removeClass('disabled-field') : extraCodeField.addClass('disabled-field');
           fetchOptions(`/rest/v1/packhouse-settings/orchard-certification-verifier/?id=${data.verifiers.join(',')}`)
             .then(verifiers => {
               updateFieldOptions(verifierField, verifiers);

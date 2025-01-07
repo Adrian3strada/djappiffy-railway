@@ -3,6 +3,7 @@ from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizati
                            CleanNameOrAliasAndOrganizationMixin, CleanNameAndMarketMixin, CleanNameAndProductMixin,
                            CleanNameAndProviderMixin, CleanNameAndCategoryAndOrganizationMixin,
                            CleanProductVarietyMixin, CleanNameAndAliasProductMixin,
+                           CleanNameAndCodeAndOrganizationMixin,
                            CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanNameAndMaquiladoraMixin)
 from organizations.models import Organization
 from cities_light.models import City, Country, Region, SubRegion
@@ -575,24 +576,21 @@ class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
         ]
 
 
-class Orchard(models.Model):
+class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     code = models.CharField(max_length=100, verbose_name=_('Registry code'))
     producer = models.ForeignKey(Provider, verbose_name=_('Producer'), on_delete=models.PROTECT)
     safety_authority_registration_date = models.DateField(verbose_name=_('Safety authority registration date'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
-    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
+    city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
+    district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT)
     ha = models.FloatField(verbose_name=_('Hectares'))
     product_classification_kind = models.ForeignKey(OrchardProductClassificationKind,
                                                     verbose_name=_('Product Classification'),
                                                     on_delete=models.PROTECT)
-    phytosanitary_certificate = models.CharField(max_length=100, verbose_name=_('Phytosanitary certificate'))
+    sanitary_certificate = models.CharField(max_length=100, verbose_name=_('Sanitary certificate'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Orchard')
@@ -613,7 +611,7 @@ class OrchardCertification(models.Model):
                                  on_delete=models.PROTECT)
     extra_code = models.CharField(max_length=100, verbose_name=_('Extra code'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.PROTECT)
+    orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.orchard.name} : {self.certification_kind.name}"
