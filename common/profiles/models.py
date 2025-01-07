@@ -202,15 +202,6 @@ class PackhouseExporterProfile(OrganizationProfile):
     sanitary_registry = models.CharField(max_length=50, verbose_name=_('Sanitary registry'))
     chain_of_custody = models.CharField(max_length=150, verbose_name=_('Chain of custody'))
 
-    def clean(self):
-        """
-        Override the clean method to ensure uniqueness only if hostname is set.
-        """
-        if self.hostname:
-            if PackhouseExporterProfile.objects.filter(hostname=self.hostname).exclude(id=self.id).exists():
-                raise ValidationError(f"The hostname '{self.hostname}' is already taken.")
-        super().clean()
-
     class Meta:
         verbose_name = _('Packhouse exporter profile')
         verbose_name_plural = _('Packhouse exporter profiles')
@@ -221,6 +212,15 @@ class PackhouseExporterSetting(models.Model):
     product_kinds = models.ManyToManyField(ProductKind, blank=True, verbose_name=_('Product kinds'))
     hostname = models.CharField(max_length=255, blank=False, null=False, verbose_name=_('Hostname'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def clean(self):
+        """
+        Override the clean method to ensure uniqueness only if hostname is set.
+        """
+        if self.hostname:
+            if PackhouseExporterSetting.objects.filter(hostname=self.hostname).exclude(id=self.id).exists():
+                raise ValidationError(f"The hostname '{self.hostname}' is already taken.")
+        super().clean()
 
     def __str__(self):
         return f"{self.profile}"
