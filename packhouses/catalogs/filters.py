@@ -2,7 +2,9 @@ from django.contrib import admin
 from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductQualityKind, ProductMassVolumeKind,
-                     Provider)
+                     Gatherer,
+                     Provider
+                     )
 from common.base.models import ProductKind
 from django.utils.translation import gettext_lazy as _
 
@@ -223,4 +225,95 @@ class ByCityForOrganizationProvidersFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(city__id=self.value())
+        return queryset
+
+
+class ByStateForOrganizationGathererFilter(admin.SimpleListFilter):
+    title = _('State')
+    parameter_name = 'state'
+
+    def lookups(self, request, model_admin):
+        states = Region.objects.all()
+        if hasattr(request, 'organization'):
+            organization_gatherers_state_ids = list(Gatherer.objects.filter(organization=request.organization).values_list('state', flat=True).distinct())
+            states = states.filter(id__in=organization_gatherers_state_ids).order_by('name')
+        return [(state.id, state.name) for state in states]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(state__id=self.value())
+        return queryset
+
+
+class ByCityForOrganizationGathererFilter(admin.SimpleListFilter):
+    title = _('City')
+    parameter_name = 'city'
+
+    def lookups(self, request, model_admin):
+        cities = SubRegion.objects.all()
+        if hasattr(request, 'organization'):
+            organization_gatherers_city_ids = list(Gatherer.objects.filter(organization=request.organization).values_list('city', flat=True).distinct())
+            cities = cities.filter(id__in=organization_gatherers_city_ids).order_by('region__name', 'name')
+        return [(city.id, f"{city.region.name}: {city.name}") for city in cities]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(city__id=self.value())
+        return queryset
+
+
+
+
+
+class ByStateForOrganizationFilter(admin.SimpleListFilter):
+    title = _('State')
+    parameter_name = 'state'
+
+    def lookups(self, request, model_admin):
+        states = Region.objects.all()
+        if hasattr(request, 'organization'):
+            packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+            country = packhouse_profile.country
+            states = states.filter(country=country)
+        return [(state.id, state.name) for state in states]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(state__id=self.value())
+        return queryset
+
+
+class ByCityForOrganizationFilter(admin.SimpleListFilter):
+    title = _('City')
+    parameter_name = 'city'
+
+    def lookups(self, request, model_admin):
+        cities = SubRegion.objects.all()
+        if hasattr(request, 'organization'):
+            packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+            country = packhouse_profile.country
+            cities = cities.filter(country=country).order_by('region__name', 'name')
+        return [(city.id, f"{city.region.name}: {city.name}") for city in cities]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(city__id=self.value())
+        return queryset
+
+
+class ByDistrictForOrganizationFilter(admin.SimpleListFilter):
+    title = _('District')
+    parameter_name = 'district'
+
+    def lookups(self, request, model_admin):
+        districts = City.objects.all()
+        if hasattr(request, 'organization'):
+            packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+            country = packhouse_profile.country
+            districts = districts.filter(country=country, subregion__isnull=False).order_by('region__name', 'subregion__name', 'name')
+        return [(district.id, f"{district.region.name} - {district.subregion.name}: {district.name}") for district in districts]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(district__id=self.value())
         return queryset

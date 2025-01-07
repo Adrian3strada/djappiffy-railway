@@ -30,6 +30,8 @@ from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextIn
 from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizationMarketsFilter,
                       ByProductForOrganizationFilter, ByProductQualityKindForOrganizationFilter,
                       ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
+                      ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
+                      ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
                       ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
@@ -532,16 +534,16 @@ class ClientAdmin(ByOrganizationAdminMixin):
 
 
 @admin.register(Gatherer)
-class GathererAdmin(admin.ModelAdmin):
+class GathererAdmin(ByOrganizationAdminMixin):
     list_display = (
     'name', 'zone', 'tax_registry_code', 'state', 'city', 'postal_code', 'address', 'email', 'phone_number', 'vehicle',
     'is_enabled')
-    list_filter = (StatesForOrganizationCountryFilter, 'is_enabled')
+    list_filter = (ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter, 'is_enabled')
     search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
     fields = (
     'name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district',
     'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle',
-    'is_enabled', 'organization')
+    'is_enabled')
 
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('zone')
@@ -569,15 +571,16 @@ class GathererAdmin(admin.ModelAdmin):
         field_mapping = {
             "state": (Region, "country", organization_country),
             "city": (SubRegion, "region", request.POST.get('state') if request.POST else obj.state.id if obj else None),
-            "district": (City, "subregion", request.POST.get('city') if request.POST else obj.city.id if obj else None)
+            "district": (City, "subregion", request.POST.get('city') if request.POST else obj.city.id if obj else None),
+            "vehicle": (Vehicle, "category", 'harvesting_crew')
         }
 
         if db_field.name in field_mapping:
             Model, filter_field, filter_value = field_mapping[db_field.name]
-            if filter_value:
-                kwargs["queryset"] = Model.objects.filter(**{f"{filter_field}_id": filter_value})
+            if db_field.name == "vehicle":
+                kwargs["queryset"] = Model.objects.filter(category=filter_value, is_enabled=True)
             else:
-                kwargs["queryset"] = Model.objects.none()
+                kwargs["queryset"] = Model.objects.filter(**{f"{filter_field}_id": filter_value}) if filter_value else Model.objects.none()
 
         formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
         formfield.label_from_instance = lambda item: item.name
