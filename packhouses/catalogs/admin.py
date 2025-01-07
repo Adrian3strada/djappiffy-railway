@@ -827,13 +827,18 @@ class MaquiladoraClientInline(admin.StackedInline):
 @admin.register(Maquiladora)
 class MaquiladoraAdmin(ByOrganizationAdminMixin):
     list_display = (
-    'name', 'zone', 'tax_registry_code', 'state', 'city', 'email', 'phone_number', 'vehicle', 'is_enabled')
+    'name', 'get_maquiladora_client', 'zone', 'tax_registry_code', 'state', 'city', 'email', 'phone_number', 'vehicle', 'is_enabled', )
     list_filter = (StatesForOrganizationCountryFilter, CityForOrganizationCountryFilter, DistrictForOrganizationCountryFilter, 'vehicle', 'is_enabled')
     search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
     fields = (
     'name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district',
     'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle',
-    'is_enabled', 'clients')
+    'is_enabled','maquiladora_client',)
+
+    def get_maquiladora_client(self, obj): 
+        return ", ".join([mc.name for mc in obj.maquiladora_client.all()]) 
+    get_maquiladora_client.short_description = _('MClients')
+
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
