@@ -572,7 +572,7 @@ class GathererAdmin(ByOrganizationAdminMixin):
             "state": (Region, "country", organization_country),
             "city": (SubRegion, "region", request.POST.get('state') if request.POST else obj.state.id if obj else None),
             "district": (City, "subregion", request.POST.get('city') if request.POST else obj.city.id if obj else None),
-            "vehicle": (Vehicle, "category", 'harvesting_crew')
+            "vehicle": (Vehicle, "category", 'packhouse')
         }
 
         if db_field.name in field_mapping:
@@ -666,7 +666,7 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
                 kwargs["queryset"] = Client.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
-        
+
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('tax_registry_code')
     @uppercase_form_charfield('population_registry_code')
@@ -686,7 +686,7 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
         obj = Maquiladora.objects.get(id=obj_id) if obj_id else None
-        
+
         if db_field.name == "state":
             if hasattr(request, 'organization'):
                 packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
@@ -695,7 +695,7 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
-        
+
         if db_field.name == "city":
             if request.POST:
                 state_id = request.POST.get('state')
@@ -708,7 +708,7 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
-        
+
         if db_field.name == "district":
             if request.POST:
                 city_id = request.POST.get('city')
@@ -721,7 +721,7 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
-        
+
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
