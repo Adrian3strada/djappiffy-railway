@@ -715,7 +715,7 @@ class OrchardCertificationInline(admin.StackedInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_object_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = Client.objects.get(id=parent_object_id) if parent_object_id else None
+        parent_obj = Orchard.objects.get(id=parent_object_id) if parent_object_id else None
 
         organization = None
         if hasattr(request, 'organization'):
