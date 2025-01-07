@@ -33,6 +33,8 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
                       ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
+                      ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
+                      ByCityForOrganizationClientsFilter,
                       ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
@@ -403,7 +405,9 @@ class ClientShipAddressInline(admin.StackedInline):
 class ClientAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'legal_category', 'tax_id', 'market', 'country', 'state', 'city', 'neighborhood', 'address',
                     'external_number', 'tax_id', 'contact_phone_number', 'is_enabled')
-    list_filter = ('market', 'legal_category', 'payment_kind', 'is_enabled')
+    list_filter = ('market', 'category', ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
+                   ByCityForOrganizationClientsFilter,
+                   'legal_category', 'payment_kind', 'is_enabled')
     search_fields = ('name', 'tax_id', 'contact_phone_number')
     fields = ('name', 'category', 'market', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address',
               'external_number', 'internal_number', 'shipping_address', 'legal_category', 'tax_id', 'payment_kind',

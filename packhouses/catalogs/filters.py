@@ -3,7 +3,7 @@ from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductQualityKind, ProductMassVolumeKind,
                      Gatherer,
-                     Provider
+                     Provider, Client
                      )
 from common.base.models import ProductKind
 from django.utils.translation import gettext_lazy as _
@@ -226,6 +226,65 @@ class ByCityForOrganizationProvidersFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(city__id=self.value())
         return queryset
+
+
+# Clientes
+
+
+class ByCountryForOrganizationClientsFilter(admin.SimpleListFilter):
+    title = _('Country')
+    parameter_name = 'country'
+
+    def lookups(self, request, model_admin):
+        countries = Country.objects.all()
+        if hasattr(request, 'organization'):
+            country_ids = list(
+                Client.objects.filter(organization=request.organization).values_list('country', flat=True).distinct())
+            countries = countries.filter(id__in=country_ids).order_by('name')
+        return [(country.id, country.name) for country in countries]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(country__id=self.value())
+        return queryset
+
+
+class ByStateForOrganizationClientsFilter(admin.SimpleListFilter):
+    title = _('State')
+    parameter_name = 'state'
+
+    def lookups(self, request, model_admin):
+        states = Region.objects.all()
+        if hasattr(request, 'organization'):
+            state_ids = list(
+                Client.objects.filter(organization=request.organization).values_list('state', flat=True).distinct())
+            states = states.filter(id__in=state_ids).order_by('country__name', 'name')
+        return [(state.id, f"{state.country.name}: {state.name}") for state in states]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(state__id=self.value())
+        return queryset
+
+
+class ByCityForOrganizationClientsFilter(admin.SimpleListFilter):
+    title = _('City')
+    parameter_name = 'city'
+
+    def lookups(self, request, model_admin):
+        cities = SubRegion.objects.all()
+        if hasattr(request, 'organization'):
+            organization_providers_city_ids = list(
+                Client.objects.filter(organization=request.organization).values_list('city', flat=True).distinct())
+            cities = cities.filter(id__in=organization_providers_city_ids).order_by('country__name', 'region__name', 'name')
+        return [(city.id, f"{city.country.name}: {city.region.name}: {city.name}") for city in cities]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(city__id=self.value())
+        return queryset
+
+# /Clientes
 
 
 class ByStateForOrganizationGathererFilter(admin.SimpleListFilter):
