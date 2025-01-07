@@ -847,15 +847,10 @@ class HarvestingCrewBeneficiaryInline(admin.StackedInline):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-
-class VehicleInline(admin.StackedInline):
-    model = Vehicle
-    extra = 0
-
+@admin.register(Vehicle)
+class VehicleAdmin(ByOrganizationAdminMixin):
     list_display = (
-    'name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'ownership', 'fuel', 'is_enabled')
-    list_filter = ('kind', 'brand', 'ownership', 'fuel', 'is_enabled')
-    search_fields = ('name', 'model', 'license_plate', 'serial_number', 'comments')
+    'name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'ownership', 'fuel', 'category', 'is_enabled')
     fields = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'category', 'ownership', 'fuel',
               'comments', 'is_enabled')
 
@@ -889,13 +884,13 @@ class VehicleInline(admin.StackedInline):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    @uppercase_formset_charfield('name')
-    @uppercase_formset_charfield('license_plate')
-    @uppercase_formset_charfield('serial_number')
-    @uppercase_formset_charfield('color')
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        return formset
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('license_plate')
+    @uppercase_form_charfield('serial_number')
+    @uppercase_form_charfield('color')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
 
 
 class HarvestingPaymentSettingInline(admin.StackedInline):
@@ -950,7 +945,7 @@ class HarvestingCrewAdmin(admin.ModelAdmin):
 
 @admin.register(HarvestingCrewProvider)
 class HarvestingCrewProviderAdmin(ByOrganizationAdminMixin):
-    inlines = [HarvestingCrewBeneficiaryInline, VehicleInline, CrewChiefInline]
+    inlines = [HarvestingCrewBeneficiaryInline, CrewChiefInline]
     fields = ('name', 'tax_id', 'is_enabled')
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)

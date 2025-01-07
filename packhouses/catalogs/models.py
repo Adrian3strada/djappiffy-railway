@@ -465,20 +465,14 @@ class Vehicle(CleanNameAndOrganizationMixin, models.Model):
     fuel = models.ForeignKey(VehicleFuelKind, verbose_name=_('Fuel kind'), on_delete=models.PROTECT)
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    harvesting_crew_provider = models.ForeignKey(HarvestingCrewProvider, on_delete=models.CASCADE,
-                                                 verbose_name=_('Harvesting Crew Provider'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = _('Vehicle')
         verbose_name_plural = _('Vehicles')
         ordering = ('name',)
         constraints = [
-            models.UniqueConstraint(fields=['name', 'harvesting_crew_provider'],
-                                    name='vehicle_unique_name_harvesting_crew_provider'),
-            models.UniqueConstraint(fields=['license_plate', 'harvesting_crew_provider'],
-                                    name='vehicle_unique_licenseplate_harvesting_crew_provider'),
-            models.UniqueConstraint(fields=['serial_number', 'harvesting_crew_provider'],
-                                    name='vehicle_unique_serialnumber_harvesting_crew_provider')
+            models.UniqueConstraint(fields=['serial_number', 'organization'], name='vehicle_unique_serial_number_organization'),
         ]
 
 
