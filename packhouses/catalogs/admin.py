@@ -872,6 +872,7 @@ class VehicleAdmin(ByOrganizationAdminMixin):
     'name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'ownership', 'fuel', 'category', 'is_enabled')
     fields = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'category', 'ownership', 'fuel',
               'comments', 'is_enabled')
+    list_filter = ('kind', 'brand', 'ownership', 'fuel', 'is_enabled')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         # Obtener la organización del request
@@ -1199,7 +1200,7 @@ class ProviderAdmin(ByOrganizationAdminMixin):
     list_filter = ('category', ByCountryForOrganizationProvidersFilter, ByStateForOrganizationProvidersFilter,
                    ByCityForOrganizationProvidersFilter, 'is_enabled',)
     search_fields = ('name', 'neighborhood', 'address', 'tax_id', 'email')
-    fields = ('name', 'category', 'provider_provider', 'country', 'state', 'city', 'district',  'postal_code',
+    fields = ('name', 'category', 'provider_provider', 'vehicle_provider',  'country', 'state', 'city', 'district',  'postal_code',
               'neighborhood', 'address', 'external_number', 'internal_number', 'tax_id', 'email', 'phone_number',
               'comments', 'is_enabled')
     inlines = (ProviderBeneficiaryInline, ProviderBalanceInline)
@@ -1302,6 +1303,19 @@ class ProviderAdmin(ByOrganizationAdminMixin):
             return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "vehicle_provider":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = Vehicle.objects.filter(organization=request.organization, is_enabled=True)
+            else:
+                kwargs["queryset"] = Vehicle.objects.none()
+            formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
 
     class Media:
         js = ('js/admin/forms/common/country-state-city-district.js',
