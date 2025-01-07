@@ -532,7 +532,7 @@ class GathererAdmin(ByOrganizationAdminMixin):
             "state": (Region, "country", organization_country),
             "city": (SubRegion, "region", request.POST.get('state') if request.POST else obj.state.id if obj else None),
             "district": (City, "subregion", request.POST.get('city') if request.POST else obj.city.id if obj else None),
-            "vehicle": (Vehicle, "category", 'harvesting_crew')
+            "vehicle": (Vehicle, "category", 'packhouse')
         }
 
         if db_field.name in field_mapping:
