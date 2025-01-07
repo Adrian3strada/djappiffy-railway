@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (options && options.length) {
       options.forEach((option) => {
-        const isSelected = option.id == currentValue;
+        const isSelected = parseInt(currentValue) === option.id;
         field.append(
           new Option(option.name, option.id, isSelected, isSelected)
         );
