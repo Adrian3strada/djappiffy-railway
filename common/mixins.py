@@ -69,6 +69,83 @@ class CleanNameAndOrganizationMixin(models.Model):
         abstract = True
 
 
+class CleanNameAndCodeAndOrganizationMixin(models.Model):
+    def __str__(self):
+        return f"{self.name}"
+
+    def clean(self):
+        self.name = getattr(self, 'name', None)
+        self.code = getattr(self, 'code', None)
+        self.organization = getattr(self, 'organization', None)
+        self.organization_id = getattr(self, 'organization_id', None)
+
+        if self.name:
+            self.name = self.name.upper()
+
+        if self.code:
+            self.code = self.code.upper()
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.organization_id:
+            if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(pk=self.pk).exists():
+                errors['name'] = _('Name must be unique, it already exists.')
+            if self.__class__.objects.filter(code=self.code, organization=self.organization).exclude(pk=self.pk).exists():
+                errors['code'] = _('Code must be unique, it already exists.')
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
+
+class CleanNameAndCategoryAndOrganizationMixin(models.Model):
+    def __str__(self):
+        return f"{self.name}"
+
+    def clean(self):
+        self.name = getattr(self, 'name', None)
+        self.category = getattr(self, 'category', None)
+        self.organization = getattr(self, 'organization', None)
+        self.organization_id = getattr(self, 'organization_id', None)
+
+        if self.name:
+            self.name = self.name.upper()
+
+        errors = {}
+
+        try:
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.organization_id:
+            if self.__class__.objects.filter(name=self.name, category=self.category, organization=self.organization).exclude(
+                pk=self.pk).exists():
+                errors['name'] = _('Name and category must be unique, it already exists a registry with this data.')
+                errors['category'] = _('Name and category must be unique, it already exists a registry with this data.')
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
+
 class CleanNameOrAliasAndOrganizationMixin(models.Model):
     def __str__(self):
         return f"{self.name}"
@@ -213,7 +290,6 @@ class CleanProductMixin(models.Model):
         abstract = True
 
 
-
 class CleanProductVarietyMixin(models.Model):
     def __str__(self):
         return f"{self.name}"
@@ -278,40 +354,6 @@ class CleanNameAndProductMixin(models.Model):
         abstract = True
 
 
-class CleanNameAndProductProviderMixin(models.Model):
-    def __str__(self):
-        return f"{self.name}"
-
-    def clean(self):
-        self.name = getattr(self, 'name', None)
-        self.provider = getattr(self, 'provider', None)
-        self.provider_id = getattr(self, 'provider_id', None)
-
-        if self.name:
-            self.name = self.name.upper()
-
-        errors = {}
-
-        try:
-            super().clean()
-        except ValidationError as e:
-            errors = e.message_dict
-
-        if self.provider_id:
-            if self.__class__.objects.filter(name=self.name, provider=self.provider).exclude(pk=self.pk).exists():
-                errors['name'] = _('Name must be unique, it already exists.')
-
-        if errors:
-            raise ValidationError(errors)
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
-
-    class Meta:
-        abstract = True
-
-
 class CleanNameAndProviderMixin(models.Model):
     def __str__(self):
         return f"{self.name}"
@@ -333,40 +375,6 @@ class CleanNameAndProviderMixin(models.Model):
 
         if self.provider_id:
             if self.__class__.objects.filter(name=self.name, provider=self.provider).exclude(pk=self.pk).exists():
-                errors['name'] = _('Name must be unique, it already exists.')
-
-        if errors:
-            raise ValidationError(errors)
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
-
-    class Meta:
-        abstract = True
-
-
-class CleanNameAndProductProducerMixin(models.Model):
-    def __str__(self):
-        return f"{self.name}"
-
-    def clean(self):
-        self.name = getattr(self, 'name', None)
-        self.producer = getattr(self, 'producer', None)
-        self.producer_id = getattr(self, 'producer_id', None)
-
-        if self.name:
-            self.name = self.name.upper()
-
-        errors = {}
-
-        try:
-            super().clean()
-        except ValidationError as e:
-            errors = e.message_dict
-
-        if self.producer_id:
-            if self.__class__.objects.filter(name=self.name, producer=self.producer).exclude(pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
 
         if errors:
@@ -451,6 +459,7 @@ class CleanNameAndMaquiladoraMixin(models.Model):
 
     class Meta:
         abstract = True
+
 
 class IncotermsAndLocalDeliveryMarketMixin(models.Model):
     def clean(self):

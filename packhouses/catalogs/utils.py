@@ -29,7 +29,7 @@ def get_payment_choices():
         ('fixed_amount', _('Fixed amount')),
     ]
 
-def vehicle_scope_choices():
+def get_vehicle_category_choices():
     return [
         ('packhouse', _('Packhouse')),
         ('harvesting_crew', _('Harvesting crew')),
@@ -43,3 +43,4 @@ def get_provider_categories_choices():
         ('harvesting_provider', _('Harvesting provider')),
         ('product_producer', _('Product producer')),
     ]
+

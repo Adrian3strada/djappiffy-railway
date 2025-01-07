@@ -115,7 +115,7 @@ class ProviderViewSet(viewsets.ModelViewSet):
 
 class VehicleViewSet(viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
-    filterset_fields = ['scope', 'is_enabled']
+    filterset_fields = ['category', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):

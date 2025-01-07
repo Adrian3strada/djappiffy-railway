@@ -1,8 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
   const categoryField = $('#id_category');
   const providerProviderField = $('#id_provider_provider');
+  const vehicleField = $('#id_vehicle_provider');
 
   const allowedProviderProviderCategories = ['product_producer'];
+  const allowedVehicleProviderCategories = ['harvesting_provider'];
 
   const mapAllowedProviderProviderCategories = {
     'product_producer': ['product_provider',]
@@ -33,10 +35,15 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
           updateFieldOptions(providerProviderField, data);
           providerProviderField.closest('.form-group').fadeIn();
+          vehicleField.closest('.form-group').fadeOut();
         });
-    } else {
+    } else if (categoryId && allowedVehicleProviderCategories.includes(categoryId)) {
+      vehicleField.closest('.form-group').fadeIn();
+      providerProviderField.closest('.form-group').fadeOut();
+    }else {
       updateFieldOptions(providerProviderField, []);
       providerProviderField.closest('.form-group').fadeOut();
+      vehicleField.closest('.form-group').fadeOut();
     }
   }
 

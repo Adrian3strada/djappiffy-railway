@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function getVehicle() {
-    fetchOptions(`${API_BASE_URL}/catalogs/vehicle/?scope=packhouse&is_enabled=true`)
+    fetchOptions(`${API_BASE_URL}/catalogs/vehicle/?category=packhouse&is_enabled=true`)
       .then(data => {
         if (data && Array.isArray(data)) {
           updateFieldOptions(vehicleField, data);

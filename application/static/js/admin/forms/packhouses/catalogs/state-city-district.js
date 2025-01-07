@@ -1,56 +1,33 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const stateField = $('#id_state');
-  const cityField = $('#id_city');
-  const districtField = $('#id_district');
-
+document.addEventListener('DOMContentLoaded', () => {
   const API_BASE_URL = '/rest/v1';
+  const fields = {
+    state: $('#id_state'),
+    city: $('#id_city'),
+    district: $('#id_district')
+  };
 
-  function updateFieldOptions(field, options) {
-    field.empty().append(new Option('---------', '', true, true));
-    options.forEach(option => {
-      field.append(new Option(option.name, option.id, false, false));
-    });
+  const updateFieldOptions = (field, options) => {
+    field.empty().append($('<option>', { text: '---------', selected: true }));
+    options.forEach(option => field.append($('<option>', { text: option.name, value: option.id })));
     field.trigger('change').select2();
-  }
+  };
 
-  function fetchOptions(url) {
-    return $.ajax({
-      url: url,
-      method: 'GET',
-      dataType: 'json'
-    }).fail(error => console.error('Fetch error:', error));
-  }
+  const fetchOptions = url => $.getJSON(url).fail(error => console.error('Fetch error:', error));
 
-  function updateCity() {
-    const stateId = stateField.val();
-    if (stateId) {
-      fetchOptions(`${API_BASE_URL}/cities/subregion/?region=${stateId}`)
-        .then(data => {
-          updateFieldOptions(cityField, data);
-        });
-    } else {
-      updateFieldOptions(cityField, []);
-    }
-  }
+  const updateCity = () => {
+    const stateId = fields.state.val();
+    const url = stateId ? `${API_BASE_URL}/cities/subregion/?region=${stateId}` : null;
+    url ? fetchOptions(url).then(data => updateFieldOptions(fields.city, data)) : updateFieldOptions(fields.city, []);
+  };
 
-  function updateDistrict() {
-    const cityId = cityField.val();
-    if (cityId) {
-      fetchOptions(`${API_BASE_URL}/cities/city/?subregion=${cityId}`)
-        .then(data => {
-          updateFieldOptions(districtField, data);
-        });
-    } else {
-      updateFieldOptions(districtField, []);
-    }
-  }
+  const updateDistrict = () => {
+    const cityId = fields.city.val();
+    const url = cityId ? `${API_BASE_URL}/cities/city/?subregion=${cityId}` : null;
+    url ? fetchOptions(url).then(data => updateFieldOptions(fields.district, data)) : updateFieldOptions(fields.district, []);
+  };
 
-  stateField.on('change', function () {
-    updateCity();
-  });
-  cityField.on('change', function () {
-    updateDistrict();
-  });
+  fields.state.on('change', updateCity);
+  fields.city.on('change', updateDistrict);
 
-  [stateField, cityField, districtField].forEach(field => field.select2());
+  Object.values(fields).forEach(field => field.select2());
 });

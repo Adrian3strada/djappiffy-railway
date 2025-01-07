@@ -3,13 +3,24 @@
   "model": "profiles.organizationprofile",
   "pk": 1,
   "fields": {
-    "polymorphic_ctype": 60,
+    "polymorphic_ctype": [
+      "profiles",
+      "packhouseexporterprofile"
+    ],
     "name": "Tezil S.A. de C.V",
     "organization": 1,
-    "country": 158,
-    "state": 2282,
-    "city": 25743,
-    "district": 87096,
+    "country": [
+      3996063
+    ],
+    "state": [
+      3995955
+    ],
+    "city": [
+      8582311
+    ],
+    "district": [
+      3985570
+    ],
     "postal_code": "58280",
     "neighborhood": "Nueva Chapultepec",
     "address": "Juan B. Ceballos",
@@ -30,13 +41,24 @@
   "model": "profiles.organizationprofile",
   "pk": 2,
   "fields": {
-    "polymorphic_ctype": 60,
+    "polymorphic_ctype": [
+      "profiles",
+      "packhouseexporterprofile"
+    ],
     "name": "Red Field Packers, LLC",
     "organization": 2,
-    "country": 234,
-    "state": 3626,
-    "city": 42973,
-    "district": 128608,
+    "country": [
+      6252001
+    ],
+    "state": [
+      4398678
+    ],
+    "city": [
+      4392354
+    ],
+    "district": [
+      4350675
+    ],
     "postal_code": "64129",
     "neighborhood": "Kansas City Neighborhood",
     "address": "Arrowhead Drive",
@@ -57,13 +79,24 @@
   "model": "profiles.organizationprofile",
   "pk": 3,
   "fields": {
-    "polymorphic_ctype": 60,
+    "polymorphic_ctype": [
+      "profiles",
+      "packhouseexporterprofile"
+    ],
     "name": "Green Bay Packers, Inc.",
     "organization": 3,
-    "country": 234,
-    "state": 3649,
-    "city": 44597,
-    "district": 138070,
+    "country": [
+      6252001
+    ],
+    "state": [
+      5279468
+    ],
+    "city": [
+      5247108
+    ],
+    "district": [
+      5215373
+    ],
     "postal_code": "54304",
     "neighborhood": "Green Bay Neighborhood",
     "address": "Lombardi Avenue",
@@ -84,13 +117,24 @@
   "model": "profiles.organizationprofile",
   "pk": 4,
   "fields": {
-    "polymorphic_ctype": 60,
+    "polymorphic_ctype": [
+      "profiles",
+      "packhouseexporterprofile"
+    ],
     "name": "Blue Coast Packers, Ltd.",
     "organization": 4,
-    "country": 234,
-    "state": 3650,
-    "city": 44697,
-    "district": 138933,
+    "country": [
+      6252001
+    ],
+    "state": [
+      5332921
+    ],
+    "city": [
+      5369578
+    ],
+    "district": [
+      5308778
+    ],
     "postal_code": "90301",
     "neighborhood": "Inglewood Neighborhood",
     "address": "Stadium Drive",
@@ -114,8 +158,7 @@
     "packhouse_number": "1",
     "registry_number": "1",
     "sanitary_registry": "1",
-    "chain_of_custody": "1",
-    "hostname": "uno.dev.certiffy.net"
+    "chain_of_custody": "1"
   }
 },
 {
@@ -125,8 +168,7 @@
     "packhouse_number": "2",
     "registry_number": "2",
     "sanitary_registry": "2",
-    "chain_of_custody": "2",
-    "hostname": "dos.dev.certiffy.net"
+    "chain_of_custody": "2"
   }
 },
 {
@@ -136,8 +178,7 @@
     "packhouse_number": "3",
     "registry_number": "3",
     "sanitary_registry": "3",
-    "chain_of_custody": "3",
-    "hostname": "tres.dev.certiffy.net"
+    "chain_of_custody": "3"
   }
 },
 {
@@ -147,8 +188,7 @@
     "packhouse_number": "4",
     "registry_number": "4",
     "sanitary_registry": "4",
-    "chain_of_custody": "4",
-    "hostname": "cuatro.dev.certiffy.net"
+    "chain_of_custody": "4"
   }
 },
 {
@@ -156,6 +196,7 @@
   "pk": 1,
   "fields": {
     "profile": 1,
+    "hostname": "uno.dev.certiffy.net",
     "is_enabled": true,
     "product_kinds": [
       8
@@ -167,6 +208,7 @@
   "pk": 2,
   "fields": {
     "profile": 2,
+    "hostname": "dos.dev.certiffy.net",
     "is_enabled": true,
     "product_kinds": [
       8
@@ -178,6 +220,7 @@
   "pk": 3,
   "fields": {
     "profile": 3,
+    "hostname": "tres.dev.certiffy.net",
     "is_enabled": true,
     "product_kinds": [
       8
@@ -189,6 +232,7 @@
   "pk": 4,
   "fields": {
     "profile": 4,
+    "hostname": "cuatro.dev.certiffy.net",
     "is_enabled": true,
     "product_kinds": [
       8
