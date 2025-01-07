@@ -9,7 +9,7 @@ import re
 
 from organizations.models import Organization, OrganizationUser
 
-from common.profiles.models import PackhouseExporterProfile
+from common.profiles.models import PackhouseExporterProfile, PackhouseExporterSetting
 
 
 class LanguageDetectionMiddleware:
@@ -51,22 +51,31 @@ class SubdomainDetectionMiddleware:
         requested_hostname = self._get_request_hostname(request)
 
         if re.match(r'^/(dadmin|rest)/.+', request.path):
+            ### Ask for Settings
             try:
-                # Verificar si existe PackhouseExporterProfile asociada al HOST
-                requested_organization_profile = PackhouseExporterProfile.objects.get(
+                requested_settings = PackhouseExporterSetting.objects.get(
                     hostname=requested_hostname,
                 )
-                try:
-                    # Verificar si existe Organization asociada al PackhouseExporterProfile
-                    requested_organization = Organization.objects.get(
-                        id=requested_organization_profile.organization_id,
-                    )
-                    request.session['organization_id'] = requested_organization.id
-                    request.organization = requested_organization
-                except Organization.DoesNotExist:
-                    raise Http404
+            except PackhouseExporterSetting.DoesNotExist:
+                print("PackhouseExporterSetting does not exist")
+                raise Http404
+
+            ### Ask for PackhouseExporterProfile
+            try:
+                requested_organization_profile = requested_settings.profile
             except PackhouseExporterProfile.DoesNotExist:
                 print("PackhouseExporterProfile does not exist")
+                raise Http404
+
+            ### Ask for Organization
+            try:
+                # Verificar si existe Organization asociada al PackhouseExporterProfile
+                requested_organization = Organization.objects.get(
+                    id=requested_organization_profile.organization_id,
+                )
+                request.session['organization_id'] = requested_organization.id
+                request.organization = requested_organization
+            except Organization.DoesNotExist:
                 raise Http404
 
             if request.user.is_authenticated:
