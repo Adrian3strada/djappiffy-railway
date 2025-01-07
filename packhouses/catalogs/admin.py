@@ -37,8 +37,7 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
-                      CityForOrganizationCountryFilter, ByStateForOrganizationMaquiladoraFilter,
-                      ByCityForOrganizationMaquiladoraFilter
+                      ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase

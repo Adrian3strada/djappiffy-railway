@@ -156,22 +156,6 @@ class StatesForOrganizationCountryFilter(admin.SimpleListFilter):
             return queryset.filter(state__id=self.value())
         return queryset
 
-class CityForOrganizationCountryFilter(admin.SimpleListFilter):
-    title = 'City'
-    parameter_name = 'city'
-
-    def lookups(self, request, model_admin):
-        if hasattr(request, 'organization'):
-            organization_profile = OrganizationProfile.objects.get(organization=request.organization)
-            country = organization_profile.country
-            cities = SubRegion.objects.filter(country_id=country.id)
-        return [(city.id, f"{city.name}, {city.region.name}") for city in cities]
-
-    def queryset(self, request, queryset):        
-        if self.value():
-            return queryset.filter(state__id=self.value())
-        return queryset
-
 
 class ByCountryForOrganizationMarketsFilter(admin.SimpleListFilter):
     title = _('Country')
