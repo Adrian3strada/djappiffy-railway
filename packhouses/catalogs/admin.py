@@ -853,7 +853,7 @@ class VehicleInline(admin.StackedInline):
     'name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'ownership', 'fuel', 'is_enabled')
     list_filter = ('kind', 'brand', 'ownership', 'fuel', 'is_enabled')
     search_fields = ('name', 'model', 'license_plate', 'serial_number', 'comments')
-    fields = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'scope', 'ownership', 'fuel',
+    fields = ('name', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'category', 'ownership', 'fuel',
               'comments', 'is_enabled')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

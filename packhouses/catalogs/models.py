@@ -14,7 +14,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from common.billing.models import TaxRegime, LegalEntityCategory
 from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
-    vehicle_scope_choices, get_provider_categories_choices
+    get_vehicle_category_choices, get_provider_categories_choices
 from django.core.exceptions import ValidationError
 from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
@@ -461,7 +461,7 @@ class Vehicle(CleanNameAndOrganizationMixin, models.Model):
     serial_number = models.CharField(max_length=100, verbose_name=_('Serial number'))
     color = models.CharField(max_length=50, verbose_name=_('Color'))
     ownership = models.ForeignKey(VehicleOwnershipKind, verbose_name=_('Ownership kind'), on_delete=models.PROTECT)
-    scope = models.CharField(max_length=15, verbose_name=_('Scope'), choices=vehicle_scope_choices())
+    category = models.CharField(max_length=15, verbose_name=_('Category'), choices=get_vehicle_category_choices())
     fuel = models.ForeignKey(VehicleFuelKind, verbose_name=_('Fuel kind'), on_delete=models.PROTECT)
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -494,7 +494,7 @@ class Gatherer(CleanNameAndOrganizationMixin, models.Model):
     social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT, null=True, blank=True)
+    district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT, null=True, blank=True)
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
     neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
     address = models.CharField(max_length=255, verbose_name=_('Address'))
