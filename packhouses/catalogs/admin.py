@@ -932,7 +932,9 @@ class WeighingScaleAdmin(admin.ModelAdmin):
 @admin.register(ColdChamber)
 class ColdChamberAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'product', 'product_variety', 'market', 'pallet_capacity', 'is_enabled')
-    list_filter = ('is_enabled',)
+    list_filter = (ByMarketForOrganizationFilter, ByProductForOrganizationFilter,
+                   ByProductVarietyForOrganizationFilter, 'is_enabled')
+    search_fields = ('name',)
     fields = ('name', 'market', 'product', 'product_variety', 'pallet_capacity',
               'freshness_days_alert', 'freshness_days_warning',
               'comments', 'is_enabled')
