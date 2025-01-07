@@ -201,12 +201,6 @@ class PackhouseExporterProfile(OrganizationProfile):
     registry_number = models.CharField(max_length=50, verbose_name=_('Registry number'))
     sanitary_registry = models.CharField(max_length=50, verbose_name=_('Sanitary registry'))
     chain_of_custody = models.CharField(max_length=150, verbose_name=_('Chain of custody'))
-    hostname = models.CharField(
-        max_length=255,
-        blank=True,
-        null=True,
-        verbose_name=_('Hostname'),
-    )
 
     def clean(self):
         """
