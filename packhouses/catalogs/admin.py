@@ -650,12 +650,12 @@ class MaquiladoraClientInline(admin.StackedInline):
 @admin.register(Maquiladora)
 class MaquiladoraAdmin(ByOrganizationAdminMixin):
     list_display = (
-    'name', 'zone', 'tax_registry_code', 'state', 'city', 'email', 'phone_number', 'vehicle', 'is_enabled', )
-    list_filter = (ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter, 'vehicle', 'is_enabled')
+    'name', 'zone', 'tax_registry_code', 'state', 'city', 'email', 'phone_number', 'is_enabled', )
+    list_filter = (ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter,  'is_enabled')
     search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
     fields = (
     'name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district',
-    'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle',
+    'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 
     'maquiladora_client', 'is_enabled',)
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):

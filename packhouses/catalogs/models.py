@@ -565,7 +565,6 @@ class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
     internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT, null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
     maquiladora_client = models.ManyToManyField(Client, verbose_name=_('Maquiladora Client'), blank=True)
