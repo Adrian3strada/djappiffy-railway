@@ -1173,6 +1173,16 @@ class ProviderBeneficiaryInline(admin.StackedInline):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = Provider.objects.get(id=object_id) if object_id else None
+
+        if db_field.name == "bank":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = Bank.objects.filter(organization=request.organization, is_enabled=True)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class ProviderBalanceInline(admin.StackedInline):
     model = ProviderFinancialBalance

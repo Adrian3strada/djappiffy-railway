@@ -497,7 +497,7 @@ class Gatherer(CleanNameAndOrganizationMixin, models.Model):
     internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
     email = models.EmailField()
     phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'), null=True, blank=True)
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT, help_text=_("Only shows the vehicles that belongs to 'packhouse' category"))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
