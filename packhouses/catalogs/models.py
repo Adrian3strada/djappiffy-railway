@@ -262,12 +262,38 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
             models.UniqueConstraint(fields=['alias', 'product'], name='productvarietysize_unique_alias_product'),
         ]
 
-
-
 # /Products
 
-# Providers
+# Vehicles
 
+class Vehicle(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    category = models.CharField(max_length=15, verbose_name=_('Category'), choices=get_vehicle_category_choices())
+    kind = models.ForeignKey(VehicleKind, verbose_name=_('Vehicle Kind'), on_delete=models.PROTECT)
+    brand = models.ForeignKey(VehicleBrand, verbose_name=_('Brand'), on_delete=models.PROTECT)
+    model = models.CharField(max_length=4, verbose_name=_('Model'), choices=vehicle_year_choices(),
+                             validators=[vehicle_validate_year])
+    license_plate = models.CharField(max_length=15, verbose_name=_('License plate'))
+    serial_number = models.CharField(max_length=100, verbose_name=_('Serial number'))
+    color = models.CharField(max_length=50, verbose_name=_('Color'))
+    ownership = models.ForeignKey(VehicleOwnershipKind, verbose_name=_('Ownership kind'), on_delete=models.PROTECT)
+    fuel = models.ForeignKey(VehicleFuelKind, verbose_name=_('Fuel kind'), on_delete=models.PROTECT)
+    comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = _('Vehicle')
+        verbose_name_plural = _('Vehicles')
+        ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(fields=['serial_number', 'organization'], name='vehicle_unique_serial_number_organization'),
+        ]
+
+# /Vehicles
+
+
+# Providers
 
 class Provider(CleanNameAndCategoryAndOrganizationMixin, models.Model):
     ### Identification fields
@@ -453,32 +479,6 @@ class HarvestingCrewProvider(models.Model):
             models.UniqueConstraint(fields=['name', 'organization'],
                                     name='harvesting_crew_provider_unique_name_organization'),
         ]
-
-
-class Vehicle(CleanNameAndOrganizationMixin, models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    category = models.CharField(max_length=15, verbose_name=_('Category'), choices=get_vehicle_category_choices())
-    kind = models.ForeignKey(VehicleKind, verbose_name=_('Vehicle Kind'), on_delete=models.PROTECT)
-    brand = models.ForeignKey(VehicleBrand, verbose_name=_('Brand'), on_delete=models.PROTECT)
-    model = models.CharField(max_length=4, verbose_name=_('Model'), choices=vehicle_year_choices(),
-                             validators=[vehicle_validate_year])
-    license_plate = models.CharField(max_length=15, verbose_name=_('License plate'))
-    serial_number = models.CharField(max_length=100, verbose_name=_('Serial number'))
-    color = models.CharField(max_length=50, verbose_name=_('Color'))
-    ownership = models.ForeignKey(VehicleOwnershipKind, verbose_name=_('Ownership kind'), on_delete=models.PROTECT)
-    fuel = models.ForeignKey(VehicleFuelKind, verbose_name=_('Fuel kind'), on_delete=models.PROTECT)
-    comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    class Meta:
-        verbose_name = _('Vehicle')
-        verbose_name_plural = _('Vehicles')
-        ordering = ('name',)
-        constraints = [
-            models.UniqueConstraint(fields=['serial_number', 'organization'], name='vehicle_unique_serial_number_organization'),
-        ]
-
 
 # Acopiadores
 
