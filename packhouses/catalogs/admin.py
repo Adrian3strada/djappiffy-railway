@@ -37,7 +37,8 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
-                      CityForOrganizationCountryFilter, DistrictForOrganizationCountryFilter,
+                      CityForOrganizationCountryFilter, ByStateForOrganizationMaquiladoraFilter,
+                      ByCityForOrganizationMaquiladoraFilter
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -650,33 +651,31 @@ class MaquiladoraClientInline(admin.StackedInline):
 @admin.register(Maquiladora)
 class MaquiladoraAdmin(ByOrganizationAdminMixin):
     list_display = (
-    'name', 'get_maquiladora_client', 'zone', 'tax_registry_code', 'state', 'city', 'email', 'phone_number', 'vehicle', 'is_enabled', )
-    list_filter = (StatesForOrganizationCountryFilter, CityForOrganizationCountryFilter, DistrictForOrganizationCountryFilter, 'vehicle', 'is_enabled')
+    'name', 'zone', 'tax_registry_code', 'state', 'city', 'email', 'phone_number', 'vehicle', 'is_enabled', )
+    list_filter = (ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter, 'vehicle', 'is_enabled')
     search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
     fields = (
     'name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district',
     'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 'vehicle',
-    'is_enabled','maquiladora_client',)
+    'maquiladora_client', 'is_enabled',)
 
-    def get_maquiladora_client(self, obj): 
-        return ", ".join([mc.name for mc in obj.maquiladora_client.all()]) 
-    get_maquiladora_client.short_description = _('MClients')
-
-
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "maquiladora_client":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = Client.objects.filter(organization=request.organization, is_enabled=True, category="maquiladora")
+            else:
+                kwargs["queryset"] = Client.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+        
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('tax_registry_code')
+    @uppercase_form_charfield('population_registry_code')
+    @uppercase_form_charfield('social_number_code')
+    @uppercase_form_charfield('zone')
+    @uppercase_form_charfield('address')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
-        if 'tax_registry_code' in form.base_fields:
-            form.base_fields['tax_registry_code'].widget = UppercaseTextInputWidget()
-        if 'population_registry_code' in form.base_fields:
-            form.base_fields['population_registry_code'].widget = UppercaseTextInputWidget()
-        if 'social_number_code' in form.base_fields:
-            form.base_fields['social_number_code'].widget = UppercaseTextInputWidget()
-        if 'zone' in form.base_fields:
-            form.base_fields['zone'].widget = UppercaseTextInputWidget()
-        if 'address' in form.base_fields:
-            form.base_fields['address'].widget = UppercaseTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -686,32 +685,44 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        user_organization = OrganizationProfile.objects.get(organization=request.organization)
-        country = user_organization.country
-
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = Maquiladora.objects.get(id=obj_id) if obj_id else None
+        
         if db_field.name == "state":
-            kwargs["queryset"] = Region.objects.filter(country=country)
+            if hasattr(request, 'organization'):
+                packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+                if packhouse_profile:
+                    kwargs["queryset"] = Region.objects.filter(country=packhouse_profile.country)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
+        
         if db_field.name == "city":
-            if 'state' in request.GET:
-                state_id = request.GET.get('state')
+            if request.POST:
+                state_id = request.POST.get('state')
+            else:
+                state_id = obj.state_id if obj else None
+            if state_id:
                 kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
             else:
-                kwargs["queryset"] = SubRegion.objects.filter(country=country)
+                kwargs["queryset"] = SubRegion.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
+        
         if db_field.name == "district":
-            if 'city' in request.GET:
-                city_id = request.GET.get('city')
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
                 kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
             else:
-                kwargs["queryset"] = City.objects.filter(country=country)
+                kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
+        
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:

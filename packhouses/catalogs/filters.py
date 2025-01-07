@@ -3,7 +3,8 @@ from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductQualityKind, ProductMassVolumeKind,
                      Gatherer,
-                     Provider
+                     Provider,
+                     Maquiladora,
                      )
 from common.base.models import ProductKind
 from django.utils.translation import gettext_lazy as _
@@ -171,21 +172,6 @@ class CityForOrganizationCountryFilter(admin.SimpleListFilter):
             return queryset.filter(state__id=self.value())
         return queryset
 
-class DistrictForOrganizationCountryFilter(admin.SimpleListFilter):
-    title = 'District'
-    parameter_name = 'district'
-
-    def lookups(self, request, model_admin):
-        if hasattr(request, 'organization'):
-            organization_profile = OrganizationProfile.objects.get(organization=request.organization)
-            country = organization_profile.country
-            districts = City.objects.filter(country_id=country.id)
-        return [(district.id, f"{district.name}, {district.region.name}") for district in districts]
-
-    def queryset(self, request, queryset):        
-        if self.value():
-            return queryset.filter(state__id=self.value())
-        return queryset
 
 class ByCountryForOrganizationMarketsFilter(admin.SimpleListFilter):
     title = _('Country')
@@ -293,9 +279,6 @@ class ByCityForOrganizationGathererFilter(admin.SimpleListFilter):
         return queryset
 
 
-
-
-
 class ByStateForOrganizationFilter(admin.SimpleListFilter):
     title = _('State')
     parameter_name = 'state'
@@ -347,4 +330,38 @@ class ByDistrictForOrganizationFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(district__id=self.value())
+        return queryset
+
+class ByStateForOrganizationMaquiladoraFilter(admin.SimpleListFilter):
+    title = _('State')
+    parameter_name = 'state'
+
+    def lookups(self, request, model_admin):
+        states = Region.objects.all()
+        if hasattr(request, 'organization'):
+            organization_maquiladora_state_ids = list(
+                Maquiladora.objects.filter(organization=request.organization).values_list('state', flat=True).distinct())
+            states = states.filter(id__in=organization_maquiladora_state_ids).order_by('country__name', 'name')
+        return [(state.id, state.name) for state in states]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(state__id=self.value())
+        return queryset
+    
+class ByCityForOrganizationMaquiladoraFilter(admin.SimpleListFilter):
+    title = _('City')
+    parameter_name = 'city'
+
+    def lookups(self, request, model_admin):
+        cities = SubRegion.objects.all()
+        if hasattr(request, 'organization'):
+            organization_maquiladora_city_ids = list(
+                Maquiladora.objects.filter(organization=request.organization).values_list('city', flat=True).distinct())
+            cities = cities.filter(id__in=organization_maquiladora_city_ids).order_by('country__name', 'region__name', 'name')
+        return [(city.id, f" {city.region.name}: {city.name}") for city in cities]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(city__id=self.value())
         return queryset
