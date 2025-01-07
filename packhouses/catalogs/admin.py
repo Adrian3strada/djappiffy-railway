@@ -15,7 +15,8 @@ from .models import (
     Provider, ProviderBeneficiary, ProviderFinancialBalance,
 )
 
-from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind, VehicleBrand,
+from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
+                                                  VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier
                                                   )
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
@@ -706,6 +707,27 @@ class OrchardCertificationInline(admin.StackedInline):
     model = OrchardCertification
     form = OrchardCertificationForm
     extra = 0
+
+    @uppercase_formset_charfield('extra_code')
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = Client.objects.get(id=parent_object_id) if parent_object_id else None
+
+        organization = None
+        if hasattr(request, 'organization'):
+            organization = request.organization
+
+        if db_field.name == "certification_kind":
+            kwargs["queryset"] = OrchardCertificationKind.objects.filter(organization=organization, is_enabled=True)
+
+        if db_field.name == "verifier":
+            kwargs["queryset"] = OrchardCertificationVerifier.objects.filter(organization=organization, is_enabled=True)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/orchard_certification_inline.js',)
