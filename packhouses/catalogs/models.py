@@ -3,6 +3,7 @@ from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizati
                            CleanNameOrAliasAndOrganizationMixin, CleanNameAndMarketMixin, CleanNameAndProductMixin,
                            CleanNameAndProviderMixin, CleanNameAndCategoryAndOrganizationMixin,
                            CleanProductVarietyMixin, CleanNameAndAliasProductMixin,
+                           CleanNameAndCodeAndOrganizationMixin,
                            CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanNameAndMaquiladoraMixin)
 from organizations.models import Organization
 from cities_light.models import City, Country, Region, SubRegion
@@ -14,7 +15,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from common.billing.models import TaxRegime, LegalEntityCategory
 from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
-    vehicle_scope_choices, get_provider_categories_choices
+    get_vehicle_category_choices, get_provider_categories_choices
 from django.core.exceptions import ValidationError
 from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
@@ -265,32 +266,6 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
 
 # /Products
 
-class Vehicle(CleanNameAndOrganizationMixin, models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    kind = models.ForeignKey(VehicleKind, verbose_name=_('Vehicle Kind'), on_delete=models.PROTECT)
-    brand = models.ForeignKey(VehicleBrand, verbose_name=_('Brand'), on_delete=models.PROTECT)
-    model = models.CharField(max_length=4, verbose_name=_('Model'), choices=vehicle_year_choices(),
-                             validators=[vehicle_validate_year])
-    license_plate = models.CharField(max_length=15, verbose_name=_('License plate'))
-    serial_number = models.CharField(max_length=100, verbose_name=_('Serial number'))
-    color = models.CharField(max_length=50, verbose_name=_('Color'))
-    ownership = models.ForeignKey(VehicleOwnershipKind, verbose_name=_('Ownership kind'), on_delete=models.PROTECT)
-    category = models.CharField(max_length=15, verbose_name=_('Category'), choices=vehicle_scope_choices())
-    fuel = models.ForeignKey(VehicleFuelKind, verbose_name=_('Fuel kind'), on_delete=models.PROTECT)
-    comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    class Meta:
-        verbose_name = _('Vehicle')
-        verbose_name_plural = _('Vehicles')
-        ordering = ('name',)
-        constraints = [
-            models.UniqueConstraint(fields=['serial_number', 'organization'], name='vehicle_unique_serial_number_organization'),
-        ]
-
-
-
 # Providers
 
 
@@ -480,6 +455,30 @@ class HarvestingCrewProvider(models.Model):
         ]
 
 
+class Vehicle(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    category = models.CharField(max_length=15, verbose_name=_('Category'), choices=get_vehicle_category_choices())
+    kind = models.ForeignKey(VehicleKind, verbose_name=_('Vehicle Kind'), on_delete=models.PROTECT)
+    brand = models.ForeignKey(VehicleBrand, verbose_name=_('Brand'), on_delete=models.PROTECT)
+    model = models.CharField(max_length=4, verbose_name=_('Model'), choices=vehicle_year_choices(),
+                             validators=[vehicle_validate_year])
+    license_plate = models.CharField(max_length=15, verbose_name=_('License plate'))
+    serial_number = models.CharField(max_length=100, verbose_name=_('Serial number'))
+    color = models.CharField(max_length=50, verbose_name=_('Color'))
+    ownership = models.ForeignKey(VehicleOwnershipKind, verbose_name=_('Ownership kind'), on_delete=models.PROTECT)
+    fuel = models.ForeignKey(VehicleFuelKind, verbose_name=_('Fuel kind'), on_delete=models.PROTECT)
+    comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = _('Vehicle')
+        verbose_name_plural = _('Vehicles')
+        ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(fields=['serial_number', 'organization'], name='vehicle_unique_serial_number_organization'),
+        ]
+
 
 # Acopiadores
 
@@ -493,7 +492,7 @@ class Gatherer(CleanNameAndOrganizationMixin, models.Model):
     social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT, null=True, blank=True)
+    district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT, null=True, blank=True)
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
     neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
     address = models.CharField(max_length=255, verbose_name=_('Address'))
@@ -580,24 +579,21 @@ class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
         ]
 
 
-class Orchard(models.Model):
+class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     code = models.CharField(max_length=100, verbose_name=_('Registry code'))
     producer = models.ForeignKey(Provider, verbose_name=_('Producer'), on_delete=models.PROTECT)
     safety_authority_registration_date = models.DateField(verbose_name=_('Safety authority registration date'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
-    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
+    city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
+    district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT)
     ha = models.FloatField(verbose_name=_('Hectares'))
     product_classification_kind = models.ForeignKey(OrchardProductClassificationKind,
                                                     verbose_name=_('Product Classification'),
                                                     on_delete=models.PROTECT)
-    phytosanitary_certificate = models.CharField(max_length=100, verbose_name=_('Phytosanitary certificate'))
+    sanitary_certificate = models.CharField(max_length=100, verbose_name=_('Sanitary certificate'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Orchard')
@@ -618,7 +614,7 @@ class OrchardCertification(models.Model):
                                  on_delete=models.PROTECT)
     extra_code = models.CharField(max_length=100, verbose_name=_('Extra code'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.PROTECT)
+    orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.orchard.name} : {self.certification_kind.name}"

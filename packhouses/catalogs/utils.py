@@ -29,7 +29,7 @@ def get_payment_choices():
         ('fixed_amount', _('Fixed amount')),
     ]
 
-def vehicle_scope_choices():
+def get_vehicle_category_choices():
     return [
         ('packhouse', _('Packhouse')),
         ('harvesting_crew', _('Harvesting crew')),
