@@ -33,6 +33,8 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
                       ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
+                      ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
+                      ByCityForOrganizationClientsFilter,
                       ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
@@ -249,24 +251,15 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = ProductSize.objects.get(id=object_id) if object_id else None
 
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+        product_organization_queryfilter = {'product__organization': organization, 'is_enabled': True}
+
         if db_field.name == "product_varieties":
-            if hasattr(request, 'organization'):
-                kwargs["queryset"] = ProductVariety.objects.filter(product__organization=request.organization, is_enabled=True)
-                if request.POST:
-                    product_id = request.POST.get('product')
-                else:
-                    product_id = obj.product_id if obj else None
-                if product_id:
-                    kwargs["queryset"] = kwargs["queryset"].filter(product_id=product_id)
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            # formfield.widget = SelectWidgetWithAlias(ProductVariety, 'alias')
-            return formfield
+            kwargs["queryset"] = ProductVariety.objects.filter(**product_organization_queryfilter)
 
         if db_field.name == "markets":
-            if hasattr(request, 'organization'):
-                kwargs["queryset"] = Market.objects.filter(organization=request.organization, is_enabled=True)
-            formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
-            return formfield
+            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
 
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
@@ -274,62 +267,28 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = ProductSize.objects.get(id=object_id) if object_id else None
 
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+        market_organization_queryfilter = {'market__organization': organization, 'is_enabled': True}
+        product_organization_queryfilter = {'product__organization': organization, 'is_enabled': True}
+
         if db_field.name == "product":
-            if hasattr(request, 'organization'):
-                kwargs["queryset"] = Product.objects.filter(organization=request.organization, is_enabled=True)
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            return formfield
+            kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
 
         if db_field.name == "market_standard_product_size":
-            if hasattr(request, 'organization'):
-                kwargs["queryset"] = MarketStandardProductSize.objects.filter(market__organization=request.organization,
-                                                                             is_enabled=True)
-                if request.POST:
-                    markets_id = request.POST.get('markets')
-                else:
-                    markets_id = obj.markets.all().values_list('id', flat=True) if obj else None
-                if markets_id:
-                    kwargs["queryset"] = kwargs["queryset"].filter(market__in=list(markets_id))
+            kwargs["queryset"] = MarketStandardProductSize.objects.filter(**market_organization_queryfilter)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: f"{item.market.name}: {item.name}"
             return formfield
 
         if db_field.name == "product_harvest_size_kind":
-            if hasattr(request, 'organization'):
-                kwargs["queryset"] = ProductHarvestSizeKind.objects.filter(product__organization=request.organization,
-                                                                           is_enabled=True)
-                if request.POST:
-                    product_id = request.POST.get('product')
-                else:
-                    product_id = obj.product_id if obj else None
-                if product_id:
-                    kwargs["queryset"] = kwargs["queryset"].filter(product_id=product_id)
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            return formfield
+            kwargs["queryset"] = ProductHarvestSizeKind.objects.filter(**product_organization_queryfilter)
 
         if db_field.name == "product_quality_kind":
-            if hasattr(request, 'organization'):
-                kwargs["queryset"] = ProductQualityKind.objects.filter(product__organization=request.organization, is_enabled=True)
-                if request.POST:
-                    product_id = request.POST.get('product')
-                else:
-                    product_id = obj.product_id if obj else None
-                if product_id:
-                    kwargs["queryset"] = kwargs["queryset"].filter(product_id=product_id)
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            return formfield
+            kwargs["queryset"] = ProductQualityKind.objects.filter(**product_organization_queryfilter)
 
         if db_field.name == "product_mass_volume_kind":
-            if hasattr(request, 'organization'):
-                kwargs["queryset"] = ProductMassVolumeKind.objects.filter(product__organization=request.organization, is_enabled=True)
-                if request.POST:
-                    product_id = request.POST.get('product')
-                else:
-                    product_id = obj.product_id if obj else None
-                if product_id:
-                    kwargs["queryset"] = kwargs["queryset"].filter(product_id=product_id)
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            return formfield
+            kwargs["queryset"] = ProductMassVolumeKind.objects.filter(**product_organization_queryfilter)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -404,7 +363,9 @@ class ClientShipAddressInline(admin.StackedInline):
 class ClientAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'legal_category', 'tax_id', 'market', 'country', 'state', 'city', 'neighborhood', 'address',
                     'external_number', 'tax_id', 'contact_phone_number', 'is_enabled')
-    list_filter = ('market', 'legal_category', 'payment_kind', 'is_enabled')
+    list_filter = ('market', 'category', ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
+                   ByCityForOrganizationClientsFilter,
+                   'legal_category', 'payment_kind', 'is_enabled')
     search_fields = ('name', 'tax_id', 'contact_phone_number')
     fields = ('name', 'category', 'market', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address',
               'external_number', 'internal_number', 'shipping_address', 'legal_category', 'tax_id', 'payment_kind',
@@ -1138,6 +1099,16 @@ class ProviderBeneficiaryInline(admin.StackedInline):
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = Provider.objects.get(id=object_id) if object_id else None
+
+        if db_field.name == "bank":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = Bank.objects.filter(organization=request.organization, is_enabled=True)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class ProviderBalanceInline(admin.StackedInline):
