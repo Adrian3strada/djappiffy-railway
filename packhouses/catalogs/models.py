@@ -909,9 +909,9 @@ class WeighingScale(models.Model):
 
 class ColdChamber(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     pallet_capacity = models.PositiveIntegerField(verbose_name=_('Pallet capacity'))
     freshness_days_warning = models.PositiveIntegerField(verbose_name=_('Freshness days warning'))
     freshness_days_alert = models.PositiveIntegerField(verbose_name=_('Freshness days alert'))
