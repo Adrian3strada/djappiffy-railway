@@ -126,8 +126,7 @@
       "packhouse_number": "1",
       "registry_number": "1",
       "sanitary_registry": "1",
-      "chain_of_custody": "1",
-      "hostname": "uno.dev.certiffy.net"
+      "chain_of_custody": "1"
     }
   },
   {
@@ -137,8 +136,7 @@
       "packhouse_number": "2",
       "registry_number": "2",
       "sanitary_registry": "2",
-      "chain_of_custody": "2",
-      "hostname": "dos.dev.certiffy.net"
+      "chain_of_custody": "2"
     }
   },
   {
@@ -148,8 +146,7 @@
       "packhouse_number": "3",
       "registry_number": "3",
       "sanitary_registry": "3",
-      "chain_of_custody": "3",
-      "hostname": "tres.dev.certiffy.net"
+      "chain_of_custody": "3"
     }
   },
   {
@@ -159,8 +156,7 @@
       "packhouse_number": "4",
       "registry_number": "4",
       "sanitary_registry": "4",
-      "chain_of_custody": "4",
-      "hostname": "cuatro.dev.certiffy.net"
+      "chain_of_custody": "4"
     }
   },
   {
@@ -169,6 +165,7 @@
     "fields": {
       "profile": 1,
       "is_enabled": true,
+      "hostname": "uno.dev.certiffy.net",
       "product_kinds": [
         8
       ]
@@ -180,6 +177,7 @@
     "fields": {
       "profile": 2,
       "is_enabled": true,
+      "hostname": "dos.dev.certiffy.net",
       "product_kinds": [
         8
       ]
@@ -191,6 +189,7 @@
     "fields": {
       "profile": 3,
       "is_enabled": true,
+      "hostname": "tres.dev.certiffy.net",
       "product_kinds": [
         8
       ]
@@ -202,6 +201,7 @@
     "fields": {
       "profile": 4,
       "is_enabled": true,
+      "hostname": "cuatro.dev.certiffy.net",
       "product_kinds": [
         8
       ]
