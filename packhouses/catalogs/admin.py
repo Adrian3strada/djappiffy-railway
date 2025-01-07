@@ -930,8 +930,12 @@ class WeighingScaleAdmin(admin.ModelAdmin):
 
 
 @admin.register(ColdChamber)
-class ColdChamberAdmin(admin.ModelAdmin):
-    pass
+class ColdChamberAdmin(ByProductForOrganizationAdminMixin):
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+
 
 
 @admin.register(Pallet)
