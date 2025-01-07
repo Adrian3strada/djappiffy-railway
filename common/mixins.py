@@ -142,6 +142,9 @@ class CleanNameAndCategoryAndOrganizationMixin(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
+    class Meta:
+        abstract = True
+
 
 class CleanNameOrAliasAndOrganizationMixin(models.Model):
     def __str__(self):
@@ -285,7 +288,6 @@ class CleanProductMixin(models.Model):
 
     class Meta:
         abstract = True
-
 
 
 class CleanProductVarietyMixin(models.Model):
@@ -457,6 +459,7 @@ class CleanNameAndMaquiladoraMixin(models.Model):
 
     class Meta:
         abstract = True
+
 
 class IncotermsAndLocalDeliveryMarketMixin(models.Model):
     def clean(self):

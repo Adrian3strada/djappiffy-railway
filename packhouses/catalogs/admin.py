@@ -421,8 +421,8 @@ class ClientAdmin(ByOrganizationAdminMixin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Market, Country, Region, City, LegalEntityCategory, Bank, PaymentKind,
-                                                  Organization]):
+        if obj and is_instance_used(obj, exclude=[Market, Country, Region, SubRegion, City, LegalEntityCategory, Bank, PaymentKind,
+                                                  Organization, ClientShippingAddress]):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
 
@@ -750,8 +750,8 @@ class OrchardAdmin(ByOrganizationAdminMixin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Provider, Region, City, OrchardProductClassificationKind,
-                                                  Organization]):
+        if obj and is_instance_used(obj, exclude=[Provider, Region, SubRegion, City, OrchardProductClassificationKind,
+                                                  Organization, OrchardCertification]):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
 
