@@ -823,10 +823,9 @@ class CrewChiefInline(admin.TabularInline):
     extra = 0
     can_delete = True
 
+    @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        if 'name' in formset.form.base_fields:
-            formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
         return formset
 
 
@@ -892,7 +891,7 @@ class HarvestingPaymentSettingInline(admin.StackedInline):
 class HarvestingCrewAdmin(ByOrganizationAdminMixin):
     form = HarvestingCrewForm
     list_display = ('name', 'provider', 'crew_chief', 'certification_name', 'persons_number', 'is_enabled')
-    list_filter = ('provider', 'crew_chief', 'is_enabled', 'certification_name')
+    list_filter = ('provider', 'crew_chief', 'is_enabled')
     fields = ('provider', 'name', 'certification_name', 'crew_chief', 'persons_number', 'comments', 'is_enabled')
     inlines = [HarvestingPaymentSettingInline,]
 
@@ -1088,65 +1087,72 @@ class ExportingCompanyAdmin(ByOrganizationAdminMixin):
 
 
 @admin.register(Transfer)
-class TransferAdmin(admin.ModelAdmin):
+class TransferAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'caat','scac', 'is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
 @admin.register(LocalTransporter)
-class LocalTransporterAdmin(admin.ModelAdmin):
+class LocalTransporterAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
 @admin.register(BorderToDestinationTransporter)
-class BorderToDestinationTransporterAdmin(admin.ModelAdmin):
+class BorderToDestinationTransporterAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'tax_id', 'caat','irs', 'scac', 'us_custom_bond', 'is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
 @admin.register(CustomsBroker)
-class CustomsBrokerAdmin(admin.ModelAdmin):
+class CustomsBrokerAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'broker_number', 'country','is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
 @admin.register(Vessel)
-class VesselAdmin(admin.ModelAdmin):
+class VesselAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'vessel_number', 'is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
 @admin.register(Airline)
-class AirlineAdmin(admin.ModelAdmin):
+class AirlineAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'airline_number', 'is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
 @admin.register(InsuranceCompany)
-class InsuranceCompanyAdmin(admin.ModelAdmin):
+class InsuranceCompanyAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'insurance_number', 'is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
