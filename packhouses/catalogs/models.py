@@ -545,7 +545,7 @@ class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
         verbose_name = _('Maquiladora client')
         verbose_name_plural = _('Maquiladora clients')
         ordering = ('name',)
-        
+
 
 
 class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
@@ -1005,26 +1005,24 @@ class ProductPackaging(models.Model):
 # Catálogos de exportación
 class ExportingCompany(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
-    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)
-    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
-    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
+     ### Localization fields
+    country = models.ForeignKey(Country, on_delete=models.PROTECT, verbose_name=_('Country'))
+    state = models.ForeignKey(Region, on_delete=models.PROTECT, verbose_name=_('State'))
+    city = models.ForeignKey(SubRegion, on_delete=models.PROTECT, verbose_name=_('City'))
+    district = models.ForeignKey(City, blank=True, null=True, on_delete=models.PROTECT, verbose_name=_('District'))
+
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
     neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
     address = models.CharField(max_length=255, verbose_name=_('Address'))
     external_number = models.CharField(max_length=10, verbose_name=_('External number'))
-    internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
-                                       null=True, blank=True,
-                                       on_delete=models.PROTECT, help_text=_(
-            'Legal category of the exporting company, must have a country selected to show that country legal categories.'))
+    internal_number = models.CharField(max_length=10, blank=True, null=True, verbose_name=_('Internal number'))
+
     tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
-    clabe = models.CharField(max_length=18, verbose_name=_('CLABE'), null=True, blank=True)
-    bank = models.ForeignKey(Bank, verbose_name=_('Bank'), on_delete=models.PROTECT, null=True, blank=True)
-    payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
+
     contact_name = models.CharField(max_length=255, verbose_name=_('Contact person full name'))
-    contact_email = models.EmailField()
-    contact_phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'))
+    ### Contact fields
+    email = models.EmailField(max_length=255, verbose_name=_('Email'))
+    phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -1036,6 +1034,16 @@ class ExportingCompany(CleanNameAndOrganizationMixin, models.Model):
                                     name='exporting_company_unique_name_organization'),
         ]
 
+class ExportingCompanyBeneficiary(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=255, verbose_name=_("Name"))
+    bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_("Bank"))
+    bank_account_number = models.CharField(max_length=25, verbose_name=_("Bank account number"))
+    interbank_account_number = models.CharField(max_length=20, verbose_name=_('Interbank account number'))
+    exporting_company = models.ForeignKey(ExportingCompany, on_delete=models.CASCADE, verbose_name=_("Exporting company"))
+
+    class Meta:
+        verbose_name = _("Exporting Company's beneficiary")
+        verbose_name_plural = _("Exporting Company's beneficiaries")
 
 class Transfer(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
