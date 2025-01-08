@@ -930,9 +930,39 @@ class WeighingScaleAdmin(admin.ModelAdmin):
 
 
 @admin.register(ColdChamber)
-class ColdChamberAdmin(admin.ModelAdmin):
-    pass
+class ColdChamberAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'product', 'product_variety', 'market', 'pallet_capacity', 'is_enabled')
+    list_filter = (ByMarketForOrganizationFilter, ByProductForOrganizationFilter,
+                   ByProductVarietyForOrganizationFilter, 'is_enabled')
+    search_fields = ('name',)
+    fields = ('name', 'market', 'product', 'product_variety', 'pallet_capacity',
+              'freshness_days_alert', 'freshness_days_warning',
+              'comments', 'is_enabled')
 
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = ColdChamber.objects.get(id=obj_id) if obj_id else None
+
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+        product_organization_queryfilter = {'product__organization': organization, 'is_enabled': True}
+
+        if db_field.name == "market":
+            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+        if db_field.name == "product":
+            kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
+        if db_field.name == "product_variety":
+            kwargs["queryset"] = ProductVariety.objects.filter(**product_organization_queryfilter)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/cold_chambers.js',)
 
 @admin.register(Pallet)
 class PalletAdmin(admin.ModelAdmin):
