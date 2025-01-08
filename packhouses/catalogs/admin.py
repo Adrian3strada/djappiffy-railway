@@ -12,7 +12,7 @@ from .models import (
     MeshBag, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    Provider, ProviderBeneficiary, ProviderFinancialBalance,
+    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
@@ -666,7 +666,7 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
                 kwargs["queryset"] = Client.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
-        
+
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('tax_registry_code')
     @uppercase_form_charfield('population_registry_code')
@@ -686,7 +686,7 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
         obj = Maquiladora.objects.get(id=obj_id) if obj_id else None
-        
+
         if db_field.name == "state":
             if hasattr(request, 'organization'):
                 packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
@@ -695,7 +695,7 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
-        
+
         if db_field.name == "city":
             if request.POST:
                 state_id = request.POST.get('state')
@@ -708,7 +708,7 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
-        
+
         if db_field.name == "district":
             if request.POST:
                 city_id = request.POST.get('city')
@@ -721,7 +721,7 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
-        
+
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
@@ -987,44 +987,57 @@ class PalletExpenseAdmin(admin.ModelAdmin):
 class ProductPackagingAdmin(admin.ModelAdmin):
     pass
 
+class ExportingCompanyBeneficiaryInline(admin.StackedInline):
+    model = ExportingCompanyBeneficiary
+    extra = 0
+    can_delete = True
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
 
 @admin.register(ExportingCompany)
-class ExportingCompanyAdmin(admin.ModelAdmin):
+class ExportingCompanyAdmin(ByOrganizationAdminMixin):
     list_display = (
-    'name', 'legal_category', 'tax_id', 'city', 'address', 'external_number', 'contact_phone_number', 'is_enabled')
-    list_filter = ('country', 'legal_category', 'payment_kind', 'is_enabled')
-    search_fields = ('name', 'tax_id', 'contact_phone_number')
-    fields = (
-    'name', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number',
-    'internal_number', 'legal_category', 'tax_id', 'clabe', 'bank', 'payment_kind', 'contact_name', 'contact_email',
-    'contact_phone_number', 'is_enabled', 'organization')
+    'name', 'contact_name', 'tax_id', 'city', 'address', 'external_number', 'phone_number', 'is_enabled')
+    list_filter = ('is_enabled',)
+    fields = ('name', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number',
+              'tax_id', 'contact_name', 'email', 'phone_number', 'is_enabled')
+    inlines = [ExportingCompanyBeneficiaryInline,]
 
+    def get_state_name(self, obj):
+        return obj.state.name
+    get_state_name.short_description = _('State')
+    get_state_name.admin_order_field = 'state__name'
+
+    def get_city_name(self, obj):
+        return obj.city.name
+    get_city_name.short_description = _('City')
+    get_city_name.admin_order_field = 'city__name'
+
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('neighborhood')
+    @uppercase_form_charfield('address')
+    @uppercase_form_charfield('contact_name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
-        if 'district' in form.base_fields:
-            form.base_fields['district'].widget = UppercaseTextInputWidget()
-        if 'neighborhood' in form.base_fields:
-            form.base_fields['neighborhood'].widget = UppercaseTextInputWidget()
-        if 'address' in form.base_fields:
-            form.base_fields['address'].widget = UppercaseTextInputWidget()
-        if 'contact_name' in form.base_fields:
-            form.base_fields['contact_name'].widget = UppercaseTextInputWidget()
+        if not obj:
+            if hasattr(request, 'organization'):
+                packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+                if packhouse_profile:
+                    form.base_fields['country'].initial = packhouse_profile.country
         return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = ExportingCompany.objects.get(id=object_id) if object_id else None
 
-        # Lógica para el campo "country"
         if db_field.name == "country":
             kwargs["queryset"] = Country.objects.all()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
 
-        # Lógica para el campo "state"
         if db_field.name == "state":
             if request.POST:
                 country_id = request.POST.get('country')
@@ -1034,27 +1047,36 @@ class ExportingCompanyAdmin(admin.ModelAdmin):
                 kwargs["queryset"] = Region.objects.filter(country_id=country_id)
             else:
                 kwargs["queryset"] = Region.objects.none()
+                if hasattr(request, 'organization'):
+                    packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+                    if packhouse_profile:
+                        kwargs["queryset"] = Region.objects.filter(country=packhouse_profile.country)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
 
-        # Lógica para el campo "city"
         if db_field.name == "city":
             if request.POST:
                 state_id = request.POST.get('state')
             else:
                 state_id = obj.state_id if obj else None
             if state_id:
-                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
             else:
-                kwargs["queryset"] = City.objects.none()
+                kwargs["queryset"] = SubRegion.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
 
-        # Lógica para campo "legal_category"
-        if db_field.name == "legal_category":
-            kwargs["queryset"] = LegalEntityCategory.objects.all()
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
+            else:
+                kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
