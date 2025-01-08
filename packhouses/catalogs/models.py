@@ -4,7 +4,8 @@ from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizati
                            CleanNameAndProviderMixin, CleanNameAndCategoryAndOrganizationMixin,
                            CleanProductVarietyMixin, CleanNameAndAliasProductMixin,
                            CleanNameAndCodeAndOrganizationMixin,
-                           CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanNameAndMaquiladoraMixin)
+                           CleanNameAndVarietyAndMarketAndVolumeKindMixin, CleanNameAndMaquiladoraMixin,
+                           CleanNameAndServiceProviderAndOrganizationMixin)
 from organizations.models import Organization
 from cities_light.models import City, Country, Region, SubRegion
 from django.utils.translation import gettext_lazy as _
@@ -830,19 +831,20 @@ class MeshBag(models.Model):
 # Proveedores de servicios
 
 
-class Service(models.Model):
+class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     service_provider = models.ForeignKey(Provider, verbose_name=_('Provider'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    
     class Meta:
         verbose_name = _('Service')
         verbose_name_plural = _('Services')
-        unique_together = ('name', 'service_provider')
         ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(fields=('name', 'service_provider', 'organization'), 
+                                    name='service_unique_name_service_provider_organization'),
+        ]
 
 
 # Tipos de cajas

@@ -39,7 +39,8 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
-                      ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter
+                      ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter,
+                      ByServiceProviderForOrganizationServiceFilter,
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -909,8 +910,27 @@ class MeshBagAdmin(admin.ModelAdmin):
 
 
 @admin.register(Service)
-class ServiceAdmin(admin.ModelAdmin):
-    pass
+class ServiceAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'service_provider', 'is_enabled')
+    list_filter = (ByServiceProviderForOrganizationServiceFilter, 'is_enabled')
+    search_fields = ('name', )
+    fields = ('name', 'service_provider', 'is_enabled',)
+
+
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "service_provider":
+                if hasattr(request, 'organization'):
+                    kwargs["queryset"] = Provider.objects.filter(organization=request.organization, is_enabled=True, category="service_provider")
+                else:
+                    kwargs["queryset"] = Provider.objects.none()
+                formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+                return formfield
+
 
 
 @admin.register(AuthorityBoxKind)

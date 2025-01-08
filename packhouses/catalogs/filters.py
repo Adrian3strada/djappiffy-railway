@@ -408,3 +408,16 @@ class ByCityForOrganizationMaquiladoraFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(city__id=self.value())
         return queryset
+
+class ByServiceProviderForOrganizationServiceFilter(admin.SimpleListFilter):
+    title = _('Provider')
+    parameter_name = 'provider'
+
+    def lookups(self, request, model_admin):
+        providers = Provider.objects.filter(organization=request.organization, is_enabled=True, category="service_provider")
+        return [(provider.id, provider.name) for provider in providers]
+    
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(service_provider=self.value())
+        return queryset
