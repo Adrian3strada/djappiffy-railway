@@ -256,7 +256,7 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     class Meta:
         verbose_name = _('Product size')
         verbose_name_plural = _('Product sizes')
-        ordering = ['product', 'order']
+        ordering = ['order']
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'], name='productvarietysize_unique_name_product'),
             models.UniqueConstraint(fields=['alias', 'product'], name='productvarietysize_unique_alias_product'),
@@ -545,7 +545,7 @@ class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
         verbose_name = _('Maquiladora client')
         verbose_name_plural = _('Maquiladora clients')
         ordering = ('name',)
-        
+
 
 
 class Maquiladora(CleanNameAndOrganizationMixin, models.Model):

@@ -52,7 +52,7 @@ from common.forms import SelectWidgetWithData
 admin.site.unregister(Country)
 admin.site.unregister(Region)
 admin.site.unregister(SubRegion)
-admin.site.unregister(City)
+# admin.site.unregister(City)
 
 
 # Markets
@@ -616,7 +616,7 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
     search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
     fields = (
     'name', 'zone', 'tax_registry_code', 'population_registry_code', 'social_number_code', 'state', 'city', 'district',
-    'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number', 
+    'neighborhood', 'postal_code', 'address', 'external_number', 'internal_number', 'email', 'phone_number',
     'maquiladora_client', 'is_enabled',)
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
