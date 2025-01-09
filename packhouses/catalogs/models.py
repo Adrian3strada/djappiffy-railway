@@ -840,6 +840,8 @@ class MeshBag(models.Model):
         unique_together = ('name', 'organization')
 
 
+
+
 # Proveedores de servicios
 
 
@@ -848,13 +850,13 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
     service_provider = models.ForeignKey(Provider, verbose_name=_('Provider'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-    
+
     class Meta:
         verbose_name = _('Service')
         verbose_name_plural = _('Services')
         ordering = ('name',)
         constraints = [
-            models.UniqueConstraint(fields=('name', 'service_provider', 'organization'), 
+            models.UniqueConstraint(fields=('name', 'service_provider', 'organization'),
                                     name='service_unique_name_service_provider_organization'),
         ]
 
