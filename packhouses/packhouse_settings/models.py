@@ -2,8 +2,9 @@ from django.db import models
 from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
-from common.mixins import CleanNameAndOrganizationMixin, CleanNameAndMarketMixin
-
+from common.mixins import (CleanNameAndOrganizationMixin, CleanNameAndMarketMixin, CleanUniqueNameForOrganizationMixin,
+                           CleanNameAndCodeAndOrganizationMixin)
+from .settings import SUPPLY_UNIT_KIND_CHOICES
 # Create your models here.
 
 
@@ -106,20 +107,6 @@ class VehicleBrand(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-class OrchardProductClassificationKind(CleanNameAndOrganizationMixin, models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    class Meta:
-        verbose_name = _('Orchard product classification')
-        verbose_name_plural = _('Orchard product classifications')
-        ordering = ('organization', 'name',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='orchardproductclassificationkind_unique_name_organization'),
-        ]
-
-
 class OrchardCertificationVerifier(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -152,9 +139,13 @@ class OrchardCertificationKind(CleanNameAndOrganizationMixin, models.Model):
 
 class SupplyKind(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_container = models.BooleanField(default=False, verbose_name=_('Is container'))
+    unit_kind = models.CharField(max_length=30, verbose_name=_('Unit kind'), choices=SUPPLY_UNIT_KIND_CHOICES)
+    is_packaging = models.BooleanField(default=False, verbose_name=_('Is packaging'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name} ({self.get_unit_kind_display()})"
 
     class Meta:
         verbose_name = _('Supply kind')
@@ -162,18 +153,4 @@ class SupplyKind(CleanNameAndOrganizationMixin, models.Model):
         ordering = ('organization', 'name',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='supplykind_unique_name_organization'),
-        ]
-
-
-class SupplyPresentationKind(CleanNameAndOrganizationMixin, models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    class Meta:
-        verbose_name = _('Supply presentation kind')
-        verbose_name_plural = _('Supply presentation kinds')
-        ordering = ('organization', 'name',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='supplypresentationkind_unique_name_organization'),
         ]

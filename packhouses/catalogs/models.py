@@ -21,9 +21,9 @@ from django.core.exceptions import ValidationError
 from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
-                                                  OrchardProductClassificationKind, OrchardCertificationVerifier,
-                                                  OrchardCertificationKind, SupplyKind, SupplyPresentationKind)
-from .settings import CLIENT_KIND_CHOICES
+                                                  OrchardCertificationVerifier,
+                                                  OrchardCertificationKind, SupplyKind)
+from .settings import CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES
 
 from django.db.models import Max, Min
 from django.db.models import Q, F
@@ -257,7 +257,7 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     class Meta:
         verbose_name = _('Product size')
         verbose_name_plural = _('Product sizes')
-        ordering = ['product', 'order']
+        ordering = ['order']
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'], name='productvarietysize_unique_name_product'),
             models.UniqueConstraint(fields=['alias', 'product'], name='productvarietysize_unique_alias_product'),
@@ -582,15 +582,13 @@ class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
 class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     code = models.CharField(max_length=100, verbose_name=_('Registry code'))
+    category = models.CharField(max_length=100, verbose_name=_('Product category'), choices=ORCHARD_PRODUCT_CLASSIFICATION_CHOICES)
     producer = models.ForeignKey(Provider, verbose_name=_('Producer'), on_delete=models.PROTECT)
     safety_authority_registration_date = models.DateField(verbose_name=_('Safety authority registration date'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT)
     ha = models.FloatField(verbose_name=_('Hectares'))
-    product_classification_kind = models.ForeignKey(OrchardProductClassificationKind,
-                                                    verbose_name=_('Product Classification'),
-                                                    on_delete=models.PROTECT)
     sanitary_certificate = models.CharField(max_length=100, verbose_name=_('Sanitary certificate'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -735,9 +733,6 @@ class SupplyKindRelation(models.Model):
 class Supply(CleanNameAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    unit_quantity = models.PositiveIntegerField(verbose_name=_('Unit quantity'), help_text=_(
-        'Quantity of units per unit kind to discunt when a supply is used'))
-    presentation = models.ForeignKey(SupplyPresentationKind, verbose_name=_('Unit kind'), on_delete=models.PROTECT)
     minimum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Minimum stock quantity'))
     maximum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Maximum stock quantity'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -752,6 +747,23 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
         ordering = ('organization', 'name',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='supply_unique_name_organization'),
+        ]
+
+class SupplyPackage(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
+    quantity = models.FloatField(verbose_name=_('Quantity'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.name} ({self.supply.name})"
+
+    class Meta:
+        verbose_name = _('Supply package')
+        verbose_name_plural = _('Supply packages')
+        ordering = ('supply', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'supply'], name='supplypackage_unique_name_supply'),
         ]
 
 

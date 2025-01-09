@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateMarketStandardProductSize() {
     const marketIds = marketsField.val();
     if (marketIds && marketIds.length > 0) {
+      console.log("marketIds", marketIds);
       fetchOptions(`${API_BASE_URL}/catalogs/market_standard_product_size/?markets=${marketIds}&is_enabled=1`)
         .then(data => {
           const marketNames = {};
@@ -133,12 +134,9 @@ document.addEventListener('DOMContentLoaded', function () {
     updateProductMassVolumeKind();
   });
 
-  productVarietiesField.on('change', (event) => {
-    if (productVarietiesField.val()) {
-      const selectedOption = event.target.options[event.target.selectedIndex];
-      console.log("selectedOption", selectedOption);
-    }
-  })
+  marketsField.on('change', () => {
+    updateMarketStandardProductSize();
+  });
 
   nameField.on('input', () => {
     const value = nameField.val();
@@ -155,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  nameField.on('input', () => {
+  function updateAliasField() {
     const value = nameField.val();
     const isNumeric = /^\d+$/.test(value);
 
@@ -163,14 +161,17 @@ document.addEventListener('DOMContentLoaded', function () {
       aliasField.val(value);
     } else {
       const sanitizedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // Remove accents
-      const firstThreeChars = sanitizedValue.replace(/[^a-zA-Z0-9]/g, '').substring(0, 3).toUpperCase();
+      const firstThreeChars = sanitizedValue.replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase();
       aliasField.val(firstThreeChars);
     }
-  });
+  }
+
+  nameField.on('input', updateAliasField);
 
   marketStandardProductSizeField.on('change', function () {
     if (marketStandardProductSizeField.val()) {
       updateNameFromMarketStandardProductSize();
+      setTimeout(updateAliasField, 100);
     }
   });
 
@@ -184,5 +185,5 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   if (!marketsField.val()) updateMarketStandardProductSize();
-  if (!marketStandardProductSizeField.val()) toggleFieldVisibility(marketStandardProductSizeField, true);
+  if (!marketStandardProductSizeField.val()) marketStandardProductSizeField.closest('.form-group').hide();
 });
