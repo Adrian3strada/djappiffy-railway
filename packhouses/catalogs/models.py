@@ -21,7 +21,7 @@ from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   OrchardCertificationVerifier,
-                                                  OrchardCertificationKind, SupplyKind, SupplyUnitKind)
+                                                  OrchardCertificationKind, SupplyKind)
 from .settings import CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES
 
 from django.db.models import Max, Min
@@ -732,7 +732,6 @@ class SupplyKindRelation(models.Model):
 class Supply(CleanNameAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    presentation = models.ForeignKey(SupplyUnitKind, verbose_name=_('Presentation'), on_delete=models.PROTECT)
     minimum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Minimum stock quantity'))
     maximum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Maximum stock quantity'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -747,6 +746,23 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
         ordering = ('organization', 'name',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='supply_unique_name_organization'),
+        ]
+
+class SupplyPackage(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
+    quantity = models.FloatField(verbose_name=_('Quantity'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.name} ({self.supply.name})"
+
+    class Meta:
+        verbose_name = _('Supply package')
+        verbose_name_plural = _('Supply packages')
+        ordering = ('supply', 'name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'supply'], name='supplypackage_unique_name_supply'),
         ]
 
 

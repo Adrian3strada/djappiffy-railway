@@ -792,6 +792,8 @@ class OrchardAdmin(ByOrganizationAdminMixin):
 class SupplyAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'kind', 'is_enabled')
     list_filter = ('kind', 'is_enabled')
+    search_fields = ('name',)
+    fields = ('kind', 'name', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('code')
