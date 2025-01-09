@@ -214,6 +214,7 @@ class ProductQualityKind(CleanNameAndProductMixin, models.Model):
 class ProductMassVolumeKind(CleanNameAndProductMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 
@@ -246,7 +247,9 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     product_mass_volume_kind = models.ForeignKey(ProductMassVolumeKind, verbose_name=_('Mass volume kind'),
                                                  on_delete=models.PROTECT,
                                                  help_text=_(
-                                                     'To separate sizes by product kind in the mass volume report'))  # Estandar, enmallado, orgánico...
+                                                     'To separate sizes by product kind in the mass volume report'))
+    # product_mass_volume_kind Estandar, enmallado, orgánico...
+
     # requires_corner_protector = models.BooleanField(default=False, verbose_name=_('Requires corner protector'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
@@ -840,6 +843,24 @@ class MeshBag(models.Model):
         unique_together = ('name', 'organization')
 
 
+class PackagingPresentation(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
+    product_variety_size = models.ForeignKey(ProductSize, verbose_name=_('Variety size'), on_delete=models.PROTECT)
+
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Packaging presentation')
+        verbose_name_plural = _('Packaging presentations')
+        unique_together = ('name', 'organization')
 
 
 # Proveedores de servicios
@@ -1061,6 +1082,7 @@ class ExportingCompanyBeneficiary(CleanNameAndOrganizationMixin, models.Model):
         verbose_name = _("Exporting Company's beneficiary")
         verbose_name_plural = _("Exporting Company's beneficiaries")
 
+
 class Transfer(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
     caat = models.CharField(max_length=100, verbose_name=_('CAAT'))
@@ -1169,4 +1191,5 @@ class InsuranceCompany(CleanNameAndOrganizationMixin, models.Model):
         verbose_name = _('Insurance Company')
         verbose_name_plural = _('Insurance Companies')
         unique_together = ('name', 'organization')
+
 

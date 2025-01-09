@@ -12,7 +12,7 @@ from .models import (
     MeshBag, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary
+    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
@@ -926,6 +926,15 @@ class MeshBagKindAdmin(admin.ModelAdmin):
 class MeshBagAdmin(admin.ModelAdmin):
     verbose_name = _('Mesh Bag (*)')
     pass
+
+
+@admin.register(PackagingPresentation)
+class PackagingPresentationAdmin(admin.ModelAdmin):
+    verbose_name_plural = _('Packaging presentations') + ' (*)'
+    pass
+
+
+
 
 
 @admin.register(Service)

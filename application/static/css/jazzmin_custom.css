@@ -97,3 +97,7 @@ body.jazzmin-login-page{
 #jazzy-logo > .brand-text {
   color: #ffc107 !important;
 }
+
+footer.main-footer .float-right {
+    display: none !important;
+}
