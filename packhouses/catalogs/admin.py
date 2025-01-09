@@ -944,7 +944,7 @@ class ServiceAdmin(ByOrganizationAdminMixin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
-    
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "service_provider":
                 if hasattr(request, 'organization'):
@@ -991,15 +991,20 @@ class ColdChamberAdmin(ByOrganizationAdminMixin):
         obj = ColdChamber.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
+        product = request.POST.get('product') if request.POST else obj.product if obj else None
+
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        product_organization_queryfilter = {'product__organization': organization, 'is_enabled': True}
+        product_organization_queryfilter = {'product': product, 'product__organization': organization, 'is_enabled': True}
 
         if db_field.name == "market":
             kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
         if db_field.name == "product":
             kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
         if db_field.name == "product_variety":
-            kwargs["queryset"] = ProductVariety.objects.filter(**product_organization_queryfilter)
+            if product:
+                kwargs["queryset"] = ProductVariety.objects.filter(**product_organization_queryfilter)
+            else:
+                kwargs["queryset"] = ProductVariety.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
