@@ -9,7 +9,7 @@ from .models import (
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora, MaquiladoraClient,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
-    MeshBag, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
+    MeshBag, Service, AuthorityPackagingKind, PackagingKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary
@@ -966,9 +966,17 @@ class ServiceAdmin(ByOrganizationAdminMixin):
                 return formfield
 
 
-@admin.register(AuthorityBoxKind)
-class AuthorityBoxKindAdmin(admin.ModelAdmin):
-    pass
+@admin.register(AuthorityPackagingKind)
+class AuthorityPackagingKindAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'is_enabled')
+    list_filter = ('is_enabled',)
+    search_fields = ('name',)
+    fields = ('name', 'is_enabled')
+
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
 
 
 @admin.register(BoxKind)

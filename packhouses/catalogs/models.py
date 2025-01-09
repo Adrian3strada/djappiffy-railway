@@ -859,20 +859,24 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
         ]
 
 
-# Tipos de cajas
+# Tipos de empaques
 
-class AuthorityBoxKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
+class AuthorityPackagingKind(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Authority box kind')
-        verbose_name_plural = _('Authority box kinds')
-        unique_together = ('name', 'organization')
+        verbose_name = _('Packaging Kind Authority')
+        verbose_name_plural = _('Packaging Kind Authorities')
+        ordering = ('name', )
+        constraints = [
+            models.UniqueConstraint(fields=('name', 'organization'),
+                                    name='authoritypackagingkind_unique_name_organization'),
+        ]
 
 
 class BoxKind(models.Model):
