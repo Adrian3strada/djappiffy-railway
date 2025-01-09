@@ -980,9 +980,16 @@ class WeighingScaleAdmin(ByOrganizationAdminMixin):
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('neighborhood')
     @uppercase_form_charfield('address')
+    @uppercase_alphanumeric_form_charfield('number')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
+    
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[City, Organization]):
+            readonly_fields.extend(['name', 'organization'])
+        return readonly_fields
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
