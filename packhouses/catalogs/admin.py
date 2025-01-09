@@ -922,13 +922,9 @@ class MeshBagKindAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(MeshBagFilmKind)
-class MeshBagFilmKindAdmin(admin.ModelAdmin):
-    pass
-
-
 @admin.register(MeshBag)
 class MeshBagAdmin(admin.ModelAdmin):
+    verbose_name = _('Mesh Bag (*)')
     pass
 
 
@@ -944,7 +940,7 @@ class ServiceAdmin(ByOrganizationAdminMixin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
-    
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "service_provider":
                 if hasattr(request, 'organization'):
