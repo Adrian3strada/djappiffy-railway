@@ -40,7 +40,8 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
                       ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter,
-                      ByServiceProviderForOrganizationServiceFilter,
+                      ByServiceProviderForOrganizationServiceFilter, ByStateForOrganizationWeighingScaleFilter,
+                      ByCityForOrganizationWeighingScaleFilter,
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -955,7 +956,6 @@ class ServiceAdmin(ByOrganizationAdminMixin):
                 return formfield
 
 
-
 @admin.register(AuthorityBoxKind)
 class AuthorityBoxKindAdmin(admin.ModelAdmin):
     pass
@@ -967,8 +967,65 @@ class BoxKindAdmin(admin.ModelAdmin):
 
 
 @admin.register(WeighingScale)
-class WeighingScaleAdmin(admin.ModelAdmin):
-    pass
+class WeighingScaleAdmin(ByOrganizationAdminMixin):
+    list_display = (
+        'name', 'number', 'state', 'city', 'neighborhood', 'address', 'external_number', 'is_enabled')
+    list_filter = (ByStateForOrganizationWeighingScaleFilter, ByCityForOrganizationWeighingScaleFilter, 'is_enabled', )
+    search_fields = ('name', )
+    fields = (
+        'name', 'number', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address',
+        'external_number', 'internal_number', 'comments', 'is_enabled',
+    )
+
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('neighborhood')
+    @uppercase_form_charfield('address')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = WeighingScale.objects.get(id=obj_id) if obj_id else None
+
+        if db_field.name == "state":
+            if hasattr(request, 'organization'):
+                packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+                if packhouse_profile:
+                    kwargs["queryset"] = Region.objects.filter(country=packhouse_profile.country)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "city":
+            if request.POST:
+                state_id = request.POST.get('state')
+            else:
+                state_id = obj.state_id if obj else None
+            if state_id:
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = SubRegion.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
+            else:
+                kwargs["queryset"] = City.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    class Media:
+        js = ('js/admin/forms/common/country-state-city-district.js',)
 
 
 @admin.register(ColdChamber)

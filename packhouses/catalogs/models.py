@@ -893,29 +893,28 @@ class BoxKind(models.Model):
 
 # Básculas
 
-class WeighingScale(models.Model):
+class WeighingScale(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    number = models.CharField(max_length=20, verbose_name=_('Number'))
+    number = models.CharField(max_length=20, verbose_name=_('Number'), null=True, blank=True)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
-    city = models.ForeignKey(City, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.CharField(max_length=255, verbose_name=_('District'), null=True, blank=True)
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
+    city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
+    district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT, null=True, blank=True)
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
     address = models.CharField(max_length=255, verbose_name=_('Address'))
     external_number = models.CharField(max_length=20, verbose_name=_('External number'))
-    internal_number = models.CharField(max_length=20, verbose_name=_('Internal number'))
+    internal_number = models.CharField(max_length=20, verbose_name=_('Internal number'), null=True, blank=True)
     comments = models.CharField(max_length=250, verbose_name=_('Comments'), blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
-    def __str__(self):
-        return f"{self.name}"
-
     class Meta:
         verbose_name = _('Weighing scale')
         verbose_name_plural = _('Weighing scales')
-        unique_together = ('name', 'organization')
         ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='weighing_scale_unique_name_organization'),
+        ]
 
 
 # Cámaras de frío

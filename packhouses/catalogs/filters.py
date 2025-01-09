@@ -4,7 +4,7 @@ from common.profiles.models import UserProfile, OrganizationProfile, PackhouseEx
 from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductQualityKind, ProductMassVolumeKind,
                      Gatherer,
                      Provider, Client,
-                     Maquiladora,
+                     Maquiladora, WeighingScale
                      )
 from common.base.models import ProductKind
 from django.utils.translation import gettext_lazy as _
@@ -420,4 +420,38 @@ class ByServiceProviderForOrganizationServiceFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(service_provider=self.value())
+        return queryset
+    
+class ByStateForOrganizationWeighingScaleFilter(admin.SimpleListFilter):
+    title = _('State')
+    parameter_name = 'state'
+
+    def lookups(self, request, model_admin):
+        states = Region.objects.all()
+        if hasattr(request, 'organization'):
+            organization_maquiladora_state_ids = list(
+                WeighingScale.objects.filter(organization=request.organization).values_list('state', flat=True).distinct())
+            states = states.filter(id__in=organization_maquiladora_state_ids).order_by('country__name', 'name')
+        return [(state.id, state.name) for state in states]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(state__id=self.value())
+        return queryset
+
+class ByCityForOrganizationWeighingScaleFilter(admin.SimpleListFilter):
+    title = _('City')
+    parameter_name = 'city'
+
+    def lookups(self, request, model_admin):
+        cities = SubRegion.objects.all()
+        if hasattr(request, 'organization'):
+            organization_maquiladora_city_ids = list(
+                WeighingScale.objects.filter(organization=request.organization).values_list('city', flat=True).distinct())
+            cities = cities.filter(id__in=organization_maquiladora_city_ids).order_by('country__name', 'region__name', 'name')
+        return [(city.id, f" {city.region.name}: {city.name}") for city in cities]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(city__id=self.value())
         return queryset
