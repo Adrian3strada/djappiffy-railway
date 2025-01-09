@@ -624,7 +624,7 @@ class MaquiladoraClientInline(admin.StackedInline):
 @admin.register(Maquiladora)
 class MaquiladoraAdmin(ByOrganizationAdminMixin):
     list_display = (
-    'name', 'zone', 'tax_registry_code', 'state', 'city', 'email', 'phone_number', 'is_enabled', )
+    'name', 'zone', 'tax_registry_code', 'get_state_name', 'get_city_name', 'email', 'phone_number', 'is_enabled', )
     list_filter = (ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter,  'is_enabled')
     search_fields = ('name', 'zone', 'tax_registry_code', 'address', 'email', 'phone_number')
     fields = (
@@ -640,6 +640,16 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
                 kwargs["queryset"] = Client.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
+    def get_state_name(self, obj):
+        return obj.state.name
+    get_state_name.short_description = _('State')
+    get_state_name.admin_order_field = 'state__name'
+
+    def get_city_name(self, obj):
+        return obj.city.name
+    get_city_name.short_description = _('City')
+    get_city_name.admin_order_field = 'city__name'
+
 
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('tax_registry_code')
@@ -969,13 +979,23 @@ class BoxKindAdmin(admin.ModelAdmin):
 @admin.register(WeighingScale)
 class WeighingScaleAdmin(ByOrganizationAdminMixin):
     list_display = (
-        'name', 'number', 'state', 'city', 'neighborhood', 'address', 'external_number', 'is_enabled')
+        'name', 'number', 'get_state_name', 'get_city_name', 'neighborhood', 'address', 'external_number', 'is_enabled')
     list_filter = (ByStateForOrganizationWeighingScaleFilter, ByCityForOrganizationWeighingScaleFilter, 'is_enabled', )
     search_fields = ('name', )
     fields = (
         'name', 'number', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address',
         'external_number', 'internal_number', 'comments', 'is_enabled',
     )
+
+    def get_state_name(self, obj):
+        return obj.state.name
+    get_state_name.short_description = _('State')
+    get_state_name.admin_order_field = 'state__name'
+
+    def get_city_name(self, obj):
+        return obj.city.name
+    get_city_name.short_description = _('City')
+    get_city_name.admin_order_field = 'city__name'
 
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('neighborhood')
