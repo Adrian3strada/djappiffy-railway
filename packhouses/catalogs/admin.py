@@ -7,7 +7,7 @@ from .models import (
     ProductHarvestSizeKind,
     ProductQualityKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora, MaquiladoraClient,
-    OrchardProductClassificationKind, Orchard, OrchardCertification, CrewChief, HarvestingCrew,
+    Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
     MeshBag, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
@@ -52,8 +52,19 @@ from common.forms import SelectWidgetWithData
 admin.site.unregister(Country)
 admin.site.unregister(Region)
 admin.site.unregister(SubRegion)
-# admin.site.unregister(City)
+admin.site.unregister(City)
 
+from cities_light.admin import CityAdmin
+
+# @admin.register(City)
+class CityAdmin(CityAdmin):
+    verbose_name = _('District')
+    verbose_name_plural = _('Districts')
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.id <= 144812:
+            return [field.name for field in self.model._meta.fields]
+        return super().get_readonly_fields(request, obj)
 
 # Markets
 
@@ -721,12 +732,17 @@ class OrchardCertificationInline(admin.StackedInline):
 
 @admin.register(Orchard)
 class OrchardAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'code', 'producer', 'product_classification_kind', 'is_enabled')
-    list_filter = ('product_classification_kind', 'safety_authority_registration_date', 'is_enabled')
+    list_display = ('name', 'code', 'producer', 'get_category', 'is_enabled')
+    list_filter = ('category', 'safety_authority_registration_date', 'is_enabled')
     search_fields = ('name', 'code', 'producer__name')
-    fields = ('name', 'code', 'producer', 'safety_authority_registration_date', 'state', 'city', 'district', 'ha',
-              'product_classification_kind', 'sanitary_certificate', 'is_enabled')
+    fields = ('name', 'code', 'category', 'producer', 'safety_authority_registration_date', 'state', 'city', 'district', 'ha',
+              'sanitary_certificate', 'is_enabled')
     inlines = [OrchardCertificationInline]
+
+    def get_category(self, obj):
+        return obj.get_category_display()
+    get_category.short_description = _('Category')
+    get_category.ordering = 'category'
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('code')
@@ -736,7 +752,7 @@ class OrchardAdmin(ByOrganizationAdminMixin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Provider, Region, SubRegion, City, OrchardProductClassificationKind,
+        if obj and is_instance_used(obj, exclude=[Provider, Region, SubRegion, City,
                                                   Organization, OrchardCertification]):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
@@ -754,14 +770,13 @@ class OrchardAdmin(ByOrganizationAdminMixin):
             "state": (Region, "country", organization_country),
             "city": (SubRegion, "region", request.POST.get('state') if request.POST else obj.state.id if obj else None),
             "district": (City, "subregion", request.POST.get('city') if request.POST else obj.city.id if obj else None),
-            "product_classification_kind": (OrchardProductClassificationKind, "organization", organization),
-            "producer": (Provider, "category", 'product_producer')
+            "producer": (Provider, "category", 'product_producer'),
         }
 
         if db_field.name in field_mapping:
             Model, filter_field, filter_value = field_mapping[db_field.name]
-            if db_field.name == "producer":
-                kwargs["queryset"] = Model.objects.filter(category=filter_value, organization=organization, is_enabled=True)
+            if db_field.name in ["producer"]:
+                kwargs["queryset"] = Model.objects.filter(**{f"{filter_field}": filter_value}, organization=organization, is_enabled=True)
             else:
                 kwargs["queryset"] = Model.objects.filter(**{f"{filter_field}_id": filter_value}) if filter_value else Model.objects.none()
 
@@ -774,9 +789,15 @@ class OrchardAdmin(ByOrganizationAdminMixin):
 
 
 @admin.register(Supply)
-class SupplyAdmin(admin.ModelAdmin):
+class SupplyAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'kind', 'is_enabled')
     list_filter = ('kind', 'is_enabled')
+
+    @uppercase_form_charfield('name')
+    @uppercase_alphanumeric_form_charfield('code')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
 
 
 class CrewChiefInline(admin.TabularInline):

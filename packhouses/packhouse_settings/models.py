@@ -2,7 +2,8 @@ from django.db import models
 from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
-from common.mixins import CleanNameAndOrganizationMixin, CleanNameAndMarketMixin
+from common.mixins import (CleanNameAndOrganizationMixin, CleanNameAndMarketMixin, CleanUniqueNameForOrganizationMixin,
+                           CleanNameAndCodeAndOrganizationMixin)
 
 # Create your models here.
 
@@ -106,20 +107,6 @@ class VehicleBrand(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-class OrchardProductClassificationKind(CleanNameAndOrganizationMixin, models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    class Meta:
-        verbose_name = _('Orchard product classification')
-        verbose_name_plural = _('Orchard product classifications')
-        ordering = ('organization', 'name',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='orchardproductclassificationkind_unique_name_organization'),
-        ]
-
-
 class OrchardCertificationVerifier(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -152,7 +139,7 @@ class OrchardCertificationKind(CleanNameAndOrganizationMixin, models.Model):
 
 class SupplyKind(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_container = models.BooleanField(default=False, verbose_name=_('Is container'))
+    is_packaging = models.BooleanField(default=False, verbose_name=_('Is packaging'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -165,15 +152,35 @@ class SupplyKind(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-class SupplyPresentationKind(CleanNameAndOrganizationMixin, models.Model):
+class SupplyUnitKind(CleanNameAndCodeAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
+    code = models.CharField(max_length=20, verbose_name=_('Code'), null=True, blank=True, help_text=_('Abbreviation or code for the presentation kind, Preferably in SI if applies.'))
+    sub_units = models.ManyToManyField('self', verbose_name=_('Sub units'), through='SupplySubUnitRelation', symmetrical=False, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
+    def clean(self):
+        # Esta es una triquiñuela para que el código no se cambie por mayúsculas al limpiar el modelo y no tener que hacer un mixin nuevo
+        code = self.code
+        super().clean()
+        self.code = code
+
     class Meta:
-        verbose_name = _('Supply presentation kind')
-        verbose_name_plural = _('Supply presentation kinds')
+        verbose_name = _('Supply unit kind')
+        verbose_name_plural = _('Supply unit kinds')
         ordering = ('organization', 'name',)
         constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='supplypresentationkind_unique_name_organization'),
+            models.UniqueConstraint(fields=['name', 'code', 'organization'], name='supplypresentationkind_unique_name_code_organization'),
         ]
+
+
+class SupplySubUnitRelation(models.Model):
+    parent_unit = models.ForeignKey(SupplyUnitKind, related_name='parent_units', on_delete=models.CASCADE)
+    child_unit = models.ForeignKey(SupplyUnitKind, related_name='child_units', on_delete=models.CASCADE)
+    conversion_factor = models.FloatField(verbose_name=_('Conversion factor'))
+
+    class Meta:
+        unique_together = ('parent_unit', 'child_unit')
+
+    def __str__(self):
+        return f"{self.parent_unit} -> {self.child_unit} ({self.conversion_factor})"
