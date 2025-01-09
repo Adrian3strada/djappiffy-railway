@@ -909,8 +909,8 @@ class WeighingScale(CleanNameAndOrganizationMixin, models.Model):
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     class Meta:
-        verbose_name = _('Weighing scale')
-        verbose_name_plural = _('Weighing scales')
+        verbose_name = _('Weighing Scale')
+        verbose_name_plural = _('Weighing Scales')
         ordering = ('name',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='weighing_scale_unique_name_organization'),
@@ -976,6 +976,9 @@ class PalletExpense(models.Model):
         verbose_name = _('Pallet expense')
         verbose_name_plural = _('Pallet expenses')
         unique_together = ('name', 'pallet')
+
+class PalletConfiguration(models.Model):
+    pass
 
 
 # configuración de productos
