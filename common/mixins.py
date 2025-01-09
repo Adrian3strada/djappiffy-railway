@@ -525,3 +525,41 @@ class IncotermsAndLocalDeliveryMarketMixin(models.Model):
 
     class Meta:
         abstract = True
+
+
+class CleanNameAndServiceProviderAndOrganizationMixin(models.Model):
+    def __str__(self):
+        return f"{self.name}"
+    
+    def clean(self):
+        self.name = getattr(self, 'name', None)
+        self.service_provider = getattr(self, 'service_provider', None)
+        self.service_provider_id = getattr(self, 'service_provider_id')
+        self.organization = getattr(self, 'organization', None)
+        self.organization_id = getattr(self, 'organization_id')
+
+        if self.name:
+            self.name = self.name.upper()
+
+        errors = {}
+
+        try: 
+            super().clean()
+        except ValidationError as e:
+            errors = e.message_dict
+
+        if self.organization_id and self.service_provider_id:
+            if self.__class__.objects.filter(name=self.name, service_provider=self.service_provider, organization=self.organization).exclude(pk=self.pk).exists():
+
+                errors['name'] = _('Name and service provider must be unique together.')
+                errors['service_provider'] = _('Name and service provider must be unique together.')
+                
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True

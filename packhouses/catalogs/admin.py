@@ -12,7 +12,7 @@ from .models import (
     MeshBag, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    Provider, ProviderBeneficiary, ProviderFinancialBalance,
+    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
@@ -39,7 +39,8 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
-                      ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter
+                      ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter,
+                      ByServiceProviderForOrganizationServiceFilter,
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -807,10 +808,9 @@ class CrewChiefInline(admin.TabularInline):
     extra = 0
     can_delete = True
 
+    @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        if 'name' in formset.form.base_fields:
-            formset.form.base_fields['name'].widget = UppercaseTextInputWidget()
         return formset
 
 
@@ -876,7 +876,7 @@ class HarvestingPaymentSettingInline(admin.StackedInline):
 class HarvestingCrewAdmin(ByOrganizationAdminMixin):
     form = HarvestingCrewForm
     list_display = ('name', 'provider', 'crew_chief', 'certification_name', 'persons_number', 'is_enabled')
-    list_filter = ('provider', 'crew_chief', 'is_enabled', 'certification_name')
+    list_filter = ('provider', 'crew_chief', 'is_enabled')
     fields = ('provider', 'name', 'certification_name', 'crew_chief', 'persons_number', 'comments', 'is_enabled')
     inlines = [HarvestingPaymentSettingInline,]
 
@@ -933,8 +933,27 @@ class MeshBagAdmin(admin.ModelAdmin):
 
 
 @admin.register(Service)
-class ServiceAdmin(admin.ModelAdmin):
-    pass
+class ServiceAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'service_provider', 'is_enabled')
+    list_filter = (ByServiceProviderForOrganizationServiceFilter, 'is_enabled')
+    search_fields = ('name', )
+    fields = ('name', 'service_provider', 'is_enabled',)
+
+
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "service_provider":
+                if hasattr(request, 'organization'):
+                    kwargs["queryset"] = Provider.objects.filter(organization=request.organization, is_enabled=True, category="service_provider")
+                else:
+                    kwargs["queryset"] = Provider.objects.none()
+                formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+                return formfield
+
 
 
 @admin.register(AuthorityBoxKind)
@@ -953,9 +972,39 @@ class WeighingScaleAdmin(admin.ModelAdmin):
 
 
 @admin.register(ColdChamber)
-class ColdChamberAdmin(admin.ModelAdmin):
-    pass
+class ColdChamberAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'product', 'product_variety', 'market', 'pallet_capacity', 'is_enabled')
+    list_filter = (ByMarketForOrganizationFilter, ByProductForOrganizationFilter,
+                   ByProductVarietyForOrganizationFilter, 'is_enabled')
+    search_fields = ('name',)
+    fields = ('name', 'market', 'product', 'product_variety', 'pallet_capacity',
+              'freshness_days_alert', 'freshness_days_warning',
+              'comments', 'is_enabled')
 
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = ColdChamber.objects.get(id=obj_id) if obj_id else None
+
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+        product_organization_queryfilter = {'product__organization': organization, 'is_enabled': True}
+
+        if db_field.name == "market":
+            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+        if db_field.name == "product":
+            kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
+        if db_field.name == "product_variety":
+            kwargs["queryset"] = ProductVariety.objects.filter(**product_organization_queryfilter)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/cold_chambers.js',)
 
 @admin.register(Pallet)
 class PalletAdmin(admin.ModelAdmin):
@@ -971,44 +1020,57 @@ class PalletExpenseAdmin(admin.ModelAdmin):
 class ProductPackagingAdmin(admin.ModelAdmin):
     pass
 
+class ExportingCompanyBeneficiaryInline(admin.StackedInline):
+    model = ExportingCompanyBeneficiary
+    extra = 0
+    can_delete = True
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
 
 @admin.register(ExportingCompany)
-class ExportingCompanyAdmin(admin.ModelAdmin):
+class ExportingCompanyAdmin(ByOrganizationAdminMixin):
     list_display = (
-    'name', 'legal_category', 'tax_id', 'city', 'address', 'external_number', 'contact_phone_number', 'is_enabled')
-    list_filter = ('country', 'legal_category', 'payment_kind', 'is_enabled')
-    search_fields = ('name', 'tax_id', 'contact_phone_number')
-    fields = (
-    'name', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number',
-    'internal_number', 'legal_category', 'tax_id', 'clabe', 'bank', 'payment_kind', 'contact_name', 'contact_email',
-    'contact_phone_number', 'is_enabled', 'organization')
+    'name', 'contact_name', 'tax_id', 'city', 'address', 'external_number', 'phone_number', 'is_enabled')
+    list_filter = ('is_enabled',)
+    fields = ('name', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number',
+              'tax_id', 'contact_name', 'email', 'phone_number', 'is_enabled')
+    inlines = [ExportingCompanyBeneficiaryInline,]
 
+    def get_state_name(self, obj):
+        return obj.state.name
+    get_state_name.short_description = _('State')
+    get_state_name.admin_order_field = 'state__name'
+
+    def get_city_name(self, obj):
+        return obj.city.name
+    get_city_name.short_description = _('City')
+    get_city_name.admin_order_field = 'city__name'
+
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('neighborhood')
+    @uppercase_form_charfield('address')
+    @uppercase_form_charfield('contact_name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
-        if 'district' in form.base_fields:
-            form.base_fields['district'].widget = UppercaseTextInputWidget()
-        if 'neighborhood' in form.base_fields:
-            form.base_fields['neighborhood'].widget = UppercaseTextInputWidget()
-        if 'address' in form.base_fields:
-            form.base_fields['address'].widget = UppercaseTextInputWidget()
-        if 'contact_name' in form.base_fields:
-            form.base_fields['contact_name'].widget = UppercaseTextInputWidget()
+        if not obj:
+            if hasattr(request, 'organization'):
+                packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+                if packhouse_profile:
+                    form.base_fields['country'].initial = packhouse_profile.country
         return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = ExportingCompany.objects.get(id=object_id) if object_id else None
 
-        # Lógica para el campo "country"
         if db_field.name == "country":
             kwargs["queryset"] = Country.objects.all()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
 
-        # Lógica para el campo "state"
         if db_field.name == "state":
             if request.POST:
                 country_id = request.POST.get('country')
@@ -1018,27 +1080,36 @@ class ExportingCompanyAdmin(admin.ModelAdmin):
                 kwargs["queryset"] = Region.objects.filter(country_id=country_id)
             else:
                 kwargs["queryset"] = Region.objects.none()
+                if hasattr(request, 'organization'):
+                    packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
+                    if packhouse_profile:
+                        kwargs["queryset"] = Region.objects.filter(country=packhouse_profile.country)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
 
-        # Lógica para el campo "city"
         if db_field.name == "city":
             if request.POST:
                 state_id = request.POST.get('state')
             else:
                 state_id = obj.state_id if obj else None
             if state_id:
-                kwargs["queryset"] = City.objects.filter(region_id=state_id)
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
             else:
-                kwargs["queryset"] = City.objects.none()
+                kwargs["queryset"] = SubRegion.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
 
-        # Lógica para campo "legal_category"
-        if db_field.name == "legal_category":
-            kwargs["queryset"] = LegalEntityCategory.objects.all()
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
+            else:
+                kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
@@ -1050,65 +1121,72 @@ class ExportingCompanyAdmin(admin.ModelAdmin):
 
 
 @admin.register(Transfer)
-class TransferAdmin(admin.ModelAdmin):
+class TransferAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'caat','scac', 'is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
 @admin.register(LocalTransporter)
-class LocalTransporterAdmin(admin.ModelAdmin):
+class LocalTransporterAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
 @admin.register(BorderToDestinationTransporter)
-class BorderToDestinationTransporterAdmin(admin.ModelAdmin):
+class BorderToDestinationTransporterAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'tax_id', 'caat','irs', 'scac', 'us_custom_bond', 'is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
 @admin.register(CustomsBroker)
-class CustomsBrokerAdmin(admin.ModelAdmin):
+class CustomsBrokerAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'broker_number', 'country','is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
 @admin.register(Vessel)
-class VesselAdmin(admin.ModelAdmin):
+class VesselAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'vessel_number', 'is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
 @admin.register(Airline)
-class AirlineAdmin(admin.ModelAdmin):
+class AirlineAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'airline_number', 'is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
 @admin.register(InsuranceCompany)
-class InsuranceCompanyAdmin(admin.ModelAdmin):
+class InsuranceCompanyAdmin(ByOrganizationAdminMixin):
+    fields = ('name', 'insurance_number', 'is_enabled')
+    list_filter = ('is_enabled',)
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
 
