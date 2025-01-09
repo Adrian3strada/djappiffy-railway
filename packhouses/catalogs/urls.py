@@ -5,7 +5,7 @@ from .models import ProductHarvestSizeKind
 from .viewsets import (
     MarketStandardProductSizeViewSet, MarketViewSet, VehicleViewSet, HarvestingCrewProviderViewSet,
     CrewChiefViewSet, ProductVarietyViewSet, ProductHarvestSizeKindViewSet, ProductQualityKindKindViewSet,
-    ProductMassVolumeKindViewSet, ClientViewSet, ProviderViewSet, ProductViewSet,
+    ProductMassVolumeKindViewSet, ClientViewSet, ProviderViewSet, ProductViewSet, SupplyViewSet
 )
 
 urlpatterns = []
@@ -18,6 +18,7 @@ drf_router.register(r'rest/v1/catalogs/product_quality_kind', ProductQualityKind
 drf_router.register(r'rest/v1/catalogs/product_mass_volume_kind', ProductMassVolumeKindViewSet, basename='product_mass_volume_kind')
 drf_router.register(r'rest/v1/catalogs/product_variety', ProductVarietyViewSet, basename='product_variety')
 drf_router.register(r'rest/v1/catalogs/provider', ProviderViewSet, basename='provider')
+drf_router.register(r'rest/v1/catalogs/supply', SupplyViewSet, basename='supply')
 drf_router.register(r'rest/v1/catalogs/vehicle', VehicleViewSet, basename='vehicle')
 drf_router.register(r'rest/v1/catalogs/harvesting_crew_provider', HarvestingCrewProviderViewSet, basename='harvesting_crew_provider')
 drf_router.register(r'rest/v1/catalogs/crew_chief', CrewChiefViewSet, basename='crew_chief')
