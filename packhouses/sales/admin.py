@@ -10,22 +10,21 @@ from adminsortable2.admin import SortableAdminMixin
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from common.base.mixins import ByOrganizationAdminMixin
-from packhouses.catalogs.models import Client, Market
+from packhouses.catalogs.models import Client, Maquiladora
 from .models import Order
 from django.utils.safestring import mark_safe
 from common.forms import SelectWidgetWithData
-
-
-
 
 
 # Register your models here.
 
 @admin.register(Order)
 class OrderAdmin(ByOrganizationAdminMixin):
-    fields = ('ooid', 'market', 'country', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms', 'observations', 'order_status')
-    list_display = ('ooid', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'incoterms', 'order_status')
-    list_filter = ('ooid', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'incoterms', 'order_status')
+    list_display = ('ooid', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'incoterms', 'status')
+    list_filter = ('ooid', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'incoterms', 'status')
+    fields = (
+    'ooid', 'client_category', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery',
+    'incoterms', 'observations', 'status')
     ordering = ('-ooid',)
 
     readonly_fields = ('ooid',)
@@ -40,63 +39,39 @@ class OrderAdmin(ByOrganizationAdminMixin):
             return self.readonly_fields
 
         # Si el pedido no está abierto, todos los campos son readonly
-        if obj.order_status != 'opened':
+        if obj.order_status in ['closed', 'canceled']:
             return tuple(self.fields) + ('rendered_observations',)
 
         return self.readonly_fields
 
     def get_fields(self, request, obj=None):
         fields = list(super().get_fields(request, obj))
-        if obj and obj.order_status != 'opened':
+        if obj and obj.order_status in ['closed', 'canceled']:
             # Reemplazar 'observations' con 'rendered_observations' en modo readonly
             fields[fields.index('observations')] = 'rendered_observations'
         return fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
         organization = getattr(request, 'organization', None)
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = Order.objects.get(id=object_id) if object_id else None
+        queryset_organization_filter = {"organization": organization, "is_enabled": True}
 
-        if db_field.name == "market":
-            if organization:
-                queryset = Market.objects.filter(organization=organization, is_enabled=True)
-            elif obj:
-                queryset = Market.objects.filter(organization_id=obj.client.organization_id, is_enabled=True)
-            else:
-                queryset = Market.objects.filter(is_enabled=True)
+        client_category = request.POST.get('client_category') if request.POST else obj.client_category if obj else None
+        client = request.POST.get('client') if request.POST else obj.client if obj else None
 
-            kwargs["queryset"] = queryset
-            kwargs["widget"] = SelectWidgetWithData(Market, 'is_foreign')
+        if db_field.name == "maquiladora":
 
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            kwargs["queryset"] = Maquiladora.objects.filter()
             formfield.label_from_instance = lambda item: item.name
-            return formfield
-
-
-        if db_field.name == "country":
-            market_id = request.POST.get('market') if request.POST else (obj.client.market_id if obj else None)
-            if market_id:
-                market_countries_id = Market.objects.get(id=market_id).countries.values_list('id', flat=True)
-                kwargs["queryset"] = Country.objects.filter(id__in=market_countries_id)
-            else:
-                kwargs["queryset"] = Country.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda item: item.name
-            return formfield
 
         if db_field.name == "client":
-            country_id = request.POST.get('country') if request.POST else (obj.country_id if obj else None)
-            if country_id:
-                kwargs["queryset"] = Client.objects.filter(country_id=country_id)
-            else:
-                kwargs["queryset"] = Client.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            queryset_filter = {"organization": organization, "category": client_category, "is_enabled": True}
+            kwargs["queryset"] = Client.objects.filter(**queryset_filter) if client_category else Client.objects.none()
             formfield.label_from_instance = lambda item: item.name
-            if obj and obj.client:
-                formfield.initial = obj.client.id
-            return formfield
 
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        return formfield
 
     class Media:
         js = ('js/admin/forms/packhouses/sales/order.js',)

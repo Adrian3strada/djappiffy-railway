@@ -32,3 +32,7 @@ admin.site.register(OrganizationUser, CustomOrganizationUserAdmin)
 admin.site.unregister(Document)
 admin.site.unregister(Image)
 admin.site.unregister(Tag)
+
+# Quitar los siguientes solo para demo o producción, no para desarrollo
+admin.site.unregister(ProductKind)
+
