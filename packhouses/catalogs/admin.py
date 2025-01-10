@@ -10,7 +10,8 @@ from .models import (
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
     MeshBag, Service, AuthorityBoxKind, BoxKind, WeighingScale, ColdChamber,
-    Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
+    Pallet, PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense, 
+    ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary
 )
@@ -1099,11 +1100,32 @@ class ColdChamberAdmin(ByOrganizationAdminMixin):
 class PalletAdmin(admin.ModelAdmin):
     pass
 
+class PalletConfigurationSupplyExpenseInLine(admin.StackedInline):
+    model = PalletConfigurationSupplyExpense
+    extra = 0
 
-@admin.register(PalletExpense)
-class PalletExpenseAdmin(admin.ModelAdmin):
-    pass
+class PalletConfigurationPersonalExpenseInline(admin.StackedInline):
+    model = PalletConfigurationPersonalExpense
+    extra = 0
 
+@admin.register(PalletConfiguration)
+class PalletConfigurationAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'alias', 'total_boxes', 'total_kg', 'creation_date', 'is_enabled')
+    list_filter = ('is_enabled',)
+    fields = ('name', 'alias', 'total_boxes', 'total_kg' ,'pallet_cost', 'is_enabled')
+    inlines = [PalletConfigurationSupplyExpenseInLine,PalletConfigurationPersonalExpenseInline]
+    
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('alias')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+    
+    def save_related(self, request, form, formsets, change):
+        return super().save_related(request, form, formsets, change)
+        form.instance.get_pallet_cost()
+        form.instance.save()
+    
 
 @admin.register(ProductPackaging)
 class ProductPackagingAdmin(admin.ModelAdmin):
