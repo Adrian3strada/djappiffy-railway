@@ -754,7 +754,7 @@ class OrchardAdmin(ByOrganizationAdminMixin):
     list_filter = ('category', 'safety_authority_registration_date', 'is_enabled')
     search_fields = ('name', 'code', 'producer__name')
     fields = ('name', 'code', 'category', 'product',  'producer', 'safety_authority_registration_date', 'state', 'city', 'district', 'ha',
-              'product_classification_kind', 'sanitary_certificate', 'is_enabled')
+              'sanitary_certificate', 'is_enabled')
     inlines = [OrchardCertificationInline]
 
     def get_category(self, obj):
@@ -1014,13 +1014,13 @@ class WeighingScaleAdmin(ByOrganizationAdminMixin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
-    
+
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj, exclude=[City, Organization]):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
-    
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
         obj = WeighingScale.objects.get(id=obj_id) if obj_id else None

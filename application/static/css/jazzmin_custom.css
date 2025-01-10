@@ -132,10 +132,13 @@ body.jazzmin-login-page{
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
-  color: #ffc107 !important;
+  color: #fff !important;
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
   border-right: 1px solid #ffc107 !important;
   color: #FFF !important;
+}
+.main-footer .float-right {
+  display: none !important;
 }
