@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateProductVarietySize() {
     const productVarietyId = productVarietyField.val();
     if (productVarietyId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_size/?is_enabled=1`)
+      fetchOptions(`${API_BASE_URL}/catalogs/product_size/?product_varieties=${productVarietyId}`)
         .then(data => {
           updateFieldOptions(productVarietySizeField, data)
         });
