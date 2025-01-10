@@ -371,7 +371,9 @@ JAZZMIN_SETTINGS = {
                               "catalogs.Maquiladora",
                               "catalogs.Orchard",
                               "catalogs.HarvestingCrew",
-                              "catalogs.Crew", "catalogs.Supply",],
+                              "catalogs.Crew", "catalogs.Supply",
+                              "catalogs.Service",
+                              "catalogs.WeighingScale"],
 
     # Custom links to append to app groups, keyed on app name
     "custom_links": {
