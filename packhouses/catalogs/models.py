@@ -556,8 +556,7 @@ class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     zone = models.CharField(max_length=200, verbose_name=_('Zone'))
     tax_registry_code = models.CharField(max_length=20, verbose_name=_('Tax registry code'))
-    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True,
-                                                blank=True)
+    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True, blank=True)
     social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)

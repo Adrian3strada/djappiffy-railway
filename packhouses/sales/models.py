@@ -7,6 +7,7 @@ from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from .utils import order_status_choices, local_delivery_choices
+from common.settings import STATUS_CHOICES
 
 from common.mixins import (
     IncotermsAndLocalDeliveryMarketMixin
@@ -24,17 +25,17 @@ from ..catalogs.settings import CLIENT_KIND_CHOICES
 
 class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_("Order Number"))
-    client_kind = models.CharField(max_length=20, verbose_name=_('Client Kind'), choices=CLIENT_KIND_CHOICES)
+    client_category = models.CharField(max_length=20, verbose_name=_('Client category'), choices=CLIENT_KIND_CHOICES)
     maquiladora = models.ForeignKey(Maquiladora, verbose_name=_("Maquiladora"), on_delete=models.PROTECT, null=True, blank=False)
     client = models.ForeignKey(Client, verbose_name=_("Client"), on_delete=models.PROTECT)
-    registration_date = models.DateField(verbose_name=_('Registration Date'), default=datetime.date.today)
-    shipment_date = models.DateField(verbose_name=_('Shipment Date'), default=datetime.date.today)
-    delivery_date = models.DateField(verbose_name=_('Delivery Date'))
-    local_delivery = models.ForeignKey(LocalDelivery, verbose_name=_('Local Delivery'), on_delete=models.PROTECT, null=True, blank=False)
+    registration_date = models.DateField(verbose_name=_('Registration date'), default=datetime.date.today)
+    shipment_date = models.DateField(verbose_name=_('Shipment date'), default=datetime.date.today)
+    delivery_date = models.DateField(verbose_name=_('Delivery date'))
+    local_delivery = models.ForeignKey(LocalDelivery, verbose_name=_('Local delivery'), on_delete=models.PROTECT, null=True, blank=False)
     incoterms = models.ForeignKey(Incoterm, verbose_name=_('Incoterms'), on_delete=models.PROTECT, null=True, blank=True)
     observations = CKEditor5Field(blank=True, null=True, verbose_name=_('Observations'))
-    order_status = models.CharField(max_length=8, verbose_name=_('Status'), choices=order_status_choices())
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
+    status = models.CharField(max_length=8, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'))
 
     def __str__(self):

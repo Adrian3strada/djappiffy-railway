@@ -126,8 +126,6 @@ class ProviderViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-
-
 class VehicleViewSet(viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
     filterset_fields = ['category', 'is_enabled']
@@ -176,4 +174,10 @@ class ClientViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return Client.objects.filter(organization=self.request.organization)
+        queryset = Client.objects.filter(organization=self.request.organization)
+
+        category = self.request.GET.get('category')
+        if category:
+            queryset = queryset.filter(category=category)
+
+        return queryset
