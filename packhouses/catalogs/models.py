@@ -193,20 +193,19 @@ class ProductHarvestSizeKind(CleanProductMixin, models.Model):
         ]
 
 
-class ProductQualityKind(CleanNameAndProductMixin, models.Model):
+class ProductSeasonKind(CleanNameAndProductMixin, models.Model):
     # Normal, roña, etc
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    has_performance = models.BooleanField(default=True, verbose_name=_('Take it for performance calculation'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
 
     class Meta:
-        verbose_name = _('Product quality kind')
-        verbose_name_plural = _('Product quality kinds')
+        verbose_name = _('Product season kind')
+        verbose_name_plural = _('Product season kinds')
         ordering = ('product', 'order',)
         constraints = [
-            models.UniqueConstraint(fields=['name', 'product'], name='productqualitykind_unique_name_product'),
+            models.UniqueConstraint(fields=['name', 'product'], name='productseasonkind_unique_name_product'),
         ]
 
 
@@ -240,7 +239,7 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     product_harvest_size_kind = models.ForeignKey(ProductHarvestSizeKind,
                                                   verbose_name=_('Harvest size kind'),
                                                   on_delete=models.PROTECT)
-    product_quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Quality kind'),
+    product_season_kind = models.ForeignKey(ProductSeasonKind, verbose_name=_('Season kind'),
                                              on_delete=models.PROTECT)  # Normal, roña, etc
     product_mass_volume_kind = models.ForeignKey(ProductMassVolumeKind, verbose_name=_('Mass volume kind'),
                                                  on_delete=models.PROTECT,
@@ -581,6 +580,7 @@ class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
 class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     code = models.CharField(max_length=100, verbose_name=_('Registry code'))
+    product = models.ManyToManyField(Product, verbose_name=_('Product'), blank=True,)
     producer = models.ForeignKey(Provider, verbose_name=_('Producer'), on_delete=models.PROTECT)
     safety_authority_registration_date = models.DateField(verbose_name=_('Safety authority registration date'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
@@ -593,6 +593,9 @@ class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
     sanitary_certificate = models.CharField(max_length=100, verbose_name=_('Sanitary certificate'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.code} - {self.name}"
 
     class Meta:
         verbose_name = _('Orchard')

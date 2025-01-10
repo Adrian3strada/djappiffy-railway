@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const marketsField = $('#id_markets');
   const marketStandardProductSizeField = $('#id_market_standard_product_size');
   const productHarvestSizeKindField = $('#id_product_harvest_size_kind');
-  const productQualityKindField = $('#id_product_quality_kind');
+  const productSeasonKindField = $('#id_product_season_kind');
   const productMassVolumeKindField = $('#id_product_mass_volume_kind');
 
   const nameField = $('#id_name');
@@ -84,15 +84,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function updateProductQualityKind() {
+  function updateProductSeasonKind() {
     const productId = productField.val();
     if (productId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_quality_kind/?product=${productId}`)
+      fetchOptions(`${API_BASE_URL}/catalogs/product_season_kind/?product=${productId}`)
         .then(data => {
-          updateFieldOptions(productQualityKindField, data);
+          updateFieldOptions(productSeasonKindField, data);
         });
     } else {
-      updateFieldOptions(productQualityKindField, []);
+      updateFieldOptions(productSeasonKindField, []);
     }
   }
 
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
   productField.on('change', () => {
     updateProductVariety()
     updateProductHarvestSizeKind();
-    updateProductQualityKind();
+    updateProductSeasonKind();
     updateProductMassVolumeKind();
   });
 
@@ -174,11 +174,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  [productField, productVarietiesField, marketsField, marketStandardProductSizeField, productHarvestSizeKindField, productQualityKindField, productMassVolumeKindField].forEach(field => field.select2());
+  [productField, productVarietiesField, marketsField, marketStandardProductSizeField, productHarvestSizeKindField, productSeasonKindField, productMassVolumeKindField].forEach(field => field.select2());
   if (!productField.val()) {
     updateProductVariety();
     updateProductHarvestSizeKind();
-    updateProductQualityKind();
+    updateProductSeasonKind();
     updateProductMassVolumeKind();
     if (!marketStandardProductSizeField.val()) toggleFieldVisibility(marketStandardProductSizeField, true);
   }

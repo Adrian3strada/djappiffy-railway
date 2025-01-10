@@ -90,6 +90,7 @@ INSTALLED_APPS = [
     "packhouses.packhouse_settings",
     "packhouses.catalogs",
     "packhouses.sales",
+    "packhouses.gathering",
 
     "eudr.parcels",
 
@@ -400,6 +401,9 @@ JAZZMIN_SETTINGS = {
         "base": "fas fa-database",
         "export_catalogs": "fas fa-truck-moving",
         "firebase_auth": "fas fa-fire",
+        "gathering": "fas fa-tractor",
+        "sales": "fas fa-dollar-sign",
+        "parcels": "fas fa-map-marked-alt",
 
     },
     # Icons that are used when one is not manually specified
