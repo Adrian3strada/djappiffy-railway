@@ -1100,6 +1100,17 @@ class ColdChamberAdmin(ByOrganizationAdminMixin):
 class PalletAdmin(admin.ModelAdmin):
     pass
 
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+
+@receiver(post_save, sender=PalletConfigurationPersonalExpense)
+@receiver(post_save, sender=PalletConfigurationSupplyExpense)
+@receiver(post_delete, sender=PalletConfigurationPersonalExpense)
+@receiver(post_delete, sender=PalletConfigurationSupplyExpense)
+def pallet_cost(sender, instance, **kwargs):
+    print(".....",instance)
+    instance.pallet_configuration.get_pallet_cost()
+
 class PalletConfigurationSupplyExpenseInLine(admin.StackedInline):
     model = PalletConfigurationSupplyExpense
     extra = 0

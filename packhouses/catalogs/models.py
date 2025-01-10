@@ -992,12 +992,14 @@ class PalletConfiguration(CleanNameOrAliasAndOrganizationMixin, models.Model):
     
     def get_pallet_cost(self):
         total_personal_expense = sum(
-                    cost.quantity * cost.unit_price for cost in self.pallet_configuration_personal_expense.all()
+                    cost.quantity * cost.unit_cost for cost in self.pallet_configuration_personal_expense.all()
                 ) if self.pallet_configuration_personal_expense.exists() else 0
 
         total_supply_expense = sum(
-                    cost.quantity * cost.unit_price for cost in self.pallet_configuration_supply_expense.all()
+                    cost.quantity * cost.unit_cost for cost in self.pallet_configuration_supply_expense.all()
                     ) if self.pallet_configuration_supply_expense.exists() else 0
+        self.total_personal_expense = total_personal_expense
+        self.total_personal_expense = total_personal_expense
         self.pallet_cost = total_personal_expense + total_supply_expense
 
     class Meta:
@@ -1017,8 +1019,7 @@ class PalletConfigurationSupplyExpense(models.Model):
                                              related_name="pallet_configuration_supply_expense")
 
     def __str__(self):
-        total = self.quantity * self.unit_cost
-        return total
+        return f"{self.supply}"
 
     class Meta: 
         verbose_name = _('Supply Expense')
@@ -1035,7 +1036,7 @@ class PalletConfigurationPersonalExpense(models.Model):
                                              related_name="pallet_configuration_personal_expense")
 
     def __str__(self):
-        return f"{self.name} ({self.quantity} x {self.unit_cost})"
+        return f"{self.name}"
     
     class Meta:
         verbose_name = _('Personal Expense')
