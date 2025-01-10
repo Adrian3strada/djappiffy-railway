@@ -12,11 +12,12 @@ from .models import (
     MeshBag, Service, AuthorityPackagingKind, PackagingKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary
+    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, InsideSupply
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
-                                                  VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier
+                                                  VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier,
+                                                  SupplyKind
                                                   )
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
@@ -979,9 +980,59 @@ class AuthorityPackagingKindAdmin(ByOrganizationAdminMixin):
         return form
 
 
-@admin.register(BoxKind)
-class BoxKindAdmin(admin.ModelAdmin):
-    pass
+class InsideSuppliesInline(admin.TabularInline):
+    model = InsideSupply
+    min_num = 0
+    extra = 0
+    list_display = ('internal_supply_kind', 'internal_supply', 'quantity')
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+
+@admin.register(PackagingKind)
+class PackagingKindAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'external_supply', 'is_enabled')
+    fields = ('name',
+              'external_supply_kind', 'external_supply',
+              'max_product_kg_per_package', 'avg_tare_kg_per_package',
+              'authority', 'code',
+              'is_enabled')
+    inlines = [InsideSuppliesInline]
+
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = PackagingKind.objects.get(id=obj_id) if obj_id else None
+
+        organization = request.organization if hasattr(request, 'organization') else None
+        external_supply_kind = request.POST.get('external_supply_kind') if request.POST else obj.external_supply_kind if obj else None
+
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+        supplykind_queryfilter = {'organization': organization, 'is_packaging': True, 'is_enabled': True}
+        supply_queryfilter = {'organization': organization, 'kind': external_supply_kind, 'is_enabled': True}
+
+        print(db_field.name)
+        if db_field.name == 'authority':
+            kwargs['queryset'] = AuthorityPackagingKind.objects.filter(**organization_queryfilter)
+
+        if db_field.name == "external_supply_kind":
+            kwargs["queryset"] = SupplyKind.objects.filter(**supplykind_queryfilter)
+        if db_field.name == "external_supply":
+            if external_supply_kind:
+                kwargs["queryset"] = Supply.objects.filter(**supply_queryfilter)
+            else:
+                kwargs["queryset"] = Supply.objects.none()
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/package_kinds.js',)
 
 
 @admin.register(WeighingScale)
