@@ -122,7 +122,7 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
 
 class ProductSizeViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSizeSerializer
-    filterset_fields = ['product', 'is_enabled']
+    filterset_fields = ['product', 'product_varieties', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
