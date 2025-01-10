@@ -1013,22 +1013,20 @@ class PalletExpense(models.Model):
 
 # configuración de productos
 
-class ProductPackaging(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
-    boxes_quantity = models.PositiveIntegerField(verbose_name=_('Boxes quantity'))
-    kg_amount = models.FloatField(verbose_name=_('Kg amount'))
-    kg_tare = models.FloatField(verbose_name=_('Kg tare'))
+
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    box_kind = models.ForeignKey(BoxKind, verbose_name=_('Box kind'),
-                                 on_delete=models.PROTECT)  # TODO: detallar tipos de caja por tipo de producto?
+    market_class = models.ForeignKey(MarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
+
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
     product_variety_size = models.ForeignKey(ProductSize, verbose_name=_('Product variety size'),
                                              on_delete=models.PROTECT)
-    kg_per_box = models.FloatField(verbose_name=_('Kg per box'))
-    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT,
-                               related_name='product_packaging_supplies')
+
+    packaging_kind = models.ForeignKey(PackagingKind, verbose_name=_('Packaging kind'),
+                                       on_delete=models.PROTECT)  # TODO: detallar tipos de caja por tipo de producto?
     is_dark = models.BooleanField(default=False, verbose_name=_('Is dark'))
     provisional_cost = models.FloatField(verbose_name=_('provisional cost'))
     provisional_price = models.FloatField(verbose_name=_('provisional price'))
@@ -1037,7 +1035,7 @@ class ProductPackaging(models.Model):
                                     related_name='product_packaging_supplies_trays')
     # TODO: agregar campo para tipo de malla, o no se que va aquí pero falta uno
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name}"
