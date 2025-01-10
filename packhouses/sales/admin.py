@@ -23,7 +23,7 @@ from common.forms import SelectWidgetWithData
 
 @admin.register(Order)
 class OrderAdmin(ByOrganizationAdminMixin):
-    fields = ('ooid', 'market', 'country', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms', 'observations', 'order_status')
+    fields = ('ooid', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms', 'observations', 'order_status')
     list_display = ('ooid', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'incoterms', 'order_status')
     list_filter = ('ooid', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'incoterms', 'order_status')
     ordering = ('-ooid',)
