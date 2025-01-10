@@ -77,10 +77,6 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
     def __str__(self):
         return f"#{self.ooid} - {self.client} - SHIPMENT: {self.shipment_date} - DELIVERY: {self.delivery_date}"
 
-    class Meta:
-        verbose_name = _('Order')
-        verbose_name_plural = _('Orders')
-
     def save(self, *args, **kwargs):
         if not self.ooid:
             # Usar transacción y bloqueo de fila para evitar condiciones de carrera
@@ -91,4 +87,8 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
                 else:
                     self.ooid = 1
         super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('Order')
+        verbose_name_plural = _('Orders')
 

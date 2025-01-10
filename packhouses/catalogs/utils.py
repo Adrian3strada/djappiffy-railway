@@ -44,3 +44,9 @@ def get_provider_categories_choices():
         ('product_producer', _('Product producer')),
     ]
 
+def get_harvest_cutting_categories_choices():
+    return [
+        ('gathering', _('Gathering')),
+        ('maquila', _('Maquila')),
+    ]
+

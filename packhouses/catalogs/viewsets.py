@@ -4,10 +4,10 @@ from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
-                          ProductQualityKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer,
+                          ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer)
 from .models import (MarketStandardProductSize, Market, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
-                     ProductHarvestSizeKind, ProductQualityKind, ProductMassVolumeKind, Client, Provider, Product)
+                     ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Provider, Product)
 
 
 class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
@@ -42,8 +42,8 @@ class ProductHarvestSizeKindViewSet(viewsets.ModelViewSet):
         return ProductHarvestSizeKind.objects.filter(product__organization=self.request.organization)
 
 
-class ProductQualityKindKindViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductQualityKindSerializer
+class ProductSeasonKindKindViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductSeasonKindSerializer
     filterset_fields = ['product', 'is_enabled']
     pagination_class = None
 
@@ -52,7 +52,7 @@ class ProductQualityKindKindViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return ProductQualityKind.objects.filter(product__organization=self.request.organization)
+        return ProductSeasonKind.objects.filter(product__organization=self.request.organization)
 
 
 class ProductMassVolumeKindViewSet(viewsets.ModelViewSet):

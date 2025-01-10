@@ -1,7 +1,7 @@
 from django.contrib import admin
 from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
-from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductQualityKind, ProductMassVolumeKind,
+from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind,
                      Gatherer,
                      Provider, Client,
                      Maquiladora, WeighingScale
@@ -111,13 +111,13 @@ class ByProductHarvestSizeKindForOrganizationFilter(admin.SimpleListFilter):
         return queryset
 
 
-class ByProductQualityKindForOrganizationFilter(admin.SimpleListFilter):
-    title = _('Quality Kind')
-    parameter_name = 'product_quality_kind'
+class ByProductSeasonKindForOrganizationFilter(admin.SimpleListFilter):
+    title = _('Season')
+    parameter_name = 'product_season_kind'
 
     def lookups(self, request, model_admin):
-        product_quality_kinds = ProductQualityKind.objects.filter(product__organization=request.organization, is_enabled=True)
-        return [(product_quality_kind.id, f"{product_quality_kind.product.name}: {product_quality_kind.name}") for product_quality_kind in product_quality_kinds]
+        product_season_kinds = ProductSeasonKind.objects.filter(product__organization=request.organization, is_enabled=True)
+        return [(product_season_kind.id, f"{product_season_kind.product.name}: {product_season_kind.name}") for product_season_kind in product_season_kinds]
 
     def queryset(self, request, queryset):
         if self.value():
