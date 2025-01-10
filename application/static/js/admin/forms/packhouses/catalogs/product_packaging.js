@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const marketClassField = $('#id_market_class');
   const productField = $('#id_product');
   const productVarietyField = $('#id_product_variety');
+  const productVarietySizeField = $('#id_product_variety_size');
 
   const API_BASE_URL = '/rest/v1';
 
@@ -42,7 +43,19 @@ document.addEventListener('DOMContentLoaded', function () {
           updateFieldOptions(productVarietyField, data)
         });
     } else {
-      updateFieldOptions(marketClassField, [])
+      updateFieldOptions(productVarietyField, [])
+    }
+  }
+
+  function updateProductVarietySize() {
+    const productVarietyId = productVarietyField.val();
+    if (productVarietyId) {
+      fetchOptions(`${API_BASE_URL}/catalogs/product_size/?is_enabled=1`)
+        .then(data => {
+          updateFieldOptions(productVarietySizeField, data)
+        });
+    } else {
+      updateFieldOptions(productVarietySizeField, [])
     }
   }
 
@@ -54,5 +67,10 @@ document.addEventListener('DOMContentLoaded', function () {
     updateProductVariety();
   });
 
-  [marketField, marketClassField].forEach(field => field.select2());
+  productVarietyField.on('change', function () {
+    updateProductVarietySize();
+  });
+
+  [marketField, marketClassField,
+    productField, productVarietyField, productVarietySizeField].forEach(field => field.select2());
 });
