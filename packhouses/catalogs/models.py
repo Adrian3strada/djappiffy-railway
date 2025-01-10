@@ -848,13 +848,13 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
     service_provider = models.ForeignKey(Provider, verbose_name=_('Provider'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-    
+
     class Meta:
         verbose_name = _('Service')
         verbose_name_plural = _('Services')
         ordering = ('name',)
         constraints = [
-            models.UniqueConstraint(fields=('name', 'service_provider', 'organization'), 
+            models.UniqueConstraint(fields=('name', 'service_provider', 'organization'),
                                     name='service_unique_name_service_provider_organization'),
         ]
 
@@ -1028,11 +1028,6 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     packaging_kind = models.ForeignKey(PackagingKind, verbose_name=_('Packaging kind'),
                                        on_delete=models.PROTECT)  # TODO: detallar tipos de caja por tipo de producto?
     is_dark = models.BooleanField(default=False, verbose_name=_('Is dark'))
-    provisional_cost = models.FloatField(verbose_name=_('provisional cost'))
-    provisional_price = models.FloatField(verbose_name=_('provisional price'))
-    market_class = models.ForeignKey(MarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
-    supply_tray = models.ForeignKey(Supply, verbose_name=_('Supply tray'), on_delete=models.PROTECT,
-                                    related_name='product_packaging_supplies_trays')
     # TODO: agregar campo para tipo de malla, o no se que va aquí pero falta uno
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
