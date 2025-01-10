@@ -20,8 +20,8 @@ from django.core.exceptions import ValidationError
 from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
-                                                  OrchardProductClassificationKind, OrchardCertificationVerifier,
-                                                  OrchardCertificationKind, SupplyKind, SupplyPresentationKind)
+                                                  OrchardCertificationVerifier,
+                                                  OrchardCertificationKind)
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, ProductVariety,
                                         Market, ProductSeasonKind, ProductHarvestSizeKind, WeighingScale)
