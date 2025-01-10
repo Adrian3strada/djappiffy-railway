@@ -1100,16 +1100,6 @@ class ColdChamberAdmin(ByOrganizationAdminMixin):
 class PalletAdmin(admin.ModelAdmin):
     pass
 
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
-
-@receiver(post_save, sender=PalletConfigurationPersonalExpense)
-@receiver(post_save, sender=PalletConfigurationSupplyExpense)
-@receiver(post_delete, sender=PalletConfigurationPersonalExpense)
-@receiver(post_delete, sender=PalletConfigurationSupplyExpense)
-def pallet_cost(sender, instance, **kwargs):
-    print(".....",instance)
-    instance.pallet_configuration.get_pallet_cost()
 
 class PalletConfigurationSupplyExpenseInLine(admin.StackedInline):
     model = PalletConfigurationSupplyExpense
@@ -1121,21 +1111,18 @@ class PalletConfigurationPersonalExpenseInline(admin.StackedInline):
 
 @admin.register(PalletConfiguration)
 class PalletConfigurationAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'alias', 'total_boxes', 'total_kg', 'creation_date', 'is_enabled')
+    list_display = ('name', 'alias', 'market', 'product')
     list_filter = ('is_enabled',)
-    fields = ('name', 'alias', 'total_boxes', 'total_kg' ,'pallet_cost', 'is_enabled')
+    fields = ('name', 'alias', 'market', 'product', 'product_varieties', 'product_variety_size', 'box_kind', 'maximum_boxes_per_pallet', 'maximum_kg_per_pallet',
+              'kg_tare', 'kg_per_box', 'is_dark', 'product_quality_kind', 'supply_tray', 'pallet_cost', 'is_enabled')
     inlines = [PalletConfigurationSupplyExpenseInLine,PalletConfigurationPersonalExpenseInline]
     
     @uppercase_form_charfield('name')
-    @uppercase_form_charfield('alias')
+    @uppercase_alphanumeric_form_charfield('alias')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
     
-    def save_related(self, request, form, formsets, change):
-        return super().save_related(request, form, formsets, change)
-        form.instance.get_pallet_cost()
-        form.instance.save()
     
 
 @admin.register(ProductPackaging)
