@@ -2,11 +2,11 @@ from itertools import product
 
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
-from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer, VehicleSerializer,
+from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer, MarketClassSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer, SupplySerializer,
                           ProductQualityKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer)
-from .models import (MarketStandardProductSize, Market, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
+from .models import (MarketStandardProductSize, Market, MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductQualityKind, ProductMassVolumeKind, Client, Provider, Product, Supply)
 
 
@@ -79,6 +79,19 @@ class MarketViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return Market.objects.filter(organization=self.request.organization)
+
+
+class MarketClassViewSet(viewsets.ModelViewSet):
+    serializer_class = MarketClassSerializer
+    filterset_fields = ['market', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return MarketClass.objects.all()
 
 
 class ProductViewSet(viewsets.ModelViewSet):
