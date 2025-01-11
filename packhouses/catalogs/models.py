@@ -550,26 +550,26 @@ class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
         ordering = ('name',)
 
 
-
 class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     zone = models.CharField(max_length=200, verbose_name=_('Zone'))
-    tax_registry_code = models.CharField(max_length=20, verbose_name=_('Tax registry code'))
-    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True, blank=True)
-    social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
+    tax_id = models.CharField(max_length=20, verbose_name=_('Tax ID'))
+    # population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True, blank=True)
+    # social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT)
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
-    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'), null=True, blank=True)
-    address = models.CharField(max_length=255, verbose_name=_('Address'), null=True, blank=True)
-    external_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    address = models.CharField(max_length=255, verbose_name=_('Address'))
+    external_number = models.CharField(max_length=10, verbose_name=_('External number'))
     internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    email = models.EmailField(null=True, blank=True)
-    phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-    maquiladora_client = models.ManyToManyField(Client, verbose_name=_('Maquiladora Client'), blank=True)
+    maquiladora_clients = models.ManyToManyField(Client, verbose_name=_('Maquiladora clients'), blank=False,
+                                                 help_text=_('Clients associated with this maquiladora, it must be created before at Catalogs:Clients section.'))
 
     class Meta:
         verbose_name = _('Maquiladora')

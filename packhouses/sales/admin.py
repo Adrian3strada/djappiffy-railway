@@ -20,14 +20,23 @@ from common.forms import SelectWidgetWithData
 
 @admin.register(Order)
 class OrderAdmin(ByOrganizationAdminMixin):
-    list_display = ('ooid', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'incoterms', 'status')
-    list_filter = ('ooid', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'incoterms', 'status')
+    list_display = ('ooid', 'client_category', 'maquiladora', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms', 'status')
+    list_filter = ('ooid', 'client_category', 'maquiladora', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms', 'status')
     fields = (
-    'ooid', 'client_category', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery',
+    'ooid', 'client_category', 'maquiladora', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery',
     'incoterms', 'observations', 'status')
     ordering = ('-ooid',)
 
     readonly_fields = ('ooid',)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['client'].widget.can_add_related = False
+        form.base_fields['client'].widget.can_change_related = False
+        form.base_fields['client'].widget.can_delete_related = False
+
+
+        return form
 
     def rendered_observations(self, obj):
         return mark_safe(obj.observations) if obj and obj.observations else ""
@@ -52,7 +61,6 @@ class OrderAdmin(ByOrganizationAdminMixin):
         return fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
         organization = getattr(request, 'organization', None)
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = Order.objects.get(id=object_id) if object_id else None
@@ -62,16 +70,16 @@ class OrderAdmin(ByOrganizationAdminMixin):
         client = request.POST.get('client') if request.POST else obj.client if obj else None
 
         if db_field.name == "maquiladora":
+            kwargs["queryset"] = Maquiladora.objects.none()
+            if client_category and client_category == 'maquiladora':
+                kwargs["queryset"] = Maquiladora.objects.filter(**queryset_organization_filter)
 
-            kwargs["queryset"] = Maquiladora.objects.filter()
-            formfield.label_from_instance = lambda item: item.name
 
         if db_field.name == "client":
             queryset_filter = {"organization": organization, "category": client_category, "is_enabled": True}
             kwargs["queryset"] = Client.objects.filter(**queryset_filter) if client_category else Client.objects.none()
-            formfield.label_from_instance = lambda item: item.name
 
-        return formfield
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
         js = ('js/admin/forms/packhouses/sales/order.js',)
