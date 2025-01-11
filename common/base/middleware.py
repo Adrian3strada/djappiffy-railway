@@ -75,6 +75,7 @@ class SubdomainDetectionMiddleware:
                 )
                 request.session['organization_id'] = requested_organization.id
                 request.organization = requested_organization
+                request.organization_settings = requested_settings
             except Organization.DoesNotExist:
                 raise Http404
 
