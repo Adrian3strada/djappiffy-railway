@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   const clientCategoryField = $("#id_client_category");
+  const maquiladoraField = $("#id_maquiladora");
   const clientField = $("#id_client");
   const incotermsField = $("#id_incoterms").closest(".field-incoterms");
   const localDeliveryField = $("#id_local_delivery").closest(".field-local_delivery");
@@ -9,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const API_BASE_URL = "/rest/v1";
 
   function updateFieldOptions(field, options) {
+    console.log("updateFieldOptions", field, options)
     field.empty();
     field.append(new Option("---------", "", true, true));
     options.forEach((option) => {
@@ -27,11 +29,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function updateClientOptions() {
     const clientCategory = clientCategoryField.val();
-    if (clientCategory) {
+    if (clientCategory && clientCategory === 'packhouse') {
       fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&is_enabled=1`).then(
         (data) => {
           console.log("Client options:", data);
           updateFieldOptions(clientField, data);
+        }
+      );
+    }
+  }
+
+  function updateMaquiladoraClientOptions() {
+    const clientCategory = clientCategoryField.val();
+    const maquiladora = maquiladoraField.val()
+    if (clientCategory && clientCategory === 'maquiladora' && maquiladora) {
+      fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&maquiladora=${maquiladora}&is_enabled=1`).then(
+        (data) => {
+          console.log("Maquiladora Client options:", data);
+          updateFieldOptions(clientField, data);
+        }
+      );
+    }
+  }
+
+  function updateMaquiladoraOptions() {
+    const clientCategory = clientCategoryField.val();
+    if (clientCategory && clientCategory === 'maquiladora') {
+      fetchOptions(`${API_BASE_URL}/catalogs/maquiladora/?is_enabled=1`).then(
+        (data) => {
+          console.log("Maquiladora options:", data);
+          updateFieldOptions(maquiladoraField, data);
         }
       );
     }
@@ -56,9 +83,36 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  clientCategoryField.on("change", updateClientOptions);
+  clientCategoryField.on("change", () => {
+    if (clientCategoryField.val() && clientCategoryField.val() === 'packhouse') {
+      updateClientOptions()
+      maquiladoraField.closest('.form-group').fadeOut();
+    } else if (clientCategoryField.val() && clientCategoryField.val() === 'maquiladora') {
+      updateMaquiladoraOptions()
+      maquiladoraField.closest('.form-group').fadeIn();
+      updateFieldOptions(clientField, []);
+    } else {
+      updateFieldOptions(maquiladoraField, []);
+      updateFieldOptions(clientField, []);
+      maquiladoraField.closest('.form-group').fadeOut();
+    }
+  });
+
+  maquiladoraField.on("change", () => {
+    const maquiladora = maquiladoraField.val()
+    if (maquiladora) {
+      updateMaquiladoraClientOptions()
+    }
+  });
 
 
-  [clientField].forEach((field) => field.select2());
+  maquiladoraField.closest('.form-group').hide();
+
+  if (clientCategoryField.val() && clientCategoryField.val() === 'maquiladora') {
+    maquiladoraField.closest('.form-group').show();
+  } else {
+    maquiladoraField.closest('.form-group').hide();
+    maquiladoraField.val(null)
+  }
 
 });
