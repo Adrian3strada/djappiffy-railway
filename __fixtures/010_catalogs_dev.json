@@ -1,153 +1,5 @@
 [
 {
-  "model": "catalogs.productqualitykind",
-  "pk": 1,
-  "fields": {
-    "name": "NORMAL",
-    "has_performance": true,
-    "is_enabled": true,
-    "product": 1,
-    "order": 0
-  }
-},
-{
-  "model": "catalogs.productqualitykind",
-  "pk": 2,
-  "fields": {
-    "name": "DESECHO",
-    "has_performance": true,
-    "is_enabled": true,
-    "product": 1,
-    "order": 1
-  }
-},
-{
-  "model": "catalogs.productqualitykind",
-  "pk": 3,
-  "fields": {
-    "name": "ROÑA",
-    "has_performance": true,
-    "is_enabled": true,
-    "product": 1,
-    "order": 2
-  }
-},
-{
-  "model": "catalogs.productqualitykind",
-  "pk": 4,
-  "fields": {
-    "name": "MATERIA ORGÁNICA",
-    "has_performance": true,
-    "is_enabled": true,
-    "product": 1,
-    "order": 3
-  }
-},
-{
-  "model": "catalogs.productqualitykind",
-  "pk": 5,
-  "fields": {
-    "name": "NORMAL",
-    "has_performance": true,
-    "is_enabled": true,
-    "product": 2,
-    "order": 0
-  }
-},
-{
-  "model": "catalogs.productqualitykind",
-  "pk": 6,
-  "fields": {
-    "name": "DESECHO",
-    "has_performance": true,
-    "is_enabled": true,
-    "product": 2,
-    "order": 1
-  }
-},
-{
-  "model": "catalogs.productqualitykind",
-  "pk": 7,
-  "fields": {
-    "name": "ROÑA",
-    "has_performance": true,
-    "is_enabled": true,
-    "product": 2,
-    "order": 2
-  }
-},
-{
-  "model": "catalogs.productqualitykind",
-  "pk": 8,
-  "fields": {
-    "name": "MATERIA ORGÁNICA",
-    "has_performance": true,
-    "is_enabled": true,
-    "product": 2,
-    "order": 3
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 1,
-  "fields": {
-    "name": "ESTANDAR",
-    "is_enabled": true,
-    "product": 1,
-    "order": 0
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 2,
-  "fields": {
-    "name": "ENMALLADO",
-    "is_enabled": true,
-    "product": 1,
-    "order": 1
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 3,
-  "fields": {
-    "name": "ORGÁNICO",
-    "is_enabled": true,
-    "product": 1,
-    "order": 2
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 4,
-  "fields": {
-    "name": "ESTANDAR",
-    "is_enabled": true,
-    "product": 2,
-    "order": 0
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 5,
-  "fields": {
-    "name": "ENMALLADO",
-    "is_enabled": true,
-    "product": 2,
-    "order": 1
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 6,
-  "fields": {
-    "name": "ORGÁNICO",
-    "is_enabled": true,
-    "product": 2,
-    "order": 2
-  }
-},
-{
   "model": "catalogs.market",
   "pk": 1,
   "fields": {
@@ -732,6 +584,340 @@
     "name": "85 g +",
     "is_enabled": true,
     "order": 0
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 1,
+  "fields": {
+    "name": "NORMAL",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 1,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 2,
+  "fields": {
+    "name": "DESECHO",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 1,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 3,
+  "fields": {
+    "name": "ROÑA",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 1,
+    "order": 2
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 4,
+  "fields": {
+    "name": "MATERIA ORGÁNICA",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 1,
+    "order": 3
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 5,
+  "fields": {
+    "name": "NORMAL",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 2,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 6,
+  "fields": {
+    "name": "DESECHO",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 2,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 7,
+  "fields": {
+    "name": "ROÑA",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 2,
+    "order": 2
+  }
+},
+{
+  "model": "catalogs.productqualitykind",
+  "pk": 8,
+  "fields": {
+    "name": "MATERIA ORGÁNICA",
+    "has_performance": true,
+    "is_enabled": true,
+    "product": 2,
+    "order": 3
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 1,
+  "fields": {
+    "name": "ESTANDAR",
+    "is_enabled": true,
+    "product": 1,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 2,
+  "fields": {
+    "name": "ENMALLADO",
+    "is_enabled": true,
+    "product": 1,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 3,
+  "fields": {
+    "name": "ORGÁNICO",
+    "is_enabled": true,
+    "product": 1,
+    "order": 2
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 4,
+  "fields": {
+    "name": "ESTANDAR",
+    "is_enabled": true,
+    "product": 2,
+    "order": 0
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 5,
+  "fields": {
+    "name": "ENMALLADO",
+    "is_enabled": true,
+    "product": 2,
+    "order": 1
+  }
+},
+{
+  "model": "catalogs.productmassvolumekind",
+  "pk": 6,
+  "fields": {
+    "name": "ORGÁNICO",
+    "is_enabled": true,
+    "product": 2,
+    "order": 2
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 1,
+  "fields": {
+    "name": "JUANITO",
+    "category": "service_provider",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2291,
+    "city": 25002,
+    "district": 88026,
+    "postal_code": "3",
+    "neighborhood": "3",
+    "address": "3",
+    "external_number": "3",
+    "internal_number": null,
+    "tax_id": "3",
+    "email": "aaaa@gmail.com",
+    "phone_number": "1",
+    "comments": null,
+    "is_enabled": false,
+    "organization": 1,
+    "vehicle_provider": []
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 2,
+  "fields": {
+    "name": "JUANITO",
+    "category": "product_producer",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2291,
+    "city": 25001,
+    "district": 88180,
+    "postal_code": "111",
+    "neighborhood": "1",
+    "address": "1",
+    "external_number": "1",
+    "internal_number": "1",
+    "tax_id": "1",
+    "email": "aaaa@gmail.com",
+    "phone_number": "1",
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1,
+    "vehicle_provider": []
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 1,
+  "fields": {
+    "kind": 1,
+    "name": "PLASTICO 20 KG",
+    "minimum_stock_quantity": 12,
+    "maximum_stock_quantity": 12222,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationverifier",
+  "pk": 1,
+  "fields": {
+    "name": "VERIFICADOR UNO 1",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationverifier",
+  "pk": 2,
+  "fields": {
+    "name": "VERIFICADOR DOS 1",
+    "is_enabled": true,
+    "organization": 2
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationverifier",
+  "pk": 3,
+  "fields": {
+    "name": "VERIFICADOR DOS 2",
+    "is_enabled": true,
+    "organization": 2
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationverifier",
+  "pk": 4,
+  "fields": {
+    "name": "VERIFICADOR UNO 2",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 1,
+  "fields": {
+    "name": "CAJA",
+    "unit_kind": "piece",
+    "is_packaging": true,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 2,
+  "fields": {
+    "name": "CHAROLA",
+    "unit_kind": "piece",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 3,
+  "fields": {
+    "name": "TARIMA",
+    "unit_kind": "piece",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 4,
+  "fields": {
+    "name": "ESQUINERO",
+    "unit_kind": "piece",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 5,
+  "fields": {
+    "name": "TAPA",
+    "unit_kind": "piece",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 6,
+  "fields": {
+    "name": "MALLA",
+    "unit_kind": "cm",
+    "is_packaging": true,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 7,
+  "fields": {
+    "name": "FILM",
+    "unit_kind": "cm",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 8,
+  "fields": {
+    "name": "FLEJE",
+    "unit_kind": "m",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
   }
 }
 ]

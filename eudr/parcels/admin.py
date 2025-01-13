@@ -7,7 +7,8 @@ from .forms import OLGoogleMapsSatelliteWidget
 # Register your models here.
 
 
-@admin.register(Parcel)
+# descomentar en desarrollo
+# @admin.register(Parcel)
 class ParcelAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'uuid', 'ooid', 'producer_name', 'country', 'state', 'city', 'created_at',)
     search_fields = ('name', 'code', 'producer__name')
