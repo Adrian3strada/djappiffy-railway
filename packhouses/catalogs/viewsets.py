@@ -5,9 +5,11 @@ from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
                           ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer,
+                          MaquiladoraSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer)
 from .models import (MarketStandardProductSize, Market, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
-                     ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Provider, Product)
+                     ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Maquiladora,
+                     Provider, Product)
 
 
 class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
@@ -93,6 +95,20 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         return Product.objects.filter(organization=self.request.organization)
 
+class MaquiladoraViewSet(viewsets.ModelViewSet):
+    serializer_class = MaquiladoraSerializer
+    filterset_fields = ['organization', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = Maquiladora.objects.filter(organization=self.request.organization)
+
+        return queryset
+
 
 class ProductVarietyViewSet(viewsets.ModelViewSet):
     serializer_class = ProductVarietySerializer
@@ -177,7 +193,12 @@ class ClientViewSet(viewsets.ModelViewSet):
         queryset = Client.objects.filter(organization=self.request.organization)
 
         category = self.request.GET.get('category')
+        maquiladora = self.request.GET.get('maquiladora')
+
         if category:
             queryset = queryset.filter(category=category)
+        if maquiladora:
+            queryset = queryset.filter(maquiladora__id=maquiladora)
 
         return queryset
+

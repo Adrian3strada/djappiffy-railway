@@ -1,0 +1,750 @@
+[
+{
+  "model": "base.productkind",
+  "pk": 1,
+  "fields": {
+    "name": "Café",
+    "name_en": "Coffe",
+    "name_pt": "Café",
+    "name_fr": "Café",
+    "name_de": "Kaffee",
+    "name_es": "Café",
+    "for_packaging": false,
+    "for_orchard": false,
+    "for_eudr": true,
+    "image": "",
+    "is_enabled": true,
+    "ordering": 0
+  }
+},
+{
+  "model": "base.productkind",
+  "pk": 2,
+  "fields": {
+    "name": "Cacao",
+    "name_en": "Cocoa",
+    "name_pt": "Cacau",
+    "name_fr": "Cacao",
+    "name_de": "Kakao",
+    "name_es": "Cacao",
+    "for_packaging": false,
+    "for_orchard": false,
+    "for_eudr": true,
+    "image": "",
+    "is_enabled": true,
+    "ordering": 0
+  }
+},
+{
+  "model": "base.productkind",
+  "pk": 3,
+  "fields": {
+    "name": "Caucho",
+    "name_en": "Rubber",
+    "name_pt": "Borracha",
+    "name_fr": "Caoutchouc",
+    "name_de": "Gummi",
+    "name_es": "Caucho",
+    "for_packaging": false,
+    "for_orchard": false,
+    "for_eudr": true,
+    "image": "",
+    "is_enabled": true,
+    "ordering": 0
+  }
+},
+{
+  "model": "base.productkind",
+  "pk": 4,
+  "fields": {
+    "name": "Ganado",
+    "name_en": "Livestock",
+    "name_pt": "Pecuário",
+    "name_fr": "Bétail",
+    "name_de": "Vieh",
+    "name_es": "Ganado",
+    "for_packaging": false,
+    "for_orchard": false,
+    "for_eudr": true,
+    "image": "",
+    "is_enabled": true,
+    "ordering": 0
+  }
+},
+{
+  "model": "base.productkind",
+  "pk": 5,
+  "fields": {
+    "name": "Madera",
+    "name_en": "Wood",
+    "name_pt": "Madeira",
+    "name_fr": "Bois",
+    "name_de": "Holz",
+    "name_es": "Madera",
+    "for_packaging": false,
+    "for_orchard": false,
+    "for_eudr": true,
+    "image": "",
+    "is_enabled": true,
+    "ordering": 0
+  }
+},
+{
+  "model": "base.productkind",
+  "pk": 6,
+  "fields": {
+    "name": "Aceite de palma",
+    "name_en": "Palm oil",
+    "name_pt": "Óleo de palma",
+    "name_fr": "Huile de palme",
+    "name_de": "Palmöl",
+    "name_es": "Aceite de palma",
+    "for_packaging": false,
+    "for_orchard": false,
+    "for_eudr": true,
+    "image": "",
+    "is_enabled": true,
+    "ordering": 0
+  }
+},
+{
+  "model": "base.productkind",
+  "pk": 7,
+  "fields": {
+    "name": "Soja",
+    "name_en": "Soy",
+    "name_pt": "Soja",
+    "name_fr": "Soja",
+    "name_de": "Soja",
+    "name_es": "Soja",
+    "for_packaging": false,
+    "for_orchard": false,
+    "for_eudr": true,
+    "image": "",
+    "is_enabled": true,
+    "ordering": 0
+  }
+},
+{
+  "model": "base.productkind",
+  "pk": 8,
+  "fields": {
+    "name": "Aguacate",
+    "name_en": "Avocado",
+    "name_pt": "Abacate",
+    "name_fr": "Avocat",
+    "name_de": "Avocado",
+    "name_es": "Aguacate",
+    "for_packaging": true,
+    "for_orchard": false,
+    "for_eudr": false,
+    "image": "",
+    "is_enabled": true,
+    "ordering": 0
+  }
+},
+{
+  "model": "base.productkind",
+  "pk": 9,
+  "fields": {
+    "name": "Limón",
+    "name_en": "Lime",
+    "name_pt": "Limão",
+    "name_fr": "Citron",
+    "name_de": "Zitrone",
+    "name_es": "Limón",
+    "for_packaging": true,
+    "for_orchard": false,
+    "for_eudr": false,
+    "image": "",
+    "is_enabled": true,
+    "ordering": 0
+  }
+},
+{
+  "model": "base.productkind",
+  "pk": 10,
+  "fields": {
+    "name": "Mango",
+    "name_en": "Mango",
+    "name_pt": "Manga",
+    "name_fr": "Mangue",
+    "name_de": "Mango",
+    "name_es": "Mango",
+    "for_packaging": true,
+    "for_orchard": false,
+    "for_eudr": false,
+    "image": "",
+    "is_enabled": false,
+    "ordering": 0
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 1,
+  "fields": {
+    "code": "601",
+    "name": "General de Ley Personas Morales",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 2,
+  "fields": {
+    "code": "603",
+    "name": "Personas Morales con Fines no Lucrativos",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 3,
+  "fields": {
+    "code": "605",
+    "name": "Sueldos y Salarios e Ingresos Asimilados a Salarios",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 4,
+  "fields": {
+    "code": "606",
+    "name": "Arrendamiento",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 5,
+  "fields": {
+    "code": "607",
+    "name": "Régimen de Enajenación o Adquisición de Bienes",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 6,
+  "fields": {
+    "code": "608",
+    "name": "Demás ingresos",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 7,
+  "fields": {
+    "code": "609",
+    "name": "Consolidación",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 8,
+  "fields": {
+    "code": "610",
+    "name": "Residentes en el Extranjero sin Establecimiento Permanente en México",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 9,
+  "fields": {
+    "code": "611",
+    "name": "Ingresos por Dividendos (socios y accionistas)",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 10,
+  "fields": {
+    "code": "612",
+    "name": "Personas Físicas con Actividades Empresariales y Profesionales",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 11,
+  "fields": {
+    "code": "614",
+    "name": "Ingresos por intereses",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 12,
+  "fields": {
+    "code": "615",
+    "name": "Régimen de los ingresos por obtención de premios",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 13,
+  "fields": {
+    "code": "616",
+    "name": "Sin obligaciones fiscales",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 14,
+  "fields": {
+    "code": "620",
+    "name": "Sociedades Cooperativas de Producción que optan por diferir sus ingresos",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 15,
+  "fields": {
+    "code": "621",
+    "name": "Incorporación Fiscal",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 16,
+  "fields": {
+    "code": "622",
+    "name": "Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 17,
+  "fields": {
+    "code": "623",
+    "name": "Opcional para Grupos de Sociedades",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 18,
+  "fields": {
+    "code": "624",
+    "name": "Coordinados",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 19,
+  "fields": {
+    "code": "625",
+    "name": "Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 20,
+  "fields": {
+    "code": "626",
+    "name": "Régimen Simplificado de Confianza",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 21,
+  "fields": {
+    "code": "628",
+    "name": "Hidrocarburos",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 22,
+  "fields": {
+    "code": "629",
+    "name": "De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 23,
+  "fields": {
+    "code": "630",
+    "name": "Enajenación de acciones en bolsa de valores",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 24,
+  "fields": {
+    "code": "1",
+    "name": "Single",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 25,
+  "fields": {
+    "code": "1",
+    "name": "Married Filing Jointly",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 26,
+  "fields": {
+    "code": "1",
+    "name": "Married Filing Separately",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 27,
+  "fields": {
+    "code": "1",
+    "name": "Head of Household",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 28,
+  "fields": {
+    "code": "1",
+    "name": "Qualifying Widow(er)",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 29,
+  "fields": {
+    "code": "2",
+    "name": "Sole Proprietorship",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 30,
+  "fields": {
+    "code": "2",
+    "name": "Partnership",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 31,
+  "fields": {
+    "code": "2",
+    "name": "C-Corporation",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 32,
+  "fields": {
+    "code": "2",
+    "name": "S-Corporation",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 33,
+  "fields": {
+    "code": "2",
+    "name": "Limited Liability Company (LLC)",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 34,
+  "fields": {
+    "code": "2",
+    "name": "Non-Profit Organization",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 35,
+  "fields": {
+    "code": "3",
+    "name": "Farmers and Ranchers",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 36,
+  "fields": {
+    "code": "3",
+    "name": "Household Employers",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 37,
+  "fields": {
+    "code": "3",
+    "name": "Resident and Non-Resident Aliens",
+    "country": 234
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 5,
+  "fields": {
+    "code": "CFR",
+    "name": "Cost And Freight",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Cost And Freight",
+    "is_enabled": true,
+    "ordering": 5
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 6,
+  "fields": {
+    "code": "CIF",
+    "name": "Cost, Insurance And Freight",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Cost, Insurance And Freight",
+    "is_enabled": true,
+    "ordering": 6
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 11,
+  "fields": {
+    "code": "CIF",
+    "name": "Delivery Duty Paid",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Delivery Duty Paid",
+    "is_enabled": true,
+    "ordering": 11
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 8,
+  "fields": {
+    "code": "CIP",
+    "name": "Cost, Insurance And Freight",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Cost, Insurance And Freight",
+    "is_enabled": true,
+    "ordering": 8
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 7,
+  "fields": {
+    "code": "CPT",
+    "name": "Carriage Paid To",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Carriage Paid To",
+    "is_enabled": true,
+    "ordering": 7
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 9,
+  "fields": {
+    "code": "DAP",
+    "name": "Delivery At Place",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Delivery At Place",
+    "is_enabled": true,
+    "ordering": 9
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 10,
+  "fields": {
+    "code": "DPU",
+    "name": "Delivered At Place Unloaded",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Delivered At Place Unloaded",
+    "is_enabled": true,
+    "ordering": 10
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 1,
+  "fields": {
+    "code": "EXW",
+    "name": "Ex Works",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Ex Works",
+    "is_enabled": true,
+    "ordering": 1
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 3,
+  "fields": {
+    "code": "FAS",
+    "name": "Free Alongside Ship",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Free Alongside Ship",
+    "is_enabled": true,
+    "ordering": 3
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 2,
+  "fields": {
+    "code": "FCA",
+    "name": "Free Carrier",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Free Carrier",
+    "is_enabled": true,
+    "ordering": 2
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 4,
+  "fields": {
+    "code": "FOB",
+    "name": "Free On Board",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Free On Board",
+    "is_enabled": true,
+    "ordering": 4
+  }
+},
+{
+  "model": "base.localdelivery",
+  "pk": 1,
+  "fields": {
+    "name": "Entrega en planta",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Entrega en planta",
+    "is_enabled": true,
+    "ordering": 1
+  }
+},
+{
+  "model": "base.localdelivery",
+  "pk": 2,
+  "fields": {
+    "name": "Entrega en planta con servicio de transporte",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Entrega en planta con servicio de transporte",
+    "is_enabled": true,
+    "ordering": 2
+  }
+},
+{
+  "model": "base.localdelivery",
+  "pk": 3,
+  "fields": {
+    "name": "Entrega en bodega",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Entrega en bodega",
+    "is_enabled": true,
+    "ordering": 3
+  }
+},
+{
+  "model": "base.localdelivery",
+  "pk": 4,
+  "fields": {
+    "name": "Entrega en frontera",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Entrega en frontera",
+    "is_enabled": true,
+    "ordering": 4
+  }
+},
+{
+  "model": "base.localdelivery",
+  "pk": 5,
+  "fields": {
+    "name": "Entrega a consignatario",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Entrega a consignatario",
+    "is_enabled": true,
+    "ordering": 5
+  }
+}
+]
