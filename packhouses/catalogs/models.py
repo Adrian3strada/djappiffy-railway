@@ -908,8 +908,8 @@ class PackagingKind(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
 
     ### Authority
-    authority = models.ForeignKey(AuthorityPackagingKind, on_delete=models.CASCADE)
-    code = models.CharField(max_length=10, verbose_name=_('Code'))
+    authority = models.ForeignKey(AuthorityPackagingKind, blank=True, null=True, on_delete=models.CASCADE)
+    code = models.CharField(max_length=10, blank=True, null=True, verbose_name=_('Code'))
 
     ### Embalaje más externo
     packaging_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)

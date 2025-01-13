@@ -23,7 +23,8 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, Ve
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
-                    OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet)
+                    OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet,
+                    PackagingKindForm)
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization, OrganizationUser
 from cities_light.models import Country, Region, SubRegion, City
@@ -974,6 +975,7 @@ class InsideSuppliesInline(admin.TabularInline):
 
 @admin.register(PackagingKind)
 class PackagingKindAdmin(ByOrganizationAdminMixin):
+    form = PackagingKindForm
     list_display = ('name',
                     'packaging', 'quantity',
                     'max_product_kg_per_package', 'avg_tare_kg_per_package',
