@@ -912,8 +912,9 @@ class PackagingKind(models.Model):
     code = models.CharField(max_length=10, verbose_name=_('Code'))
 
     ### Embalaje más externo
-    external_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('External supply kind'), on_delete=models.PROTECT)
-    external_supply = models.ForeignKey(Supply, verbose_name=_('External supply'), on_delete=models.PROTECT)
+    packaging_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)
+    packaging = models.ForeignKey(Supply, verbose_name=_('Packaging'), on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'))
 
     ### Pesos del producto y tare
     max_product_kg_per_package = models.FloatField(verbose_name=_('Max product Kg per package'))

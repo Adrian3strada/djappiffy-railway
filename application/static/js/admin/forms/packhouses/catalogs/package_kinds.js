@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const externalSupplyKindField = $('#id_external_supply_kind');
-  const externalSupplyField = $('#id_external_supply');
+  const packagingKindField = $('#id_packaging_kind');
+  const packagingField = $('#id_packaging');
 
   const API_BASE_URL = '/rest/v1';
 
@@ -20,21 +20,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }).fail(error => console.error('Fetch error:', error));
   }
 
-  function updatePrimarySupply() {
-    const externalSupplyKindId = externalSupplyKindField.val();
-    if (externalSupplyKindId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${externalSupplyKindId}&is_enabled=1`)
+  function updatePackaging() {
+    const packagingKindId = packagingKindField.val();
+    if (packagingKindId) {
+      fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingKindId}&is_enabled=1`)
         .then(data => {
-          updateFieldOptions(externalSupplyField, data);
+          updateFieldOptions(packagingField, data);
         });
     } else {
-      updateFieldOptions(externalSupplyField, []);
+      updateFieldOptions(packagingField, []);
     }
   }
 
-  externalSupplyKindField.on('change', function () {
-    updatePrimarySupply();
+  packagingKindField.on('change', function () {
+    updatePackaging();
   });
 
-  [externalSupplyKindField, externalSupplyField].forEach(field => field.select2());
+  [packagingKindField, packagingField].forEach(field => field.select2());
 });

@@ -974,9 +974,14 @@ class InsideSuppliesInline(admin.TabularInline):
 
 @admin.register(PackagingKind)
 class PackagingKindAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'external_supply', 'is_enabled')
+    list_display = ('name',
+                    'packaging', 'quantity',
+                    'max_product_kg_per_package', 'avg_tare_kg_per_package',
+                    'authority', 'code',
+                    'is_enabled',
+    )
     fields = ('name',
-              'external_supply_kind', 'external_supply',
+              'packaging_kind', 'packaging', 'quantity',
               'max_product_kg_per_package', 'avg_tare_kg_per_package',
               'authority', 'code',
               'is_enabled')
@@ -992,20 +997,20 @@ class PackagingKindAdmin(ByOrganizationAdminMixin):
         obj = PackagingKind.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
-        external_supply_kind = request.POST.get('external_supply_kind') if request.POST else obj.external_supply_kind if obj else None
+        packaging_kind = request.POST.get('packaging_kind') if request.POST else obj.packaging_kind if obj else None
 
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        supplykind_queryfilter = {'organization': organization, 'is_packaging': True, 'is_enabled': True}
-        supply_queryfilter = {'organization': organization, 'kind': external_supply_kind, 'is_enabled': True}
+        packagingkind_queryfilter = {'organization': organization, 'is_packaging': True, 'is_enabled': True}
+        supply_queryfilter = {'organization': organization, 'kind': packaging_kind, 'is_enabled': True}
 
         print(db_field.name)
         if db_field.name == 'authority':
             kwargs['queryset'] = AuthorityPackagingKind.objects.filter(**organization_queryfilter)
 
-        if db_field.name == "external_supply_kind":
-            kwargs["queryset"] = SupplyKind.objects.filter(**supplykind_queryfilter)
-        if db_field.name == "external_supply":
-            if external_supply_kind:
+        if db_field.name == "packaging_kind":
+            kwargs["queryset"] = SupplyKind.objects.filter(**packagingkind_queryfilter)
+        if db_field.name == "packaging":
+            if packaging_kind:
                 kwargs["queryset"] = Supply.objects.filter(**supply_queryfilter)
             else:
                 kwargs["queryset"] = Supply.objects.none()
