@@ -44,7 +44,8 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByServiceProviderForOrganizationServiceFilter, ByStateForOrganizationWeighingScaleFilter,
                       ByCityForOrganizationWeighingScaleFilter, ByCountryForOrganizationExportingCompaniesFilter, 
                       ByStateForOrganizationExportingCompaniesFilter, ByCityForOrganizationExportingCompaniesFilter, 
-                      ByCountryForOrganizationCustomsBrokersFilter, 
+                      ByCountryForOrganizationCustomsBrokersFilter, ByProductForOrganizationPalletConfigurationFilter,
+                      ByMarketForOrganizationPalletConfigurationFilter,
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -1121,17 +1122,33 @@ class PalletAdmin(admin.ModelAdmin):
 class PalletConfigurationSupplyExpenseInLine(admin.StackedInline):
     model = PalletConfigurationSupplyExpense
     extra = 0
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "supply":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = Supply.objects.filter(organization=request.organization, is_enabled=True, kind__is_packaging=False)
+            else:
+                kwargs["queryset"] = Supply.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
 
 class PalletConfigurationPersonalExpenseInline(admin.StackedInline):
     model = PalletConfigurationPersonalExpense
     extra = 0
 
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('description')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+
 @admin.register(PalletConfiguration)
 class PalletConfigurationAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'alias', 'market', 'product')
-    list_filter = ('is_enabled',)
-    fields = ('name', 'alias', 'market', 'product', 'product_varieties', 'product_variety_size', 'box_kind', 'maximum_boxes_per_pallet', 'maximum_kg_per_pallet',
-              'kg_tare', 'kg_per_box', 'is_dark', 'product_quality_kind', 'supply_tray', 'pallet_cost', 'is_enabled')
+    list_display = ('name', 'alias', 'market', 'product', 'is_dark', 'is_enabled')
+    list_filter = (ByMarketForOrganizationPalletConfigurationFilter, ByProductForOrganizationPalletConfigurationFilter, 'is_dark','is_enabled',)
+    fields = ('name', 'alias', 'market', 'product', 'product_size', 'product_varieties', 'box_kind', 'maximum_boxes_per_pallet', 'maximum_kg_per_pallet',
+              'kg_tare', 'kg_per_box', 'is_dark', 'is_enabled')
+    search_fields = ('name', 'alias')
     inlines = [PalletConfigurationSupplyExpenseInLine,PalletConfigurationPersonalExpenseInline]
     
     @uppercase_form_charfield('name')
@@ -1139,6 +1156,26 @@ class PalletConfigurationAdmin(ByOrganizationAdminMixin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
+    
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[Organization]):
+            readonly_fields.extend(['name', 'alias', 'countries', 'is_foreign', 'organization'])
+        return readonly_fields
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+        
+        if db_field.name == "market":
+            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+        if db_field.name == "product":
+            kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
+        if db_field.name == "box_kind":
+            kwargs["queryset"] = BoxKind.objects.filter(**organization_queryfilter)
+        
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     
     
 

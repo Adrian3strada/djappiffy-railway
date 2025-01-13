@@ -990,15 +990,18 @@ class PalletConfiguration(CleanNameOrAliasAndOrganizationMixin, models.Model):
     alias = models.CharField(max_length=20, verbose_name=_('Alias'), null=False, blank=False)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT, null=False, blank=False)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT, null=False, blank=False)
+    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT, null=False, blank=False)
     product_varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Product varieties'), blank=False)
-    product_variety_size = models.ForeignKey(ProductSize, verbose_name=_('Product variety size'), on_delete=models.PROTECT, null=False, blank=False)
     box_kind = models.ForeignKey(BoxKind, verbose_name=_('Box kind'), on_delete=models.PROTECT, null=False, blank=False)
-    maximum_boxes_per_pallet = models.PositiveIntegerField(verbose_name=_('Boxes quantity'), null=False, blank=False)
-    maximum_kg_per_pallet = models.FloatField(verbose_name=_('Kg amount'), null=False, blank=False)
+    maximum_boxes_per_pallet = models.PositiveIntegerField(verbose_name=_('Boxes quantity'), null=False, blank=False, help_text=_(
+        "Maximum number of boxes per pallet"
+    ))
+    maximum_kg_per_pallet = models.FloatField(verbose_name=_('Kg amount'), null=False, blank=False, help_text=_(
+        "Maximum Kg per pallet"
+    ))
     kg_tare = models.FloatField(verbose_name=_('Kg tare'), null=True, blank=True)
     kg_per_box = models.FloatField(verbose_name=_('Kg per box'), null=False, blank=False)
     is_dark = models.BooleanField(default=False, verbose_name=_('Is dark'), blank=True)
-    product_quality_kind = models.ForeignKey(ProductQualityKind, verbose_name=_('Quality kind'), on_delete=models.PROTECT, null=False, blank=False) 
     supply_tray = models.ForeignKey(Supply, verbose_name=_('Supply tray'), on_delete=models.PROTECT, null=True, blank=True)
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Creation date'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
