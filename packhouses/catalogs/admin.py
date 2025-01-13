@@ -41,7 +41,9 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
                       ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter,
                       ByServiceProviderForOrganizationServiceFilter, ByStateForOrganizationWeighingScaleFilter,
-                      ByCityForOrganizationWeighingScaleFilter,
+                      ByCityForOrganizationWeighingScaleFilter, ByCountryForOrganizationExportingCompaniesFilter, 
+                      ByStateForOrganizationExportingCompaniesFilter, ByCityForOrganizationExportingCompaniesFilter, 
+                      ByCountryForOrganizationCustomsBrokersFilter, 
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -1136,8 +1138,8 @@ class ExportingCompanyBeneficiaryInline(admin.StackedInline):
 @admin.register(ExportingCompany)
 class ExportingCompanyAdmin(ByOrganizationAdminMixin):
     list_display = (
-    'name', 'contact_name', 'tax_id', 'city', 'address', 'external_number', 'phone_number', 'is_enabled')
-    list_filter = ('is_enabled',)
+    'name', 'contact_name', 'tax_id', 'country' ,'get_state_name' , 'get_city_name', 'address', 'external_number', 'phone_number', 'is_enabled')
+    list_filter = (ByCountryForOrganizationExportingCompaniesFilter, ByStateForOrganizationExportingCompaniesFilter, ByCityForOrganizationExportingCompaniesFilter, 'is_enabled',)
     fields = ('name', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number',
               'tax_id', 'contact_name', 'email', 'phone_number', 'is_enabled')
     inlines = [ExportingCompanyBeneficiaryInline,]
@@ -1256,8 +1258,9 @@ class BorderToDestinationTransporterAdmin(ByOrganizationAdminMixin):
 
 @admin.register(CustomsBroker)
 class CustomsBrokerAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'broker_number', 'country', 'is_enabled')
     fields = ('name', 'broker_number', 'country','is_enabled')
-    list_filter = ('is_enabled',)
+    list_filter = (ByCountryForOrganizationCustomsBrokersFilter, 'is_enabled',)
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
