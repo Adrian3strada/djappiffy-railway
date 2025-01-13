@@ -34,7 +34,7 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
                       ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
                       ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
-                      ByCityForOrganizationClientsFilter,
+                      ByCityForOrganizationClientsFilter, ByPaymentKindForOrganizationFilter,
                       ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
@@ -391,7 +391,7 @@ class ClientAdmin(ByOrganizationAdminMixin):
                     'tax_id', 'contact_phone_number', 'is_enabled')
     list_filter = ('market', 'category', ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                    ByCityForOrganizationClientsFilter,
-                   'legal_category', 'payment_kind', 'is_enabled')
+                   'legal_category', ByPaymentKindForOrganizationFilter, 'is_enabled')
     search_fields = ('name', 'tax_id', 'contact_phone_number')
     fields = (
     'name', 'category', 'market', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address',

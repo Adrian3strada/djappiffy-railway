@@ -17,7 +17,11 @@ class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
 
 @admin.register(Incoterm)
 class IncotermAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('name', 'is_enabled', 'ordering')
+    list_display = ('get_name', 'is_enabled', 'ordering')
+
+    def get_name(self, obj):
+        return f"{obj.id} -- {obj.name}"
+    get_name.short_description = 'Name'
 
 
 @admin.register(LocalDelivery)

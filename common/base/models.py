@@ -43,8 +43,8 @@ class LegalEntityCategory(models.Model):
 
 
 class Incoterm(models.Model):
-    id = models.CharField(max_length=8, primary_key=True)
-    name = models.CharField(max_length=255, unique=True)
+    code = models.CharField(max_length=4, verbose_name=_('Code'))
+    name = models.CharField(max_length=255)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     ordering = models.PositiveIntegerField(default=0)
 
@@ -55,6 +55,9 @@ class Incoterm(models.Model):
         verbose_name = _('Incoterm')
         verbose_name_plural = _('Incoterms')
         ordering = ['ordering']
+        constraints = [
+            models.UniqueConstraint(fields=['id', 'name'], name='incoterm_unique_id_name')
+        ]
 
 
 class LocalDelivery(models.Model):

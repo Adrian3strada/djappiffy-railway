@@ -2,10 +2,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const clientCategoryField = $("#id_client_category");
   const maquiladoraField = $("#id_maquiladora");
   const clientField = $("#id_client");
-  const incotermsField = $("#id_incoterms").closest(".field-incoterms");
-  const localDeliveryField = $("#id_local_delivery").closest(".field-local_delivery");
-
-  const clientMarketCountries = []
+  const localDeliveryField = $("#id_local_delivery")
+  const incotermsField = $("#id_incoterms")
+  let organization = null;
 
   const API_BASE_URL = "/rest/v1";
 
@@ -64,25 +63,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function toggleFieldsBasedOnMarket() {
-    const selectedOption = marketField.find('option:selected');
-    const isForeign = selectedOption.attr('data-is_foreign');
-
-    if (isForeign === 'True') {
-      // Mostrar incoterms y ocultar local_delivery
-      incotermsField.show();
-      incotermsField.prev("label").show(); // Asegurarse de mostrar la label de incoterms
-      localDeliveryField.hide();
-      localDeliveryField.prev("label").hide(); // Ocultar la label de local_delivery
-    } else {
-      // Mostrar local_delivery y ocultar incoterms
-      incotermsField.hide();
-      incotermsField.prev("label").hide(); // Ocultar la label de incoterms
-      localDeliveryField.show();
-      localDeliveryField.prev("label").show(); // Mostrar la label de local_delivery
-    }
-  }
-
   clientCategoryField.on("change", () => {
     if (clientCategoryField.val() && clientCategoryField.val() === 'packhouse') {
       updateClientOptions()
@@ -102,11 +82,48 @@ document.addEventListener("DOMContentLoaded", function () {
     const maquiladora = maquiladoraField.val()
     if (maquiladora) {
       updateMaquiladoraClientOptions()
+    } else {
+      updateFieldOptions(clientField, []);
     }
   });
 
+  clientField.on('change', () => {
+    const client = clientField.val();
+
+
+    localDeliveryField.closest('.form-group').fadeOut();
+    incotermsField.closest('.form-group').fadeOut();
+    setTimeout(() => {
+      localDeliveryField.val(null).trigger('change');
+      incotermsField.val(null).trigger('change');
+      }, 100);
+    if (client) {
+      fetchOptions(`${API_BASE_URL}/catalogs/client/${client}/`).then(
+        (data) => {
+          setTimeout(() => {
+            console.log("Client data:", data);
+            if (data.country === organization.country) {
+              localDeliveryField.closest('.form-group').fadeIn();
+            } else {
+              incotermsField.closest('.form-group').fadeIn();
+            }
+          }, 300);
+        });
+    }
+  });
+
+  fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
+    (data) => {
+      console.log("profiles/packhouse-exporter-profile:", data);
+      if (data.count === 1) {
+        organization = data.results.pop()
+      }
+    }
+  );
 
   maquiladoraField.closest('.form-group').hide();
+  localDeliveryField.closest('.form-group').hide();
+  incotermsField.closest('.form-group').hide();
 
   if (clientCategoryField.val() && clientCategoryField.val() === 'maquiladora') {
     maquiladoraField.closest('.form-group').show();
@@ -114,5 +131,4 @@ document.addEventListener("DOMContentLoaded", function () {
     maquiladoraField.closest('.form-group').hide();
     maquiladoraField.val(null)
   }
-
 });

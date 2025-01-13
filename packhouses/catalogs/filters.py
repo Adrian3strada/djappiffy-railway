@@ -2,7 +2,7 @@ from django.contrib import admin
 from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind,
-                     Gatherer,
+                     Gatherer, PaymentKind,
                      Provider, Client,
                      Maquiladora, WeighingScale
                      )
@@ -94,6 +94,20 @@ class ByMarketForOrganizationFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(market__id=self.value())
+        return queryset
+
+
+class ByPaymentKindForOrganizationFilter(admin.SimpleListFilter):
+    title = _('Payment kind')
+    parameter_name = 'payment_kind'
+
+    def lookups(self, request, model_admin):
+        payment_kinds = PaymentKind.objects.filter(organization=request.organization, is_enabled=True)
+        return [(payment_kind.id, payment_kind.name) for payment_kind in payment_kinds]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(payment_kind__id=self.value())
         return queryset
 
 
@@ -416,12 +430,12 @@ class ByServiceProviderForOrganizationServiceFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         providers = Provider.objects.filter(organization=request.organization, is_enabled=True, category="service_provider")
         return [(provider.id, provider.name) for provider in providers]
-    
+
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(service_provider=self.value())
         return queryset
-    
+
 class ByStateForOrganizationWeighingScaleFilter(admin.SimpleListFilter):
     title = _('State')
     parameter_name = 'state'

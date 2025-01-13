@@ -513,6 +513,171 @@
   }
 },
 {
+  "model": "base.incoterm",
+  "pk": 5,
+  "fields": {
+    "code": "CFR",
+    "name": "Cost And Freight",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Cost And Freight",
+    "is_enabled": true,
+    "ordering": 5
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 6,
+  "fields": {
+    "code": "CIF",
+    "name": "Cost, Insurance And Freight",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Cost, Insurance And Freight",
+    "is_enabled": true,
+    "ordering": 6
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 11,
+  "fields": {
+    "code": "CIF",
+    "name": "Delivery Duty Paid",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Delivery Duty Paid",
+    "is_enabled": true,
+    "ordering": 11
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 8,
+  "fields": {
+    "code": "CIP",
+    "name": "Cost, Insurance And Freight",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Cost, Insurance And Freight",
+    "is_enabled": true,
+    "ordering": 8
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 7,
+  "fields": {
+    "code": "CPT",
+    "name": "Carriage Paid To",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Carriage Paid To",
+    "is_enabled": true,
+    "ordering": 7
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 9,
+  "fields": {
+    "code": "DAP",
+    "name": "Delivery At Place",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Delivery At Place",
+    "is_enabled": true,
+    "ordering": 9
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 10,
+  "fields": {
+    "code": "DPU",
+    "name": "Delivered At Place Unloaded",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Delivered At Place Unloaded",
+    "is_enabled": true,
+    "ordering": 10
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 1,
+  "fields": {
+    "code": "EXW",
+    "name": "Ex Works",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Ex Works",
+    "is_enabled": true,
+    "ordering": 1
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 3,
+  "fields": {
+    "code": "FAS",
+    "name": "Free Alongside Ship",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Free Alongside Ship",
+    "is_enabled": true,
+    "ordering": 3
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 2,
+  "fields": {
+    "code": "FCA",
+    "name": "Free Carrier",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Free Carrier",
+    "is_enabled": true,
+    "ordering": 2
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 4,
+  "fields": {
+    "code": "FOB",
+    "name": "Free On Board",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Free On Board",
+    "is_enabled": true,
+    "ordering": 4
+  }
+},
+{
   "model": "base.localdelivery",
   "pk": 1,
   "fields": {
