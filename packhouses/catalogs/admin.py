@@ -43,9 +43,9 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
                       ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter,
                       ByServiceProviderForOrganizationServiceFilter, ByStateForOrganizationWeighingScaleFilter,
-                      ByCityForOrganizationWeighingScaleFilter, ByCountryForOrganizationExportingCompaniesFilter, 
-                      ByStateForOrganizationExportingCompaniesFilter, ByCityForOrganizationExportingCompaniesFilter, 
-                      ByCountryForOrganizationCustomsBrokersFilter, 
+                      ByCityForOrganizationWeighingScaleFilter, ByCountryForOrganizationExportingCompaniesFilter,
+                      ByStateForOrganizationExportingCompaniesFilter, ByCityForOrganizationExportingCompaniesFilter,
+                      ByCountryForOrganizationCustomsBrokersFilter,
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -779,7 +779,7 @@ class OrchardAdmin(ByOrganizationAdminMixin):
 
 @admin.register(Supply)
 class SupplyAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'kind', 'is_enabled')
+    list_display = ('name', 'kind', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
     list_filter = ('kind', 'is_enabled')
     search_fields = ('name',)
     fields = ('kind', 'name', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
@@ -1348,7 +1348,7 @@ class CustomsBrokerAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'broker_number', 'country', 'is_enabled')
     fields = ('name', 'broker_number', 'country','is_enabled')
     list_filter = (ByCountryForOrganizationCustomsBrokersFilter, 'is_enabled',)
-    
+
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
