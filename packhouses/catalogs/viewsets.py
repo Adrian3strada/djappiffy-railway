@@ -8,7 +8,7 @@ from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer,
                           ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer)
 from .models import (MarketStandardProductSize, Market, MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
-                     ProductHarvestSizeKind, ProductQualityKind, ProductMassVolumeKind, Client, Provider, Product, Supply, ProductSize)
+                     ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Provider, Product, Supply, ProductSize)
 
 
 class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
