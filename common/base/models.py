@@ -49,7 +49,7 @@ class Incoterm(models.Model):
     ordering = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"{self.id} -- {self.name}"
+        return f"{self.code} -- {self.name}"
 
     class Meta:
         verbose_name = _('Incoterm')

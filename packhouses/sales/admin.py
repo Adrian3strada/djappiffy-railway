@@ -9,6 +9,7 @@ from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
+from .filters import ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter
 from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import Client, Maquiladora
 from .models import Order
@@ -22,7 +23,7 @@ from common.forms import SelectWidgetWithData
 @admin.register(Order)
 class OrderAdmin(ByOrganizationAdminMixin):
     list_display = ('ooid', 'client_category', 'maquiladora', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms', 'status')
-    list_filter = ('client_category', 'maquiladora', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms', 'status')
+    list_filter = ('client_category', ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter, 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms', 'status')
     fields = (
     'ooid', 'client_category', 'maquiladora', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery',
     'incoterms', 'observations', 'status')
@@ -30,23 +31,21 @@ class OrderAdmin(ByOrganizationAdminMixin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        form.base_fields['client'].widget.can_add_related = False
-        form.base_fields['client'].widget.can_change_related = False
-        form.base_fields['client'].widget.can_delete_related = False
-        form.base_fields['client'].widget.can_view_related = False
-        form.base_fields['local_delivery'].widget.can_add_related = False
-        form.base_fields['local_delivery'].widget.can_change_related = False
-        form.base_fields['local_delivery'].widget.can_delete_related = False
-        form.base_fields['local_delivery'].widget.can_view_related = False
-        form.base_fields['incoterms'].widget.can_add_related = False
-        form.base_fields['incoterms'].widget.can_change_related = False
-        form.base_fields['incoterms'].widget.can_delete_related = False
-        form.base_fields['incoterms'].widget.can_view_related = False
-
-        if not obj:
-            form.base_fields['ooid'].initial = Order.objects.filter(organization=request.organization).aggregate(Max('ooid'))['ooid__max'] + 1 if Order.objects.filter(organization=request.organization).exists() else 1
-            form.base_fields['ooid'].widget.attrs.update(
-                {'class': 'disabled-field'})
+        if 'status' in form.base_fields:
+            form.base_fields['status'].choices = [choice for choice in form.base_fields['status'].choices if choice[0] != 'closed']
+        if not obj or obj.status not in ['closed', 'canceled']:
+            form.base_fields['client'].widget.can_add_related = False
+            form.base_fields['client'].widget.can_change_related = False
+            form.base_fields['client'].widget.can_delete_related = False
+            form.base_fields['client'].widget.can_view_related = False
+            form.base_fields['local_delivery'].widget.can_add_related = False
+            form.base_fields['local_delivery'].widget.can_change_related = False
+            form.base_fields['local_delivery'].widget.can_delete_related = False
+            form.base_fields['local_delivery'].widget.can_view_related = False
+            form.base_fields['incoterms'].widget.can_add_related = False
+            form.base_fields['incoterms'].widget.can_change_related = False
+            form.base_fields['incoterms'].widget.can_delete_related = False
+            form.base_fields['incoterms'].widget.can_view_related = False
         return form
 
     def rendered_observations(self, obj):
@@ -56,19 +55,25 @@ class OrderAdmin(ByOrganizationAdminMixin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = super().readonly_fields
-        print("readonly_fields", readonly_fields)
-        print("readonly_fields type", type(readonly_fields))
+
+        if not obj:
+            readonly_fields += ('status',)
+
         if obj and obj.pk:
             readonly_fields += ('ooid',)
 
         # Si el pedido no está abierto, todos los campos son readonly
         if obj and obj.status in ['closed', 'canceled']:
+            readonly_fields += self.fields
             readonly_fields += ('rendered_observations',)
 
         return readonly_fields
 
     def get_fields(self, request, obj=None):
         fields = list(super().get_fields(request, obj))
+        if not obj:
+            fields.remove('ooid')
+
         if obj and obj.status in ['closed', 'canceled']:
             # Reemplazar 'observations' con 'rendered_observations' en modo readonly
             fields[fields.index('observations')] = 'rendered_observations'

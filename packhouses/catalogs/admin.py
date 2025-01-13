@@ -50,6 +50,7 @@ from common.base.decorators import uppercase_formset_charfield, uppercase_alphan
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin
 from common.forms import SelectWidgetWithData
+from django.db.models import Q, F, Max, Min
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -394,10 +395,10 @@ class ClientAdmin(ByOrganizationAdminMixin):
                    'legal_category', ByPaymentKindForOrganizationFilter, 'is_enabled')
     search_fields = ('name', 'tax_id', 'contact_phone_number')
     fields = (
-    'name', 'category', 'market', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address',
-    'external_number', 'internal_number', 'shipping_address', 'legal_category', 'tax_id', 'payment_kind',
-    'max_money_credit_limit', 'max_days_credit_limit', 'fda', 'swift', 'aba', 'clabe', 'bank', 'contact_name',
-    'contact_email', 'contact_phone_number', 'is_enabled')
+        'name', 'category', 'market', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address',
+        'external_number', 'internal_number', 'shipping_address', 'legal_category', 'tax_id', 'payment_kind',
+        'max_money_credit_limit', 'max_days_credit_limit', 'fda', 'swift', 'aba', 'clabe', 'bank', 'contact_name',
+        'contact_email', 'contact_phone_number', 'is_enabled')
     inlines = [ClientShipAddressInline]
 
     @uppercase_form_charfield('name')
@@ -423,10 +424,8 @@ class ClientAdmin(ByOrganizationAdminMixin):
         obj = Client.objects.get(id=object_id) if object_id else None
         queryset_organization_filter = {"organization": organization, "is_enabled": True}
 
-
         if db_field.name == "market":
             kwargs["queryset"] = Market.objects.filter(**queryset_organization_filter)
-
 
         if db_field.name == "country":
             if request.POST:
@@ -659,10 +658,15 @@ class MaquiladoraAdmin(ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = Maquiladora.objects.get(id=obj_id) if obj_id else None
+
         if db_field.name == "maquiladora_clients":
             if hasattr(request, 'organization'):
-                kwargs["queryset"] = Client.objects.filter(organization=request.organization, is_enabled=True,
-                                                           category="maquiladora")
+                kwargs["queryset"] = Client.objects.filter(
+                    Q(organization=request.organization, is_enabled=True, category="maquiladora")
+                    & (Q(maquiladora__isnull=True) | Q(maquiladora=obj))
+                )
             else:
                 kwargs["queryset"] = Client.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -800,8 +804,8 @@ class VehicleAdmin(ByOrganizationAdminMixin):
         'name', 'category', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'ownership', 'fuel',
         'is_enabled')
     fields = (
-    'name', 'category', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'ownership', 'fuel',
-    'comments', 'is_enabled')
+        'name', 'category', 'kind', 'brand', 'model', 'license_plate', 'serial_number', 'color', 'ownership', 'fuel',
+        'comments', 'is_enabled')
     list_filter = ('kind', 'brand', 'ownership', 'fuel', 'is_enabled')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -1105,8 +1109,8 @@ class ExportingCompanyAdmin(ByOrganizationAdminMixin):
         'name', 'contact_name', 'tax_id', 'city', 'address', 'external_number', 'phone_number', 'is_enabled')
     list_filter = ('is_enabled',)
     fields = (
-    'name', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number',
-    'tax_id', 'contact_name', 'email', 'phone_number', 'is_enabled')
+        'name', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number',
+        'tax_id', 'contact_name', 'email', 'phone_number', 'is_enabled')
     inlines = [ExportingCompanyBeneficiaryInline, ]
 
     def get_state_name(self, obj):
@@ -1310,9 +1314,10 @@ class ProviderAdmin(ByOrganizationAdminMixin):
                    ByCityForOrganizationProvidersFilter, 'is_enabled',)
     search_fields = ('name', 'neighborhood', 'address', 'tax_id', 'email')
     fields = (
-    'name', 'category', 'provider_provider', 'vehicle_provider', 'country', 'state', 'city', 'district', 'postal_code',
-    'neighborhood', 'address', 'external_number', 'internal_number', 'tax_id', 'email', 'phone_number',
-    'comments', 'is_enabled')
+        'name', 'category', 'provider_provider', 'vehicle_provider', 'country', 'state', 'city', 'district',
+        'postal_code',
+        'neighborhood', 'address', 'external_number', 'internal_number', 'tax_id', 'email', 'phone_number',
+        'comments', 'is_enabled')
     inlines = (ProviderBeneficiaryInline, ProviderBalanceInline, CrewChiefInline)
 
     def get_state_name(self, obj):

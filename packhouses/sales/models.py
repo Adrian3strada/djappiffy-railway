@@ -24,7 +24,7 @@ from ..catalogs.settings import CLIENT_KIND_CHOICES
 
 
 class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
-    ooid = models.PositiveIntegerField(verbose_name=_("Order Number"))
+    ooid = models.PositiveIntegerField(verbose_name=_("Order ID"))
     client_category = models.CharField(max_length=20, verbose_name=_('Client category'), choices=CLIENT_KIND_CHOICES)
     maquiladora = models.ForeignKey(Maquiladora, verbose_name=_("Maquiladora"), on_delete=models.PROTECT, null=True, blank=True)
     client = models.ForeignKey(Client, verbose_name=_("Client"), on_delete=models.PROTECT)

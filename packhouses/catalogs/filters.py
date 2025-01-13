@@ -406,6 +406,7 @@ class ByStateForOrganizationMaquiladoraFilter(admin.SimpleListFilter):
             return queryset.filter(state__id=self.value())
         return queryset
 
+
 class ByCityForOrganizationMaquiladoraFilter(admin.SimpleListFilter):
     title = _('City')
     parameter_name = 'city'

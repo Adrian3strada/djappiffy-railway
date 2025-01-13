@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const ooidField = $("#id_ooid");
   const clientCategoryField = $("#id_client_category");
   const maquiladoraField = $("#id_maquiladora");
   const clientField = $("#id_client");
@@ -131,4 +132,6 @@ document.addEventListener("DOMContentLoaded", function () {
     maquiladoraField.closest('.form-group').hide();
     maquiladoraField.val(null)
   }
+
+  ooidField.blur();
 });
