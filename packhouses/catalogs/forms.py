@@ -10,7 +10,7 @@ from django.core.exceptions import ValidationError
 from common.utils import is_instance_used
 
 
-class ProductQualityKindInlineFormSet(BaseInlineFormSet):
+class ProductSeasonKindInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -18,7 +18,7 @@ class ProductQualityKindInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductSize.objects.filter(product_quality_kind=instance).exists():
+            if instance.pk and ProductSize.objects.filter(product_season_kind=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})

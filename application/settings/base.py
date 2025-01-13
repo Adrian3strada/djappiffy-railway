@@ -90,6 +90,7 @@ INSTALLED_APPS = [
     "packhouses.packhouse_settings",
     "packhouses.catalogs",
     "packhouses.sales",
+    "packhouses.gathering",
 
     "eudr.parcels",
 
@@ -296,7 +297,6 @@ JAZZMIN_SETTINGS = {
     # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
     "site_icon": "img/favicon.png",
 
-
     # Welcome text on the login screen
     "welcome_sign": " ",
 
@@ -324,7 +324,7 @@ JAZZMIN_SETTINGS = {
         {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
 
         # external url that opens in a new window (Permissions can be added)
-        #{"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
+        # {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
 
         # model admin to link to (Permissions checked against model)
         {"model": "users.User"},
@@ -339,7 +339,7 @@ JAZZMIN_SETTINGS = {
 
     # Additional links to include in the user menu on the top right ("app" url type is not allowed)
     "usermenu_links": [
-        #{"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
+        # {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
         {"model": "auth.user"}
     ],
 
@@ -360,19 +360,40 @@ JAZZMIN_SETTINGS = {
     "hide_models": [],
 
     # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
-    "order_with_respect_to": ["packhouse_settings", "catalogs", "catalogs.Market", "catalogs.MarketClass",
-                              "catalogs.Product",
-                              "catalogs.ProductSize",
-                              "catalogs.Provider",
-                              "catalogs.Client",
-                              "catalogs.Vehicle",
-                              "catalogs.Gatherer",
-                              "catalogs.Maquiladora",
-                              "catalogs.Orchard",
-                              "catalogs.HarvestingCrew",
-                              "catalogs.Crew", "catalogs.Supply",
-                              "catalogs.Service",
-                              "catalogs.WeighingScale"],
+    "order_with_respect_to": [
+        "sales",
+        "catalogs",
+        "catalogs.Market",
+        "catalogs.MarketClass",
+        "catalogs.Product",
+        "catalogs.ProductSize",
+        "catalogs.Provider",
+        "catalogs.Client",
+        "catalogs.Vehicle",
+        "catalogs.Gatherer",
+        "catalogs.Maquiladora",
+        "catalogs.Orchard",
+        "catalogs.HarvestingCrew",
+        "catalogs.Crew",
+        "catalogs.Supply",
+        "catalogs.PackagingPresentation",
+        "catalogs.MeshBag",
+        "catalogs.Service",
+        # "catalogs.TipoEmpaque(Ismael)",
+        "catalogs.WeighingScale",
+        "catalogs.ColdChamber",
+        "catalogs.Pallet",
+        "catalogs.ProductPackaging",
+        "catalogs.ExportingCompany",
+        "catalogs.Transfer",
+        "catalogs.LocalTransporter",
+        "catalogs.BorderToDestinationTransporter",
+        "catalogs.CustomsBroker",
+        "catalogs.Vessel",
+        "catalogs.Airline",
+        "catalogs.InsuranceCompany",
+        "packhouse_settings",
+    ],
 
     # Custom links to append to app groups, keyed on app name
     "custom_links": {
@@ -402,6 +423,9 @@ JAZZMIN_SETTINGS = {
         "base": "fas fa-database",
         "export_catalogs": "fas fa-truck-moving",
         "firebase_auth": "fas fa-fire",
+        "gathering": "fas fa-tractor",
+        "sales": "fas fa-dollar-sign",
+        "parcels": "fas fa-map-marked-alt",
 
     },
     # Icons that are used when one is not manually specified
@@ -420,7 +444,6 @@ JAZZMIN_SETTINGS = {
     # Relative paths to custom CSS/JS scripts (must be present in static files)
     "custom_css": 'css/jazzmin_custom.css',
     'custom_js': None,
-
 
     # Whether to link font from fonts.googleapis.com (use custom_css to supply font otherwise)
     "use_google_fonts_cdn": True,

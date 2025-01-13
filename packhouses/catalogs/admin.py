@@ -5,14 +5,15 @@ from common.billing.models import LegalEntityCategory
 from .models import (
     Market, KGCostMarket, MarketClass, MarketStandardProductSize, Product, ProductVariety, ProductSize,
     ProductHarvestSizeKind,
-    ProductQualityKind, ProductMassVolumeKind,
+    ProductSeasonKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora, MaquiladoraClient,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
     MeshBag, Service, AuthorityPackagingKind, PackagingKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, InsideSupply
+    InsideSupply,
+    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
@@ -21,7 +22,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, Ve
                                                   )
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
-                    ProductQualityKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
+                    ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet)
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization, OrganizationUser
@@ -30,7 +31,7 @@ from cities_light.models import Country, Region, SubRegion, City
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizationMarketsFilter,
-                      ByProductForOrganizationFilter, ByProductQualityKindForOrganizationFilter,
+                      ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
                       ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
                       ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
@@ -42,7 +43,9 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
                       ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter,
                       ByServiceProviderForOrganizationServiceFilter, ByStateForOrganizationWeighingScaleFilter,
-                      ByCityForOrganizationWeighingScaleFilter,
+                      ByCityForOrganizationWeighingScaleFilter, ByCountryForOrganizationExportingCompaniesFilter, 
+                      ByStateForOrganizationExportingCompaniesFilter, ByCityForOrganizationExportingCompaniesFilter, 
+                      ByCountryForOrganizationCustomsBrokersFilter, 
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -142,14 +145,14 @@ class MarketAdmin(ByOrganizationAdminMixin):
 
 # Products
 
-class ProductQualityKindInline(admin.TabularInline):
-    model = ProductQualityKind
+class ProductSeasonKindInline(admin.TabularInline):
+    model = ProductSeasonKind
     extra = 0
-    fields = ('name', 'has_performance', 'is_enabled', 'order')
+    fields = ('name', 'is_enabled', 'order')
     ordering = ['order', 'name']
-    verbose_name = _('Quality kind')
-    verbose_name_plural = _('Quality kind')
-    formset = ProductQualityKindInlineFormSet
+    verbose_name = _('Season')
+    verbose_name_plural = _('Seasons')
+    formset = ProductSeasonKindInlineFormSet
 
     @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
@@ -208,13 +211,19 @@ class ProductAdmin(ByOrganizationAdminMixin):
     list_filter = (ProductKindForPackagingFilter, 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
     fields = ('kind', 'name', 'description', 'is_enabled')
-    inlines = [ProductQualityKindInline, ProductMassVolumeKindInline, ProductVarietyInline,
+    inlines = [ProductSeasonKindInline, ProductMassVolumeKindInline, ProductVarietyInline,
                ProductHarvestSizeKindInline]
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        if 'kind' in form.base_fields:
+            form.base_fields['kind'].widget.can_add_related = False
+            form.base_fields['kind'].widget.can_change_related = False
+            form.base_fields['kind'].widget.can_delete_related = False
+            form.base_fields['kind'].widget.can_view_related = False
         return form
+
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
@@ -238,10 +247,10 @@ class ProductAdmin(ByOrganizationAdminMixin):
 class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
     list_display = (
         'name', 'alias', 'product', 'get_product_varieties', 'get_markets', 'product_harvest_size_kind',
-        'product_quality_kind', 'product_mass_volume_kind', 'is_enabled', 'order')
+        'product_season_kind', 'product_mass_volume_kind', 'is_enabled', 'order')
     list_filter = (
         ByProductForOrganizationFilter, ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
-        ByProductHarvestSizeKindForOrganizationFilter, ByProductQualityKindForOrganizationFilter,
+        ByProductHarvestSizeKindForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
         ByProductMassVolumeKindForOrganizationFilter, 'is_enabled'
     )
     search_fields = ('name', 'alias', 'product__name')
@@ -298,8 +307,8 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
         if db_field.name == "product_harvest_size_kind":
             kwargs["queryset"] = ProductHarvestSizeKind.objects.filter(**product_organization_queryfilter)
 
-        if db_field.name == "product_quality_kind":
-            kwargs["queryset"] = ProductQualityKind.objects.filter(**product_organization_queryfilter)
+        if db_field.name == "product_season_kind":
+            kwargs["queryset"] = ProductSeasonKind.objects.filter(**product_organization_queryfilter)
 
         if db_field.name == "product_mass_volume_kind":
             kwargs["queryset"] = ProductMassVolumeKind.objects.filter(**product_organization_queryfilter)
@@ -748,7 +757,7 @@ class OrchardAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'code', 'producer', 'get_category', 'is_enabled')
     list_filter = ('category', 'safety_authority_registration_date', 'is_enabled')
     search_fields = ('name', 'code', 'producer__name')
-    fields = ('name', 'code', 'category', 'producer', 'safety_authority_registration_date', 'state', 'city', 'district', 'ha',
+    fields = ('name', 'code', 'category', 'product',  'producer', 'safety_authority_registration_date', 'state', 'city', 'district', 'ha',
               'sanitary_certificate', 'is_enabled')
     inlines = [OrchardCertificationInline]
 
@@ -761,6 +770,10 @@ class OrchardAdmin(ByOrganizationAdminMixin):
     @uppercase_alphanumeric_form_charfield('code')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        form.base_fields['producer'].widget.can_add_related = False
+        form.base_fields['producer'].widget.can_change_related = False
+        form.base_fields['producer'].widget.can_delete_related = False
+        form.base_fields['producer'].widget.can_view_related = False
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -934,14 +947,19 @@ class MeshBagKindAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(MeshBagFilmKind)
-class MeshBagFilmKindAdmin(admin.ModelAdmin):
-    pass
-
-
 @admin.register(MeshBag)
 class MeshBagAdmin(admin.ModelAdmin):
+    verbose_name = _('Mesh Bag (*)')
     pass
+
+
+@admin.register(PackagingPresentation)
+class PackagingPresentationAdmin(admin.ModelAdmin):
+    verbose_name_plural = _('Packaging presentations') + ' (*)'
+    pass
+
+
+
 
 
 @admin.register(Service)
@@ -1231,8 +1249,8 @@ class ExportingCompanyBeneficiaryInline(admin.StackedInline):
 @admin.register(ExportingCompany)
 class ExportingCompanyAdmin(ByOrganizationAdminMixin):
     list_display = (
-    'name', 'contact_name', 'tax_id', 'city', 'address', 'external_number', 'phone_number', 'is_enabled')
-    list_filter = ('is_enabled',)
+    'name', 'contact_name', 'tax_id', 'country' ,'get_state_name' , 'get_city_name', 'address', 'external_number', 'phone_number', 'is_enabled')
+    list_filter = (ByCountryForOrganizationExportingCompaniesFilter, ByStateForOrganizationExportingCompaniesFilter, ByCityForOrganizationExportingCompaniesFilter, 'is_enabled',)
     fields = ('name', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number',
               'tax_id', 'contact_name', 'email', 'phone_number', 'is_enabled')
     inlines = [ExportingCompanyBeneficiaryInline,]
@@ -1351,8 +1369,9 @@ class BorderToDestinationTransporterAdmin(ByOrganizationAdminMixin):
 
 @admin.register(CustomsBroker)
 class CustomsBrokerAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'broker_number', 'country', 'is_enabled')
     fields = ('name', 'broker_number', 'country','is_enabled')
-    list_filter = ('is_enabled',)
+    list_filter = (ByCountryForOrganizationCustomsBrokersFilter, 'is_enabled',)
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -1453,6 +1472,7 @@ class ProviderAdmin(ByOrganizationAdminMixin):
                 packhouse_profile = PackhouseExporterProfile.objects.get(organization=request.organization)
                 if packhouse_profile:
                     form.base_fields['country'].initial = packhouse_profile.country
+        form.base_fields['vehicle_provider'].widget.can_add_related = False
         return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

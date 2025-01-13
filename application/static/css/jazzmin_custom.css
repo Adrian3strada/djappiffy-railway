@@ -97,3 +97,52 @@ body.jazzmin-login-page{
 #jazzy-logo > .brand-text {
   color: #ffc107 !important;
 }
+
+footer.main-footer .float-right {
+    display: none !important;
+}
+
+.btn-success{
+  background-color:#4daf50 !important;
+  border-color:#4daf50 !important;
+}
+
+.btn-success:hover{
+  background-color: #338337 !important;
+  border-color:#338337 !important;
+}
+
+.btn-info{
+  background-color:#0e1f40 !important;
+  border-color:#0e1f40 !important;
+}
+
+.btn-info:hover{
+  background-color: #183670 !important;
+  border-color:#183670 !important;
+}
+
+.accent-primary .nav-tabs .nav-link{
+  color: #0046ca !important;
+}
+
+.accent-primary a:not(.dropdown-item):not(.btn-app):not(.nav-link):not(.brand-link):not(.page-link):not(.btn) {
+  color: #08509d;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+  background-color: #0e1e3f !important;
+  border: 1px solid #ffc107 !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+  color: #fff !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+  border-right: 1px solid #ffc107 !important;
+  color: #FFF !important;
+}
+.main-footer .float-right {
+  display: none !important;
+}

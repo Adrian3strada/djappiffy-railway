@@ -2,9 +2,10 @@ from itertools import product
 
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
+
 from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer, MarketClassSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer, SupplySerializer,
-                          ProductQualityKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
+                          ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer)
 from .models import (MarketStandardProductSize, Market, MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductQualityKind, ProductMassVolumeKind, Client, Provider, Product, Supply, ProductSize)
@@ -42,8 +43,8 @@ class ProductHarvestSizeKindViewSet(viewsets.ModelViewSet):
         return ProductHarvestSizeKind.objects.filter(product__organization=self.request.organization)
 
 
-class ProductQualityKindKindViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductQualityKindSerializer
+class ProductSeasonKindKindViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductSeasonKindSerializer
     filterset_fields = ['product', 'is_enabled']
     pagination_class = None
 
@@ -52,7 +53,7 @@ class ProductQualityKindKindViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return ProductQualityKind.objects.filter(product__organization=self.request.organization)
+        return ProductSeasonKind.objects.filter(product__organization=self.request.organization)
 
 
 class ProductMassVolumeKindViewSet(viewsets.ModelViewSet):
@@ -213,4 +214,10 @@ class ClientViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return Client.objects.filter(organization=self.request.organization)
+        queryset = Client.objects.filter(organization=self.request.organization)
+
+        category = self.request.GET.get('category')
+        if category:
+            queryset = queryset.filter(category=category)
+
+        return queryset
