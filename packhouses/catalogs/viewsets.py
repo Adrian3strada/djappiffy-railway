@@ -2,12 +2,13 @@ from itertools import product
 
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
-from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer, VehicleSerializer,
-                          ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
-                          ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer,
+
+from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer, MarketClassSerializer, VehicleSerializer,
+                          ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer, SupplySerializer,
+                          ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer)
-from .models import (MarketStandardProductSize, Market, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
-                     ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Provider, Product)
+from .models import (MarketStandardProductSize, Market, MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
+                     ProductHarvestSizeKind, ProductQualityKind, ProductMassVolumeKind, Client, Provider, Product, Supply, ProductSize)
 
 
 class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
@@ -81,6 +82,19 @@ class MarketViewSet(viewsets.ModelViewSet):
         return Market.objects.filter(organization=self.request.organization)
 
 
+class MarketClassViewSet(viewsets.ModelViewSet):
+    serializer_class = MarketClassSerializer
+    filterset_fields = ['market', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return MarketClass.objects.all()
+
+
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     filterset_fields = ['organization', 'is_enabled']
@@ -107,6 +121,19 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
         return ProductVariety.objects.filter(product__organization=self.request.organization)
 
 
+class ProductSizeViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductSizeSerializer
+    filterset_fields = ['product', 'product_varieties', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return ProductSize.objects.all()
+
+
 class ProviderViewSet(viewsets.ModelViewSet):
     serializer_class = ProviderSerializer
     filterset_fields = ['category', 'is_enabled']
@@ -124,6 +151,19 @@ class ProviderViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(category__in=category_list)
 
         return queryset
+
+
+class SupplyViewSet(viewsets.ModelViewSet):
+    serializer_class = SupplySerializer
+    filterset_fields = ['kind', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return Supply.objects.all()
 
 
 class VehicleViewSet(viewsets.ModelViewSet):
