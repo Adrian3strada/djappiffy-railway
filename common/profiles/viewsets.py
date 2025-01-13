@@ -19,14 +19,14 @@ class BaseOrganizationProfileViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(organization__organization_users__in=OrganizationUser.objects.filter(user=user))
 
     def perform_create(self, serializer):
-        products_data = self.request.data.pop('products', [])
-        del serializer.validated_data['products']
+        products_data = self.request.data.pop('product_kinds', [])
+        del serializer.validated_data['product_kinds']
         instance = serializer.save()
         instance.product_kinds.set(products_data)
 
     def perform_update(self, serializer):
-        products_data = self.request.data.pop('products', [])
-        del serializer.validated_data['products']
+        products_data = self.request.data.pop('product_kinds', [])
+        del serializer.validated_data['product_kinds']
         instance = serializer.save()
         instance.product_kinds.set(products_data)
         if not self.request.user.is_superuser:
