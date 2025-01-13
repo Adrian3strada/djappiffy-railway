@@ -24,14 +24,14 @@ from ..catalogs.settings import CLIENT_KIND_CHOICES
 
 
 class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
-    ooid = models.PositiveIntegerField(verbose_name=_("Order Number"))
+    ooid = models.PositiveIntegerField(verbose_name=_("Order ID"))
     client_category = models.CharField(max_length=20, verbose_name=_('Client category'), choices=CLIENT_KIND_CHOICES)
-    maquiladora = models.ForeignKey(Maquiladora, verbose_name=_("Maquiladora"), on_delete=models.PROTECT, null=True, blank=False)
+    maquiladora = models.ForeignKey(Maquiladora, verbose_name=_("Maquiladora"), on_delete=models.PROTECT, null=True, blank=True)
     client = models.ForeignKey(Client, verbose_name=_("Client"), on_delete=models.PROTECT)
     registration_date = models.DateField(verbose_name=_('Registration date'), default=datetime.date.today)
     shipment_date = models.DateField(verbose_name=_('Shipment date'), default=datetime.date.today)
     delivery_date = models.DateField(verbose_name=_('Delivery date'))
-    local_delivery = models.ForeignKey(LocalDelivery, verbose_name=_('Local delivery'), on_delete=models.PROTECT, null=True, blank=False)
+    local_delivery = models.ForeignKey(LocalDelivery, verbose_name=_('Local delivery'), on_delete=models.PROTECT, null=True, blank=True)
     incoterms = models.ForeignKey(Incoterm, verbose_name=_('Incoterms'), on_delete=models.PROTECT, null=True, blank=True)
     observations = CKEditor5Field(blank=True, null=True, verbose_name=_('Observations'))
     status = models.CharField(max_length=8, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open')
@@ -42,7 +42,7 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
         return f"#{self.ooid} - {self.client} - SHIPMENT: {self.shipment_date} - DELIVERY: {self.delivery_date}"
 
     def save(self, *args, **kwargs):
-        if not self.ooid:
+        if not self.pk:
             # Usar transacción y bloqueo de fila para evitar condiciones de carrera
             with transaction.atomic():
                 last_order = Order.objects.select_for_update().filter(organization=self.organization).order_by('ooid').last()
@@ -52,4 +52,8 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
     class Meta:
         verbose_name = _('Order')
         verbose_name_plural = _('Orders')
+        ordering = ['-ooid']
+        constraints = [
+            models.UniqueConstraint(fields=['ooid', 'organization'], name='order_unique_ooid_organization')
+        ]
 
