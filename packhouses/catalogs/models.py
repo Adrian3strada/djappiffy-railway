@@ -550,26 +550,26 @@ class MaquiladoraClient(CleanNameAndMaquiladoraMixin, models.Model):
         ordering = ('name',)
 
 
-
 class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     zone = models.CharField(max_length=200, verbose_name=_('Zone'))
-    tax_registry_code = models.CharField(max_length=20, verbose_name=_('Tax registry code'))
-    population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True, blank=True)
-    social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
+    tax_id = models.CharField(max_length=20, verbose_name=_('Tax ID'))
+    # population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True, blank=True)
+    # social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT)
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'), null=True, blank=True)
-    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'), null=True, blank=True)
-    address = models.CharField(max_length=255, verbose_name=_('Address'), null=True, blank=True)
-    external_number = models.CharField(max_length=10, verbose_name=_('External number'), null=True, blank=True)
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    address = models.CharField(max_length=255, verbose_name=_('Address'))
+    external_number = models.CharField(max_length=10, verbose_name=_('External number'))
     internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    email = models.EmailField(null=True, blank=True)
-    phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'), null=True, blank=True)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-    maquiladora_client = models.ManyToManyField(Client, verbose_name=_('Maquiladora Client'), blank=True)
+    maquiladora_clients = models.ManyToManyField(Client, verbose_name=_('Maquiladora clients'), blank=False,
+                                                 help_text=_('Clients associated with this maquiladora, it must be created before at Catalogs:Clients section.'))
 
     class Meta:
         verbose_name = _('Maquiladora')
@@ -884,37 +884,70 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
         ]
 
 
-# Tipos de cajas
+# Tipos de empaques
 
-class AuthorityBoxKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
+class AuthorityPackagingKind(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Authority box kind')
-        verbose_name_plural = _('Authority box kinds')
-        unique_together = ('name', 'organization')
+        verbose_name = _('Packaging Kind Authority')
+        verbose_name_plural = _('Packaging Kind Authorities')
+        ordering = ('name', )
+        constraints = [
+            models.UniqueConstraint(fields=('name', 'organization'),
+                                    name='authoritypackagingkind_unique_name_organization'),
+        ]
 
 
-class BoxKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    kg_per_box = models.FloatField(verbose_name=_('Kg per box'))
-    trays_per_box = models.PositiveIntegerField(verbose_name=_('Trays per box'))
+class PackagingKind(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+
+    ### Authority
+    authority = models.ForeignKey(AuthorityPackagingKind, on_delete=models.CASCADE)
+    code = models.CharField(max_length=10, verbose_name=_('Code'))
+
+    ### Embalaje más externo
+    external_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('External supply kind'), on_delete=models.PROTECT)
+    external_supply = models.ForeignKey(Supply, verbose_name=_('External supply'), on_delete=models.PROTECT)
+
+    ### Pesos del producto y tare
+    max_product_kg_per_package = models.FloatField(verbose_name=_('Max product Kg per package'))
+    avg_tare_kg_per_package = models.FloatField(verbose_name=_('Average tare Kg per package'))
+
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Box kind')
-        verbose_name_plural = _('Box kinds')
-        unique_together = ('name', 'organization')
+        verbose_name = _('Package kind')
+        verbose_name_plural = _('Package kinds')
+        ordering = ('name', )
+        constraints = [
+            models.UniqueConstraint(fields=('name', 'organization'),
+                                    name='packagingkind_unique_name_organization'),
+        ]
 
+class InsideSupply(models.Model):
+    packaging_kind = models.ForeignKey(PackagingKind, on_delete=models.CASCADE)
+    supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Supply kind'), on_delete=models.PROTECT)
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'))
+
+    class Meta:
+        verbose_name = _('Inside supply')
+        verbose_name_plural = _('Inside supplies')
+        ordering = ('supply_kind', 'supply')
+        constraints = [
+            models.UniqueConstraint(fields=('packaging_kind', 'supply_kind'),
+                                    name='insidesupply_unique_packagingkind_supplykind'),
+        ]
 
 # Básculas
 
@@ -1052,31 +1085,24 @@ class PalletConfigurationPersonalExpense(models.Model):
 
 # configuración de productos
 
-class ProductPackaging(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
-    boxes_quantity = models.PositiveIntegerField(verbose_name=_('Boxes quantity'))
-    kg_amount = models.FloatField(verbose_name=_('Kg amount'))
-    kg_tare = models.FloatField(verbose_name=_('Kg tare'))
+
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    box_kind = models.ForeignKey(BoxKind, verbose_name=_('Box kind'),
-                                 on_delete=models.PROTECT)  # TODO: detallar tipos de caja por tipo de producto?
+    market_class = models.ForeignKey(MarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
+
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
     product_variety_size = models.ForeignKey(ProductSize, verbose_name=_('Product variety size'),
                                              on_delete=models.PROTECT)
-    kg_per_box = models.FloatField(verbose_name=_('Kg per box'))
-    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT,
-                               related_name='product_packaging_supplies')
+
+    packaging_kind = models.ForeignKey(PackagingKind, verbose_name=_('Packaging kind'),
+                                       on_delete=models.PROTECT)  # TODO: detallar tipos de caja por tipo de producto?
     is_dark = models.BooleanField(default=False, verbose_name=_('Is dark'))
-    provisional_cost = models.FloatField(verbose_name=_('provisional cost'))
-    provisional_price = models.FloatField(verbose_name=_('provisional price'))
-    market_class = models.ForeignKey(MarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
-    supply_tray = models.ForeignKey(Supply, verbose_name=_('Supply tray'), on_delete=models.PROTECT,
-                                    related_name='product_packaging_supplies_trays')
     # TODO: agregar campo para tipo de malla, o no se que va aquí pero falta uno
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name}"

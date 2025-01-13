@@ -1,10 +1,9 @@
 from django.db import models
 from wagtail.models import Orderable
-# from django_countries.fields import CountryField
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from django.utils.translation import gettext_lazy as _
-
+from ..base.models import LegalEntityCategory
 # Create your models here.
 
 
@@ -24,22 +23,6 @@ class TaxRegime(Orderable):
         verbose_name_plural = _('Tax Regimes')
         unique_together = ('code', 'name', 'country')
 
-
-class LegalEntityCategory(Orderable):
-    code = models.CharField(max_length=30, verbose_name=_('Code'))
-    name = models.CharField(max_length=255, verbose_name=_('Name'))
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Legal Entity Category')
-        verbose_name_plural = _('Legal Entity Categories')
-        ordering = ['country', 'code', 'name']
-        constraints = [
-            models.UniqueConstraint(fields=['code', 'name', 'country'], name='legalentitycategory_unique_code_name_country')
-        ]
 
 class LegalEntity(Orderable):
     tax_regime = models.ForeignKey(TaxRegime, verbose_name=_('Tax regime'), on_delete=models.PROTECT)
