@@ -573,3 +573,21 @@ class ByMarketForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(market__id=self.value())
         return queryset
+    
+   
+class ByProductVarietyForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
+    title = _('Product Variety')
+    parameter_name = 'product_variety'
+
+    def lookups(self, request, model_admin):
+        product_varieties = ProductVariety.objects.all()
+        if hasattr(request, 'organization'):
+            product_varieties_ids = list(
+                PalletConfiguration.objects.filter(organization=request.organization).values_list('product_variety', flat=True).distinct())
+            product_varieties = product_varieties.filter(id__in=product_varieties_ids).order_by('name')
+        return [(product_variety.id, product_variety.name) for product_variety in product_varieties]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(market__id=self.value())
+        return queryset

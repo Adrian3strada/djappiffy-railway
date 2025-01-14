@@ -383,6 +383,7 @@ JAZZMIN_SETTINGS = {
         "catalogs.WeighingScale",
         "catalogs.ColdChamber",
         "catalogs.Pallet",
+        "catalogs.PalletConfiguration",
         "catalogs.ProductPackaging",
         "catalogs.ExportingCompany",
         "catalogs.Transfer",
