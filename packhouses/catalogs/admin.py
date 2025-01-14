@@ -9,7 +9,7 @@ from .models import (
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora, MaquiladoraClient,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
-    MeshBag, Service, AuthorityPackagingKind, PackagingKind, WeighingScale, ColdChamber,
+    MeshBag, Service, PackagingKind, WeighingScale, ColdChamber,
     Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     InsideSupply,
@@ -18,7 +18,7 @@ from .models import (
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
                                                   VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier,
-                                                  SupplyKind
+                                                  SupplyKind, AuthorityPackagingKind,
                                                   )
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
@@ -947,19 +947,6 @@ class ServiceAdmin(ByOrganizationAdminMixin):
                 kwargs["queryset"] = Provider.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
-
-
-@admin.register(AuthorityPackagingKind)
-class AuthorityPackagingKindAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'is_enabled')
-    list_filter = ('is_enabled',)
-    search_fields = ('name',)
-    fields = ('name', 'is_enabled')
-
-    @uppercase_form_charfield('name')
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        return form
 
 
 class InsideSuppliesInline(admin.TabularInline):

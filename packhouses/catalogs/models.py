@@ -21,6 +21,7 @@ from django.core.exceptions import ValidationError
 from common.base.models import ProductKind
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
+                                                  AuthorityPackagingKind,
                                                   OrchardCertificationVerifier,
                                                   OrchardCertificationKind, SupplyKind)
 from .settings import CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES
@@ -886,29 +887,12 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 
 # Tipos de empaques
 
-class AuthorityPackagingKind(models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Packaging Kind Authority')
-        verbose_name_plural = _('Packaging Kind Authorities')
-        ordering = ('name', )
-        constraints = [
-            models.UniqueConstraint(fields=('name', 'organization'),
-                                    name='authoritypackagingkind_unique_name_organization'),
-        ]
-
 
 class PackagingKind(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
 
     ### Authority
-    authority = models.ForeignKey(AuthorityPackagingKind, blank=True, null=True, on_delete=models.CASCADE)
+    authority = models.ForeignKey(AuthorityPackagingKind, blank=True, null=True, on_delete=models.PROTECT)
     code = models.CharField(max_length=10, blank=True, null=True, verbose_name=_('Code'))
 
     ### Embalaje más externo
