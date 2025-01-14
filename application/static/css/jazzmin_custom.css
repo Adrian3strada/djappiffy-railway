@@ -109,17 +109,40 @@ body.jazzmin-login-page{
 }
 
 .btn-info{
-  background-color:#0e1f40 !important;
+  background-color: #183670 !important;
   border-color:#0e1f40 !important;
 }
 
+.add-row > a.float-right{
+  border-bottom: solid 2px #0e1e3f !important;
+  border-radius: 0 !important;
+}
+
 .btn-info:hover{
-  background-color: #183670 !important;
+  background-color:#0e1f40 !important;
   border-color:#183670 !important;
 }
 
 .accent-primary .nav-tabs .nav-link{
   color: #0046ca !important;
+}
+
+.accent-primary .nav-tabs .nav-link:hover{
+  background-color: #e1e1e1;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #183670;
+  border-color: #183670;
+  color: #FFF !important;
+}
+.nav-tabs .nav-link.active:hover {
+  background-color: #183670;
+  border-color: #183670;
+  color: #FFF !important;
+}
+.nav-tabs{
+  border-bottom: solid 1px #d0c8c8 !important;
 }
 
 .accent-primary a:not(.dropdown-item):not(.btn-app):not(.nav-link):not(.brand-link):not(.page-link):not(.btn) {
@@ -142,3 +165,6 @@ body.jazzmin-login-page{
 .main-footer .float-right {
   display: none !important;
 }
+
+
+

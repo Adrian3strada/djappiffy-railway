@@ -779,6 +779,15 @@ class OrchardAdmin(ByOrganizationAdminMixin):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
 
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "product":
+            organization = request.organization if hasattr(request, 'organization') else None
+            if organization:
+                kwargs["queryset"] = Product.objects.filter(organization=organization, is_enabled=True)
+            else:
+                kwargs["queryset"] = Product.objects.none()
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = Orchard.objects.get(id=object_id) if object_id else None
@@ -797,7 +806,7 @@ class OrchardAdmin(ByOrganizationAdminMixin):
 
         if db_field.name in field_mapping:
             Model, filter_field, filter_value = field_mapping[db_field.name]
-            if db_field.name in ["producer"]:
+            if db_field.name == "producer":
                 kwargs["queryset"] = Model.objects.filter(**{f"{filter_field}": filter_value}, organization=organization, is_enabled=True)
             else:
                 kwargs["queryset"] = Model.objects.filter(**{f"{filter_field}_id": filter_value}) if filter_value else Model.objects.none()

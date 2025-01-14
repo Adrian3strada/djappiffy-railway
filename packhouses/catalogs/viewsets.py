@@ -5,9 +5,11 @@ from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
                           ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer,
-                          HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer)
+                          HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
+                          OrchardSerializer, HarvestingCrewSerializer)
 from .models import (MarketStandardProductSize, Market, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
-                     ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Provider, Product)
+                     ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Provider, Product,
+                     Orchard, HarvestingCrew)
 
 
 class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
@@ -109,7 +111,7 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
 
 class ProviderViewSet(viewsets.ModelViewSet):
     serializer_class = ProviderSerializer
-    filterset_fields = ['category', 'is_enabled']
+    filterset_fields = ['category', 'is_enabled', 'id']
     pagination_class = None
 
     def get_queryset(self):
@@ -130,7 +132,7 @@ class ProviderViewSet(viewsets.ModelViewSet):
 
 class VehicleViewSet(viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
-    filterset_fields = ['category', 'is_enabled']
+    filterset_fields = ['category', 'is_enabled', 'id']
     pagination_class = None
 
     def get_queryset(self):
@@ -177,3 +179,27 @@ class ClientViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return Client.objects.filter(organization=self.request.organization)
+
+class OrchardViewSet(viewsets.ModelViewSet):
+    serializer_class = OrchardSerializer
+    filterset_fields = ['organization', 'is_enabled', 'product']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return Orchard.objects.filter(organization=self.request.organization)
+
+class HarvestingCrewViewSet(viewsets.ModelViewSet):
+    serializer_class = HarvestingCrewSerializer
+    filterset_fields = ['organization', 'is_enabled', 'provider']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return HarvestingCrew.objects.filter(organization=self.request.organization)

@@ -22,3 +22,14 @@ class ByProductForOrganizationAdminMixin(admin.ModelAdmin):
         if hasattr(request, 'organization'):
             return qs.filter(product__organization=request.organization)
         return qs
+
+class DisableInlineRelatedLinksMixin:
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        form = formset.form
+        for field in form.base_fields.values():
+            field.widget.can_add_related = False
+            field.widget.can_change_related = False
+            field.widget.can_delete_related = False
+            field.widget.can_view_related = False
+        return formset
