@@ -3,14 +3,16 @@ from itertools import product
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 
-from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer, MarketClassSerializer, VehicleSerializer,
-                          ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer, SupplySerializer,
-                          ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
+from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer,MarketClassSerializer, VehicleSerializer,
+                          ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,SupplySerializer,
+                          ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer,ProductSizeSerializer,
                           MaquiladoraSerializer,
-                          HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer)
-from .models import (MarketStandardProductSize, Market, MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
-                     ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Maquiladora,
-                     Product, Supply, ProductSize, Provider, Product)
+                          HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
+                          OrchardSerializer, HarvestingCrewSerializer)
+from .models import (MarketStandardProductSize, Market,MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
+                     ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Maquiladora, Provider, Product,
+                     Supply, ProductSize, Orchard, HarvestingCrew)
+
 
 
 class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
@@ -152,7 +154,7 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
 
 class ProviderViewSet(viewsets.ModelViewSet):
     serializer_class = ProviderSerializer
-    filterset_fields = ['category', 'is_enabled']
+    filterset_fields = ['category', 'is_enabled', 'id']
     pagination_class = None
 
     def get_queryset(self):
@@ -184,7 +186,7 @@ class SupplyViewSet(viewsets.ModelViewSet):
 
 class VehicleViewSet(viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
-    filterset_fields = ['category', 'is_enabled']
+    filterset_fields = ['category', 'is_enabled', 'id']
     pagination_class = None
 
     def get_queryset(self):
@@ -242,3 +244,26 @@ class ClientViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+class OrchardViewSet(viewsets.ModelViewSet):
+    serializer_class = OrchardSerializer
+    filterset_fields = ['organization', 'is_enabled', 'product']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return Orchard.objects.filter(organization=self.request.organization)
+
+class HarvestingCrewViewSet(viewsets.ModelViewSet):
+    serializer_class = HarvestingCrewSerializer
+    filterset_fields = ['organization', 'is_enabled', 'provider']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return HarvestingCrew.objects.filter(organization=self.request.organization)

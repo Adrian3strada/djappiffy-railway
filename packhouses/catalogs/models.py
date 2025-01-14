@@ -285,6 +285,9 @@ class Vehicle(CleanNameAndOrganizationMixin, models.Model):
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
+    def __str__(self):
+        return f"{self.license_plate} / {self.name}"
+
     class Meta:
         verbose_name = _('Vehicle')
         verbose_name_plural = _('Vehicles')
