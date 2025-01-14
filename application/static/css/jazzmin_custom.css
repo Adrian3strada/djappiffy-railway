@@ -98,6 +98,10 @@ body.jazzmin-login-page{
   color: #ffc107 !important;
 }
 
+footer.main-footer .float-right {
+    display: none !important;
+}
+
 .btn-success{
   background-color:#4daf50 !important;
   border-color:#4daf50 !important;
