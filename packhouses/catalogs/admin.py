@@ -6,11 +6,14 @@ from .models import (
     Market, KGCostMarket, MarketClass, MarketStandardProductSize, Product, ProductVariety, ProductSize,
     ProductHarvestSizeKind,
     ProductSeasonKind, ProductMassVolumeKind,
-    PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora, MaquiladoraClient,
+    PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora, 
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
+    MeshBag, Service, WeighingScale, ColdChamber,
+    Pallet, PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense, 
+    ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     MeshBag, Service, AuthorityPackagingKind, PackagingKind, WeighingScale, ColdChamber,
-    Pallet, PalletExpense, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
+    Pallet, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     InsideSupply,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation
@@ -45,7 +48,8 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByServiceProviderForOrganizationServiceFilter, ByStateForOrganizationWeighingScaleFilter,
                       ByCityForOrganizationWeighingScaleFilter, ByCountryForOrganizationExportingCompaniesFilter, 
                       ByStateForOrganizationExportingCompaniesFilter, ByCityForOrganizationExportingCompaniesFilter, 
-                      ByCountryForOrganizationCustomsBrokersFilter, 
+                      ByCountryForOrganizationCustomsBrokersFilter, ByProductForOrganizationPalletConfigurationFilter,
+                      ByMarketForOrganizationPalletConfigurationFilter, ByProductVarietyForOrganizationPalletConfigurationFilter,
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -1153,10 +1157,90 @@ class PalletAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(PalletExpense)
-class PalletExpenseAdmin(admin.ModelAdmin):
-    pass
+class PalletConfigurationSupplyExpenseInLine(admin.StackedInline):
+    model = PalletConfigurationSupplyExpense
+    extra = 0
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "supply":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = Supply.objects.filter(organization=request.organization, is_enabled=True, kind__is_packaging=False)
+            else:
+                kwargs["queryset"] = Supply.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
 
+class PalletConfigurationPersonalExpenseInline(admin.StackedInline):
+    model = PalletConfigurationPersonalExpense
+    extra = 0
+
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('description')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+
+@admin.register(PalletConfiguration)
+class PalletConfigurationAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'alias', 'market', 'product', 'product_variety' , 'product_variety_size' , 'ripeness', 'is_enabled')
+    list_filter = (ByMarketForOrganizationPalletConfigurationFilter, ByProductForOrganizationPalletConfigurationFilter, ByProductVarietyForOrganizationPalletConfigurationFilter, 'is_enabled',)
+    fields = ('name', 'alias', 'market', 'market_class' ,'product', 'product_variety', 'product_variety_size', 'maximum_boxes_per_pallet', 'maximum_kg_per_pallet',
+              'kg_tare', 'kg_per_box', 'packaging_kind' ,'ripeness', 'is_enabled')
+    search_fields = ('name', 'alias')
+    inlines = [PalletConfigurationSupplyExpenseInLine,PalletConfigurationPersonalExpenseInline]
+    
+    @uppercase_form_charfield('name')
+    @uppercase_alphanumeric_form_charfield('alias')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+    
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[Organization]):
+            readonly_fields.extend(['name', 'alias', 'organization'])
+        return readonly_fields
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = PalletConfiguration.objects.get(id=obj_id) if obj_id else None
+        
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+        market = request.POST.get('market') if request.POST else obj.market if obj else None
+        product = request.POST.get('product') if request.POST else obj.product if obj else None
+        variety = request.POST.get('product_variety') if request.POST else obj.product_variety if obj else None
+        
+        market_queryfilter = {'market': market, 'is_enabled': True}
+        product_queryfilter = {'product': product, 'is_enabled': True}
+        variety_queryfilter = {'product_varieties': variety, 'is_enabled': True}
+        
+        if db_field.name == "market":
+            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+        if db_field.name == "market_class":
+            if market:
+                kwargs["queryset"] = MarketClass.objects.filter(**market_queryfilter)
+            else:
+                kwargs["queryset"] = MarketClass.objects.none()
+        if db_field.name == "product":
+            kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
+        if db_field.name == "product_variety":
+            if product:
+                kwargs["queryset"] = ProductVariety.objects.filter(**product_queryfilter)
+            else:
+                kwargs["queryset"] = ProductVariety.objects.none()
+        if db_field.name == "product_variety_size":
+            if variety:
+                kwargs["queryset"] = ProductSize.objects.filter(**variety_queryfilter)
+            else:
+                kwargs["queryset"] = ProductSize.objects.none()
+        
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/pallet_configuration.js',)
+    
+    
 
 @admin.register(ProductPackaging)
 class ProductPackagingAdmin(ByOrganizationAdminMixin):
