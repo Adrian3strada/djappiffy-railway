@@ -5,7 +5,7 @@ from .models import ProductHarvestSizeKind
 from .viewsets import (
     MarketStandardProductSizeViewSet, MarketViewSet, MarketClassViewSet, VehicleViewSet, HarvestingCrewProviderViewSet,
     CrewChiefViewSet, ProductVarietyViewSet, ProductHarvestSizeKindViewSet, ProductSeasonKindKindViewSet,
-    ProductMassVolumeKindViewSet, ClientViewSet, ProviderViewSet, ProductViewSet, MaquiladoraViewSet, SupplyViewSet, ProductSizeViewSet,
+    ProductMassVolumeKindViewSet, ClientViewSet, ProviderViewSet, ProductViewSet, MaquiladoraViewSet, SupplyViewSet, MarketProductSizeViewSet,
     OrchardViewSet, HarvestingCrewViewSet
 )
 
@@ -19,7 +19,7 @@ drf_router.register(r'rest/v1/catalogs/product_harvest_size_kind', ProductHarves
 drf_router.register(r'rest/v1/catalogs/product_season_kind', ProductSeasonKindKindViewSet, basename='product_season_kind')
 drf_router.register(r'rest/v1/catalogs/product_mass_volume_kind', ProductMassVolumeKindViewSet, basename='product_mass_volume_kind')
 drf_router.register(r'rest/v1/catalogs/product_variety', ProductVarietyViewSet, basename='product_variety')
-drf_router.register(r'rest/v1/catalogs/product_size', ProductSizeViewSet, basename='product_size')
+drf_router.register(r'rest/v1/catalogs/product_size', MarketProductSizeViewSet, basename='product_size')
 drf_router.register(r'rest/v1/catalogs/provider', ProviderViewSet, basename='provider')
 drf_router.register(r'rest/v1/catalogs/supply', SupplyViewSet, basename='supply')
 drf_router.register(r'rest/v1/catalogs/vehicle', VehicleViewSet, basename='vehicle')

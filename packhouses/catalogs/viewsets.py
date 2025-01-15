@@ -4,14 +4,14 @@ from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 
 from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer,MarketClassSerializer, VehicleSerializer,
-                          ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,SupplySerializer,
-                          ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer,ProductSizeSerializer,
+                          ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer, SupplySerializer,
+                          ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, MarketProductSizeSerializer,
                           MaquiladoraSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
                           OrchardSerializer, HarvestingCrewSerializer)
 from .models import (MarketStandardProductSize, Market,MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Maquiladora, Provider, Product,
-                     Supply, ProductSize, Orchard, HarvestingCrew)
+                     Supply, MarketProductSize, Orchard, HarvestingCrew)
 from django_filters.rest_framework import DjangoFilterBackend
 
 
@@ -140,8 +140,8 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
         return ProductVariety.objects.filter(product__organization=self.request.organization)
 
 
-class ProductSizeViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductSizeSerializer
+class MarketProductSizeViewSet(viewsets.ModelViewSet):
+    serializer_class = MarketProductSizeSerializer
     filterset_fields = ['product', 'product_varieties', 'is_enabled']
     pagination_class = None
 
@@ -150,7 +150,7 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return ProductSize.objects.all()
+        return MarketProductSize.objects.all()
 
 
 class ProviderViewSet(viewsets.ModelViewSet):
