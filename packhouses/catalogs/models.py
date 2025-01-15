@@ -25,6 +25,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   OrchardCertificationVerifier,
                                                   OrchardCertificationKind, SupplyKind)
 from .settings import CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES
+from packhouses.packhouse_settings.settings import SUPPLY_UNIT_KIND_CHOICES
 
 from django.db.models import Max, Min
 from django.db.models import Q, F
@@ -1206,3 +1207,17 @@ class InsuranceCompany(CleanNameAndOrganizationMixin, models.Model):
         unique_together = ('name', 'organization')
 
 
+class HarvestCuttingContainer(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    capacity = models.FloatField(verbose_name=_('Capacity'))
+    unit_kind = models.CharField(max_length=30, verbose_name=_('Unit kind'), choices=SUPPLY_UNIT_KIND_CHOICES)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name} - {self.capacity} {self.unit_kind}"
+
+    class Meta:
+        verbose_name = _('Harvest Cutting Container')
+        verbose_name_plural = _('Harvest Cutting Containers')
+        unique_together = ('name', 'organization')

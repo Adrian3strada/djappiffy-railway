@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.contrib import admin
 
 from wagtail.admin import urls as wagtailadmin_urls
@@ -8,14 +8,16 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 from search import views as search_views
 
-from common.base.router import drf_router
-
 urlpatterns = [
+    # Admin URLs
     path("dadmin/", admin.site.urls),
     path("wadmin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
+
+    # Search functionality
     path("search/", search_views.search, name="search"),
 
+    # App-specific URLs
     path("", include("common.base.urls")),
     path("", include("common.profiles.urls")),
     path("", include("common.producers.urls")),
@@ -23,32 +25,29 @@ urlpatterns = [
     path("", include("common.exporters.urls")),
     path("", include("common.government.urls")),
     path("", include("common.billing.urls")),
-    path("", include('packhouses.catalogs.urls')),
-    path("", include('packhouses.packhouse_settings.urls')),
-    path("", include('eudr.parcels.urls')),
+    path("", include("packhouses.catalogs.urls")),
+    path("", include("packhouses.packhouse_settings.urls")),
+    path("", include("eudr.parcels.urls")),
+
+    # Internationalization
+    path("i18n/", include("django.conf.urls.i18n")),
+
+    # CKEditor integration
+    path("ckeditor5/", include("django_ckeditor_5.urls")),
+    path("_nested_admin/", include("nested_admin.urls")),
 ]
 
-# Añadir el set_language
-urlpatterns += [
-    path('i18n/', include('django.conf.urls.i18n')),
-    path("ckeditor5/", include('django_ckeditor_5.urls')),
-
-]
-
+# Add static and media files serving in debug mode
 if settings.DEBUG:
     from django.conf.urls.static import static
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
-    # Serve static and media files from development server
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-urlpatterns = urlpatterns + [
-    # For anything not caught by a more specific rule above, hand over to
-    # Wagtail's page serving mechanism. This should be the last pattern in
-    # the list:
+# Add Wagtail page serving mechanism
+urlpatterns += [
+    # Catch-all pattern for Wagtail pages, placed last
     path("", include(wagtail_urls)),
-    # Alternatively, if you want Wagtail pages to be served from a subpath
-    # of your site, rather than the site root:
-    #    path("pages/", include(wagtail_urls)),
 ]
+

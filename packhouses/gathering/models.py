@@ -25,10 +25,11 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, ProductVariety,
                                         Market, ProductSeasonKind, ProductHarvestSizeKind, WeighingScale,
-                                        HarvestingCrew, Vehicle)
+                                        HarvestingCrew, Vehicle, HarvestCuttingContainer)
 from django.db.models import Max, Min
 from django.db.models import Q, F
 import datetime
+
 
 
 # Create your models here.
@@ -182,6 +183,18 @@ class HarvestCuttingVehicle(models.Model):
         verbose_name=_("Stamp Number"),
     )
 
+    def __str__(self):
+        return f"{self.vehicle.license_plate} / {self.vehicle.name}"
+
     class Meta:
         verbose_name = _('Vehicle')
         verbose_name_plural = _('Vehicles')
+
+
+
+class CuttingContainerVehicle(models.Model):
+    harvest_cutting = models.ForeignKey(HarvestCuttingVehicle, on_delete=models.CASCADE)
+    harvest_cutting_container = models.ForeignKey(HarvestCuttingContainer, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+
+

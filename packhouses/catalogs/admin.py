@@ -16,7 +16,8 @@ from .models import (
     ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     InsideSupply,
-    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation
+    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation,
+    HarvestCuttingContainer
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
@@ -1600,3 +1601,15 @@ class ProviderAdmin(ByOrganizationAdminMixin):
               'js/admin/forms/packhouses/catalogs/harvesting_crew_provider.js')
 
 # /Providers
+
+@admin.register(HarvestCuttingContainer)
+class HarvestCuttingContainerAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'capacity', 'is_enabled')
+    list_filter = ('capacity', 'is_enabled')
+    search_fields = ('name', 'capacity', 'is_enabled')
+    fields = ('name', 'capacity', 'unit_kind', 'is_enabled')
+
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form

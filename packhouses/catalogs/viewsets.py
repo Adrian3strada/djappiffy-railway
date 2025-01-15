@@ -12,6 +12,7 @@ from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer,
 from .models import (MarketStandardProductSize, Market,MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Maquiladora, Provider, Product,
                      Supply, MarketProductSize, Orchard, HarvestingCrew)
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 
@@ -188,13 +189,22 @@ class VehicleViewSet(viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
     filterset_fields = ['category', 'is_enabled', 'id']
     pagination_class = None
+    filter_backends = [DjangoFilterBackend]
 
     def get_queryset(self):
         user = self.request.user
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return Vehicle.objects.filter(organization=self.request.organization)
+        queryset = Vehicle.objects.filter(organization=self.request.organization)
+
+        # Filtrar por múltiples IDs si se proporciona 'ids' en la querystring
+        ids = self.request.query_params.get('ids')
+        if ids:
+            ids_list = [int(i) for i in ids.split(',')]  # Convierte a una lista de enteros
+            queryset = queryset.filter(id__in=ids_list)
+
+        return queryset
 
 
 class HarvestingCrewProviderViewSet(viewsets.ModelViewSet):
