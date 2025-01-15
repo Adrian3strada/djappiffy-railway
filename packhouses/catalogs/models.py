@@ -959,7 +959,7 @@ class PalletConfiguration(CleanNameOrAliasAndOrganizationMixin, models.Model):
     market_class = models.ForeignKey(MarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT, null=False, blank=False)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT, null=False, blank=False)
-    product_variety_size = models.ForeignKey(ProductSize, verbose_name=_('Product variety size'), on_delete=models.PROTECT, null=False, blank=False)
+    product_variety_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product variety size'), on_delete=models.PROTECT, null=False, blank=False)
     maximum_boxes_per_pallet = models.PositiveIntegerField(verbose_name=_('Boxes quantity'), null=False, blank=False, help_text=_(
         "Maximum number of boxes per pallet"
     ))
@@ -976,7 +976,7 @@ class PalletConfiguration(CleanNameOrAliasAndOrganizationMixin, models.Model):
 
     def __str__(self):
         return f"{self.name}"
-    
+
     class Meta:
         verbose_name = _('Pallet Configuration')
         verbose_name_plural = _('Pallet Configuration')
@@ -995,7 +995,7 @@ class PalletConfigurationSupplyExpense(models.Model):
     def __str__(self):
         return f"{self.supply}"
 
-    class Meta: 
+    class Meta:
         verbose_name = _('Supply Expense')
         verbose_name_plural = _('Supply Expenses')
         ordering = ('supply', )
@@ -1007,12 +1007,12 @@ class PalletConfigurationPersonalExpense(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
     cost = models.FloatField(verbose_name=_('Cost'), null=False, blank=False)
-    pallet_configuration = models.ForeignKey(PalletConfiguration, verbose_name='Pallet Configuration', on_delete=models.PROTECT, 
+    pallet_configuration = models.ForeignKey(PalletConfiguration, verbose_name='Pallet Configuration', on_delete=models.PROTECT,
                                              related_name="pallet_configuration_personal_expense")
 
     def __str__(self):
         return f"{self.name}"
-    
+
     class Meta:
         verbose_name = _('Personal Expense')
         verbose_name_plural = _('Personal Expenses')
