@@ -25,6 +25,47 @@ class ProductKind(models.Model):
         ordering = ['ordering']
 
 
+class MarketProductSizeStandard(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    ordering = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+    def clean(self):
+        if self.name:
+            self.name = self.name.strip().upper()
+
+    class Meta:
+        verbose_name = _('Market Product Size Standard')
+        verbose_name_plural = _('Market Product Size Standards')
+        ordering = ['ordering']
+
+
+class MarketProductSizeStandardUnit(models.Model):
+    standard = models.ForeignKey(MarketProductSizeStandard, on_delete=models.CASCADE)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    ordering = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = _('Market Product Size Standard Unit')
+        verbose_name_plural = _('Market Product Size Standard Units')
+        ordering = ['ordering']
+
+
+class MarketProductSizeStandardUnitSize(models.Model):
+    standard_unit = models.ForeignKey(MarketProductSizeStandardUnit, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    alias = models.CharField(max_length=10)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    ordering = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = _('Market Product Size Standard Unit')
+        verbose_name_plural = _('Market Product Size Standard Units')
+        ordering = ['ordering']
+
 class LegalEntityCategory(models.Model):
     code = models.CharField(max_length=30, verbose_name=_('Code'))
     name = models.CharField(max_length=255, verbose_name=_('Name'))
