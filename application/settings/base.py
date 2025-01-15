@@ -91,6 +91,7 @@ INSTALLED_APPS = [
     "packhouses.catalogs",
     "packhouses.sales",
     "packhouses.gathering",
+    "packhouses.hrm",
 
     "eudr.parcels",
 
@@ -383,6 +384,7 @@ JAZZMIN_SETTINGS = {
         "catalogs.WeighingScale",
         "catalogs.ColdChamber",
         "catalogs.Pallet",
+        "catalogs.PalletConfiguration",
         "catalogs.ProductPackaging",
         "catalogs.ExportingCompany",
         "catalogs.Transfer",
