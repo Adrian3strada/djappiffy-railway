@@ -54,11 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  setTimeout(function(){
   // Manejar formularios existentes
     $('div[id^="harvestcuttingharvestingcrew_set-"]').each((index, form) => {
-      const providerField = $(form).find('select[name$="-provider"]'); // Encontrar el campo proveedor
-      const harvestingCrewField = $(form).find('select[name$="-harvesting_crew"]'); // Encontrar el campo harvesting_crew
+      const providerField = $(form).find(`select[name$="${index-1}-provider"]`); // Encontrar el campo proveedor
+      const harvestingCrewField = $(form).find(`select[name$="${index-1}-harvesting_crew"]`); // Encontrar el campo harvesting_crew
       const selectedHarvestingCrew = harvestingCrewField.val(); // Obtener el valor actualmente seleccionado en harvesting_crew
 
       // Si ya se ha seleccionado un proveedor, actualizar las opciones del campo harvesting_crew
@@ -71,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         handleProviderChange(providerField, harvestingCrewField, harvestingCrewField.val());
       });
     });
-  }, 300);
 
 
 });

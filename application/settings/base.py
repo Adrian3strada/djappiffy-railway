@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'django_ckeditor_5',
     'adminsortable2',
     'polymorphic',
+    'nested_admin',
 
     # djappiffy apps
     "common",

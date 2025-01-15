@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (HarvestCutting, HarvestCuttingHarvestingCrew, HarvestCuttingVehicle)
+from .models import (HarvestCutting, HarvestCuttingHarvestingCrew, HarvestCuttingVehicle, CuttingContainerVehicle)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
                                                   VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier
                                                   )
@@ -23,7 +23,7 @@ from packhouses.catalogs.filters import (StatesForOrganizationCountryFilter, ByC
                       ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter
                       )
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, Market,WeighingScale,
-                                        ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind)
+                                        ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind, HarvestCuttingContainer)
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
 from common.base.models import ProductKind
@@ -32,6 +32,7 @@ from common.base.decorators import uppercase_form_charfield, uppercase_alphanume
 from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, DisableInlineRelatedLinksMixin
 from common.forms import SelectWidgetWithData
 from django import forms
+import nested_admin
 
 # Register your models here.
 
@@ -40,7 +41,7 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 
-class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
+class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = HarvestCuttingHarvestingCrew
     extra = 0
     min = 1
@@ -77,9 +78,33 @@ class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, admin.S
     class Media:
         js = ('js/admin/forms/packhouses/gathering/harvest_cutting_harvesting_crew_inline.js',)
 
-class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
+class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
+    model = CuttingContainerVehicle
+    extra = 0
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = HarvestCuttingVehicle.objects.get(id=parent_object_id) if parent_object_id else None
+
+        organization = None
+        if hasattr(request, 'organization'):
+            organization = request.organization
+
+        if db_field.name == "harvest_cutting_container":
+            kwargs["queryset"] = HarvestCuttingContainer.objects.filter(
+                organization=organization,
+                is_enabled=True
+            )
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+
+
+class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = HarvestCuttingVehicle
     extra = 1
+    inlines = [HarvestCuttingContainerVehicleInline]
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -100,32 +125,28 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, admin.StackedI
                 category='harvesting_provider'
             )
 
-        if db_field.name == "harvesting_crew":
-            # Mantener el queryset relacionado con el valor seleccionado previamente
-            provider_id = request.GET.get('provider') or request.POST.get('provider')
-            selected_value = request.POST.get(f"{db_field.name}")
-            if provider_id or selected_value:
-                kwargs["queryset"] = HarvestingCrew.objects.filter(
-                    Q(provider_id=provider_id) | Q(id=selected_value),
-                    organization=organization,
-                    is_enabled=True
-                )
-            else:
-                kwargs["queryset"] = HarvestingCrew.objects.none()
+        if db_field.name == "vehicle":
+            kwargs["queryset"] = Vehicle.objects.filter(
+                organization=organization,
+                is_enabled=True
+            )
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/gathering/harvest_cutting_vehicle_inline.js',)
 
 
 
 @admin.register(HarvestCutting)
-class HarvestCuttingAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin):
+class HarvestCuttingAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     fields = ('ooid', 'harvest_cutting_date', 'category', 'gatherer', 'maquiladora', 'product_provider','product',
               'product_variety', 'product_season_kind', 'product_harvest_size_kind','orchard',  'market', 'weighing_scale',
               'meeting_point')
     list_display = ('ooid', 'category', 'product_provider', 'product','product_variety', 'market', 'product_season_kind')
     list_filter = ('category', 'product_provider','gatherer', 'maquiladora')
     readonly_fields = ('ooid',)
-    inlines = [HarvestCuttingHarvestingCrewInline, ]
+    inlines = [HarvestCuttingHarvestingCrewInline, HarvestCuttingVehicleInline]
 
 
     def get_form(self, request, obj=None, **kwargs):
@@ -192,3 +213,6 @@ class HarvestCuttingAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdmi
 
     class Media:
         js = ('js/admin/forms/packhouses/gathering/harvest-cutting.js',)
+
+
+
