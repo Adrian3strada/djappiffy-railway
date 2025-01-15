@@ -159,7 +159,7 @@ class MarketAdmin(ByOrganizationAdminMixin):
 class ProductSeasonKindInline(admin.TabularInline):
     model = ProductSeasonKind
     extra = 0
-    fields = ('name', 'is_enabled', 'order')
+    fields = ('name', 'is_enabled', 'sort_order')
     ordering = ['sort_order', 'name']
     verbose_name = _('Season')
     verbose_name_plural = _('Seasons')
@@ -174,7 +174,7 @@ class ProductSeasonKindInline(admin.TabularInline):
 class ProductMassVolumeKindInline(admin.TabularInline):
     model = ProductMassVolumeKind
     extra = 0
-    fields = ('name', 'is_enabled', 'order')
+    fields = ('name', 'is_enabled', 'sort_order')
     ordering = ['sort_order', '-name']
     verbose_name = _('Mass volume kind')
     verbose_name_plural = _('Mass volume kinds')
@@ -205,7 +205,7 @@ class ProductVarietyInline(admin.TabularInline):
 class ProductHarvestSizeKindInline(admin.TabularInline):
     model = ProductHarvestSizeKind
     extra = 0
-    fields = ('name', 'product', 'is_enabled', 'order')
+    fields = ('name', 'product', 'is_enabled', 'sort_order')
     ordering = ['sort_order', '-name']
     verbose_name = _('Harvest size kind')
     verbose_name_plural = _('Harvest size kinds')

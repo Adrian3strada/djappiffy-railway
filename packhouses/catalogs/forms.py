@@ -19,13 +19,13 @@ class ProductSeasonKindInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and MarketProductSize.objects.filter(product_season_kind=instance).exists():
+            if instance.pk and MarketProductSize.objects.all().exists(): #filter(product_season_kind=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
-                form.fields['has_performance'].disabled = True
-                form.fields['has_performance'].widget.attrs.update(
-                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
+                #form.fields['has_performance'].disabled = True
+                #form.fields['has_performance'].widget.attrs.update(
+                #    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
                 form.fields['DELETE'].initial = False
                 form.fields['DELETE'].disabled = True
                 form.fields['DELETE'].widget.attrs.update(
@@ -40,7 +40,7 @@ class ProductMassVolumeKindInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and MarketProductSize.objects.filter(product_mass_volume_kind=instance).exists():
+            if instance.pk and MarketProductSize.objects.all().exists():#filter(product_mass_volume_kind=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
@@ -58,7 +58,7 @@ class ProductVarietyInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and MarketProductSize.objects.filter(product_varieties=instance).exists():
+            if instance.pk and MarketProductSize.objects.all().exists(): #(product_varieties=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
@@ -79,7 +79,7 @@ class ProductHarvestSizeKindInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and MarketProductSize.objects.filter(product_harvest_size_kind=instance).exists():
+            if instance.pk and MarketProductSize.objects.all().exists(): #filter(product_harvest_size_kind=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
