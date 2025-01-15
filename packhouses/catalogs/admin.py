@@ -9,11 +9,10 @@ from .models import (
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora, 
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
-    MeshBag, Service, WeighingScale, ColdChamber,
-    Pallet, PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense, 
+    MeshBag, Service, PackagingKind, WeighingScale, ColdChamber, 
+    Pallet, PalletExpense,
+    PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense, 
     ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
-    MeshBag, Service, AuthorityPackagingKind, PackagingKind, WeighingScale, ColdChamber,
-    Pallet, ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     InsideSupply,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation
@@ -21,12 +20,13 @@ from .models import (
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
                                                   VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier,
-                                                  SupplyKind
+                                                  SupplyKind, AuthorityPackagingKind,
                                                   )
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
-                    OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet)
+                    OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet,
+                    PackagingKindForm)
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization, OrganizationUser
 from cities_light.models import Country, Region, SubRegion, City
@@ -791,7 +791,7 @@ class OrchardAdmin(ByOrganizationAdminMixin):
 
 @admin.register(Supply)
 class SupplyAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'kind', 'is_enabled')
+    list_display = ('name', 'kind', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
     list_filter = ('kind', 'is_enabled')
     search_fields = ('name',)
     fields = ('kind', 'name', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
@@ -960,19 +960,6 @@ class ServiceAdmin(ByOrganizationAdminMixin):
             return formfield
 
 
-@admin.register(AuthorityPackagingKind)
-class AuthorityPackagingKindAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'is_enabled')
-    list_filter = ('is_enabled',)
-    search_fields = ('name',)
-    fields = ('name', 'is_enabled')
-
-    @uppercase_form_charfield('name')
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        return form
-
-
 class InsideSuppliesInline(admin.TabularInline):
     model = InsideSupply
     min_num = 0
@@ -986,9 +973,15 @@ class InsideSuppliesInline(admin.TabularInline):
 
 @admin.register(PackagingKind)
 class PackagingKindAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'external_supply', 'is_enabled')
+    form = PackagingKindForm
+    list_display = ('name',
+                    'packaging', 'quantity',
+                    'max_product_kg_per_package', 'avg_tare_kg_per_package',
+                    'authority', 'code',
+                    'is_enabled',
+    )
     fields = ('name',
-              'external_supply_kind', 'external_supply',
+              'packaging_kind', 'packaging', 'quantity',
               'max_product_kg_per_package', 'avg_tare_kg_per_package',
               'authority', 'code',
               'is_enabled')
@@ -1004,20 +997,20 @@ class PackagingKindAdmin(ByOrganizationAdminMixin):
         obj = PackagingKind.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
-        external_supply_kind = request.POST.get('external_supply_kind') if request.POST else obj.external_supply_kind if obj else None
+        packaging_kind = request.POST.get('packaging_kind') if request.POST else obj.packaging_kind if obj else None
 
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        supplykind_queryfilter = {'organization': organization, 'is_packaging': True, 'is_enabled': True}
-        supply_queryfilter = {'organization': organization, 'kind': external_supply_kind, 'is_enabled': True}
+        packagingkind_queryfilter = {'organization': organization, 'is_packaging': True, 'is_enabled': True}
+        supply_queryfilter = {'organization': organization, 'kind': packaging_kind, 'is_enabled': True}
 
         print(db_field.name)
         if db_field.name == 'authority':
             kwargs['queryset'] = AuthorityPackagingKind.objects.filter(**organization_queryfilter)
 
-        if db_field.name == "external_supply_kind":
-            kwargs["queryset"] = SupplyKind.objects.filter(**supplykind_queryfilter)
-        if db_field.name == "external_supply":
-            if external_supply_kind:
+        if db_field.name == "packaging_kind":
+            kwargs["queryset"] = SupplyKind.objects.filter(**packagingkind_queryfilter)
+        if db_field.name == "packaging":
+            if packaging_kind:
                 kwargs["queryset"] = Supply.objects.filter(**supply_queryfilter)
             else:
                 kwargs["queryset"] = Supply.objects.none()
@@ -1440,7 +1433,7 @@ class CustomsBrokerAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'broker_number', 'country', 'is_enabled')
     fields = ('name', 'broker_number', 'country','is_enabled')
     list_filter = (ByCountryForOrganizationCustomsBrokersFilter, 'is_enabled',)
-    
+
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)

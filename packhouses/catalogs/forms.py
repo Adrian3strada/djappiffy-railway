@@ -2,7 +2,8 @@ from django import forms
 from .models import (
     Product, ProductSize, MarketStandardProductSize, OrchardCertification, HarvestingCrew,
     ProductHarvestSizeKind,
-    HarvestingPaymentSetting
+    HarvestingPaymentSetting,
+    PackagingKind,
 )
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
@@ -86,6 +87,31 @@ class ProductHarvestSizeKindInlineFormSet(BaseInlineFormSet):
                 form.fields['DELETE'].disabled = True
                 form.fields['DELETE'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
+
+
+class PackagingKindForm(forms.ModelForm):
+    class Meta:
+        model = PackagingKind
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        authority = cleaned_data.get('authority')
+        code = cleaned_data.get('code')
+
+        if authority and (not code):
+            raise forms.ValidationError({
+                'authority': _('If an authority is given, then code is required.'),
+                'code': _('This field is required.'),
+            })
+
+        if code and (not authority):
+            raise forms.ValidationError({
+                'authority': _('This field is required.'),
+                'code': _('If a code is given, must be provided by an authority.'),
+            })
+
+        return self.cleaned_data
 
 
 class OrchardCertificationForm(forms.ModelForm):

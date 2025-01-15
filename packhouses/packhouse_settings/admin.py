@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import (Status, Bank, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
-                     PaymentKind, VehicleBrand, OrchardCertificationVerifier,
+                     PaymentKind, VehicleBrand, AuthorityPackagingKind,
+                     OrchardCertificationVerifier,
                      OrchardCertificationKind, SupplyKind)
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget
 from organizations.models import Organization
@@ -136,6 +137,19 @@ class VehicleBrandAdmin(ByOrganizationAdminMixin):
         if obj and is_instance_used(obj, exclude=[Organization]):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
+
+
+@admin.register(AuthorityPackagingKind)
+class AuthorityPackagingKindAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'is_enabled')
+    list_filter = ('is_enabled',)
+    search_fields = ('name',)
+    fields = ('name', 'is_enabled')
+
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
 
 
 @admin.register(OrchardCertificationVerifier)
