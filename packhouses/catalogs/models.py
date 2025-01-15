@@ -1207,7 +1207,7 @@ class InsuranceCompany(CleanNameAndOrganizationMixin, models.Model):
         unique_together = ('name', 'organization')
 
 
-class HarvestCuttingContainer(CleanNameAndOrganizationMixin, models.Model):
+class HarvestContainer(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     capacity = models.FloatField(verbose_name=_('Capacity'))
     unit_kind = models.CharField(max_length=30, verbose_name=_('Unit kind'), choices=SUPPLY_UNIT_KIND_CHOICES)
@@ -1218,6 +1218,6 @@ class HarvestCuttingContainer(CleanNameAndOrganizationMixin, models.Model):
         return f"{self.name} - {self.capacity} {self.unit_kind}"
 
     class Meta:
-        verbose_name = _('Harvest Cutting Container')
-        verbose_name_plural = _('Harvest Cutting Containers')
+        verbose_name = _('Harvest Container')
+        verbose_name_plural = _('Harvest Containers')
         unique_together = ('name', 'organization')

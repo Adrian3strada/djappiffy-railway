@@ -25,7 +25,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, ProductVariety,
                                         Market, ProductSeasonKind, ProductHarvestSizeKind, WeighingScale,
-                                        HarvestingCrew, Vehicle, HarvestCuttingContainer)
+                                        HarvestingCrew, Vehicle, HarvestContainer)
 from django.db.models import Max, Min
 from django.db.models import Q, F
 import datetime
@@ -33,13 +33,13 @@ import datetime
 
 
 # Create your models here.
-class HarvestCutting(models.Model):
+class ScheduleHarvest(models.Model):
     ooid = models.PositiveIntegerField(
-        verbose_name=_("Harvest Cutting Number"),
+        verbose_name=_("Harvest Number"),
         null=True, blank=True, unique=True
     )
-    harvest_cutting_date = models.DateField(
-        verbose_name=_('Harvest Cutting date'),
+    harvest_date = models.DateField(
+        verbose_name=_('Harvest date'),
         default=datetime.date.today
     )
     product_provider = models.ForeignKey(
@@ -121,7 +121,7 @@ class HarvestCutting(models.Model):
         if not self.ooid:
             # Usar transacción y bloqueo de fila para evitar condiciones de carrera
             with transaction.atomic():
-                last_order = HarvestCutting.objects.select_for_update().filter(organization=self.organization).order_by('-ooid').first()
+                last_order = ScheduleHarvest.objects.select_for_update().filter(organization=self.organization).order_by('-ooid').first()
                 if last_order:
                     self.ooid = last_order.ooid + 1
                 else:
@@ -129,19 +129,19 @@ class HarvestCutting(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = _('Harvest Cutting')
-        verbose_name_plural = _('Harvest Cuttings')
+        verbose_name = _('Schedule Harvest')
+        verbose_name_plural = _('Schedule Harvests')
         constraints = [
             models.UniqueConstraint(
                 fields=['ooid', 'organization'],
-                name='unique_harvest_cutting'
+                name='unique_schedule_harvest'
             )
         ]
 
-class HarvestCuttingHarvestingCrew(models.Model):
+class ScheduleHarvestHarvestingCrew(models.Model):
     harvest_cutting = models.ForeignKey(
-        HarvestCutting,
-        verbose_name=_("Harvest Cutting"),
+        ScheduleHarvest,
+        verbose_name=_("Schedule Harvest"),
         on_delete=models.PROTECT,
     )
     provider = models.ForeignKey(
@@ -162,9 +162,9 @@ class HarvestCuttingHarvestingCrew(models.Model):
         verbose_name = _('Harvesting Crew')
         verbose_name_plural = _('Harvesting Crews')
 
-class HarvestCuttingVehicle(models.Model):
+class ScheduleHarvestVehicle(models.Model):
     harvest_cutting = models.ForeignKey(
-        HarvestCutting,
+        ScheduleHarvest,
         verbose_name=_("Harvest Cutting"),
         on_delete=models.PROTECT,
     )
@@ -192,9 +192,9 @@ class HarvestCuttingVehicle(models.Model):
 
 
 
-class CuttingContainerVehicle(models.Model):
-    harvest_cutting = models.ForeignKey(HarvestCuttingVehicle, on_delete=models.CASCADE)
-    harvest_cutting_container = models.ForeignKey(HarvestCuttingContainer, on_delete=models.CASCADE)
+class ScheduleHarvestContainerVehicle(models.Model):
+    harvest_cutting = models.ForeignKey(ScheduleHarvestVehicle, on_delete=models.CASCADE)
+    harvest_cutting_container = models.ForeignKey(HarvestContainer, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
 
 

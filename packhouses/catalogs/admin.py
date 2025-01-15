@@ -17,7 +17,7 @@ from .models import (
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     InsideSupply,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation,
-    HarvestCuttingContainer
+    HarvestContainer
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
@@ -1602,7 +1602,7 @@ class ProviderAdmin(ByOrganizationAdminMixin):
 
 # /Providers
 
-@admin.register(HarvestCuttingContainer)
+@admin.register(HarvestContainer)
 class HarvestCuttingContainerAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'capacity', 'is_enabled')
     list_filter = ('capacity', 'is_enabled')

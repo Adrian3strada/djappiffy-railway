@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (HarvestCutting, HarvestCuttingHarvestingCrew, HarvestCuttingVehicle, CuttingContainerVehicle)
+from .models import (ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
                                                   VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier
                                                   )
@@ -22,8 +22,8 @@ from packhouses.catalogs.filters import (StatesForOrganizationCountryFilter, ByC
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
                       ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter
                       )
-from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, Market,WeighingScale,
-                                        ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind, HarvestCuttingContainer)
+from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, Market, WeighingScale,
+                                        ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind, HarvestContainer)
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
 from common.base.models import ProductKind
@@ -42,7 +42,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 
 class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
-    model = HarvestCuttingHarvestingCrew
+    model = ScheduleHarvestHarvestingCrew
     extra = 0
     min = 1
 
@@ -53,7 +53,7 @@ class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_object_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = HarvestCutting.objects.get(id=parent_object_id) if parent_object_id else None
+        parent_obj = ScheduleHarvest.objects.get(id=parent_object_id) if parent_object_id else None
 
         organization = None
         if hasattr(request, 'organization'):
@@ -79,19 +79,19 @@ class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_
         js = ('js/admin/forms/packhouses/gathering/harvest_cutting_harvesting_crew_inline.js',)
 
 class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
-    model = CuttingContainerVehicle
+    model = ScheduleHarvestContainerVehicle
     extra = 0
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_object_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = HarvestCuttingVehicle.objects.get(id=parent_object_id) if parent_object_id else None
+        parent_obj = ScheduleHarvestVehicle.objects.get(id=parent_object_id) if parent_object_id else None
 
         organization = None
         if hasattr(request, 'organization'):
             organization = request.organization
 
         if db_field.name == "harvest_cutting_container":
-            kwargs["queryset"] = HarvestCuttingContainer.objects.filter(
+            kwargs["queryset"] = HarvestContainer.objects.filter(
                 organization=organization,
                 is_enabled=True
             )
@@ -102,7 +102,7 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
 
 
 class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
-    model = HarvestCuttingVehicle
+    model = ScheduleHarvestVehicle
     extra = 1
     inlines = [HarvestCuttingContainerVehicleInline]
 
@@ -138,9 +138,9 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.N
 
 
 
-@admin.register(HarvestCutting)
+@admin.register(ScheduleHarvest)
 class HarvestCuttingAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
-    fields = ('ooid', 'harvest_cutting_date', 'category', 'gatherer', 'maquiladora', 'product_provider','product',
+    fields = ('ooid', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
               'product_variety', 'product_season_kind', 'product_harvest_size_kind','orchard',  'market', 'weighing_scale',
               'meeting_point')
     list_display = ('ooid', 'category', 'product_provider', 'product','product_variety', 'market', 'product_season_kind')
