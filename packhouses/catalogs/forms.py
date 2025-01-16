@@ -1,6 +1,6 @@
 from django import forms
 from .models import (
-    Product, MarketProductSize, MarketStandardProductSize, OrchardCertification, HarvestingCrew,
+    Product, MarketProductSize, OrchardCertification, HarvestingCrew,
     ProductHarvestSizeKind,
     HarvestingPaymentSetting
 )

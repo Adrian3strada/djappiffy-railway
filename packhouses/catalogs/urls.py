@@ -3,7 +3,7 @@ from django.urls import path
 from . import views
 from .models import ProductHarvestSizeKind
 from .viewsets import (
-    MarketStandardProductSizeViewSet, MarketViewSet, VehicleViewSet, HarvestingCrewProviderViewSet,
+    MarketViewSet, VehicleViewSet, HarvestingCrewProviderViewSet,
     CrewChiefViewSet, ProductVarietyViewSet, ProductHarvestSizeKindViewSet, ProductSeasonKindKindViewSet,
     ProductMassVolumeKindViewSet, ClientViewSet, ProviderViewSet, ProductViewSet, MaquiladoraViewSet
 )
@@ -11,7 +11,6 @@ from .viewsets import (
 urlpatterns = []
 
 drf_router.register(r'rest/v1/catalogs/market', MarketViewSet, basename='market')
-drf_router.register(r'rest/v1/catalogs/market_standard_product_size', MarketStandardProductSizeViewSet, basename='market_standard_product_size')
 drf_router.register(r'rest/v1/catalogs/product', ProductViewSet, basename='product')
 drf_router.register(r'rest/v1/catalogs/product_harvest_size_kind', ProductHarvestSizeKindViewSet, basename='product_harvest_size_kind')
 drf_router.register(r'rest/v1/catalogs/product_season_kind', ProductSeasonKindKindViewSet, basename='product_season_kind')

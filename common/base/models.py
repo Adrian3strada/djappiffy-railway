@@ -63,6 +63,9 @@ class MarketProductSizeStandardSize(models.Model):
     standard = models.ForeignKey(MarketProductSizeStandard, on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
+    def __str__(self):
+        return self.name
+
     objects = MarketProductSizeStandardSizeManager()
 
     class Meta:
