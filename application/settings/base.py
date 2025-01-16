@@ -395,6 +395,7 @@ JAZZMIN_SETTINGS = {
         "catalogs.Airline",
         "catalogs.InsuranceCompany",
         "packhouse_settings",
+        "hrm",
     ],
 
     # Custom links to append to app groups, keyed on app name
@@ -428,6 +429,7 @@ JAZZMIN_SETTINGS = {
         "gathering": "fas fa-tractor",
         "sales": "fas fa-dollar-sign",
         "parcels": "fas fa-map-marked-alt",
+        "hrm": "fas fa-clipboard",
 
     },
     # Icons that are used when one is not manually specified
