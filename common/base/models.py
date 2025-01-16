@@ -3,6 +3,9 @@ from django.db import models
 from wagtail.models import Orderable
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
+from django.db.models import Manager, QuerySet
+from django.db.models import Case, When, IntegerField, Value
+from django.db.models.functions import Cast
 
 # Create your models here.
 
@@ -28,7 +31,8 @@ class ProductKind(models.Model):
 # ejemplo: APEAM
 class MarketProductSizeStandard(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    countries = models.ManyToManyField(Country, verbose_name=_('Countries'), blank=False)
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     sort_order = models.PositiveIntegerField(default=0)
 
@@ -39,21 +43,33 @@ class MarketProductSizeStandard(models.Model):
         verbose_name = _('Market Product Size Standard')
         verbose_name_plural = _('Market Product Size Standards')
         ordering = ['sort_order']
+        constraints = [
+            models.UniqueConstraint(fields=['product_kind', 'country'], name='marketproductsizestandard_unique_productkind_country')
+        ]
 
+class MarketProductSizeStandardSizeManager(Manager):
+    def get_queryset(self):
+        return super().get_queryset().annotate(
+            name_as_int=Case(
+                When(name__regex=r'^\d+$', then=Cast('name', output_field=IntegerField())),
+                default=Value(None),
+                output_field=IntegerField(),
+            )
+        ).order_by('name_as_int', 'name')
 
 # ejemplo 30, 40, 60... (de apeam)
-class MarketProductSizeStandardClass(models.Model):
+class MarketProductSizeStandardSize(models.Model):
     name = models.CharField(max_length=255)
     standard = models.ForeignKey(MarketProductSizeStandard, on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    sort_order = models.PositiveIntegerField(default=0)
+
+    objects = MarketProductSizeStandardSizeManager()
 
     class Meta:
-        verbose_name = _('Market product size standard, Class')
-        verbose_name_plural = _('Market product size standard, Classes')
-        ordering = ['sort_order']
+        verbose_name = _('Market product size standard, Size')
+        verbose_name_plural = _('Market product size standard, Sizes')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'standard'], name='marketproductsizestandardclass_unique_name_standard')
+            models.UniqueConstraint(fields=['name', 'standard'], name='marketproductsizestandardsize_unique_name_standard')
         ]
 
 
