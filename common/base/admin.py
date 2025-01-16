@@ -12,12 +12,12 @@ from adminsortable2.admin import SortableAdminMixin
 
 @admin.register(ProductKind)
 class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('name', 'for_packaging', 'for_orchard', 'for_eudr', 'is_enabled', 'ordering')
+    list_display = ('name', 'for_packaging', 'for_orchard', 'for_eudr', 'is_enabled', 'sort_order')
 
 
 @admin.register(Incoterm)
 class IncotermAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('get_name', 'is_enabled', 'ordering')
+    list_display = ('get_name', 'is_enabled', 'sort_order')
 
     def get_name(self, obj):
         return f"{obj.id} -- {obj.name}"
@@ -26,7 +26,7 @@ class IncotermAdmin(SortableAdminMixin, admin.ModelAdmin):
 
 @admin.register(LocalDelivery)
 class LocalDeliveryAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('name', 'is_enabled', 'ordering')
+    list_display = ('name', 'is_enabled', 'sort_order')
 
 
 @admin.register(LegalEntityCategory)
@@ -37,15 +37,11 @@ class LegalEntityCategoryAdmin(admin.ModelAdmin):
 
 
 class CustomOrganizationAdmin(OrganizationAdmin):
-    list_display = ["id", "name", "slug", "created", "modified", "is_active"]
-    ordering = ["id"]
+    pass
 
 
 class CustomOrganizationUserAdmin(OrganizationUserAdmin):
-    list_display = ["id", "created", "modified", "is_admin",
-                    "organization", "user"]
-    list_display_links = ["id", "organization", "user"]
-    ordering = ["id"]
+    pass
 
 
 admin.site.unregister(Organization)

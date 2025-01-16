@@ -119,7 +119,7 @@ class MarketAdmin(ByOrganizationAdminMixin):
     # TODO: revisar si KGCostMarketInline si va en Market o va por variedad o donde?
 
     def get_countries(self, obj):
-        return ", ".join([m.name for m in obj.countries.all()])
+        return ", ".join([m.name for m in obj.country.all()])
 
     get_countries.short_description = _('countries')
 
