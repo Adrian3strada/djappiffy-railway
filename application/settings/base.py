@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'django_ckeditor_5',
     'adminsortable2',
     'polymorphic',
+    'nested_admin',
 
     # djappiffy apps
     "common",
@@ -91,6 +92,7 @@ INSTALLED_APPS = [
     "packhouses.catalogs",
     "packhouses.sales",
     "packhouses.gathering",
+    "packhouses.hrm",
 
     "eudr.parcels",
 
@@ -362,6 +364,7 @@ JAZZMIN_SETTINGS = {
     # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
     "order_with_respect_to": [
         "sales",
+        "gathering",
         "catalogs",
         "catalogs.Market",
         "catalogs.MarketClass",
@@ -383,6 +386,7 @@ JAZZMIN_SETTINGS = {
         "catalogs.WeighingScale",
         "catalogs.ColdChamber",
         "catalogs.Pallet",
+        "catalogs.PalletConfiguration",
         "catalogs.ProductPackaging",
         "catalogs.ExportingCompany",
         "catalogs.Transfer",

@@ -24,15 +24,23 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   OrchardCertificationKind)
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, ProductVariety,
-                                        Market, ProductSeasonKind, ProductHarvestSizeKind, WeighingScale)
+                                        Market, ProductSeasonKind, ProductHarvestSizeKind, WeighingScale,
+                                        HarvestingCrew, Vehicle, HarvestContainer)
 from django.db.models import Max, Min
 from django.db.models import Q, F
+import datetime
+
+
 
 # Create your models here.
-class HarvestCutting(models.Model):
+class ScheduleHarvest(models.Model):
     ooid = models.PositiveIntegerField(
-        verbose_name=_("Harvest Cutting Number"),
+        verbose_name=_("Harvest Number"),
         null=True, blank=True, unique=True
+    )
+    harvest_date = models.DateField(
+        verbose_name=_('Harvest date'),
+        default=datetime.date.today
     )
     product_provider = models.ForeignKey(
         Provider,
@@ -57,11 +65,6 @@ class HarvestCutting(models.Model):
         on_delete=models.PROTECT,
         null=True, blank=True
     )
-    orchard = models.ForeignKey(
-        Orchard,
-        verbose_name=_("Orchard"),
-        on_delete=models.PROTECT,
-    )
     product = models.ForeignKey(
         Product,
         verbose_name=_("Product"),
@@ -82,6 +85,11 @@ class HarvestCutting(models.Model):
         verbose_name=_("Product harvest size"),
         on_delete=models.PROTECT
     )
+    orchard = models.ForeignKey(
+        Orchard,
+        verbose_name=_("Orchard"),
+        on_delete=models.PROTECT,
+    )
     market = models.ForeignKey(
         Market,
         verbose_name=_("Market"),
@@ -97,20 +105,23 @@ class HarvestCutting(models.Model):
         verbose_name=_("Meeting Point for the Harvest Cutting"),
         null=True, blank=True
     )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(
         Organization,
         on_delete=models.PROTECT,
         verbose_name=_('Organization'),
     )
 
+
+
     def __str__(self):
-        return f"Harvest Cutting {self.ooid}"
+        return f"#{self.ooid}"
 
     def save(self, *args, **kwargs):
         if not self.ooid:
             # Usar transacción y bloqueo de fila para evitar condiciones de carrera
             with transaction.atomic():
-                last_order = HarvestCutting.objects.select_for_update().filter(organization=self.organization).order_by('-ooid').first()
+                last_order = ScheduleHarvest.objects.select_for_update().filter(organization=self.organization).order_by('-ooid').first()
                 if last_order:
                     self.ooid = last_order.ooid + 1
                 else:
@@ -118,23 +129,72 @@ class HarvestCutting(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = _('Harvest Cutting')
-        verbose_name_plural = _('Harvest Cuttings')
+        verbose_name = _('Schedule Harvest')
+        verbose_name_plural = _('Schedule Harvests')
         constraints = [
             models.UniqueConstraint(
                 fields=['ooid', 'organization'],
-                name='unique_harvest_cutting'
+                name='unique_schedule_harvest'
             )
         ]
 
-class HarvestCuttingHarvestingCrew(models.Model):
+class ScheduleHarvestHarvestingCrew(models.Model):
     harvest_cutting = models.ForeignKey(
-        HarvestCutting,
+        ScheduleHarvest,
+        verbose_name=_("Schedule Harvest"),
+        on_delete=models.PROTECT,
+    )
+    provider = models.ForeignKey(
+        Provider,
+        verbose_name=_('Harvesting Crew Provider'),
+        on_delete=models.PROTECT,
+    )
+    harvesting_crew = models.ForeignKey(
+        HarvestingCrew,
+        verbose_name=_("Harvesting Crew"),
+        on_delete=models.PROTECT,
+    )
+
+    def __str__(self):
+        return f"{self.provider.name} : {self.harvesting_crew.name}"
+
+    class Meta:
+        verbose_name = _('Harvesting Crew')
+        verbose_name_plural = _('Harvesting Crews')
+
+class ScheduleHarvestVehicle(models.Model):
+    harvest_cutting = models.ForeignKey(
+        ScheduleHarvest,
         verbose_name=_("Harvest Cutting"),
         on_delete=models.PROTECT,
     )
-    person = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        verbose_name=_("Person"),
+    provider = models.ForeignKey(
+        Provider,
+        verbose_name=_('Harvesting Crew Provider'),
         on_delete=models.PROTECT,
     )
+    vehicle = models.ForeignKey(
+        Vehicle,
+        verbose_name=_("Vehicle"),
+        on_delete=models.PROTECT,
+    )
+    stamp_number = models.CharField(
+        max_length=20,
+        verbose_name=_("Stamp Number"),
+    )
+
+    def __str__(self):
+        return f"{self.vehicle.license_plate} / {self.vehicle.name}"
+
+    class Meta:
+        verbose_name = _('Vehicle')
+        verbose_name_plural = _('Vehicles')
+
+
+
+class ScheduleHarvestContainerVehicle(models.Model):
+    harvest_cutting = models.ForeignKey(ScheduleHarvestVehicle, on_delete=models.CASCADE)
+    harvest_cutting_container = models.ForeignKey(HarvestContainer, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+
+
