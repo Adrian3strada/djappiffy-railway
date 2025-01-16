@@ -291,7 +291,6 @@ class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMi
             else:
                 kwargs["queryset"] = ProductVariety.objects.none()
 
-
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -312,7 +311,6 @@ class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMi
                 kwargs["queryset"] = ProductVariety.objects.none()
 
         return super().formfield_for_manytomany(db_field, request, **kwargs)
-
 
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/product_size.js',)
