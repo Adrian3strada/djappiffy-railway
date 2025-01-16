@@ -14,7 +14,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -32,7 +32,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -50,7 +50,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -68,7 +68,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -86,7 +86,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -104,7 +104,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -122,7 +122,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -140,7 +140,7 @@
     "for_eudr": false,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -158,7 +158,7 @@
     "for_eudr": false,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -176,7 +176,7 @@
     "for_eudr": false,
     "image": "",
     "is_enabled": false,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -524,7 +524,7 @@
     "name_de": null,
     "name_es": "Cost And Freight",
     "is_enabled": true,
-    "ordering": 5
+    "sort_order": 5
   }
 },
 {
@@ -539,7 +539,7 @@
     "name_de": null,
     "name_es": "Cost, Insurance And Freight",
     "is_enabled": true,
-    "ordering": 6
+    "sort_order": 6
   }
 },
 {
@@ -554,7 +554,7 @@
     "name_de": null,
     "name_es": "Delivery Duty Paid",
     "is_enabled": true,
-    "ordering": 11
+    "sort_order": 11
   }
 },
 {
@@ -569,7 +569,7 @@
     "name_de": null,
     "name_es": "Cost, Insurance And Freight",
     "is_enabled": true,
-    "ordering": 8
+    "sort_order": 8
   }
 },
 {
@@ -584,7 +584,7 @@
     "name_de": null,
     "name_es": "Carriage Paid To",
     "is_enabled": true,
-    "ordering": 7
+    "sort_order": 7
   }
 },
 {
@@ -599,7 +599,7 @@
     "name_de": null,
     "name_es": "Delivery At Place",
     "is_enabled": true,
-    "ordering": 9
+    "sort_order": 9
   }
 },
 {
@@ -614,7 +614,7 @@
     "name_de": null,
     "name_es": "Delivered At Place Unloaded",
     "is_enabled": true,
-    "ordering": 10
+    "sort_order": 10
   }
 },
 {
@@ -629,7 +629,7 @@
     "name_de": null,
     "name_es": "Ex Works",
     "is_enabled": true,
-    "ordering": 1
+    "sort_order": 1
   }
 },
 {
@@ -644,7 +644,7 @@
     "name_de": null,
     "name_es": "Free Alongside Ship",
     "is_enabled": true,
-    "ordering": 3
+    "sort_order": 3
   }
 },
 {
@@ -659,7 +659,7 @@
     "name_de": null,
     "name_es": "Free Carrier",
     "is_enabled": true,
-    "ordering": 2
+    "sort_order": 2
   }
 },
 {
@@ -674,7 +674,7 @@
     "name_de": null,
     "name_es": "Free On Board",
     "is_enabled": true,
-    "ordering": 4
+    "sort_order": 4
   }
 },
 {
@@ -688,7 +688,7 @@
     "name_de": null,
     "name_es": "Entrega en planta",
     "is_enabled": true,
-    "ordering": 1
+    "sort_order": 1
   }
 },
 {
@@ -702,7 +702,7 @@
     "name_de": null,
     "name_es": "Entrega en planta con servicio de transporte",
     "is_enabled": true,
-    "ordering": 2
+    "sort_order": 2
   }
 },
 {
@@ -716,7 +716,7 @@
     "name_de": null,
     "name_es": "Entrega en bodega",
     "is_enabled": true,
-    "ordering": 3
+    "sort_order": 3
   }
 },
 {
@@ -730,7 +730,7 @@
     "name_de": null,
     "name_es": "Entrega en frontera",
     "is_enabled": true,
-    "ordering": 4
+    "sort_order": 4
   }
 },
 {
@@ -744,7 +744,7 @@
     "name_de": null,
     "name_es": "Entrega a consignatario",
     "is_enabled": true,
-    "ordering": 5
+    "sort_order": 5
   }
 }
 ]
