@@ -18,7 +18,7 @@ from common.billing.models import TaxRegime, LegalEntityCategory
 from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
     get_vehicle_category_choices, get_provider_categories_choices
 from django.core.exceptions import ValidationError
-from common.base.models import ProductKind
+from common.base.models import ProductKind, MarketProductSizeStandardSize
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   AuthorityPackagingKind,
@@ -99,47 +99,6 @@ class MarketClass(CleanNameAndMarketMixin, models.Model):
         constraints = [
             models.UniqueConstraint(fields=['name', 'market'], name='marketclass_unique_name_market'),
         ]
-
-# TODO: eliminar 14 ene 2025
-class MarketStandardProductSize(models.Model):
-    # En caso de que se necesite poner "apeam" o algo similar, ver la posibilidad de ponerlo en el Market como atributo
-    # a modo de autoridad en la materia
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    code = models.CharField(max_length=20, verbose_name=_('Code'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.CASCADE)
-    sort_order = models.PositiveIntegerField(default=0, verbose_name=_('Sort order'))
-
-    def __str__(self):
-        return f"{self.name}"
-
-    def clean(self):
-        errors = {}
-
-        try:
-            super().clean()
-        except ValidationError as e:
-            errors = e.message_dict
-
-        if self.market_id:
-            if self.__class__.objects.filter(name=self.name, market=self.market).exclude(pk=self.pk).exists():
-                errors['name'] = _('Must be unique, it already exists.')
-
-        if errors:
-            raise ValidationError(errors)
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
-
-    class Meta:
-        verbose_name = _('Market standard product size')
-        verbose_name_plural = _('Market standard product sizes')
-        ordering = ('market', 'sort_order', 'name')
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'market'], name='marketstandardproductsize_unique_name_market'),
-        ]
-
 
 # /Markets
 
@@ -228,7 +187,9 @@ class ProductMassVolumeKind(CleanNameAndProductMixin, models.Model):
 
 class MarketProductSize(CleanNameAndAliasProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    market = models.ForeignKey(Market, verbose_name=_('Markets'), on_delete=models.PROTECT)
+    varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Varieties'), blank=False)
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    standard_size = models.ForeignKey(MarketProductSizeStandardSize, verbose_name=_('Standard size'), on_delete=models.PROTECT)
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)

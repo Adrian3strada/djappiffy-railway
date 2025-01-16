@@ -7,12 +7,6 @@ from packhouses.catalogs.models import (
 )
 
 
-class MarketStandardProductSizeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MarketStandardProductSize
-        fields = '__all__'
-
-
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product

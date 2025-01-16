@@ -3,36 +3,16 @@ from itertools import product
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 
-from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer,MarketClassSerializer, VehicleSerializer,
-                          ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer, SupplySerializer,
+from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer, MarketClassSerializer, VehicleSerializer,
+                          ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
                           ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, MarketProductSizeSerializer,
                           MaquiladoraSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
-                          OrchardSerializer, HarvestingCrewSerializer)
+                          )
 from .models import (MarketStandardProductSize, Market,MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Maquiladora, Provider, Product,
-                     Supply, MarketProductSize, Orchard, HarvestingCrew)
+                     )
 from django_filters.rest_framework import DjangoFilterBackend
-
-
-
-class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
-    serializer_class = MarketStandardProductSizeSerializer
-    filterset_fields = ['market', 'is_enabled']
-    pagination_class = None
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            raise NotAuthenticated()
-
-        queryset = MarketStandardProductSize.objects.filter(market__organization=self.request.organization)
-        markets = self.request.GET.get('markets')
-        if markets:
-            market_list = markets.split(',')
-            queryset = queryset.filter(market__id__in=market_list)
-
-        return queryset
 
 
 class ProductHarvestSizeKindViewSet(viewsets.ModelViewSet):

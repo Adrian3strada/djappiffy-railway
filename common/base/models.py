@@ -3,6 +3,9 @@ from django.db import models
 from wagtail.models import Orderable
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
+from django.db.models import Manager, QuerySet
+from django.db.models import Case, When, IntegerField, Value
+from django.db.models.functions import Cast
 
 # Create your models here.
 
@@ -14,7 +17,7 @@ class ProductKind(models.Model):
     for_eudr = models.BooleanField(default=False)
     image = models.ImageField(upload_to="base/product_kind", blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    ordering = models.PositiveIntegerField(default=0)
+    sort_order = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -22,7 +25,55 @@ class ProductKind(models.Model):
     class Meta:
         verbose_name = _('Product Kind')
         verbose_name_plural = _('Product Kinds')
-        ordering = ['ordering']
+        ordering = ['sort_order']
+
+
+# ejemplo: APEAM
+class MarketProductSizeStandard(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    sort_order = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('Market Product Size Standard')
+        verbose_name_plural = _('Market Product Size Standards')
+        ordering = ['sort_order']
+        constraints = [
+            models.UniqueConstraint(fields=['product_kind', 'country'], name='marketproductsizestandard_unique_productkind_country')
+        ]
+
+class MarketProductSizeStandardSizeManager(Manager):
+    def get_queryset(self):
+        return super().get_queryset().annotate(
+            name_as_int=Case(
+                When(name__regex=r'^\d+$', then=Cast('name', output_field=IntegerField())),
+                default=Value(None),
+                output_field=IntegerField(),
+            )
+        ).order_by('name_as_int', 'name')
+
+# ejemplo 30, 40, 60... (de apeam)
+class MarketProductSizeStandardSize(models.Model):
+    name = models.CharField(max_length=255)
+    standard = models.ForeignKey(MarketProductSizeStandard, on_delete=models.CASCADE)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return self.name
+
+    objects = MarketProductSizeStandardSizeManager()
+
+    class Meta:
+        verbose_name = _('Market product size standard, Size')
+        verbose_name_plural = _('Market product size standard, Sizes')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'standard'], name='marketproductsizestandardsize_unique_name_standard')
+        ]
 
 
 class LegalEntityCategory(models.Model):
@@ -46,7 +97,7 @@ class Incoterm(models.Model):
     code = models.CharField(max_length=4, verbose_name=_('Code'))
     name = models.CharField(max_length=255)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    ordering = models.PositiveIntegerField(default=0)
+    sort_order = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"{self.code} -- {self.name}"
@@ -54,7 +105,7 @@ class Incoterm(models.Model):
     class Meta:
         verbose_name = _('Incoterm')
         verbose_name_plural = _('Incoterms')
-        ordering = ['ordering']
+        ordering = ['sort_order']
         constraints = [
             models.UniqueConstraint(fields=['id', 'name'], name='incoterm_unique_id_name')
         ]
@@ -63,7 +114,7 @@ class Incoterm(models.Model):
 class LocalDelivery(models.Model):
     name = models.CharField(max_length=255, unique=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    ordering = models.PositiveIntegerField(default=0)
+    sort_order = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -71,4 +122,4 @@ class LocalDelivery(models.Model):
     class Meta:
         verbose_name = _('Local Delivery')
         verbose_name_plural = _('Local Deliveries')
-        ordering = ['ordering']
+        ordering = ['sort_order']

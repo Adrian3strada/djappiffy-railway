@@ -4,7 +4,6 @@ from django.contrib import admin
 from common.billing.models import LegalEntityCategory
 from .models import (
     Market, KGCostMarket, MarketClass, Product, ProductVariety, MarketProductSize,
-    MarketStandardProductSize, # TODO: eliminar MarketStandardProductSize 14 ene 2024
     ProductHarvestSizeKind,
     ProductSeasonKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
@@ -55,7 +54,7 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
-from common.base.models import ProductKind
+from common.base.models import ProductKind, MarketProductSizeStandardSize
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin
@@ -104,17 +103,6 @@ class MarketClassInline(admin.TabularInline):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
 
-# TODO: eliminar MarketStandardProductSizeInline 14 ene 2024
-class MarketStandardProductSizeInline(admin.TabularInline):
-    model = MarketStandardProductSize
-    ordering = ('order', 'name')
-    extra = 0
-
-    @uppercase_formset_charfield('name')
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        return formset
-
 
 @admin.register(Market)
 class MarketAdmin(ByOrganizationAdminMixin):
@@ -128,7 +116,7 @@ class MarketAdmin(ByOrganizationAdminMixin):
     # TODO: revisar si KGCostMarketInline si va en Market o va por variedad o donde?
 
     def get_countries(self, obj):
-        return ", ".join([m.name for m in obj.countries.all()])
+        return ", ".join([m.name for m in obj.country.all()])
 
     get_countries.short_description = _('countries')
 
@@ -164,7 +152,7 @@ class ProductSeasonKindInline(admin.TabularInline):
     ordering = ['sort_order', 'name']
     verbose_name = _('Season')
     verbose_name_plural = _('Seasons')
-    formset = ProductSeasonKindInlineFormSet
+    # formset = ProductSeasonKindInlineFormSet
 
     @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
@@ -179,7 +167,7 @@ class ProductMassVolumeKindInline(admin.TabularInline):
     ordering = ['sort_order', '-name']
     verbose_name = _('Mass volume kind')
     verbose_name_plural = _('Mass volume kinds')
-    formset = ProductMassVolumeKindInlineFormSet
+    # formset = ProductMassVolumeKindInlineFormSet
 
     @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
@@ -194,7 +182,7 @@ class ProductVarietyInline(admin.TabularInline):
     fields = ('name', 'alias', 'description', 'is_enabled')
     verbose_name = _('Variety')
     verbose_name_plural = _('Varieties')
-    formset = ProductVarietyInlineFormSet
+    # formset = ProductVarietyInlineFormSet
 
     @uppercase_formset_charfield('name')
     @uppercase_alphanumeric_formset_charfield('alias')
@@ -210,7 +198,7 @@ class ProductHarvestSizeKindInline(admin.TabularInline):
     ordering = ['sort_order', '-name']
     verbose_name = _('Harvest size kind')
     verbose_name_plural = _('Harvest size kinds')
-    formset = ProductHarvestSizeKindInlineFormSet
+    # formset = ProductHarvestSizeKindInlineFormSet
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -264,7 +252,7 @@ class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMi
         ByProductHarvestSizeKindForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
         ByProductMassVolumeKindForOrganizationFilter, 'is_enabled'
     )
-    search_fields = ('name', 'alias', 'product__name')
+    search_fields = ('name', 'alias')
     ordering = ['sort_order']
 
     @uppercase_form_charfield('name')
@@ -286,7 +274,45 @@ class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMi
         if db_field.name == "market":
             kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
 
+        if db_field.name == "standard_size":
+            if request.POST:
+                market_id = request.POST.get('market')
+            else:
+                market_id = obj.market_id if obj else None
+            if market_id:
+                market = Market.objects.get(id=market_id)
+                kwargs["queryset"] = MarketProductSizeStandardSize.objects.filter(standard__country_id__in=market.countries.all(), is_enabled=True)
+                formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+                if market.countries.all().count() > 1:
+                    formfield.label_from_instance = lambda item: f"{item.standard.country.name}: {item.name} ({item.standard.name})"
+                else:
+                    formfield.label_from_instance = lambda item: f"{item.name} ({item.standard.name})"
+                return formfield
+            else:
+                kwargs["queryset"] = ProductVariety.objects.none()
+
+
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = MarketProductSize.objects.get(id=object_id) if object_id else None
+
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+
+        if db_field.name == "varieties":
+            if request.POST:
+                product_id = request.POST.get('product')
+            else:
+                product_id = obj.product_id if obj else None
+            if product_id:
+                kwargs["queryset"] = ProductVariety.objects.filter(product_id=product_id, is_enabled=True)
+            else:
+                kwargs["queryset"] = ProductVariety.objects.none()
+
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
 
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/product_size.js',)
