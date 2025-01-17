@@ -23,9 +23,6 @@ class ProductSeasonKindInlineFormSet(BaseInlineFormSet):
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
-                #form.fields['has_performance'].disabled = True
-                #form.fields['has_performance'].widget.attrs.update(
-                #    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
                 form.fields['DELETE'].initial = False
                 form.fields['DELETE'].disabled = True
                 form.fields['DELETE'].widget.attrs.update(

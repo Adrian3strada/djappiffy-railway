@@ -246,14 +246,18 @@ class ProductAdmin(ByOrganizationAdminMixin):
 @admin.register(MarketProductSize)
 class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
     list_display = (
-        'name', 'alias', 'product', 'market', 'is_enabled', 'sort_order')
+        'name', 'alias', 'product', 'get_varieties', 'market', 'is_enabled', 'sort_order')
     list_filter = (
         ByProductForOrganizationFilter, ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
-        ByProductHarvestSizeKindForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
-        ByProductMassVolumeKindForOrganizationFilter, 'is_enabled'
+        'is_enabled'
     )
     search_fields = ('name', 'alias')
     ordering = ['sort_order']
+
+    def get_varieties(self, obj):
+        return ", ".join([m.name for m in obj.varieties.all()])
+    get_varieties.admin_order_field = 'varieties__name'
+    get_varieties.short_description = _('varieties')
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
@@ -276,21 +280,30 @@ class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMi
 
         if db_field.name == "standard_size":
             if request.POST:
+                product_id = request.POST.get('product')
                 market_id = request.POST.get('market')
             else:
+                product_id = obj.product_id if obj else None
                 market_id = obj.market_id if obj else None
-            if market_id:
+            if product_id and market_id:
                 market = Market.objects.get(id=market_id)
-                kwargs["queryset"] = MarketProductSizeStandardSize.objects.filter(standard__country_id__in=market.countries.all(), is_enabled=True)
+                product = Product.objects.get(id=product_id)
+                queryset = MarketProductSizeStandardSize.objects.filter(standard__product_kind=product.kind, standard__country_id__in=market.countries.all(), is_enabled=True)
+                kwargs["queryset"] = queryset
                 formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+                formfield.required = queryset.exists()
+                standards = queryset.values_list('standard', flat=True).distinct()
                 if market.countries.all().count() > 1:
-                    formfield.label_from_instance = lambda item: f"{item.standard.country.name}: {item.name} ({item.standard.name})"
+                    formfield.label_from_instance = lambda item: f"{item.standard.country.name}: {item.name}" + (f"({item.standard.name})" if standards.count() > 1 else "")
                 else:
-                    formfield.label_from_instance = lambda item: f"{item.name} ({item.standard.name})"
+                    formfield.label_from_instance = lambda item: f"{item.name}" + (f"({item.standard.name})" if standards.count() > 1 else "")
                 return formfield
             else:
-                kwargs["queryset"] = ProductVariety.objects.none()
-
+                queryset = MarketProductSizeStandardSize.objects.none()
+                kwargs["queryset"] = queryset
+                formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+                formfield.required = queryset.exists()
+                return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -312,7 +325,6 @@ class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMi
                 kwargs["queryset"] = ProductVariety.objects.none()
 
         return super().formfield_for_manytomany(db_field, request, **kwargs)
-
 
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/product_size.js',)
@@ -1156,8 +1168,8 @@ class PalletConfigurationPersonalExpenseInline(admin.StackedInline):
 
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('description')
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
+    def get_formset(self, request, obj=None, **kwargs):
+        form = super().get_formset(request, obj, **kwargs)
         return form
 
 @admin.register(PalletConfiguration)
@@ -1465,7 +1477,6 @@ class InsuranceCompanyAdmin(ByOrganizationAdminMixin):
 class ProviderBeneficiaryInline(admin.StackedInline):
     model = ProviderBeneficiary
     extra = 0
-    can_delete = True
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -1480,6 +1491,7 @@ class ProviderBeneficiaryInline(admin.StackedInline):
                 kwargs["queryset"] = Bank.objects.filter(organization=request.organization, is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 
 class ProviderBalanceInline(admin.StackedInline):

@@ -51,7 +51,7 @@ class OrderAdmin(ByOrganizationAdminMixin):
     def rendered_observations(self, obj):
         return mark_safe(obj.observations) if obj and obj.observations else ""
 
-    rendered_observations.short_description = 'Observations'
+    rendered_observations.short_description = _('Observations')
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = super().readonly_fields

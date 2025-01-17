@@ -1,6 +1,7 @@
 from rest_framework import viewsets
-from .serializers import ProductKindSerializer, CitySerializer, SubRegionSerializer, RegionSerializer, CountrySerializer
-from .models import ProductKind
+from .serializers import (ProductKindSerializer, CitySerializer, SubRegionSerializer, RegionSerializer,
+                          CountrySerializer, MarketProductSizeStandardSizeSerializer)
+from .models import ProductKind, MarketProductSizeStandardSize
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
 from cities_light.contrib.restframework3 import SubRegionModelViewSet as BaseSubRegionModelViewSet
 from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
@@ -13,6 +14,29 @@ class ProductKindViewSet(viewsets.ModelViewSet):
     serializer_class = ProductKindSerializer
     queryset = ProductKind.objects.all()
     filterset_fields = ['for_packaging', 'for_orchard', 'for_eudr']
+
+
+class MarketProductSizeStandardSizeViewSet(viewsets.ModelViewSet):
+    serializer_class = MarketProductSizeStandardSizeSerializer
+    pagination_class = None
+    multiple_standards = False
+
+    def get_queryset(self):
+        queryset = MarketProductSizeStandardSize.objects.all()
+        product_kind = self.request.GET.get('product_kind')
+        country = self.request.GET.get('country')
+        countries = self.request.GET.get('countries')
+        if countries:
+            country_ids = countries.split(',')
+            queryset = queryset.filter(standard__country_id__in=country_ids)
+        if product_kind:
+            queryset = queryset.filter(standard__product_kind_id=product_kind)
+        if country:
+            queryset = queryset.filter(standard__country_id=country)
+
+        standards = queryset.values_list('standard', flat=True).distinct()
+        self.multiple_standards = standards.count() > 1
+        return queryset
 
 
 class CountryViewSet(BaseCountryModelViewSet):

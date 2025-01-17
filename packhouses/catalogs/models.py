@@ -189,7 +189,7 @@ class MarketProductSize(CleanNameAndAliasProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Varieties'), blank=False)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    standard_size = models.ForeignKey(MarketProductSizeStandardSize, verbose_name=_('Standard size'), on_delete=models.PROTECT)
+    standard_size = models.ForeignKey(MarketProductSizeStandardSize, verbose_name=_('Standard size'), on_delete=models.PROTECT, null=True, blank=False)
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
