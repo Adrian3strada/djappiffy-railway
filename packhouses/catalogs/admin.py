@@ -27,7 +27,7 @@ from common.profiles.models import UserProfile, PackhouseExporterProfile, Organi
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet,
-                    PackagingKindForm)
+                    PackagingKindForm, ProviderForm)
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization, OrganizationUser
 from cities_light.models import Country, Region, SubRegion, City
@@ -1517,6 +1517,7 @@ class ProviderAdmin(ByOrganizationAdminMixin):
         'neighborhood', 'address', 'external_number', 'internal_number', 'tax_id', 'email', 'phone_number',
         'comments', 'is_enabled')
     inlines = (ProviderBeneficiaryInline, ProviderBalanceInline, CrewChiefInline)
+    form = ProviderForm
 
     def get_state_name(self, obj):
         return obj.state.name

@@ -3,7 +3,7 @@ from .models import (
     Product, MarketProductSize, OrchardCertification, HarvestingCrew,
     ProductHarvestSizeKind,
     HarvestingPaymentSetting,
-    PackagingKind,
+    PackagingKind, Provider
 )
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
@@ -170,3 +170,17 @@ class HarvestingPaymentSettingInlineFormSet(BaseInlineFormSet):
             raise forms.ValidationError(
                 _(f'Type harvest "{type_harvest}" is already selected. Only one of each type is allowed.')
             )
+
+class ProviderForm(forms.ModelForm):
+    class Meta:
+        model = Provider
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        category = cleaned_data.get('category')
+        vehicle_provider = cleaned_data.get('vehicle_provider')
+
+        if category == 'harvesting_provider' and not vehicle_provider:
+            self.add_error('vehicle_provider', _('This field is required when category is Harvesting Provider.'))
+        return cleaned_data
