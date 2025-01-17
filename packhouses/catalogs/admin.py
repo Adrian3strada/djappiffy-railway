@@ -14,7 +14,7 @@ from .models import (
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    InsideSupply,
+    PackagingSupply,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation,
     HarvestContainer
 )
@@ -31,7 +31,7 @@ from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFor
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization, OrganizationUser
 from cities_light.models import Country, Region, SubRegion, City
-
+import nested_admin
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizationMarketsFilter,
@@ -57,7 +57,7 @@ from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, Sort
 from common.base.models import ProductKind, MarketProductSizeStandardSize
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
-from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin
+from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, DisableInlineRelatedLinksMixin
 from common.forms import SelectWidgetWithData
 from django.db.models import Q, F, Max, Min
 
@@ -947,32 +947,39 @@ class ServiceAdmin(ByOrganizationAdminMixin):
             return formfield
 
 
-class InsideSuppliesInline(admin.TabularInline):
-    model = InsideSupply
+class PackagingSupplyInline(admin.StackedInline):
+    model = PackagingSupply
     min_num = 0
     extra = 0
-    list_display = ('internal_supply_kind', 'internal_supply', 'quantity')
+    list_display = ('supply_kind', 'supply', 'quantity')
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
+
+    #class Meta:
+    verbose_name = _('Complementary Supply')
+    verbose_name_plural = _('Complementary Supplies')
+
+    #class Media:
+    #    js = ('js/admin/forms/packhouses/catalogs/packaging_complementary_supplies_inline.js',)
 
 
 @admin.register(PackagingKind)
 class PackagingKindAdmin(ByOrganizationAdminMixin):
     form = PackagingKindForm
     list_display = ('name',
-                    'packaging', 'quantity',
-                    'max_product_kg_per_package', 'avg_tare_kg_per_package',
+                    'max_product_kg_per_package',
                     'authority', 'code',
                     'is_enabled',
     )
     fields = ('name',
-              'packaging_kind', 'packaging', 'quantity',
-              'max_product_kg_per_package', 'avg_tare_kg_per_package',
+              'main_supply_kind', 'main_supply', 'quantity',
+              'max_product_kg_per_package',
               'authority', 'code',
-              'is_enabled')
-    inlines = [InsideSuppliesInline]
+              'is_enabled',
+    )
+    inlines = (PackagingSupplyInline, )
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
@@ -984,20 +991,20 @@ class PackagingKindAdmin(ByOrganizationAdminMixin):
         obj = PackagingKind.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
-        packaging_kind = request.POST.get('packaging_kind') if request.POST else obj.packaging_kind if obj else None
+        supply_kind = request.POST.get('main_supply_kind') if request.POST else obj.main_supply_kind if obj else None
 
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        packagingkind_queryfilter = {'organization': organization, 'is_packaging': True, 'is_enabled': True}
-        supply_queryfilter = {'organization': organization, 'kind': packaging_kind, 'is_enabled': True}
+        supplykind_queryfilter = {'organization': organization, 'is_packaging': True, 'is_enabled': True}
+        supply_queryfilter = {'organization': organization, 'kind': supply_kind, 'is_enabled': True}
 
-        print(db_field.name)
         if db_field.name == 'authority':
             kwargs['queryset'] = AuthorityPackagingKind.objects.filter(**organization_queryfilter)
 
-        if db_field.name == "packaging_kind":
-            kwargs["queryset"] = SupplyKind.objects.filter(**packagingkind_queryfilter)
-        if db_field.name == "packaging":
-            if packaging_kind:
+        if db_field.name == "main_supply_kind":
+            kwargs["queryset"] = SupplyKind.objects.filter(**supplykind_queryfilter)
+        if db_field.name == "main_supply":
+            print(supply_kind)
+            if supply_kind:
                 kwargs["queryset"] = Supply.objects.filter(**supply_queryfilter)
             else:
                 kwargs["queryset"] = Supply.objects.none()

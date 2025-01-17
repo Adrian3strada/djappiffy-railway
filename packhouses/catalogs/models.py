@@ -806,14 +806,14 @@ class PackagingKind(models.Model):
     authority = models.ForeignKey(AuthorityPackagingKind, blank=True, null=True, on_delete=models.PROTECT)
     code = models.CharField(max_length=10, blank=True, null=True, verbose_name=_('Code'))
 
-    ### Embalaje más externo
-    packaging_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)
-    packaging = models.ForeignKey(Supply, verbose_name=_('Packaging'), on_delete=models.PROTECT)
+    ### Embalaje principal
+    main_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Main supply kind'), on_delete=models.PROTECT)
+    main_supply = models.ForeignKey(Supply, verbose_name=_('Main supply'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'))
 
-    ### Pesos del producto y tare
+    ### Máximo peso
     max_product_kg_per_package = models.FloatField(verbose_name=_('Max product Kg per package'))
-    avg_tare_kg_per_package = models.FloatField(verbose_name=_('Average tare Kg per package'))
+    #avg_tare_kg_per_package = models.FloatField(verbose_name=_('Average tare Kg per package'))
 
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
@@ -822,28 +822,28 @@ class PackagingKind(models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Package kind')
-        verbose_name_plural = _('Package kinds')
+        verbose_name = _('Packaging kind')
+        verbose_name_plural = _('Packaging kinds')
         ordering = ('name', )
         constraints = [
             models.UniqueConstraint(fields=('name', 'organization'),
                                     name='packagingkind_unique_name_organization'),
         ]
 
-class InsideSupply(models.Model):
-    packaging_kind = models.ForeignKey(PackagingKind, on_delete=models.CASCADE)
+class PackagingSupply(models.Model):
+    packaging_kind = models.ForeignKey(PackagingKind, on_delete=models.PROTECT)
     supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Supply kind'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'))
 
     class Meta:
-        verbose_name = _('Inside supply')
-        verbose_name_plural = _('Inside supplies')
+        verbose_name = _('Packaging supply')
+        verbose_name_plural = _('Packaging supplies')
         ordering = ('supply_kind', 'supply')
-        constraints = [
-            models.UniqueConstraint(fields=('packaging_kind', 'supply_kind'),
-                                    name='insidesupply_unique_packagingkind_supplykind'),
-        ]
+        #constraints = [
+        #    models.UniqueConstraint(fields=('packaging_kind', 'supply_kind'),
+        #                            name='insidesupply_unique_packagingkind_supplykind'),
+        #]
 
 # Básculas
 
