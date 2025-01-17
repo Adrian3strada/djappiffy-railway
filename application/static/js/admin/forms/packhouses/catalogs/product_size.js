@@ -1,14 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
   const productField = $('#id_product');
   const varietiesField = $('#id_varieties');
-  const marketsField = $('#id_markets');
-  const MarketProductSizeStandardSizeField = $('#id_market_product_size_standard_size');
-  const productHarvestSizeKindField = $('#id_product_harvest_size_kind');
-  const productQualityKindField = $('#id_product_quality_kind');
-  const productMassVolumeKindField = $('#id_product_mass_volume_kind');
-
+  const marketField = $('#id_market');
+  const standardSizeField = $('#id_standard_size');
   const nameField = $('#id_name');
   const aliasField = $('#id_alias');
+
+  let productProductKind = 0
+  let marketCountries = ''
 
   const API_BASE_URL = '/rest/v1';
 
@@ -35,6 +34,34 @@ document.addEventListener('DOMContentLoaded', function () {
     }).fail(error => console.error('Fetch error:', error));
   }
 
+  function getProductKind(productId) {
+    if (productId) {
+      return fetchOptions(`${API_BASE_URL}/catalogs/product/${productId}/`)
+        .then(data => {
+          console.log("product", data);
+          productProductKind = data.kind ? data.kind : null;
+          console.log("productProductKind", productProductKind);
+        });
+    } else {
+      productProductKind = null;
+      return Promise.resolve();
+    }
+  }
+
+  function getMarketCountries(marketId) {
+    if (marketId) {
+      return fetchOptions(`${API_BASE_URL}/catalogs/market/${marketId}/`)
+        .then(data => {
+          console.log("market", data)
+          data.countries ? marketCountries = data.countries.join(',') : marketCountries = null
+          console.log("marketCountries", marketCountries)
+        });
+    } else {
+      marketCountries = ''
+      return Promise.resolve();
+    }
+  }
+
   function updateProductVariety() {
     const productId = productField.val();
     if (productId) {
@@ -48,35 +75,38 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function updateMarketProductSizeStandardSize() {
-    const marketIds = marketsField.val();
-    if (marketIds && marketIds.length > 0) {
-      fetchOptions(`${API_BASE_URL}/base/market_product_size_standard_size/?market=${marketIds}&is_enabled=1`)
+    const productId = productField.val();
+    const marketId = marketField.val();
+    if (productId && marketId) {
+      console.log("marketCountries", marketCountries)
+      console.log("productId", productId)
+      console.log("marketId", marketId)
+      fetchOptions(`${API_BASE_URL}/base/market-product-size-standard-size/?countries=${marketCountries}&product_kind=${productProductKind}&is_enabled=1`)
         .then(data => {
           const marketNames = {};
-          marketsField.find('option').each(function () {
+          marketField.find('option').each(function () {
             const option = $(this);
             marketNames[option.val()] = option.text();
           });
-
           data.forEach(item => {
             item.market_name = marketNames[item.market];
           });
-          updateFieldOptions(MarketProductSizeStandardSizeField, data, 'market_name');
-          toggleFieldVisibility(MarketProductSizeStandardSizeField, data.length > 0);
+          updateFieldOptions(standardSizeField, data, 'market_name');
+          toggleFieldVisibility(standardSizeField, data.length > 0);
         });
     } else {
-      updateFieldOptions(MarketProductSizeStandardSizeField, []);
-      toggleFieldVisibility(MarketProductSizeStandardSizeField, false);
+      updateFieldOptions(standardSizeField, []);
+      toggleFieldVisibility(standardSizeField, false);
     }
   }
 
-
   function updateNameFromMarketStandardProductSize() {
-    const marketStandardProductSize = MarketProductSizeStandardSizeField.val();
-    if (marketStandardProductSize) {
-      fetchOptions(`${API_BASE_URL}/catalogs/market_standard_product_size/${marketStandardProductSize}/`)
+    const standardSize = standardSizeField.val();
+    if (standardSize) {
+      fetchOptions(`${API_BASE_URL}/base/market-product-size-standard-size/${standardSize}/`)
         .then(data => {
           nameField.val(data.name);
+          setAliasName();
         })
     }
   }
@@ -90,28 +120,36 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   productField.on('change', () => {
-    updateProductVariety()
+    getProductKind(productField.val()).then(() => {
+      if (productField.val()) {
+        updateProductVariety();
+        if (productField.val()) {
+          updateMarketProductSizeStandardSize();
+        } else {
+          updateFieldOptions(varietiesField, []);
+          toggleFieldVisibility(standardSizeField, false);
+        }
+      } else {
+        updateFieldOptions(varietiesField, []);
+        toggleFieldVisibility(standardSizeField, false);
+      }
+    });
   });
 
-  nameField.on('input', () => {
-    const value = nameField.val();
-    const hasLetters = /[a-zA-Z]/.test(value);
-
-    if (hasLetters) {
-      const sanitizedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // Remove accents
-      const letters = sanitizedValue.match(/[a-zA-Z]/g) || [];
-      const firstThreeLetters = letters.slice(0, 3).join('').toUpperCase();
-      const numbers = sanitizedValue.match(/[0-9]/g) || [];
-      aliasField.val(numbers.join('') + firstThreeLetters);
+  marketField.on('change', () => {
+    if (marketField.val() && productField.val()) {
+      getMarketCountries(marketField.val()).then(() => {
+        updateMarketProductSizeStandardSize();
+      });
     } else {
-      aliasField.val(value);
+      updateFieldOptions(standardSizeField, []);
+      toggleFieldVisibility(standardSizeField, false);
     }
   });
 
-  nameField.on('input', () => {
+  function setAliasName() {
     const value = nameField.val();
     const isNumeric = /^\d+$/.test(value);
-
     if (isNumeric) {
       aliasField.val(value);
     } else {
@@ -119,20 +157,27 @@ document.addEventListener('DOMContentLoaded', function () {
       const firstThreeChars = sanitizedValue.replace(/[^a-zA-Z0-9]/g, '').substring(0, 3).toUpperCase();
       aliasField.val(firstThreeChars);
     }
+  }
+
+  nameField.on('input', () => {
+    setAliasName();
   });
 
-  MarketProductSizeStandardSizeField.on('change', function () {
-    if (MarketProductSizeStandardSizeField.val()) {
+  standardSizeField.on('change', function () {
+    if (standardSizeField.val()) {
       updateNameFromMarketStandardProductSize();
     }
   });
 
-  [productField, varietiesField, marketsField, MarketProductSizeStandardSizeField, productHarvestSizeKindField, productQualityKindField, productMassVolumeKindField].forEach(field => field.select2());
+  [productField, varietiesField, marketField, standardSizeField].forEach(field => field.select2());
   if (!productField.val()) {
     updateProductVariety();
-    if (!MarketProductSizeStandardSizeField.val()) toggleFieldVisibility(MarketProductSizeStandardSizeField, true);
+    if (!standardSizeField.val()) toggleFieldVisibility(standardSizeField, true);
   }
 
-  if (!marketsField.val()) updateMarketProductSizeStandardSize();
-  if (!MarketProductSizeStandardSizeField.val()) toggleFieldVisibility(MarketProductSizeStandardSizeField, true);
+  if (!marketField.val()) updateMarketProductSizeStandardSize();
+  if (!standardSizeField.val()) toggleFieldVisibility(standardSizeField, true);
+
+  if (productField.val()) getProductKind(productField.val());
+  if (marketField.val()) getMarketCountries(marketField.val());
 });
