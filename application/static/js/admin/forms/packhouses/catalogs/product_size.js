@@ -176,8 +176,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   if (!marketField.val()) updateMarketProductSizeStandardSize();
-  if (!standardSizeField.val()) toggleFieldVisibility(standardSizeField, true);
 
   if (productField.val()) getProductKind(productField.val());
   if (marketField.val()) getMarketCountries(marketField.val());
+  if (!standardSizeField.val()) standardSizeField.closest('.form-group').hide();
 });

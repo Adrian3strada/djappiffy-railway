@@ -3,7 +3,13 @@ from django import forms
 
 class UppercaseTextInputWidget(forms.TextInput):
     def __init__(self, *args, **kwargs):
-        kwargs['attrs'] = {'oninput': 'this.value = this.value.toUpperCase();'}
+        kwargs['attrs'] = {
+            'oninput': (
+                "let start = this.selectionStart, end = this.selectionEnd;"
+                "this.value = this.value.toUpperCase();"
+                "this.setSelectionRange(start, end);"
+            )
+        }
         super().__init__(*args, **kwargs)
 
     def format_value(self, value):
@@ -14,7 +20,9 @@ class UppercaseAlphanumericTextInputWidget(forms.TextInput):
     def __init__(self, *args, **kwargs):
         kwargs['attrs'] = {
             'oninput': (
+                "let start = this.selectionStart, end = this.selectionEnd;"
                 "this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');"
+                "this.setSelectionRange(start, end);"
             )
         }
         super().__init__(*args, **kwargs)
