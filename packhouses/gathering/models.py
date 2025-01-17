@@ -29,6 +29,8 @@ from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard
 from django.db.models import Max, Min
 from django.db.models import Q, F
 import datetime
+from common.settings import STATUS_CHOICES
+
 
 
 
@@ -95,6 +97,10 @@ class ScheduleHarvest(models.Model):
         verbose_name=_("Market"),
         on_delete=models.PROTECT,
     )
+    weight_expected = models.FloatField(
+        verbose_name=_("Expected Weight in kilograms"),
+        validators=[MinValueValidator(0.01)]
+    )
     weighing_scale = models.ForeignKey(
         WeighingScale,
         verbose_name=_("Weighing Scale"),
@@ -105,6 +111,7 @@ class ScheduleHarvest(models.Model):
         verbose_name=_("Meeting Point for the Harvest Cutting"),
         null=True, blank=True
     )
+    status = models.CharField(max_length=8, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(
         Organization,
@@ -196,5 +203,8 @@ class ScheduleHarvestContainerVehicle(models.Model):
     harvest_cutting = models.ForeignKey(ScheduleHarvestVehicle, on_delete=models.CASCADE)
     harvest_cutting_container = models.ForeignKey(HarvestContainer, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
+
+    def __str__(self):
+        return ""
 
 

@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Manejar la adición de nuevos formularios en el formset
   document.addEventListener('formset:added', (event) => {
-    if (event.detail.formsetName === 'harvestcuttingharvestingcrew_set') {
+    if (event.detail.formsetName === 'scheduleharvestharvestingcrew_set') {
       const newForm = event.target; // Obtener el formulario agregado
       const providerField = $(newForm).find('select[name$="-provider"]'); // Encontrar el campo proveedor
       const harvestingCrewField = $(newForm).find('select[name$="-harvesting_crew"]'); // Encontrar el campo harvesting_crew
@@ -55,9 +55,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Manejar formularios existentes
-    $('div[id^="harvestcuttingharvestingcrew_set-"]').each((index, form) => {
+    $('div[id^="scheduleharvestharvestingcrew_set-"]').each((index, form) => {
       const providerField = $(form).find(`select[name$="${index-1}-provider"]`); // Encontrar el campo proveedor
       const harvestingCrewField = $(form).find(`select[name$="${index-1}-harvesting_crew"]`); // Encontrar el campo harvesting_crew
+      const deleteField = $(form).find(`input[name$="${index-1}-DELETE"]`); // Encontrar el campo DELETE
+      const deleteLabel = $(form).find(`label[for$="${index-1}-DELETE"]`); // Encontrar el campo DELETE
+
       const selectedHarvestingCrew = harvestingCrewField.val(); // Obtener el valor actualmente seleccionado en harvesting_crew
 
       // Si ya se ha seleccionado un proveedor, actualizar las opciones del campo harvesting_crew
@@ -69,6 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
       providerField.on('change', function() {
         handleProviderChange(providerField, harvestingCrewField, harvestingCrewField.val());
       });
+
+      var status = $('.field-status .readonly').first().text().trim(); // Obtiene el primer "readonly" dentro de "field-status"
+      if(status === 'Closed' || status === 'Canceled'){
+        setTimeout(function(){
+          providerField.next('.select2-container').addClass('disabled-field');
+          harvestingCrewField.next('.select2-container').addClass('disabled-field');
+          deleteField.hide();
+          deleteLabel.hide();
+          $('.djn-add-handler').hide();
+        }, 300);
+      }
+
     });
 
 
