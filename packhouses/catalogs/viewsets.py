@@ -12,7 +12,7 @@ from .serializers import (MarketSerializer, MarketClassSerializer, VehicleSerial
                           )
 from .models import (Market,MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Maquiladora, Provider, Product,
-                     Supply, Orchard, HarvestingCrew,
+                     Supply, Orchard, HarvestingCrew, MarketProductSize
                      )
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -124,7 +124,7 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
 
 class MarketProductSizeViewSet(viewsets.ModelViewSet):
     serializer_class = MarketProductSizeSerializer
-    filterset_fields = ['product', 'product_varieties', 'is_enabled']
+    filterset_fields = ['product', 'market', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
