@@ -14,13 +14,15 @@ from common.mixins import (
 )
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
-from packhouses.catalogs.models import Market, Country, Client, Maquiladora
+from packhouses.catalogs.models import (Market, MarketClass, Client, Maquiladora, Product, ProductSeasonKind,
+                                        MarketProductSize)
+from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from django.db.models import Max, Min, Q, F
 from .utils import incoterms_choices
 from common.base.models import Incoterm, LocalDelivery
 import datetime
+from .settings import ORDER_ITEM_PRICE_CATEGORY_CHOICES
 
-from ..catalogs.settings import CLIENT_KIND_CHOICES
 
 
 class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
@@ -57,3 +59,25 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
             models.UniqueConstraint(fields=['ooid', 'organization'], name='order_unique_ooid_organization')
         ]
 
+
+class OrderItem(models.Model):
+    """
+    Nota: Como la orden tiene un cliente, y el cliente tiene mercado, podemos inferir el mercado a partir
+    del cliente.
+    necesitamos el product size, entonces tb necesitamos el product; que puede estar filtrado por mercado.
+
+    el mercado lo tengo del cliente
+    """
+
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
+    product_season = models.ForeignKey(ProductSeasonKind, verbose_name=_('Product season'), on_delete=models.PROTECT)
+    market_class = models.ForeignKey(MarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
+    quantity = models.DecimalField(verbose_name=_('Quantity'), max_digits=12, decimal_places=2, validators=[MinValueValidator(0.01)])
+    price = models.DecimalField(verbose_name=_('Price'), max_digits=12, decimal_places=2, validators=[MinValueValidator(0.01)])
+    price_category = models.CharField(max_length=20, verbose_name=_('Price category'), choices=ORDER_ITEM_PRICE_CATEGORY_CHOICES)
+    order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = _('Order item')
+        verbose_name_plural = _('Order items')
