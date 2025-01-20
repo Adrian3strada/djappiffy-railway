@@ -947,7 +947,7 @@ class ServiceAdmin(ByOrganizationAdminMixin):
             return formfield
 
 
-class PackagingSupplyInline(admin.StackedInline):
+class PackagingSupplyInline(admin.TabularInline):
     model = PackagingSupply
     min_num = 0
     extra = 0
@@ -957,12 +957,18 @@ class PackagingSupplyInline(admin.StackedInline):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_obj_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = PackagingKind.objects.get(id=parent_obj_id) if parent_obj_id else None
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     #class Meta:
     verbose_name = _('Complementary Supply')
     verbose_name_plural = _('Complementary Supplies')
 
-    #class Media:
-    #    js = ('js/admin/forms/packhouses/catalogs/packaging_complementary_supplies_inline.js',)
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/packaging_complementary_supplies_inline.js',)
 
 
 @admin.register(PackagingKind)
