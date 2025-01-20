@@ -14,7 +14,7 @@ from .models import (
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    PackagingSupply,
+    PackagingSupply, RelationPackaging,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation,
     HarvestContainer
 )
@@ -971,6 +971,14 @@ class PackagingSupplyInline(admin.TabularInline):
         js = ('js/admin/forms/packhouses/catalogs/packaging_complementary_supplies_inline.js',)
 
 
+class ContainedPackagingInline(admin.TabularInline):
+    model = RelationPackaging
+    min_num = 0
+    extra = 0
+    fk_name = 'outside'
+    list_display = ('inside', 'quantity')
+
+
 @admin.register(PackagingKind)
 class PackagingKindAdmin(ByOrganizationAdminMixin):
     form = PackagingKindForm
@@ -985,7 +993,7 @@ class PackagingKindAdmin(ByOrganizationAdminMixin):
               'authority', 'code',
               'is_enabled',
     )
-    inlines = (PackagingSupplyInline, )
+    inlines = (PackagingSupplyInline, ContainedPackagingInline)
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
