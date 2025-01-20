@@ -7,8 +7,12 @@ from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
 from search import views as search_views
+from packhouses.gathering.views import generate_pdf
+
 
 urlpatterns = [
+    # Admin URLs personalizadas
+    path('dadmin/gathering/scheduleharvest/generate_pdf/<int:harvest_id>/', generate_pdf, name='generate_pdf'),
     # Admin URLs
     path("dadmin/", admin.site.urls),
     path("wadmin/", include(wagtailadmin_urls)),
