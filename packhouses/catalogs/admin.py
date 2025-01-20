@@ -1008,14 +1008,15 @@ class PackagingKindAdmin(ByOrganizationAdminMixin):
         supply_kind = request.POST.get('main_supply_kind') if request.POST else obj.main_supply_kind if obj else None
 
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        supplykind_queryfilter = {'organization': organization, 'is_packaging': True, 'is_enabled': True}
+        supplykind_queryfilter = {'organization': organization, 'is_enabled': True}
         supply_queryfilter = {'organization': organization, 'kind': supply_kind, 'is_enabled': True}
 
         if db_field.name == 'authority':
             kwargs['queryset'] = AuthorityPackagingKind.objects.filter(**organization_queryfilter)
 
         if db_field.name == "main_supply_kind":
-            kwargs["queryset"] = SupplyKind.objects.filter(**supplykind_queryfilter)
+            packaging_or_tarima_query = Q(is_packaging=True) | Q(name='TARIMA')
+            kwargs["queryset"] = SupplyKind.objects.filter(packaging_or_tarima_query, **supplykind_queryfilter)
         if db_field.name == "main_supply":
             print(supply_kind)
             if supply_kind:
