@@ -41,6 +41,8 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.contrib.admin.widgets import AdminDateWidget
+from django.utils.html import format_html
+from django.urls import reverse
 
 
 class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
@@ -155,11 +157,22 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.N
 class HarvestCuttingAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     fields = ('ooid', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
               'product_variety', 'product_season_kind', 'product_harvest_size_kind','orchard',  'market',
-              'weight_expected', 'weighing_scale','status', 'meeting_point')
-    list_display = ('ooid', 'category', 'product_provider', 'product','product_variety', 'market', 'product_season_kind', 'weight_expected')
+              'weight_expected', 'weighing_scale','status', 'meeting_point', )
+    list_display = ('ooid', 'harvest_date', 'category', 'product_provider', 'product','product_variety', 'market',
+                    'product_season_kind', 'weight_expected',  'generate_pdf_button')
     list_filter = ('category', 'product_provider','gatherer', 'maquiladora', )
     readonly_fields = ('ooid',)
     inlines = [HarvestCuttingHarvestingCrewInline, HarvestCuttingVehicleInline]
+
+    def generate_pdf_button(self, obj):
+        url = reverse('generate_pdf', args=[obj.pk])  # URL de la vista de generación de PDF
+        button_text = str(_("Harvest Order"))
+        return format_html(
+            '<a class="button" href="{}" target="_blank">{}</a>', url, button_text
+        )
+
+    generate_pdf_button.short_description = _('Actions')
+    generate_pdf_button.allow_tags = True
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)

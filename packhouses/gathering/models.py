@@ -112,6 +112,7 @@ class ScheduleHarvest(models.Model):
         null=True, blank=True
     )
     status = models.CharField(max_length=8, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open')
+    reason_change_date = models.TextField(blank=True, null=True, verbose_name=_('Reason for date change'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(
         Organization,
@@ -122,7 +123,7 @@ class ScheduleHarvest(models.Model):
 
 
     def __str__(self):
-        return f"#{self.ooid}"
+        return f"{self.ooid}"
 
     def save(self, *args, **kwargs):
         if not self.ooid:
