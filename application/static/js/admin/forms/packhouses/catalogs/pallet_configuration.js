@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const marketClassField = $('#id_market_class');
   const productField = $('#id_product');
   const productVarietyField = $('#id_product_variety');
-  const productVarietySizeField = $('#id_product_variety_size');
+  const productMarketSizeField = $('#id_product_size');
 
   const API_BASE_URL = '/rest/v1';
 
@@ -46,31 +46,31 @@ document.addEventListener('DOMContentLoaded', function () {
       updateFieldOptions(productVarietyField, [])
     }
   }
-
-  function updateProductVarietySize() {
-    const productVarietyId = productVarietyField.val();
-    if (productVarietyId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_size/?product_varieties=${productVarietyId}`)
-        .then(data => {
-          updateFieldOptions(productVarietySizeField, data)
-        });
-    } else {
-      updateFieldOptions(productVarietySizeField, [])
+    function updateProductSize(){
+      const productId = productField.val();
+      const marketId = marketField.val();
+      if(productId && marketId){
+        fetchOptions(`${API_BASE_URL}/catalogs/product_size/?product=${productId}&market=${marketId}&is_enabled=1`)
+          .then(data => {
+            updateFieldOptions(productMarketSizeField, data)
+          });
+  
+      } else {
+        updateFieldOptions(productMarketSizeField, [])
+      }
     }
-  }
+    
 
   marketField.on('change', function () {
     updateMarketClass();
+    updateProductSize();
   });
 
   productField.on('change', function () {
     updateProductVariety();
-  });
-
-  productVarietyField.on('change', function () {
-    updateProductVarietySize();
+    updateProductSize();
   });
 
   [marketField, marketClassField,
-    productField, productVarietyField, productVarietySizeField].forEach(field => field.select2());
+    productField, productVarietyField, productMarketSizeField].forEach(field => field.select2());
 });
