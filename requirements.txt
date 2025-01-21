@@ -51,6 +51,7 @@ django-ckeditor-5
 django-admin-sortable2
 django-nested-admin
 django-modeladmin-reorder
+django-weasyprint
 setuptools
 
 geopandas

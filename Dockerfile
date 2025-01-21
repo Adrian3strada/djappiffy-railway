@@ -24,6 +24,8 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     zlib1g-dev \
     libwebp-dev \
     proj-data \
+    weasyprint \
+    libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0 libjpeg-dev libopenjp2-7-dev libffi-dev \
     && rm -rf /var/lib/apt/lists/* \
     && pip install gdal==$(gdal-config --version)
 
