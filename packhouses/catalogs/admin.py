@@ -1239,6 +1239,14 @@ class PalletConfigurationAdmin(ByOrganizationAdminMixin):
                 kwargs["queryset"] = ProductVariety.objects.filter(**product_queryfilter)
             else:
                 kwargs["queryset"] = ProductVariety.objects.none()
+        if db_field.name == "product_variety_size":
+            if variety:
+                kwargs["queryset"] = MarketProductSize.objects.filter(**variety_queryfilter)
+            else:
+                kwargs["queryset"] = MarketProductSize.objects.none()
+        # Comentado ante discrepancias con desarrollo entre Cesar y Jaqueline
+        #   La versión de arriba parece la asociada de un calibre dependiente de variedades
+        """
         if db_field.name == "product_size":
             if market and product:
                 kwargs["queryset"] = MarketProductSize.objects.filter(market=market, **product_queryfilter)
@@ -1247,6 +1255,7 @@ class PalletConfigurationAdmin(ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name.split(' (')[0]
             return formfield
+        """
         if db_field.name == "packaging_kind":
             kwargs["queryset"] = PackagingKind.objects.filter(**organization_queryfilter)
 
@@ -1303,9 +1312,9 @@ class ProductPackagingAdmin(ByOrganizationAdminMixin):
                 kwargs["queryset"] = ProductVariety.objects.none()
         if db_field.name == "product_variety_size":
             if variety:
-                kwargs["queryset"] = ProductSize.objects.filter(**variety_queryfilter)
+                kwargs["queryset"] = MarketProductSize.objects.filter(**variety_queryfilter)
             else:
-                kwargs["queryset"] = ProductSize.objects.none()
+                kwargs["queryset"] = MarketProductSize.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
