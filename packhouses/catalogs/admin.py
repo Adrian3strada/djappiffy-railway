@@ -1223,9 +1223,9 @@ class PalletConfigurationAdmin(ByOrganizationAdminMixin):
                 kwargs["queryset"] = ProductVariety.objects.none()
         if db_field.name == "product_variety_size":
             if variety:
-                kwargs["queryset"] = ProductSize.objects.filter(**variety_queryfilter)
+                kwargs["queryset"] = MarketProductSize.objects.filter(**variety_queryfilter)
             else:
-                kwargs["queryset"] = ProductSize.objects.none()
+                kwargs["queryset"] = MarketProductSize.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -1280,9 +1280,9 @@ class ProductPackagingAdmin(ByOrganizationAdminMixin):
                 kwargs["queryset"] = ProductVariety.objects.none()
         if db_field.name == "product_variety_size":
             if variety:
-                kwargs["queryset"] = ProductSize.objects.filter(**variety_queryfilter)
+                kwargs["queryset"] = MarketProductSize.objects.filter(**variety_queryfilter)
             else:
-                kwargs["queryset"] = ProductSize.objects.none()
+                kwargs["queryset"] = MarketProductSize.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
