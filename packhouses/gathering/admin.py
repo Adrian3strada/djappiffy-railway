@@ -40,6 +40,10 @@ from django.shortcuts import get_object_or_404
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from django.contrib.admin.widgets import AdminDateWidget
+from django.utils.html import format_html
+from django.urls import reverse
+
 
 class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = ScheduleHarvestHarvestingCrew
@@ -50,6 +54,7 @@ class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
+
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_object_id = request.resolver_match.kwargs.get("object_id")
@@ -72,15 +77,25 @@ class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_
                 is_enabled=True
             )
 
-
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
         js = ('js/admin/forms/packhouses/gathering/harvest_cutting_harvesting_crew_inline.js',)
 
+
 class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
     model = ScheduleHarvestContainerVehicle
     extra = 0
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        form = formset.form
+        for field in form.base_fields.values():
+            field.widget.can_add_related = True
+            field.widget.can_change_related = False
+            field.widget.can_delete_related = False
+            field.widget.can_view_related = False
+        return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_object_id = request.resolver_match.kwargs.get("object_id")
@@ -103,7 +118,7 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
 
 class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = ScheduleHarvestVehicle
-    extra = 1
+    extra = 0
     inlines = [HarvestCuttingContainerVehicleInline]
 
     def get_formset(self, request, obj=None, **kwargs):
@@ -141,20 +156,37 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.N
 @admin.register(ScheduleHarvest)
 class HarvestCuttingAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     fields = ('ooid', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
-              'product_variety', 'product_season_kind', 'product_harvest_size_kind','orchard',  'market', 'weighing_scale',
-              'meeting_point')
-    list_display = ('ooid', 'category', 'product_provider', 'product','product_variety', 'market', 'product_season_kind')
-    list_filter = ('category', 'product_provider','gatherer', 'maquiladora')
+              'product_variety', 'product_season_kind', 'product_harvest_size_kind','orchard',  'market',
+              'weight_expected', 'weighing_scale','status', 'meeting_point', )
+    list_display = ('ooid', 'harvest_date', 'category', 'product_provider', 'product','product_variety', 'market',
+                    'product_season_kind', 'weight_expected',  'generate_pdf_button')
+    list_filter = ('category', 'product_provider','gatherer', 'maquiladora', )
     readonly_fields = ('ooid',)
     inlines = [HarvestCuttingHarvestingCrewInline, HarvestCuttingVehicleInline]
 
+    def generate_pdf_button(self, obj):
+        url = reverse('generate_pdf', args=[obj.pk])  # URL de la vista de generación de PDF
+        button_text = str(_("Harvest Order"))
+        return format_html(
+            '<a class="button" href="{}" target="_blank">{}</a>', url, button_text
+        )
+
+    generate_pdf_button.short_description = _('Actions')
+    generate_pdf_button.allow_tags = True
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        form.base_fields['product_provider'].widget.can_add_related = False
-        form.base_fields['product_provider'].widget.can_change_related = False
-        form.base_fields['product_provider'].widget.can_delete_related = False
-        form.base_fields['product_provider'].widget.can_view_related = False
+        if 'product_provider' in form.base_fields:
+            form.base_fields['product_provider'].widget.can_add_related = False
+            form.base_fields['product_provider'].widget.can_change_related = False
+            form.base_fields['product_provider'].widget.can_delete_related = False
+            form.base_fields['product_provider'].widget.can_view_related = False
+        if 'product' in form.base_fields:
+            form.base_fields['product'].widget.can_add_related = False
+            form.base_fields['product'].widget.can_change_related = False
+            form.base_fields['product'].widget.can_delete_related = False
+            form.base_fields['product'].widget.can_view_related = False
+
         return form
 
     def get_product_varieties(self, obj):
@@ -210,6 +242,27 @@ class HarvestCuttingAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdmi
             )
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_readonly_fields(self, request, obj=None):
+        # Obtener los campos readonly predefinidos
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+
+        # Campos siempre readonly cuando el objeto no existe
+        if not obj:
+            readonly_fields.append('ooid')
+
+        # Campos readonly para objetos existentes
+        if obj and obj.pk:
+            readonly_fields.append('ooid')
+
+        # Si el estado del corte está cerrado o cancelado, todos los campos son readonly
+        if obj and obj.status in ['closed', 'canceled']:
+            # Filtrar solo los campos definidos en el admin que realmente existen
+            readonly_fields.extend([
+                field for field in self.fields if hasattr(obj, field)
+            ])
+
+        return readonly_fields
 
     class Media:
         js = ('js/admin/forms/packhouses/gathering/harvest-cutting.js',)

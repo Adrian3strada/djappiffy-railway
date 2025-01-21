@@ -87,22 +87,21 @@
                       {% for line in fieldset %}
                           {% for field in line %}
                               <div class="row mb-3" style="margin-top:15px;">
-                                  <div class="col-md-3" style="font-weight: 510 !important;">
+                                  <div class="col-md-4" style="font-weight: 510 !important;">
                                       {{ field.label_tag }}
+                                    {% if field.field.field.required %}
+                                      <span class="text-red">* </span>
+                                    {% endif %}
                                   </div>
                                   <div class="col-md-7">
                                       {{ field.field }}
                                   </div>
                               </div>
                               {% if field.errors %}
-                                  <div class="row mb-3">
-                                      <div class="col-md-3"></div>
-                                      <div class="col-md-7">
-                                          <ul class="errorlist">
-                                              {% for error in field.errors %}
-                                                  <li>{{ error }}</li>
-                                              {% endfor %}
-                                          </ul>
+                                  <div class="row mb-3" style="margin-top:-15px;">
+                                      <div class="col-md-4"></div>
+                                      <div class="col-md-7 help-block text-red">
+                                          {{ field.errors }}
                                       </div>
                                   </div>
                               {% endif %}

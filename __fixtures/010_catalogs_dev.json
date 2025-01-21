@@ -639,11 +639,614 @@
   "pk": 1,
   "fields": {
     "kind": 1,
-    "name": "PLASTICO 20 KG",
-    "minimum_stock_quantity": 12,
-    "maximum_stock_quantity": 12222,
+    "name": "CAJA CARTÓN 4 KG",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 1000,
     "is_enabled": true,
     "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 2,
+  "fields": {
+    "kind": 1,
+    "name": "CAJA CARTÓN 6 KG",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 1000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 3,
+  "fields": {
+    "kind": 1,
+    "name": "CAJA CARTÓN 11.3 KG",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 1000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 4,
+  "fields": {
+    "kind": 1,
+    "name": "CAJA MADERA 11.3 KG",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 100,
+    "is_enabled": false,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 5,
+  "fields": {
+    "kind": 1,
+    "name": "CAJA PLÁSTICO 11.3 KG",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 500,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 6,
+  "fields": {
+    "kind": 5,
+    "name": "TAPA CARTÓN",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 3000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 7,
+  "fields": {
+    "kind": 5,
+    "name": "TAPA PLÁSTICO",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 500,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 8,
+  "fields": {
+    "kind": 2,
+    "name": "CHAROLA ESTÁNDAR 16",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 5000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 9,
+  "fields": {
+    "kind": 2,
+    "name": "CHAROLA ESTÁNDAR 18",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 5000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 10,
+  "fields": {
+    "kind": 2,
+    "name": "CHAROLA ESTÁNDAR 20",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 5000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 11,
+  "fields": {
+    "kind": 2,
+    "name": "CHAROLA EURO 23",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 5000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 12,
+  "fields": {
+    "kind": 2,
+    "name": "CHAROLA EURO 27",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 5000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 13,
+  "fields": {
+    "kind": 2,
+    "name": "CHAROLA EURO 30",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 5000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 14,
+  "fields": {
+    "kind": 2,
+    "name": "CHAROLA EURO 36A",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 5000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 15,
+  "fields": {
+    "kind": 2,
+    "name": "CHAROLA EURO 36B",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 5000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 16,
+  "fields": {
+    "kind": 4,
+    "name": "ESQUINERO PLÁSTICO (TRANSPARENTE)",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 4000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 17,
+  "fields": {
+    "kind": 4,
+    "name": "ESQUINERO PLÁSTICO (NEGRO)",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 4000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 18,
+  "fields": {
+    "kind": 8,
+    "name": "FLEJE (TRANSPARENTE)",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 2500,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 19,
+  "fields": {
+    "kind": 8,
+    "name": "FLEJE (NEGRO)",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 2500,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 20,
+  "fields": {
+    "kind": 6,
+    "name": "MALLA EN ROLLO (BLANCA)",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 15000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 21,
+  "fields": {
+    "kind": 6,
+    "name": "MALLA EN ROLLO (MORADA)",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 15000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 22,
+  "fields": {
+    "kind": 3,
+    "name": "TARIMA DE MADERA",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 150,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 23,
+  "fields": {
+    "kind": 3,
+    "name": "TARIMA DE PLÁSTICO",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 150,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 24,
+  "fields": {
+    "kind": 2,
+    "name": "CHAROLA ESTÁNDAR 24",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 5000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 25,
+  "fields": {
+    "kind": 2,
+    "name": "CHAROLA ESTÁNDAR 30",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 5000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 26,
+  "fields": {
+    "kind": 2,
+    "name": "CHAROLA ESTÁNDAR 35",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 5000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 27,
+  "fields": {
+    "kind": 2,
+    "name": "CHAROLA EURO 45",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 5000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 28,
+  "fields": {
+    "kind": 2,
+    "name": "CHAROLA EURO 49",
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 5000,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.packagingkind",
+  "pk": 1,
+  "fields": {
+    "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
+    "authority": null,
+    "code": null,
+    "main_supply_kind": 1,
+    "main_supply": 3,
+    "quantity": 1,
+    "max_product_kg_per_package": 11.3,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.packagingkind",
+  "pk": 2,
+  "fields": {
+    "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
+    "authority": null,
+    "code": null,
+    "main_supply_kind": 1,
+    "main_supply": 3,
+    "quantity": 1,
+    "max_product_kg_per_package": 11.3,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.packagingkind",
+  "pk": 3,
+  "fields": {
+    "name": "MALLA SENCILLA",
+    "authority": null,
+    "code": null,
+    "main_supply_kind": 6,
+    "main_supply": 20,
+    "quantity": 45,
+    "max_product_kg_per_package": 1.0,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.packagingkind",
+  "pk": 4,
+  "fields": {
+    "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
+    "authority": null,
+    "code": null,
+    "main_supply_kind": 1,
+    "main_supply": 3,
+    "quantity": 1,
+    "max_product_kg_per_package": 11.3,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.packagingkind",
+  "pk": 5,
+  "fields": {
+    "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
+    "authority": null,
+    "code": null,
+    "main_supply_kind": 1,
+    "main_supply": 3,
+    "quantity": 1,
+    "max_product_kg_per_package": 11.3,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.packagingkind",
+  "pk": 6,
+  "fields": {
+    "name": "PALLET 48'S + 70'S",
+    "authority": null,
+    "code": null,
+    "main_supply_kind": 3,
+    "main_supply": 23,
+    "quantity": 1,
+    "max_product_kg_per_package": 100.0,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.packagingkind",
+  "pk": 7,
+  "fields": {
+    "name": "PALLET 48'S + 70'S (ENMALLADOS)",
+    "authority": null,
+    "code": null,
+    "main_supply_kind": 3,
+    "main_supply": 23,
+    "quantity": 1,
+    "max_product_kg_per_package": 100.0,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.packagingsupply",
+  "pk": 1,
+  "fields": {
+    "packaging_kind": 1,
+    "supply_kind": 5,
+    "supply": 6,
+    "quantity": 1
+  }
+},
+{
+  "model": "catalogs.packagingsupply",
+  "pk": 3,
+  "fields": {
+    "packaging_kind": 2,
+    "supply_kind": 2,
+    "supply": 24,
+    "quantity": 2
+  }
+},
+{
+  "model": "catalogs.packagingsupply",
+  "pk": 4,
+  "fields": {
+    "packaging_kind": 1,
+    "supply_kind": 2,
+    "supply": 26,
+    "quantity": 2
+  }
+},
+{
+  "model": "catalogs.packagingsupply",
+  "pk": 5,
+  "fields": {
+    "packaging_kind": 2,
+    "supply_kind": 5,
+    "supply": 6,
+    "quantity": 1
+  }
+},
+{
+  "model": "catalogs.packagingsupply",
+  "pk": 6,
+  "fields": {
+    "packaging_kind": 4,
+    "supply_kind": 2,
+    "supply": 26,
+    "quantity": 2
+  }
+},
+{
+  "model": "catalogs.packagingsupply",
+  "pk": 7,
+  "fields": {
+    "packaging_kind": 4,
+    "supply_kind": 5,
+    "supply": 6,
+    "quantity": 1
+  }
+},
+{
+  "model": "catalogs.packagingsupply",
+  "pk": 8,
+  "fields": {
+    "packaging_kind": 5,
+    "supply_kind": 2,
+    "supply": 24,
+    "quantity": 2
+  }
+},
+{
+  "model": "catalogs.packagingsupply",
+  "pk": 9,
+  "fields": {
+    "packaging_kind": 5,
+    "supply_kind": 5,
+    "supply": 6,
+    "quantity": 1
+  }
+},
+{
+  "model": "catalogs.packagingsupply",
+  "pk": 10,
+  "fields": {
+    "packaging_kind": 6,
+    "supply_kind": 4,
+    "supply": 17,
+    "quantity": 4
+  }
+},
+{
+  "model": "catalogs.packagingsupply",
+  "pk": 11,
+  "fields": {
+    "packaging_kind": 6,
+    "supply_kind": 8,
+    "supply": 19,
+    "quantity": 8
+  }
+},
+{
+  "model": "catalogs.packagingsupply",
+  "pk": 12,
+  "fields": {
+    "packaging_kind": 7,
+    "supply_kind": 4,
+    "supply": 17,
+    "quantity": 4
+  }
+},
+{
+  "model": "catalogs.packagingsupply",
+  "pk": 13,
+  "fields": {
+    "packaging_kind": 7,
+    "supply_kind": 8,
+    "supply": 19,
+    "quantity": 8
+  }
+},
+{
+  "model": "catalogs.relationpackaging",
+  "pk": 1,
+  "fields": {
+    "outside": 4,
+    "inside": 3,
+    "quantity": 10
+  }
+},
+{
+  "model": "catalogs.relationpackaging",
+  "pk": 2,
+  "fields": {
+    "outside": 5,
+    "inside": 3,
+    "quantity": 10
+  }
+},
+{
+  "model": "catalogs.relationpackaging",
+  "pk": 3,
+  "fields": {
+    "outside": 6,
+    "inside": 2,
+    "quantity": 6
+  }
+},
+{
+  "model": "catalogs.relationpackaging",
+  "pk": 4,
+  "fields": {
+    "outside": 6,
+    "inside": 1,
+    "quantity": 10
+  }
+},
+{
+  "model": "catalogs.relationpackaging",
+  "pk": 5,
+  "fields": {
+    "outside": 7,
+    "inside": 5,
+    "quantity": 6
+  }
+},
+{
+  "model": "catalogs.relationpackaging",
+  "pk": 6,
+  "fields": {
+    "outside": 7,
+    "inside": 4,
+    "quantity": 10
   }
 },
 {
