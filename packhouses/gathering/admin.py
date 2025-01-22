@@ -23,7 +23,8 @@ from packhouses.catalogs.filters import (StatesForOrganizationCountryFilter, ByC
                       ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter
                       )
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, Market, WeighingScale,
-                                        ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind, HarvestContainer)
+                                        ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind, HarvestContainer,
+                                        OrchardCertification)
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
 from common.base.models import ProductKind
@@ -156,23 +157,38 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.N
 @admin.register(ScheduleHarvest)
 class HarvestCuttingAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     fields = ('ooid', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
-              'product_variety', 'product_season_kind', 'product_harvest_size_kind','orchard',  'market',
-              'weight_expected', 'weighing_scale','status', 'meeting_point', )
+              'product_variety', 'product_season_kind', 'product_harvest_size_kind','orchard', 'orchard_certification',
+              'market', 'weight_expected', 'weighing_scale','status', 'meeting_point', 'comments' )
     list_display = ('ooid', 'harvest_date', 'category', 'product_provider', 'product','product_variety', 'market',
-                    'product_season_kind', 'weight_expected',  'generate_pdf_button')
-    list_filter = ('category', 'product_provider','gatherer', 'maquiladora', )
+                    'weight_expected', 'status',  'generate_pdf_buttons')
+    list_filter = ('category', 'product_provider','gatherer', 'maquiladora', 'status' )
     readonly_fields = ('ooid',)
     inlines = [HarvestCuttingHarvestingCrewInline, HarvestCuttingVehicleInline]
 
-    def generate_pdf_button(self, obj):
-        url = reverse('generate_pdf', args=[obj.pk])  # URL de la vista de generación de PDF
-        button_text = str(_("Harvest Order"))
+    def generate_pdf_buttons(self, obj):
+        # URL del primer botón (generar PDF)
+        pdf_url = reverse('harvest_order_pdf', args=[obj.pk])
+        tooltip_harvest_order = _('Generate Harvest Order PDF')
+
+        # URL del segundo botón (por ejemplo, generar un reporte)
+        report_url = reverse('good_harvest_practices_format', args=[obj.pk])
+        tooltip_report = _('Good harvest practices format')
+
         return format_html(
-            '<a class="button" href="{}" target="_blank">{}</a>', url, button_text
+            '''
+            <a class="button" href="{}" target="_blank" data-toggle="tooltip" title="{}">
+                <i class="fa-solid fa-print"></i>
+            </a>
+            <a class="button" href="{}" target="_blank" data-toggle="tooltip" title="{}">
+                <i class="fa-solid fa-file-shield"></i>
+            </a>
+            ''',
+            pdf_url, tooltip_harvest_order,
+            report_url, tooltip_report
         )
 
-    generate_pdf_button.short_description = _('Actions')
-    generate_pdf_button.allow_tags = True
+    generate_pdf_buttons.short_description = _('Actions')
+    generate_pdf_buttons.allow_tags = True
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -224,6 +240,10 @@ class HarvestCuttingAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdmi
             },
             "orchard": {
                 "model": Orchard,
+                "filters": {"is_enabled": True},
+            },
+            "orchard_certification": {
+                "model": OrchardCertification,
                 "filters": {"is_enabled": True},
             },
             "weighing_scale": {

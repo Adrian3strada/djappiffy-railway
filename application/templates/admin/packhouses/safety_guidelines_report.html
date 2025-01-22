@@ -3,11 +3,12 @@
 {% load i18n %}
 
 {% block page_content %}
-{% load static %}  
+{% load static %}
 <style>
+
     table.header-table .center h1 {
-        margin: 10px 0;
-        font-size: 10pt;
+        margin: 10px 0 !important;
+        font-size: 10pt !important;
     }
     .information-section, .harvest_section, .substance_section,
     .guideline_section, .signature_section, .harvest-information{
@@ -17,27 +18,27 @@
     .first_row {
         display: flex;
         flex-wrap: wrap;
-        gap: 20px;  
+        gap: 20px;
     }
     .first_row p {
-        flex: 1 1 22%; 
-        border-bottom: 1px solid #000;  
-        padding: 5px 0;  
-        text-align: left; 
-        margin: 0; 
+        flex: 1 1 22%;
+        border-bottom: 1px solid #000;
+        padding: 5px 0;
+        text-align: left;
+        margin: 0;
     }
     .data_information {
         display: flex;
         flex-wrap: wrap;
-        gap: 20px;  
+        gap: 20px;
     }
 
     .data_information p {
-        flex: 1 1 30%;  
-        border-bottom: 1px solid #000;  
-        padding: 5px 0; 
-        text-align: left;  
-        margin: 0;  
+        flex: 1 1 30%;
+        border-bottom: 1px solid #000;
+        padding: 5px 0;
+        text-align: left;
+        margin: 0;
     }
 
     .data_information br {
@@ -85,8 +86,8 @@
     }
     .grid-container {
         display: grid;
-        grid-template-columns: repeat(3, 1fr); 
-        grid-gap: 2px; 
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 2px;
         margin-top: 5px;
     }
     .guideline_table{
@@ -102,7 +103,7 @@
     }
     .double-table {
         display: flex;
-        flex-direction: column; 
+        flex-direction: column;
         gap: 10px;
     }
     .folio-table{
@@ -120,17 +121,19 @@
     }
     .signature{
         display: grid;
-        grid-template-columns: repeat(4, 1fr); 
-        column-gap: 30px; 
+        grid-template-columns: repeat(4, 1fr);
+        column-gap: 30px;
         margin-top: 5px;
         text-align: center;
     }
 </style>
 
+{% for crew in scheduleharvestharvestingcrewinline %}
+
 <table class="folio-table">
     <tr>
         <td style="width: 10%; padding: 10px; border-left: 10px solid #123782; background-color: #ffc600;">Folio</td>
-        <td style="width: 20%; color:red; background-color: #fff4cc;"> N° 123412 {{folio}}</td>
+        <td style="width: 20%; color:red; background-color: #fff4cc;"> N° {{ crew.id }}</td>
         <td style="width: 70%;"></td>
     </tr>
 </table>
@@ -140,22 +143,22 @@
         <h2>General Information</h2>
     </div>
     <div class="first_row">
-        <p>No. Harvest: {{ harvest_num }}</p> <p>Collector: {{ collector }} </p>  <p>Crew: {{ crew }} </p> <p>Telephone: {{ telephone_num}}</p>
+      <p>No. Harvest: <span style="color:red;">{{ harvest.id }}</span></p> <p>Collector: {{ harvest.gatherer|default:'' }} </p>  <p>Crew: {{ crew }} </p> <p>Telephone: {{ crew.provider.phone_number }}</p>
     </div>
     <div class="data_information">
-        <p>Arrival time: {{ time_arrive}} </p><p>Departure time: {{ time_arrive}} </p> <p>Date: {{ date }} </p>
-        <p>Producer: {{ producer }} </p> <p>Orchand: {{ orchand }} </p> <p></p>
-        <p>Location: {{location}} </p> <p>Orchand Certification: {{orchand_certification}} </p> <p></p>
+        <p>Arrival time: {{ time_arrive}} </p><p>Departure time: {{ time_arrive}} </p> <p>Date: {{ harvest.harvest_date }} </p>
+        <p>Producer: {{ crew.orchard.producer.name }} </p> <p>Orchard: {{ orchand }} </p> <p></p>
+        <p>Location: {{location}} </p> <p>Orchard Certification: {{orchand_certification}} </p> <p></p>
         <p>Comments: </p> <p>Harvest Type:</p><p>Candado N°: {{ candado}} </p>
         <p>Operador: {{operador}} </p><p>License plate: {{ license_plate }} </p> <p>Full Boxes: {{ boxes }} </p>
-        <p>Destination: {{ destination }} </p> <p>Meeting Point: {{ meeting_point }} </p> 
+        <p>Destination: {{ destination }} </p> <p>Meeting Point: {{ meeting_point }} </p>
         <p></p>
     </div>
 </div>
 
 <div class="harvest-information">
     <table class="harvest-information-table">
-        <tr class="subtitle-table"> 
+        <tr class="subtitle-table">
             <td rowspan="2" colspan="2" style="width: 40%;"> Harvester's Name</td>
             <td colspan="2">Factor</td>
             <td colspan="3">Fruit/Box</td>
@@ -183,7 +186,7 @@
             <td></td>
             <td></td>
         </tr>
-    {% endfor %}                    
+    {% endfor %}
     </table>
 </div>
 
@@ -201,7 +204,7 @@
             <td style="width: 20%;" rowspan="3">Signature of the Person Who Performed It</td>
         </tr>
         <tr>
-            <td rowspan="2"> 
+            <td rowspan="2">
                     <label>
                         YES<span class="circle si"></span>
                     </label>
@@ -227,7 +230,7 @@
             <td>Punto de Muestreo</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
         </tr>
         <tr>
-            <td>Conditioning (Container)</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>            
+            <td>Conditioning (Container)</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
         </tr>
             <td>Sanitizing Agent (Sprayer)</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
         <tr>
@@ -587,8 +590,8 @@
         <p></p>
     </div>
     <p style="margin-bottom: 50px;">
-        To the producer or fruit supervisor: In order to ensure the quality and safety of the fruit, the points mentioned above were verified. We suggest checking 
-        the market, verify the number of boxes filled with fruit, check that the truck doors are closed, check the picking bags and the personnel's truck. 
+        To the producer or fruit supervisor: In order to ensure the quality and safety of the fruit, the points mentioned above were verified. We suggest checking
+        the market, verify the number of boxes filled with fruit, check that the truck doors are closed, check the picking bags and the personnel's truck.
         If not, it will be your responsibility if an anomaly occurs.
         If you agree with the above, please write your name and sign in the indicated section.
     </p>
@@ -604,4 +607,7 @@
     </div>
 
 </div>
-{% endblock page_content %}    
+
+{% endfor %}
+
+{% endblock page_content %}
