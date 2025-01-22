@@ -25,7 +25,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, ProductVariety,
                                         Market, ProductSeasonKind, ProductHarvestSizeKind, WeighingScale,
-                                        HarvestingCrew, Vehicle, HarvestContainer)
+                                        HarvestingCrew, Vehicle, HarvestContainer, OrchardCertification)
 from django.db.models import Max, Min
 from django.db.models import Q, F
 import datetime
@@ -92,6 +92,11 @@ class ScheduleHarvest(models.Model):
         verbose_name=_("Orchard"),
         on_delete=models.PROTECT,
     )
+    orchard_certification = models.ManyToManyField(
+        OrchardCertification,
+        verbose_name=_("Orchard Certification"),
+        blank=True
+    )
     market = models.ForeignKey(
         Market,
         verbose_name=_("Market"),
@@ -112,7 +117,7 @@ class ScheduleHarvest(models.Model):
         null=True, blank=True
     )
     status = models.CharField(max_length=8, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open')
-    reason_change_date = models.TextField(blank=True, null=True, verbose_name=_('Reason for date change'))
+    comments = models.TextField(verbose_name=_('Comments'), blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(
         Organization,

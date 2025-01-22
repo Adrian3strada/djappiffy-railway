@@ -11,18 +11,41 @@ $(document).ready(function () {
   const initialHarvestSizeValue = harvestSizeField.val();
   const orchardField = $("#id_orchard");
   const initialOrchardSizeValue = orchardField.val();
+  const orchardCertificationField = $("#id_orchard_certification");
+  const initialOrchardCertificationValue = orchardCertificationField.val();
 
   const API_BASE_URL = "/rest/v1";
 
   function updateFieldOptions(field, options) {
-    field.empty().append(new Option("---------", "", true, true));
-    options.forEach((option) => {
-      if(field === orchardField){
-        field.append(new Option(option.code+' - '+option.name, option.id, false, false));
-      }else{
+    field.empty(); // Limpiar las opciones existentes
+    if (!field.prop('multiple')) {
+      field.append(new Option('---------', '', true, false)); // Añadir opción por defecto
+    }
+    if(field===orchardField) {
+      options.forEach((option) => {
+       field.append(new Option(option.code+' - '+option.name, option.id, false, false));
+      });
+    }else if(field===orchardCertificationField){
+      var fechaActual = new Date();
+      options.forEach((option) => {
+          var optionText = option.verifier_name + ' - #' + option.certification_number;
+          var isDisabled = false;
+
+          if (fechaActual > new Date(option.expiration_date)) {
+              optionText += ' - ' + option.expired_text;
+              isDisabled = true;
+          }
+
+          var newOption = new Option(optionText, option.id, false, false);
+          newOption.disabled = isDisabled;
+          field.append(newOption);
+      });
+    }else{
+      options.forEach((option) => {
         field.append(new Option(option.name, option.id, false, false));
-      }
-    });
+      });
+    }
+
     field.trigger("change").select2();
   }
 
@@ -113,6 +136,21 @@ $(document).ready(function () {
     }
   }
 
+  function updateOrchardCertificationField() {
+    const orchardId = orchardField.val();
+    if (orchardId) {
+      fetchOptions(`${API_BASE_URL}/catalogs/orchard_certification/?orchard=${orchardId}&is_enabled=true`)
+        .then((data) => {
+          updateFieldOptions(orchardCertificationField, data);
+          if (initialOrchardCertificationValue) {
+            orchardCertificationField.val(initialOrchardCertificationValue).trigger("change");
+          }
+        });
+    } else {
+      updateFieldOptions(orchardCertificationField, []);
+    }
+  }
+
   // Oculta ambos campos al inicio
   gathererField.hide();
   maquiladoraField.hide();
@@ -126,8 +164,15 @@ $(document).ready(function () {
         updateSeasonField();
         updateHarvestSizeField();
         updateOrchardField();
+        updateOrchardCertificationField();
     }, 300);
 });
+
+  orchardField.on("change", function () {
+    setTimeout(function () {
+        updateOrchardCertificationField();
+    }, 300);
+  });
 
 
   // Llama a la función cuando el campo de categoría cambia
@@ -142,5 +187,6 @@ $(document).ready(function () {
   updateSeasonField();
   updateHarvestSizeField();
   updateOrchardField();
+  updateOrchardCertificationField();
 
 });
