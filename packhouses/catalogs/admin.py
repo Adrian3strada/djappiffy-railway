@@ -9,7 +9,7 @@ from .models import (
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
-    MeshBag, Service, PackagingKind, WeighingScale, ColdChamber,
+    MeshBag, Service, Packaging, WeighingScale, ColdChamber,
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
@@ -970,7 +970,7 @@ class PackagingSupplyInline(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_obj_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = PackagingKind.objects.get(id=parent_obj_id) if parent_obj_id else None
+        parent_obj = Packaging.objects.get(id=parent_obj_id) if parent_obj_id else None
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -990,8 +990,8 @@ class ContainedPackagingInline(admin.TabularInline):
     list_display = ('inside', 'quantity')
 
 
-@admin.register(PackagingKind)
-class PackagingKindAdmin(ByOrganizationAdminMixin):
+@admin.register(Packaging)
+class PackagingAdmin(ByOrganizationAdminMixin):
     form = PackagingKindForm
     list_display = ('name',
                     'max_product_kg_per_package',
@@ -1013,7 +1013,7 @@ class PackagingKindAdmin(ByOrganizationAdminMixin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = PackagingKind.objects.get(id=obj_id) if obj_id else None
+        obj = Packaging.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
         supply_kind = request.POST.get('main_supply_kind') if request.POST else obj.main_supply_kind if obj else None
@@ -1038,7 +1038,7 @@ class PackagingKindAdmin(ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/package_kinds.js',)
+        js = ('js/admin/forms/packhouses/catalogs/packaging.js',)
 
 
 @admin.register(WeighingScale)
@@ -1209,10 +1209,10 @@ class PalletConfigurationAdmin(ByOrganizationAdminMixin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Product, ProductVariety, MarketProductSize, Market, MarketClass, PackagingKind, Organization]):
+        if obj and is_instance_used(obj, exclude=[Product, ProductVariety, MarketProductSize, Market, MarketClass, Packaging, Organization]):
             readonly_fields.extend(['name', 'alias',])
         return readonly_fields
-    
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
         obj = PalletConfiguration.objects.get(id=obj_id) if obj_id else None
@@ -1221,10 +1221,10 @@ class PalletConfigurationAdmin(ByOrganizationAdminMixin):
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
         market = request.POST.get('market') if request.POST else obj.market if obj else None
         product = request.POST.get('product') if request.POST else obj.product if obj else None
-        
+
         market_queryfilter = {'market': market, 'is_enabled': True}
         product_queryfilter = {'product': product, 'is_enabled': True}
-        
+
         if db_field.name == "market":
             kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
         if db_field.name == "market_class":
@@ -1257,7 +1257,7 @@ class PalletConfigurationAdmin(ByOrganizationAdminMixin):
             return formfield
         """
         if db_field.name == "packaging_kind":
-            kwargs["queryset"] = PackagingKind.objects.filter(**organization_queryfilter)
+            kwargs["queryset"] = Packaging.objects.filter(**organization_queryfilter)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

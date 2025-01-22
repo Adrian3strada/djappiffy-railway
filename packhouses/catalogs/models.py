@@ -799,7 +799,7 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 # Tipos de empaques
 
 
-class PackagingKind(models.Model):
+class Packaging(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
 
     ### Authority
@@ -822,16 +822,16 @@ class PackagingKind(models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Packaging kind')
-        verbose_name_plural = _('Packaging kinds')
+        verbose_name = _('Packaging')
+        verbose_name_plural = _('Packaging')
         ordering = ('name', )
         constraints = [
             models.UniqueConstraint(fields=('name', 'organization'),
-                                    name='packagingkind_unique_name_organization'),
+                                    name='packaging_unique_name_organization'),
         ]
 
 class PackagingSupply(models.Model):
-    packaging_kind = models.ForeignKey(PackagingKind, on_delete=models.PROTECT)
+    packaging_kind = models.ForeignKey(Packaging, on_delete=models.PROTECT)
     supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Supply kind'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'))
@@ -847,8 +847,8 @@ class PackagingSupply(models.Model):
 
 
 class RelationPackaging(models.Model):
-    outside = models.ForeignKey(PackagingKind, on_delete=models.PROTECT, related_name='outside')
-    inside = models.ForeignKey(PackagingKind, on_delete=models.PROTECT, related_name='inside')
+    outside = models.ForeignKey(Packaging, on_delete=models.PROTECT, related_name='outside')
+    inside = models.ForeignKey(Packaging, on_delete=models.PROTECT, related_name='inside')
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'))
 
     class Meta:
@@ -923,7 +923,7 @@ class PalletConfiguration(CleanNameOrAliasAndOrganizationMixin, models.Model):
     ))
     kg_tare = models.FloatField(verbose_name=_('Kg tare'), null=True, blank=True)
     kg_per_box = models.FloatField(verbose_name=_('Kg per box'), null=False, blank=False)
-    packaging_kind = models.ForeignKey(PackagingKind, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)
+    packaging_kind = models.ForeignKey(Packaging, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Creation date'))
     is_ripe = models.BooleanField(default=False, verbose_name=_('Is ripe'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -991,7 +991,7 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     product_variety_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product variety size'),
                                              on_delete=models.PROTECT)
 
-    packaging_kind = models.ForeignKey(PackagingKind, verbose_name=_('Packaging kind'),
+    packaging_kind = models.ForeignKey(Packaging, verbose_name=_('Packaging kind'),
                                        on_delete=models.PROTECT)  # TODO: detallar tipos de caja por tipo de producto?
     is_dark = models.BooleanField(default=False, verbose_name=_('Is dark'))
     # TODO: agregar campo para tipo de malla, o no se que va aquí pero falta uno
