@@ -9,13 +9,13 @@ from .serializers import (MarketSerializer, MarketClassSerializer, VehicleSerial
                           MaquiladoraSerializer,
                           SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
+                          OrchardCertificationSerializer
                           )
 from .models import (Market,MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Maquiladora, Provider, Product,
-                     Supply, Orchard, HarvestingCrew,
+                     Supply, Orchard, HarvestingCrew, MarketProductSize, OrchardCertification
                      )
 from django_filters.rest_framework import DjangoFilterBackend
-
 
 class ProductHarvestSizeKindViewSet(viewsets.ModelViewSet):
     serializer_class = ProductHarvestSizeKindSerializer
@@ -124,7 +124,7 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
 
 class MarketProductSizeViewSet(viewsets.ModelViewSet):
     serializer_class = MarketProductSizeSerializer
-    filterset_fields = ['product', 'product_varieties', 'is_enabled']
+    filterset_fields = ['product', 'market', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -259,3 +259,18 @@ class HarvestingCrewViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return HarvestingCrew.objects.filter(organization=self.request.organization)
+
+class OrchardCertificationViewSet(viewsets.ModelViewSet):
+    serializer_class = OrchardCertificationSerializer
+    filterset_fields = ['is_enabled', 'orchard']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return OrchardCertification.objects.filter(orchard__organization=self.request.organization)
+
+
+
