@@ -6,27 +6,78 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse
 from weasyprint import HTML, CSS
 from io import BytesIO
+from datetime import datetime
+from django.db.models import Prefetch
+from django.utils.text import capfirst
+from django.db.models import Sum
 
 def generate_pdf(request, harvest_id):
+    base_url = request.build_absolute_uri('/')
+    if hasattr(request, 'organization'):
+        organization = request.organization.organizationprofile.name
+        add =  request.organization.organizationprofile.address
+        organization_profile = request.organization.organizationprofile
+        def get_name(model, obj_id, default):
+            if obj_id:
+                try:
+                    return model.objects.get(id=obj_id).name
+                except model.DoesNotExist:
+                    return f"{default} no encontrada"
+            return f"{default} no especificada"
+
+        # Obtener los nombres de las regiones
+        city_name = get_name(SubRegion, organization_profile.city_id, "Ciudad")
+        country_name = get_name(Country, organization_profile.country_id, "Country")
+        state_name = get_name(Region, organization_profile.state_id, "State")
+        district_name = get_name(City, organization_profile.district_id, "District")
+        if organization_profile.logo:  
+            logo_url = organization_profile.logo.url  
+    
+    packhouse_name = organization
+    company_address = f"{add}, {district_name}, {city_name}, {state_name}, {country_name}"
+    date = datetime.now()
+    year = date.year
+    
     # Obtener el registro
     harvest = get_object_or_404(ScheduleHarvest, pk=harvest_id)
+    pdf_title = capfirst(ScheduleHarvest._meta.verbose_name)
 
     # Obtener los inlines relacionados
     scheduleharvestharvestingcrewinline = ScheduleHarvestHarvestingCrew.objects.filter(harvest_cutting=harvest)
-    scheduleharvestvehicleinline = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest)
-    scheduleharvestcontainervehicleinline = ScheduleHarvestContainerVehicle.objects.filter(harvest_cutting__in=scheduleharvestvehicleinline)
+    scheduleharvestvehicleinline = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest).prefetch_related(
+        Prefetch(
+            'scheduleharvestcontainervehicle_set',
+            queryset=ScheduleHarvestContainerVehicle.objects.all(),
+        )
+    )
+    
+    total_box = ScheduleHarvestContainerVehicle.objects.filter(harvest_cutting__in=scheduleharvestvehicleinline).aggregate(total=Sum('quantity'))['total'] or 0
+
+
+    css = CSS(string='''
+        @page {
+            size: letter portrait;
+        }''')
 
     # Renderizar el template HTML
-    html_string = render_to_string('admin/scheduleharvest_pdf.html', {
+    html_string = render_to_string('admin/packhouses/schedule-harvest.html', {
+        'packhouse_name': packhouse_name,
+        'company_address': company_address,
+        'pdf_title': pdf_title,
+        'logo_url': logo_url,
         'harvest': harvest,
         'scheduleharvestharvestingcrewinline': scheduleharvestharvestingcrewinline,
         'scheduleharvestvehicleinline': scheduleharvestvehicleinline,
-        'scheduleharvestcontainervehicleinline': scheduleharvestcontainervehicleinline,
+        'packhouse_name': packhouse_name,
+        'total_box': total_box,
+        'year': year,
+        'date': date, 
     })
+
     # Convertir el HTML a PDF
-    html = HTML(string=html_string)
+    html = HTML(string=html_string, base_url=base_url)
     pdf_buffer = BytesIO()
-    html.write_pdf(pdf_buffer)
+    html.write_pdf(pdf_buffer, stylesheets=[css],)
 
     # Traducir el nombre del archivo manualmente
     filename = f"{_('harvest_order')}_{harvest.ooid}.pdf"
