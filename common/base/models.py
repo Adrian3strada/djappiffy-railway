@@ -28,7 +28,11 @@ class ProductKind(models.Model):
         ordering = ['sort_order']
 
 
-# ejemplo: APEAM
+# Ejemplo:
+#   - Estándar del APEAM para AGUACATE en MÉXICO
+#   - Estándar del APEAM para AGUACATE en ESTADOS UNIDOS
+#   - Estándar de X para LIMÓN-MEXICANO en MÉXICO
+#   - Estándar de X para LIMÓN-PERSA en ESTADOS UNIDOS
 class MarketProductSizeStandard(models.Model):
     name = models.CharField(max_length=255, unique=True)
     product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
@@ -45,6 +49,8 @@ class MarketProductSizeStandard(models.Model):
         ordering = ['sort_order']
         constraints = [
             models.UniqueConstraint(fields=['product_kind', 'country'], name='marketproductsizestandard_unique_productkind_country')
+            # TODO: Revisar este constraint. Valorar que para un mismo país se puede tener MÁS DE UN ESTÁNDAR
+            #       para el mismo PRODUCT_KIND. Siendo el ESTÁNDAR aplicable por VARIEDAD.
         ]
 
 class MarketProductSizeStandardSizeManager(Manager):
@@ -57,10 +63,15 @@ class MarketProductSizeStandardSizeManager(Manager):
             )
         ).order_by('name_as_int', 'name')
 
-# ejemplo 30, 40, 60... (de apeam)
+# Ejemplo:
+#   - Comercial, Extra, Mediano, Primera, Super, ... (de APEAM para AGUACATES en MÉXICO)
+#   - 32, 36, 40, 48, 60, 70, ... (de APEAM para AGUACATES en ESTADOS UNIDOS)
+#   - 300, 400, 500, 600, ... (de APEAM para LIMÓN-MEXICANO en MÉXICO)
+#   - 110, 150, 175, 200, 230, 250, ... (de "ALGUNA ASOCIACIÓN" para LIMÓN-PERSA en ESTADOS UNIDOS)
 class MarketProductSizeStandardSize(models.Model):
     name = models.CharField(max_length=255)
     standard = models.ForeignKey(MarketProductSizeStandard, on_delete=models.CASCADE)
+    description = models.CharField(max_length=255, null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
