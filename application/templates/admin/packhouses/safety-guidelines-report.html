@@ -5,38 +5,46 @@
 {% block page_content %}
 {% load static %}
 <style>
-
+    
     table.header-table .center h1 {
         margin: 10px 0 !important;
-        font-size: 10pt !important;
+        font-size: 9pt !important;
     }
-    .information-section, .harvest_section, .substance_section,
-    .guideline_section, .signature_section, .harvest-information{
+    .information-section, .harvest_section, .substance-section,
+    .signature_section, .harvest-information{
         width: 100%;
         margin-bottom: 15px;
+        font-size: 6pt !important;
     }
-    .first_row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
+    .guideline_section, .signature_section{
+        margin-bottom: 0px;
     }
-    .first_row p {
-        flex: 1 1 22%;
-        border-bottom: 1px solid #000;
-        padding: 5px 0;
-        text-align: left;
+    .row {
+        display: grid;
+        margin-top: 5px;
+    }
+
+    .row-four {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .row p {
         margin: 0;
+        border-bottom: 1px solid #000;
+    }
+
+    .row p strong {
+        font-weight: bold;
     }
     .data_information {
         display: flex;
         flex-wrap: wrap;
-        gap: 20px;
     }
 
     .data_information p {
         flex: 1 1 30%;
         border-bottom: 1px solid #000;
-        padding: 5px 0;
+        
         text-align: left;
         margin: 0;
     }
@@ -48,32 +56,33 @@
         display: flex;
         background-color: #ffc600;
         width: 100%;
-        height: 30px;
+        height: 25px;
         justify-content: center;
         align-items: center;
         text-align: center;
         h2{
-            font-size: 10pt;
+            font-size: 8pt;
         }
     }
     .guideline_table_subtitle{
         background-color: #fff4cc;
-        padding: 8px;
+        
         font-weight: bold;
         border-bottom: 1px solid black;
     }
     .subtitle-table{
         background-color: #ffc600;
-        padding: 8px;
+        
         font-weight: bold;
     }
     .harvest-information-table, .substance-section-table{
         border-collapse: collapse;
         width: 100%;
+        font-size: 7pt;
         td{
             border: 1px solid #000;
             text-align: center;
-            padding: 3px;
+            
         }
     }
     .circle {
@@ -94,11 +103,11 @@
         width: 100%;
         border-collapse: collapse;
         border: 1px solid black;
-        margin-bottom: 10px;
+        margin-bottom: 2px;
         font-size: 7pt;
         .td-option{
             border: 1px solid black;
-            padding: 2px;
+            
         }
     }
     .double-table {
@@ -109,30 +118,53 @@
     .folio-table{
         width: 100%;
         text-align: center;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
         border-collapse: collapse;
     }
-    .comment{
+    .folio-table tr {
+        height: 25px; 
+    }
+    .folio-table td{
+        line-height: 25px; 
+        padding: 0; 
+        overflow: hidden; 
+    }
+    .observations{
         width: 100%;
         p{
-            border-bottom: 1px solid black;
-            padding: 6px;
+            margin-top: 10px;
+            border-bottom: 1px solid black;   
+            padding: 5px;        
         }
     }
     .signature{
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        column-gap: 30px;
-        margin-top: 5px;
         text-align: center;
+        column-gap: 25px; 
+        margin-bottom: 0;
     }
+    .signature_section{
+        page-break-after: always;
+    }
+    .circle {
+    display: inline-block;
+    width: 15px; 
+    height: 15px;
+    background-color: #ffffff; 
+    border: 1px solid #000;
+    border-radius: 50%; 
+    margin-right: 5px; 
+    vertical-align: middle;
+}
+
 </style>
 
 {% for crew in scheduleharvestharvestingcrewinline %}
 
 <table class="folio-table">
     <tr>
-        <td style="width: 10%; padding: 10px; border-left: 10px solid #123782; background-color: #ffc600;">Folio</td>
+        <td style="width: 10%; border-left: 10px solid #123782; background-color: #ffc600;">Folio</td>
         <td style="width: 20%; color:red; background-color: #fff4cc;"> N° {{ crew.id }}</td>
         <td style="width: 70%;"></td>
     </tr>
@@ -142,18 +174,78 @@
     <div class="title">
         <h2>General Information</h2>
     </div>
-    <div class="first_row">
-      <p>No. Harvest: <span style="color:red;">{{ harvest.id }}</span></p> <p>Collector: {{ harvest.gatherer|default:'' }} </p>  <p>Crew: {{ crew }} </p> <p>Telephone: {{ crew.provider.phone_number }}</p>
+    <div class="row row-four">
+        <p><strong>No. Harvest:</strong> <span style="color:red;">{{ harvest.id }}</span></p>
+        <p>
+            {% if harvest.category == 'gathering' %}
+            <strong>Gatherer:</strong> {{ harvest.gatherer }}
+            {% elif harvest.category == 'maquila' %}
+            <strong>Maquiladora:</strong> {{ harvest.maquiladora }}
+            {% else %}
+                No Data
+            {% endif %}
+        </p>
+        <p><strong>Crew Chief:</strong> {{crew.provider}}</p>
+        <p><strong>Crew:</strong> {{ crew.harvesting_crew }}</p>
     </div>
-    <div class="data_information">
-        <p>Arrival time: {{ time_arrive}} </p><p>Departure time: {{ time_arrive}} </p> <p>Date: {{ harvest.harvest_date }} </p>
-        <p>Producer: {{ crew.orchard.producer.name }} </p> <p>Orchard: {{ orchand }} </p> <p></p>
-        <p>Location: {{location}} </p> <p>Orchard Certification: {{orchand_certification}} </p> <p></p>
-        <p>Comments: </p> <p>Harvest Type:</p><p>Candado N°: {{ candado}} </p>
-        <p>Operador: {{operador}} </p><p>License plate: {{ license_plate }} </p> <p>Full Boxes: {{ boxes }} </p>
-        <p>Destination: {{ destination }} </p> <p>Meeting Point: {{ meeting_point }} </p>
-        <p></p>
+
+    <div class="row row-four">
+        <p><strong>Producer: </strong>{{harvest.orchard.producer}}</p>
+        <p><strong>Arrival Time:</strong></p>
+        <p><strong>Departure Time:</strong></p>
+        <p><strong>Date: </strong>{{harvest.created_at}}</p>
     </div>
+
+    <div class="row row-four">
+        <p><strong>Product:</strong> {{harvest.product}}</p>
+        <p><strong>Variety:</strong> {{harvest.product_variety}}</p>
+        <p><strong>Season:</strong> {{harvest.product_season_kind}}</p>
+        <p><strong>Harvest Type:</strong> {{harvest.product_harvest_size_kind}}</p>
+    </div>
+
+    <!-- Grupo de tres elementos -->
+    <div class="row row-four">
+        <p><strong>Orchard: </strong>{{harvest.orchard.name}}</p>
+        <p style="grid-column: span 2;"><strong>Location: </strong>{{harvest.orchard.district.name}}, {{harvest.orchard.city.name}}, {{harvest.orchard.state.name}}</p>
+        <p><strong>Date: </strong>{{harvest.created_at}}</p>
+    </div>
+
+    <div class="row row-four">
+        <p style="grid-column: span 3;"><strong>Orchard Certification: </strong>
+            {% for certification in harvest.orchard_certification.all %}
+                {{ certification.certification_kind.name }} {{certification.certification_number}}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+                No Data
+            {% endfor %}
+        </p>
+        <p><strong>Full Boxes:</strong></p>
+    </div>
+
+    <div class="row row-four">
+        <p style="grid-column: span 3;"><strong>Comments:</strong> {{harvest.comments}}</p>
+        <p><strong>Lock N°:</strong></p>
+    </div>
+
+    <div class="row row-four">
+        <p style="grid-column: span 2;"><strong>Operator:</strong></p>
+        <p style="grid-column: span 2;""><strong>License Plate: </strong> 
+            {% for vehicle in crew_vehicles %}
+                {% if vehicle.provider == crew.provider %}
+                    {{ vehicle.vehicle.license_plate }},
+                {% endif %}
+            {% empty %}
+                No vehicles available for this crew.
+            {% endfor %}
+        </p>  
+    </div>
+
+    <div class="row row-four">
+        <p style="grid-column: span 1;"><strong>Destination:</strong> {{harvest.market}}</p>
+        <p style="grid-column: span 3;"><strong>Meeting Point:</strong> {{harvest.meeting_point}}</p>
+    </div>
+
+   
+
 </div>
 
 <div class="harvest-information">
@@ -173,7 +265,8 @@
             <td>Mishandling</td>
             <td>Out of Size</td>
         </tr>
-        {% for x in rows_harvest_detail %}
+        
+        {% for i in crew.harvesting_crew.get_persons_range %}
         <tr>
             <td style="width: 5%;">{{ forloop.counter }}</td>
             <td></td>
@@ -187,59 +280,64 @@
             <td></td>
         </tr>
     {% endfor %}
+
+
+        <tr>
+            <td style="text-align: right; padding-right: 25px;" colspan="7">Total</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
     </table>
 </div>
 
 <div class="substance-section">
     <table class="substance-section-table">
         <tr>
-            <td class="subtitle-table" colspan="15" style="padding: 10px;">
+            <td class="subtitle-table" colspan="13" >
                 Water Managment - Preparation and Monitoring of Substances
             </td>
         </tr>
         <tr>
-            <td style="width: 20%;">Equipped with Monitoring Equipment</td>
-            <td style="width: 30%;"colspan="5">Preparation</td>
-            <td style="width: 30%;"colspan="5">Monitoring</td>
-            <td style="width: 20%;" rowspan="3">Signature of the Person Who Performed It</td>
+            <td style="width: 20%;" colspan="2">Equipped with Monitoring Equipment</td>
+            <td style="width: 30%;" colspan="5">Preparation</td>
+            <td style="width: 30%;" colspan="5">Monitoring</td>
+            <td style="width: 20%;" rowspan="4">Signature of the Person Who Performed It</td>
         </tr>
         <tr>
-            <td rowspan="2">
-                    <label>
-                        YES<span class="circle si"></span>
-                    </label>
-                    <label>
-                        NO<span class="circle no"></span>
-                    </label>
-            </td>
-            <td rowspan="2"> Hour </td>
-            <td rowspan="2"> Volume to Prepare</td>
-            <td rowspan="2"> PH </td>
-            <td rowspan="2"> ML Applied</td>
-            <td rowspan="2"> Hour </td>
-            <td rowspan="2"> PPM. Detected</td>
+            <td rowspan="2"> Yes <br> <span class="circle"></span> </td>
+            <td rowspan="2"> No <br> <span class="circle"></span> </td>
+            <td rowspan="3"> Hour </td>
+            <td rowspan="3"> Volume to Prepare</td>
+            <td rowspan="3"> PH </td>
+            <td rowspan="3"> ML Applied</td>
+            <td rowspan="3"> Hour </td>
+            <td rowspan="3"> PPM. Detected</td>
             <td colspan="2"> Needs Corrective Action</td>
-            <td rowspan="2"> ML Aplied</td>
-            <td rowspan="2"> PPM. Detected</td>
+            <td rowspan="3"> ML Aplied</td>
+            <td rowspan="3"> PPM. Detected</td>
         </tr>
         <tr>
-            <td>Yes</td>
-            <td>No</td>
+            <td rowspan="2">Yes</td>
+            <td rowspan="2">No</td>
         </tr>
         <tr>
-            <td>Punto de Muestreo</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            <td colspan="2">Punto de Muestreo</td>
         </tr>
         <tr>
-            <td>Conditioning (Container)</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            <td colspan="2">Conditioning (Container)</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
         </tr>
-            <td>Sanitizing Agent (Sprayer)</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
         <tr>
-            <td colspan="15" style="text-align: left;">Products Used: </td>
+            <td colspan="2">Sanitizing Agent (Sprayer)</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
         </tr>
+        <tr>
+            <td colspan="13" style="text-align: left;">Products Used: </td>
+        </tr>
+            
     </table>
 </div>
 
-<div class="guideline_section">
+<div class="guideline-section">
     <div class="title">
         <h2>Preventive Guidelines Before, During, and After Harvest <br>(As indicated below: Yes or No, as appropriate)</h2>
     </div>
@@ -584,23 +682,23 @@
 </div>
 
 <div class="signature_section">
-    <div class="comment">
-        <h2>Observations</h2>
+    <div class="observations">
+        <h2 style="margin-bottom: 4px;">Observations</h2>
         <p></p>
         <p></p>
     </div>
-    <p style="margin-bottom: 50px;">
+    <p style="margin-bottom: 20px;">
         To the producer or fruit supervisor: In order to ensure the quality and safety of the fruit, the points mentioned above were verified. We suggest checking
         the market, verify the number of boxes filled with fruit, check that the truck doors are closed, check the picking bags and the personnel's truck.
         If not, it will be your responsibility if an anomaly occurs.
         If you agree with the above, please write your name and sign in the indicated section.
     </p>
     <div class="signature">
-        <p style="border-bottom: 1px solid black;"></p>
-        <p style="border-bottom: 1px solid black;"></p>
-        <p style="border-bottom: 1px solid black;"></p>
-        <p style="border-bottom: 1px solid black;"></p>
-        <p>Crew Leader</p>
+        <p style="border-bottom: 1px solid black; margin-bottom: 0px;"></p>
+        <p style="border-bottom: 1px solid black; margin-bottom: 0px;"></p>
+        <p style="border-bottom: 1px solid black; margin-bottom: 0px;"></p>
+        <p style="border-bottom: 1px solid black; margin-bottom: 0px;"></p>
+        <p>Crew Chief</p>
         <p>Responsible Technician or Supervisor</p>
         <p>Transport Operator</p>
         <p>Producer and/or Orchard Manager</p>

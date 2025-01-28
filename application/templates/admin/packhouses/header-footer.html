@@ -10,7 +10,7 @@
     <style>
         @page {
             margin: 0.3in;
-            margin-top: 4cm;
+            margin-top: 3cm;
             margin-bottom: 1.5cm;
             @top-center {
                 content: element(header-table);
@@ -58,7 +58,7 @@
         }
 
         table.header-table .left {
-            width: 20%;
+            width: 15%;
             text-align: center;
         }
 
@@ -68,7 +68,7 @@
         }
 
         table.header-table .right {
-            width: 20%;
+            width: 15%;
             text-align: center;
         }
 
@@ -114,7 +114,7 @@
         <table class="header-table">
             <tr>
                 <td class="left">
-                    <img src="{% static 'img/logo.png' %}" alt="Certiffy Logo">
+                    <img src="{% static 'img/logo.png' %}" alt="Certiffy Logo" style="width: auto; height: 80px; object-fit: cover;">
                 </td>
                 <td class="center">
                     <p>Company: {{ packhouse_name }}</p>
@@ -123,9 +123,9 @@
                 </td>
                 <td class="right">
                     {% if logo_url %}
-                        <img src="{{ logo_url }}" alt="{{ organization_name }} Logo" style="width: 100px; height: auto;">
+                        <img src="{{ logo_url }}" alt="{{ organization_name }} Logo" style="width: auto; height: 70px;">
                     {% else %}
-                        <img src="{% static 'img/default_logo.png' %}" alt="Default Logo" style="width: 100px; height: auto;">
+                        <img src="{% static 'img/logo.png' %}" alt="Default Logo" style="width: auto; height: 70px;">
                     {% endif %}
                 </td>
             </tr>
@@ -133,9 +133,6 @@
     </header>
     {% endblock header_content %}
 
- <!-- Contenido principal -->
-        {% block page_content %}
-        {% endblock page_content %}
 
      <!-- Pie de página -->
     {% block footer %}
@@ -153,5 +150,8 @@
     </footer>
     {% endblock footer %}
 
+    <!-- Contenido principal -->
+    {% block page_content %}
+    {% endblock page_content %}
 
 </html>
