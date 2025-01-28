@@ -571,6 +571,9 @@ class HarvestingCrew(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    def get_persons_range(self):
+        return range(1, self.persons_number + 1)
+    
     class Meta:
         verbose_name = _('Harvesting crew')
         verbose_name_plural = _('Harvesting crews')
