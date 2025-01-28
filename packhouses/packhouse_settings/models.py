@@ -107,6 +107,24 @@ class VehicleBrand(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
+class AuthorityPackagingKind(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Packaging Kind Authority')
+        verbose_name_plural = _('Packaging Kind Authorities')
+        ordering = ('name', )
+        constraints = [
+            models.UniqueConstraint(fields=('name', 'organization'),
+                                    name='authoritypackagingkind_unique_name_organization'),
+        ]
+
+
 class OrchardCertificationVerifier(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))

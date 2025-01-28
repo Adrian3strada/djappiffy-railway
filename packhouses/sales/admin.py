@@ -11,8 +11,9 @@ from common.base.decorators import uppercase_formset_charfield, uppercase_alphan
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from .filters import ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter
 from common.base.mixins import ByOrganizationAdminMixin
-from packhouses.catalogs.models import Client, Maquiladora
-from .models import Order
+from packhouses.catalogs.models import (Client, Maquiladora, Market, MarketClass, Product, MarketProductSize,
+                                        ProductPackaging)
+from .models import Order, OrderItem
 from django.utils.safestring import mark_safe
 from django.db.models import Max, Min, Q, F
 from common.forms import SelectWidgetWithData
@@ -20,14 +21,41 @@ from common.forms import SelectWidgetWithData
 
 # Register your models here.
 
+class OrderItemInline(admin.StackedInline):
+    model = OrderItem
+    extra = 0
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        organization = getattr(request, 'organization', None)
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = Order.objects.get(id=object_id) if object_id else None
+        queryset_organization_filter = {"organization": organization, "is_enabled": True}
+
+        if db_field.name == "product":
+            kwargs["queryset"] = Product.objects.none()
+            if organization:
+                kwargs["queryset"] = Product.objects.filter(**queryset_organization_filter)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/sales/order_item.js',)
+
+
+
 @admin.register(Order)
 class OrderAdmin(ByOrganizationAdminMixin):
     list_display = ('ooid', 'client_category', 'maquiladora', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms', 'status')
     list_filter = ('client_category', ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter, 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms', 'status')
     fields = (
     'ooid', 'client_category', 'maquiladora', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery',
-    'incoterms', 'observations', 'status')
+    'incoterms', 'items_price_unit_category', 'items_price_category', 'items_packaging', 'observations', 'status')
     ordering = ('-ooid',)
+    inlines = [OrderItemInline]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -51,7 +79,7 @@ class OrderAdmin(ByOrganizationAdminMixin):
     def rendered_observations(self, obj):
         return mark_safe(obj.observations) if obj and obj.observations else ""
 
-    rendered_observations.short_description = 'Observations'
+    rendered_observations.short_description = _('Observations')
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = super().readonly_fields

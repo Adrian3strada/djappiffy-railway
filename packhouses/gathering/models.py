@@ -25,20 +25,23 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, ProductVariety,
                                         Market, ProductSeasonKind, ProductHarvestSizeKind, WeighingScale,
-                                        HarvestingCrew, Vehicle)
+                                        HarvestingCrew, Vehicle, HarvestContainer, OrchardCertification)
 from django.db.models import Max, Min
 from django.db.models import Q, F
 import datetime
+from common.settings import STATUS_CHOICES
+
+
 
 
 # Create your models here.
-class HarvestCutting(models.Model):
+class ScheduleHarvest(models.Model):
     ooid = models.PositiveIntegerField(
-        verbose_name=_("Harvest Cutting Number"),
+        verbose_name=_("Harvest Number"),
         null=True, blank=True, unique=True
     )
-    harvest_cutting_date = models.DateField(
-        verbose_name=_('Harvest Cutting date'),
+    harvest_date = models.DateField(
+        verbose_name=_('Harvest date'),
         default=datetime.date.today
     )
     product_provider = models.ForeignKey(
@@ -89,10 +92,19 @@ class HarvestCutting(models.Model):
         verbose_name=_("Orchard"),
         on_delete=models.PROTECT,
     )
+    orchard_certification = models.ManyToManyField(
+        OrchardCertification,
+        verbose_name=_("Orchard Certification"),
+        blank=True
+    )
     market = models.ForeignKey(
         Market,
         verbose_name=_("Market"),
         on_delete=models.PROTECT,
+    )
+    weight_expected = models.FloatField(
+        verbose_name=_("Expected Weight in kilograms"),
+        validators=[MinValueValidator(0.01)]
     )
     weighing_scale = models.ForeignKey(
         WeighingScale,
@@ -104,6 +116,8 @@ class HarvestCutting(models.Model):
         verbose_name=_("Meeting Point for the Harvest Cutting"),
         null=True, blank=True
     )
+    status = models.CharField(max_length=8, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open')
+    comments = models.TextField(verbose_name=_('Comments'), blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(
         Organization,
@@ -114,13 +128,13 @@ class HarvestCutting(models.Model):
 
 
     def __str__(self):
-        return f"#{self.ooid}"
+        return f"{self.ooid}"
 
     def save(self, *args, **kwargs):
         if not self.ooid:
             # Usar transacción y bloqueo de fila para evitar condiciones de carrera
             with transaction.atomic():
-                last_order = HarvestCutting.objects.select_for_update().filter(organization=self.organization).order_by('-ooid').first()
+                last_order = ScheduleHarvest.objects.select_for_update().filter(organization=self.organization).order_by('-ooid').first()
                 if last_order:
                     self.ooid = last_order.ooid + 1
                 else:
@@ -128,19 +142,19 @@ class HarvestCutting(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = _('Harvest Cutting')
-        verbose_name_plural = _('Harvest Cuttings')
+        verbose_name = _('Schedule Harvest')
+        verbose_name_plural = _('Schedule Harvests')
         constraints = [
             models.UniqueConstraint(
                 fields=['ooid', 'organization'],
-                name='unique_harvest_cutting'
+                name='unique_schedule_harvest'
             )
         ]
 
-class HarvestCuttingHarvestingCrew(models.Model):
+class ScheduleHarvestHarvestingCrew(models.Model):
     harvest_cutting = models.ForeignKey(
-        HarvestCutting,
-        verbose_name=_("Harvest Cutting"),
+        ScheduleHarvest,
+        verbose_name=_("Schedule Harvest"),
         on_delete=models.PROTECT,
     )
     provider = models.ForeignKey(
@@ -161,9 +175,9 @@ class HarvestCuttingHarvestingCrew(models.Model):
         verbose_name = _('Harvesting Crew')
         verbose_name_plural = _('Harvesting Crews')
 
-class HarvestCuttingVehicle(models.Model):
+class ScheduleHarvestVehicle(models.Model):
     harvest_cutting = models.ForeignKey(
-        HarvestCutting,
+        ScheduleHarvest,
         verbose_name=_("Harvest Cutting"),
         on_delete=models.PROTECT,
     )
@@ -182,6 +196,21 @@ class HarvestCuttingVehicle(models.Model):
         verbose_name=_("Stamp Number"),
     )
 
+    def __str__(self):
+        return f"{self.vehicle.license_plate} / {self.vehicle.name}"
+
     class Meta:
         verbose_name = _('Vehicle')
         verbose_name_plural = _('Vehicles')
+
+
+
+class ScheduleHarvestContainerVehicle(models.Model):
+    harvest_cutting = models.ForeignKey(ScheduleHarvestVehicle, on_delete=models.CASCADE)
+    harvest_cutting_container = models.ForeignKey(HarvestContainer, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+
+    def __str__(self):
+        return ""
+
+

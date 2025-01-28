@@ -1,16 +1,12 @@
 from rest_framework import serializers
 from packhouses.catalogs.models import (
-    MarketStandardProductSize, Market, MarketClass, Vehicle, HarvestingCrewProvider,
+    Market, MarketClass, Vehicle, HarvestingCrewProvider,
     ProductVariety, ProductSeasonKind, ProductMassVolumeKind, Maquiladora,
-    CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard,
-    HarvestingCrew
+    CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, MarketProductSize, Orchard,
+    HarvestingCrew, OrchardCertification
 )
+from django.utils.translation import gettext_lazy as _
 
-
-class MarketStandardProductSizeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MarketStandardProductSize
-        fields = '__all__'
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -67,9 +63,9 @@ class ProductVarietySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProductSizeSerializer(serializers.ModelSerializer):
+class MarketProductSizeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ProductSize
+        model = MarketProductSize
         fields = '__all__'
 
 
@@ -112,3 +108,19 @@ class MaquiladoraSerializer(serializers.ModelSerializer):
     class Meta:
         model = Maquiladora
         fields = '__all__'
+
+from rest_framework import serializers
+
+class OrchardCertificationSerializer(serializers.ModelSerializer):
+    verifier_name = serializers.SerializerMethodField()
+    expired_text = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OrchardCertification
+        fields = '__all__'
+
+    def get_verifier_name(self, obj):
+        return obj.verifier.name
+
+    def get_expired_text(self, obj):
+        return _('Expired')

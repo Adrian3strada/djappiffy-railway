@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const ooidField = $("#id_ooid");
   const clientCategoryField = $("#id_client_category");
   const maquiladoraField = $("#id_maquiladora");
   const clientField = $("#id_client");
@@ -126,12 +125,22 @@ document.addEventListener("DOMContentLoaded", function () {
   localDeliveryField.closest('.form-group').hide();
   incotermsField.closest('.form-group').hide();
 
-  if (clientCategoryField.val() && clientCategoryField.val() === 'maquiladora') {
-    maquiladoraField.closest('.form-group').show();
-  } else {
-    maquiladoraField.closest('.form-group').hide();
-    maquiladoraField.val(null)
+  if (clientCategoryField.val()) {
+    if (clientCategoryField.val() === 'maquiladora') {
+      maquiladoraField.closest('.form-group').show();
+    }
   }
 
-  ooidField.blur();
+  if (clientField.val()) {
+    fetchOptions(`${API_BASE_URL}/catalogs/client/${clientField.val()}/`).then(
+      (data) => {
+        console.log("Client data:", data);
+        if (data.country === organization.country) {
+          localDeliveryField.closest('.form-group').show();
+        } else {
+          incotermsField.closest('.form-group').show();
+        }
+      });
+  }
+
 });

@@ -14,7 +14,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -32,7 +32,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -50,7 +50,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -68,7 +68,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -86,7 +86,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -104,7 +104,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -122,7 +122,7 @@
     "for_eudr": true,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -140,7 +140,7 @@
     "for_eudr": false,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -158,7 +158,7 @@
     "for_eudr": false,
     "image": "",
     "is_enabled": true,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -176,7 +176,7 @@
     "for_eudr": false,
     "image": "",
     "is_enabled": false,
-    "ordering": 0
+    "sort_order": 0
   }
 },
 {
@@ -524,7 +524,7 @@
     "name_de": null,
     "name_es": "Cost And Freight",
     "is_enabled": true,
-    "ordering": 5
+    "sort_order": 5
   }
 },
 {
@@ -539,7 +539,7 @@
     "name_de": null,
     "name_es": "Cost, Insurance And Freight",
     "is_enabled": true,
-    "ordering": 6
+    "sort_order": 6
   }
 },
 {
@@ -554,7 +554,7 @@
     "name_de": null,
     "name_es": "Delivery Duty Paid",
     "is_enabled": true,
-    "ordering": 11
+    "sort_order": 11
   }
 },
 {
@@ -569,7 +569,7 @@
     "name_de": null,
     "name_es": "Cost, Insurance And Freight",
     "is_enabled": true,
-    "ordering": 8
+    "sort_order": 8
   }
 },
 {
@@ -584,7 +584,7 @@
     "name_de": null,
     "name_es": "Carriage Paid To",
     "is_enabled": true,
-    "ordering": 7
+    "sort_order": 7
   }
 },
 {
@@ -599,7 +599,7 @@
     "name_de": null,
     "name_es": "Delivery At Place",
     "is_enabled": true,
-    "ordering": 9
+    "sort_order": 9
   }
 },
 {
@@ -614,7 +614,7 @@
     "name_de": null,
     "name_es": "Delivered At Place Unloaded",
     "is_enabled": true,
-    "ordering": 10
+    "sort_order": 10
   }
 },
 {
@@ -629,7 +629,7 @@
     "name_de": null,
     "name_es": "Ex Works",
     "is_enabled": true,
-    "ordering": 1
+    "sort_order": 1
   }
 },
 {
@@ -644,7 +644,7 @@
     "name_de": null,
     "name_es": "Free Alongside Ship",
     "is_enabled": true,
-    "ordering": 3
+    "sort_order": 3
   }
 },
 {
@@ -659,7 +659,7 @@
     "name_de": null,
     "name_es": "Free Carrier",
     "is_enabled": true,
-    "ordering": 2
+    "sort_order": 2
   }
 },
 {
@@ -674,7 +674,7 @@
     "name_de": null,
     "name_es": "Free On Board",
     "is_enabled": true,
-    "ordering": 4
+    "sort_order": 4
   }
 },
 {
@@ -688,7 +688,7 @@
     "name_de": null,
     "name_es": "Entrega en planta",
     "is_enabled": true,
-    "ordering": 1
+    "sort_order": 1
   }
 },
 {
@@ -702,7 +702,7 @@
     "name_de": null,
     "name_es": "Entrega en planta con servicio de transporte",
     "is_enabled": true,
-    "ordering": 2
+    "sort_order": 2
   }
 },
 {
@@ -716,7 +716,7 @@
     "name_de": null,
     "name_es": "Entrega en bodega",
     "is_enabled": true,
-    "ordering": 3
+    "sort_order": 3
   }
 },
 {
@@ -730,7 +730,7 @@
     "name_de": null,
     "name_es": "Entrega en frontera",
     "is_enabled": true,
-    "ordering": 4
+    "sort_order": 4
   }
 },
 {
@@ -744,7 +744,576 @@
     "name_de": null,
     "name_es": "Entrega a consignatario",
     "is_enabled": true,
-    "ordering": 5
+    "sort_order": 5
+  }
+},
+{
+  "model": "base.marketproductsizestandard",
+  "pk": 1,
+  "fields": {
+    "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [MÉXICO]",
+    "product_kind": 8,
+    "country": 158,
+    "is_enabled": true,
+    "sort_order": 1
+  }
+},
+{
+  "model": "base.marketproductsizestandard",
+  "pk": 2,
+  "fields": {
+    "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [ALEMANIA - UNIÓN EUROPEA]",
+    "product_kind": 8,
+    "country": 57,
+    "is_enabled": true,
+    "sort_order": 2
+  }
+},
+{
+  "model": "base.marketproductsizestandard",
+  "pk": 3,
+  "fields": {
+    "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [CANADÁ]",
+    "product_kind": 8,
+    "country": 38,
+    "is_enabled": true,
+    "sort_order": 3
+  }
+},
+{
+  "model": "base.marketproductsizestandard",
+  "pk": 4,
+  "fields": {
+    "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [JAPÓN]",
+    "product_kind": 8,
+    "country": 114,
+    "is_enabled": true,
+    "sort_order": 4
+  }
+},
+{
+  "model": "base.marketproductsizestandard",
+  "pk": 5,
+  "fields": {
+    "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [ESTADOS UNIDOS]",
+    "product_kind": 8,
+    "country": 234,
+    "is_enabled": true,
+    "sort_order": 5
+  }
+},
+{
+  "model": "base.marketproductsizestandard",
+  "pk": 6,
+  "fields": {
+    "name": "ESTÁNDARES DE X SOBRE [LIMÓN - MEXICANO] PARA [MÉXICO]",
+    "product_kind": 9,
+    "country": 158,
+    "is_enabled": true,
+    "sort_order": 6
+  }
+},
+{
+  "model": "base.marketproductsizestandard",
+  "pk": 7,
+  "fields": {
+    "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [ESTADOS UNIDOS]",
+    "product_kind": 9,
+    "country": 234,
+    "is_enabled": true,
+    "sort_order": 7
+  }
+},
+{
+  "model": "base.marketproductsizestandard",
+  "pk": 8,
+  "fields": {
+    "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [JAPÓN - ASIA]",
+    "product_kind": 9,
+    "country": 114,
+    "is_enabled": true,
+    "sort_order": 8
+  }
+},
+{
+  "model": "base.marketproductsizestandard",
+  "pk": 9,
+  "fields": {
+    "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [ALEMANIA - UNIÓN EUROPEA]",
+    "product_kind": 9,
+    "country": 57,
+    "is_enabled": true,
+    "sort_order": 9
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 1,
+  "fields": {
+    "name": "Comercial",
+    "standard": 1,
+    "description": "120 a 150 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 2,
+  "fields": {
+    "name": "Mediano",
+    "standard": 1,
+    "description": "170 a 205 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 3,
+  "fields": {
+    "name": "Primera",
+    "standard": 1,
+    "description": "205 a 265 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 4,
+  "fields": {
+    "name": "Extra",
+    "standard": 1,
+    "description": "150 a 170 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 5,
+  "fields": {
+    "name": "Super",
+    "standard": 1,
+    "description": "+ de 265 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 6,
+  "fields": {
+    "name": "26",
+    "standard": 2,
+    "description": "120 a 150 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 7,
+  "fields": {
+    "name": "24",
+    "standard": 2,
+    "description": "150 a 170 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 8,
+  "fields": {
+    "name": "22",
+    "standard": 2,
+    "description": "170 a 205 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 9,
+  "fields": {
+    "name": "18",
+    "standard": 2,
+    "description": "205 a 265 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 10,
+  "fields": {
+    "name": "16",
+    "standard": 2,
+    "description": "265 a 300 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 11,
+  "fields": {
+    "name": "14",
+    "standard": 2,
+    "description": "300 a 330 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 12,
+  "fields": {
+    "name": "12",
+    "standard": 2,
+    "description": "+ de 330 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 13,
+  "fields": {
+    "name": "26",
+    "standard": 3,
+    "description": "120 a 150 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 14,
+  "fields": {
+    "name": "24",
+    "standard": 3,
+    "description": "150 a 170 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 15,
+  "fields": {
+    "name": "22",
+    "standard": 3,
+    "description": "170 a 205 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 16,
+  "fields": {
+    "name": "18",
+    "standard": 3,
+    "description": "205 a 265 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 17,
+  "fields": {
+    "name": "16",
+    "standard": 3,
+    "description": "265 a 300 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 18,
+  "fields": {
+    "name": "14",
+    "standard": 3,
+    "description": "300 a 330 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 19,
+  "fields": {
+    "name": "12",
+    "standard": 3,
+    "description": "+ de 330 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 20,
+  "fields": {
+    "name": "30",
+    "standard": 4,
+    "description": "170 a 205 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 21,
+  "fields": {
+    "name": "24",
+    "standard": 4,
+    "description": "205 a 265 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 22,
+  "fields": {
+    "name": "84",
+    "standard": 5,
+    "description": "120 a 150 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 23,
+  "fields": {
+    "name": "70",
+    "standard": 5,
+    "description": "150 a 170 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 24,
+  "fields": {
+    "name": "60",
+    "standard": 5,
+    "description": "170 a 205 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 25,
+  "fields": {
+    "name": "48",
+    "standard": 5,
+    "description": "205 a 265 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 26,
+  "fields": {
+    "name": "40",
+    "standard": 5,
+    "description": "265 a 300 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 27,
+  "fields": {
+    "name": "36",
+    "standard": 5,
+    "description": "300 a 330 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 28,
+  "fields": {
+    "name": "32",
+    "standard": 5,
+    "description": "+ de 330 grs",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 29,
+  "fields": {
+    "name": "600",
+    "standard": 6,
+    "description": "32 a 35 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 30,
+  "fields": {
+    "name": "500",
+    "standard": 6,
+    "description": "35 a 37 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 31,
+  "fields": {
+    "name": "400",
+    "standard": 6,
+    "description": "37 a 39 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 32,
+  "fields": {
+    "name": "300",
+    "standard": 6,
+    "description": "+ de 39 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 33,
+  "fields": {
+    "name": "250",
+    "standard": 7,
+    "description": "50 a 51 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 34,
+  "fields": {
+    "name": "230",
+    "standard": 7,
+    "description": "52 a 53 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 35,
+  "fields": {
+    "name": "200",
+    "standard": 7,
+    "description": "54 a 55 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 36,
+  "fields": {
+    "name": "175",
+    "standard": 7,
+    "description": "56 a 59 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 37,
+  "fields": {
+    "name": "150",
+    "standard": 7,
+    "description": "59 a 61 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 38,
+  "fields": {
+    "name": "110",
+    "standard": 7,
+    "description": "61 a 63 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 39,
+  "fields": {
+    "name": "54",
+    "standard": 8,
+    "description": "52 a 53 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 40,
+  "fields": {
+    "name": "48",
+    "standard": 8,
+    "description": "54 a 55 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 41,
+  "fields": {
+    "name": "44",
+    "standard": 8,
+    "description": "56 a 59 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 42,
+  "fields": {
+    "name": "40",
+    "standard": 8,
+    "description": "59 a 61 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 43,
+  "fields": {
+    "name": "36",
+    "standard": 8,
+    "description": "61 a 63 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 44,
+  "fields": {
+    "name": "63",
+    "standard": 9,
+    "description": "50 a 51 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 45,
+  "fields": {
+    "name": "54",
+    "standard": 9,
+    "description": "52 a 55 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 46,
+  "fields": {
+    "name": "48",
+    "standard": 9,
+    "description": "56 a 59 mm",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.marketproductsizestandardsize",
+  "pk": 47,
+  "fields": {
+    "name": "42",
+    "standard": 9,
+    "description": "59 a 61 mm",
+    "is_enabled": true
   }
 }
 ]

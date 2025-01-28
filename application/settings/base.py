@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'django_ckeditor_5',
     'adminsortable2',
     'polymorphic',
+    'nested_admin',
 
     # djappiffy apps
     "common",
@@ -363,11 +364,12 @@ JAZZMIN_SETTINGS = {
     # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
     "order_with_respect_to": [
         "sales",
+        "gathering",
         "catalogs",
         "catalogs.Market",
         "catalogs.MarketClass",
         "catalogs.Product",
-        "catalogs.ProductSize",
+        "catalogs.MarketProductSize",
         "catalogs.Provider",
         "catalogs.Client",
         "catalogs.Vehicle",
@@ -469,6 +471,7 @@ JAZZMIN_SETTINGS = {
     # Add a language dropdown into the admin
     "language_chooser": True,
 
+    "change_form_format": "collapsible",
 }
 
 JAZZMIN_UI_TWEAKS = {

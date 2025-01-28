@@ -3,36 +3,19 @@ from itertools import product
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 
-from .serializers import (MarketStandardProductSizeSerializer, MarketSerializer,MarketClassSerializer, VehicleSerializer,
-                          ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,SupplySerializer,
-                          ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer,ProductSizeSerializer,
+from .serializers import (MarketSerializer, MarketClassSerializer, VehicleSerializer,
+                          ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
+                          ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, MarketProductSizeSerializer,
                           MaquiladoraSerializer,
+                          SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
-                          OrchardSerializer, HarvestingCrewSerializer)
-from .models import (MarketStandardProductSize, Market,MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
+                          OrchardCertificationSerializer
+                          )
+from .models import (Market,MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Maquiladora, Provider, Product,
-                     Supply, ProductSize, Orchard, HarvestingCrew)
-
-
-
-class MarketStandardProductSizeViewSet(viewsets.ModelViewSet):
-    serializer_class = MarketStandardProductSizeSerializer
-    filterset_fields = ['market', 'is_enabled']
-    pagination_class = None
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            raise NotAuthenticated()
-
-        queryset = MarketStandardProductSize.objects.filter(market__organization=self.request.organization)
-        markets = self.request.GET.get('markets')
-        if markets:
-            market_list = markets.split(',')
-            queryset = queryset.filter(market__id__in=market_list)
-
-        return queryset
-
+                     Supply, Orchard, HarvestingCrew, MarketProductSize, OrchardCertification
+                     )
+from django_filters.rest_framework import DjangoFilterBackend
 
 class ProductHarvestSizeKindViewSet(viewsets.ModelViewSet):
     serializer_class = ProductHarvestSizeKindSerializer
@@ -139,9 +122,9 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
         return ProductVariety.objects.filter(product__organization=self.request.organization)
 
 
-class ProductSizeViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductSizeSerializer
-    filterset_fields = ['product', 'product_varieties', 'is_enabled']
+class MarketProductSizeViewSet(viewsets.ModelViewSet):
+    serializer_class = MarketProductSizeSerializer
+    filterset_fields = ['product', 'market', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -149,7 +132,7 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return ProductSize.objects.all()
+        return MarketProductSize.objects.all()
 
 
 class ProviderViewSet(viewsets.ModelViewSet):
@@ -188,13 +171,22 @@ class VehicleViewSet(viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
     filterset_fields = ['category', 'is_enabled', 'id']
     pagination_class = None
+    filter_backends = [DjangoFilterBackend]
 
     def get_queryset(self):
         user = self.request.user
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return Vehicle.objects.filter(organization=self.request.organization)
+        queryset = Vehicle.objects.filter(organization=self.request.organization)
+
+        # Filtrar por múltiples IDs si se proporciona 'ids' en la querystring
+        ids = self.request.query_params.get('ids')
+        if ids:
+            ids_list = [int(i) for i in ids.split(',')]  # Convierte a una lista de enteros
+            queryset = queryset.filter(id__in=ids_list)
+
+        return queryset
 
 
 class HarvestingCrewProviderViewSet(viewsets.ModelViewSet):
@@ -267,3 +259,18 @@ class HarvestingCrewViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return HarvestingCrew.objects.filter(organization=self.request.organization)
+
+class OrchardCertificationViewSet(viewsets.ModelViewSet):
+    serializer_class = OrchardCertificationSerializer
+    filterset_fields = ['is_enabled', 'orchard']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return OrchardCertification.objects.filter(orchard__organization=self.request.organization)
+
+
+

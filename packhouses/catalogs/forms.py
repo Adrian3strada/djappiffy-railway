@@ -1,8 +1,9 @@
 from django import forms
 from .models import (
-    Product, ProductSize, MarketStandardProductSize, OrchardCertification, HarvestingCrew,
+    Product, MarketProductSize, OrchardCertification, HarvestingCrew,
     ProductHarvestSizeKind,
-    HarvestingPaymentSetting
+    HarvestingPaymentSetting,
+    Packaging, Provider
 )
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
@@ -18,12 +19,9 @@ class ProductSeasonKindInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductSize.objects.filter(product_season_kind=instance).exists():
+            if instance.pk and MarketProductSize.objects.all().exists(): #filter(product_season_kind=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
-                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
-                form.fields['has_performance'].disabled = True
-                form.fields['has_performance'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
                 form.fields['DELETE'].initial = False
                 form.fields['DELETE'].disabled = True
@@ -39,7 +37,7 @@ class ProductMassVolumeKindInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductSize.objects.filter(product_mass_volume_kind=instance).exists():
+            if instance.pk and MarketProductSize.objects.all().exists():#filter(product_mass_volume_kind=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
@@ -57,7 +55,7 @@ class ProductVarietyInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductSize.objects.filter(product_varieties=instance).exists():
+            if instance.pk and MarketProductSize.objects.all().exists(): #(product_varieties=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
@@ -78,7 +76,7 @@ class ProductHarvestSizeKindInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductSize.objects.filter(product_harvest_size_kind=instance).exists():
+            if instance.pk and MarketProductSize.objects.all().exists(): #filter(product_harvest_size_kind=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
@@ -86,6 +84,31 @@ class ProductHarvestSizeKindInlineFormSet(BaseInlineFormSet):
                 form.fields['DELETE'].disabled = True
                 form.fields['DELETE'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
+
+
+class PackagingKindForm(forms.ModelForm):
+    class Meta:
+        model = Packaging
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        authority = cleaned_data.get('authority')
+        code = cleaned_data.get('code')
+
+        if authority and (not code):
+            raise forms.ValidationError({
+                'authority': _('If an authority is given, then code is required.'),
+                'code': _('This field is required.'),
+            })
+
+        if code and (not authority):
+            raise forms.ValidationError({
+                'authority': _('This field is required.'),
+                'code': _('If a code is given, must be provided by an authority.'),
+            })
+
+        return self.cleaned_data
 
 
 class OrchardCertificationForm(forms.ModelForm):
@@ -147,3 +170,17 @@ class HarvestingPaymentSettingInlineFormSet(BaseInlineFormSet):
             raise forms.ValidationError(
                 _(f'Type harvest "{type_harvest}" is already selected. Only one of each type is allowed.')
             )
+
+class ProviderForm(forms.ModelForm):
+    class Meta:
+        model = Provider
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        category = cleaned_data.get('category')
+        vehicle_provider = cleaned_data.get('vehicle_provider')
+
+        if category == 'harvesting_provider' and not vehicle_provider:
+            self.add_error('vehicle_provider', _('This field is required when category is Harvesting Provider.'))
+        return cleaned_data
