@@ -7,6 +7,8 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse
 from weasyprint import HTML, CSS
 from io import BytesIO
+from django.urls import reverse
+from django.http import HttpResponseForbidden
 
 def harvest_order_pdf(request, harvest_id):
     # Obtener el registro
@@ -71,3 +73,11 @@ def good_harvest_practices_format(request, harvest_id):
     response = HttpResponse(pdf_buffer, content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="{filename}"'
     return response
+
+def cancel_schedule_harvest(request, pk):
+    schedule_harvest = get_object_or_404(ScheduleHarvest, pk=pk)
+    if schedule_harvest.status not in ['open']:
+        return HttpResponseForbidden("You cannot cancel this harvest.")
+    schedule_harvest.status = 'canceled'
+    schedule_harvest.save()
+    return redirect(reverse('admin:gathering_scheduleharvest_changelist'))
