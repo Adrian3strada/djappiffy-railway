@@ -7,7 +7,7 @@ from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
 from search import views as search_views
-from packhouses.gathering.views import harvest_order_pdf, good_harvest_practices_format
+from packhouses.gathering.views import harvest_order_pdf, good_harvest_practices_format, cancel_schedule_harvest
 
 
 urlpatterns = [
@@ -15,6 +15,7 @@ urlpatterns = [
     path('dadmin/gathering/scheduleharvest/harvest_order_pdf/<int:harvest_id>/', harvest_order_pdf, name='harvest_order_pdf'),
     path('dadmin/gathering/scheduleharvest/good_harvest_practices_format/<int:harvest_id>/', good_harvest_practices_format,
          name='good_harvest_practices_format'),
+    path('dadmin/gathering/scheduleharvest/<int:pk>/cancel/', cancel_schedule_harvest, name='cancel_schedule_harvest'),
 
     # Admin URLs
     path("dadmin/", admin.site.urls),

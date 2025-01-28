@@ -30,7 +30,7 @@ from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, Sort
 from common.base.models import ProductKind
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
-from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, DisableInlineRelatedLinksMixin
+from common.base.mixins import (ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, DisableInlineRelatedLinksMixin)
 from common.forms import SelectWidgetWithData
 from django import forms
 import nested_admin
@@ -58,8 +58,6 @@ class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_
 
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        parent_object_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = ScheduleHarvest.objects.get(id=parent_object_id) if parent_object_id else None
 
         organization = None
         if hasattr(request, 'organization'):
@@ -99,9 +97,6 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        parent_object_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = ScheduleHarvestVehicle.objects.get(id=parent_object_id) if parent_object_id else None
-
         organization = None
         if hasattr(request, 'organization'):
             organization = request.organization
@@ -127,9 +122,6 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.N
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        parent_object_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = Provider.objects.get(id=parent_object_id) if parent_object_id else None
-
         organization = None
         if hasattr(request, 'organization'):
             organization = request.organization
@@ -158,21 +150,33 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.N
 class HarvestCuttingAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     fields = ('ooid', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
               'product_variety', 'product_season_kind', 'product_harvest_size_kind','orchard', 'orchard_certification',
-              'market', 'weight_expected', 'weighing_scale','status', 'meeting_point', 'comments' )
+              'market', 'weight_expected', 'weighing_scale', 'meeting_point', 'comments' )
     list_display = ('ooid', 'harvest_date', 'category', 'product_provider', 'product','product_variety', 'market',
-                    'weight_expected', 'status',  'generate_pdf_buttons')
+                    'weight_expected', 'status',  'generate_actions_buttons')
     list_filter = ('category', 'product_provider','gatherer', 'maquiladora', 'status' )
     readonly_fields = ('ooid',)
     inlines = [HarvestCuttingHarvestingCrewInline, HarvestCuttingVehicleInline]
 
-    def generate_pdf_buttons(self, obj):
-        # URL del primer botón (generar PDF)
+    def generate_actions_buttons(self, obj):
         pdf_url = reverse('harvest_order_pdf', args=[obj.pk])
         tooltip_harvest_order = _('Generate Harvest Order PDF')
-
-        # URL del segundo botón (por ejemplo, generar un reporte)
         report_url = reverse('good_harvest_practices_format', args=[obj.pk])
         tooltip_report = _('Good harvest practices format')
+        cancel_url = reverse('cancel_schedule_harvest', args=[obj.pk])
+        tooltip_cancel = _('Cancel this harvest')
+        confirm_cancel_text = _('Are you sure you want to cancel this harvest?')
+
+        cancel_button_html = ''
+        if obj.status in ['open', 'ready']:
+            cancel_button_html = format_html(
+                '''
+                <a class="button" href="{}" data-toggle="tooltip" title="{}"
+                   onclick="return confirm('{}');">
+                    <i class="fa-solid fa-ban"></i>
+                </a>
+                ''',
+                cancel_url, tooltip_cancel, confirm_cancel_text
+            )
 
         return format_html(
             '''
@@ -182,13 +186,15 @@ class HarvestCuttingAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdmi
             <a class="button" href="{}" target="_blank" data-toggle="tooltip" title="{}">
                 <i class="fa-solid fa-file-shield"></i>
             </a>
+            {}
             ''',
             pdf_url, tooltip_harvest_order,
-            report_url, tooltip_report
+            report_url, tooltip_report,
+            cancel_button_html
         )
 
-    generate_pdf_buttons.short_description = _('Actions')
-    generate_pdf_buttons.allow_tags = True
+    generate_actions_buttons.short_description = _('Actions')
+    generate_actions_buttons.allow_tags = True
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)

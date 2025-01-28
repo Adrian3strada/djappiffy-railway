@@ -12,6 +12,7 @@ from django.db.models import Prefetch
 from django.utils.text import capfirst
 from django.db.models import Sum
 
+
 def harvest_order_pdf(request, harvest_id):
     # Obtener el registro
     harvest = get_object_or_404(ScheduleHarvest, pk=harvest_id)
@@ -170,3 +171,11 @@ def good_harvest_practices_format(request, harvest_id):
     response = HttpResponse(pdf_buffer, content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="{filename}"'
     return response
+
+def cancel_schedule_harvest(request, pk):
+    schedule_harvest = get_object_or_404(ScheduleHarvest, pk=pk)
+    if schedule_harvest.status not in ['open']:
+        return HttpResponseForbidden("You cannot cancel this harvest.")
+    schedule_harvest.status = 'canceled'
+    schedule_harvest.save()
+    return redirect(reverse('admin:gathering_scheduleharvest_changelist'))
