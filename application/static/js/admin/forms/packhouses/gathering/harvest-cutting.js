@@ -1,4 +1,4 @@
-$(document).ready(function () {
+document.addEventListener("DOMContentLoaded", function() {
  const categoryField = $("#id_category");
   const gathererField = $(".field-gatherer");
   const maquiladoraField = $(".field-maquiladora");
@@ -13,7 +13,6 @@ $(document).ready(function () {
   const initialOrchardSizeValue = orchardField.val();
   const orchardCertificationField = $("#id_orchard_certification");
   const initialOrchardCertificationValue = orchardCertificationField.val();
-
   const API_BASE_URL = "/rest/v1";
 
   function updateFieldOptions(field, options) {
@@ -182,6 +181,28 @@ $(document).ready(function () {
   if (initialVarietyValue) {
     varietyField.val(initialVarietyValue).trigger("change");
   }
+
+  $(document).on("click", ".btn-cancel-confirm", function (e) {
+    var url = $(this).data("url");
+    var message = $(this).data("message");
+    var confirm = $(this).data("confirm");
+    var cancel = $(this).data("cancel");
+    Swal.fire({
+          html: "<b>"+message+"</b>",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: confirm,
+          cancelButtonText: cancel
+      }).then((result) => {
+          if (result.isConfirmed) {
+              window.location.href = url;
+          }
+      });
+  });
+
+
 
   updateVarietyField();
   updateSeasonField();
