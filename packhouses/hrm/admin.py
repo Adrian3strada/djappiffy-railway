@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (Employee, JobPosition, EmployeeJobPosition, WorkSchedule, WorkShift, 
+from .models import (Employee, JobPosition, EmployeeJobPosition, 
                      EmployeeTaxAndMedicalInformation, EmployeeContactInformation, 
                      EmployeeAcademicAndWorkInfomation, WorkShiftSchedule)
 from django.utils.translation import gettext_lazy as _
@@ -37,14 +37,6 @@ class JobPositionAdmin(admin.ModelAdmin):
                     job_position=obj,  
                 )
 
-
-@admin.register(WorkSchedule)
-class WorkScheduleAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(WorkShift)
-class WorkShiftAdmin(admin.ModelAdmin):
-    pass
 
 
 class EmployeeJobPositionInline(admin.StackedInline):
@@ -84,7 +76,7 @@ class EmployeeAcademicAndWorkInfomationInline(admin.StackedInline):
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('first_name','full_name', 'get_job_position', 'status')
-    inlines = [EmployeeJobPositionInline, EmployeeContactInformationInline, 
+    inlines = [EmployeeJobPositionInline,  
                EmployeeTaxAndMedicalInformationInline, EmployeeAcademicAndWorkInfomationInline]
 
     @uppercase_form_charfield('first_name')

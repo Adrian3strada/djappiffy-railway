@@ -11,33 +11,6 @@ from .settings import (EMPLOYEE_GENDER_CHOICES, EMPLOYEE_BLOOD_TYPE_CHOICES, EMP
 from django.core.exceptions import ValidationError
 
 # Create your models here.
-
-class WorkSchedule(models.Model):
-    name = models.CharField(max_length=50, verbose_name=_("Work Schedule"))
-    description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-
-    def __str__(self):
-        return self.name
-
-    class Meta: 
-        verbose_name = _('Work Schedule')
-        verbose_name_plural = _('Work Schedules')
-        ordering = ('name',)
-
-class WorkShift(models.Model):
-    name = models.CharField(max_length=50, verbose_name=_("Work Shift"))
-    description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-
-    def __str__(self):
-        return self.name
-
-    class Meta: 
-        verbose_name = _('Work Shift')
-        verbose_name_plural = _('Work Shifts')
-        ordering = ('name',)
-
 class JobPosition(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Job Title'))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
@@ -87,11 +60,8 @@ class Employee(models.Model):
         ordering = ('first_name',)
 
 
-
 class EmployeeJobPosition(models.Model):
     job_position = models.OneToOneField(JobPosition, on_delete=models.CASCADE, verbose_name=_('Job Position'))
-    work_schedule = models.ForeignKey(WorkSchedule, verbose_name=_('Work Schedule'), on_delete=models.PROTECT)
-    work_shift = models.ForeignKey(WorkShift, verbose_name=_('Work Shift'), on_delete=models.PROTECT)
     work_days_per_week = models.PositiveIntegerField(default=0, verbose_name=_('Work Days per Week'))
     hours_per_day = models.DecimalField(default=0, max_digits=4, decimal_places=2, verbose_name=_("Hours per Day")) 
     payment_per_hour = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_("Payment per Hour"))
@@ -102,7 +72,6 @@ class EmployeeJobPosition(models.Model):
     equipment = models.BooleanField(default=True, verbose_name=_('Equipment'), help_text=_('Employee requires uniform and/or equipment'))
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
     
-
     def __str__(self):
         return f"{self.employee} - {self.job_position}"
 
@@ -172,4 +141,37 @@ class EmployeeAcademicAndWorkInfomation(models.Model):
         verbose_name = _('Employee Academic and Work Information')
         verbose_name_plural = _('Employee Academic and Work Information Records')
 
+class EmployeeWorkExperience(models.Model):
+    title = models.CharField(max_length=255, verbose_name=_('Previous Role'), null=True, blank=True)
+    company_name = models.CharField(max_length=255, verbose_name=_("Company Name"), null=True, blank=True)
+    location = models.CharField(max_length=255, verbose_name=_("Location"), null=True, blank=True)
+    description = models.CharField(max_length=255, verbose_name=_('Description'), null=True, blank=True)
+    start_date = models.DateField(verbose_name=_("Start Date"), null=True, blank=True)
+    end_date = models.DateField(verbose_name=_("End Date"), null=True, blank=True)
+    time_in_position = models.CharField(max_length=20, verbose_name="Time in Position", help_text=_("Example: '2 years 3 months'"), null=True, blank=True)
+    reference_contact = models.CharField(max_length=255, verbose_name=_("Reference Contact"), null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.title} at {self.company_name}" if self.company_name else self.title
+
+class EmployeeAcademicInformation(models.Model):
+    education_level = models.CharField(max_length=20, choices=EMPLOYEE_STATUS_CHOICES, verbose_name=_('Education Level'))
+    institution_name = models.CharField(max_length=200)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    professional_license = models.CharField(max_length=255, verbose_name=_('Professional License'), null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.education_level}"
+
+class EmployeeCertificationInformation(models.Model):
+    certification_name = models.CharField(max_length=200)
+    issuing_organization = models.CharField(max_length=200)
+    issue_date = models.DateField()
+    expiration_date = models.DateField(null=True, blank=True)  
+    certification_number = models.CharField(max_length=100, unique=True, blank=True, null=True)
+    certificate_url = models.URLField(null=True, blank=True)  
+    description = models.TextField(null=True, blank=True) 
+
+    def __str__(self):
+        return f"{self.certification_name}"
