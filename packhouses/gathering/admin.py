@@ -44,6 +44,7 @@ from django.db.models import Q
 from django.contrib.admin.widgets import AdminDateWidget
 from django.utils.html import format_html
 from django.urls import reverse
+from .forms import ScheduleHarvestForm
 
 
 class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
@@ -147,7 +148,8 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.N
 
 
 @admin.register(ScheduleHarvest)
-class HarvestCuttingAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
+class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
+    form = ScheduleHarvestForm
     fields = ('ooid', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
               'product_variety', 'product_season_kind', 'product_harvest_size_kind','orchard', 'orchard_certification',
               'market', 'weight_expected', 'weighing_scale', 'meeting_point', 'comments' )
@@ -165,17 +167,19 @@ class HarvestCuttingAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdmi
         cancel_url = reverse('cancel_schedule_harvest', args=[obj.pk])
         tooltip_cancel = _('Cancel this harvest')
         confirm_cancel_text = _('Are you sure you want to cancel this harvest?')
+        confirm_button_text = _('Yes, cancel it')
+        cancel_button_text = _('No')
 
         cancel_button_html = ''
         if obj.status in ['open', 'ready']:
             cancel_button_html = format_html(
                 '''
-                <a class="button" href="{}" data-toggle="tooltip" title="{}"
-                   onclick="return confirm('{}');">
+                <a class="button btn-cancel-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
+                   data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}">
                     <i class="fa-solid fa-ban"></i>
                 </a>
                 ''',
-                cancel_url, tooltip_cancel, confirm_cancel_text
+                tooltip_cancel, cancel_url, confirm_cancel_text, confirm_button_text, cancel_button_text
             )
 
         return format_html(

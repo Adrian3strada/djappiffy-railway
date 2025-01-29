@@ -1,4 +1,10 @@
 /* Cambiar el color de fondo de la barra lateral */
+@font-face {
+    font-family: 'Futura';
+    src: url('../fonts/futura.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
 
 .readonly-field {
     background-color: #bababa !important; /* Fondo gris claro para el campo deshabilitado */
@@ -176,6 +182,16 @@ footer.main-footer .float-right {
   border-bottom: solid 1px #d0c8c8 !important;
 }
 
+.add-row > td > .btn-default{
+  background-color: #183670 !important;
+  border-color: #183670 !important;
+  color: #FFF !important;
+}
+
+.add-row > td > .btn-default:hover{
+  background-color: #0e1f40 !important;
+}
+
 .accent-primary a:not(.dropdown-item):not(.btn-app):not(.nav-link):not(.brand-link):not(.page-link):not(.btn) {
   color: #08509d;
 }
@@ -209,5 +225,11 @@ table.djn-items{
   background-color: #f4f4f4 !important;
 }
 
+body{
+  font-family: "Futura", serif; !important;
+}
 
+label:not(.form-check-label):not(.custom-file-label) {
+  font-weight: normal !important;
+}
 

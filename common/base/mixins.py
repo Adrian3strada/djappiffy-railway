@@ -1,5 +1,6 @@
 # admin_mixins.py
 from django.contrib import admin
+from common.profiles.models import UserProfile
 
 
 class ByOrganizationAdminMixin(admin.ModelAdmin):
@@ -33,3 +34,17 @@ class DisableInlineRelatedLinksMixin:
             field.widget.can_delete_related = False
             field.widget.can_view_related = False
         return formset
+
+class ByUserAdminMixin(admin.ModelAdmin):
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        if hasattr(request, 'user'):
+            user_profile = UserProfile.objects.get(user=request.user)
+            return queryset.filter(user=user_profile)
+        return queryset
+
+    def save_model(self, request, obj, form, change):
+        user_profile = UserProfile.objects.get(user=request.user)
+        obj.user = user_profile
+        super().save_model(request, obj, form, change)
+
