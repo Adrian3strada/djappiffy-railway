@@ -5,159 +5,186 @@
 {% block page_content %}
 {% load static %}
 <style>
-    
-    table.header-table .center h1 {
-        margin: 10px 0 !important;
-        font-size: 9pt !important;
-    }
-    .information-section, .harvest_section, .substance-section,
-    .signature_section, .harvest-information{
-        width: 100%;
-        margin-bottom: 15px;
-        font-size: 6pt !important;
-    }
-    .guideline_section, .signature_section{
-        margin-bottom: 0px;
-    }
-    .row {
-        display: grid;
-        margin-top: 5px;
-    }
-
-    .row-four {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    .row p {
-        margin: 0;
-        border-bottom: 1px solid #000;
-    }
-
-    .row p strong {
-        font-weight: bold;
-    }
-    .data_information {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .data_information p {
-        flex: 1 1 30%;
-        border-bottom: 1px solid #000;
-        
-        text-align: left;
-        margin: 0;
-    }
-
-    .data_information br {
-        width: 100%;
-    }
-    .title{
-        display: flex;
-        background-color: #ffc600;
-        width: 100%;
-        height: 25px;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        h2{
-            font-size: 8pt;
-        }
-    }
-    .guideline_table_subtitle{
-        background-color: #fff4cc;
-        
-        font-weight: bold;
-        border-bottom: 1px solid black;
-    }
-    .subtitle-table{
-        background-color: #ffc600;
-        
-        font-weight: bold;
-    }
-    .harvest-information-table, .substance-section-table{
-        border-collapse: collapse;
-        width: 100%;
-        font-size: 7pt;
-        td{
-            border: 1px solid #000;
-            text-align: center;
-            
-        }
-    }
-    .circle {
-        width: 15px;
-        height: 15px;
-        border: 2px solid #000;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: 10px;
-    }
-    .grid-container {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-gap: 2px;
-        margin-top: 5px;
-    }
-    .guideline_table{
-        width: 100%;
-        border-collapse: collapse;
-        border: 1px solid black;
-        margin-bottom: 2px;
-        font-size: 7pt;
-        .td-option{
-            border: 1px solid black;
-            
-        }
-    }
-    .double-table {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    .folio-table{
-        width: 100%;
-        text-align: center;
-        margin-bottom: 10px;
-        border-collapse: collapse;
-    }
-    .folio-table tr {
-        height: 25px; 
-    }
-    .folio-table td{
-        line-height: 25px; 
-        padding: 0; 
-        overflow: hidden; 
-    }
-    .observations{
-        width: 100%;
-        p{
-            margin-top: 10px;
-            border-bottom: 1px solid black;   
-            padding: 5px;        
-        }
-    }
-    .signature{
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        text-align: center;
-        column-gap: 25px; 
-        margin-bottom: 0;
-    }
-    .signature_section{
-        page-break-after: always;
-    }
-    .circle {
-    display: inline-block;
-    width: 15px; 
-    height: 15px;
-    background-color: #ffffff; 
-    border: 1px solid #000;
-    border-radius: 50%; 
-    margin-right: 5px; 
-    vertical-align: middle;
+/* Estilos de la tabla de encabezado */
+table.header-table .center h1 {
+    margin: 10px 0 !important;
+    font-size: 9pt !important;
 }
 
+/* Secciones generales */
+.information-section,
+.harvest_section,
+.substance-section,
+.signature_section,
+.harvest-information {
+    width: 100%;
+    margin-bottom: 15px;
+    font-size: 6pt !important;
+}
+
+.guideline_section,
+.signature_section {
+    margin-bottom: 0px;
+}
+
+/* Filas y columnas */
+.row {
+    display: grid;
+    margin-top: 5px;
+}
+
+.row-four {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.row p {
+    margin: 0;
+    border-bottom: 1px solid #000;
+}
+
+.row p strong {
+    font-weight: bold;
+}
+
+/* Información de datos */
+.data_information {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.data_information p {
+    flex: 1 1 30%;
+    border-bottom: 1px solid #000;
+    text-align: left;
+    margin: 0;
+}
+
+.data_information br {
+    width: 100%;
+}
+
+/* Títulos */
+.title {
+    display: flex;
+    background-color: #ffc600;
+    width: 100%;
+    height: 25px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.title h2 {
+    font-size: 8pt;
+}
+
+/* Subtítulos */
+.guideline_table_subtitle {
+    background-color: #fff4cc;
+    font-weight: bold;
+    border-bottom: 1px solid black;
+}
+
+.subtitle-table {
+    background-color: #ffc600;
+    font-weight: bold;
+}
+
+/* Tablas de información */
+.harvest-information-table,
+.substance-section-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 7pt;
+}
+
+.harvest-information-table td,
+.substance-section-table td {
+    border: 1px solid #000;
+    text-align: center;
+}
+
+/* Círculo */
+.circle {
+    width: 15px;
+    height: 15px;
+    border: 1px solid #000;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: middle;
+    background-color: #ffffff;
+}
+
+/* Contenedor de cuadrícula */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 2px;
+    margin-top: 5px;
+}
+
+/* Tabla de directrices */
+.guideline_table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid black;
+    margin-bottom: 2px;
+    font-size: 7pt;
+}
+
+.guideline_table .td-option {
+    border: 1px solid black;
+}
+
+/* Tabla doble */
+.double-table {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Tabla de folios */
+.folio-table {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+    border-collapse: collapse;
+}
+
+.folio-table tr {
+    height: 25px;
+}
+
+.folio-table td {
+    line-height: 25px;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Observaciones */
+.observations {
+    width: 100%;
+}
+
+.observations p {
+    margin-top: 10px;
+    border-bottom: 1px solid black;
+    padding: 5px;
+}
+
+/* Firmas */
+.signature {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    text-align: center;
+    column-gap: 25px;
+    margin-bottom: 0;
+}
+
+.signature_section {
+    page-break-after: always;
+}
 </style>
 
 {% for crew in scheduleharvestharvestingcrewinline %}
@@ -228,7 +255,7 @@
 
     <div class="row row-four">
         <p style="grid-column: span 2;"><strong>Operator:</strong></p>
-        <p style="grid-column: span 2;""><strong>License Plate: </strong> 
+        <p style="grid-column: span 2;""><strong>License Plate: </strong>
             {% for vehicle in crew_vehicles %}
                 {% if vehicle.provider == crew.provider %}
                     {{ vehicle.vehicle.license_plate }},
@@ -236,7 +263,7 @@
             {% empty %}
                 No vehicles available for this crew.
             {% endfor %}
-        </p>  
+        </p>
     </div>
 
     <div class="row row-four">
@@ -244,7 +271,7 @@
         <p style="grid-column: span 3;"><strong>Meeting Point:</strong> {{harvest.meeting_point}}</p>
     </div>
 
-   
+
 
 </div>
 
@@ -265,7 +292,7 @@
             <td>Mishandling</td>
             <td>Out of Size</td>
         </tr>
-        
+
         {% for i in crew.harvesting_crew.get_persons_range %}
         <tr>
             <td style="width: 5%;">{{ forloop.counter }}</td>
@@ -333,7 +360,7 @@
         <tr>
             <td colspan="13" style="text-align: left;">Products Used: </td>
         </tr>
-            
+
     </table>
 </div>
 
