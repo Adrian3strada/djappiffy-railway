@@ -1,0 +1,32 @@
+{% load i18n %}
+{% load admin_urls %}
+
+{% if has_export_permission %}
+<button id="export-sheet"  button class="btn btn-info" style="margin-right: 10px;">
+    <a href="{% url opts|admin_urlname:'export' %}{{cl.get_query_string}}" class="text-white" target="_blank">
+        <i class="fas fa-file-pdf"></i> {% translate "Export" %} Excel</a>
+</button>
+<button id="export-pdf" button class="btn btn-info" style="margin-right: 10px;">
+    <a href="{% url opts|admin_urlname:'export' %}{{cl.get_query_string}}" class="text-white" target="_blank">
+        <i class="fas fa-file-pdf"></i> {% translate "Export" %} PDF</a>
+</button>
+{% endif %}
+
+<script>
+document.getElementById("export-sheet").addEventListener("click", function () {
+    let link = this.querySelector("a");
+    let url = new URL(link.href);
+    url.searchParams.delete('export_type');
+    url.searchParams.set('export_type', 'export-sheet');
+    link.href = url.toString();
+    
+});
+document.getElementById("export-pdf").addEventListener("click", function () {
+    let link = this.querySelector("a");
+    let url = new URL(link.href);
+    url.searchParams.delete('export_type');
+    url.searchParams.set('export_type', 'export-pdf');
+    link.href = url.toString();
+});
+
+</script>

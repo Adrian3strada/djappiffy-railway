@@ -59,6 +59,10 @@ from common.base.decorators import uppercase_form_charfield, uppercase_alphanume
 from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, DisableInlineRelatedLinksMixin
 from common.forms import SelectWidgetWithData
 from django.db.models import Q, F, Max, Min
+from common.base.utils import ReportExportAdmin, SheetExportAdmin, SheetReportExportAdmin
+from .views import basic_report
+from .resources import (ProductResource, MarketResource, )
+
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -104,7 +108,9 @@ class MarketClassInline(admin.TabularInline):
 
 
 @admin.register(Market)
-class MarketAdmin(ByOrganizationAdminMixin):
+class MarketAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
+    report_function = staticmethod(basic_report)
+    resource_classes = [MarketResource]
     list_display = ('name', 'alias', 'get_countries', 'is_mixable', 'is_enabled')
     list_filter = (ByCountryForOrganizationMarketsFilter, 'is_mixable', 'is_enabled',)
     search_fields = ('name', 'alias')
@@ -205,7 +211,9 @@ class ProductHarvestSizeKindInline(admin.TabularInline):
 
 
 @admin.register(Product)
-class ProductAdmin(ByOrganizationAdminMixin):
+class ProductAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
+    report_function = staticmethod(basic_report)
+    resource_classes = [ProductResource]
     list_display = ('name', 'kind', 'is_enabled')
     list_filter = (ProductKindForPackagingFilter, 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
@@ -243,7 +251,9 @@ class ProductAdmin(ByOrganizationAdminMixin):
 
 
 @admin.register(MarketProductSize)
-class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
+class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin, SheetReportExportAdmin):
+    report_function = staticmethod(basic_report)
+    #resource_classes = [ProductResource]
     list_display = (
         'name', 'alias', 'product', 'get_varieties', 'market', 'is_enabled', 'sort_order')
     list_filter = (

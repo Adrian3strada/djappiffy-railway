@@ -52,6 +52,7 @@ django-admin-sortable2
 django-nested-admin
 django-modeladmin-reorder
 django-weasyprint
+django-import-export
 setuptools
 
 geopandas
