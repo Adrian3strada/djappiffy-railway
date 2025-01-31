@@ -5,6 +5,15 @@
 {% block page_content %}
 {% load static %}
 <style>
+  @font-face {
+    font-family: 'Futura';
+    src: url('../../../static/fonts') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  body{
+    font-family: 'Futura', sans-serif;
+  }
   .folio-table {
       width: 100%;
       text-align: center;
@@ -43,6 +52,7 @@
       color: #000000;
       font-weight: bold;
       padding: 8px;
+      text-align:center;
   }
 
   .table_form tr {
@@ -58,6 +68,7 @@
   }
 
   .signature-container {
+      margin-top:50px;
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -75,8 +86,8 @@
   }
 
   .signature-container label {
-      font-size: 8px;
-      font-weight: bold;
+      font-size: 12px;
+      font-weight: normal;
   }
 </style>
 
@@ -99,15 +110,15 @@
         <tr>
             <th>Supply</th>
             <th>Quantity</th>
-            <th>Description</th>
+            <th>Comments</th>
         </tr>
     </thead>
     <tbody>
         {% for item in requisitionsupplyinline %}
         <tr>
             <td> {{ item.supply }} </td>
-            <td> {{ item.quantity }} </td>
-            <td> {{ item.comments }} </td>
+            <td style="text-align: center;"> {{ item.quantity }} </td>
+            <td>{{ item.comments|default:"" }}</td>
         </tr>
         {% endfor %}
 
@@ -116,7 +127,9 @@
 </div>
 
 <div class="signature-container">
-    <div class="signature-line"> </div>
-    <label for="signature"> {{ solicitante }} </label>
+    <div class="signature-line"></div>
+    <label>
+      {{ applicant_name }}<br>{{ applicant_email }}
+    </label>
 </div>
 {% endblock page_content %}

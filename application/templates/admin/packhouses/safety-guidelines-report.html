@@ -5,9 +5,18 @@
 {% block page_content %}
 {% load static %}
 <style>
+  @font-face {
+    font-family: 'Futura';
+    src: url('../../../static/fonts') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  body{
+    font-family: 'Futura', sans-serif;
+  }
 /* Estilos de la tabla de encabezado */
 table.header-table .center h1 {
-    margin: 10px 0 !important;
+    margin: 5px 0 !important;
     font-size: 9pt !important;
 }
 
@@ -18,7 +27,7 @@ table.header-table .center h1 {
 .signature_section,
 .harvest-information {
     width: 100%;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     font-size: 6pt !important;
 }
 
@@ -68,7 +77,7 @@ table.header-table .center h1 {
     display: flex;
     background-color: #ffc600;
     width: 100%;
-    height: 25px;
+    height: 30px;
     justify-content: center;
     align-items: center;
     text-align: center;
@@ -135,6 +144,7 @@ table.header-table .center h1 {
 
 .guideline_table .td-option {
     border: 1px solid black;
+    text-align:center;
 }
 
 /* Tabla doble */
@@ -249,7 +259,7 @@ table.header-table .center h1 {
     </div>
 
     <div class="row row-four">
-        <p style="grid-column: span 3;"><strong>Comments:</strong> {{harvest.comments}}</p>
+        <p style="grid-column: span 3;"><strong>Comments:</strong> {{harvest.comments|default:""}}</p>
         <p><strong>Lock N°:</strong></p>
     </div>
 
@@ -268,14 +278,14 @@ table.header-table .center h1 {
 
     <div class="row row-four">
         <p style="grid-column: span 1;"><strong>Destination:</strong> {{harvest.market}}</p>
-        <p style="grid-column: span 3;"><strong>Meeting Point:</strong> {{harvest.meeting_point}}</p>
+        <p style="grid-column: span 3;"><strong>Meeting Point:</strong> {{harvest.meeting_point|default:""}}</p>
     </div>
 
 
 
 </div>
 
-<div class="harvest-information">
+<div class="harvest-information" style="margin-top:-5px;">
     <table class="harvest-information-table">
         <tr class="subtitle-table">
             <td rowspan="2" colspan="2" style="width: 40%;"> Harvester's Name</td>
@@ -318,7 +328,7 @@ table.header-table .center h1 {
     </table>
 </div>
 
-<div class="substance-section">
+<div class="substance-section"  style="margin-top:-5px;">
     <table class="substance-section-table">
         <tr>
             <td class="subtitle-table" colspan="13" >
@@ -364,11 +374,11 @@ table.header-table .center h1 {
     </table>
 </div>
 
-<div class="guideline-section">
+<div class="guideline-section"  style="margin-top:-5px;">
     <div class="title">
         <h2>Preventive Guidelines Before, During, and After Harvest <br>(As indicated below: Yes or No, as appropriate)</h2>
     </div>
-    <div class="grid-container">
+    <div class="grid-container" style="margin-top:0px;">
         <!-- Tabla 1 -->
         <table class="guideline_table">
             <tr>
@@ -710,9 +720,9 @@ table.header-table .center h1 {
 
 <div class="signature_section">
     <div class="observations">
-        <h2 style="margin-bottom: 4px;">Observations</h2>
-        <p></p>
-        <p></p>
+        <h3 style="margin-bottom: 4px;">Observations</h3>
+        <p style="margin-top:-5px;"></p>
+        <p style="margin-top:-5px;"></p>
     </div>
     <p style="margin-bottom: 20px;">
         To the producer or fruit supervisor: In order to ensure the quality and safety of the fruit, the points mentioned above were verified. We suggest checking
