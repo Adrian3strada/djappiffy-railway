@@ -144,7 +144,7 @@ DATABASE_URL = os.getenv('DATABASE_URL', 'spatialite:///db.spatialite')
 DATABASES = {
     "default": dj_database_url.config(default=DATABASE_URL)
 }
-
+LOGIN_URL = '/dadmin/login/'
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
