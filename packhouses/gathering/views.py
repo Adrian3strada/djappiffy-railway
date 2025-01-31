@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from .models import (ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle, Country, Region, SubRegion, City)
 from packhouses.catalogs.models import HarvestingCrew
 from django.template.loader import render_to_string
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from weasyprint import HTML, CSS
 from io import BytesIO
 from datetime import datetime
@@ -12,11 +13,14 @@ from django.db.models import Prefetch
 from django.utils.text import capfirst
 from django.db.models import Sum
 
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import  permission_classes
+from django.contrib.auth.decorators import login_required
 
-@permission_classes([IsAuthenticated])
 def harvest_order_pdf(request, harvest_id):
+    # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
+    if not request.user.is_authenticated:
+        login_url = reverse('admin:login') 
+        return redirect(login_url)
+    
     # Obtener el registro
     harvest = get_object_or_404(ScheduleHarvest, pk=harvest_id)
 
@@ -93,6 +97,11 @@ def harvest_order_pdf(request, harvest_id):
 
 
 def good_harvest_practices_format(request, harvest_id):
+    # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
+    if not request.user.is_authenticated:
+        login_url = reverse('admin:login') 
+        return redirect(login_url)
+    
     # Obtener el registro
     harvest = get_object_or_404(ScheduleHarvest, pk=harvest_id)
 
@@ -164,16 +173,15 @@ def good_harvest_practices_format(request, harvest_id):
     # Convertir el HTML a PDF
     html = HTML(string=html_string, base_url=base_url)
     pdf_buffer = BytesIO()
-    
+    html.write_pdf(pdf_buffer, stylesheets=[css],)
 
     # Traducir el nombre del archivo manualmente
     filename = f"{_('good_harvest_practices')}_{harvest.ooid}.pdf"
 
     # Devolver el PDF como respuesta
     pdf_buffer.seek(0)
-    response = HttpResponse(content_type='application/pdf')
+    response = HttpResponse(pdf_buffer, content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="{filename}"'
-    html.write_pdf(pdf_buffer, stylesheets=[css],)
     return response
 
 def cancel_schedule_harvest(request, pk):

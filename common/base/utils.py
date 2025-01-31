@@ -4,6 +4,7 @@ from import_export.formats.base_formats import JSON, XLSX
 from import_export import resources
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import FieldDoesNotExist
+from django.utils.translation import gettext_lazy as _
 
 # Para exportar solo a PDF
 class ReportExportAdmin(ExportMixin):
@@ -24,7 +25,7 @@ class ReportExportAdmin(ExportMixin):
         response = self.report_function(request, export_data, model_name)
         return response
 
-# Para exportar a excel
+# Para exportar solo a excel
 class SheetExportAdmin(ExportMixin):
     import_export_change_list_template = "admin/export/export_sheet/change_list_export.html"
 
@@ -90,16 +91,91 @@ class ExportResource(resources.ModelResource):
 
 class DehydrationResource():
     def dehydrate_countries(self, obj):
-        return " ".join(country.name for country in obj.countries.all())
+        return " ".join(country.name for country in obj.countries.all()) if obj.countries.exists() else ""
+
+    def dehydrate_country(self, obj):
+        return obj.country.name if obj.country else ""
+
+    def dehydrate_state(self, obj):
+        return obj.state.name if obj.state else ""
+
+    def dehydrate_city(self, obj):
+        return obj.city.name if obj.city else ""
+
+    def dehydrate_district(self, obj):
+        return obj.district.name if obj.district else ""
+
+    def dehydrate_market(self, obj):
+        return obj.market.name if obj.market else ""
+    
+    def dehydrate_market_class(self, obj):
+        return obj.market_class.name if obj.market_class else ""
+    
+    def dehydrate_product(self, obj):
+        return obj.product.name if obj.product else ""
+    
+    def dehydrate_product_variety(self, obj):
+        return obj.product_variety.name if obj.product_variety else ""
+
+    def dehydrate_product_variety_size(self, obj):
+        return obj.product_variety_size.name if obj.product_variety_size else ""
+    
+    def dehydrate_product_size(self, obj):
+        return obj.product_size.name if obj.product_size else ""
+
     def dehydrate_organization(self, obj):
-        return obj.organization.name
+        return obj.organization.name if obj.organization else ""
+
+    def dehydrate_brand(self, obj):
+        return obj.brand.name if obj.brand else ""
+
+    def dehydrate_ownership(self, obj):
+        return obj.ownership.name if obj.ownership else ""
+
+    def dehydrate_fuel(self, obj):
+        return obj.fuel.name if obj.fuel else ""
+
+    def dehydrate_vehicle(self, obj):
+        return obj.vehicle.name if obj.vehicle else ""
+
+    def dehydrate_maquiladora_clients(self, obj):
+        return ", ".join(client.name for client in obj.maquiladora_clients.all()) if obj.maquiladora_clients.exists() else ""
+
+    def dehydrate_provider(self, obj):
+        return obj.provider.name if obj.provider else ""
+
+    def dehydrate_main_supply_kind(self, obj):
+        return obj.main_supply_kind.name if obj.main_supply_kind else ""
+
+    def dehydrate_main_supply(self, obj):
+        return obj.main_supply.name if obj.main_supply else ""
+    
+    def dehydrate_kind(self, obj):
+        return obj.kind.name if obj.kind else ""
+
+    def dehydrate_packaging_kind(self, obj):
+        return obj.packaging_kind.name if obj.packaging_kind else ""
+
+    def dehydrate_authority(self, obj):
+        return obj.authority.name if obj.authority else ""
+
+    def dehydrate_crew_chief(self, obj):
+        return obj.crew_chief.name if obj.crew_chief else ""
+    
+    def dehydrate_service_provider(self, obj):
+        return obj.service_provider.name if obj.service_provider else ""
+
     def dehydrate_is_foreign(self, obj):
         return "✅" if obj.is_foreign else "❌"
+
     def dehydrate_is_enabled(self, obj):
         return "✅" if obj.is_enabled else "❌"
+
     def dehydrate_is_mixable(self, obj):
         return "✅" if obj.is_mixable else "❌"
-    def dehydrate_kind(self, obj):
-        return obj.kind.name
+    
+    def dehydrate_is_ripe(self, obj):
+        return "✅" if obj.is_ripe else "❌"
+    
         
-default_excluded_fields = ('label_language', 'organization')
+default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization')
