@@ -66,33 +66,29 @@ class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.TabularInlin
 
         return super().has_delete_permission(request, obj)
 
+
 @admin.register(Requisition)
 class RequisitionAdmin(ByOrganizationAdminMixin, ByUserAdminMixin):
     form = RequisitionForm
-    fields = ('ooid', 'status',  'comments',)
+    fields = ('ooid', 'status', 'comments', 'save_and_send')
     list_display = ('ooid', 'created_at', 'status', 'generate_actions_buttons')
-    readonly_fields = ('ooid','status')
+    readonly_fields = ('ooid', 'status')
     inlines = (RequisitionSupplyInline,)
 
-    def get_readonly_fields(self, request, obj=None):
-        # Obtener los campos readonly predefinidos
-        readonly_fields = list(super().get_readonly_fields(request, obj))
+    def save_model(self, request, obj, form, change):
+        save_and_send = form.cleaned_data.get('save_and_send', False)
+        if save_and_send:
+            obj.status = 'ready'
+        super().save_model(request, obj, form, change)
 
-        # Campos siempre readonly cuando el objeto no existe
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
         if not obj:
             readonly_fields.append('ooid')
-
-        # Campos readonly para objetos existentes
         if obj and obj.pk:
             readonly_fields.append('ooid')
-
-        # Si el estado del corte está cerrado o cancelado, todos los campos son readonly
         if obj and obj.status in ['closed', 'canceled', 'ready']:
-            # Filtrar solo los campos definidos en el admin que realmente existen
-            readonly_fields.extend([
-                field for field in self.fields if hasattr(obj, field)
-            ])
-
+            readonly_fields.extend([field for field in self.fields if hasattr(obj, field)])
         return readonly_fields
 
     def generate_actions_buttons(self, obj):
@@ -132,5 +128,4 @@ class RequisitionAdmin(ByOrganizationAdminMixin, ByUserAdminMixin):
 
     class Media:
         js = ('js/admin/forms/packhouses/purchase_operations/requisition.js',)
-
 

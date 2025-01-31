@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-
-  // Función para obtener el token CSRF
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -15,6 +13,41 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     return cookieValue;
   }
+
+  // Interceptar el clic en el botón de guardar
+  const saveButton = document.querySelector('input[name="_save"]');
+  if (saveButton) {
+        saveButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const saveAndSendInput = $('input[name="save_and_send"]');
+            const questionText = saveAndSendInput.data('question');
+            const confirmText = saveAndSendInput.data('confirm');
+            const denyText = saveAndSendInput.data('deny');
+            const cancelText = saveAndSendInput.data('cancel');
+
+            Swal.fire({
+                icon: "question",
+                text: questionText,
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: confirmText,
+                denyButtonText: denyText,
+                confirmButtonColor: "#4daf50",
+                denyButtonColor: "#162c58",
+                cancelButtonColor: "#d33",
+                cancelButtonText: cancelText,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.querySelector('input[name="save_and_send"]').value = 'true';
+                    document.querySelector('#requisition_form').submit();
+                } else if (result.isDenied) {
+                    document.querySelector('input[name="save_and_send"]').value = 'false';
+                    document.querySelector('#requisition_form').submit();
+                }
+            });
+        });
+    }
 
   $(document).on("click", ".btn-ready-confirm", function (e) {
     var url = $(this).data("url");
@@ -44,9 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
           .then((response) => response.json())
           .then((data) => {
             if (data.success) {
-              // Ocultar el botón
               button.hide();
-
               var row = button.closest("tr");
               var statusCell = row.find(".field-status");
               statusCell.text("Ready");
