@@ -8,6 +8,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 from search import views as search_views
 from packhouses.gathering.views import harvest_order_pdf, good_harvest_practices_format, cancel_schedule_harvest
+from packhouses.purchase_operations.views import requisition_pdf, set_requisition_ready
 
 
 urlpatterns = [
@@ -15,8 +16,9 @@ urlpatterns = [
     path('dadmin/gathering/scheduleharvest/harvest_order_pdf/<int:harvest_id>/', harvest_order_pdf, name='harvest_order_pdf'),
     path('dadmin/gathering/scheduleharvest/good_harvest_practices_format/<int:harvest_id>/', good_harvest_practices_format,
          name='good_harvest_practices_format'),
-    path('dadmin/gathering/scheduleharvest/<int:pk>/cancel/', cancel_schedule_harvest, name='cancel_schedule_harvest'),
-
+    path('dadmin/gathering/scheduleharvest/cancel_schedule_harvest/<int:pk>/', cancel_schedule_harvest, name='cancel_schedule_harvest'),
+    path('dadmin/purchase_operations/requisition_pdf/<int:requisition_id>/', requisition_pdf, name='requisition_pdf'),
+    path('dadmin/purchase_operations/set_requisition_ready/<int:requisition_id>/', set_requisition_ready, name='set_requisition_ready'),
     # Admin URLs
     path("dadmin/", admin.site.urls),
     path("wadmin/", include(wagtailadmin_urls)),

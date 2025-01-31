@@ -1,6 +1,8 @@
 # admin_mixins.py
 from django.contrib import admin
 from common.profiles.models import UserProfile
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 class ByOrganizationAdminMixin(admin.ModelAdmin):
@@ -39,12 +41,12 @@ class ByUserAdminMixin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         if hasattr(request, 'user'):
-            user_profile = UserProfile.objects.get(user=request.user)
+            user_profile = User.objects.get(username=request.user)
             return queryset.filter(user=user_profile)
         return queryset
 
     def save_model(self, request, obj, form, change):
-        user_profile = UserProfile.objects.get(user=request.user)
+        user_profile = User.objects.get(username=request.user)
         obj.user = user_profile
         super().save_model(request, obj, form, change)
 

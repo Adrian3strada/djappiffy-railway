@@ -11,6 +11,9 @@ from datetime import datetime
 from django.db.models import Prefetch
 from django.utils.text import capfirst
 from django.db.models import Sum
+from django.urls import reverse
+from django.http import HttpResponseForbidden
+from django.http import JsonResponse
 
 
 def harvest_order_pdf(request, harvest_id):
@@ -35,8 +38,8 @@ def harvest_order_pdf(request, harvest_id):
         country_name = get_name(Country, organization_profile.country_id, "Country")
         state_name = get_name(Region, organization_profile.state_id, "State")
         district_name = get_name(City, organization_profile.district_id, "District")
-        if organization_profile.logo:  
-            logo_url = organization_profile.logo.url  
+        if organization_profile.logo:
+            logo_url = organization_profile.logo.url
         else:
             logo_url = None
     pdf_title = capfirst(ScheduleHarvest._meta.verbose_name)
@@ -68,10 +71,9 @@ def harvest_order_pdf(request, harvest_id):
         'harvest': harvest,
         'scheduleharvestharvestingcrewinline': scheduleharvestharvestingcrewinline,
         'scheduleharvestvehicleinline': scheduleharvestvehicleinline,
-        'packhouse_name': packhouse_name,
         'total_box': total_box,
         'year': year,
-        'date': date, 
+        'date': date,
     })
 
     # Convertir el HTML a PDF
@@ -111,8 +113,8 @@ def good_harvest_practices_format(request, harvest_id):
         country_name = get_name(Country, organization_profile.country_id, "Country")
         state_name = get_name(Region, organization_profile.state_id, "State")
         district_name = get_name(City, organization_profile.district_id, "District")
-        if organization_profile.logo:  
-            logo_url = organization_profile.logo.url  
+        if organization_profile.logo:
+            logo_url = organization_profile.logo.url
         else:
             logo_url = None
     pdf_title = _("REGISTRO DE VERIFICACIÓN DE LAS BUENAS PRÁCTICAS DE HIGIENE Y SEGURIDAD DURANTE LAS OPERACIONES DE COSECHA (BIT-BPHS-01)")
@@ -135,14 +137,15 @@ def good_harvest_practices_format(request, harvest_id):
     for crew in scheduleharvestharvestingcrewinline:
         vehicles = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest,provider=crew.provider)
         crew_vehicles.extend(vehicles)
-    
-    
+
+
     # CSS
     base_url = request.build_absolute_uri('/')
     css = CSS(string='''
         @page {
             size: legal portrait;
         }''')
+
 
     # Renderizar el template HTML
     html_string = render_to_string('admin/packhouses/safety-guidelines-report.html', {
@@ -174,8 +177,17 @@ def good_harvest_practices_format(request, harvest_id):
 
 def cancel_schedule_harvest(request, pk):
     schedule_harvest = get_object_or_404(ScheduleHarvest, pk=pk)
-    if schedule_harvest.status not in ['open']:
-        return HttpResponseForbidden("You cannot cancel this harvest.")
+    if schedule_harvest.status not in ['open', 'ready']:
+        return JsonResponse({
+            'success': False,
+            'message': 'You cannot cancel this harvest.'
+        }, status=403)  # 403: Forbidden
+
     schedule_harvest.status = 'canceled'
     schedule_harvest.save()
-    return redirect(reverse('admin:gathering_scheduleharvest_changelist'))
+    success_message = _('Harvest canceled successfully.')
+
+    return JsonResponse({
+        'success': True,
+        'message': success_message
+    })
