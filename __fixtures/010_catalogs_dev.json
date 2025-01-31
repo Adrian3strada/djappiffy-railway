@@ -971,7 +971,7 @@
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 1,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
@@ -986,7 +986,7 @@
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 2,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
@@ -1001,7 +1001,7 @@
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 3,
   "fields": {
     "name": "MALLA SENCILLA",
@@ -1016,7 +1016,7 @@
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 4,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
@@ -1031,7 +1031,7 @@
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 5,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
@@ -1046,7 +1046,7 @@
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 6,
   "fields": {
     "name": "PALLET 48'S + 70'S",
@@ -1061,7 +1061,7 @@
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 7,
   "fields": {
     "name": "PALLET 48'S + 70'S (ENMALLADOS)",
