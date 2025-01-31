@@ -111,8 +111,6 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-
-
 class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = ScheduleHarvestVehicle
     extra = 0
@@ -150,13 +148,13 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.N
 @admin.register(ScheduleHarvest)
 class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     form = ScheduleHarvestForm
-    fields = ('ooid', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
+    fields = ('ooid', 'status', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
               'product_variety', 'product_season_kind', 'product_harvest_size_kind','orchard', 'orchard_certification',
               'market', 'weight_expected', 'weighing_scale', 'meeting_point', 'comments' )
     list_display = ('ooid', 'harvest_date', 'category', 'product_provider', 'product','product_variety', 'market',
                     'weight_expected', 'status',  'generate_actions_buttons')
     list_filter = ('category', 'product_provider','gatherer', 'maquiladora', 'status' )
-    readonly_fields = ('ooid',)
+    readonly_fields = ('ooid', 'status')
     inlines = [HarvestCuttingHarvestingCrewInline, HarvestCuttingVehicleInline]
 
     def generate_actions_buttons(self, obj):

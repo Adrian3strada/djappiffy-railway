@@ -18,16 +18,17 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   OrchardCertificationKind)
 from packhouses.catalogs.models import (SupplyKind,Supply)
 from common.settings import STATUS_CHOICES
-
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 # Create your models here.
 class Requisition(models.Model):
     ooid = models.PositiveIntegerField(
-        verbose_name=_("Requisition Number"),
+        verbose_name=_("Folio"),
         null=True, blank=True, unique=True
     )
     user = models.ForeignKey(
-        UserProfile,
+        User,
         verbose_name=_("User"),
         on_delete=models.PROTECT
     )
@@ -56,11 +57,10 @@ class Requisition(models.Model):
         if not self.ooid:
             # Usar transacción y bloqueo de fila para evitar condiciones de carrera
             with transaction.atomic():
-                last_order = Requisition.objects.select_for_update().filter(organization=self.organization).order_by('-ooid').first()
-                if last_order:
-                    self.ooid = last_order.ooid + 1
-                else:
-                    self.ooid = 1
+                last_order = Requisition.objects.select_for_update().filter(organization=self.organization).order_by(
+                    '-ooid').first()
+                self.ooid = (last_order.ooid + 1) if last_order and last_order.ooid is not None else 1
+
         if user:
             self.user = user
 
