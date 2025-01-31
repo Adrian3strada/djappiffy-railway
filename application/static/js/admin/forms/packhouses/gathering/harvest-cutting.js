@@ -15,6 +15,99 @@ document.addEventListener("DOMContentLoaded", function() {
   const initialOrchardCertificationValue = orchardCertificationField.val();
   const API_BASE_URL = "/rest/v1";
 
+  // Función para obtener el token CSRF
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(name + "=")) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  $(document).on("click", ".btn-cancel-confirm", function (e) {
+    e.preventDefault();
+
+    var url = $(this).data("url");
+    var message = $(this).data("message");
+    var confirmText = $(this).data("confirm");
+    var cancelText = $(this).data("cancel");
+
+    var button = $(this);
+
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: message,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#4daf50",
+      cancelButtonColor: "#d33",
+      confirmButtonText: confirmText,
+      cancelButtonText: cancelText,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              button.hide();
+
+              var row = button.closest("tr");
+              var statusCell = row.find(".field-status");
+              statusCell.text("Canceled");
+
+              Toastify({
+                text: data.message,
+                duration: 3000,
+                close: true,
+                gravity: "bottom",
+                position: "right",
+                backgroundColor: "#4caf50",
+              }).showToast();
+            } else {
+              Toastify({
+                text: data.message,
+                duration: 3000,
+                close: true,
+                gravity: "bottom",
+                position: "right",
+                backgroundColor: "#f44336",
+              }).showToast();
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            Toastify({
+              text: "An error occurred while processing your request.",
+              duration: 3000,
+              close: true,
+              gravity: "bottom",
+              position: "right",
+              backgroundColor: "#f44336",
+            }).showToast();
+          });
+      }
+    });
+  });
+
+
   function updateFieldOptions(field, options) {
     field.empty(); // Limpiar las opciones existentes
     if (!field.prop('multiple')) {
@@ -181,28 +274,6 @@ document.addEventListener("DOMContentLoaded", function() {
   if (initialVarietyValue) {
     varietyField.val(initialVarietyValue).trigger("change");
   }
-
-  $(document).on("click", ".btn-cancel-confirm", function (e) {
-    var url = $(this).data("url");
-    var message = $(this).data("message");
-    var confirm = $(this).data("confirm");
-    var cancel = $(this).data("cancel");
-    Swal.fire({
-          html: "<b>"+message+"</b>",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#d33",
-          cancelButtonColor: "#3085d6",
-          confirmButtonText: confirm,
-          cancelButtonText: cancel
-      }).then((result) => {
-          if (result.isConfirmed) {
-              window.location.href = url;
-          }
-      });
-  });
-
-
 
   updateVarietyField();
   updateSeasonField();
