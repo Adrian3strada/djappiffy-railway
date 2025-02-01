@@ -16,6 +16,11 @@ from django.http import HttpResponseForbidden
 from django.http import JsonResponse
 
 def requisition_pdf(request, requisition_id):
+    # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
+    if not request.user.is_authenticated:
+        login_url = reverse('admin:login') 
+        return redirect(login_url)
+    
     # Obtener el registro
     requisition = get_object_or_404(Requisition, pk=requisition_id)
 
