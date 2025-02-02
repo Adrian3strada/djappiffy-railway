@@ -1,5 +1,13 @@
 from django.utils.translation import gettext_lazy as _
 
+PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES = [
+    ('g', _('grams')),
+    ('Kg', _('Kilograms')),
+    ('Ton', _('Tons')),
+    ('ml', _('milliliters')),
+    ('L', _('Liters')),
+]
+
 CLIENT_KIND_CHOICES = [
     ('packhouse', _('Packhouse client')),
     ('maquiladora', _('Maquiladora client')),

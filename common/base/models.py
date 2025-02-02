@@ -33,7 +33,7 @@ class ProductKind(models.Model):
 #   - Estándar del APEAM para AGUACATE en ESTADOS UNIDOS
 #   - Estándar de X para LIMÓN-MEXICANO en MÉXICO
 #   - Estándar de X para LIMÓN-PERSA en ESTADOS UNIDOS
-class MarketProductSizeStandard(models.Model):
+class MarketProductStandard(models.Model):
     name = models.CharField(max_length=255, unique=True)
     product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
     country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)
@@ -53,7 +53,8 @@ class MarketProductSizeStandard(models.Model):
             #       para el mismo PRODUCT_KIND. Siendo el ESTÁNDAR aplicable por VARIEDAD.
         ]
 
-class MarketProductSizeStandardSizeManager(Manager):
+
+class MarketProductStandardSizeManager(Manager):
     def get_queryset(self):
         return super().get_queryset().annotate(
             name_as_int=Case(
@@ -68,22 +69,39 @@ class MarketProductSizeStandardSizeManager(Manager):
 #   - 32, 36, 40, 48, 60, 70, ... (de APEAM para AGUACATES en ESTADOS UNIDOS)
 #   - 300, 400, 500, 600, ... (de APEAM para LIMÓN-MEXICANO en MÉXICO)
 #   - 110, 150, 175, 200, 230, 250, ... (de "ALGUNA ASOCIACIÓN" para LIMÓN-PERSA en ESTADOS UNIDOS)
-class MarketProductSizeStandardSize(models.Model):
+class MarketProductStandardSize(models.Model):
     name = models.CharField(max_length=255)
-    standard = models.ForeignKey(MarketProductSizeStandard, on_delete=models.CASCADE)
+    standard = models.ForeignKey(MarketProductStandard, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
         return self.name
 
-    objects = MarketProductSizeStandardSizeManager()
+    objects = MarketProductStandardSizeManager()
 
     class Meta:
-        verbose_name = _('Market product size standard, Size')
-        verbose_name_plural = _('Market product size standard, Sizes')
+        verbose_name = _('Market product standard, Size')
+        verbose_name_plural = _('Market product standard, Sizes')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'standard'], name='marketproductsizestandardsize_unique_name_standard')
+            models.UniqueConstraint(fields=['name', 'standard'], name='marketproductstandardsize_unique_name_standard')
+        ]
+
+
+class MarketProductStandardPackaging(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    standard = models.ForeignKey(MarketProductStandard, on_delete=models.CASCADE)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('Market product standard, Packaging')
+        verbose_name_plural = _('Market product standard, Packaging')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'standard'], name='marketproductstandardpackaging_unique_name_standard')
         ]
 
 

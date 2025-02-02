@@ -53,7 +53,7 @@ class OrderAdmin(ByOrganizationAdminMixin):
     list_filter = ('client_category', ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter, 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms', 'status')
     fields = (
     'ooid', 'client_category', 'maquiladora', 'client', 'registration_date', 'shipment_date', 'delivery_date', 'local_delivery',
-    'incoterms', 'items_price_unit_category', 'items_price_category', 'items_packaging', 'observations', 'status')
+    'incoterms', 'items_price_measure_unit_category', 'items_price_category', 'items_packaging', 'observations', 'status')
     ordering = ('-ooid',)
     inlines = [OrderItemInline]
 

@@ -53,7 +53,7 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
-from common.base.models import ProductKind, MarketProductSizeStandardSize
+from common.base.models import ProductKind, MarketProductStandardSize
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, DisableInlineRelatedLinksMixin
@@ -207,9 +207,9 @@ class ProductHarvestSizeKindInline(admin.TabularInline):
 @admin.register(Product)
 class ProductAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'kind', 'is_enabled')
-    list_filter = (ProductKindForPackagingFilter, 'is_enabled',)
+    list_filter = (ProductKindForPackagingFilter, 'price_measure_unit_category', 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
-    fields = ('kind', 'name', 'description', 'is_enabled')
+    fields = ('kind', 'name', 'description', 'price_measure_unit_category', 'is_enabled')
     inlines = [ProductSeasonKindInline, ProductMassVolumeKindInline, ProductVarietyInline,
                ProductHarvestSizeKindInline]
 
@@ -226,7 +226,7 @@ class ProductAdmin(ByOrganizationAdminMixin):
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj, exclude=[ProductKind, Organization]):
-            readonly_fields.extend(['kind', 'name', 'organization'])
+            readonly_fields.extend(['kind', 'name', 'price_measure_unit_category', 'organization'])
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -287,7 +287,7 @@ class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMi
             if product_id and market_id:
                 market = Market.objects.get(id=market_id)
                 product = Product.objects.get(id=product_id)
-                queryset = MarketProductSizeStandardSize.objects.filter(standard__product_kind=product.kind, standard__country_id__in=market.countries.all(), is_enabled=True)
+                queryset = MarketProductStandardSize.objects.filter(standard__product_kind=product.kind, standard__country_id__in=market.countries.all(), is_enabled=True)
                 kwargs["queryset"] = queryset
                 formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
                 formfield.required = queryset.exists()
@@ -298,7 +298,7 @@ class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMi
                     formfield.label_from_instance = lambda item: f"{item.name}" + (f"({item.standard.name})" if standards.count() > 1 else "")
                 return formfield
             else:
-                queryset = MarketProductSizeStandardSize.objects.none()
+                queryset = MarketProductStandardSize.objects.none()
                 kwargs["queryset"] = queryset
                 formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
                 formfield.required = queryset.exists()
@@ -995,13 +995,11 @@ class PackagingAdmin(ByOrganizationAdminMixin):
     form = PackagingKindForm
     list_display = ('name',
                     'max_product_kg_per_package',
-                    'authority', 'code',
                     'is_enabled',
     )
     fields = ('name',
-              'main_supply_kind', 'main_supply', 'quantity',
+              'main_supply_kind', 'main_supply', 'main_supply_quantity',
               'max_product_kg_per_package',
-              'authority', 'code',
               'is_enabled',
     )
     inlines = (PackagingSupplyInline, ContainedPackagingInline)
@@ -1022,11 +1020,9 @@ class PackagingAdmin(ByOrganizationAdminMixin):
         supplykind_queryfilter = {'organization': organization, 'is_enabled': True}
         supply_queryfilter = {'organization': organization, 'kind': supply_kind, 'is_enabled': True}
 
-        if db_field.name == 'authority':
-            kwargs['queryset'] = AuthorityPackagingKind.objects.filter(**organization_queryfilter)
-
         if db_field.name == "main_supply_kind":
             packaging_or_tarima_query = Q(is_packaging=True) | Q(name='TARIMA')
+            # TODO:  | Q(name='TARIMA') ???
             kwargs["queryset"] = SupplyKind.objects.filter(packaging_or_tarima_query, **supplykind_queryfilter)
         if db_field.name == "main_supply":
             print(supply_kind)
@@ -1221,6 +1217,7 @@ class PalletConfigurationAdmin(ByOrganizationAdminMixin):
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
         market = request.POST.get('market') if request.POST else obj.market if obj else None
         product = request.POST.get('product') if request.POST else obj.product if obj else None
+        variety = request.POST.get('product_variety') if request.POST else obj.product_variety if obj else None
 
         market_queryfilter = {'market': market, 'is_enabled': True}
         product_queryfilter = {'product': product, 'is_enabled': True}
@@ -1239,9 +1236,9 @@ class PalletConfigurationAdmin(ByOrganizationAdminMixin):
                 kwargs["queryset"] = ProductVariety.objects.filter(**product_queryfilter)
             else:
                 kwargs["queryset"] = ProductVariety.objects.none()
-        if db_field.name == "product_variety_size":
+        if db_field.name == "product_size":
             if variety:
-                kwargs["queryset"] = MarketProductSize.objects.filter(**variety_queryfilter)
+                kwargs["queryset"] = MarketProductSize.objects.filter(**product_queryfilter)
             else:
                 kwargs["queryset"] = MarketProductSize.objects.none()
         # Comentado ante discrepancias con desarrollo entre Cesar y Jaqueline
@@ -1272,8 +1269,8 @@ class ProductPackagingAdmin(ByOrganizationAdminMixin):
     list_filter = ('is_enabled', )
     search_fields = ('name', 'alias')
     fields = ('name', 'alias',
-              'market', 'market_class',
-              'product', 'product_variety', 'product_variety_size',
+              'market',
+              'product', 'product_variety', 'product_size',
               'packaging_kind',
               'is_dark', 'is_enabled')
 
@@ -1293,15 +1290,9 @@ class ProductPackagingAdmin(ByOrganizationAdminMixin):
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
         market_queryfilter = {'market': market, 'is_enabled': True}
         product_queryfilter = {'product': product, 'is_enabled': True}
-        variety_queryfilter = {'product_varieties': variety, 'is_enabled': True}
 
         if db_field.name == "market":
             kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
-        if db_field.name == "market_class":
-            if market:
-                kwargs["queryset"] = MarketClass.objects.filter(**market_queryfilter)
-            else:
-                kwargs["queryset"] = MarketClass.objects.none()
 
         if db_field.name == "product":
             kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
@@ -1310,9 +1301,9 @@ class ProductPackagingAdmin(ByOrganizationAdminMixin):
                 kwargs["queryset"] = ProductVariety.objects.filter(**product_queryfilter)
             else:
                 kwargs["queryset"] = ProductVariety.objects.none()
-        if db_field.name == "product_variety_size":
-            if variety:
-                kwargs["queryset"] = MarketProductSize.objects.filter(**variety_queryfilter)
+        if db_field.name == "product_size":
+            if product:
+                kwargs["queryset"] = MarketProductSize.objects.filter(**product_queryfilter)
             else:
                 kwargs["queryset"] = MarketProductSize.objects.none()
 

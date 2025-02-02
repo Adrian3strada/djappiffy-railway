@@ -5,10 +5,10 @@ ORDER_ITEMS_PRICE_CATEGORY_CHOICES = [
     ('packaging', _('Per packaging')),
 ]
 
-ORDER_ITEMS_PRICE_UNIT_CATEGORY_CHOICES = [
-    ('g', _('gram')),
-    ('Kg', _('Kilogram')),
-    ('Ton', _('Tonelada?')),
-    ('ml', _('milliliter')),
-    ('L', _('Liter')),
+ORDER_ITEMS_PRICE_MEASURE_UNIT_CATEGORY_CHOICES = [
+    ('g', _('grams')),
+    ('Kg', _('Kilograms')),
+    ('Ton', _('Tons')),
+    ('ml', _('milliliters')),
+    ('L', _('Liters')),
 ]

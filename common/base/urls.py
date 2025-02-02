@@ -1,6 +1,6 @@
 from django.urls import path, include
 from common.base.router import drf_router
-from .models import MarketProductSizeStandard
+from .models import MarketProductStandard
 from .viewsets import (ProductKindViewSet, CityViewSet, SubRegionViewSet, RegionViewSet, CountryViewSet,
                        MarketProductSizeStandardSizeViewSet)
 
