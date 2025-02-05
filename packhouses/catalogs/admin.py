@@ -1270,9 +1270,8 @@ class ProductPackagingAdmin(ByOrganizationAdminMixin):
     search_fields = ('name', 'alias')
     fields = ('name', 'alias',
               'market',
-              'product', 'product_variety', 'product_size',
-              'packaging_kind',
-              'is_dark', 'is_enabled')
+              'product', 'product_size',
+              'packaging', 'is_enabled')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)

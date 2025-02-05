@@ -993,14 +993,13 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     # market_class = models.ForeignKey(MarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
 
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
-    product_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product variety size'),
-                                     on_delete=models.PROTECT)
+    product_varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Product varieties'), blank=False)
+    product_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product variety size'), on_delete=models.PROTECT)
 
-    packaging_kind = models.ForeignKey(Packaging, verbose_name=_('Packaging kind'),
-                                       on_delete=models.PROTECT)  # TODO: detallar tipos de caja por tipo de producto?
+    packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)
+    # TODO: detallar tipos de caja por tipo de producto?
     # TODO: el is_dark creo que debería ir en pedido o en season
-    is_dark = models.BooleanField(default=False, verbose_name=_('Is dark'))
+    # is_dark = models.BooleanField(default=False, verbose_name=_('Is dark'))
     # TODO: agregar campo para tipo de malla, o no se que va aquí pero falta uno
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
