@@ -4,11 +4,11 @@
 {% if has_export_permission %}
 <button id="export-sheet"  button class="btn btn-info" style="margin-right: 10px;">
     <a href="{% url opts|admin_urlname:'export' %}{{cl.get_query_string}}" class="text-white" target="_blank">
-        <i class="fas fa-file-pdf"></i> {% translate "Export" %} Excel</a>
+        <i class="fas fa-file-pdf"></i> {% translate "Export Excel" %} </a>
 </button>
 <button id="export-pdf" button class="btn btn-info" style="margin-right: 10px;">
     <a href="{% url opts|admin_urlname:'export' %}{{cl.get_query_string}}" class="text-white" target="_blank">
-        <i class="fas fa-file-pdf"></i> {% translate "Export" %} PDF</a>
+        <i class="fas fa-file-pdf"></i> {% translate "Export PDF" %}</a>
 </button>
 {% endif %}
 
