@@ -3,31 +3,52 @@ from django.db import models
 from organizations.models import Organization
 from cities_light.models import City, Country, Region, SubRegion
 from django.utils.translation import gettext_lazy as _
-
+from common.mixins import CleanNameAndOrganizationMixin
 from packhouses.packhouse_settings.models import PaymentKind 
 from common.billing.models import LegalEntityCategory
 from .settings import (EMPLOYEE_GENDER_CHOICES, EMPLOYEE_BLOOD_TYPE_CHOICES, EMPLOYEE_STATUS_CHOICES, EMPLOYEE_ACADEMIC_CHOICES, 
-                       EMPLOYEE_PAYMENT_CHOICES, EMERGENCY_CONTACT_RELATIONSHIP_CHOICES, MARITAL_STATUS_CHOICES)
+                       EMPLOYEE_PAYMENT_CHOICES, EMERGENCY_CONTACT_RELATIONSHIP_CHOICES, MARITAL_STATUS_CHOICES, PAYMENT_CHOICES)
 from django.core.exceptions import ValidationError
 
 # Create your models here.
-class JobPosition(models.Model):
+
+class EmployeeStatus(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Status'))
+    description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
+    payment_type = models.CharField(max_length=10, choices=PAYMENT_CHOICES, default='full', verbose_name=_("Payment Type"))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _("Employee Status")
+        verbose_name_plural = _("Employee Status")
+
+class JobPosition(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Job Title'))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
     def __str__(self):
         return f"{self.name}"
     
     class Meta: 
         verbose_name = _('Job Position')
         verbose_name_plural = _('Job Positions')
+        ordering = ('name', )
+        constraints = [
+            models.UniqueConstraint(fields=('name', 'organization'),
+                                    name='jobposition_unique_name_organization'),
+        ]
 
 class WorkShiftSchedule(models.Model):
     day = models.CharField(max_length=50, verbose_name=_("Day"))
+    entry_time = models.TimeField(verbose_name=_('Entry Time'), blank=True, null=True, default="08:00:00" )
+    exit_time = models.TimeField(verbose_name=_('Exit Time'), blank=True, null=True, default="18:00:00" )
     is_enabled = models.BooleanField(default=True, verbose_name=_("Is Enabled"))
-    entry_time = models.TimeField(verbose_name=_('Entry Time'), blank=True, null=True, default="00:00:00" )
-    exit_time = models.TimeField(verbose_name=_('Exit Time'), blank=True, null=True, default="00:00:00" )
     job_position = models.ForeignKey(JobPosition, on_delete=models.CASCADE, verbose_name=_('Job Position'))
     
     def __str__(self):
@@ -38,18 +59,31 @@ class WorkShiftSchedule(models.Model):
         verbose_name_plural = _('Work Shift Schedules')
 
 class Employee(models.Model):
-    status = models.CharField(max_length=20, choices=EMPLOYEE_STATUS_CHOICES, verbose_name=_('Status'))
+    status = models.ForeignKey(EmployeeStatus, on_delete=models.CASCADE, verbose_name=_('Status'))
     first_name = models.CharField(max_length=100, verbose_name=_('First Name'))
     middle_name = models.CharField(max_length=100, verbose_name=_('Middle Name'), blank=True, null=True)
-    paternal_last_name = models.CharField(max_length=100, verbose_name=_('Paternal Last Name'))
-    maternal_last_name = models.CharField(max_length=100, verbose_name=_('Maternal Last Name'), blank=True, null=True)
+    last_name = models.CharField(max_length=100, verbose_name=_('Last Name'), help_text=_("First surname (paternal)"))
+    second_last_name = models.CharField(max_length=100, verbose_name=_('Second Last Name'), blank=True, null=True, help_text=_("Second surname (maternal)"))
     full_name = models.CharField(max_length=300, verbose_name=_('Full Name'), blank=True)
     population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True,)
     gender = models.CharField(max_length=20, choices=EMPLOYEE_GENDER_CHOICES, verbose_name=_('Gender'))
-    marital_status = models.CharField(max_length=20, choices=MARITAL_STATUS_CHOICES, verbose_name=_('Marital Status'), blank=True, null=True,)
+    marital_status = models.CharField(max_length=20, choices=MARITAL_STATUS_CHOICES, verbose_name=_('Marital Status'))
     hire_date = models.DateField(verbose_name=_('Hire Date'), blank=False, null=False)
     termination_date = models.DateField(verbose_name=_('Termination Date'), blank=True, null=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def get_full_name(self):
+        parts = [self.first_name]
+        if self.middle_name:
+            parts.append(self.middle_name)
+        parts.append(self.last_name)
+        if self.second_last_name:
+            parts.append(self.second_last_name)
+        return " ".join(parts)
+
+    def save(self, *args, **kwargs):
+        self.full_name = self.get_full_name()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.full_name}"
@@ -57,7 +91,7 @@ class Employee(models.Model):
     class Meta: 
         verbose_name = _('Employee')
         verbose_name_plural = _('Employees')
-        ordering = ('first_name',)
+        ordering = ('full_name',)
 
 
 class EmployeeJobPosition(models.Model):

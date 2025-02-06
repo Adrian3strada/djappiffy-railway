@@ -1,20 +1,11 @@
 from django.utils.translation import gettext_lazy as _
 
-WORK_SCHEDULE = [
-    ('full_time', _('Full-Time')),
-    ('part_time', _('Part-Time')),
-    ('freelance', _('Freelance')),
-    ('contract_based', _('Contract-Based')),
-    ('flexible_schedule', _('Flexible-Schedule')),
-]
-
-WORK_SHIFT = [
-    ('day_shift', _('Day Shift')),
-    ('night_shift', _('Night Shift')),
-    ('afternoon_shift', _('Afternoon Shift')),
-    ('night_shift', _('Night Shift')),
-    ('rotating_shift', _('Rotating Shift')),
-]
+PAYMENT_CHOICES = [
+        ('full', _("Full Payment")),       
+        ('half', _("Half Payment")),       
+        ('none', _("No Payment")),         
+        ('double', _("Double Payment")),   
+    ]
 
 EMPLOYEE_GENDER_CHOICES = [
     ('male', _('Male')),
