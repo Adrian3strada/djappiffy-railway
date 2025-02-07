@@ -256,6 +256,7 @@ class ProductAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
 
 @admin.register(MarketProductSize)
 class MarketProductSizeAdmin(SheetReportExportAdmin, SortableAdminMixin, ByProductForOrganizationAdminMixin):
+    change_list_template = "admin/export/export_pdf_sheet/custom_export.html"
     report_function = staticmethod(basic_report)
     resource_classes = [MarketProductSizeResource]
     list_display = (
@@ -266,6 +267,13 @@ class MarketProductSizeAdmin(SheetReportExportAdmin, SortableAdminMixin, ByProdu
     )
     search_fields = ('name', 'alias')
     ordering = ['sort_order']
+
+    def get_queryset(self, request):
+        return super().get_queryset(request)
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        return super().changelist_view(request, extra_context=extra_context)
 
     def get_varieties(self, obj):
         return ", ".join([m.name for m in obj.varieties.all()])

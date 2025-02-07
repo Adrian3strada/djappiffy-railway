@@ -111,6 +111,12 @@ class DehydrationResource():
     def dehydrate_market_class(self, obj):
         return obj.market_class.name if obj.market_class else ""
     
+    def dehydrate_varieties(self, obj):
+        return ", ".join(variety.name for variety in obj.varieties.all()) if obj.varieties.exists() else ""
+
+    def dehydrate_standard_size(self, obj):
+        return obj.standard_size.name if obj.standard_size else ""
+    
     def dehydrate_product(self, obj):
         return obj.product.name if obj.product else ""
     
@@ -178,4 +184,4 @@ class DehydrationResource():
         return "✅" if obj.is_ripe else "❌"
     
         
-default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization')
+default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization', 'description')

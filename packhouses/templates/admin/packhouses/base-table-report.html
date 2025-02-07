@@ -5,6 +5,7 @@
 {% block page_content %}
     {% load static %}
 <style>
+
 /* Estilos para sección de información */
 .info_container, .div-table, .div-total {
     width: 100%;
@@ -12,6 +13,12 @@
     font-size: 10px; 
     margin-bottom: 0px;
 }
+.div-table ul{
+    margin: 0px;
+    padding-left: 0;              
+    list-style-position: inside;
+}
+
 
 .info_row {
     display: flex; 
@@ -90,7 +97,7 @@ tr {
             {% for row in data %}
             <tr>
                 {% for item in row %}
-                <td>{{ item }}</td>
+                <td>{{ item|safe}}</td>
                 {% endfor %}
             </tr>
             {% endfor %}
