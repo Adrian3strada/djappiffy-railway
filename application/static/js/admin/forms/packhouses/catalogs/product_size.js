@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateProductVariety() {
     const productId = productField.val();
     if (productId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_variety/?product=${productId}&is_enabled=1`)
+      fetchOptions(`${API_BASE_URL}/catalogs/product-variety/?product=${productId}&is_enabled=1`)
         .then(data => {
           updateFieldOptions(varietiesField, data);
         });

@@ -487,6 +487,7 @@ class ClientAdmin(ByOrganizationAdminMixin):
             return formfield
 
         if db_field.name == "shipping_address":
+            # TODO: filtrar solo las direcciones de envío del cliente
             kwargs["queryset"] = ClientShippingAddress.objects.filter(client=obj, is_enabled=True)
 
         if db_field.name == "legal_category":

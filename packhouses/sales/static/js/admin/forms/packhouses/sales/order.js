@@ -4,6 +4,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const clientField = $("#id_client");
   const localDeliveryField = $("#id_local_delivery")
   const incotermsField = $("#id_incoterms")
+  const productField = $("#id_product")
+  const productVarietyField = $("#id_product_variety")
+
   let organization = null;
 
   const API_BASE_URL = "/rest/v1";
@@ -63,6 +66,24 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function updateProductVarietyOptions() {
+    const product = productField.val();
+    if (product) {
+      fetchOptions(`${API_BASE_URL}/catalogs/product-variety/?product=${product}&is_enabled=1`).then(
+        (data) => {
+          console.log("Product Variety options:", data);
+          updateFieldOptions(productVarietyField, data);
+        }
+      );
+    } else {
+      updateFieldOptions(productVarietyField, []);
+    }
+  }
+
+  productField.on("change", () => {
+    updateProductVarietyOptions()
+  });
+
   clientCategoryField.on("change", () => {
     if (clientCategoryField.val() && clientCategoryField.val() === 'packhouse') {
       updateClientOptions()
@@ -89,7 +110,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   clientField.on('change', () => {
     const client = clientField.val();
-
 
     localDeliveryField.closest('.form-group').fadeOut();
     incotermsField.closest('.form-group').fadeOut();

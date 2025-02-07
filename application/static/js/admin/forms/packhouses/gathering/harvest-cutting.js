@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function updateVarietyField() {
     const productId = productField.val();
     if (productId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_variety/?product=${productId}&is_enabled=true`)
+      fetchOptions(`${API_BASE_URL}/catalogs/product-variety/?product=${productId}&is_enabled=1`)
         .then((data) => {
           updateFieldOptions(varietyField, data);
           if (initialVarietyValue) {
