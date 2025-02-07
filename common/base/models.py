@@ -134,3 +134,19 @@ class LocalDelivery(models.Model):
         verbose_name = _('Local Delivery')
         verbose_name_plural = _('Local Deliveries')
         ordering = ['sort_order']
+
+class Currency(models.Model):
+    code = models.CharField(max_length=3, verbose_name=_('Code'))
+    name = models.CharField(max_length=255)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.code} -- {self.name}"
+
+    class Meta:
+        verbose_name = _('Currency')
+        verbose_name_plural = _('Currencies')
+        ordering = ['name']
+        constraints = [
+            models.UniqueConstraint(fields=['id', 'name'], name='currency_unique_id_name')
+        ]
