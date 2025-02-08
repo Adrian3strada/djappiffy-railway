@@ -15,7 +15,7 @@ from common.mixins import (
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from packhouses.catalogs.models import (Market, MarketClass, Client, Maquiladora, Product, ProductVariety,
-                                        ProductSeasonKind,
+                                        ProductPhenologyKind,
                                         ProductPackaging,
                                         MarketProductSize)
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
@@ -31,7 +31,7 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_("Order ID"))
     client_category = models.CharField(max_length=20, verbose_name=_('Client category'), choices=CLIENT_KIND_CHOICES)
     maquiladora = models.ForeignKey(Maquiladora, verbose_name=_("Maquiladora"), on_delete=models.PROTECT, null=True, blank=True)
-    client = models.ForeignKey(Client, verbose_name=_("Client"), on_delete=models.PROTECT)
+    client = models.ForeignKey(Client, verbose_name=_("Client"), on_delete=models.PROTECT, help_text=_('Client must exists in Catalogs->Clients to be able to select it.'))
     local_delivery = models.ForeignKey(LocalDelivery, verbose_name=_('Local delivery'), on_delete=models.PROTECT, null=True, blank=True)
     registration_date = models.DateField(verbose_name=_('Registration date'), default=datetime.date.today)
     shipment_date = models.DateField(verbose_name=_('Shipment date'), default=datetime.date.today)
@@ -75,7 +75,7 @@ class OrderItem(models.Model):
     """
 
     product_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
-    product_season = models.ForeignKey(ProductSeasonKind, verbose_name=_('Product season'), on_delete=models.PROTECT)
+    product_season = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product season'), on_delete=models.PROTECT)
     market_class = models.ForeignKey(MarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT, null=True, blank=False)
     quantity_per_packaging = models.PositiveIntegerField(verbose_name=_('Quantity per packaging'), default=1)

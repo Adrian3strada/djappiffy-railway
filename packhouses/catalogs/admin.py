@@ -5,7 +5,7 @@ from common.billing.models import LegalEntityCategory
 from .models import (
     Market, KGCostMarket, MarketClass, Product, ProductVariety, MarketProductSize,
     ProductHarvestSizeKind,
-    ProductSeasonKind, ProductMassVolumeKind,
+    ProductPhenologyKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
@@ -13,7 +13,7 @@ from .models import (
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    PackagingSupply, RelationPackaging,
+    PackagingSupply, RelationPackaging, ProductRipness,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation,
     HarvestContainer
 )
@@ -145,12 +145,12 @@ class MarketAdmin(ByOrganizationAdminMixin):
 # Products
 
 class ProductSeasonKindInline(admin.TabularInline):
-    model = ProductSeasonKind
+    model = ProductPhenologyKind
     extra = 0
     fields = ('name', 'is_enabled', 'sort_order')
     ordering = ['sort_order', 'name']
-    verbose_name = _('Season')
-    verbose_name_plural = _('Seasons')
+    verbose_name = _('Phenology')
+    verbose_name_plural = _('Phenologies')
     # formset = ProductSeasonKindInlineFormSet
 
     @uppercase_formset_charfield('name')
@@ -195,10 +195,22 @@ class ProductHarvestSizeKindInline(admin.TabularInline):
     extra = 0
     fields = ('name', 'product', 'is_enabled', 'sort_order')
     ordering = ['sort_order', '-name']
-    verbose_name = _('Harvest size kind')
-    verbose_name_plural = _('Harvest size kinds')
+    verbose_name = _('Harvest size')
+    verbose_name_plural = _('Harvest sizes')
     # formset = ProductHarvestSizeKindInlineFormSet
 
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+
+class ProductRipnessInline(admin.TabularInline):
+    model = ProductRipness
+    extra = 0
+    verbose_name = _('Ripeness')
+    verbose_name_plural = _('Ripenesses')
+
+    @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
@@ -211,7 +223,7 @@ class ProductAdmin(ByOrganizationAdminMixin):
     search_fields = ('name', 'kind__name', 'description')
     fields = ('kind', 'name', 'description', 'price_measure_unit_category', 'is_enabled')
     inlines = [ProductSeasonKindInline, ProductMassVolumeKindInline, ProductVarietyInline,
-               ProductHarvestSizeKindInline]
+               ProductHarvestSizeKindInline, ProductRipnessInline]
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
@@ -394,7 +406,7 @@ class ClientShipAddressInline(admin.StackedInline):
 
 @admin.register(Client)
 class ClientAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'category', 'tax_id', 'market', 'country', 'state', 'city', 'neighborhood',
+    list_display = ('name', 'category', 'tax_id', 'market', 'country_display', 'state_display', 'city_display', 'neighborhood',
                     'tax_id', 'contact_phone_number', 'is_enabled')
     list_filter = ('market', 'category', ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                    ByCityForOrganizationClientsFilter,
@@ -406,6 +418,21 @@ class ClientAdmin(ByOrganizationAdminMixin):
         'max_money_credit_limit', 'max_days_credit_limit', 'fda', 'swift', 'aba', 'clabe', 'bank', 'contact_name',
         'contact_email', 'contact_phone_number', 'is_enabled')
     inlines = [ClientShipAddressInline]
+
+    def country_display(self, obj):
+        return obj.country.name
+    country_display.short_description = _('Country')
+    country_display.admin_order_field = 'country__name'
+
+    def state_display(self, obj):
+        return obj.state.name
+    state_display.short_description = _('State')
+    state_display.admin_order_field = 'state__name'
+
+    def city_display(self, obj):
+        return obj.city.name
+    city_display.short_description = _('City')
+    city_display.admin_order_field = 'city__name'
 
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('neighborhood')

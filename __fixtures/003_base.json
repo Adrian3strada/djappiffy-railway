@@ -748,7 +748,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandard",
+  "model": "base.marketproductstandard",
   "pk": 1,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [MÉXICO]",
@@ -759,7 +759,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandard",
+  "model": "base.marketproductstandard",
   "pk": 2,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [ALEMANIA - UNIÓN EUROPEA]",
@@ -770,7 +770,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandard",
+  "model": "base.marketproductstandard",
   "pk": 3,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [CANADÁ]",
@@ -781,7 +781,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandard",
+  "model": "base.marketproductstandard",
   "pk": 4,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [JAPÓN]",
@@ -792,7 +792,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandard",
+  "model": "base.marketproductstandard",
   "pk": 5,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [ESTADOS UNIDOS]",
@@ -803,7 +803,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandard",
+  "model": "base.marketproductstandard",
   "pk": 6,
   "fields": {
     "name": "ESTÁNDARES DE X SOBRE [LIMÓN - MEXICANO] PARA [MÉXICO]",
@@ -814,7 +814,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandard",
+  "model": "base.marketproductstandard",
   "pk": 7,
   "fields": {
     "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [ESTADOS UNIDOS]",
@@ -825,7 +825,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandard",
+  "model": "base.marketproductstandard",
   "pk": 8,
   "fields": {
     "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [JAPÓN - ASIA]",
@@ -836,7 +836,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandard",
+  "model": "base.marketproductstandard",
   "pk": 9,
   "fields": {
     "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [ALEMANIA - UNIÓN EUROPEA]",
@@ -847,7 +847,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 1,
   "fields": {
     "name": "Comercial",
@@ -857,7 +857,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 2,
   "fields": {
     "name": "Mediano",
@@ -867,7 +867,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 3,
   "fields": {
     "name": "Primera",
@@ -877,7 +877,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 4,
   "fields": {
     "name": "Extra",
@@ -887,7 +887,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 5,
   "fields": {
     "name": "Super",
@@ -897,7 +897,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 6,
   "fields": {
     "name": "26",
@@ -907,7 +907,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 7,
   "fields": {
     "name": "24",
@@ -917,7 +917,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 8,
   "fields": {
     "name": "22",
@@ -927,7 +927,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 9,
   "fields": {
     "name": "18",
@@ -937,7 +937,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 10,
   "fields": {
     "name": "16",
@@ -947,7 +947,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 11,
   "fields": {
     "name": "14",
@@ -957,7 +957,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 12,
   "fields": {
     "name": "12",
@@ -967,7 +967,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 13,
   "fields": {
     "name": "26",
@@ -977,7 +977,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 14,
   "fields": {
     "name": "24",
@@ -987,7 +987,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 15,
   "fields": {
     "name": "22",
@@ -997,7 +997,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 16,
   "fields": {
     "name": "18",
@@ -1007,7 +1007,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 17,
   "fields": {
     "name": "16",
@@ -1017,7 +1017,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 18,
   "fields": {
     "name": "14",
@@ -1027,7 +1027,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 19,
   "fields": {
     "name": "12",
@@ -1037,7 +1037,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 20,
   "fields": {
     "name": "30",
@@ -1047,7 +1047,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 21,
   "fields": {
     "name": "24",
@@ -1057,7 +1057,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 22,
   "fields": {
     "name": "84",
@@ -1067,7 +1067,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 23,
   "fields": {
     "name": "70",
@@ -1077,7 +1077,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 24,
   "fields": {
     "name": "60",
@@ -1087,7 +1087,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 25,
   "fields": {
     "name": "48",
@@ -1097,7 +1097,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 26,
   "fields": {
     "name": "40",
@@ -1107,7 +1107,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 27,
   "fields": {
     "name": "36",
@@ -1117,7 +1117,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 28,
   "fields": {
     "name": "32",
@@ -1127,7 +1127,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 29,
   "fields": {
     "name": "600",
@@ -1137,7 +1137,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 30,
   "fields": {
     "name": "500",
@@ -1147,7 +1147,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 31,
   "fields": {
     "name": "400",
@@ -1157,7 +1157,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 32,
   "fields": {
     "name": "300",
@@ -1167,7 +1167,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 33,
   "fields": {
     "name": "250",
@@ -1177,7 +1177,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 34,
   "fields": {
     "name": "230",
@@ -1187,7 +1187,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 35,
   "fields": {
     "name": "200",
@@ -1197,7 +1197,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 36,
   "fields": {
     "name": "175",
@@ -1207,7 +1207,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 37,
   "fields": {
     "name": "150",
@@ -1217,7 +1217,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 38,
   "fields": {
     "name": "110",
@@ -1227,7 +1227,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 39,
   "fields": {
     "name": "54",
@@ -1237,7 +1237,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 40,
   "fields": {
     "name": "48",
@@ -1247,7 +1247,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 41,
   "fields": {
     "name": "44",
@@ -1257,7 +1257,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 42,
   "fields": {
     "name": "40",
@@ -1267,7 +1267,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 43,
   "fields": {
     "name": "36",
@@ -1277,7 +1277,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 44,
   "fields": {
     "name": "63",
@@ -1287,7 +1287,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 45,
   "fields": {
     "name": "54",
@@ -1297,7 +1297,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 46,
   "fields": {
     "name": "48",
@@ -1307,7 +1307,7 @@
   }
 },
 {
-  "model": "base.marketproductsizestandardsize",
+  "model": "base.marketproductstandardsize",
   "pk": 47,
   "fields": {
     "name": "42",

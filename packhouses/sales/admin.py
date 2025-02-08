@@ -23,7 +23,7 @@ from common.forms import SelectWidgetWithData
 
 class OrderItemInline(admin.StackedInline):
     model = OrderItem
-    extra = 1
+    extra = 0
     min_num = 1
 
     def get_formset(self, request, obj=None, **kwargs):
@@ -49,12 +49,15 @@ class OrderItemInline(admin.StackedInline):
         if db_field.name == "product_size":
             kwargs["queryset"] = MarketProductSize.objects.none()
             if parent_obj and parent_obj.product:
-                kwargs["queryset"] = MarketProductSize.objects.filter(product=parent_obj.product, is_enabled=True)
+                kwargs["queryset"] = MarketProductSize.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: f"{item.name} ({item.description})" if item.description else f"{item.name}"
+            return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/sales/order_item.js',)
+        js = ('js/admin/forms/packhouses/sales/order_item_inline.js',)
 
 
 
@@ -66,8 +69,8 @@ class OrderAdmin(ByOrganizationAdminMixin):
                    'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms',
                    'product', 'product_variety', 'status')
     fields = (
-        'ooid', 'client_category', 'maquiladora', 'client', 'local_delivery', 'incoterms',
-        'registration_date', 'shipment_date', 'delivery_date',
+        'ooid', 'client_category', 'maquiladora', 'client',
+        'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms',
         'product', 'product_variety',
         'observations', 'status'
     )
@@ -100,6 +103,11 @@ class OrderAdmin(ByOrganizationAdminMixin):
             form.base_fields['incoterms'].widget.can_change_related = False
             form.base_fields['incoterms'].widget.can_delete_related = False
             form.base_fields['incoterms'].widget.can_view_related = False
+            # form.base_fields['product'].widget.can_add_related = False
+            # form.base_fields['product'].widget.can_change_related = False
+            # form.base_fields['product'].widget.can_delete_related = False
+            # form.base_fields['product'].widget.can_view_related = False
+
         return form
 
     def rendered_observations(self, obj):

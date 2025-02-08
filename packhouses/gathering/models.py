@@ -24,7 +24,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   OrchardCertificationKind)
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, ProductVariety,
-                                        Market, ProductSeasonKind, ProductHarvestSizeKind, WeighingScale,
+                                        Market, ProductPhenologyKind, ProductHarvestSizeKind, WeighingScale,
                                         HarvestingCrew, Vehicle, HarvestContainer, OrchardCertification)
 from django.db.models import Max, Min
 from django.db.models import Q, F
@@ -78,7 +78,7 @@ class ScheduleHarvest(models.Model):
         on_delete=models.PROTECT,
     )
     product_season_kind = models.ForeignKey(
-        ProductSeasonKind,
+        ProductPhenologyKind,
         verbose_name=_("Product season"),
         on_delete=models.PROTECT
     )

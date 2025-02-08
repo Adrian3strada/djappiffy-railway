@@ -440,7 +440,7 @@
   }
 },
 {
-  "model": "catalogs.productseasonkind",
+  "model": "catalogs.productphenologykind",
   "pk": 1,
   "fields": {
     "name": "NORMAL",
@@ -450,7 +450,7 @@
   }
 },
 {
-  "model": "catalogs.productseasonkind",
+  "model": "catalogs.productphenologykind",
   "pk": 2,
   "fields": {
     "name": "DESECHO","is_enabled": true,
@@ -459,7 +459,7 @@
   }
 },
 {
-  "model": "catalogs.productseasonkind",
+  "model": "catalogs.productphenologykind",
   "pk": 3,
   "fields": {
     "name": "ROÑA",
@@ -469,7 +469,7 @@
   }
 },
 {
-  "model": "catalogs.productseasonkind",
+  "model": "catalogs.productphenologykind",
   "pk": 4,
   "fields": {
     "name": "MATERIA ORGÁNICA",
@@ -479,7 +479,7 @@
   }
 },
 {
-  "model": "catalogs.productseasonkind",
+  "model": "catalogs.productphenologykind",
   "pk": 5,
   "fields": {
     "name": "NORMAL",
@@ -489,7 +489,7 @@
   }
 },
 {
-  "model": "catalogs.productseasonkind",
+  "model": "catalogs.productphenologykind",
   "pk": 6,
   "fields": {
     "name": "DESECHO",
@@ -499,7 +499,7 @@
   }
 },
 {
-  "model": "catalogs.productseasonkind",
+  "model": "catalogs.productphenologykind",
   "pk": 7,
   "fields": {
     "name": "ROÑA",
@@ -509,7 +509,7 @@
   }
 },
 {
-  "model": "catalogs.productseasonkind",
+  "model": "catalogs.productphenologykind",
   "pk": 8,
   "fields": {
     "name": "MATERIA ORGÁNICA",
@@ -975,11 +975,9 @@
   "pk": 1,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 1,
+    "main_supply_quantity": 1,
     "main_supply": 3,
-    "quantity": 1,
     "max_product_kg_per_package": 11.3,
     "is_enabled": true,
     "organization": 1
@@ -990,11 +988,9 @@
   "pk": 2,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 1,
+    "main_supply_quantity": 1,
     "main_supply": 3,
-    "quantity": 1,
     "max_product_kg_per_package": 11.3,
     "is_enabled": true,
     "organization": 1
@@ -1005,11 +1001,9 @@
   "pk": 3,
   "fields": {
     "name": "MALLA SENCILLA",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 6,
+    "main_supply_quantity": 6,
     "main_supply": 20,
-    "quantity": 45,
     "max_product_kg_per_package": 1.0,
     "is_enabled": true,
     "organization": 1
@@ -1020,11 +1014,9 @@
   "pk": 4,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 1,
+    "main_supply_quantity": 1,
     "main_supply": 3,
-    "quantity": 1,
     "max_product_kg_per_package": 11.3,
     "is_enabled": true,
     "organization": 1
@@ -1035,11 +1027,9 @@
   "pk": 5,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 1,
+    "main_supply_quantity": 1,
     "main_supply": 3,
-    "quantity": 1,
     "max_product_kg_per_package": 11.3,
     "is_enabled": true,
     "organization": 1
@@ -1050,11 +1040,9 @@
   "pk": 6,
   "fields": {
     "name": "PALLET 48'S + 70'S",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 3,
+    "main_supply_quantity": 3,
     "main_supply": 23,
-    "quantity": 1,
     "max_product_kg_per_package": 100.0,
     "is_enabled": true,
     "organization": 1
@@ -1065,11 +1053,9 @@
   "pk": 7,
   "fields": {
     "name": "PALLET 48'S + 70'S (ENMALLADOS)",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 3,
+    "main_supply_quantity": 3,
     "main_supply": 23,
-    "quantity": 1,
     "max_product_kg_per_package": 100.0,
     "is_enabled": true,
     "organization": 1
