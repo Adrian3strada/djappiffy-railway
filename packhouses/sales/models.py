@@ -69,13 +69,12 @@ class OrderItem(models.Model):
     """
     Nota: Como la orden tiene un cliente, y el cliente tiene mercado, podemos inferir el mercado a partir
     del cliente.
-    necesitamos el product size, entonces tb necesitamos el product; que puede estar filtrado por mercado.
-
-    el mercado lo tengo del cliente
+    - Necesitamos el product size, entonces tb necesitamos el product; que puede estar filtrado por mercado.
+    - El mercado lo tengo del cliente
     """
 
     product_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
-    product_season = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product season'), on_delete=models.PROTECT)
+    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT)
     market_class = models.ForeignKey(MarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT, null=True, blank=False)
     quantity_per_packaging = models.PositiveIntegerField(verbose_name=_('Quantity per packaging'), default=1)

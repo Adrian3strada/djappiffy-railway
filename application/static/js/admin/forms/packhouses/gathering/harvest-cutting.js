@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function updateSeasonField() {
     const productId = productField.val();
     if (productId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_season_kind/?product=${productId}&is_enabled=true`)
+      fetchOptions(`${API_BASE_URL}/catalogs/product-phenology/?product=${productId}&is_enabled=true`)
         .then((data) => {
           updateFieldOptions(seasonField, data);
           if (initialSeasonValue) {

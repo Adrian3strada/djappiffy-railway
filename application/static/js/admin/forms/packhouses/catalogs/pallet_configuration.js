@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateMarketClass() {
     const marketId = marketField.val();
     if (marketId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/market_class/?market=${marketId}&is_enabled=1`)
+      fetchOptions(`${API_BASE_URL}/catalogs/market-class/?market=${marketId}&is_enabled=1`)
         .then(data => {
           updateFieldOptions(marketClassField, data);
         });
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const productId = productField.val();
       const marketId = marketField.val();
       if(productId && marketId){
-        fetchOptions(`${API_BASE_URL}/catalogs/product_size/?product=${productId}&market=${marketId}&is_enabled=1`)
+        fetchOptions(`${API_BASE_URL}/catalogs/product-size/?product=${productId}&market=${marketId}&is_enabled=1`)
           .then(data => {
             updateFieldOptions(productMarketSizeField, data)
           });
