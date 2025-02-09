@@ -24,7 +24,6 @@ from common.forms import SelectWidgetWithData
 class OrderItemInline(admin.StackedInline):
     model = OrderItem
     extra = 0
-    min_num = 1
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)

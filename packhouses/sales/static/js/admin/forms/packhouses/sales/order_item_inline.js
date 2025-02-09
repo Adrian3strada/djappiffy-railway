@@ -98,15 +98,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('formset:added', (event) => {
-
     if (event.detail.formsetName === 'orderitem_set') {
       const newForm = event.target;
       const productSizeField = $(newForm).find('select[name$="-product_size"]');
       const productPhenologyField = $(newForm).find('select[name$="-product_phenology"]');
       const marketClassField = $(newForm).find('select[name$="-market_class"]');
       const productPackagingField = $(newForm).find('select[name$="-product_packaging"]');
-
-      console.log("productSizeOptions", productSizeOptions)
 
       updateFieldOptions(productSizeField, productSizeOptions);
       updateFieldOptions(productPhenologyField, productPhenologyOptions);
@@ -115,36 +112,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  //const existingForms = $('div[id^="orderitem_set-"]');
-  const existingForms = $('div[id^="orderitem_set-"]').filter((index, element) => {
-    return /\d+$/.test(element.id);
-  });
-  existingForms.each((index, form) => {
-    const productSizeField = $(form).find(`select[name$="${index}-product_size"]`);
-    const productPhenologyField = $(form).find(`select[name$="${index}-product_phenology"]`);
-    const marketClassField = $(form).find(`select[name$="${index}-market_class"]`);
-    const productPackagingField = $(form).find(`select[name$="${index}-product_packaging"]`);
-
-    console.log("existingForms", index, form)
-    console.log("productSizeField", productSizeField)
-    console.log("productPhenologyField", productPhenologyField)
-    console.log("marketClassField", marketClassField)
-    console.log("productPackagingField", productPackagingField)
-    alert("Existing form")
-
-    updateFieldOptions(productSizeField, productSizeOptions);
-    updateFieldOptions(productPhenologyField, productPhenologyOptions);
-    updateFieldOptions(marketClassField, marketClassOptions);
-    updateFieldOptions(productPackagingField, productPackagingOptions);
-  });
-
-
-  if (productField.val()) {
-    updateProductOptions();
-  }
-
   if (clientField.val()) {
+    // alert(clientField.val())
+    getClientProperties();
     updateMarketClassOptions();
   }
+
+  if (productField.val()) {
+    setTimeout(() => {
+      // alert(productField.val())
+      updateProductOptions();
+    }, 300);
+  }
+
+  setTimeout(() => {
+    // const existingForms = $('div[id^="orderitem_set-"]');
+    // se cambió la forma de obtener los elementos para que solo tome los que tienen un ID numérico (y evitar el group y el vacío)
+    const existingForms = $('div[id^="orderitem_set-"]').filter((index, form) => {
+      return /\d+$/.test(form.id);
+    });
+
+    existingForms.each((index, form) => {
+      const productSizeField = $(form).find(`select[name$="${index}-product_size"]`);
+      const productPhenologyField = $(form).find(`select[name$="${index}-product_phenology"]`);
+      const marketClassField = $(form).find(`select[name$="${index}-market_class"]`);
+      const productPackagingField = $(form).find(`select[name$="${index}-product_packaging"]`);
+
+      updateFieldOptions(productSizeField, productSizeOptions);
+      updateFieldOptions(productPhenologyField, productPhenologyOptions);
+      updateFieldOptions(marketClassField, marketClassOptions);
+      updateFieldOptions(productPackagingField, productPackagingOptions);
+    });
+  }, 2000);
 
 });

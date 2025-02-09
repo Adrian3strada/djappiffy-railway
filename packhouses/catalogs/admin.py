@@ -53,7 +53,7 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
-from common.base.models import ProductKind, MarketProductStandardSize
+from common.base.models import ProductKind, CountryProductStandardSize
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, DisableInlineRelatedLinksMixin
@@ -299,7 +299,7 @@ class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMi
             if product_id and market_id:
                 market = Market.objects.get(id=market_id)
                 product = Product.objects.get(id=product_id)
-                queryset = MarketProductStandardSize.objects.filter(standard__product_kind=product.kind, standard__country_id__in=market.countries.all(), is_enabled=True)
+                queryset = CountryProductStandardSize.objects.filter(standard__product_kind=product.kind, standard__country_id__in=market.countries.all(), is_enabled=True)
                 kwargs["queryset"] = queryset
                 formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
                 formfield.required = queryset.exists()
@@ -310,7 +310,7 @@ class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMi
                     formfield.label_from_instance = lambda item: f"{item.name}" + (f"({item.standard.name})" if standards.count() > 1 else "")
                 return formfield
             else:
-                queryset = MarketProductStandardSize.objects.none()
+                queryset = CountryProductStandardSize.objects.none()
                 kwargs["queryset"] = queryset
                 formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
                 formfield.required = queryset.exists()

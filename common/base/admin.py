@@ -1,7 +1,7 @@
 from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
-from .models import (ProductKind, MarketProductStandard, MarketProductStandardSize, LegalEntityCategory,
+from .models import (ProductKind, CountryProductStandard, CountryProductStandardSize, LegalEntityCategory,
                      Incoterm, LocalDelivery)
 from .filters import ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter
 from wagtail.documents.models import Document
@@ -19,12 +19,12 @@ class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
 
 
 class MarketProductSizeStandardSizeInline(admin.TabularInline):
-    model = MarketProductStandardSize
+    model = CountryProductStandardSize
     extra = 0
 
 
 
-@admin.register(MarketProductStandard)
+@admin.register(CountryProductStandard)
 class MarketProductSizeStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'product_kind', 'country', 'is_enabled', 'sort_order')
     list_filter = [ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter, 'is_enabled']

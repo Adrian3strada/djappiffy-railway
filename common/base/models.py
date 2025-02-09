@@ -33,7 +33,7 @@ class ProductKind(models.Model):
 #   - Estándar del APEAM para AGUACATE en ESTADOS UNIDOS
 #   - Estándar de X para LIMÓN-MEXICANO en MÉXICO
 #   - Estándar de X para LIMÓN-PERSA en ESTADOS UNIDOS
-class MarketProductStandard(models.Model):
+class CountryProductStandard(models.Model):
     name = models.CharField(max_length=255, unique=True)
     product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
     country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)
@@ -44,17 +44,17 @@ class MarketProductStandard(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('Market Product Size Standard')
-        verbose_name_plural = _('Market Product Size Standards')
+        verbose_name = _('Country product standard')
+        verbose_name_plural = _('Country product standards')
         ordering = ['sort_order']
         constraints = [
-            models.UniqueConstraint(fields=['product_kind', 'country'], name='marketproductsizestandard_unique_productkind_country')
+            models.UniqueConstraint(fields=['product_kind', 'country'], name='countryproductsizestandard_unique_productkind_country')
             # TODO: Revisar este constraint. Valorar que para un mismo país se puede tener MÁS DE UN ESTÁNDAR
             #       para el mismo PRODUCT_KIND. Siendo el ESTÁNDAR aplicable por VARIEDAD.
         ]
 
 
-class MarketProductStandardSizeManager(Manager):
+class CountryProductStandardSizeManager(Manager):
     def get_queryset(self):
         return super().get_queryset().annotate(
             name_as_int=Case(
@@ -69,28 +69,28 @@ class MarketProductStandardSizeManager(Manager):
 #   - 32, 36, 40, 48, 60, 70, ... (de APEAM para AGUACATES en ESTADOS UNIDOS)
 #   - 300, 400, 500, 600, ... (de APEAM para LIMÓN-MEXICANO en MÉXICO)
 #   - 110, 150, 175, 200, 230, 250, ... (de "ALGUNA ASOCIACIÓN" para LIMÓN-PERSA en ESTADOS UNIDOS)
-class MarketProductStandardSize(models.Model):
+class CountryProductStandardSize(models.Model):
     name = models.CharField(max_length=255)
-    standard = models.ForeignKey(MarketProductStandard, on_delete=models.CASCADE)
+    standard = models.ForeignKey(CountryProductStandard, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
         return self.name
 
-    objects = MarketProductStandardSizeManager()
+    objects = CountryProductStandardSizeManager()
 
     class Meta:
-        verbose_name = _('Market product standard, Size')
-        verbose_name_plural = _('Market product standard, Sizes')
+        verbose_name = _('Country product standard, Size')
+        verbose_name_plural = _('Country product standard, Sizes')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'standard'], name='marketproductstandardsize_unique_name_standard')
+            models.UniqueConstraint(fields=['name', 'standard'], name='countryproductstandardsize_unique_name_standard')
         ]
 
 
-class MarketProductStandardPackaging(models.Model):
+class CountryProductStandardPackaging(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    standard = models.ForeignKey(MarketProductStandard, on_delete=models.CASCADE)
+    standard = models.ForeignKey(CountryProductStandard, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -98,10 +98,10 @@ class MarketProductStandardPackaging(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('Market product standard, Packaging')
-        verbose_name_plural = _('Market product standard, Packaging')
+        verbose_name = _('Country product standard, Packaging')
+        verbose_name_plural = _('Country product standard, Packaging')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'standard'], name='marketproductstandardpackaging_unique_name_standard')
+            models.UniqueConstraint(fields=['name', 'standard'], name='countryproductstandardpackaging_unique_name_standard')
         ]
 
 

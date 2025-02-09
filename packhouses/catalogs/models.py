@@ -18,7 +18,7 @@ from common.billing.models import TaxRegime, LegalEntityCategory
 from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
     get_vehicle_category_choices, get_provider_categories_choices
 from django.core.exceptions import ValidationError
-from common.base.models import ProductKind, MarketProductStandardSize
+from common.base.models import ProductKind, CountryProductStandardSize
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   AuthorityPackagingKind,
@@ -207,7 +207,7 @@ class MarketProductSize(CleanNameAndAliasProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Varieties'), blank=False)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    standard_size = models.ForeignKey(MarketProductStandardSize, verbose_name=_('Standard size'), on_delete=models.PROTECT, null=True, blank=False)
+    standard_size = models.ForeignKey(CountryProductStandardSize, verbose_name=_('Standard size'), on_delete=models.PROTECT, null=True, blank=False)
     name = models.CharField(max_length=160, verbose_name=_('Size name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
@@ -757,8 +757,8 @@ class MeshBagFilmKind(models.Model):
 class MeshBag(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    product_variety_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product variety size'),
-                                             on_delete=models.PROTECT)
+    product_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product variety size'),
+                                     on_delete=models.PROTECT)
     mesh_bags_per_box = models.PositiveIntegerField(verbose_name=_('Mesh bags per box'))
     pieces_per_mesh_bag = models.PositiveIntegerField(verbose_name=_('Pieces per mesh bags'))
     mesh_bag_kind = models.ForeignKey(MeshBagKind, verbose_name=_('Mesh bag kind'), on_delete=models.PROTECT)
@@ -820,7 +820,7 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 # Tipos de empaques
 
 
-class Packaging(models.Model):
+class Packaging(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
 
     ### Authority
@@ -837,6 +837,8 @@ class Packaging(models.Model):
     max_product_kg_per_package = models.FloatField(verbose_name=_('Max product Kg per package'))
     #avg_tare_kg_per_package = models.FloatField(verbose_name=_('Average tare Kg per package'))
 
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 

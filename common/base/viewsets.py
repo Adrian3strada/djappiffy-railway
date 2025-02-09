@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from .serializers import (ProductKindSerializer, CitySerializer, SubRegionSerializer, RegionSerializer,
                           CountrySerializer, MarketProductSizeStandardSizeSerializer)
-from .models import ProductKind, MarketProductStandardSize
+from .models import ProductKind, CountryProductStandardSize
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
 from cities_light.contrib.restframework3 import SubRegionModelViewSet as BaseSubRegionModelViewSet
 from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
@@ -22,7 +22,7 @@ class MarketProductSizeStandardSizeViewSet(viewsets.ModelViewSet):
     multiple_standards = False
 
     def get_queryset(self):
-        queryset = MarketProductStandardSize.objects.all()
+        queryset = CountryProductStandardSize.objects.all()
         product_kind = self.request.GET.get('product_kind')
         country = self.request.GET.get('country')
         countries = self.request.GET.get('countries')
