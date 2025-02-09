@@ -6,7 +6,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const incotermsField = $("#id_incoterms")
   const productField = $("#id_product")
   const productVarietyField = $("#id_product_variety")
+  const orderKindField = $("#id_order_kind")
+  const pricingByField = $("#id_pricing_by")
 
+  let productProperties = null;
   let organization = null;
 
   const API_BASE_URL = "/rest/v1";
@@ -80,8 +83,31 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function getProductProperties() {
+    if (productField.val()) {
+      fetchOptions(`${API_BASE_URL}/catalogs/product/${productField.val()}/`).then(
+        (data) => {
+          productProperties = data;
+          console.log("productProperties", productProperties)
+          if (data.price_measure_unit_category_display) {
+            pricingByField.find('option[value="product_measure_unit"]').text(data.price_measure_unit_category_display);
+            orderKindField.find('option[value="product_measure_unit"]').text(data.price_measure_unit_category_display);
+            pricingByField.trigger('change').select2();
+            orderKindField.trigger('change').select2();
+          }
+        });
+    } else {
+      productProperties = null;
+      pricingByField.find('option[value="product_measure_unit"]').text('Product measure unit');
+      orderKindField.find('option[value="product_measure_unit"]').text('Product measure unit');
+      pricingByField.trigger('change').select2();
+      orderKindField.trigger('change').select2();
+    }
+  }
+
   productField.on("change", () => {
     updateProductVarietyOptions()
+    getProductProperties();
   });
 
   clientCategoryField.on("change", () => {
@@ -116,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(() => {
       localDeliveryField.val(null).trigger('change');
       incotermsField.val(null).trigger('change');
-      }, 100);
+    }, 100);
     if (client) {
       fetchOptions(`${API_BASE_URL}/catalogs/client/${client}/`).then(
         (data) => {
@@ -144,6 +170,10 @@ document.addEventListener("DOMContentLoaded", function () {
   maquiladoraField.closest('.form-group').hide();
   localDeliveryField.closest('.form-group').hide();
   incotermsField.closest('.form-group').hide();
+
+  if (localDeliveryField.val()) localDeliveryField.closest('.form-group').show();
+  if (incotermsField.val()) incotermsField.closest('.form-group').show();
+  if (productField.val()) getProductProperties();
 
   if (clientCategoryField.val()) {
     if (clientCategoryField.val() === 'maquiladora') {

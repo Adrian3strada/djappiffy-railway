@@ -10,6 +10,11 @@ from django.utils.translation import gettext_lazy as _
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    price_measure_unit_category_display = serializers.SerializerMethodField()
+
+    def get_price_measure_unit_category_display(self, obj):
+        return obj.get_price_measure_unit_category_display()
+
     class Meta:
         model = Product
         fields = '__all__'

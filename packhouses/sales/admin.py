@@ -69,9 +69,9 @@ class OrderAdmin(ByOrganizationAdminMixin):
                    'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms',
                    'product', 'product_variety', 'status')
     fields = (
-        'ooid', 'client_category', 'maquiladora', 'client',
-        'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms',
-        'product', 'product_variety',
+        'ooid', 'client_category', 'maquiladora', 'client', 'local_delivery', 'incoterms',
+        'registration_date', 'shipment_date', 'delivery_date',
+        'product', 'product_variety', 'order_kind', 'pricing_by',
         'observations', 'status'
     )
     ordering = ('-ooid',)
@@ -91,6 +91,11 @@ class OrderAdmin(ByOrganizationAdminMixin):
         if 'status' in form.base_fields:
             form.base_fields['status'].choices = [choice for choice in form.base_fields['status'].choices if choice[0] != 'closed']
         if not obj or obj.status not in ['closed', 'canceled']:
+
+            form.base_fields['maquiladora'].widget.can_add_related = False
+            form.base_fields['maquiladora'].widget.can_change_related = False
+            form.base_fields['maquiladora'].widget.can_delete_related = False
+            form.base_fields['maquiladora'].widget.can_view_related = False
             form.base_fields['client'].widget.can_add_related = False
             form.base_fields['client'].widget.can_change_related = False
             form.base_fields['client'].widget.can_delete_related = False
@@ -103,10 +108,10 @@ class OrderAdmin(ByOrganizationAdminMixin):
             form.base_fields['incoterms'].widget.can_change_related = False
             form.base_fields['incoterms'].widget.can_delete_related = False
             form.base_fields['incoterms'].widget.can_view_related = False
-            # form.base_fields['product'].widget.can_add_related = False
-            # form.base_fields['product'].widget.can_change_related = False
-            # form.base_fields['product'].widget.can_delete_related = False
-            # form.base_fields['product'].widget.can_view_related = False
+            form.base_fields['product'].widget.can_add_related = False
+            form.base_fields['product'].widget.can_change_related = False
+            form.base_fields['product'].widget.can_delete_related = False
+            form.base_fields['product'].widget.can_view_related = False
 
         return form
 
