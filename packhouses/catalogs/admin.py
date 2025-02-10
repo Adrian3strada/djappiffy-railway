@@ -1022,12 +1022,12 @@ class ContainedPackagingInline(admin.TabularInline):
 class PackagingAdmin(ByOrganizationAdminMixin):
     form = PackagingKindForm
     list_display = ('name',
-                    'max_product_kg_per_package',
+                    'max_product_amount_per_package',
                     'is_enabled',
     )
     fields = ('name',
               'main_supply_kind', 'main_supply', 'main_supply_quantity',
-              'max_product_kg_per_package',
+              'max_product_amount_per_package',
               'is_enabled',
     )
     inlines = (PackagingSupplyInline, ContainedPackagingInline)

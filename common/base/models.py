@@ -81,27 +81,28 @@ class CountryProductStandardSize(models.Model):
     objects = CountryProductStandardSizeManager()
 
     class Meta:
-        verbose_name = _('Country product standard, Size')
-        verbose_name_plural = _('Country product standard, Sizes')
+        verbose_name = _('Product standard, Size')
+        verbose_name_plural = _('Product standard, Sizes')
         constraints = [
             models.UniqueConstraint(fields=['name', 'standard'], name='countryproductstandardsize_unique_name_standard')
         ]
 
 
-class ProductStandardPackaging(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    standard = models.ForeignKey(CountryProductStandard, on_delete=models.CASCADE)
+class CountryProductStandardPackaging(models.Model):
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=10, verbose_name=_('Code'))
     description = models.CharField(max_length=255, null=True, blank=True)
+    standard = models.ForeignKey(CountryProductStandard, on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = _('product standard, Packaging')
-        verbose_name_plural = _('product standard, Packaging')
+        verbose_name = _('Product standard, Packaging')
+        verbose_name_plural = _('Product standard, Packaging')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'standard'], name='countryproductstandardpackaging_unique_name_standard')
+            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='productstandardpackaging_unique_name_code_standard')
         ]
 
 
