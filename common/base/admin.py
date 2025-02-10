@@ -2,6 +2,7 @@ from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
 from .models import (ProductKind, CountryProductStandard, CountryProductStandardSize, LegalEntityCategory,
+                     ProductStandardPackaging,
                      Incoterm, LocalDelivery)
 from .filters import ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter
 from wagtail.documents.models import Document
@@ -18,24 +19,28 @@ class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_filter = ['for_packaging', 'for_orchard', 'for_eudr', 'is_enabled']
 
 
-class MarketProductSizeStandardSizeInline(admin.TabularInline):
+class CountryProductStandardSizeInline(admin.TabularInline):
     model = CountryProductStandardSize
     extra = 0
 
 
-
 @admin.register(CountryProductStandard)
-class MarketProductSizeStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
+class CountryProductStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'product_kind', 'country', 'is_enabled', 'sort_order')
     list_filter = [ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter, 'is_enabled']
     search_fields = ['name']
     ordering = ['sort_order']
-    inlines = [MarketProductSizeStandardSizeInline]
+    inlines = [CountryProductStandardSizeInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'product_kind':
             kwargs['queryset'] = ProductKind.objects.filter(for_packaging=True, is_enabled=True)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+@admin.register(ProductStandardPackaging)
+class ProductStandardPackagingAdmin(admin.ModelAdmin):
+    list_display = ('name', 'standard', 'is_enabled')
 
 
 @admin.register(Incoterm)

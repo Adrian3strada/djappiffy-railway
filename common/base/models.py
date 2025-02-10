@@ -88,7 +88,7 @@ class CountryProductStandardSize(models.Model):
         ]
 
 
-class CountryProductStandardPackaging(models.Model):
+class ProductStandardPackaging(models.Model):
     name = models.CharField(max_length=255, unique=True)
     standard = models.ForeignKey(CountryProductStandard, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, null=True, blank=True)
@@ -98,8 +98,8 @@ class CountryProductStandardPackaging(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('Country product standard, Packaging')
-        verbose_name_plural = _('Country product standard, Packaging')
+        verbose_name = _('product standard, Packaging')
+        verbose_name_plural = _('product standard, Packaging')
         constraints = [
             models.UniqueConstraint(fields=['name', 'standard'], name='countryproductstandardpackaging_unique_name_standard')
         ]

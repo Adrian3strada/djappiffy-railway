@@ -975,6 +975,9 @@
   "pk": 1,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
+    "market": 1,
+    "product": 1,
+    "standard_packaging": 1,
     "main_supply_kind": 1,
     "main_supply_quantity": 1,
     "main_supply": 3,
@@ -988,6 +991,9 @@
   "pk": 2,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
+    "market": 1,
+    "product": 1,
+    "standard_packaging": 1,
     "main_supply_kind": 1,
     "main_supply_quantity": 1,
     "main_supply": 3,
@@ -1001,6 +1007,9 @@
   "pk": 3,
   "fields": {
     "name": "MALLA SENCILLA",
+    "market": 1,
+    "product": 1,
+    "standard_packaging": 1,
     "main_supply_kind": 6,
     "main_supply_quantity": 6,
     "main_supply": 20,
@@ -1014,6 +1023,9 @@
   "pk": 4,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
+    "market": 1,
+    "product": 1,
+    "standard_packaging": 1,
     "main_supply_kind": 1,
     "main_supply_quantity": 1,
     "main_supply": 3,
@@ -1027,6 +1039,9 @@
   "pk": 5,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
+    "market": 1,
+    "product": 1,
+    "standard_packaging": 1,
     "main_supply_kind": 1,
     "main_supply_quantity": 1,
     "main_supply": 3,
@@ -1040,6 +1055,9 @@
   "pk": 6,
   "fields": {
     "name": "PALLET 48'S + 70'S",
+    "market": 1,
+    "product": 1,
+    "standard_packaging": 1,
     "main_supply_kind": 3,
     "main_supply_quantity": 3,
     "main_supply": 23,
@@ -1053,6 +1071,9 @@
   "pk": 7,
   "fields": {
     "name": "PALLET 48'S + 70'S (ENMALLADOS)",
+    "market": 1,
+    "product": 1,
+    "standard_packaging": 1,
     "main_supply_kind": 3,
     "main_supply_quantity": 3,
     "main_supply": 23,
