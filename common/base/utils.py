@@ -7,7 +7,7 @@ from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 # Para exportar solo a PDF
-class ReportExportAdmin(ExportMixin):
+class ReportExportAdminMixin(ExportMixin):
     import_export_change_list_template = "admin/export/export_pdf/change_list_export.html"
     report_function = None  
         
@@ -26,7 +26,7 @@ class ReportExportAdmin(ExportMixin):
         return response
 
 # Para exportar solo a excel
-class SheetExportAdmin(ExportMixin):
+class SheetExportAdminMixin(ExportMixin):
     import_export_change_list_template = "admin/export/export_sheet/change_list_export.html"
 
     def export_action(self, request):
@@ -41,7 +41,7 @@ class SheetExportAdmin(ExportMixin):
         return self._do_file_export(formats[0](), request, queryset)
 
 # Para exportar a excel y PDF
-class SheetReportExportAdmin(ExportMixin):
+class SheetReportExportAdminMixin(ExportMixin):
     import_export_change_list_template = "admin/export/export_pdf_sheet/change_list_export.html"
     report_function = None  
 
@@ -118,6 +118,10 @@ class DehydrationResource():
         return obj.standard_size.name if obj.standard_size else ""
     
     def dehydrate_product(self, obj):
+        # Si "product" es un ManyToManyField, devolver una lista de nombres
+        if hasattr(obj.product, "all"):
+            return ", ".join(product.name for product in obj.product.all()) if obj.product.exists() else ""
+        # Si "product" es un ForeignKey, devolver directamente el nombre del producto
         return obj.product.name if obj.product else ""
     
     def dehydrate_product_variety(self, obj):
@@ -131,9 +135,15 @@ class DehydrationResource():
 
     def dehydrate_organization(self, obj):
         return obj.organization.name if obj.organization else ""
+    
+    def dehydrate_producer(self, obj):
+        return obj.producer.name if obj.producer else ""
 
     def dehydrate_brand(self, obj):
         return obj.brand.name if obj.brand else ""
+    
+    def dehydrate_legal_category(self, obj):
+        return obj.legal_category.name if obj.legal_category else ""
 
     def dehydrate_ownership(self, obj):
         return obj.ownership.name if obj.ownership else ""

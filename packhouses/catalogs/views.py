@@ -83,7 +83,7 @@ def basic_report(request, json_data, model_name):
 
     html = HTML(string=html_string, base_url=base_url)
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="{packhouse_name}_{model_name}.pdf"'
+    response['Content-Disposition'] = f'inline; filename="{model_name}.pdf"'
     html.write_pdf(response, stylesheets=[css], )
 
     return response

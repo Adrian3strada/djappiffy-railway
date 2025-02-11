@@ -7,9 +7,8 @@ from django.http import HttpResponse
 from common.base.utils import ExportResource, DehydrationResource, default_excluded_fields
 from import_export import resources, fields
 from django.utils.translation import gettext_lazy as _
-from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
-    get_vehicle_category_choices, get_provider_categories_choices
-from .settings import CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES
+from .utils import get_vehicle_category_choices, get_provider_categories_choices
+from .settings import ORCHARD_PRODUCT_CLASSIFICATION_CHOICES
 from packhouses.packhouse_settings.settings import SUPPLY_UNIT_KIND_CHOICES
 from django.utils.safestring import mark_safe
 
@@ -28,6 +27,8 @@ class MarketResource(DehydrationResource, ExportResource):
     class Meta:
         model = Market
         exclude = tuple(default_excluded_fields + ("address_label",))
+        export_order = ('id', 'name', 'alias', 'countries', 'management_cost_per_kg', 'market_class_name', 'is_mixable' ,'is_enabled')
+
         
 class ProductResource(DehydrationResource, ExportResource): 
     product_season = Field(column_name=_("Season"), readonly=True) 
@@ -36,33 +37,25 @@ class ProductResource(DehydrationResource, ExportResource):
     harvest_size_kind = Field(column_name=_("Harvest Size Kinds"), readonly=True) 
 
     def dehydrate_product_season(self, product):
-        # Filtrar las temporadas de productos relacionadas
-        product_seasons = product.productseasonkind_set.all()  
-        # Retornar en formato de lista HTML
+        product_seasons = product.productseasonkind_set.filter(is_enabled=True) 
         if product_seasons:
             return "<ul>" + "".join([f"<li>{s.name}</li>" for s in product_seasons]) + "</ul>"
         return ''
     
     def dehydrate_product_variety(self, product):
-        # Filtrar las variedades de productos relacionadas
-        product_varieties = product.productvariety_set.all()  
-        # Retornar en formato de lista HTML
+        product_varieties = product.productvariety_set.filter(is_enabled=True) 
         if product_varieties:
             return "<ul>" + "".join([f"<li>{pv.name} ({pv.alias})</li>" for pv in product_varieties]) + "</ul>"
         return ''
     
     def dehydrate_mass_volume_kind(self, product):
-        # Filtrar los tipos de volumen de masa relacionados
-        mass_volume = product.productmassvolumekind_set.all()  
-        # Retornar en formato de lista HTML
+        mass_volume = product.productmassvolumekind_set.filter(is_enabled=True)
         if mass_volume:
             return "<ul>" + "".join([f"<li>{mvk.name}</li>" for mvk in mass_volume]) + "</ul>"
         return ''
     
     def dehydrate_harvest_size_kind(self, product):
-        # Filtrar los tipos de tamaño de cosecha relacionados
-        harvest_size = product.productharvestsizekind_set.all()  
-        # Retornar en formato de lista HTML
+        harvest_size = product.productharvestsizekind_set.filter(is_enabled=True)
         if harvest_size:
             return "<ul>" + "".join([f"<li>{phk.name}</li>" for phk in harvest_size]) + "</ul>"
         return ''
@@ -70,7 +63,7 @@ class ProductResource(DehydrationResource, ExportResource):
     class Meta:
         model = Product
         exclude = default_excluded_fields 
-        export_order = ('id', 'kind', 'name', 'product_season', 'product_variety', 'mass_volume_kind', 'harvest_size_kind')
+        export_order = ('id', 'kind', 'name', 'product_season', 'mass_volume_kind', 'product_variety',  'harvest_size_kind', 'is_enabled')
 
 
 class MarketProductSizeResource(DehydrationResource, ExportResource):
@@ -79,6 +72,14 @@ class MarketProductSizeResource(DehydrationResource, ExportResource):
         exclude = tuple(default_excluded_fields + ("sort_order",))
     
 class ProviderResource(DehydrationResource, ExportResource):
+    crew_chief = Field(column_name=_("Crew Chief"), readonly=True)
+
+    def dehydrate_crew_chief(self, provider):
+        crew_chiefs = provider.crewchief_set.filter(is_enabled=True)
+        if crew_chiefs:
+            return "<ul>" + "".join([f"<li>{s.name}</li>" for s in crew_chiefs]) + "</ul>"
+        return ''
+        
     def dehydrate_category(self, obj):
         choices_dict = dict(get_provider_categories_choices())
         category_value = obj.category
@@ -125,12 +126,16 @@ class OrchardResource(DehydrationResource, ExportResource):
     
     certification_kind = Field(column_name=_("Orchard Certification Kind"), readonly=True) 
     def dehydrate_certification_kind(self, orchard):
-        certification_kinds = orchard.orchardcertification_set.all()  
-        return  ", ".join([oc.certification_kind.name for oc in certification_kinds]) if certification_kinds else None
+        certification_kinds = orchard.orchardcertification_set.filter(is_enabled=True) 
+        if certification_kinds:
+            return "<ul>" + "".join([f"<li>{oc.certification_kind.name}" for oc in certification_kinds]) + "</ul>"   
+        return ''
     
     class Meta:
         model = Orchard
         exclude = default_excluded_fields 
+        export_order = ('id', 'name', 'code', 'category', 'product', 'producer', 'safety_authority_registration_date', 
+                        'state', 'city', 'district', 'ha', 'sanitary_certificate', 'certification_kind', 'is_enabled')
       
 class HarvestingCrewResource(DehydrationResource, ExportResource):
     class Meta:
@@ -143,6 +148,21 @@ class SupplyResource(DehydrationResource, ExportResource):
         exclude = default_excluded_fields 
 
 class PackagingResource(DehydrationResource, ExportResource):
+    packaging_kind = Field(column_name=_("Complementary Supplies"))
+    inside = Field(column_name=_("Relation Packaging"))
+
+    def dehydrate_packaging_kind(self, packaging):
+        complementary_supplies = packaging.packagingsupply_set.all()
+        if complementary_supplies:
+            return "<ul>" + "".join([f"<li>{cs.packaging_kind.name}" for cs in complementary_supplies]) + "</ul>"   
+        return ''
+    
+    def dehydrate_inside(self, packaging):
+        containers = packaging.outside.all()
+        if containers:
+            return "<ul>" + "".join([f"<li>{i.inside.name}" for i in containers]) + "</ul>"   
+        return ''
+
     class Meta:
         model = Packaging
         exclude = default_excluded_fields 

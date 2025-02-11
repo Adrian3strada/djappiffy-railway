@@ -60,7 +60,7 @@ from common.base.decorators import uppercase_form_charfield, uppercase_alphanume
 from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, DisableInlineRelatedLinksMixin
 from common.forms import SelectWidgetWithData
 from django.db.models import Q, F, Max, Min
-from common.base.utils import ReportExportAdmin, SheetExportAdmin, SheetReportExportAdmin
+from common.base.utils import ReportExportAdminMixin, SheetExportAdminMixin, SheetReportExportAdminMixin
 from .views import basic_report
 from .resources import (ProductResource, MarketResource, MarketProductSizeResource, ProviderResource, ClientResource, VehicleResource, GathererResource, 
                         MaquiladoraResource, OrchardResource, HarvestingCrewResource, SupplyResource, PackagingResource, ServiceResource, WeighingScaleResource, 
@@ -112,7 +112,7 @@ class MarketClassInline(admin.TabularInline):
 
 
 @admin.register(Market)
-class MarketAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
+class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [MarketResource]
     list_display = ('name', 'alias', 'get_countries', 'is_mixable', 'is_enabled')
@@ -215,7 +215,7 @@ class ProductHarvestSizeKindInline(admin.TabularInline):
 
 
 @admin.register(Product)
-class ProductAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
+class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductResource]
     list_display = ('name', 'kind', 'is_enabled')
@@ -255,8 +255,7 @@ class ProductAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
 
 
 @admin.register(MarketProductSize)
-class MarketProductSizeAdmin(SheetReportExportAdmin, SortableAdminMixin, ByProductForOrganizationAdminMixin):
-    change_list_template = "admin/export/export_pdf_sheet/custom_export.html"
+class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin): 
     report_function = staticmethod(basic_report)
     resource_classes = [MarketProductSizeResource]
     list_display = (
@@ -415,7 +414,7 @@ class ClientShipAddressInline(admin.StackedInline):
 
 
 @admin.register(Client)
-class ClientAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class ClientAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ClientResource]
     list_display = ('name', 'category', 'tax_id', 'market', 'country', 'state', 'city', 'neighborhood',
@@ -538,7 +537,7 @@ class ClientAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
 
 
 @admin.register(Gatherer)
-class GathererAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
+class GathererAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [GathererResource]
     list_display = (
@@ -606,7 +605,7 @@ class GathererAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
 
 
 @admin.register(Maquiladora)
-class MaquiladoraAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class MaquiladoraAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [MaquiladoraResource]
     list_display = (
@@ -741,7 +740,7 @@ class OrchardCertificationInline(admin.StackedInline):
 
 
 @admin.register(Orchard)
-class OrchardAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class OrchardAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [OrchardResource]
     list_display = ('name', 'code', 'producer', 'get_category', 'is_enabled')
@@ -818,7 +817,7 @@ class OrchardAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
 
 
 @admin.register(Supply)
-class SupplyAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class SupplyAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [SupplyResource]
     list_display = ('name', 'kind', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
@@ -845,7 +844,7 @@ class CrewChiefInline(admin.TabularInline):
 
 
 @admin.register(Vehicle)
-class VehicleAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
+class VehicleAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [VehicleResource]
     list_display = (
@@ -907,7 +906,7 @@ class HarvestingPaymentSettingInline(admin.StackedInline):
 
 
 @admin.register(HarvestingCrew)
-class HarvestingCrewAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class HarvestingCrewAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [HarvestingCrewResource]
     form = HarvestingCrewForm
@@ -972,7 +971,7 @@ class PackagingPresentationAdmin(admin.ModelAdmin):
 
 
 @admin.register(Service)
-class ServiceAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class ServiceAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ServiceResource]
     list_display = ('name', 'service_provider', 'is_enabled')
@@ -1029,7 +1028,7 @@ class ContainedPackagingInline(admin.TabularInline):
 
 
 @admin.register(Packaging)
-class PackagingAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class PackagingAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PackagingResource]
     form = PackagingKindForm
@@ -1082,7 +1081,7 @@ class PackagingAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
 
 
 @admin.register(WeighingScale)
-class WeighingScaleAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class WeighingScaleAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [WeighingScaleResource]
     list_display = (
@@ -1166,7 +1165,7 @@ class WeighingScaleAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
 
 
 @admin.register(ColdChamber)
-class ColdChamberAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
+class ColdChamberAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ColdChamberResource]
     list_display = ('name', 'product', 'product_variety', 'market', 'pallet_capacity', 'is_enabled')
@@ -1233,7 +1232,7 @@ class PalletConfigurationPersonalExpenseInline(admin.StackedInline):
         return form
 
 @admin.register(PalletConfiguration)
-class PalletConfigurationAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class PalletConfigurationAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PalletConfigurationResource]
     list_display = ('name', 'alias', 'market', 'product', 'product_variety' , 'get_product_size', 'is_ripe', 'is_enabled')
@@ -1306,7 +1305,7 @@ class PalletConfigurationAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
 
 
 @admin.register(ProductPackaging)
-class ProductPackagingAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class ProductPackagingAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductPackagingResource]
     list_display = ('name', 'alias', 'market')
@@ -1374,7 +1373,7 @@ class ExportingCompanyBeneficiaryInline(admin.StackedInline):
 
 
 @admin.register(ExportingCompany)
-class ExportingCompanyAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class ExportingCompanyAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ExportingCompanyResource]
     list_display = ('name', 'contact_name', 'tax_id', 'country',
@@ -1470,7 +1469,7 @@ class ExportingCompanyAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
 
 
 @admin.register(Transfer)
-class TransferAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class TransferAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [TransferResource]
     fields = ('name', 'caat', 'scac', 'is_enabled')
@@ -1483,7 +1482,7 @@ class TransferAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
 
 
 @admin.register(LocalTransporter)
-class LocalTransporterAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class LocalTransporterAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [LocalTransporterResource]
     fields = ('name', 'is_enabled')
@@ -1496,7 +1495,7 @@ class LocalTransporterAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
 
 
 @admin.register(BorderToDestinationTransporter)
-class BorderToDestinationTransporterAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
+class BorderToDestinationTransporterAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [BorderToDestinationTransporterResource]
     fields = ('name', 'tax_id', 'caat', 'irs', 'scac', 'us_custom_bond', 'is_enabled')
@@ -1509,7 +1508,7 @@ class BorderToDestinationTransporterAdmin(SheetReportExportAdmin, ByOrganization
 
 
 @admin.register(CustomsBroker)
-class CustomsBrokerAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class CustomsBrokerAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [CustomsBrokerResource]
     list_display = ('name', 'broker_number', 'country', 'is_enabled')
@@ -1523,7 +1522,7 @@ class CustomsBrokerAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
 
 
 @admin.register(Vessel)
-class VesselAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
+class VesselAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [VesselResource]
     fields = ('name', 'vessel_number', 'is_enabled')
@@ -1536,7 +1535,7 @@ class VesselAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
 
 
 @admin.register(Airline)
-class AirlineAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
+class AirlineAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [AirlineResource]
     fields = ('name', 'airline_number', 'is_enabled')
@@ -1549,7 +1548,7 @@ class AirlineAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
 
 
 @admin.register(InsuranceCompany)
-class InsuranceCompanyAdmin(SheetReportExportAdmin,ByOrganizationAdminMixin):
+class InsuranceCompanyAdmin(SheetReportExportAdminMixin,ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [InsuranceCompanyResource]
     fields = ('name', 'insurance_number', 'is_enabled')
@@ -1595,7 +1594,7 @@ class ProviderBalanceInline(admin.StackedInline):
 
 
 @admin.register(Provider)
-class ProviderAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
+class ProviderAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProviderResource]
     list_display = ('name', 'category', 'country', 'get_state_name', 'get_city_name', 'tax_id', 'email', 'is_enabled')
@@ -1733,7 +1732,7 @@ class ProviderAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
 # /Providers
 
 @admin.register(HarvestContainer)
-class HarvestCuttingContainerAdmin(SheetReportExportAdmin, ByOrganizationAdminMixin):
+class HarvestCuttingContainerAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report) 
     resource_classes = [HarvestContainerResource]
     list_display = ('name', 'capacity', 'is_enabled')

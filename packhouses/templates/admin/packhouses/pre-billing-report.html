@@ -1,4 +1,4 @@
-<!-- Prefactura para departamento de Ventas-->
+<!-- Prefactura para remisiones del departamento de Ventas-->
 {% extends "admin/packhouses/header-footer.html" %}
 {% load i18n %}
 
@@ -41,6 +41,25 @@
     align-items: center;      
 }
 
+.details-table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.details-table th{
+    text-align: center;
+    background-color: #fff4cc;
+    vertical-align: middle;  
+    border: 1px solid #000000;  
+    min-height: 20px;
+    line-height: 20px;        
+    text-align: center;
+}
+.details-table td{
+    border: 1px solid #000;
+    padding-left: 5px;
+    min-height: 20px;
+    line-height: 20px; 
+}
 .cost-deduction-table{
     width: 100%;
     border-collapse: collapse;
@@ -95,7 +114,7 @@
 <div>
     <h3 class="title-2">{% translate "DETAILS" %}</h3>
 
-    <table>
+    <table class="details-table">
         <thead>
             <tr>
                 {% for header in headers %}
@@ -115,8 +134,8 @@
         </tbody>
     </table>
 
-    <div class="div-total"> <!-- ajustar -->
-        <table class="total_table">
+    <div class="div-total"> <!-- adaptar acorde al manejo de totales (cantidad, kgs, precio) -->
+        <table class="total_table"> <!-- sugerencia si los subtotales se manejan en un ciclo-->
             <tbody>
                 {% for label, total in totals.items %}
                 <tr>
@@ -125,7 +144,7 @@
                 {% endfor %}
             </tbody>
         </table>
-        <table class="total_table">
+        <table class="total_table"> <!-- sugerencia si se maneja un subtotal fijo-->
             <tbody>
                 <tr>
                     <td>{% translate "TOTAL:" %} {{ total }}</td>
@@ -180,8 +199,29 @@
     </table>
 </div>
 
+<div>
+    <table class="details-table" style="margin-top: 20px;">
+        <thead>
+            <tr>
+                <th>INVOICE SUBTOTAL</th>
+                <th>COST</th>
+                <th>DEDUCTIONS</th>
+                <th>TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 <div style="margin-top: 10px;">
-    <h2 class="title">{% translate "BILLING OBSERVATIONS:" %} </h2>
+    <h2 class="title">{% translate "INVOICE OBSERVATIONS:" %} </h2>
     <p style="border-bottom: 1px solid #000;">&nbsp;</p>
 </div>
 
