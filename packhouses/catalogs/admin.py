@@ -53,7 +53,7 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
-from common.base.models import ProductKind, CountryProductStandardSize
+from common.base.models import ProductKind, CountryProductStandardSize, CapitalFramework
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, DisableInlineRelatedLinksMixin
@@ -429,11 +429,11 @@ class ClientAdmin(ByOrganizationAdminMixin):
                     'tax_id', 'contact_phone_number', 'is_enabled')
     list_filter = ('market', 'category', ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                    ByCityForOrganizationClientsFilter,
-                   'legal_category', ByPaymentKindForOrganizationFilter, 'is_enabled')
+                   'capital_framework', ByPaymentKindForOrganizationFilter, 'is_enabled')
     search_fields = ('name', 'tax_id', 'contact_phone_number')
     fields = (
         'name', 'category', 'market', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address',
-        'external_number', 'internal_number', 'shipping_address', 'legal_category', 'tax_id', 'payment_kind',
+        'external_number', 'internal_number', 'shipping_address', 'capital_framework', 'tax_id', 'payment_kind',
         'max_money_credit_limit', 'max_days_credit_limit', 'fda', 'swift', 'aba', 'clabe', 'bank', 'contact_name',
         'contact_email', 'contact_phone_number', 'is_enabled')
     inlines = [ClientShipAddressInline]
@@ -536,15 +536,15 @@ class ClientAdmin(ByOrganizationAdminMixin):
             # TODO: filtrar solo las direcciones de envío del cliente
             kwargs["queryset"] = ClientShippingAddress.objects.filter(client=obj, is_enabled=True)
 
-        if db_field.name == "legal_category":
+        if db_field.name == "capital_framework":
             if request.POST:
                 country_id = request.POST.get('country')
             else:
                 country_id = obj.country_id if obj else None
             if country_id:
-                kwargs["queryset"] = LegalEntityCategory.objects.filter(country_id=country_id)
+                kwargs["queryset"] = CapitalFramework.objects.filter(country_id=country_id)
             else:
-                kwargs["queryset"] = Region.objects.none()
+                kwargs["queryset"] = CapitalFramework.objects.none()
 
         if db_field.name == "bank":
             kwargs["queryset"] = Bank.objects.filter(organization=organization, is_enabled=True)

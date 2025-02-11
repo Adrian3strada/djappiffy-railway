@@ -1,8 +1,8 @@
 from django.urls import path, include
 from common.base.router import drf_router
-from .models import CountryProductStandard
 from .viewsets import (ProductKindViewSet, CityViewSet, SubRegionViewSet, RegionViewSet, CountryViewSet,
-                       MarketProductSizeStandardSizeViewSet)
+                       CapitalFrameworkViewSet,
+                       CountryProductStandardSizeViewSet)
 
 # write your urls here
 
@@ -13,7 +13,8 @@ urlpatterns = [
 ]
 
 drf_router.register(r'rest/v1/base/product-kind', ProductKindViewSet, basename='base_productkind')
-drf_router.register(r'rest/v1/base/market-product-size-standard-size', MarketProductSizeStandardSizeViewSet, basename='market_product_size_standard_size')
+drf_router.register(r'rest/v1/base/capital-framework', CapitalFrameworkViewSet, basename='capital_framework')
+drf_router.register(r'rest/v1/base/country-product-standard-size', CountryProductStandardSizeViewSet, basename='market_product_size_standard_size')
 drf_router.register(r'rest/v1/cities/country', CountryViewSet, basename='cities_country')
 drf_router.register(r'rest/v1/cities/region', RegionViewSet, basename='cities_region')
 drf_router.register(r'rest/v1/cities/subregion', SubRegionViewSet, basename='cities_subregion')

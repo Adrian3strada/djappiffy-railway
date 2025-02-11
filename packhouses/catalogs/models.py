@@ -17,7 +17,7 @@ from django.dispatch import receiver
 from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
     get_vehicle_category_choices, get_provider_categories_choices
 from django.core.exceptions import ValidationError
-from common.base.models import (ProductKind, CountryProductStandardSize, CountryProductStandardPackaging, TaxRegime,
+from common.base.models import (ProductKind, CountryProductStandardSize, CountryProductStandardPackaging, CapitalFramework,
                                 LegalEntityCategory)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
@@ -367,9 +367,9 @@ class Client(CleanNameAndCategoryAndOrganizationMixin, models.Model):
                                         verbose_name=_('Shipping address'),
                                         help_text=_('Shipping address of the client, leave it blank if you want to use the client address for shipping, or select one if you want to use a different one.'),
                                         on_delete=models.PROTECT, null=True, blank=True, related_name='shipping_address_clients')
-    legal_category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal entity category'),
-                                       null=True, blank=True,
-                                       on_delete=models.PROTECT, help_text=_(
+    capital_framework = models.ForeignKey(CapitalFramework, verbose_name=_(''),
+                                          null=True, blank=True,
+                                          on_delete=models.PROTECT, help_text=_(
             'Legal category of the client, must have a country selected to show that country legal categories.'))
     tax_id = models.CharField(max_length=30, verbose_name=_('Client tax ID'))
     payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)

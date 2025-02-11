@@ -1,18 +1,18 @@
 from django.contrib import admin
 from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
-from .models import CountryProductStandard, CountryProductStandardSize, TaxRegime
+from .models import CountryProductStandard, CountryProductStandardSize, CapitalFramework
 from common.base.models import ProductKind
 from django.utils.translation import gettext_lazy as _
 
 
-class ByCountryForTaxRegimeFilter(admin.SimpleListFilter):
+class ByCountryForCapitalFrameworkFilter(admin.SimpleListFilter):
     title = _('Country')
     parameter_name = 'country'
 
     def lookups(self, request, model_admin):
-        countries_for_tax_regimes = list(TaxRegime.objects.all().values_list('country_id', flat=True).distinct())
-        countries = Country.objects.filter(id__in=countries_for_tax_regimes)
+        countries_for_capital_frameworks = list(CapitalFramework.objects.all().values_list('country_id', flat=True).distinct())
+        countries = Country.objects.filter(id__in=countries_for_capital_frameworks)
         return [(country.id, country.name) for country in countries]
 
     def queryset(self, request, queryset):

@@ -123,7 +123,7 @@ class LegalEntityCategory(models.Model):
         ]
 
 
-class TaxRegime(Orderable):
+class CapitalFramework(Orderable):
     code = models.CharField(max_length=30, verbose_name=_('Code'))
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='tax_regimes')
@@ -132,8 +132,8 @@ class TaxRegime(Orderable):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Tax Regime')
-        verbose_name_plural = _('Tax Regimes')
+        verbose_name = _('Capital framework')
+        verbose_name_plural = _('Capital frameworks')
         ordering = ['country', 'code', 'name']
         constraints = [
             models.UniqueConstraint(fields=['code', 'name', 'country'], name='taxregime_unique_code_name_country')

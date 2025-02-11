@@ -23,7 +23,7 @@ from django.db.models import Max, Min, Q, F
 from .utils import incoterms_choices
 from common.base.models import Incoterm, LocalDelivery
 import datetime
-from .settings import ORDER_ITEMS_PRICE_CATEGORY_CHOICES, ORDER_ITEMS_PRICE_MEASURE_UNIT_CATEGORY_CHOICES
+from .settings import ORDER_ITEMS_CATEGORY_CHOICES, ORDER_ITEMS_PRICE_MEASURE_UNIT_CATEGORY_CHOICES
 
 
 
@@ -39,8 +39,8 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
     incoterms = models.ForeignKey(Incoterm, verbose_name=_('Incoterms'), on_delete=models.PROTECT, null=True, blank=True)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
-    order_kind = models.CharField(max_length=20, verbose_name=_('Order kind by'), choices=ORDER_ITEMS_PRICE_CATEGORY_CHOICES)
-    pricing_by = models.CharField(max_length=20, verbose_name=_('Pricing by'), choices=ORDER_ITEMS_PRICE_CATEGORY_CHOICES)
+    order_items_by = models.CharField(max_length=20, verbose_name=_('Order items by'), choices=ORDER_ITEMS_CATEGORY_CHOICES)
+    pricing_by = models.CharField(max_length=20, verbose_name=_('Pricing by'), choices=ORDER_ITEMS_CATEGORY_CHOICES)
     observations = CKEditor5Field(blank=True, null=True, verbose_name=_('Observations'))
     status = models.CharField(max_length=8, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))

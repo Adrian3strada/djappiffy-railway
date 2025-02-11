@@ -16,7 +16,7 @@ from django.dispatch import receiver
 from packhouses.catalogs.utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
     get_vehicle_category_choices, get_provider_categories_choices, get_harvest_cutting_categories_choices
 from django.core.exceptions import ValidationError
-from common.base.models import ProductKind, TaxRegime, LegalEntityCategory
+from common.base.models import ProductKind, CapitalFramework, LegalEntityCategory
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   OrchardCertificationVerifier,

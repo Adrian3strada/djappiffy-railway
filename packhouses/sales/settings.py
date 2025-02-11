@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 
-ORDER_ITEMS_PRICE_CATEGORY_CHOICES = [
+ORDER_ITEMS_CATEGORY_CHOICES = [
     ('product_measure_unit', _('Product measure unit')),
     ('product_packaging', _('Product packaging')),
 ]
