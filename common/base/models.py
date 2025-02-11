@@ -33,7 +33,7 @@ class ProductKind(models.Model):
 #   - Estándar del APEAM para AGUACATE en ESTADOS UNIDOS
 #   - Estándar de X para LIMÓN-MEXICANO en MÉXICO
 #   - Estándar de X para LIMÓN-PERSA en ESTADOS UNIDOS
-class MarketProductSizeStandard(models.Model):
+class CountryProductStandard(models.Model):
     name = models.CharField(max_length=255, unique=True)
     product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
     country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)
@@ -44,16 +44,17 @@ class MarketProductSizeStandard(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('Market Product Size Standard')
-        verbose_name_plural = _('Market Product Size Standards')
+        verbose_name = _('Country product standard')
+        verbose_name_plural = _('Country product standards')
         ordering = ['sort_order']
         constraints = [
-            models.UniqueConstraint(fields=['product_kind', 'country'], name='marketproductsizestandard_unique_productkind_country')
+            models.UniqueConstraint(fields=['product_kind', 'country'], name='countryproductsizestandard_unique_productkind_country')
             # TODO: Revisar este constraint. Valorar que para un mismo país se puede tener MÁS DE UN ESTÁNDAR
             #       para el mismo PRODUCT_KIND. Siendo el ESTÁNDAR aplicable por VARIEDAD.
         ]
 
-class MarketProductSizeStandardSizeManager(Manager):
+
+class CountryProductStandardSizeManager(Manager):
     def get_queryset(self):
         return super().get_queryset().annotate(
             name_as_int=Case(
@@ -68,22 +69,40 @@ class MarketProductSizeStandardSizeManager(Manager):
 #   - 32, 36, 40, 48, 60, 70, ... (de APEAM para AGUACATES en ESTADOS UNIDOS)
 #   - 300, 400, 500, 600, ... (de APEAM para LIMÓN-MEXICANO en MÉXICO)
 #   - 110, 150, 175, 200, 230, 250, ... (de "ALGUNA ASOCIACIÓN" para LIMÓN-PERSA en ESTADOS UNIDOS)
-class MarketProductSizeStandardSize(models.Model):
+class CountryProductStandardSize(models.Model):
     name = models.CharField(max_length=255)
-    standard = models.ForeignKey(MarketProductSizeStandard, on_delete=models.CASCADE)
+    standard = models.ForeignKey(CountryProductStandard, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
         return self.name
 
-    objects = MarketProductSizeStandardSizeManager()
+    objects = CountryProductStandardSizeManager()
 
     class Meta:
-        verbose_name = _('Market product size standard, Size')
-        verbose_name_plural = _('Market product size standard, Sizes')
+        verbose_name = _('Product standard, Size')
+        verbose_name_plural = _('Product standard, Sizes')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'standard'], name='marketproductsizestandardsize_unique_name_standard')
+            models.UniqueConstraint(fields=['name', 'standard'], name='countryproductstandardsize_unique_name_standard')
+        ]
+
+
+class CountryProductStandardPackaging(models.Model):
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=10, verbose_name=_('Code'))
+    description = models.CharField(max_length=255, null=True, blank=True)
+    standard = models.ForeignKey(CountryProductStandard, on_delete=models.CASCADE)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('Product standard, Packaging')
+        verbose_name_plural = _('Product standard, Packaging')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='productstandardpackaging_unique_name_code_standard')
         ]
 
 
@@ -101,6 +120,23 @@ class LegalEntityCategory(models.Model):
         ordering = ['country', 'code', 'name']
         constraints = [
             models.UniqueConstraint(fields=['code', 'name', 'country'], name='legalentitycategory_unique_code_name_country')
+        ]
+
+
+class CapitalFramework(Orderable):
+    code = models.CharField(max_length=30, verbose_name=_('Code'))
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='tax_regimes')
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Capital framework')
+        verbose_name_plural = _('Capital frameworks')
+        ordering = ['country', 'code', 'name']
+        constraints = [
+            models.UniqueConstraint(fields=['code', 'name', 'country'], name='taxregime_unique_code_name_country')
         ]
 
 
