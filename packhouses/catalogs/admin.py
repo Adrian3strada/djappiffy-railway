@@ -3,8 +3,8 @@ from unicodedata import category
 from django.contrib import admin
 from common.billing.models import LegalEntityCategory
 from .models import (
-    Market, KGCostMarket, MarketClass, Product, ProductVariety, MarketProductSize,
-    ProductHarvestSizeKind,
+    Market, MarketClass, Product, ProductVariety, MarketProductSize,
+    ProductHarvestSizeKind, ProductMarketMeasureUnitManagementCost, ProductMarketClass,
     ProductPhenologyKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
@@ -13,7 +13,7 @@ from .models import (
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    PackagingSupply, RelationPackaging, ProductRipness,
+    PackagingSupply, RelationPackaging, ProductRipeness,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation,
     HarvestContainer
 )
@@ -81,18 +81,6 @@ class CityAdmin(CityAdmin):
 
 # Markets
 
-class KGCostMarketInline(admin.TabularInline):
-    model = KGCostMarket
-    extra = 0
-
-    # TODO: Revisar si este inline si se va a usar en Market
-
-    @uppercase_formset_charfield('name')
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        return formset
-
-
 class MarketClassInline(admin.TabularInline):
     model = MarketClass
     extra = 0
@@ -112,8 +100,6 @@ class MarketAdmin(ByOrganizationAdminMixin):
               'label_language', 'address_label', 'is_enabled')
     inlines = [MarketClassInline]
 
-    # TODO: revisar si KGCostMarketInline si va en Market o va por variedad o donde?
-
     def get_countries(self, obj):
         return ", ".join([m.name for m in obj.countries.all()])
 
@@ -128,7 +114,7 @@ class MarketAdmin(ByOrganizationAdminMixin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[KGCostMarket, MarketClass, Country,
+        if obj and is_instance_used(obj, exclude=[MarketClass, Country,
                                                   Organization]):
             readonly_fields.extend(['name', 'alias', 'countries', 'organization'])
         return readonly_fields
@@ -144,14 +130,57 @@ class MarketAdmin(ByOrganizationAdminMixin):
 
 # Products
 
+
+class ProductMarketMeasureUnitManagementCostInline(admin.TabularInline):
+    model = ProductMarketMeasureUnitManagementCost
+    extra = 0
+    fields = ('market', 'measure_unit_management_cost', 'is_enabled')
+    verbose_name = _('Management cost')
+    verbose_name_plural = _('Management costs')
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+
+        if db_field.name == "market":
+            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+
+class ProductMarketClassInline(admin.TabularInline):
+    model = ProductMarketClass
+    extra = 0
+    fields = ('market', 'class_name', 'is_enabled')
+    verbose_name = _('Class')
+    verbose_name_plural = _('Classes')
+
+    @uppercase_formset_charfield('class_name')
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+
+        if db_field.name == "market":
+            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
 class ProductVarietyInline(admin.TabularInline):
-    # TODO: crear automáticamente el alias de 3 letras.
     model = ProductVariety
     extra = 0
     fields = ('name', 'alias', 'description', 'is_enabled')
     verbose_name = _('Variety')
     verbose_name_plural = _('Varieties')
-    # formset = ProductVarietyInlineFormSet
 
     @uppercase_formset_charfield('name')
     @uppercase_alphanumeric_formset_charfield('alias')
@@ -194,8 +223,8 @@ class ProductMassVolumeKindInline(admin.TabularInline):
     extra = 0
     fields = ('name', 'is_enabled', 'sort_order')
     ordering = ['sort_order', '-name']
-    verbose_name = _('Mass volume kind')
-    verbose_name_plural = _('Mass volume kinds')
+    verbose_name = _('Mass volume')
+    verbose_name_plural = _('Mass volumes')
     # formset = ProductMassVolumeKindInlineFormSet
 
     @uppercase_formset_charfield('name')
@@ -204,8 +233,8 @@ class ProductMassVolumeKindInline(admin.TabularInline):
         return formset
 
 
-class ProductRipnessInline(admin.TabularInline):
-    model = ProductRipness
+class ProductRipenessInline(admin.TabularInline):
+    model = ProductRipeness
     extra = 0
     verbose_name = _('Ripeness')
     verbose_name_plural = _('Ripenesses')
@@ -222,8 +251,10 @@ class ProductAdmin(ByOrganizationAdminMixin):
     list_filter = (ProductKindForPackagingFilter, 'price_measure_unit_category', 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
     fields = ('kind', 'name', 'description', 'price_measure_unit_category', 'is_enabled')
-    inlines = [ProductVarietyInline, ProductPhenologyKindInline, ProductHarvestSizeKindInline,
-               ProductMassVolumeKindInline, ProductRipnessInline]
+    inlines = [ProductMarketMeasureUnitManagementCostInline, ProductMarketClassInline,
+               ProductVarietyInline,
+               ProductPhenologyKindInline, ProductHarvestSizeKindInline,
+               ProductMassVolumeKindInline, ProductRipenessInline]
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):

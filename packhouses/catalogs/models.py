@@ -63,21 +63,6 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
         ]
 
 
-class KGCostMarket(CleanNameAndMarketMixin, models.Model):
-    name = models.CharField(max_length=120, verbose_name=_('Name'))
-    cost_per_kg = models.FloatField(validators=[MinValueValidator(0.01)], verbose_name=_('Cost per Kg'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = _('Cost per Kg on Market')
-        verbose_name_plural = _('Costs per Kg on Market')
-        ordering = ('market', 'name',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'market'], name='kgcostmarket_unique_name_market'),
-        ]
-
-
 class MarketClass(CleanNameAndMarketMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -138,6 +123,44 @@ class ProductPhenologyKind(CleanNameAndProductMixin, models.Model):
         ]
 
 
+class ProductMarketMeasureUnitManagementCost(models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    measure_unit_management_cost = models.CharField(max_length=100, verbose_name=_('Measure unit management cost'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.product.name} ({self.market.name} ): {self.measure_unit_management_cost}"
+
+    class Meta:
+        verbose_name = _('Product market measure unit management cost')
+        verbose_name_plural = _('Product market measure unit management costs')
+        ordering = ('market', 'product', 'measure_unit_management_cost')
+        constraints = [
+            models.UniqueConstraint(fields=['product', 'market'],
+                                    name='productmarketmeasureunitmanagementcost_product_market'),
+        ]
+
+
+class ProductMarketClass(models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    class_name = models.CharField(max_length=100, verbose_name=_('Class name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.product.name} ({self.market.name} ): {self.class_name}"
+
+    class Meta:
+        verbose_name = _('Product market class')
+        verbose_name_plural = _('Product market class')
+        ordering = ('market', 'product', 'class_name')
+        constraints = [
+            models.UniqueConstraint(fields=['product', 'market', 'class_name'],
+                                    name='productmarketclass_product_market_class_name'),
+        ]
+
+
 class ProductVariety(CleanNameAndAliasProductMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Variety name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
@@ -187,19 +210,19 @@ class ProductMassVolumeKind(CleanNameAndProductMixin, models.Model):
         ]
 
 
-class ProductRipness(CleanProductMixin, models.Model):
+class ProductRipeness(CleanProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     sort_order = models.IntegerField(default=0, verbose_name=_('Sort order'))
 
     class Meta:
-        verbose_name = _('Product ripness')
-        verbose_name_plural = _('Product ripnesses')
+        verbose_name = _('Product ripeness')
+        verbose_name_plural = _('Product ripenesses')
         ordering = ('product', 'sort_order', '-name')
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'],
-                                    name='productripness_unique_name_product'),
+                                    name='productripeness_unique_name_product'),
         ]
 
 
