@@ -62,30 +62,6 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
             models.UniqueConstraint(fields=['alias', 'organization'], name='market_unique_alias_organization')
         ]
 
-
-class MarketClass(CleanNameAndMarketMixin, models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.CASCADE)
-
-    @receiver(post_save, sender=Market)
-    def create_market_classes(sender, instance, created, **kwargs):
-        if created:
-            existing_classes = MarketClass.objects.filter(market=instance).values_list('name', flat=True)
-            classes_to_create = [name for name in ['A', 'B', 'C'] if name not in existing_classes]
-            if classes_to_create:
-                MarketClass.objects.bulk_create([
-                    MarketClass(name=name, market=instance) for name in classes_to_create
-                ])
-
-    class Meta:
-        verbose_name = _('Market class')
-        verbose_name_plural = _('Market classes')
-        ordering = ('market', 'name',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'market'], name='marketclass_unique_name_market'),
-        ]
-
 # /Markets
 
 # Products
@@ -217,7 +193,7 @@ class ProductRipeness(CleanProductMixin, models.Model):
 
     class Meta:
         verbose_name = _('Product ripeness')
-        verbose_name_plural = _('Product ripenesses')
+        verbose_name_plural = _('Product Ripeness')
         ordering = ('product', 'name')
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'],
@@ -958,8 +934,8 @@ class PalletConfiguration(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
     alias = models.CharField(max_length=20, verbose_name=_('Alias'), null=False, blank=False)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT, null=False, blank=False)
-    market_class = models.ForeignKey(MarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT, null=False, blank=False)
+    market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product Variety'), on_delete=models.PROTECT, null=False, blank=False)
     product_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product Size'), on_delete=models.PROTECT, null=False, blank=False)
     maximum_boxes_per_pallet = models.PositiveIntegerField(verbose_name=_('Boxes quantity'), null=False, blank=False, help_text=_(
@@ -1031,7 +1007,7 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
 
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    # market_class = models.ForeignKey(MarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
+    # market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
 
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Product varieties'), blank=False)

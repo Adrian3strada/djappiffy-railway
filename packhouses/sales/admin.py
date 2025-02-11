@@ -11,7 +11,7 @@ from common.base.decorators import uppercase_formset_charfield, uppercase_alphan
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from .filters import ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter
 from common.base.mixins import ByOrganizationAdminMixin
-from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, MarketClass, Product, MarketProductSize,
+from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, MarketProductSize,
                                         ProductPackaging)
 from .models import Order, OrderItem
 from django.utils.safestring import mark_safe

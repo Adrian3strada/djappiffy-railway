@@ -25,8 +25,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateMarketClass() {
     const marketId = marketField.val();
-    if (marketId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/market-class/?market=${marketId}&is_enabled=1`)
+    const productId = productField.val()
+    if (marketId && productId) {
+      fetchOptions(`${API_BASE_URL}/catalogs/product-market-class/?market=${marketId}&product=${productId}&is_enabled=1`)
         .then(data => {
           updateFieldOptions(marketClassField, data);
         });

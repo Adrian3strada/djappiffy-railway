@@ -68,114 +68,6 @@
   }
 },
 {
-  "model": "catalogs.marketclass",
-  "pk": 1,
-  "fields": {
-    "name": "A",
-    "is_enabled": true,
-    "market": 1
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 2,
-  "fields": {
-    "name": "B",
-    "is_enabled": true,
-    "market": 1
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 3,
-  "fields": {
-    "name": "C",
-    "is_enabled": true,
-    "market": 1
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 4,
-  "fields": {
-    "name": "A",
-    "is_enabled": true,
-    "market": 2
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 5,
-  "fields": {
-    "name": "B",
-    "is_enabled": true,
-    "market": 2
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 6,
-  "fields": {
-    "name": "C",
-    "is_enabled": true,
-    "market": 2
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 7,
-  "fields": {
-    "name": "A",
-    "is_enabled": true,
-    "market": 3
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 8,
-  "fields": {
-    "name": "B",
-    "is_enabled": true,
-    "market": 3
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 9,
-  "fields": {
-    "name": "C",
-    "is_enabled": true,
-    "market": 3
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 10,
-  "fields": {
-    "name": "A",
-    "is_enabled": true,
-    "market": 4
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 11,
-  "fields": {
-    "name": "B",
-    "is_enabled": true,
-    "market": 4
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 12,
-  "fields": {
-    "name": "C",
-    "is_enabled": false,
-    "market": 4
-  }
-},
-{
   "model": "catalogs.product",
   "pk": 1,
   "fields": {
@@ -421,7 +313,7 @@
   "model": "catalogs.productvariety",
   "pk": 1,
   "fields": {
-    "name": "HASS UNO",
+    "name": "HASS",
     "alias": "HAS",
     "description": null,
     "is_enabled": true,
@@ -432,7 +324,7 @@
   "model": "catalogs.productvariety",
   "pk": 2,
   "fields": {
-    "name": "MENDEZ UNO",
+    "name": "MENDEZ",
     "alias": "MEN",
     "description": null,
     "is_enabled": true,
@@ -443,7 +335,7 @@
   "model": "catalogs.productvariety",
   "pk": 3,
   "fields": {
-    "name": "CRIOLLO UNO",
+    "name": "CRIOLLO",
     "alias": "CR1",
     "description": null,
     "is_enabled": false,
@@ -687,8 +579,7 @@
   "fields": {
     "product": 1,
     "name": "NEGRA",
-    "is_enabled": true,
-    "sort_order": 0
+    "is_enabled": true
   }
 },
 {

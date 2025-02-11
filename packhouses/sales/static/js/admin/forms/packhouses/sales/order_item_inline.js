@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateMarketClassOptions() {
     if (clientProperties) {
-      fetchOptions(`/rest/v1/catalogs/market-class/?market=${clientProperties.market}`)
+      fetchOptions(`/rest/v1/catalogs/product-market-class/?market=${clientProperties.market}`)
         .then(data => {
           marketClassOptions = data
         });

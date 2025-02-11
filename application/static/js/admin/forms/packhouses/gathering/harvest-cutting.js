@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function updateHarvestSizeField() {
     const productId = productField.val();
     if (productId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_harvest_size_kind/?product=${productId}&is_enabled=true`)
+      fetchOptions(`${API_BASE_URL}/catalogs/product-harvest-size-kind/?product=${productId}&is_enabled=true`)
         .then((data) => {
           updateFieldOptions(harvestSizeField, data);
           if (initialHarvestSizeValue) {

@@ -3,8 +3,8 @@ from unicodedata import category
 from django.contrib import admin
 from common.billing.models import LegalEntityCategory
 from .models import (
-    Market, MarketClass, Product, ProductVariety, MarketProductSize,
-    ProductHarvestSizeKind, ProductMarketMeasureUnitManagementCost, ProductMarketClass,
+    Market, Product, ProductMarketClass, ProductVariety, MarketProductSize,
+    ProductHarvestSizeKind, ProductMarketMeasureUnitManagementCost,
     ProductPhenologyKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
@@ -81,16 +81,6 @@ class CityAdmin(CityAdmin):
 
 # Markets
 
-class MarketClassInline(admin.TabularInline):
-    model = MarketClass
-    extra = 0
-
-    @uppercase_formset_charfield('name')
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        return formset
-
-
 @admin.register(Market)
 class MarketAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'alias', 'get_countries', 'is_mixable', 'is_enabled')
@@ -98,7 +88,6 @@ class MarketAdmin(ByOrganizationAdminMixin):
     search_fields = ('name', 'alias')
     fields = ('name', 'alias', 'countries', 'management_cost_per_kg', 'is_mixable',
               'label_language', 'address_label', 'is_enabled')
-    inlines = [MarketClassInline]
 
     def get_countries(self, obj):
         return ", ".join([m.name for m in obj.countries.all()])
@@ -114,8 +103,7 @@ class MarketAdmin(ByOrganizationAdminMixin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[MarketClass, Country,
-                                                  Organization]):
+        if obj and is_instance_used(obj, exclude=[Country, Organization]):
             readonly_fields.extend(['name', 'alias', 'countries', 'organization'])
         return readonly_fields
 
@@ -237,7 +225,7 @@ class ProductRipenessInline(admin.TabularInline):
     model = ProductRipeness
     extra = 0
     verbose_name = _('Ripeness')
-    verbose_name_plural = _('Ripenesses')
+    verbose_name_plural = _('Ripeness')
 
     @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
@@ -1264,7 +1252,7 @@ class PalletConfigurationAdmin(ByOrganizationAdminMixin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Product, ProductVariety, MarketProductSize, Market, MarketClass, Packaging, Organization]):
+        if obj and is_instance_used(obj, exclude=[Product, ProductVariety, MarketProductSize, Market, ProductMarketClass, Packaging, Organization]):
             readonly_fields.extend(['name', 'alias',])
         return readonly_fields
 
@@ -1285,9 +1273,9 @@ class PalletConfigurationAdmin(ByOrganizationAdminMixin):
             kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
         if db_field.name == "market_class":
             if market:
-                kwargs["queryset"] = MarketClass.objects.filter(**market_queryfilter)
+                kwargs["queryset"] = ProductMarketClass.objects.filter(**market_queryfilter)
             else:
-                kwargs["queryset"] = MarketClass.objects.none()
+                kwargs["queryset"] = ProductMarketClass.objects.none()
         if db_field.name == "product":
             kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
         if db_field.name == "product_variety":
