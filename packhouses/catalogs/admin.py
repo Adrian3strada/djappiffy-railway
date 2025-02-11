@@ -216,7 +216,7 @@ class ProductRipnessInline(admin.TabularInline):
         return formset
 
 
-@admin.register(ProductAdmin)
+@admin.register(Product)
 class ProductAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'kind', 'is_enabled')
     list_filter = (ProductKindForPackagingFilter, 'price_measure_unit_category', 'is_enabled',)
