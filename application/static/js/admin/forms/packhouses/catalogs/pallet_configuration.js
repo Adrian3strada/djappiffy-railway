@@ -25,8 +25,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateMarketClass() {
     const marketId = marketField.val();
-    if (marketId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/market_class/?market=${marketId}&is_enabled=1`)
+    const productId = productField.val()
+    if (marketId && productId) {
+      fetchOptions(`${API_BASE_URL}/catalogs/product-market-class/?market=${marketId}&product=${productId}&is_enabled=1`)
         .then(data => {
           updateFieldOptions(marketClassField, data);
         });
@@ -38,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateProductVariety() {
     const productId = productField.val();
     if (productId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_variety/?product=${productId}&is_enabled=1`)
+      fetchOptions(`${API_BASE_URL}/catalogs/product-variety/?product=${productId}&is_enabled=1`)
         .then(data => {
           updateFieldOptions(productVarietyField, data)
         });
@@ -50,16 +51,16 @@ document.addEventListener('DOMContentLoaded', function () {
       const productId = productField.val();
       const marketId = marketField.val();
       if(productId && marketId){
-        fetchOptions(`${API_BASE_URL}/catalogs/product_size/?product=${productId}&market=${marketId}&is_enabled=1`)
+        fetchOptions(`${API_BASE_URL}/catalogs/product-size/?product=${productId}&market=${marketId}&is_enabled=1`)
           .then(data => {
             updateFieldOptions(productMarketSizeField, data)
           });
-  
+
       } else {
         updateFieldOptions(productMarketSizeField, [])
       }
     }
-    
+
 
   marketField.on('change', function () {
     updateMarketClass();

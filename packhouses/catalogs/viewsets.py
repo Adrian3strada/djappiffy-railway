@@ -3,16 +3,17 @@ from itertools import product
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 
-from .serializers import (MarketSerializer, MarketClassSerializer, VehicleSerializer,
+from .serializers import (MarketSerializer, ProductMarketClassSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
-                          ProductSeasonKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, MarketProductSizeSerializer,
-                          MaquiladoraSerializer,
+                          ProductPhenologyKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, MarketProductSizeSerializer,
+                          MaquiladoraSerializer, ProductPackagingSerializer,
                           SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
                           OrchardCertificationSerializer
                           )
-from .models import (Market,MarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
-                     ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind, Client, Maquiladora, Provider, Product,
+from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
+                     ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
+                     Product, ProductPackaging,
                      Supply, Orchard, HarvestingCrew, MarketProductSize, OrchardCertification
                      )
 from django_filters.rest_framework import DjangoFilterBackend
@@ -30,8 +31,8 @@ class ProductHarvestSizeKindViewSet(viewsets.ModelViewSet):
         return ProductHarvestSizeKind.objects.filter(product__organization=self.request.organization)
 
 
-class ProductSeasonKindKindViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductSeasonKindSerializer
+class ProductPhenologyKindViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductPhenologyKindSerializer
     filterset_fields = ['product', 'is_enabled']
     pagination_class = None
 
@@ -40,7 +41,7 @@ class ProductSeasonKindKindViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return ProductSeasonKind.objects.filter(product__organization=self.request.organization)
+        return ProductPhenologyKind.objects.filter(product__organization=self.request.organization)
 
 
 class ProductMassVolumeKindViewSet(viewsets.ModelViewSet):
@@ -69,9 +70,9 @@ class MarketViewSet(viewsets.ModelViewSet):
         return Market.objects.filter(organization=self.request.organization)
 
 
-class MarketClassViewSet(viewsets.ModelViewSet):
-    serializer_class = MarketClassSerializer
-    filterset_fields = ['market', 'is_enabled']
+class ProductMarketClassViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductMarketClassSerializer
+    filterset_fields = ['market', 'product', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -79,7 +80,7 @@ class MarketClassViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return MarketClass.objects.all()
+        return ProductMarketClass.objects.all()
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -120,6 +121,19 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return ProductVariety.objects.filter(product__organization=self.request.organization)
+
+
+class ProductPackagingViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductPackagingSerializer
+    filterset_fields = ['product', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return ProductPackaging.objects.filter(product__organization=self.request.organization)
 
 
 class MarketProductSizeViewSet(viewsets.ModelViewSet):
@@ -213,6 +227,7 @@ class CrewChiefViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return CrewChief.objects.filter(provider__organization=self.request.organization)
+
 
 class ClientViewSet(viewsets.ModelViewSet):
     serializer_class = ClientSerializer

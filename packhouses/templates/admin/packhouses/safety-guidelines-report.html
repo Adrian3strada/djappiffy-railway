@@ -1,0 +1,748 @@
+<!--Formato de Buenas Prácticas-->
+{% extends "admin/packhouses/header-footer.html" %}
+{% load i18n %}
+
+{% block page_content %}
+{% load static %}
+<style>
+  @font-face {
+    font-family: 'Futura';
+    src: url('../../../static/fonts') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  body{
+    font-family: 'Futura', sans-serif;
+  }
+/* Estilos de la tabla de encabezado */
+table.header-table .center h1 {
+    margin: 5px 0 !important;
+    font-size: 9pt !important;
+}
+
+/* Secciones generales */
+.information-section,
+.harvest_section,
+.substance-section,
+.signature_section,
+.harvest-information {
+    width: 100%;
+    margin-bottom: 5px;
+    font-size: 6pt !important;
+}
+
+.guideline_section,
+.signature_section {
+    margin-bottom: 0px;
+}
+
+/* Filas y columnas */
+.row {
+    display: grid;
+    margin-top: 5px;
+}
+
+.row-four {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.row p {
+    margin: 0;
+    border-bottom: 1px solid #000;
+}
+
+.row p strong {
+    font-weight: bold;
+}
+
+/* Información de datos */
+.data_information {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.data_information p {
+    flex: 1 1 30%;
+    border-bottom: 1px solid #000;
+    text-align: left;
+    margin: 0;
+}
+
+.data_information br {
+    width: 100%;
+}
+
+/* Títulos */
+.title {
+    display: flex;
+    background-color: #ffc600;
+    width: 100%;
+    height: 30px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.title h2 {
+    font-size: 8pt;
+}
+
+/* Subtítulos */
+.guideline_table_subtitle {
+    background-color: #fff4cc;
+    font-weight: bold;
+    border-bottom: 1px solid black;
+}
+
+.subtitle-table {
+    background-color: #ffc600;
+    font-weight: bold;
+}
+
+/* Tablas de información */
+.harvest-information-table,
+.substance-section-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 7pt;
+}
+
+.harvest-information-table td,
+.substance-section-table td {
+    border: 1px solid #000;
+    text-align: center;
+}
+
+/* Círculo */
+.circle {
+    width: 15px;
+    height: 15px;
+    border: 1px solid #000;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: middle;
+    background-color: #ffffff;
+}
+
+/* Contenedor de cuadrícula */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 2px;
+    margin-top: 5px;
+}
+
+/* Tabla de directrices */
+.guideline_table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid black;
+    margin-bottom: 2px;
+    font-size: 7pt;
+}
+
+.guideline_table .td-option {
+    border: 1px solid black;
+    text-align:center;
+}
+
+/* Tabla doble */
+.double-table {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Tabla de folios */
+.folio-table {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+    border-collapse: collapse;
+}
+
+.folio-table tr {
+    height: 25px;
+}
+
+.folio-table td {
+    line-height: 25px;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Observaciones */
+.observations {
+    width: 100%;
+}
+
+.observations p {
+    margin-top: 10px;
+    border-bottom: 1px solid black;
+    padding: 5px;
+}
+
+/* Firmas */
+.signature {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    text-align: center;
+    column-gap: 25px;
+    margin-bottom: 0;
+}
+
+.signature_section {
+    page-break-after: always;
+}
+</style>
+
+{% for crew in scheduleharvestharvestingcrewinline %}
+
+<table class="folio-table">
+    <tr>
+        <td style="width: 10%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Folio" %}</td>
+        <td style="width: 20%; color:red; background-color: #fff4cc;"> {% translate "N°" %} {{ crew.id }}</td>
+        <td style="width: 70%;"></td>
+    </tr>
+</table>
+
+<div class="information-section">
+    <div class="title">
+        <h2>{% translate "General Information" %}</h2>
+    </div>
+    <div class="row row-four">
+        <p><strong>{% translate "No. Harvest:" %}</strong> <span style="color:red;">{{ harvest.id }}</span></p>
+        <p>
+            {% if harvest.category == 'gathering' %}
+            <strong>{% translate "Gatherer:"}</strong> {{ harvest.gatherer }}
+            {% elif harvest.category == 'maquila' %}
+            <strong>{% translate "Maquiladora:" %}</strong> {{ harvest.maquiladora }}
+            {% else %}
+                {% translate "No Data" %}
+            {% endif %}
+        </p>
+        <p><strong>{% translate "Crew Chief" %}:</strong> {{crew.provider}}</p>
+        <p><strong>{% translate "Crew:" %}</strong> {{ crew.harvesting_crew }}</p>
+    </div>
+
+    <div class="row row-four">
+        <p><strong>{% translate "Producer:" %} </strong>{{harvest.orchard.producer}}</p>
+        <p><strong>{% translate "Arrival Time:" %}</strong></p>
+        <p><strong>{% translate "Departure Time:" %}</strong></p>
+        <p><strong>{% translate "Date:" %} </strong>{{harvest.created_at}}</p>
+    </div>
+
+    <div class="row row-four">
+        <p><strong>{% translate "Product:" %}</strong> {{harvest.product}}</p>
+        <p><strong>{% translate "Variety:" %}</strong> {{harvest.product_variety}}</p>
+        <p><strong>{% translate "Season:" %}</strong> {{harvest.product_season_kind}}</p>
+        <p><strong>{% translate "Harvest Type:" %}</strong> {{harvest.product_harvest_size_kind}}</p>
+    </div>
+
+    <!-- Grupo de tres elementos -->
+    <div class="row row-four">
+        <p><strong>{% translate "Orchard:" %} </strong>{{harvest.orchard.name}}</p>
+        <p style="grid-column: span 2;"><strong>{% translate "Location:" %} </strong>{{harvest.orchard.district.name}}, {{harvest.orchard.city.name}}, {{harvest.orchard.state.name}}</p>
+        <p><strong>{% translate "Date:" %} </strong>{{harvest.created_at}}</p>
+    </div>
+
+    <div class="row row-four">
+        <p style="grid-column: span 3;"><strong>{% translate "Orchard Certification:" %} </strong>
+            {% for certification in harvest.orchard_certification.all %}
+                {{ certification.certification_kind.name }} {{certification.certification_number}}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+                {% translate "No Data" %}
+            {% endfor %}
+        </p>
+        <p><strong>{% translate "Full Boxes:" %}</strong></p>
+    </div>
+
+    <div class="row row-four">
+        <p style="grid-column: span 3;"><strong>{% translate "Comments:" %}</strong> {{harvest.comments|default:""}}</p>
+        <p><strong>{% translate "Lock N°:" %}</strong></p>
+    </div>
+
+    <div class="row row-four">
+        <p style="grid-column: span 2;"><strong>{% translate "Operator:" %}</strong></p>
+        <p style="grid-column: span 2;""><strong>{% translate "License Plate:" %} </strong>
+            {% for vehicle in crew_vehicles %}
+                {% if vehicle.provider == crew.provider %}
+                    {{ vehicle.vehicle.license_plate }},
+                {% endif %}
+            {% empty %}
+                {% translate "No vehicles available for this crew." %}
+            {% endfor %}
+        </p>
+    </div>
+
+    <div class="row row-four">
+        <p style="grid-column: span 1;"><strong>{% translate "Destination:" %}</strong> {{harvest.market}}</p>
+        <p style="grid-column: span 3;"><strong>{% translate "Meeting Point" %}:</strong> {{harvest.meeting_point|default:""}}</p>
+    </div>
+</div>
+
+<div class="harvest-information" style="margin-top:-5px;">
+    <table class="harvest-information-table">
+        <tr class="subtitle-table">
+            <td rowspan="2" colspan="2" style="width: 40%;"> {% translate "Harvester's Name" %} </td>
+            <td colspan="2">{% translate "Factor" %}</td>
+            <td colspan="3">{% translate "Fruit/Box" %}</td>
+            <td rowspan="2" style="width: 10%;">{% translate "Price" %}</td>
+            <td rowspan="2" style="width: 10%;">{% translate "Kg" %}</td>
+            <td rowspan="2" style="word-break:normal; width: 8%;">{% translate "Boxes Harvested" %}</td>
+        </tr>
+        <tr class="subtitle-table">
+            <td>{% translate "Exp." %}</td>
+            <td>{% translate "Nat." %}</td>
+            <td>{% translate "Trimming" %}</td>
+            <td>{% translate "Mishandling" %}</td>
+            <td>{% translate "Out of Size" %}</td>
+        </tr>
+
+        {% for i in crew.harvesting_crew.get_persons_range %}
+        <tr>
+            <td style="width: 5%;">{{ forloop.counter }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    {% endfor %}
+        <tr>
+            <td style="text-align: right; padding-right: 25px;" colspan="7">{% translate "Total" %}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+
+<div class="substance-section"  style="margin-top:-5px;">
+    <table class="substance-section-table">
+        <tr>
+            <td class="subtitle-table" colspan="13" >
+                {% translate "Water Managment - Preparation and Monitoring of Substances" %}
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 20%;" colspan="2">{% translate "Equipped with Monitoring Equipment" %}</td>
+            <td style="width: 30%;" colspan="5">{% translate "Preparation" %}</td>
+            <td style="width: 30%;" colspan="5">{% translate "Monitoring" %}</td>
+            <td style="width: 20%;" rowspan="4">Signature of the Person Who Performed It</td>
+        </tr>
+        <tr>
+            <td rowspan="2"> {% translate "Yes" %} <br> <span class="circle"></span> </td>
+            <td rowspan="2"> {% translate "No" %} <br> <span class="circle"></span> </td>
+            <td rowspan="3"> {% translate "Hour" %} </td>
+            <td rowspan="3"> {% translate "Volume to Prepare" %}</td>
+            <td rowspan="3"> {% translate "PH" %} </td>
+            <td rowspan="3"> {% translate "ML Applied" %}</td>
+            <td rowspan="3"> {% translate "Hour" %} </td>
+            <td rowspan="3"> {% translate "PPM. Detected" %}</td>
+            <td colspan="2"> {% translate "Needs Corrective Action" %}</td>
+            <td rowspan="3"> {% translate "ML Aplied" %}</td>
+            <td rowspan="3"> {% translate "PPM. Detected" %}</td>
+        </tr>
+        <tr>
+            <td rowspan="2">{% translate "Yes" %}</td>
+            <td rowspan="2">{% translate "No" %}</td>
+        </tr>
+        <tr>
+            <td colspan="2">{% translate "Punto de Muestreo" %}</td>
+        </tr>
+        <tr>
+            <td colspan="2">{% translate "Conditioning (Container)" %}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+            <td colspan="2">{% translate "Sanitizing Agent (Sprayer)" %}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+            <td colspan="13" style="text-align: left;">{% translate "Products Used:" %} </td>
+        </tr>
+
+    </table>
+</div>
+
+<div class="guideline-section"  style="margin-top:-5px;">
+    <div class="title">
+        <h2>
+            {% blocktrans %}
+                Preventive Guidelines Before, During, and After Harvest <br>
+                (As indicated below: Yes or No, as appropriate)
+            {% endblocktrans %}
+        </h2>
+    </div>
+    <div class="grid-container" style="margin-top:0px;">
+        <!-- Tabla 1 -->
+        <table class="guideline_table">
+            <tr>
+                <td class="guideline_table_subtitle" colspan="3">{% translate "Health, Hygiene, and Safety of Personnel" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Clean staff" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Hair and nails trimmed" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Jewelry worn" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Proper shirt, pants, and footwear" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Proper hand washing" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Food was consumed in harvest area" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Hive presence" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Appearance of electric wires" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "A fully equipped first aid kit is available" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Personnel under the influence of substances and/or alcohol." %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Sick and/or injured personnel" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+        </table>
+        <!-- Tabla 3 -->
+        <table class="guideline_table">
+            <tr>
+                <td class="guideline_table_subtitle" colspan="3">{% translate "3.- Orchand Inspection" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "The orchard follows a food safety program" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Meets the safety interval requirements" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="width: 80%; border-bottom: 1px solid black;">{% translate "Applied product:" %} </td>
+            </tr>
+            <tr>
+                <td colspan="3" style="width: 80%; border-bottom: 1px solid black;">{% translate "Application date:" %} </td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Harvest area inspected" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Presencia de basura" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Presencia de animales y/o materia fecal" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "The orchard's restroom was inspected" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Restroom clean and leak-free" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Equipped with handwashing supplies" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Restroom water quality, potable (in PPM)" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "The orchard's dining area was inspected" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Clean table" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Clean grill" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Trash container available" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "The facilities were cleaned and organized after finishing" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "The fire pit was extinguished" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+        </table>
+        <!-- Tabla 5 y 6 -->
+        <div class="double-table">
+            <!-- Tabla 5 -->
+            <table class="guideline_table">
+                <tr>
+                    <td class="guideline_table_subtitle" colspan="3">{% translate "5.- Vehicle Hygiene" %}</td>
+                </tr>
+                <tr>
+                    <td style="width: 80%;">{% translate "Clean Truck" %}</td>
+                    <td class="td-option">{% translate "Yes" %}</td>
+                    <td class="td-option">{% translate "No" %}</td>
+                </tr>
+                <tr>
+                    <td style="width: 80%;">{% translate "Presence of odors and/or trash" %}</td>
+                    <td class="td-option">{% translate "Yes" %}</td>
+                    <td class="td-option">{% translate "No" %}</td>
+                </tr>
+                <tr>
+                    <td style="width: 80%;">{% translate "Muddy or mesh-covered truck" %}</td>
+                    <td class="td-option">{% translate "Yes" %}</td>
+                    <td class="td-option">{% translate "No" %}</td>
+                </tr>
+                <tr>
+                    <td style="width: 80%;">{% translate "Leakage of fuel and/or oil" %}</td>
+                    <td class="td-option">{% translate "Yes" %}</td>
+                    <td class="td-option">{% translate "No" %}</td>
+                </tr>
+                <tr>
+                    <td style="width: 80%;">{% translate "Operator" %}</td>
+                    <td class="td-option">{% translate "Yes" %}</td>
+                    <td class="td-option">{% translate "No" %}</td>
+                </tr>
+                <tr>
+                    <td style="width: 80%;">{% translate "Trailer" %}</td>
+                    <td class="td-option">{% translate "Yes" %}</td>
+                    <td class="td-option">{% translate "No" %}</td>
+                </tr>
+            </table>
+            <!-- Tabla 6 -->
+            <table class="guideline_table">
+                <tr>
+                    <td class="guideline_table_subtitle" colspan="3">6.- Sanitary Hygiene</td>
+                </tr>
+                <tr>
+                    <td style="width: 80%;">{% translate "A sanitary facility was used for no more than 20 people" %}</td>
+                    <td class="td-option">{% translate "Yes" %}</td>
+                    <td class="td-option">{% translate "No" %}</td>
+                </tr>
+                <tr>
+                    <td style="width: 80%;">{% translate "The hand washing station was the only one installed" %}</td>
+                    <td class="td-option">{% translate "Yes" %}</td>
+                    <td class="td-option">{% translate "No" %}</td>
+                </tr>
+                <tr>
+                    <td style="width: 80%;">{% translate "Sets up a fully equipped restroom" %}</td>
+                    <td class="td-option">{% translate "Yes" %}</td>
+                    <td class="td-option">{% translate "No" %}</td>
+                </tr>
+                <tr>
+                    <td style="width: 80%;">{% translate "Is equipped with all necessary hygiene materials and supplies" %}</td>
+                    <td class="td-option">{% translate "Yes" %}</td>
+                    <td class="td-option">{% translate "No" %}</td>
+                </tr>
+                <tr>
+                    <td style="width: 80%;">{% translate "Cleaned and sanitized the workbench" %}</td>
+                    <td class="td-option">{% translate "Yes" %}</td>
+                    <td class="td-option">{% translate "No" %}</td>
+                </tr>
+                <tr>
+                    <td style="width: 80%;">{% translate "Lime was applied and the pit was sealed" %}</td>
+                    <td class="td-option">{% translate "Yes" %}</td>
+                    <td class="td-option">{% translate "No" %}</td>
+                </tr>
+            </table>
+        </div>
+        <!-- Tabla 2 -->
+        <table class="guideline_table">
+            <tr>
+                <td class="guideline_table_subtitle" colspan="3">{% translate "2.- Tools Maintenance and Hygiene " %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Cleaned and disinfected scissors" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Cleaned and disinfected hooks" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Clean and sanitized bags and nets" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Empty bags" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Cleaning and disinfection of the bin" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Cleaning and disinfection of sprayers" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Clean sanitation compartment" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Leak-free and clean water collection vessel" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Clean tool carrying bags and containers" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Well-organized personnel transport" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Measures are taken to keep cutting tools separate from safety gear and sanitary facilities" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+        </table>
+        <!-- Tabla 4 -->
+        <table class="guideline_table">
+            <tr>
+                <td class="guideline_table_subtitle" colspan="3">{% translate "4.- Guidelines for measures during harvest process" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "The producer or supervisor was present" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Isolate dirty or damaged boxes" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Inspected the proper stacking of boxes" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Fruit harvested and trimmed from the top" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Fruit transferred from bag to box" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Fruit is stored in a sheltered space" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Fruit that touched the ground was collected" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+            <tr>
+                <td style="width: 80%;">{% translate "Contact between cutting tools and the ground is avoided" %}</td>
+                <td class="td-option">{% translate "Yes" %}</td>
+                <td class="td-option">{% translate "No" %}</td>
+            </tr>
+        </table>
+        <!-- Tabla 6 -->
+        <table class="guideline_table">
+            <tr>
+                <td class="guideline_table_subtitle" colspan="3">{% translate "7.-Inventory of Materials" %}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="signature_section">
+    <div class="observations">
+        <h3 style="margin-bottom: 4px;">{% translate "Observations" %}</h3>
+        <p style="margin-top:-5px;"></p>
+        <p style="margin-top:-5px;"></p>
+    </div>
+    <p style="margin-bottom: 20px;">
+        {% translate "To the producer or fruit supervisor: In order to ensure the quality and safety of the fruit, the points mentioned above were verified. We suggest checking
+        the market, verify the number of boxes filled with fruit, check that the truck doors are closed, check the picking bags and the personnel's truck.
+        If not, it will be your responsibility if an anomaly occurs.
+        If you agree with the above, please write your name and sign in the indicated section." %}
+    </p>
+    <div class="signature">
+        <p style="border-bottom: 1px solid black; margin-bottom: 0px;"></p>
+        <p style="border-bottom: 1px solid black; margin-bottom: 0px;"></p>
+        <p style="border-bottom: 1px solid black; margin-bottom: 0px;"></p>
+        <p style="border-bottom: 1px solid black; margin-bottom: 0px;"></p>
+        <p>{% translate "Crew Chief" %}</p>
+        <p>{% translate "Responsible Technician or Supervisor" %}</p>
+        <p>{% translate "Transport Operator" %}</p>
+        <p>{% translate "Producer and/or Orchard Manager" %}</p>
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% endblock page_content %}

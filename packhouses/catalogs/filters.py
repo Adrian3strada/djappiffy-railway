@@ -1,7 +1,7 @@
 from django.contrib import admin
 from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
-from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductSeasonKind, ProductMassVolumeKind,
+from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind,
                      Gatherer, PaymentKind,
                      Provider, Client,
                      Maquiladora, WeighingScale, ExportingCompany, CustomsBroker, PalletConfiguration
@@ -126,12 +126,12 @@ class ByProductHarvestSizeKindForOrganizationFilter(admin.SimpleListFilter):
 
 
 class ByProductSeasonKindForOrganizationFilter(admin.SimpleListFilter):
-    title = _('Season')
-    parameter_name = 'product_season_kind'
+    title = _('Phenology')
+    parameter_name = 'product_phenology_kind'
 
     def lookups(self, request, model_admin):
-        product_season_kinds = ProductSeasonKind.objects.filter(product__organization=request.organization, is_enabled=True)
-        return [(product_season_kind.id, f"{product_season_kind.product.name}: {product_season_kind.name}") for product_season_kind in product_season_kinds]
+        product_phenology_kinds = ProductPhenologyKind.objects.filter(product__organization=request.organization, is_enabled=True)
+        return [(product_phenology_kind.id, f"{product_phenology_kind.product.name}: {product_phenology_kind.name}") for product_phenology_kind in product_phenology_kinds]
 
     def queryset(self, request, queryset):
         if self.value():
@@ -471,7 +471,7 @@ class ByCityForOrganizationWeighingScaleFilter(admin.SimpleListFilter):
             return queryset.filter(city__id=self.value())
         return queryset
 
-    
+
 class ByCountryForOrganizationExportingCompaniesFilter(admin.SimpleListFilter):
     title = _('Country')
     parameter_name = 'country'
@@ -522,7 +522,7 @@ class ByCityForOrganizationExportingCompaniesFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(city__id=self.value())
         return queryset
-    
+
 class ByCountryForOrganizationCustomsBrokersFilter(admin.SimpleListFilter):
     title = _('Country')
     parameter_name = 'country'
@@ -539,7 +539,7 @@ class ByCountryForOrganizationCustomsBrokersFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(country__id=self.value())
         return queryset
-    
+
 class ByProductForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
     title = _('Product')
     parameter_name = 'product'
@@ -556,7 +556,7 @@ class ByProductForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(product__id=self.value())
         return queryset
-    
+
 class ByMarketForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
     title = _('Market')
     parameter_name = 'market'
@@ -573,8 +573,8 @@ class ByMarketForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(market__id=self.value())
         return queryset
-    
-   
+
+
 class ByProductVarietyForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
     title = _('Product Variety')
     parameter_name = 'product_variety'

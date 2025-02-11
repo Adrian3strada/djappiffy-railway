@@ -93,14 +93,18 @@
 
 <table class="folio-table">
     <tr>
-        <td style="width: 10%; border-left: 10px solid #123782; background-color: #ffc600;">Folio</td>
+        <td style="width: 10%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Folio" %}</td>
         <td style="width: 20%; color:red; background-color: #fff4cc;"> N° {{ requisition.ooid }}</td>
         <td style="width: 70%;"></td>
     </tr>
 </table>
 
 <div>
-<p>Order Date: {{requisition.created_at}} Hrs. </p>
+<p>
+    {% blocktrans with created_at=requisition.created_at %}
+        Order Date: {{ created_at }} Hrs.
+    {% endblocktrans %}
+</p>
 
 <p>{{ request_text }}</p>
 
@@ -108,9 +112,9 @@
 <table class="table_form" style="width:100%;">
     <thead>
         <tr>
-            <th>Supply</th>
-            <th>Quantity</th>
-            <th>Comments</th>
+            <th>{% translate "Supply" %}</th>
+            <th>{% translate "Quantity" %}</th>
+            <th>{% translate "Comments" %}</th>
         </tr>
     </thead>
     <tbody>

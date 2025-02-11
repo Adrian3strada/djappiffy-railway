@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from .models import (ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle, Country, Region, SubRegion, City)
 from packhouses.catalogs.models import HarvestingCrew
 from django.template.loader import render_to_string
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from weasyprint import HTML, CSS
 from io import BytesIO
 from datetime import datetime
@@ -15,8 +16,14 @@ from django.urls import reverse
 from django.http import HttpResponseForbidden
 from django.http import JsonResponse
 
+from django.contrib.auth.decorators import login_required
 
 def harvest_order_pdf(request, harvest_id):
+    # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
+    if not request.user.is_authenticated:
+        login_url = reverse('admin:login') 
+        return redirect(login_url)
+    
     # Obtener el registro
     harvest = get_object_or_404(ScheduleHarvest, pk=harvest_id)
 
@@ -63,7 +70,7 @@ def harvest_order_pdf(request, harvest_id):
         }''')
 
     # Renderizar el template HTML
-    html_string = render_to_string('admin/packhouses/schedule-harvest-report.html', {
+    html_string = render_to_string('admin/packhouses/on-site-sales-report.html', {
         'packhouse_name': packhouse_name,
         'company_address': company_address,
         'pdf_title': pdf_title,
@@ -92,6 +99,11 @@ def harvest_order_pdf(request, harvest_id):
 
 
 def good_harvest_practices_format(request, harvest_id):
+    # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
+    if not request.user.is_authenticated:
+        login_url = reverse('admin:login') 
+        return redirect(login_url)
+    
     # Obtener el registro
     harvest = get_object_or_404(ScheduleHarvest, pk=harvest_id)
 

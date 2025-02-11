@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateProductVariety() {
     const productId = productField.val();
     if (productId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_variety/?product=${productId}&is_enabled=1`)
+      fetchOptions(`${API_BASE_URL}/catalogs/product-variety/?product=${productId}&is_enabled=1`)
         .then(data => {
           updateFieldOptions(varietiesField, data);
         });
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
       console.log("marketCountries", marketCountries)
       console.log("productId", productId)
       console.log("marketId", marketId)
-      fetchOptions(`${API_BASE_URL}/base/market-product-size-standard-size/?countries=${marketCountries}&product_kind=${productProductKind}&is_enabled=1`)
+      fetchOptions(`${API_BASE_URL}/base/country-product-standard-size/?countries=${marketCountries}&product_kind=${productProductKind}&is_enabled=1`)
         .then(data => {
           const marketNames = {};
           marketField.find('option').each(function () {
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateNameFromMarketStandardProductSize() {
     const standardSize = standardSizeField.val();
     if (standardSize) {
-      fetchOptions(`${API_BASE_URL}/base/market-product-size-standard-size/${standardSize}/`)
+      fetchOptions(`${API_BASE_URL}/base/country-product-standard-size/${standardSize}/`)
         .then(data => {
           nameField.val(data.name);
           setAliasName();

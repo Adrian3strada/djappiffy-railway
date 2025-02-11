@@ -13,18 +13,17 @@ from django_ckeditor_5.fields import CKEditor5Field
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from common.billing.models import TaxRegime, LegalEntityCategory
 from packhouses.catalogs.utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
     get_vehicle_category_choices, get_provider_categories_choices, get_harvest_cutting_categories_choices
 from django.core.exceptions import ValidationError
-from common.base.models import ProductKind
+from common.base.models import ProductKind, CapitalFramework, LegalEntityCategory
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   OrchardCertificationVerifier,
                                                   OrchardCertificationKind)
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, ProductVariety,
-                                        Market, ProductSeasonKind, ProductHarvestSizeKind, WeighingScale,
+                                        Market, ProductPhenologyKind, ProductHarvestSizeKind, WeighingScale,
                                         HarvestingCrew, Vehicle, HarvestContainer, OrchardCertification)
 from django.db.models import Max, Min
 from django.db.models import Q, F
@@ -78,7 +77,7 @@ class ScheduleHarvest(models.Model):
         on_delete=models.PROTECT,
     )
     product_season_kind = models.ForeignKey(
-        ProductSeasonKind,
+        ProductPhenologyKind,
         verbose_name=_("Product season"),
         on_delete=models.PROTECT
     )

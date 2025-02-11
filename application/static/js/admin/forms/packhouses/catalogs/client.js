@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const stateField = $('#id_state');
   const cityField = $('#id_city');
   const districtField = $('#id_district');
-  const legalCategoryField = $('#id_legal_category');
+  const capitalFrameworkField = $('#id_capital_framework');
 
   const API_BASE_URL = '/rest/v1';
 
@@ -44,10 +44,10 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateLegalEntityCategory() {
     const countryId = countryField.val();
     if (countryId) {
-      fetchOptions(`${API_BASE_URL}/billing/legal-entity-category/?country=${countryId}`)
-        .then(data => updateFieldOptions(legalCategoryField, data));
+      fetchOptions(`${API_BASE_URL}/base/capital-framework/?country=${countryId}`)
+        .then(data => updateFieldOptions(capitalFrameworkField, data));
     } else {
-      updateFieldOptions(legalCategoryField, []);
+      updateFieldOptions(capitalFrameworkField, []);
     }
   }
 
@@ -106,5 +106,5 @@ document.addEventListener('DOMContentLoaded', function () {
     updateDistrict();
   });
 
-  [marketField, countryField, stateField, cityField, districtField, legalCategoryField].forEach(field => field.select2());
+  [marketField, countryField, stateField, cityField, districtField, capitalFrameworkField].forEach(field => field.select2());
 });

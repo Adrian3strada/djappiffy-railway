@@ -1,0 +1,9 @@
+{% load i18n %}
+{% load admin_urls %}
+
+{% if has_export_permission %}
+<button button class="btn btn-info" style="margin-right: 10px;">
+    <a href="{% url opts|admin_urlname:'export' %}{{cl.get_query_string}}" class="text-white" target="_blank">
+        <i class="fas fa-file-pdf"></i> {% translate "Export Excel" %}</a>
+</button>
+{% endif %}
