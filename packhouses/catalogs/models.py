@@ -214,12 +214,11 @@ class ProductRipeness(CleanProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    sort_order = models.IntegerField(default=0, verbose_name=_('Sort order'))
 
     class Meta:
         verbose_name = _('Product ripeness')
         verbose_name_plural = _('Product ripenesses')
-        ordering = ('product', 'sort_order', '-name')
+        ordering = ('product', 'name')
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'],
                                     name='productripeness_unique_name_product'),
