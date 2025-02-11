@@ -3,7 +3,7 @@
   "model": "catalogs.market",
   "pk": 1,
   "fields": {
-    "name": "MEXICO UNO",
+    "name": "MEXICO",
     "alias": "MX1",
     "management_cost_per_kg": 11.0,
     "is_mixable": true,
@@ -182,6 +182,7 @@
     "kind": 8,
     "name": "AGUACATE",
     "description": null,
+    "price_measure_unit_category": "",
     "is_enabled": true,
     "organization": 1
   }
@@ -193,6 +194,7 @@
     "kind": 8,
     "name": "AGUACATE DOS",
     "description": null,
+    "price_measure_unit_category": "",
     "is_enabled": true,
     "organization": 2
   }
@@ -204,6 +206,7 @@
     "kind": 8,
     "name": "PALTA",
     "description": null,
+    "price_measure_unit_category": "",
     "is_enabled": true,
     "organization": 1
   }
@@ -215,6 +218,7 @@
     "kind": 9,
     "name": "LIMÓN AMARILLO",
     "description": null,
+    "price_measure_unit_category": "",
     "is_enabled": true,
     "organization": 1
   }
@@ -226,6 +230,7 @@
     "kind": 8,
     "name": "VERDE",
     "description": null,
+    "price_measure_unit_category": "",
     "is_enabled": true,
     "organization": 1
   }
@@ -237,6 +242,7 @@
     "kind": 8,
     "name": "UNO",
     "description": null,
+    "price_measure_unit_category": "",
     "is_enabled": true,
     "organization": 1
   }
@@ -453,7 +459,8 @@
   "model": "catalogs.productphenologykind",
   "pk": 2,
   "fields": {
-    "name": "DESECHO","is_enabled": true,
+    "name": "DESECHO",
+    "is_enabled": true,
     "product": 1,
     "sort_order": 1
   }
@@ -523,8 +530,8 @@
   "pk": 1,
   "fields": {
     "name": "ESTANDAR",
-    "packaging_supply_kind": 1,
     "is_enabled": true,
+    "packaging_supply_kind": 1,
     "product": 1,
     "sort_order": 0
   }
@@ -534,8 +541,8 @@
   "pk": 2,
   "fields": {
     "name": "ENMALLADO",
-    "packaging_supply_kind": 1,
     "is_enabled": true,
+    "packaging_supply_kind": 1,
     "product": 1,
     "sort_order": 1
   }
@@ -545,8 +552,8 @@
   "pk": 3,
   "fields": {
     "name": "ORGÁNICO",
-    "packaging_supply_kind": 1,
     "is_enabled": true,
+    "packaging_supply_kind": 1,
     "product": 1,
     "sort_order": 2
   }
@@ -556,8 +563,8 @@
   "pk": 4,
   "fields": {
     "name": "ESTANDAR",
-    "packaging_supply_kind": 1,
     "is_enabled": true,
+    "packaging_supply_kind": 1,
     "product": 2,
     "sort_order": 0
   }
@@ -567,8 +574,8 @@
   "pk": 5,
   "fields": {
     "name": "ENMALLADO",
-    "packaging_supply_kind": 1,
     "is_enabled": true,
+    "packaging_supply_kind": 1,
     "product": 2,
     "sort_order": 1
   }
@@ -578,8 +585,8 @@
   "pk": 6,
   "fields": {
     "name": "ORGÁNICO",
-    "packaging_supply_kind": 1,
     "is_enabled": true,
+    "packaging_supply_kind": 1,
     "product": 2,
     "sort_order": 2
   }
@@ -975,13 +982,13 @@
   "pk": 1,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
+    "main_supply_kind": 1,
+    "main_supply": 3,
+    "main_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
     "market": 1,
     "product": 1,
     "product_packaging_standard": 1,
-    "main_supply_kind": 1,
-    "main_supply_quantity": 1,
-    "main_supply": 3,
-    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1
   }
@@ -991,13 +998,13 @@
   "pk": 2,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
+    "main_supply_kind": 1,
+    "main_supply": 3,
+    "main_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
     "market": 1,
     "product": 1,
     "product_packaging_standard": 1,
-    "main_supply_kind": 1,
-    "main_supply_quantity": 1,
-    "main_supply": 3,
-    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1
   }
@@ -1007,13 +1014,13 @@
   "pk": 3,
   "fields": {
     "name": "MALLA SENCILLA",
+    "main_supply_kind": 6,
+    "main_supply": 20,
+    "main_supply_quantity": 6,
+    "max_product_amount_per_package": 1.0,
     "market": 1,
     "product": 1,
     "product_packaging_standard": 1,
-    "main_supply_kind": 6,
-    "main_supply_quantity": 6,
-    "main_supply": 20,
-    "max_product_amount_per_package": 1.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1023,13 +1030,13 @@
   "pk": 4,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
+    "main_supply_kind": 1,
+    "main_supply": 3,
+    "main_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
     "market": 1,
     "product": 1,
     "product_packaging_standard": 1,
-    "main_supply_kind": 1,
-    "main_supply_quantity": 1,
-    "main_supply": 3,
-    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1
   }
@@ -1039,13 +1046,13 @@
   "pk": 5,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
+    "main_supply_kind": 1,
+    "main_supply": 3,
+    "main_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
     "market": 1,
     "product": 1,
     "product_packaging_standard": 1,
-    "main_supply_kind": 1,
-    "main_supply_quantity": 1,
-    "main_supply": 3,
-    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1
   }
@@ -1055,13 +1062,13 @@
   "pk": 6,
   "fields": {
     "name": "PALLET 48'S + 70'S",
+    "main_supply_kind": 3,
+    "main_supply": 23,
+    "main_supply_quantity": 3,
+    "max_product_amount_per_package": 1.0,
     "market": 1,
     "product": 1,
     "product_packaging_standard": 1,
-    "main_supply_kind": 3,
-    "main_supply_quantity": 3,
-    "main_supply": 23,
-    "max_product_amount_per_package": 100.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1071,13 +1078,13 @@
   "pk": 7,
   "fields": {
     "name": "PALLET 48'S + 70'S (ENMALLADOS)",
+    "main_supply_kind": 3,
+    "main_supply": 23,
+    "main_supply_quantity": 3,
+    "max_product_amount_per_package": 1.0,
     "market": 1,
     "product": 1,
     "product_packaging_standard": 1,
-    "main_supply_kind": 3,
-    "main_supply_quantity": 3,
-    "main_supply": 23,
-    "max_product_amount_per_package": 100.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1254,130 +1261,6 @@
     "outside": 7,
     "inside": 4,
     "quantity": 10
-  }
-},
-{
-  "model": "packhouse_settings.orchardcertificationverifier",
-  "pk": 1,
-  "fields": {
-    "name": "VERIFICADOR UNO 1",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.orchardcertificationverifier",
-  "pk": 2,
-  "fields": {
-    "name": "VERIFICADOR DOS 1",
-    "is_enabled": true,
-    "organization": 2
-  }
-},
-{
-  "model": "packhouse_settings.orchardcertificationverifier",
-  "pk": 3,
-  "fields": {
-    "name": "VERIFICADOR DOS 2",
-    "is_enabled": true,
-    "organization": 2
-  }
-},
-{
-  "model": "packhouse_settings.orchardcertificationverifier",
-  "pk": 4,
-  "fields": {
-    "name": "VERIFICADOR UNO 2",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 1,
-  "fields": {
-    "name": "CAJA",
-    "unit_kind": "piece",
-    "is_packaging": true,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 2,
-  "fields": {
-    "name": "CHAROLA",
-    "unit_kind": "piece",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 3,
-  "fields": {
-    "name": "TARIMA",
-    "unit_kind": "piece",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 4,
-  "fields": {
-    "name": "ESQUINERO",
-    "unit_kind": "piece",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 5,
-  "fields": {
-    "name": "TAPA",
-    "unit_kind": "piece",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 6,
-  "fields": {
-    "name": "MALLA",
-    "unit_kind": "cm",
-    "is_packaging": true,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 7,
-  "fields": {
-    "name": "FILM",
-    "unit_kind": "cm",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 8,
-  "fields": {
-    "name": "FLEJE",
-    "unit_kind": "m",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
   }
 }
 ]

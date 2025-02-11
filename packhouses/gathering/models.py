@@ -13,11 +13,10 @@ from django_ckeditor_5.fields import CKEditor5Field
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from common.billing.models import TaxRegime, LegalEntityCategory
 from packhouses.catalogs.utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
     get_vehicle_category_choices, get_provider_categories_choices, get_harvest_cutting_categories_choices
 from django.core.exceptions import ValidationError
-from common.base.models import ProductKind
+from common.base.models import ProductKind, TaxRegime, LegalEntityCategory
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   OrchardCertificationVerifier,

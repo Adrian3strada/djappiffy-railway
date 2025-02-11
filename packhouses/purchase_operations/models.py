@@ -10,8 +10,7 @@ from organizations.models import Organization
 from cities_light.models import City, Country, Region, SubRegion
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
-from common.billing.models import TaxRegime, LegalEntityCategory
-from common.base.models import ProductKind
+from common.base.models import ProductKind, TaxRegime, LegalEntityCategory
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   OrchardCertificationVerifier,

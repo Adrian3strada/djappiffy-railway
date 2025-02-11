@@ -1,10 +1,11 @@
 from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
-from .models import (ProductKind, CountryProductStandard, CountryProductStandardSize, LegalEntityCategory,
+from .models import (ProductKind, CountryProductStandard, CountryProductStandardSize, LegalEntityCategory, TaxRegime,
                      CountryProductStandardPackaging,
                      Incoterm, LocalDelivery)
-from .filters import ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter
+from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
+                      ByCountryForTaxRegimeFilter)
 from wagtail.documents.models import Document
 from wagtail.images.models import Image
 from taggit.models import Tag
@@ -66,6 +67,13 @@ class LegalEntityCategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'code', 'country']
     search_fields = ['name',]
     list_filter = ['country']
+
+
+@admin.register(TaxRegime)
+class TaxRegimeAdmin(admin.ModelAdmin):
+    list_display = ['name', 'code', 'country']
+    search_fields = ['name',]
+    list_filter = [ByCountryForTaxRegimeFilter]
 
 
 class CustomOrganizationAdmin(OrganizationAdmin):

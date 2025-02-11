@@ -14,11 +14,11 @@ from django_ckeditor_5.fields import CKEditor5Field
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from common.billing.models import TaxRegime, LegalEntityCategory
 from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
     get_vehicle_category_choices, get_provider_categories_choices
 from django.core.exceptions import ValidationError
-from common.base.models import ProductKind, CountryProductStandardSize, CountryProductStandardPackaging
+from common.base.models import (ProductKind, CountryProductStandardSize, CountryProductStandardPackaging, TaxRegime,
+                                LegalEntityCategory)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   AuthorityPackagingKind,
@@ -122,6 +122,22 @@ class Product(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
+class ProductPhenologyKind(CleanNameAndProductMixin, models.Model):
+    # Normal, roña, etc
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    sort_order = models.PositiveIntegerField(default=0, verbose_name=_('Sort order'))
+
+    class Meta:
+        verbose_name = _('Product phenology kind')
+        verbose_name_plural = _('Product phenology kinds')
+        ordering = ('product', 'sort_order',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product'], name='productphenologykind_unique_name_product'),
+        ]
+
+
 class ProductVariety(CleanNameAndAliasProductMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Variety name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
@@ -155,38 +171,6 @@ class ProductHarvestSizeKind(CleanProductMixin, models.Model):
         ]
 
 
-class ProductRipness(CleanProductMixin, models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    sort_order = models.IntegerField(default=0, verbose_name=_('Sort order'))
-
-    class Meta:
-        verbose_name = _('Product ripness')
-        verbose_name_plural = _('Product ripnesses')
-        ordering = ('product', 'sort_order', '-name')
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'product'],
-                                    name='productripness_unique_name_product'),
-        ]
-
-
-class ProductPhenologyKind(CleanNameAndProductMixin, models.Model):
-    # Normal, roña, etc
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
-    sort_order = models.PositiveIntegerField(default=0, verbose_name=_('Sort order'))
-
-    class Meta:
-        verbose_name = _('Product phenology kind')
-        verbose_name_plural = _('Product phenology kinds')
-        ordering = ('product', 'sort_order',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'product'], name='productphenologykind_unique_name_product'),
-        ]
-
-
 class ProductMassVolumeKind(CleanNameAndProductMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -200,6 +184,22 @@ class ProductMassVolumeKind(CleanNameAndProductMixin, models.Model):
         ordering = ('product', 'sort_order',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'], name='productmassvolumekind_unique_name_product'),
+        ]
+
+
+class ProductRipness(CleanProductMixin, models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    sort_order = models.IntegerField(default=0, verbose_name=_('Sort order'))
+
+    class Meta:
+        verbose_name = _('Product ripness')
+        verbose_name_plural = _('Product ripnesses')
+        ordering = ('product', 'sort_order', '-name')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product'],
+                                    name='productripness_unique_name_product'),
         ]
 
 

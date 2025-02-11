@@ -1,11 +1,7 @@
 from django.contrib import admin
-from .models import TaxRegime, LegalEntity, BillingSerie
+from .models import LegalEntity, BillingSerie
 
 # Register your models here.
-
-
-admin.site.register(TaxRegime)
-
 
 
 class BillingSerieInline(admin.TabularInline):

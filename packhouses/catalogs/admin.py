@@ -144,7 +144,23 @@ class MarketAdmin(ByOrganizationAdminMixin):
 
 # Products
 
-class ProductSeasonKindInline(admin.TabularInline):
+class ProductVarietyInline(admin.TabularInline):
+    # TODO: crear automáticamente el alias de 3 letras.
+    model = ProductVariety
+    extra = 0
+    fields = ('name', 'alias', 'description', 'is_enabled')
+    verbose_name = _('Variety')
+    verbose_name_plural = _('Varieties')
+    # formset = ProductVarietyInlineFormSet
+
+    @uppercase_formset_charfield('name')
+    @uppercase_alphanumeric_formset_charfield('alias')
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+
+class ProductPhenologyKindInline(admin.TabularInline):
     model = ProductPhenologyKind
     extra = 0
     fields = ('name', 'is_enabled', 'sort_order')
@@ -154,6 +170,20 @@ class ProductSeasonKindInline(admin.TabularInline):
     # formset = ProductSeasonKindInlineFormSet
 
     @uppercase_formset_charfield('name')
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+
+class ProductHarvestSizeKindInline(admin.TabularInline):
+    model = ProductHarvestSizeKind
+    extra = 0
+    fields = ('name', 'product', 'is_enabled', 'sort_order')
+    ordering = ['sort_order', '-name']
+    verbose_name = _('Harvest size')
+    verbose_name_plural = _('Harvest sizes')
+    # formset = ProductHarvestSizeKindInlineFormSet
+
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
@@ -174,36 +204,6 @@ class ProductMassVolumeKindInline(admin.TabularInline):
         return formset
 
 
-class ProductVarietyInline(admin.TabularInline):
-    # TODO: crear automáticamente el alias de 3 letras.
-    model = ProductVariety
-    extra = 0
-    fields = ('name', 'alias', 'description', 'is_enabled')
-    verbose_name = _('Variety')
-    verbose_name_plural = _('Varieties')
-    # formset = ProductVarietyInlineFormSet
-
-    @uppercase_formset_charfield('name')
-    @uppercase_alphanumeric_formset_charfield('alias')
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        return formset
-
-
-class ProductHarvestSizeKindInline(admin.TabularInline):
-    model = ProductHarvestSizeKind
-    extra = 0
-    fields = ('name', 'product', 'is_enabled', 'sort_order')
-    ordering = ['sort_order', '-name']
-    verbose_name = _('Harvest size')
-    verbose_name_plural = _('Harvest sizes')
-    # formset = ProductHarvestSizeKindInlineFormSet
-
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        return formset
-
-
 class ProductRipnessInline(admin.TabularInline):
     model = ProductRipness
     extra = 0
@@ -216,14 +216,14 @@ class ProductRipnessInline(admin.TabularInline):
         return formset
 
 
-@admin.register(Product)
+@admin.register(ProductAdmin)
 class ProductAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'kind', 'is_enabled')
     list_filter = (ProductKindForPackagingFilter, 'price_measure_unit_category', 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
     fields = ('kind', 'name', 'description', 'price_measure_unit_category', 'is_enabled')
-    inlines = [ProductSeasonKindInline, ProductMassVolumeKindInline, ProductVarietyInline,
-               ProductHarvestSizeKindInline, ProductRipnessInline]
+    inlines = [ProductVarietyInline, ProductPhenologyKindInline, ProductHarvestSizeKindInline,
+               ProductMassVolumeKindInline, ProductRipnessInline]
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):

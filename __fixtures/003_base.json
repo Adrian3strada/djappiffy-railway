@@ -180,574 +180,6 @@
   }
 },
 {
-  "model": "base.legalentitycategory",
-  "pk": 1,
-  "fields": {
-    "code": "601",
-    "name": "General de Ley Personas Morales",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 2,
-  "fields": {
-    "code": "603",
-    "name": "Personas Morales con Fines no Lucrativos",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 3,
-  "fields": {
-    "code": "605",
-    "name": "Sueldos y Salarios e Ingresos Asimilados a Salarios",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 4,
-  "fields": {
-    "code": "606",
-    "name": "Arrendamiento",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 5,
-  "fields": {
-    "code": "607",
-    "name": "Régimen de Enajenación o Adquisición de Bienes",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 6,
-  "fields": {
-    "code": "608",
-    "name": "Demás ingresos",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 7,
-  "fields": {
-    "code": "609",
-    "name": "Consolidación",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 8,
-  "fields": {
-    "code": "610",
-    "name": "Residentes en el Extranjero sin Establecimiento Permanente en México",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 9,
-  "fields": {
-    "code": "611",
-    "name": "Ingresos por Dividendos (socios y accionistas)",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 10,
-  "fields": {
-    "code": "612",
-    "name": "Personas Físicas con Actividades Empresariales y Profesionales",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 11,
-  "fields": {
-    "code": "614",
-    "name": "Ingresos por intereses",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 12,
-  "fields": {
-    "code": "615",
-    "name": "Régimen de los ingresos por obtención de premios",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 13,
-  "fields": {
-    "code": "616",
-    "name": "Sin obligaciones fiscales",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 14,
-  "fields": {
-    "code": "620",
-    "name": "Sociedades Cooperativas de Producción que optan por diferir sus ingresos",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 15,
-  "fields": {
-    "code": "621",
-    "name": "Incorporación Fiscal",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 16,
-  "fields": {
-    "code": "622",
-    "name": "Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 17,
-  "fields": {
-    "code": "623",
-    "name": "Opcional para Grupos de Sociedades",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 18,
-  "fields": {
-    "code": "624",
-    "name": "Coordinados",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 19,
-  "fields": {
-    "code": "625",
-    "name": "Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 20,
-  "fields": {
-    "code": "626",
-    "name": "Régimen Simplificado de Confianza",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 21,
-  "fields": {
-    "code": "628",
-    "name": "Hidrocarburos",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 22,
-  "fields": {
-    "code": "629",
-    "name": "De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 23,
-  "fields": {
-    "code": "630",
-    "name": "Enajenación de acciones en bolsa de valores",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 24,
-  "fields": {
-    "code": "1",
-    "name": "Single",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 25,
-  "fields": {
-    "code": "1",
-    "name": "Married Filing Jointly",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 26,
-  "fields": {
-    "code": "1",
-    "name": "Married Filing Separately",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 27,
-  "fields": {
-    "code": "1",
-    "name": "Head of Household",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 28,
-  "fields": {
-    "code": "1",
-    "name": "Qualifying Widow(er)",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 29,
-  "fields": {
-    "code": "2",
-    "name": "Sole Proprietorship",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 30,
-  "fields": {
-    "code": "2",
-    "name": "Partnership",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 31,
-  "fields": {
-    "code": "2",
-    "name": "C-Corporation",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 32,
-  "fields": {
-    "code": "2",
-    "name": "S-Corporation",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 33,
-  "fields": {
-    "code": "2",
-    "name": "Limited Liability Company (LLC)",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 34,
-  "fields": {
-    "code": "2",
-    "name": "Non-Profit Organization",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 35,
-  "fields": {
-    "code": "3",
-    "name": "Farmers and Ranchers",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 36,
-  "fields": {
-    "code": "3",
-    "name": "Household Employers",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 37,
-  "fields": {
-    "code": "3",
-    "name": "Resident and Non-Resident Aliens",
-    "country": 234
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 5,
-  "fields": {
-    "code": "CFR",
-    "name": "Cost And Freight",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Cost And Freight",
-    "is_enabled": true,
-    "sort_order": 5
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 6,
-  "fields": {
-    "code": "CIF",
-    "name": "Cost, Insurance And Freight",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Cost, Insurance And Freight",
-    "is_enabled": true,
-    "sort_order": 6
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 11,
-  "fields": {
-    "code": "CIF",
-    "name": "Delivery Duty Paid",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Delivery Duty Paid",
-    "is_enabled": true,
-    "sort_order": 11
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 8,
-  "fields": {
-    "code": "CIP",
-    "name": "Cost, Insurance And Freight",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Cost, Insurance And Freight",
-    "is_enabled": true,
-    "sort_order": 8
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 7,
-  "fields": {
-    "code": "CPT",
-    "name": "Carriage Paid To",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Carriage Paid To",
-    "is_enabled": true,
-    "sort_order": 7
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 9,
-  "fields": {
-    "code": "DAP",
-    "name": "Delivery At Place",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Delivery At Place",
-    "is_enabled": true,
-    "sort_order": 9
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 10,
-  "fields": {
-    "code": "DPU",
-    "name": "Delivered At Place Unloaded",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Delivered At Place Unloaded",
-    "is_enabled": true,
-    "sort_order": 10
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 1,
-  "fields": {
-    "code": "EXW",
-    "name": "Ex Works",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Ex Works",
-    "is_enabled": true,
-    "sort_order": 1
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 3,
-  "fields": {
-    "code": "FAS",
-    "name": "Free Alongside Ship",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Free Alongside Ship",
-    "is_enabled": true,
-    "sort_order": 3
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 2,
-  "fields": {
-    "code": "FCA",
-    "name": "Free Carrier",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Free Carrier",
-    "is_enabled": true,
-    "sort_order": 2
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 4,
-  "fields": {
-    "code": "FOB",
-    "name": "Free On Board",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Free On Board",
-    "is_enabled": true,
-    "sort_order": 4
-  }
-},
-{
-  "model": "base.localdelivery",
-  "pk": 1,
-  "fields": {
-    "name": "Entrega en planta",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Entrega en planta",
-    "is_enabled": true,
-    "sort_order": 1
-  }
-},
-{
-  "model": "base.localdelivery",
-  "pk": 2,
-  "fields": {
-    "name": "Entrega en planta con servicio de transporte",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Entrega en planta con servicio de transporte",
-    "is_enabled": true,
-    "sort_order": 2
-  }
-},
-{
-  "model": "base.localdelivery",
-  "pk": 3,
-  "fields": {
-    "name": "Entrega en bodega",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Entrega en bodega",
-    "is_enabled": true,
-    "sort_order": 3
-  }
-},
-{
-  "model": "base.localdelivery",
-  "pk": 4,
-  "fields": {
-    "name": "Entrega en frontera",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Entrega en frontera",
-    "is_enabled": true,
-    "sort_order": 4
-  }
-},
-{
-  "model": "base.localdelivery",
-  "pk": 5,
-  "fields": {
-    "name": "Entrega a consignatario",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Entrega a consignatario",
-    "is_enabled": true,
-    "sort_order": 5
-  }
-},
-{
   "model": "base.countryproductstandard",
   "pk": 1,
   "fields": {
@@ -1314,6 +746,975 @@
     "standard": 9,
     "description": "59 a 61 mm",
     "is_enabled": true
+  }
+},
+{
+  "model": "base.countryproductstandardpackaging",
+  "pk": 1,
+  "fields": {
+    "name": "CARTÓN 11.3",
+    "code": "1",
+    "description": null,
+    "standard": 1,
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 1,
+  "fields": {
+    "code": "601",
+    "name": "General de Ley Personas Morales",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 2,
+  "fields": {
+    "code": "603",
+    "name": "Personas Morales con Fines no Lucrativos",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 3,
+  "fields": {
+    "code": "605",
+    "name": "Sueldos y Salarios e Ingresos Asimilados a Salarios",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 4,
+  "fields": {
+    "code": "606",
+    "name": "Arrendamiento",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 5,
+  "fields": {
+    "code": "607",
+    "name": "Régimen de Enajenación o Adquisición de Bienes",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 6,
+  "fields": {
+    "code": "608",
+    "name": "Demás ingresos",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 7,
+  "fields": {
+    "code": "609",
+    "name": "Consolidación",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 8,
+  "fields": {
+    "code": "610",
+    "name": "Residentes en el Extranjero sin Establecimiento Permanente en México",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 9,
+  "fields": {
+    "code": "611",
+    "name": "Ingresos por Dividendos (socios y accionistas)",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 10,
+  "fields": {
+    "code": "612",
+    "name": "Personas Físicas con Actividades Empresariales y Profesionales",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 11,
+  "fields": {
+    "code": "614",
+    "name": "Ingresos por intereses",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 12,
+  "fields": {
+    "code": "615",
+    "name": "Régimen de los ingresos por obtención de premios",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 13,
+  "fields": {
+    "code": "616",
+    "name": "Sin obligaciones fiscales",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 14,
+  "fields": {
+    "code": "620",
+    "name": "Sociedades Cooperativas de Producción que optan por diferir sus ingresos",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 15,
+  "fields": {
+    "code": "621",
+    "name": "Incorporación Fiscal",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 16,
+  "fields": {
+    "code": "622",
+    "name": "Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 17,
+  "fields": {
+    "code": "623",
+    "name": "Opcional para Grupos de Sociedades",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 18,
+  "fields": {
+    "code": "624",
+    "name": "Coordinados",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 19,
+  "fields": {
+    "code": "625",
+    "name": "Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 20,
+  "fields": {
+    "code": "626",
+    "name": "Régimen Simplificado de Confianza",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 21,
+  "fields": {
+    "code": "628",
+    "name": "Hidrocarburos",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 22,
+  "fields": {
+    "code": "629",
+    "name": "De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 23,
+  "fields": {
+    "code": "630",
+    "name": "Enajenación de acciones en bolsa de valores",
+    "country": 158
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 24,
+  "fields": {
+    "code": "1",
+    "name": "Single",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 25,
+  "fields": {
+    "code": "1",
+    "name": "Married Filing Jointly",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 26,
+  "fields": {
+    "code": "1",
+    "name": "Married Filing Separately",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 27,
+  "fields": {
+    "code": "1",
+    "name": "Head of Household",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 28,
+  "fields": {
+    "code": "1",
+    "name": "Qualifying Widow(er)",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 29,
+  "fields": {
+    "code": "2",
+    "name": "Sole Proprietorship",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 30,
+  "fields": {
+    "code": "2",
+    "name": "Partnership",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 31,
+  "fields": {
+    "code": "2",
+    "name": "C-Corporation",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 32,
+  "fields": {
+    "code": "2",
+    "name": "S-Corporation",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 33,
+  "fields": {
+    "code": "2",
+    "name": "Limited Liability Company (LLC)",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 34,
+  "fields": {
+    "code": "2",
+    "name": "Non-Profit Organization",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 35,
+  "fields": {
+    "code": "3",
+    "name": "Farmers and Ranchers",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 36,
+  "fields": {
+    "code": "3",
+    "name": "Household Employers",
+    "country": 234
+  }
+},
+{
+  "model": "base.legalentitycategory",
+  "pk": 37,
+  "fields": {
+    "code": "3",
+    "name": "Resident and Non-Resident Aliens",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 1,
+  "fields": {
+    "sort_order": null,
+    "code": "S.A.",
+    "name": "Sociedad Anónima",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 2,
+  "fields": {
+    "sort_order": null,
+    "code": "S.A. de C.V.",
+    "name": "Sociedad Anónima de Capital Variable",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 3,
+  "fields": {
+    "sort_order": null,
+    "code": "S. de R.L.",
+    "name": "Sociedad de Responsabilidad Limitada",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 4,
+  "fields": {
+    "sort_order": null,
+    "code": "S. de R.L. de C.V.",
+    "name": "Sociedad de Responsabilidad Limitada de Capital Variable",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 5,
+  "fields": {
+    "sort_order": null,
+    "code": "S. en N.C.",
+    "name": "Sociedad en Nombre Colectivo",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 6,
+  "fields": {
+    "sort_order": null,
+    "code": "S. en C.S.",
+    "name": "Sociedad en Comandita Simple",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 7,
+  "fields": {
+    "sort_order": null,
+    "code": "S. en C.A.",
+    "name": "Sociedad en Comandita por Acciones",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 8,
+  "fields": {
+    "sort_order": null,
+    "code": "S.C.",
+    "name": "Sociedad Cooperativa",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 9,
+  "fields": {
+    "sort_order": null,
+    "code": "S.A.S.",
+    "name": "Sociedad por Acciones Simplificada",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 10,
+  "fields": {
+    "sort_order": null,
+    "code": "A.C.",
+    "name": "Asociación Civil",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 11,
+  "fields": {
+    "sort_order": null,
+    "code": "S.A.B.",
+    "name": "Sociedad Anónima Bursátil",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 12,
+  "fields": {
+    "sort_order": null,
+    "code": "S.A.P.I.",
+    "name": "Sociedad Anónima Promotora de Inversión",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 13,
+  "fields": {
+    "sort_order": null,
+    "code": "S.A.P.I. de C.V.",
+    "name": "Sociedad Anónima Promotora de Inversión de Capital Variable",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 14,
+  "fields": {
+    "sort_order": null,
+    "code": "Corp.",
+    "name": "Corporation",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 15,
+  "fields": {
+    "sort_order": null,
+    "code": "LLC",
+    "name": "Limited Liability Company",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 16,
+  "fields": {
+    "sort_order": null,
+    "code": "S Corp.",
+    "name": "S Corporation",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 17,
+  "fields": {
+    "sort_order": null,
+    "code": "C Corp.",
+    "name": "C Corporation",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 18,
+  "fields": {
+    "sort_order": null,
+    "code": "Part.",
+    "name": "Partnership",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 19,
+  "fields": {
+    "sort_order": null,
+    "code": "LLP",
+    "name": "Limited Liability Partnership",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 20,
+  "fields": {
+    "sort_order": null,
+    "code": "LLLP",
+    "name": "Limited Liability Limited Partnership",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 21,
+  "fields": {
+    "sort_order": null,
+    "code": "S. de R.L.U.",
+    "name": "Sociedad de Responsabilidad Limitada Unipersonal",
+    "country": 158
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 22,
+  "fields": {
+    "sort_order": null,
+    "code": "Sole Prop.",
+    "name": "Sole Proprietorship",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 23,
+  "fields": {
+    "sort_order": null,
+    "code": "NPO o Non-Profit",
+    "name": "Non-Profit Corporation",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 24,
+  "fields": {
+    "sort_order": null,
+    "code": "PC",
+    "name": "Professional Corporation",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 25,
+  "fields": {
+    "sort_order": null,
+    "code": "PLLC",
+    "name": "Professional Limited Liability Company",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 26,
+  "fields": {
+    "sort_order": null,
+    "code": "B Corp.",
+    "name": "Benefit Corporation",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 27,
+  "fields": {
+    "sort_order": null,
+    "code": "Closely Held Corp.",
+    "name": "Close Corporation",
+    "country": 234
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 28,
+  "fields": {
+    "sort_order": null,
+    "code": "Corp.",
+    "name": "Corporation",
+    "country": 38
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 29,
+  "fields": {
+    "sort_order": null,
+    "code": "LLC",
+    "name": "Limited Liability Company",
+    "country": 38
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 30,
+  "fields": {
+    "sort_order": null,
+    "code": "C.C.",
+    "name": "Canadian Corporation",
+    "country": 38
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 31,
+  "fields": {
+    "sort_order": null,
+    "code": "NPO",
+    "name": "Non-Profit Corporation",
+    "country": 38
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 32,
+  "fields": {
+    "sort_order": null,
+    "code": "Part.",
+    "name": "Partnership",
+    "country": 38
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 33,
+  "fields": {
+    "sort_order": null,
+    "code": "LLP",
+    "name": "Limited Liability Partnership",
+    "country": 38
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 34,
+  "fields": {
+    "sort_order": null,
+    "code": "JV",
+    "name": "Joint Venture",
+    "country": 38
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 35,
+  "fields": {
+    "sort_order": null,
+    "code": "Co-op",
+    "name": "Cooperative",
+    "country": 38
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 36,
+  "fields": {
+    "sort_order": null,
+    "code": "Sole Prop.",
+    "name": "Sole Proprietorship",
+    "country": 38
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 37,
+  "fields": {
+    "sort_order": null,
+    "code": "Trust",
+    "name": "Trust",
+    "country": 38
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 38,
+  "fields": {
+    "sort_order": null,
+    "code": "ULC",
+    "name": "Unlimited Liability Corporation",
+    "country": 38
+  }
+},
+{
+  "model": "base.taxregime",
+  "pk": 39,
+  "fields": {
+    "sort_order": null,
+    "code": "FIC",
+    "name": "Federally Incorporated Corporation",
+    "country": 38
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 1,
+  "fields": {
+    "code": "EXW",
+    "name": "Ex Works",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Ex Works",
+    "is_enabled": true,
+    "sort_order": 1
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 2,
+  "fields": {
+    "code": "FCA",
+    "name": "Free Carrier",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Free Carrier",
+    "is_enabled": true,
+    "sort_order": 2
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 3,
+  "fields": {
+    "code": "FAS",
+    "name": "Free Alongside Ship",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Free Alongside Ship",
+    "is_enabled": true,
+    "sort_order": 3
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 4,
+  "fields": {
+    "code": "FOB",
+    "name": "Free On Board",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Free On Board",
+    "is_enabled": true,
+    "sort_order": 4
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 5,
+  "fields": {
+    "code": "CFR",
+    "name": "Cost And Freight",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Cost And Freight",
+    "is_enabled": true,
+    "sort_order": 5
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 6,
+  "fields": {
+    "code": "CIF",
+    "name": "Cost, Insurance And Freight",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Cost, Insurance And Freight",
+    "is_enabled": true,
+    "sort_order": 6
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 7,
+  "fields": {
+    "code": "CPT",
+    "name": "Carriage Paid To",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Carriage Paid To",
+    "is_enabled": true,
+    "sort_order": 7
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 8,
+  "fields": {
+    "code": "CIP",
+    "name": "Cost, Insurance And Freight",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Cost, Insurance And Freight",
+    "is_enabled": true,
+    "sort_order": 8
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 9,
+  "fields": {
+    "code": "DAP",
+    "name": "Delivery At Place",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Delivery At Place",
+    "is_enabled": true,
+    "sort_order": 9
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 10,
+  "fields": {
+    "code": "DPU",
+    "name": "Delivered At Place Unloaded",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Delivered At Place Unloaded",
+    "is_enabled": true,
+    "sort_order": 10
+  }
+},
+{
+  "model": "base.incoterm",
+  "pk": 11,
+  "fields": {
+    "code": "CIF",
+    "name": "Delivery Duty Paid",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Delivery Duty Paid",
+    "is_enabled": true,
+    "sort_order": 11
+  }
+},
+{
+  "model": "base.localdelivery",
+  "pk": 1,
+  "fields": {
+    "name": "Entrega en planta",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Entrega en planta",
+    "is_enabled": true,
+    "sort_order": 1
+  }
+},
+{
+  "model": "base.localdelivery",
+  "pk": 2,
+  "fields": {
+    "name": "Entrega en planta con servicio de transporte",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Entrega en planta con servicio de transporte",
+    "is_enabled": true,
+    "sort_order": 2
+  }
+},
+{
+  "model": "base.localdelivery",
+  "pk": 3,
+  "fields": {
+    "name": "Entrega en bodega",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Entrega en bodega",
+    "is_enabled": true,
+    "sort_order": 3
+  }
+},
+{
+  "model": "base.localdelivery",
+  "pk": 4,
+  "fields": {
+    "name": "Entrega en frontera",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Entrega en frontera",
+    "is_enabled": true,
+    "sort_order": 4
+  }
+},
+{
+  "model": "base.localdelivery",
+  "pk": 5,
+  "fields": {
+    "name": "Entrega a consignatario",
+    "name_en": null,
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "Entrega a consignatario",
+    "is_enabled": true,
+    "sort_order": 5
   }
 }
 ]
