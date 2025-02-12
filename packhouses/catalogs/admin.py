@@ -392,13 +392,15 @@ class ClientShipAddressInline(admin.StackedInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_object_id = request.resolver_match.kwargs.get("object_id")
         parent_obj = Client.objects.get(id=parent_object_id) if parent_object_id else None
-
         markets_countries = None
 
-        if hasattr(request, 'organization'):
-            markets_countries = list(
-                Market.objects.filter(organization=request.organization, is_enabled=True).values_list('countries',
-                                                                                                      flat=True).distinct())
+        if request.POST:
+            market_id = request.POST.get('market')
+        else:
+            market_id = parent_obj.market_id if parent_obj else None
+        if market_id:
+            markets_countries = list(Market.objects.get(id=market_id).countries.all().values_list('id', flat=True))
+
         if db_field.name == "country":
             if markets_countries:
                 kwargs["queryset"] = Country.objects.filter(id__in=markets_countries)
