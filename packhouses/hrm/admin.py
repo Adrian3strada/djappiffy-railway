@@ -1,12 +1,14 @@
 from django.contrib import admin
-from .models import (Employee, JobPosition, EmployeeJobPosition, 
-                     EmployeeTaxAndMedicalInformation, EmployeeContactInformation, 
-                     EmployeeAcademicAndWorkInfomation, WorkShiftSchedule, EmployeeStatus)
+from .models import (Employee, JobPosition, EmployeeJobPosition, EmployeeTaxAndMedicalInformation, EmployeeContactInformation, 
+                     EmployeeAcademicAndWorkInfomation, WorkShiftSchedule, EmployeeStatus, EmployeeCertificationInformation, EmployeeWorkExperience)
 from django.utils.translation import gettext_lazy as _
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
-from django.db.models import Case, When 
 from cities_light.models import Country, Region, SubRegion, City
-from common.base.mixins import ByOrganizationAdminMixin
+from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLinksMixin)
+import nested_admin
+from common.base.utils import ReportExportAdminMixin, SheetExportAdminMixin, SheetReportExportAdminMixin
+from .views import basic_report
+from .resources import EmployeeResource
 
 @admin.register(EmployeeStatus)
 class EmployeeStatusAdmin(ByOrganizationAdminMixin):
@@ -36,7 +38,10 @@ class JobPositionAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     fields = ('name', 'description', 'is_enabled')
     inlines = [WorkShiftScheduleInline]
-
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change) 
@@ -52,10 +57,10 @@ class JobPositionAdmin(ByOrganizationAdminMixin):
                 )
 
 
-class EmployeeJobPositionInline(admin.StackedInline):
+class EmployeeJobPositionInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeJobPosition
 
-class EmployeeContactInformationInline(admin.StackedInline):
+class EmployeeContactInformationInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeContactInformation
     min_num = 1
     @uppercase_form_charfield('neighborhood')
@@ -77,25 +82,38 @@ class EmployeeContactInformationInline(admin.StackedInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/hrm/country-state-city-district.js',)
+        js = ('js/admin/forms/common/country-state-city-district.js',)
 
     
-class EmployeeTaxAndMedicalInformationInline(admin.StackedInline):
+class EmployeeTaxAndMedicalInformationInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeTaxAndMedicalInformation
 
-class EmployeeAcademicAndWorkInfomationInline(admin.StackedInline):
+
+class EmployeeCertificationInformationInline(nested_admin.NestedTabularInline):
+    model = EmployeeCertificationInformation
+    extra = 0
+
+class EmployeeWorkExperienceInline(nested_admin.NestedTabularInline):
+    model = EmployeeWorkExperience
+    extra = 0
+
+class EmployeeAcademicAndWorkInfomationInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeAcademicAndWorkInfomation
+    inlines = [EmployeeCertificationInformationInline, EmployeeWorkExperienceInline]
 
 @admin.register(Employee)
-class EmployeeAdmin(ByOrganizationAdminMixin):
-    list_display = ('full_name', 'get_job_position', 'status')
+class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
+    report_function = staticmethod(basic_report)
+    resource_classes = [EmployeeResource]
+    list_display = ('full_name', 'get_job_position', 'gender', 'hire_date','status')
     list_filter = ('status',)
-    fields = ('status', 'first_name', 'middle_name', 'last_name', 'second_last_name', 'population_registry_code', 'gender', 
+    fields = ('status', 'name', 'middle_name', 'last_name', 'second_last_name', 'population_registry_code', 'gender', 
               'marital_status', 'hire_date', 'termination_date')
-    inlines = [EmployeeJobPositionInline,  
-               EmployeeTaxAndMedicalInformationInline, EmployeeAcademicAndWorkInfomationInline]
+    search_fields = ('full_name', )
+    inlines = [EmployeeJobPositionInline, EmployeeContactInformationInline,
+               EmployeeTaxAndMedicalInformationInline, EmployeeAcademicAndWorkInfomationInline,]
 
-    @uppercase_form_charfield('first_name')
+    @uppercase_form_charfield('name')
     @uppercase_form_charfield('middle_name')
     @uppercase_form_charfield('last_name')
     @uppercase_form_charfield('second_last_name')
@@ -116,3 +134,4 @@ class EmployeeAdmin(ByOrganizationAdminMixin):
         if hasattr(obj, 'employeejobposition') and obj.employeejobposition.job_position:
             return obj.employeejobposition.job_position
     get_job_position.short_description = 'Job Position'
+
