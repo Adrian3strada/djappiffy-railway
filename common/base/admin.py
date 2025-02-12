@@ -1,13 +1,17 @@
 from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
-from .models import (ProductKind, MarketProductSizeStandard, MarketProductSizeStandardSize, LegalEntityCategory,
-                     Incoterm, LocalDelivery)
-from .filters import ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter
+from .models import (ProductKind, CountryProductStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
+                     CountryProductStandardPackaging,
+                     Incoterm, LocalDelivery, Currency)
+from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
+                      ByCountryForCapitalFrameworkFilter)
 from wagtail.documents.models import Document
 from wagtail.images.models import Image
 from taggit.models import Tag
 from adminsortable2.admin import SortableAdminMixin
+from .decorators import uppercase_form_charfield
+
 
 #
 
@@ -18,19 +22,27 @@ class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_filter = ['for_packaging', 'for_orchard', 'for_eudr', 'is_enabled']
 
 
-class MarketProductSizeStandardSizeInline(admin.TabularInline):
-    model = MarketProductSizeStandardSize
+class CountryProductStandardSizeInline(admin.TabularInline):
+    model = CountryProductStandardSize
     extra = 0
+    verbose_name = 'Size'
+    verbose_name_plural = 'Sizes'
 
 
+class CountryProductStandardPackagingInline(admin.TabularInline):
+    model = CountryProductStandardPackaging
+    extra = 0
+    verbose_name = 'Packaging'
+    verbose_name_plural = 'Packaging'
 
-@admin.register(MarketProductSizeStandard)
-class MarketProductSizeStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
+
+@admin.register(CountryProductStandard)
+class CountryProductStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'product_kind', 'country', 'is_enabled', 'sort_order')
     list_filter = [ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter, 'is_enabled']
     search_fields = ['name']
     ordering = ['sort_order']
-    inlines = [MarketProductSizeStandardSizeInline]
+    inlines = [CountryProductStandardSizeInline, CountryProductStandardPackagingInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'product_kind':
@@ -59,6 +71,13 @@ class LegalEntityCategoryAdmin(admin.ModelAdmin):
     list_filter = ['country']
 
 
+@admin.register(CapitalFramework)
+class CapitalFrameworkAdmin(admin.ModelAdmin):
+    list_display = ['name', 'code', 'country']
+    search_fields = ['name',]
+    list_filter = [ByCountryForCapitalFrameworkFilter]
+
+
 class CustomOrganizationAdmin(OrganizationAdmin):
     pass
 
@@ -81,3 +100,12 @@ admin.site.unregister(Tag)
 # descomentar los siguientes solo para demo o producción, no para desarrollo
 # admin.site.unregister(ProductKind)
 
+@admin.register(Currency)
+class CurrencyAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code', 'is_enabled')
+    list_filter = ['is_enabled']
+
+    @uppercase_form_charfield('code')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form

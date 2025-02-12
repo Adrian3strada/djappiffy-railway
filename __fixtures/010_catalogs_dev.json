@@ -3,8 +3,8 @@
   "model": "catalogs.market",
   "pk": 1,
   "fields": {
-    "name": "MEXICO UNO",
-    "alias": "MX1",
+    "name": "MEXICO",
+    "alias": "MEX",
     "management_cost_per_kg": 11.0,
     "is_mixable": true,
     "label_language": "es",
@@ -37,16 +37,16 @@
   "model": "catalogs.market",
   "pk": 3,
   "fields": {
-    "name": "COLOMBIA",
-    "alias": "CO",
+    "name": "ESTADOS UNIDOS",
+    "alias": "USA",
     "management_cost_per_kg": 12.0,
-    "is_mixable": true,
-    "label_language": "es",
+    "is_mixable": false,
+    "label_language": "en",
     "address_label": null,
-    "is_enabled": false,
+    "is_enabled": true,
     "organization": 1,
     "countries": [
-      49
+      234
     ]
   }
 },
@@ -54,125 +54,17 @@
   "model": "catalogs.market",
   "pk": 4,
   "fields": {
-    "name": "CUBA",
-    "alias": "CU",
+    "name": "CANADA",
+    "alias": "CAN",
     "management_cost_per_kg": 12.0,
     "is_mixable": true,
-    "label_language": "es",
+    "label_language": "en",
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
     "countries": [
-      51
+      38
     ]
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 1,
-  "fields": {
-    "name": "A",
-    "is_enabled": true,
-    "market": 1
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 2,
-  "fields": {
-    "name": "B",
-    "is_enabled": true,
-    "market": 1
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 3,
-  "fields": {
-    "name": "C",
-    "is_enabled": true,
-    "market": 1
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 4,
-  "fields": {
-    "name": "A",
-    "is_enabled": true,
-    "market": 2
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 5,
-  "fields": {
-    "name": "B",
-    "is_enabled": true,
-    "market": 2
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 6,
-  "fields": {
-    "name": "C",
-    "is_enabled": true,
-    "market": 2
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 7,
-  "fields": {
-    "name": "A",
-    "is_enabled": true,
-    "market": 3
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 8,
-  "fields": {
-    "name": "B",
-    "is_enabled": true,
-    "market": 3
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 9,
-  "fields": {
-    "name": "C",
-    "is_enabled": true,
-    "market": 3
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 10,
-  "fields": {
-    "name": "A",
-    "is_enabled": true,
-    "market": 4
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 11,
-  "fields": {
-    "name": "B",
-    "is_enabled": true,
-    "market": 4
-  }
-},
-{
-  "model": "catalogs.marketclass",
-  "pk": 12,
-  "fields": {
-    "name": "C",
-    "is_enabled": false,
-    "market": 4
   }
 },
 {
@@ -182,6 +74,7 @@
     "kind": 8,
     "name": "AGUACATE",
     "description": null,
+    "price_measure_unit_category": "Kg",
     "is_enabled": true,
     "organization": 1
   }
@@ -193,6 +86,7 @@
     "kind": 8,
     "name": "AGUACATE DOS",
     "description": null,
+    "price_measure_unit_category": "Kg",
     "is_enabled": true,
     "organization": 2
   }
@@ -204,6 +98,7 @@
     "kind": 8,
     "name": "PALTA",
     "description": null,
+    "price_measure_unit_category": "Kg",
     "is_enabled": true,
     "organization": 1
   }
@@ -215,6 +110,7 @@
     "kind": 9,
     "name": "LIMÓN AMARILLO",
     "description": null,
+    "price_measure_unit_category": "Kg",
     "is_enabled": true,
     "organization": 1
   }
@@ -226,6 +122,7 @@
     "kind": 8,
     "name": "VERDE",
     "description": null,
+    "price_measure_unit_category": "Kg",
     "is_enabled": true,
     "organization": 1
   }
@@ -237,15 +134,186 @@
     "kind": 8,
     "name": "UNO",
     "description": null,
+    "price_measure_unit_category": "Kg",
     "is_enabled": true,
     "organization": 1
+  }
+},
+{
+  "model": "catalogs.productphenologykind",
+  "pk": 1,
+  "fields": {
+    "name": "NORMAL",
+    "is_enabled": true,
+    "product": 1,
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalogs.productphenologykind",
+  "pk": 2,
+  "fields": {
+    "name": "LOCA",
+    "is_enabled": true,
+    "product": 1,
+    "sort_order": 1
+  }
+},
+{
+  "model": "catalogs.productphenologykind",
+  "pk": 3,
+  "fields": {
+    "name": "AVENTAJADA",
+    "is_enabled": true,
+    "product": 1,
+    "sort_order": 2
+  }
+},
+{
+  "model": "catalogs.productphenologykind",
+  "pk": 4,
+  "fields": {
+    "name": "MARCEÑA",
+    "is_enabled": true,
+    "product": 1,
+    "sort_order": 3
+  }
+},
+{
+  "model": "catalogs.productphenologykind",
+  "pk": 5,
+  "fields": {
+    "name": "NORMAL",
+    "is_enabled": true,
+    "product": 2,
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalogs.productphenologykind",
+  "pk": 6,
+  "fields": {
+    "name": "DESECHO",
+    "is_enabled": true,
+    "product": 2,
+    "sort_order": 1
+  }
+},
+{
+  "model": "catalogs.productphenologykind",
+  "pk": 7,
+  "fields": {
+    "name": "ROÑA",
+    "is_enabled": true,
+    "product": 2,
+    "sort_order": 2
+  }
+},
+{
+  "model": "catalogs.productphenologykind",
+  "pk": 8,
+  "fields": {
+    "name": "MATERIA ORGÁNICA",
+    "is_enabled": true,
+    "product": 2,
+    "sort_order": 3
+  }
+},
+{
+  "model": "catalogs.productmarketmeasureunitmanagementcost",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "measure_unit_management_cost": "11",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketmeasureunitmanagementcost",
+  "pk": 2,
+  "fields": {
+    "product": 1,
+    "market": 4,
+    "measure_unit_management_cost": "12",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketmeasureunitmanagementcost",
+  "pk": 3,
+  "fields": {
+    "product": 1,
+    "market": 3,
+    "measure_unit_management_cost": "12",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "market": 3,
+    "class_name": "1",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 2,
+  "fields": {
+    "product": 1,
+    "market": 3,
+    "class_name": "2",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 3,
+  "fields": {
+    "product": 1,
+    "market": 3,
+    "class_name": "C",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 4,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "class_name": "C",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 5,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "class_name": "A",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 6,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "class_name": "B",
+    "is_enabled": true
   }
 },
 {
   "model": "catalogs.productvariety",
   "pk": 1,
   "fields": {
-    "name": "HASS UNO",
+    "name": "HASS",
     "alias": "HAS",
     "description": null,
     "is_enabled": true,
@@ -256,7 +324,7 @@
   "model": "catalogs.productvariety",
   "pk": 2,
   "fields": {
-    "name": "MENDEZ UNO",
+    "name": "MENDEZ",
     "alias": "MEN",
     "description": null,
     "is_enabled": true,
@@ -267,7 +335,7 @@
   "model": "catalogs.productvariety",
   "pk": 3,
   "fields": {
-    "name": "CRIOLLO UNO",
+    "name": "CRIOLLO",
     "alias": "CR1",
     "description": null,
     "is_enabled": false,
@@ -440,91 +508,12 @@
   }
 },
 {
-  "model": "catalogs.productseasonkind",
-  "pk": 1,
-  "fields": {
-    "name": "NORMAL",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productseasonkind",
-  "pk": 2,
-  "fields": {
-    "name": "DESECHO","is_enabled": true,
-    "product": 1,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productseasonkind",
-  "pk": 3,
-  "fields": {
-    "name": "ROÑA",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 2
-  }
-},
-{
-  "model": "catalogs.productseasonkind",
-  "pk": 4,
-  "fields": {
-    "name": "MATERIA ORGÁNICA",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 3
-  }
-},
-{
-  "model": "catalogs.productseasonkind",
-  "pk": 5,
-  "fields": {
-    "name": "NORMAL",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productseasonkind",
-  "pk": 6,
-  "fields": {
-    "name": "DESECHO",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productseasonkind",
-  "pk": 7,
-  "fields": {
-    "name": "ROÑA",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 2
-  }
-},
-{
-  "model": "catalogs.productseasonkind",
-  "pk": 8,
-  "fields": {
-    "name": "MATERIA ORGÁNICA",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 3
-  }
-},
-{
   "model": "catalogs.productmassvolumekind",
   "pk": 1,
   "fields": {
     "name": "ESTANDAR",
-    "packaging_supply_kind": 1,
     "is_enabled": true,
+    "packaging_supply_kind": 1,
     "product": 1,
     "sort_order": 0
   }
@@ -534,8 +523,8 @@
   "pk": 2,
   "fields": {
     "name": "ENMALLADO",
-    "packaging_supply_kind": 1,
     "is_enabled": true,
+    "packaging_supply_kind": 1,
     "product": 1,
     "sort_order": 1
   }
@@ -545,8 +534,8 @@
   "pk": 3,
   "fields": {
     "name": "ORGÁNICO",
-    "packaging_supply_kind": 1,
     "is_enabled": true,
+    "packaging_supply_kind": 1,
     "product": 1,
     "sort_order": 2
   }
@@ -556,8 +545,8 @@
   "pk": 4,
   "fields": {
     "name": "ESTANDAR",
-    "packaging_supply_kind": 1,
     "is_enabled": true,
+    "packaging_supply_kind": 1,
     "product": 2,
     "sort_order": 0
   }
@@ -567,8 +556,8 @@
   "pk": 5,
   "fields": {
     "name": "ENMALLADO",
-    "packaging_supply_kind": 1,
     "is_enabled": true,
+    "packaging_supply_kind": 1,
     "product": 2,
     "sort_order": 1
   }
@@ -578,10 +567,19 @@
   "pk": 6,
   "fields": {
     "name": "ORGÁNICO",
-    "packaging_supply_kind": 1,
     "is_enabled": true,
+    "packaging_supply_kind": 1,
     "product": 2,
     "sort_order": 2
+  }
+},
+{
+  "model": "catalogs.productripeness",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "name": "NEGRA",
+    "is_enabled": true
   }
 },
 {
@@ -971,106 +969,113 @@
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 1,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 1,
     "main_supply": 3,
-    "quantity": 1,
-    "max_product_kg_per_package": 11.3,
+    "main_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
+    "market": 1,
+    "product": 1,
+    "product_packaging_standard": 1,
     "is_enabled": true,
     "organization": 1
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 2,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 1,
     "main_supply": 3,
-    "quantity": 1,
-    "max_product_kg_per_package": 11.3,
+    "main_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
+    "market": 1,
+    "product": 1,
+    "product_packaging_standard": 1,
     "is_enabled": true,
     "organization": 1
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 3,
   "fields": {
     "name": "MALLA SENCILLA",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 6,
     "main_supply": 20,
-    "quantity": 45,
-    "max_product_kg_per_package": 1.0,
+    "main_supply_quantity": 6,
+    "max_product_amount_per_package": 1.0,
+    "market": 1,
+    "product": 1,
+    "product_packaging_standard": 1,
     "is_enabled": true,
     "organization": 1
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 4,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 1,
     "main_supply": 3,
-    "quantity": 1,
-    "max_product_kg_per_package": 11.3,
+    "main_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
+    "market": 1,
+    "product": 1,
+    "product_packaging_standard": 1,
     "is_enabled": true,
     "organization": 1
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 5,
   "fields": {
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 1,
     "main_supply": 3,
-    "quantity": 1,
-    "max_product_kg_per_package": 11.3,
+    "main_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
+    "market": 1,
+    "product": 1,
+    "product_packaging_standard": 1,
     "is_enabled": true,
     "organization": 1
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 6,
   "fields": {
     "name": "PALLET 48'S + 70'S",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 3,
     "main_supply": 23,
-    "quantity": 1,
-    "max_product_kg_per_package": 100.0,
+    "main_supply_quantity": 3,
+    "max_product_amount_per_package": 1.0,
+    "market": 1,
+    "product": 1,
+    "product_packaging_standard": 1,
     "is_enabled": true,
     "organization": 1
   }
 },
 {
-  "model": "catalogs.packagingkind",
+  "model": "catalogs.packaging",
   "pk": 7,
   "fields": {
     "name": "PALLET 48'S + 70'S (ENMALLADOS)",
-    "authority": null,
-    "code": null,
     "main_supply_kind": 3,
     "main_supply": 23,
-    "quantity": 1,
-    "max_product_kg_per_package": 100.0,
+    "main_supply_quantity": 3,
+    "max_product_amount_per_package": 1.0,
+    "market": 1,
+    "product": 1,
+    "product_packaging_standard": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1247,130 +1252,6 @@
     "outside": 7,
     "inside": 4,
     "quantity": 10
-  }
-},
-{
-  "model": "packhouse_settings.orchardcertificationverifier",
-  "pk": 1,
-  "fields": {
-    "name": "VERIFICADOR UNO 1",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.orchardcertificationverifier",
-  "pk": 2,
-  "fields": {
-    "name": "VERIFICADOR DOS 1",
-    "is_enabled": true,
-    "organization": 2
-  }
-},
-{
-  "model": "packhouse_settings.orchardcertificationverifier",
-  "pk": 3,
-  "fields": {
-    "name": "VERIFICADOR DOS 2",
-    "is_enabled": true,
-    "organization": 2
-  }
-},
-{
-  "model": "packhouse_settings.orchardcertificationverifier",
-  "pk": 4,
-  "fields": {
-    "name": "VERIFICADOR UNO 2",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 1,
-  "fields": {
-    "name": "CAJA",
-    "unit_kind": "piece",
-    "is_packaging": true,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 2,
-  "fields": {
-    "name": "CHAROLA",
-    "unit_kind": "piece",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 3,
-  "fields": {
-    "name": "TARIMA",
-    "unit_kind": "piece",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 4,
-  "fields": {
-    "name": "ESQUINERO",
-    "unit_kind": "piece",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 5,
-  "fields": {
-    "name": "TAPA",
-    "unit_kind": "piece",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 6,
-  "fields": {
-    "name": "MALLA",
-    "unit_kind": "cm",
-    "is_packaging": true,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 7,
-  "fields": {
-    "name": "FILM",
-    "unit_kind": "cm",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 8,
-  "fields": {
-    "name": "FLEJE",
-    "unit_kind": "m",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
   }
 }
 ]

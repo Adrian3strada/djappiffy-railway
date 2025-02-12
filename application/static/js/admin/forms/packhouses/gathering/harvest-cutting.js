@@ -1,4 +1,4 @@
-$(document).ready(function () {
+document.addEventListener("DOMContentLoaded", function() {
  const categoryField = $("#id_category");
   const gathererField = $(".field-gatherer");
   const maquiladoraField = $(".field-maquiladora");
@@ -13,8 +13,100 @@ $(document).ready(function () {
   const initialOrchardSizeValue = orchardField.val();
   const orchardCertificationField = $("#id_orchard_certification");
   const initialOrchardCertificationValue = orchardCertificationField.val();
-
   const API_BASE_URL = "/rest/v1";
+
+  // Función para obtener el token CSRF
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(name + "=")) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  $(document).on("click", ".btn-cancel-confirm", function (e) {
+    e.preventDefault();
+
+    var url = $(this).data("url");
+    var message = $(this).data("message");
+    var confirmText = $(this).data("confirm");
+    var cancelText = $(this).data("cancel");
+
+    var button = $(this);
+
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: message,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#4daf50",
+      cancelButtonColor: "#d33",
+      confirmButtonText: confirmText,
+      cancelButtonText: cancelText,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              button.hide();
+
+              var row = button.closest("tr");
+              var statusCell = row.find(".field-status");
+              statusCell.text("Canceled");
+
+              Toastify({
+                text: data.message,
+                duration: 3000,
+                close: true,
+                gravity: "bottom",
+                position: "right",
+                backgroundColor: "#4caf50",
+              }).showToast();
+            } else {
+              Toastify({
+                text: data.message,
+                duration: 3000,
+                close: true,
+                gravity: "bottom",
+                position: "right",
+                backgroundColor: "#f44336",
+              }).showToast();
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            Toastify({
+              text: "An error occurred while processing your request.",
+              duration: 3000,
+              close: true,
+              gravity: "bottom",
+              position: "right",
+              backgroundColor: "#f44336",
+            }).showToast();
+          });
+      }
+    });
+  });
+
 
   function updateFieldOptions(field, options) {
     field.empty(); // Limpiar las opciones existentes
@@ -60,7 +152,7 @@ $(document).ready(function () {
   function updateVarietyField() {
     const productId = productField.val();
     if (productId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_variety/?product=${productId}&is_enabled=true`)
+      fetchOptions(`${API_BASE_URL}/catalogs/product-variety/?product=${productId}&is_enabled=1`)
         .then((data) => {
           updateFieldOptions(varietyField, data);
           if (initialVarietyValue) {
@@ -75,7 +167,7 @@ $(document).ready(function () {
   function updateSeasonField() {
     const productId = productField.val();
     if (productId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_season_kind/?product=${productId}&is_enabled=true`)
+      fetchOptions(`${API_BASE_URL}/catalogs/product-phenology/?product=${productId}&is_enabled=true`)
         .then((data) => {
           updateFieldOptions(seasonField, data);
           if (initialSeasonValue) {
@@ -90,7 +182,7 @@ $(document).ready(function () {
   function updateHarvestSizeField() {
     const productId = productField.val();
     if (productId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_harvest_size_kind/?product=${productId}&is_enabled=true`)
+      fetchOptions(`${API_BASE_URL}/catalogs/product-harvest-size-kind/?product=${productId}&is_enabled=true`)
         .then((data) => {
           updateFieldOptions(harvestSizeField, data);
           if (initialHarvestSizeValue) {

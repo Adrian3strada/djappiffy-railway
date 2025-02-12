@@ -93,6 +93,7 @@ INSTALLED_APPS = [
     "packhouses.sales",
     "packhouses.gathering",
     "packhouses.hrm",
+    "packhouses.purchase_operations",
 
     "eudr.parcels",
 
@@ -143,7 +144,7 @@ DATABASE_URL = os.getenv('DATABASE_URL', 'spatialite:///db.spatialite')
 DATABASES = {
     "default": dj_database_url.config(default=DATABASE_URL)
 }
-
+LOGIN_URL = '/dadmin/login/'
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -365,9 +366,9 @@ JAZZMIN_SETTINGS = {
     "order_with_respect_to": [
         "sales",
         "gathering",
+        "purchase_operations",
         "catalogs",
         "catalogs.Market",
-        "catalogs.MarketClass",
         "catalogs.Product",
         "catalogs.MarketProductSize",
         "catalogs.Provider",
@@ -431,6 +432,7 @@ JAZZMIN_SETTINGS = {
         "gathering": "fas fa-tractor",
         "sales": "fas fa-dollar-sign",
         "parcels": "fas fa-map-marked-alt",
+        "purchase_operations": "fas fa-shopping-cart",
         "hrm": "fas fa-clipboard",
 
     },

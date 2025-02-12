@@ -32,7 +32,9 @@
 
     <!-- Custom fixes for django -->
     <link rel="stylesheet" href="{% static "jazzmin/css/main.css" %}">
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     {% if jazzmin_settings.custom_css %}
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static jazzmin_settings.custom_css %}">
@@ -369,6 +371,8 @@
 <!-- Django customisations -->
 <script src="{% static "jazzmin/js/main.js" %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
 
 {% if jazzmin_settings.custom_js %}
 <script src="{% static jazzmin_settings.custom_js %}"></script>

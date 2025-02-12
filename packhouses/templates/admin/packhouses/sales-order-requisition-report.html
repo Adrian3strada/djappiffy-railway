@@ -1,0 +1,139 @@
+<!--Requisición de ventas-->
+{% extends "admin/packhouses/header-footer.html" %}
+{% load i18n %}
+
+{% block page_content %}
+{% load static %}
+<style>
+  @font-face {
+    font-family: 'Futura';
+    src: url('../../../static/fonts') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  body{
+    font-family: 'Futura', sans-serif;
+  }
+  .folio-table {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 10px;
+      border-collapse: collapse;
+  }
+
+  .folio-table tr {
+      height: 25px;
+  }
+
+  .folio-table td {
+      line-height: 25px;
+      padding: 0;
+      overflow: hidden;
+  }
+
+  .table_form {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      table-layout: fixed;
+  }
+
+  .table_form th,
+  .table_form td {
+      border: 1px solid #000000;
+      padding: 8px !important;
+      text-align: left;
+      word-wrap: break-word;
+      box-sizing: border-box;
+  }
+
+  .table_form th {
+      background-color: #ffc600;
+      color: #000000;
+      font-weight: bold;
+      padding: 8px;
+      text-align:center;
+  }
+
+  .table_form tr {
+      page-break-inside: avoid;
+  }
+
+  .table_form thead {
+      display: table-header-group;
+  }
+
+  .table_form tbody {
+      display: table-row-group;
+  }
+
+  .signature-container {
+      margin-top:50px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 50px;
+  }
+
+  .signature-line {
+      width: 40%;
+      border-bottom: 1px solid #000;
+      margin-top: 5px;
+      padding-bottom: 5px;
+  }
+
+  .signature-container label {
+      font-size: 12px;
+      font-weight: normal;
+  }
+</style>
+
+<table class="folio-table">
+    <tr>
+        <td style="width: 10%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Folio" %}</td>
+        <td style="width: 20%; color:red; background-color: #fff4cc;"> N° {{ requisition.ooid }}</td>
+        <td style="width: 70%;"></td>
+    </tr>
+</table>
+
+<div>
+<p>
+    {% blocktrans with created_at=requisition.created_at %}
+        Order Date: {{ created_at }} Hrs.
+    {% endblocktrans %}
+</p>
+
+<p>{{ request_text }}</p>
+
+
+<table class="table_form" style="width:100%;">
+    <thead>
+        <tr>
+            <th>{% translate "Supply" %}</th>
+            <th>{% translate "Quantity" %}</th>
+            <th>{% translate "Comments" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in requisitionsupplyinline %}
+        <tr>
+            <td> {{ item.supply }} </td>
+            <td style="text-align: center;"> {{ item.quantity }} </td>
+            <td>{{ item.comments|default:"" }}</td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+</div>
+
+<div class="signature-container">
+    <div class="signature-line"></div>
+    <label>
+      {{ applicant_name }}<br>{{ applicant_email }}
+    </label>
+</div>
+{% endblock page_content %}

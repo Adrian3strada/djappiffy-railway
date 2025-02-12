@@ -1,10 +1,24 @@
 from django.contrib import admin
 from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
-from .models import MarketProductSizeStandard, MarketProductSizeStandardSize
+from .models import CountryProductStandard, CountryProductStandardSize, CapitalFramework
 from common.base.models import ProductKind
 from django.utils.translation import gettext_lazy as _
 
+
+class ByCountryForCapitalFrameworkFilter(admin.SimpleListFilter):
+    title = _('Country')
+    parameter_name = 'country'
+
+    def lookups(self, request, model_admin):
+        countries_for_capital_frameworks = list(CapitalFramework.objects.all().values_list('country_id', flat=True).distinct())
+        countries = Country.objects.filter(id__in=countries_for_capital_frameworks)
+        return [(country.id, country.name) for country in countries]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(country__id=self.value())
+        return queryset
 
 
 class ByProductKindForPackagingFilter(admin.SimpleListFilter):
@@ -26,8 +40,8 @@ class ByCountryForMarketProductSizeStandardFilter(admin.SimpleListFilter):
     parameter_name = 'country'
 
     def lookups(self, request, model_admin):
-        countries_for_market_roduct_size_standards = list(MarketProductSizeStandard.objects.filter(is_enabled=True).values_list('country_id', flat=True).distinct())
-        countries = Country.objects.filter(id__in=countries_for_market_roduct_size_standards)
+        countries_for_market_product_size_standards = list(CountryProductStandard.objects.filter(is_enabled=True).values_list('country_id', flat=True).distinct())
+        countries = Country.objects.filter(id__in=countries_for_market_product_size_standards)
         return [(country.id, country.name) for country in countries]
 
     def queryset(self, request, queryset):

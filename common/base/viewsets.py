@@ -1,7 +1,8 @@
 from rest_framework import viewsets
 from .serializers import (ProductKindSerializer, CitySerializer, SubRegionSerializer, RegionSerializer,
-                          CountrySerializer, MarketProductSizeStandardSizeSerializer)
-from .models import ProductKind, MarketProductSizeStandardSize
+                          CapitalFrameworkSerializer,
+                          CountrySerializer, CountryProductStandardSizeSerializer)
+from .models import ProductKind, CountryProductStandardSize, CapitalFramework
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
 from cities_light.contrib.restframework3 import SubRegionModelViewSet as BaseSubRegionModelViewSet
 from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
@@ -12,17 +13,31 @@ from cities_light.contrib.restframework3 import CountryModelViewSet as BaseCount
 
 class ProductKindViewSet(viewsets.ModelViewSet):
     serializer_class = ProductKindSerializer
+    pagination_class = None
     queryset = ProductKind.objects.all()
     filterset_fields = ['for_packaging', 'for_orchard', 'for_eudr']
 
 
-class MarketProductSizeStandardSizeViewSet(viewsets.ModelViewSet):
-    serializer_class = MarketProductSizeStandardSizeSerializer
+class CapitalFrameworkViewSet(viewsets.ModelViewSet):
+    serializer_class = CapitalFrameworkSerializer
+    pagination_class = None
+    queryset = CapitalFramework.objects.all()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        country_id = self.request.GET.get('country')
+        if country_id:
+            queryset = queryset.filter(country_id=country_id)
+        return queryset
+
+
+class CountryProductStandardSizeViewSet(viewsets.ModelViewSet):
+    serializer_class = CountryProductStandardSizeSerializer
     pagination_class = None
     multiple_standards = False
 
     def get_queryset(self):
-        queryset = MarketProductSizeStandardSize.objects.all()
+        queryset = CountryProductStandardSize.objects.all()
         product_kind = self.request.GET.get('product_kind')
         country = self.request.GET.get('country')
         countries = self.request.GET.get('countries')

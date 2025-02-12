@@ -3,29 +3,13 @@ from wagtail.models import Orderable
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from django.utils.translation import gettext_lazy as _
-from ..base.models import LegalEntityCategory
+from common.base.models import LegalEntityCategory, CapitalFramework
+
 # Create your models here.
 
 
-class TaxRegime(Orderable):
-    code = models.CharField(max_length=30, verbose_name=_('Code'))
-    name = models.CharField(max_length=255, verbose_name=_('Name'))
-    # category = models.ForeignKey(TaxRegimeCategory, on_delete=models.PROTECT)
-    country = models.ForeignKey(Country, verbose_name=_('Country'), default=158, on_delete=models.PROTECT, related_name='tax_regimes')
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        # verbose_name = 'Regimen Fiscal'
-        # verbose_name_plural = 'Regímenes Fiscales'
-        verbose_name = _('Tax Regime')
-        verbose_name_plural = _('Tax Regimes')
-        unique_together = ('code', 'name', 'country')
-
-
 class LegalEntity(Orderable):
-    tax_regime = models.ForeignKey(TaxRegime, verbose_name=_('Tax regime'), on_delete=models.PROTECT)
+    capital_framework = models.ForeignKey(CapitalFramework, verbose_name=_('Tax regime'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     category = models.ForeignKey(LegalEntityCategory, verbose_name=_('Legal Entity Category'), on_delete=models.PROTECT)
     tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))

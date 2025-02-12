@@ -1,15 +1,20 @@
 from rest_framework import serializers
 from packhouses.catalogs.models import (
-    Market, MarketClass, Vehicle, HarvestingCrewProvider,
-    ProductVariety, ProductSeasonKind, ProductMassVolumeKind, Maquiladora,
+    Market, ProductMarketClass, Vehicle, HarvestingCrewProvider,
+    ProductVariety, ProductPhenologyKind, ProductMassVolumeKind, Maquiladora,
     CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, MarketProductSize, Orchard,
-    HarvestingCrew, OrchardCertification
+    HarvestingCrew, OrchardCertification, ProductPackaging
 )
 from django.utils.translation import gettext_lazy as _
 
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    price_measure_unit_category_display = serializers.SerializerMethodField()
+
+    def get_price_measure_unit_category_display(self, obj):
+        return obj.get_price_measure_unit_category_display()
+
     class Meta:
         model = Product
         fields = '__all__'
@@ -21,9 +26,9 @@ class ProductHarvestSizeKindSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProductSeasonKindSerializer(serializers.ModelSerializer):
+class ProductPhenologyKindSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ProductSeasonKind
+        model = ProductPhenologyKind
         fields = '__all__'
 
 
@@ -51,15 +56,21 @@ class MarketSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class MarketClassSerializer(serializers.ModelSerializer):
+class ProductMarketClassSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MarketClass
+        model = ProductMarketClass
         fields = '__all__'
 
 
 class ProductVarietySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVariety
+        fields = '__all__'
+
+
+class ProductPackagingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductPackaging
         fields = '__all__'
 
 

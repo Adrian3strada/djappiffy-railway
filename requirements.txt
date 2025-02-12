@@ -52,6 +52,7 @@ django-admin-sortable2
 django-nested-admin
 django-modeladmin-reorder
 django-weasyprint
+django-import-export
 setuptools
 
 geopandas
@@ -62,4 +63,4 @@ earthengine-api
 pyasyncore; python_version>="3.12"
 aiosmtpd; python_version>="3.12"
 standard-smtpd; python_version>="3.12"
-distutils; python_version<="3.11"
+# distutils; python_version<="3.11"
