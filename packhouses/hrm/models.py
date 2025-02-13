@@ -77,7 +77,8 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
         if self.middle_name:
             parts.append(self.middle_name)
         parts.append(self.last_name)
-
+        return ' '.join(parts)
+    
     def save(self, *args, **kwargs):
         self.full_name = self.get_full_name()
         super().save(*args, **kwargs)
@@ -92,7 +93,7 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
 
 
 class EmployeeJobPosition(models.Model):
-    job_position = models.OneToOneField(JobPosition, on_delete=models.CASCADE, verbose_name=_('Job Position'))
+    job_position = models.ForeignKey(JobPosition, on_delete=models.CASCADE, verbose_name=_('Job Position'))
     payment_per_hour = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_("Payment per Hour"))
     payment_frequency = models.CharField(max_length=20, choices=EMPLOYEE_PAYMENT_CHOICES, verbose_name=_('Payment Frecuency'))
     payment_kind = models.CharField(max_length=30, choices=EMPLOYEE_PAYMENT_METHOD_CHOICES, verbose_name=_('Payment kind'))
