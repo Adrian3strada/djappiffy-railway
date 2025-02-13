@@ -1,69 +1,64 @@
 from django.contrib import admin
-from common.profiles.models import UserProfile
-from .models import (Requisition, RequisitionSupply)
-from packhouses.catalogs.models import Supply
+from common.profiles.models import UserProfile  # (Si no se usa, se puede eliminar)
+from .models import (Requisition, RequisitionSupply, PurchaseOrder, PurchaseOrderSupply)
+from packhouses.catalogs.models import Supply, Provider
 from django.utils.translation import gettext_lazy as _
-from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
-from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
-from common.base.mixins import (ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, DisableInlineRelatedLinksMixin,
-                                ByUserAdminMixin, )
+from common.base.decorators import (
+    uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield,
+    uppercase_form_charfield, uppercase_alphanumeric_form_charfield,
+)
+from common.base.mixins import (
+    ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin,
+    DisableInlineRelatedLinksMixin, ByUserAdminMixin,
+)
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import RequisitionForm
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 from django.urls import reverse
+import nested_admin
+from common.forms import SelectWidgetWithData
+from common.utils import is_instance_used
 
-# Register your models here.
+
 class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.TabularInline):
     model = RequisitionSupply
     fields = ('supply', 'quantity', 'comments')
     extra = 0
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    def _get_parent_obj(self, request):
+        """Obtiene el objeto Requisition padre a partir del parámetro object_id."""
         parent_object_id = request.resolver_match.kwargs.get("object_id")
-        try:
-            parent_obj = Requisition.objects.get(id=parent_object_id) if parent_object_id else None
-        except Requisition.DoesNotExist:
-            parent_obj = None
+        if parent_object_id:
+            try:
+                return Requisition.objects.get(id=parent_object_id)
+            except Requisition.DoesNotExist:
+                return None
+        return None
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_obj = self._get_parent_obj(request)
         if db_field.name == "supply" and parent_obj:
             kwargs["queryset"] = Supply.objects.filter(
                 organization=parent_obj.organization,
                 is_enabled=True,
             )
-
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-
-        # Obtener el objeto padre (Requisition)
-        parent_object_id = request.resolver_match.kwargs.get("object_id")
-        try:
-            parent_obj = Requisition.objects.get(id=parent_object_id) if parent_object_id else None
-        except Requisition.DoesNotExist:
-            parent_obj = None
-
-        # Si el estado del Requisition es 'closed', 'canceled' o 'ready', hacer todos los campos readonly
+        parent_obj = self._get_parent_obj(request)
         if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+            # Todos los campos se vuelven de solo lectura si el estado es cerrado, cancelado o listo
             readonly_fields.extend([
                 field.name for field in self.model._meta.fields
                 if field.name not in readonly_fields
             ])
-
         return readonly_fields
 
     def has_delete_permission(self, request, obj=None):
-        # Obtener el objeto padre (Requisition)
-        parent_object_id = request.resolver_match.kwargs.get("object_id")
-        try:
-            parent_obj = Requisition.objects.get(id=parent_object_id) if parent_object_id else None
-        except Requisition.DoesNotExist:
-            parent_obj = None
-
-        # Si el estado del Requisition es 'closed', 'canceled' o 'ready', deshabilitar la eliminación
+        parent_obj = self._get_parent_obj(request)
         if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
             return False
-
         return super().has_delete_permission(request, obj)
 
 
@@ -83,10 +78,10 @@ class RequisitionAdmin(ByOrganizationAdminMixin, ByUserAdminMixin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if not obj:
-            readonly_fields.append('ooid')
-        if obj and obj.pk:
-            readonly_fields.append('ooid')
+        # Asegurar que 'ooid' sea de solo lectura tanto en creación como en edición
+        if not obj or (obj and obj.pk):
+            if 'ooid' not in readonly_fields:
+                readonly_fields.append('ooid')
         if obj and obj.status in ['closed', 'canceled', 'ready']:
             readonly_fields.extend([field for field in self.fields if hasattr(obj, field)])
         return readonly_fields
@@ -95,14 +90,14 @@ class RequisitionAdmin(ByOrganizationAdminMixin, ByUserAdminMixin):
         requisition_pdf = reverse('requisition_pdf', args=[obj.pk])
         tooltip_requisition_pdf = _('Generate Requisition PDF')
 
-        tooltip_ready = _('Send to Purchase Operations Departament')
+        tooltip_ready = _('Send to Purchase Operations Department')
         ready_url = reverse('set_requisition_ready', args=[obj.pk])
-        confirm_ready_text = _('Are you sure you want to send this requisition to Purchase Operations Departament?')
+        confirm_ready_text = _('Are you sure you want to send this requisition to Purchase Operations Department?')
         confirm_button_text = _('Yes, send')
         cancel_button_text = _('No')
 
         set_requisition_ready_button = ''
-        if obj.status in ['open']:
+        if obj.status == 'open':
             set_requisition_ready_button = format_html(
                 '''
                 <a class="button btn-ready-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
@@ -129,3 +124,69 @@ class RequisitionAdmin(ByOrganizationAdminMixin, ByUserAdminMixin):
     class Media:
         js = ('js/admin/forms/packhouses/purchase_operations/requisition.js',)
 
+
+class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
+    model = PurchaseOrderSupply
+    fields = ('requisition_supply', 'quantity', 'unit_price', 'total_price','comments')
+    readonly_fields = ('total_price','comments',)
+    extra = 0
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        # Agregar clases o atributos personalizados a los campos
+        form.base_fields['quantity'].widget.attrs.update({'class': 'quantity-field'})
+        form.base_fields['unit_price'].widget.attrs.update({'class': 'unit-price-field'})
+        form.base_fields['total_price'].widget.attrs.update({'class': 'total-price-field', 'readonly': 'readonly'})
+        return form
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "requisition_supply":
+            # Obtener el ID del Purchase Order actual
+            parent_po_id = request.resolver_match.kwargs.get('object_id')
+
+            # Excluir sólo los requisition_supply que están usados en otros PurchaseOrders
+            used_requisition_supplies = PurchaseOrderSupply.objects.exclude(
+                purchase_order_id=parent_po_id
+            ).values_list('requisition_supply_id', flat=True)
+
+            # Filtrar solo las RequisitionSupply con estado 'ready'
+            queryset = RequisitionSupply.objects.filter(requisition__status='ready').exclude(
+                id__in=used_requisition_supplies
+            )
+
+            kwargs["queryset"] = queryset
+            kwargs["widget"] = SelectWidgetWithData(model=RequisitionSupply, data_fields=["quantity", "comments"])
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/purchase_operations/purchase_orders_supply.js',)
+
+
+
+@admin.register(PurchaseOrder)
+class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
+    list_display = ('ooid', 'provider', 'currency', 'status', 'created_at')
+    fields = ('ooid', 'provider','payment_date','currency', 'status', 'comments')
+    list_filter = ('provider', 'currency', 'status')
+    readonly_fields = ('ooid', 'status')
+    inlines = [PurchaseOrderRequisitionSupplyInline]
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if not obj or (obj and obj.pk):
+            if 'ooid' not in readonly_fields:
+                readonly_fields.append('ooid')
+        return readonly_fields
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+
+        if db_field.name == "provider":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = Provider.objects.filter(organization=request.organization, is_enabled=True,
+                                                             category='supply_provider')
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)

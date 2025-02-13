@@ -2,8 +2,19 @@
 {% load admin_urls %}
 
 {% if has_export_permission %}
-<button button class="btn btn-info" style="margin-right: 10px;">
-    <a href="{% url opts|admin_urlname:'export' %}{{cl.get_query_string}}" class="text-white" target="_blank">
-        <i class="fas fa-file-pdf"></i> {% translate "Export Excel" %}</a>
+<button id="export-sheet" class="btn btn-info" style="margin-right: 10px;">
+    <i class="fas fa-file-excel"></i> {% translate "Export Excel" %}
 </button>
 {% endif %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var exportButton = document.getElementById("export-sheet");
+    if (exportButton) {
+        exportButton.addEventListener("click", function () {
+            var baseUrl = "{% url opts|admin_urlname:'export' %}{{ cl.get_query_string }}";
+            window.open(baseUrl, '_blank');
+        });
+    }
+});
+</script>

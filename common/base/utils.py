@@ -180,6 +180,9 @@ class DehydrationResource():
     
     def dehydrate_service_provider(self, obj):
         return obj.service_provider.name if obj.service_provider else ""
+    
+    def dehydrate_status(self, obj):
+        return obj.status.name if obj.status else ""
 
     def dehydrate_is_foreign(self, obj):
         return "✅" if obj.is_foreign else "❌"

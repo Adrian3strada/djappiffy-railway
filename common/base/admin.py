@@ -3,13 +3,15 @@ from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
 from .models import (ProductKind, CountryProductStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
                      CountryProductStandardPackaging,
-                     Incoterm, LocalDelivery)
+                     Incoterm, LocalDelivery, Currency)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
 from wagtail.documents.models import Document
 from wagtail.images.models import Image
 from taggit.models import Tag
 from adminsortable2.admin import SortableAdminMixin
+from .decorators import uppercase_form_charfield
+
 
 #
 
@@ -98,3 +100,12 @@ admin.site.unregister(Tag)
 # descomentar los siguientes solo para demo o producción, no para desarrollo
 # admin.site.unregister(ProductKind)
 
+@admin.register(Currency)
+class CurrencyAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code', 'is_enabled')
+    list_filter = ['is_enabled']
+
+    @uppercase_form_charfield('code')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form

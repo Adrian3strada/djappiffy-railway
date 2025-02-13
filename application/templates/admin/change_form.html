@@ -148,7 +148,25 @@
         if (formGroups.length > 1) formGroups[1].style.order = 3;
         if (formGroups.length > 2) formGroups[2].style.order = 1;
         if (formGroups.length > 3) formGroups[3].style.order = 2;
+
       };
+
+      document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function() {
+          var addButtons = document.querySelectorAll("tr.add-row td > a.btn");
+          addButtons.forEach(function(btn) {
+            btn.classList.remove("float-right");
+            btn.classList.add("float-left");
+          });
+        }, 100);
+      });
+
+
+
+
+
+
+
     </script>
 
 
