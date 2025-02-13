@@ -367,14 +367,15 @@ class Client(CleanNameAndCategoryAndOrganizationMixin, models.Model):
                                         verbose_name=_('Shipping address'),
                                         help_text=_('Shipping address of the client, leave it blank if you want to use the client address for shipping, or select one if you want to use a different one.'),
                                         on_delete=models.PROTECT, null=True, blank=True, related_name='shipping_address_clients')
-    capital_framework = models.ForeignKey(CapitalFramework, verbose_name=_(''),
+    capital_framework = models.ForeignKey(CapitalFramework, verbose_name=_('Capital framework'),
                                           null=True, blank=True,
                                           on_delete=models.PROTECT, help_text=_(
             'Legal category of the client, must have a country selected to show that country legal categories.'))
+    has_instructions_letter = models.BooleanField(default=False, verbose_name=_('Has instructions letter'), help_text=_('This must be checked if it wants to be able to make instructions letter for this client'))
     tax_id = models.CharField(max_length=30, verbose_name=_('Client tax ID'))
     payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
-    max_money_credit_limit = models.FloatField(verbose_name=_('Max money credit limit'), null=True, blank=True)
-    max_days_credit_limit = models.FloatField(verbose_name=_('Max days credit limit'), null=True, blank=True)
+    max_money_credit_limit = models.FloatField(default=0, verbose_name=_('Max money credit limit'))
+    max_days_credit_limit = models.FloatField(default=0, verbose_name=_('Max days credit limit'))
     fda = models.CharField(max_length=20, verbose_name=_('FDA'), null=True, blank=True)
     swift = models.CharField(max_length=20, verbose_name=_('SWIFT'), null=True, blank=True)
     aba = models.CharField(max_length=20, verbose_name=_('ABA'), null=True, blank=True)

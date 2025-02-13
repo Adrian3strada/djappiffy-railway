@@ -405,7 +405,7 @@ class ClientShipAddressInline(admin.StackedInline):
             if markets_countries:
                 kwargs["queryset"] = Country.objects.filter(id__in=markets_countries)
             else:
-                kwargs["queryset"] = Country.objects.all()
+                kwargs["queryset"] = Country.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
@@ -414,7 +414,7 @@ class ClientShipAddressInline(admin.StackedInline):
             if markets_countries:
                 kwargs["queryset"] = Region.objects.filter(country_id__in=markets_countries)
             else:
-                kwargs["queryset"] = Region.objects.all()
+                kwargs["queryset"] = Region.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
@@ -423,7 +423,7 @@ class ClientShipAddressInline(admin.StackedInline):
             if markets_countries:
                 kwargs["queryset"] = SubRegion.objects.filter(country_id__in=markets_countries)
             else:
-                kwargs["queryset"] = SubRegion.objects.all()
+                kwargs["queryset"] = SubRegion.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
@@ -432,7 +432,7 @@ class ClientShipAddressInline(admin.StackedInline):
             if markets_countries:
                 kwargs["queryset"] = City.objects.filter(country_id__in=markets_countries)
             else:
-                kwargs["queryset"] = City.objects.all()
+                kwargs["queryset"] = City.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
@@ -455,9 +455,9 @@ class ClientAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     search_fields = ('name', 'tax_id', 'contact_phone_number')
     fields = (
         'name', 'category', 'market', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address',
-        'external_number', 'internal_number', 'shipping_address', 'capital_framework', 'tax_id', 'payment_kind',
-        'max_money_credit_limit', 'max_days_credit_limit', 'fda', 'swift', 'aba', 'clabe', 'bank', 'contact_name',
-        'contact_email', 'contact_phone_number', 'is_enabled')
+        'external_number', 'internal_number', 'shipping_address', 'capital_framework', 'has_instructions_letter',
+        'tax_id', 'payment_kind', 'max_money_credit_limit', 'max_days_credit_limit', 'fda', 'swift', 'aba', 'clabe',
+        'bank', 'contact_name', 'contact_email', 'contact_phone_number', 'is_enabled')
     inlines = [ClientShipAddressInline]
 
     def country_display(self, obj):
@@ -481,6 +481,13 @@ class ClientAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     @uppercase_form_charfield('contact_name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+
+        if 'capital_framework' in form.base_fields:
+            form.base_fields['capital_framework'].widget.can_add_related = False
+            form.base_fields['capital_framework'].widget.can_change_related = False
+            form.base_fields['capital_framework'].widget.can_delete_related = False
+            form.base_fields['capital_framework'].widget.can_view_related = False
+
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -559,14 +566,22 @@ class ClientAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             kwargs["queryset"] = ClientShippingAddress.objects.filter(client=obj, is_enabled=True)
 
         if db_field.name == "capital_framework":
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.required = True
             if request.POST:
                 country_id = request.POST.get('country')
             else:
                 country_id = obj.country_id if obj else None
             if country_id:
-                kwargs["queryset"] = CapitalFramework.objects.filter(country_id=country_id)
+                queryset = CapitalFramework.objects.filter(country_id=country_id)
+                kwargs["queryset"] = queryset
+                if queryset.exists():
+                    formfield.required = True
+                else:
+                    formfield.required = False
             else:
                 kwargs["queryset"] = CapitalFramework.objects.none()
+            return formfield
 
         if db_field.name == "bank":
             kwargs["queryset"] = Bank.objects.filter(organization=organization, is_enabled=True)
