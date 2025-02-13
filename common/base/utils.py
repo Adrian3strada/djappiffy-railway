@@ -109,7 +109,7 @@ class DehydrationResource():
         return obj.market.name if obj.market else ""
     
     def dehydrate_market_class(self, obj):
-        return obj.market_class.name if obj.market_class else ""
+        return obj.market_class.class_name if obj.market_class else ""
     
     def dehydrate_varieties(self, obj):
         return ", ".join(variety.name for variety in obj.varieties.all()) if obj.varieties.exists() else ""
@@ -132,6 +132,9 @@ class DehydrationResource():
     
     def dehydrate_product_size(self, obj):
         return obj.product_size.name if obj.product_size else ""
+    
+    def dehydrate_product_ripeness(self, obj):
+        return obj.product_ripeness.name if obj.product_ripeness else ""
 
     def dehydrate_organization(self, obj):
         return obj.organization.name if obj.organization else ""
@@ -180,6 +183,9 @@ class DehydrationResource():
     
     def dehydrate_service_provider(self, obj):
         return obj.service_provider.name if obj.service_provider else ""
+    
+    def dehydrate_capital_framework(self, obj):
+        return obj.capital_framework.name if obj.capital_framework else ""
     
     def dehydrate_status(self, obj):
         return obj.status.name if obj.status else ""

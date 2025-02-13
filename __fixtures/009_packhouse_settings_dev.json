@@ -34,5 +34,93 @@
     "is_enabled": true,
     "organization": 1
   }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 1,
+  "fields": {
+    "name": "CAJA",
+    "unit_kind": "piece",
+    "is_packaging": true,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 2,
+  "fields": {
+    "name": "CHAROLA",
+    "unit_kind": "piece",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 3,
+  "fields": {
+    "name": "TARIMA",
+    "unit_kind": "piece",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 4,
+  "fields": {
+    "name": "ESQUINERO",
+    "unit_kind": "piece",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 5,
+  "fields": {
+    "name": "TAPA",
+    "unit_kind": "piece",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 6,
+  "fields": {
+    "name": "MALLA",
+    "unit_kind": "cm",
+    "is_packaging": true,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 7,
+  "fields": {
+    "name": "FILM",
+    "unit_kind": "cm",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.supplykind",
+  "pk": 8,
+  "fields": {
+    "name": "FLEJE",
+    "unit_kind": "m",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
 }
 ]
