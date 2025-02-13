@@ -181,6 +181,9 @@ class DehydrationResource():
     def dehydrate_service_provider(self, obj):
         return obj.service_provider.name if obj.service_provider else ""
     
+    def dehydrate_capital_framework(self, obj):
+        return obj.capital_framework.name if obj.capital_framework else ""
+    
     def dehydrate_status(self, obj):
         return obj.status.name if obj.status else ""
 

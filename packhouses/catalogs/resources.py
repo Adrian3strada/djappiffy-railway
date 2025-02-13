@@ -126,6 +126,8 @@ class MaquiladoraResource(DehydrationResource, ExportResource):
     class Meta:
         model = Maquiladora
         exclude = default_excluded_fields 
+        export_order = ('id', 'name', 'zone', 'tax_id', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'email', 'phone_number', 'maquiladora_clients', 'is_enabled')
+
 
 class OrchardResource(DehydrationResource, ExportResource):
     def dehydrate_category(self, obj):
