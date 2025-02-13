@@ -107,7 +107,7 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
     resource_classes = [EmployeeResource]
     list_display = ('full_name', 'get_job_position', 'gender', 'hire_date','status')
     list_filter = ('status',)
-    fields = ('status', 'name', 'middle_name', 'last_name', 'second_last_name', 'population_registry_code', 'gender', 
+    fields = ('status', 'name', 'middle_name', 'last_name', 'population_registry_code', 'gender', 
               'marital_status', 'hire_date', 'termination_date')
     search_fields = ('full_name', )
     inlines = [EmployeeJobPositionInline, EmployeeContactInformationInline,
@@ -116,7 +116,6 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('middle_name')
     @uppercase_form_charfield('last_name')
-    @uppercase_form_charfield('second_last_name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
