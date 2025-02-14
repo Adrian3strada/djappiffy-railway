@@ -362,7 +362,6 @@ class Client(CleanNameAndCategoryAndOrganizationMixin, models.Model):
     address = models.CharField(max_length=255, verbose_name=_('Address'))
     external_number = models.CharField(max_length=10, verbose_name=_('External number'))
     internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    # same_ship_address = models.BooleanField(default=False)
     shipping_address = models.OneToOneField('catalogs.ClientShippingAddress',
                                         verbose_name=_('Shipping address'),
                                         help_text=_('Shipping address of the client, leave it blank if you want to use the client address for shipping, or select one if you want to use a different one.'),
@@ -371,7 +370,8 @@ class Client(CleanNameAndCategoryAndOrganizationMixin, models.Model):
                                           null=True, blank=True,
                                           on_delete=models.PROTECT, help_text=_(
             'Legal category of the client, must have a country selected to show that country legal categories.'))
-    has_instructions_letter = models.BooleanField(default=False, verbose_name=_('Has instructions letter'), help_text=_('This must be checked if it wants to be able to make instructions letter for this client'))
+    # has_instructions_letter = models.BooleanField(default=False, verbose_name=_('Has instructions letter'), help_text=_('This must be checked if it wants to be able to make instructions letter for this client'))
+
     tax_id = models.CharField(max_length=30, verbose_name=_('Client tax ID'))
     payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
     max_money_credit_limit = models.FloatField(default=0, verbose_name=_('Max money credit limit'))
@@ -497,8 +497,8 @@ class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
     phone_number = models.CharField(max_length=15, verbose_name=_('Phone number'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-    maquiladora_clients = models.ManyToManyField(Client, verbose_name=_('Maquiladora clients'), blank=False,
-                                                 help_text=_('Clients associated with this maquiladora, it must be created before at Catalogs:Clients section.'))
+    clients = models.ManyToManyField(Client, verbose_name=_('Clients'), blank=False,
+                                     help_text=_('Clients associated with this maquiladora, it must be created before at Catalogs:Clients section.'))
 
     class Meta:
         verbose_name = _('Maquiladora')

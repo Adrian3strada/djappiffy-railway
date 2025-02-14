@@ -6,14 +6,17 @@ document.addEventListener('DOMContentLoaded', function () {
   const cityField = $('#id_city');
   const districtField = $('#id_district');
   const capitalFrameworkField = $('#id_capital_framework');
-  const hasInstuctionsLetterField = $('#id_has_instructions_letter');
 
   const API_BASE_URL = '/rest/v1';
 
   function updateFieldOptions(field, options) {
     field.empty().append(new Option('---------', '', true, true));
     options.forEach(option => {
-      field.append(new Option(option.name, option.id, false, false));
+      if (field === capitalFrameworkField) {
+        field.append(new Option(option.code, option.id, false, false));
+      } else {
+        field.append(new Option(option.name, option.id, false, false));
+      }
     });
     field.trigger('change').select2();
   }
@@ -100,15 +103,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  categoryField.on('change', function () {
-    if (categoryField.val() === 'packhouse') {
-      hasInstuctionsLetterField.closest('.form-group').fadeIn();
-    } else {
-      hasInstuctionsLetterField.prop('checked', false);
-      hasInstuctionsLetterField.closest('.form-group').fadeOut();
-    }
-  });
-
   marketField.on('change', function () {
     updateCountry();
   });
@@ -127,14 +121,12 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   capitalFrameworkField.closest('.form-group').hide();
-  hasInstuctionsLetterField.closest('.form-group').hide();
 
   if (countryField.val()) {
-    updateState();
-    updateCapitalFramework();
+    if (!stateField.val()) updateState();
+    if (!capitalFrameworkField.val()) updateCapitalFramework();
   }
   if (capitalFrameworkField.val().length > 0) capitalFrameworkField.closest('.form-group').show();
-  if (categoryField.val() === 'packhouse') hasInstuctionsLetterField.closest('.form-group').show();
 
   [marketField, countryField, stateField, cityField, districtField, capitalFrameworkField].forEach(field => field.select2());
 });

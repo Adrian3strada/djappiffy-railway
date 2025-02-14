@@ -3,7 +3,7 @@ from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind,
                      Gatherer, PaymentKind,
-                     Provider, Client,
+                     Provider, Client, CapitalFramework,
                      Maquiladora, WeighingScale, ExportingCompany, CustomsBroker, PalletConfiguration
                      )
 from common.base.models import ProductKind
@@ -94,6 +94,21 @@ class ByMarketForOrganizationFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(market__id=self.value())
+        return queryset
+
+
+class ByClientCapitalFrameworkForOrganizationFilter(admin.SimpleListFilter):
+    title = _('Capital framework')
+    parameter_name = 'capital_framework'
+
+    def lookups(self, request, model_admin):
+        clients_capital_frameworks = list(Client.objects.filter(organization=request.organization, is_enabled=True).values_list('capital_framework', flat=True).distinct())
+        capital_frameworks = CapitalFramework.objects.filter(id__in=clients_capital_frameworks)
+        return [(capital_framework.id, capital_framework.code) for capital_framework in capital_frameworks]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(capital_framework__id=self.value())
         return queryset
 
 
