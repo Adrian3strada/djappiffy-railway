@@ -41,9 +41,6 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     countries = models.ManyToManyField(Country, verbose_name=_('Countries'))
-    management_cost_per_kg = models.FloatField(verbose_name=_('Management cost per Kg'),
-                                               validators=[MinValueValidator(0.01)], help_text=_(
-            'Cost generated per Kg for product management and packaging'))
     is_mixable = models.BooleanField(default=True, verbose_name=_('Is mixable'),
                                      help_text=_('Conditional that does not allow mixing fruit with other markets'))
     label_language = models.CharField(max_length=20, verbose_name=_('Label language'), choices=settings.LANGUAGES,

@@ -103,7 +103,7 @@ class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     list_display = ('name', 'alias', 'get_countries', 'is_mixable', 'is_enabled')
     list_filter = (ByCountryForOrganizationMarketsFilter, 'is_mixable', 'is_enabled',)
     search_fields = ('name', 'alias')
-    fields = ('name', 'alias', 'countries', 'management_cost_per_kg', 'is_mixable',
+    fields = ('name', 'alias', 'countries', 'is_mixable',
               'label_language', 'address_label', 'is_enabled')
 
     def get_countries(self, obj):
