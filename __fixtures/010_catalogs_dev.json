@@ -1076,6 +1076,114 @@
   }
 },
 {
+  "model": "catalogs.crewchief",
+  "pk": 1,
+  "fields": {
+    "name": "AARÓN SÁNCHEZ",
+    "provider": 16,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 2,
+  "fields": {
+    "name": "BALDOMERO SANTOYO",
+    "provider": 16,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 3,
+  "fields": {
+    "name": "CARLOS SANTANA",
+    "provider": 16,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 4,
+  "fields": {
+    "name": "ÁLVARO PÉREZ",
+    "provider": 11,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 5,
+  "fields": {
+    "name": "BLAS PEREIRA",
+    "provider": 11,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 6,
+  "fields": {
+    "name": "CLAUDIO PEDRAZA",
+    "provider": 11,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 7,
+  "fields": {
+    "name": "ARMANDO TAPIA",
+    "provider": 12,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 8,
+  "fields": {
+    "name": "BRUNO TALAVERA",
+    "provider": 12,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 9,
+  "fields": {
+    "name": "CRISTIAN TABOADA",
+    "provider": 12,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 10,
+  "fields": {
+    "name": "AURELIO URIBE",
+    "provider": 10,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 11,
+  "fields": {
+    "name": "BULMARO UGARTE",
+    "provider": 10,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 12,
+  "fields": {
+    "name": "CUSTODIO ULLOA",
+    "provider": 10,
+    "is_enabled": true
+  }
+},
+{
   "model": "catalogs.orchard",
   "pk": 1,
   "fields": {
