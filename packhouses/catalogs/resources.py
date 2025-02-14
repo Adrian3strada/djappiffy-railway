@@ -13,57 +13,68 @@ from packhouses.packhouse_settings.settings import SUPPLY_UNIT_KIND_CHOICES
 from django.utils.safestring import mark_safe
 
 class MarketResource(DehydrationResource, ExportResource):
-    market_class_name = Field(column_name=_("Market Class"), attribute="marketclass_set", readonly=True)
-
-    def dehydrate_market_class_name(self, market):
-        # Filtrar solo las clases activas
-        active_market_classes = market.marketclass_set.filter(is_enabled=True)  
-        
-        # Retornar en formato de lista HTML
-        if active_market_classes:
-            return "<ul>" + "".join([f"<li>{mc.name}</li>" for mc in active_market_classes]) + "</ul>"
-        return ''
-
     class Meta:
         model = Market
         exclude = tuple(default_excluded_fields + ("address_label",))
-        export_order = ('id', 'name', 'alias', 'countries', 'management_cost_per_kg', 'market_class_name', 'is_mixable' ,'is_enabled')
+        export_order = ('id', 'name', 'alias', 'countries', 'management_cost_per_kg', 'is_mixable' ,'is_enabled')
 
         
 class ProductResource(DehydrationResource, ExportResource): 
-    product_season = Field(column_name=_("Season"), readonly=True) 
-    product_variety = Field(column_name=_("Variety"), readonly=True) 
-    mass_volume_kind = Field(column_name=_("Mass Volume Kind"), readonly=True) 
-    harvest_size_kind = Field(column_name=_("Harvest Size Kinds"), readonly=True) 
+    product_managment_cost = Field(column_name=_("Managment Cost"), readonly=True)
+    product_class = Field(column_name=_("Class"), readonly=True)
+    product_variety = Field(column_name=_("Variety"), readonly=True)
+    product_phenology = Field(column_name=_("Phenology Kind"), readonly=True)
+    product_harvest_size = Field(column_name=_("Harvest Size"), readonly=True)
+    product_mass_volume = Field(column_name=_("Mass Volume"), readonly=True)
+    product_ripeness = Field(column_name=_("Ripeness"), readonly=True)
 
-    def dehydrate_product_season(self, product):
-        product_seasons = product.productseasonkind_set.filter(is_enabled=True) 
-        if product_seasons:
-            return "<ul>" + "".join([f"<li>{s.name}</li>" for s in product_seasons]) + "</ul>"
+    def dehydrate_product_managment_cost(self, product):
+        product_managment_costs = product.productmarketmeasureunitmanagementcost_set.filter(is_enabled=True)
+        if product_managment_costs:
+            return "<ul>" + "".join([f"<li>{pmc.measure_unit_management_cost} ({pmc.market})</li>" for pmc in product_managment_costs]) + "</ul>"
         return ''
     
+    def dehydrate_product_class(self, product):
+        product_classes = product.productmarketclass_set.filter(is_enabled=True)
+        if product_classes:
+            return "<ul>" + "".join([f"<li>{pc.class_name} ({pc.market})</li>" for pc in product_classes]) + "</ul>"
+        return ''
+
     def dehydrate_product_variety(self, product):
-        product_varieties = product.productvariety_set.filter(is_enabled=True) 
+        product_varieties = product.productvariety_set.filter(is_enabled=True)
         if product_varieties:
             return "<ul>" + "".join([f"<li>{pv.name} ({pv.alias})</li>" for pv in product_varieties]) + "</ul>"
         return ''
     
-    def dehydrate_mass_volume_kind(self, product):
-        mass_volume = product.productmassvolumekind_set.filter(is_enabled=True)
-        if mass_volume:
-            return "<ul>" + "".join([f"<li>{mvk.name}</li>" for mvk in mass_volume]) + "</ul>"
+    def dehydrate_product_phenology(self, product):
+        product_phenologies = product.productphenologykind_set.filter(is_enabled=True)
+        if product_phenologies:
+            return "<ul>" + "".join([f"<li>{pph.name}</li>" for pph in product_phenologies]) + "</ul>"
         return ''
     
-    def dehydrate_harvest_size_kind(self, product):
-        harvest_size = product.productharvestsizekind_set.filter(is_enabled=True)
-        if harvest_size:
-            return "<ul>" + "".join([f"<li>{phk.name}</li>" for phk in harvest_size]) + "</ul>"
+    def dehydrate_product_harvest_size(self, product):
+        product_harvest_sizes = product.productharvestsizekind_set.filter(is_enabled=True)
+        if product_harvest_sizes:
+            return "<ul>" + "".join([f"<li>{phk.name}</li>" for phk in product_harvest_sizes]) + "</ul>"
         return ''
-
+    
+    def dehydrate_product_mass_volume(self, product):
+        product_mass_volumes = product.productmassvolumekind_set.filter(is_enabled=True)
+        if product_mass_volumes:
+            return "<ul>" + "".join([f"<li>{pmv.name}</li>" for pmv in product_mass_volumes]) + "</ul>"
+        return ''
+    
+    def dehydrate_product_ripeness(self, product):
+        product_ripeness = product.productripeness_set.filter(is_enabled=True)
+        if product_ripeness:
+            return "<ul>" + "".join([f"<li>{pr.name}</li>" for pr in product_ripeness]) + "</ul>"
+        return ''
+    
     class Meta:
         model = Product
         exclude = default_excluded_fields 
-        export_order = ('id', 'kind', 'name', 'product_season', 'mass_volume_kind', 'product_variety',  'harvest_size_kind', 'is_enabled')
+        export_order = ('id', 'kind', 'name', 'price_measure_unit_category', 'product_managment_cost', 'product_class',  'product_variety', 
+                        'product_phenology', 'product_harvest_size', 'product_mass_volume', 'product_ripeness', 'is_enabled')
 
 
 class MarketProductSizeResource(DehydrationResource, ExportResource):
@@ -115,6 +126,8 @@ class MaquiladoraResource(DehydrationResource, ExportResource):
     class Meta:
         model = Maquiladora
         exclude = default_excluded_fields 
+        export_order = ('id', 'name', 'zone', 'tax_id', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'email', 'phone_number', 'maquiladora_clients', 'is_enabled')
+
 
 class OrchardResource(DehydrationResource, ExportResource):
     def dehydrate_category(self, obj):

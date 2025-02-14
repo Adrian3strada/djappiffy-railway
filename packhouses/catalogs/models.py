@@ -948,7 +948,8 @@ class PalletConfiguration(CleanNameOrAliasAndOrganizationMixin, models.Model):
     kg_per_box = models.FloatField(verbose_name=_('Kg per box'), null=False, blank=False)
     packaging_kind = models.ForeignKey(Packaging, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Creation date'))
-    is_ripe = models.BooleanField(default=False, verbose_name=_('Is ripe'))
+    # is_ripe = models.BooleanField(default=False, verbose_name=_('Is ripe'))
+    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product Ripeness'), on_delete=models.PROTECT, null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 

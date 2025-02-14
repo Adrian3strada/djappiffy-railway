@@ -1277,10 +1277,10 @@ class PalletConfigurationPersonalExpenseInline(admin.StackedInline):
 class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PalletConfigurationResource]
-    list_display = ('name', 'alias', 'market', 'product', 'product_variety' , 'get_product_size', 'is_ripe', 'is_enabled')
-    list_filter = (ByMarketForOrganizationPalletConfigurationFilter, ByProductForOrganizationPalletConfigurationFilter, ByProductVarietyForOrganizationPalletConfigurationFilter, 'is_ripe', 'is_enabled',)
-    fields = ('name', 'alias', 'market', 'market_class' ,'product', 'product_variety', 'product_size', 'maximum_boxes_per_pallet', 'maximum_kg_per_pallet',
-              'kg_tare', 'kg_per_box', 'packaging_kind' ,'is_ripe', 'is_enabled')
+    list_display = ('name', 'alias', 'market', 'product', 'product_variety' , 'get_product_size', 'product_ripeness', 'is_enabled')
+    list_filter = (ByMarketForOrganizationPalletConfigurationFilter, ByProductForOrganizationPalletConfigurationFilter, ByProductVarietyForOrganizationPalletConfigurationFilter, 'is_enabled',)
+    fields = ('name', 'alias', 'product', 'market', 'market_class' , 'product_variety', 'product_size', 'maximum_boxes_per_pallet', 'maximum_kg_per_pallet',
+              'kg_tare', 'kg_per_box', 'packaging_kind' ,'product_ripeness', 'is_enabled')
     search_fields = ('name', 'alias')
     inlines = [PalletConfigurationSupplyExpenseInLine,PalletConfigurationPersonalExpenseInline]
 
@@ -1332,20 +1332,13 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
                 kwargs["queryset"] = MarketProductSize.objects.filter(**product_queryfilter)
             else:
                 kwargs["queryset"] = MarketProductSize.objects.none()
-        # Comentado ante discrepancias con desarrollo entre Cesar y Jaqueline
-        #   La versión de arriba parece la asociada de un calibre dependiente de variedades
-        """
-        if db_field.name == "product_size":
-            if market and product:
-                kwargs["queryset"] = MarketProductSize.objects.filter(market=market, **product_queryfilter)
-            else:
-                kwargs["queryset"] = MarketProductSize.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda item: item.name.split(' (')[0]
-            return formfield
-        """
         if db_field.name == "packaging_kind":
             kwargs["queryset"] = Packaging.objects.filter(**organization_queryfilter)
+        if db_field.name == "product_ripeness":
+            if product:
+                kwargs["queryset"] = ProductRipeness.objects.filter(**product_queryfilter)
+            else:
+                kwargs["queryset"] = ProductRipeness.objects.none()        
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
