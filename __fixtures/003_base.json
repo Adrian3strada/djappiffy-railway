@@ -1716,5 +1716,61 @@
     "is_enabled": true,
     "sort_order": 5
   }
+},
+{
+  "model": "base.currency",
+  "pk": 1,
+  "fields": {
+    "code": "USD",
+    "name": "DÓLAR ESTADOUNIDENSE",
+    "name_en": "UNITED STATES DOLLAR",
+    "name_pt": "DÓLAR AMERICANO",
+    "name_fr": "DOLLAR AMÉRICAIN",
+    "name_de": "US-DOLLAR",
+    "name_es": "DÓLAR ESTADOUNIDENSE",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.currency",
+  "pk": 2,
+  "fields": {
+    "code": "MXN",
+    "name": "PESO MEXICANO",
+    "name_en": "MEXICAN PESO",
+    "name_pt": "PESO MEXICANO",
+    "name_fr": "PESO MEXICAIN",
+    "name_de": "MEXIKANISCHER PESO",
+    "name_es": "PESO MEXICANO",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.currency",
+  "pk": 3,
+  "fields": {
+    "code": "EUR",
+    "name": "EURO",
+    "name_en": "EURO",
+    "name_pt": "EURO",
+    "name_fr": "EURO",
+    "name_de": "EURO",
+    "name_es": "EURO",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.currency",
+  "pk": 4,
+  "fields": {
+    "code": "COP",
+    "name": "PESO COLOMBIANO",
+    "name_en": "COLOMBIAN PESO",
+    "name_pt": "PESO COLOMBIANO",
+    "name_fr": "PESO COLOMBIEN",
+    "name_de": "KOLUMBIANISCHER PESO",
+    "name_es": "PESO COLOMBIANO",
+    "is_enabled": true
+  }
 }
 ]
