@@ -6,7 +6,7 @@ from .viewsets import (
     MarketViewSet, ProductMarketClassViewSet, VehicleViewSet, HarvestingCrewProviderViewSet,
     CrewChiefViewSet, ProductVarietyViewSet, ProductHarvestSizeKindViewSet, ProductPhenologyKindViewSet,
     ProductMassVolumeKindViewSet, ClientViewSet, ProviderViewSet, ProductViewSet, MaquiladoraViewSet, SupplyViewSet, MarketProductSizeViewSet,
-    OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, ProductPackagingViewSet
+    OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, PackagingViewSet
 )
 
 urlpatterns = []
@@ -19,7 +19,7 @@ drf_router.register(r'rest/v1/catalogs/product-phenology', ProductPhenologyKindV
 drf_router.register(r'rest/v1/catalogs/product-mass-volume-kind', ProductMassVolumeKindViewSet, basename='product_mass_volume_kind')
 drf_router.register(r'rest/v1/catalogs/product-variety', ProductVarietyViewSet, basename='product_variety')
 drf_router.register(r'rest/v1/catalogs/product-size', MarketProductSizeViewSet, basename='product_size')
-drf_router.register(r'rest/v1/catalogs/product-packaging', ProductPackagingViewSet, basename='product_packaging')
+drf_router.register(r'rest/v1/catalogs/packaging', PackagingViewSet, basename='packaging')
 drf_router.register(r'rest/v1/catalogs/provider', ProviderViewSet, basename='provider')
 drf_router.register(r'rest/v1/catalogs/supply', SupplyViewSet, basename='supply')
 drf_router.register(r'rest/v1/catalogs/vehicle', VehicleViewSet, basename='vehicle')
@@ -27,9 +27,9 @@ drf_router.register(r'rest/v1/catalogs/harvesting-crew-provider', HarvestingCrew
 drf_router.register(r'rest/v1/catalogs/crew_chief', CrewChiefViewSet, basename='crew_chief')
 drf_router.register(r'rest/v1/catalogs/client', ClientViewSet, basename='client')
 drf_router.register(r'rest/v1/catalogs/orchard', OrchardViewSet, basename='orchard')
-drf_router.register(r'rest/v1/catalogs/harvesting_crew', HarvestingCrewViewSet, basename='harvesting_crew')
+drf_router.register(r'rest/v1/catalogs/harvesting-crew', HarvestingCrewViewSet, basename='harvesting_crew')
 drf_router.register(r'rest/v1/catalogs/maquiladora', MaquiladoraViewSet, basename='maquiladora')
-drf_router.register(r'rest/v1/catalogs/orchard_certification', OrchardCertificationViewSet, basename='orchard_certification')
+drf_router.register(r'rest/v1/catalogs/orchard-certification', OrchardCertificationViewSet, basename='orchard_certification')
 
 
 urlpatterns += drf_router.urls

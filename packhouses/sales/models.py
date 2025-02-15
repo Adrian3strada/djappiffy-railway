@@ -75,7 +75,7 @@ class OrderItem(models.Model):
 
     product_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT)
-    market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
+    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
     product_packaging = models.ForeignKey(Packaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT, null=True, blank=False)
     quantity_per_packaging = models.PositiveIntegerField(verbose_name=_('Quantity per packaging'), default=1)
     quantity = models.DecimalField(verbose_name=_('Quantity'), max_digits=12, decimal_places=2, validators=[MinValueValidator(0.01)])

@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function updateOrchardCertificationField() {
     const orchardId = orchardField.val();
     if (orchardId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/orchard_certification/?orchard=${orchardId}&is_enabled=true`)
+      fetchOptions(`${API_BASE_URL}/catalogs/orchard-certification/?orchard=${orchardId}&is_enabled=true`)
         .then((data) => {
           updateFieldOptions(orchardCertificationField, data);
           if (initialOrchardCertificationValue) {

@@ -819,11 +819,6 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 class Packaging(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
 
-    ### Authority
-    # TODO: Revisar estos dos campos pues puede que no se usen si se implementa la misma logica de los calibres
-    # authority = models.ForeignKey(AuthorityPackagingKind, blank=True, null=True, on_delete=models.PROTECT)
-    # code = models.CharField(max_length=10, blank=True, null=True, verbose_name=_('Code'))
-
     ### Embalaje principal
     main_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Main supply kind'), on_delete=models.PROTECT)
     main_supply = models.ForeignKey(Supply, verbose_name=_('Main supply'), on_delete=models.PROTECT)

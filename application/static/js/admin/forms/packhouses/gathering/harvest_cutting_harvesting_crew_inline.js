@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Si se ha seleccionado un proveedor, realizar la solicitud AJAX
     if (providerId) {
-      fetchOptions(`/rest/v1/catalogs/harvesting_crew/?provider=${providerId}`)
+      fetchOptions(`/rest/v1/catalogs/harvesting-crew/?provider=${providerId}`)
         .then(harvestingCrews => {
           updateFieldOptions(harvestingCrewField, harvestingCrews, selectedHarvestingCrew); // Actualizar opciones
         })

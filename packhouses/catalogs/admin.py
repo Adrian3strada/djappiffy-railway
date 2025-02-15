@@ -69,7 +69,7 @@ from .resources import (ProductResource, MarketResource, MarketProductSizeResour
                         VehicleResource, GathererResource,
                         MaquiladoraResource, OrchardResource, HarvestingCrewResource, SupplyResource, PackagingResource,
                         ServiceResource, WeighingScaleResource,
-                        ColdChamberResource, PalletConfigurationResource, ProductPackagingResource,
+                        ColdChamberResource, PalletConfigurationResource,
                         ExportingCompanyResource, TransferResource, LocalTransporterResource,
                         BorderToDestinationTransporterResource, CustomsBrokerResource, VesselResource, AirlineResource,
                         InsuranceCompanyResource,
@@ -1396,57 +1396,6 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
 
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/pallet_configuration.js',)
-
-
-@admin.register(ProductPackaging)
-class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
-    report_function = staticmethod(basic_report)
-    resource_classes = [ProductPackagingResource]
-    list_display = ('name', 'alias', 'market')
-    list_filter = ('is_enabled',)
-    search_fields = ('name', 'alias')
-    fields = ('name', 'alias',
-              'market',
-              'product', 'product_size',
-              'packaging', 'is_enabled')
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        return form
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
-
-        organization = request.organization if hasattr(request, 'organization') else None
-        market = request.POST.get('market') if request.POST else obj.market if obj else None
-        product = request.POST.get('product') if request.POST else obj.product if obj else None
-        variety = request.POST.get('product_variety') if request.POST else obj.product_variety if obj else None
-
-        organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        market_queryfilter = {'market': market, 'is_enabled': True}
-        product_queryfilter = {'product': product, 'is_enabled': True}
-
-        if db_field.name == "market":
-            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
-
-        if db_field.name == "product":
-            kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
-        if db_field.name == "product_variety":
-            if product:
-                kwargs["queryset"] = ProductVariety.objects.filter(**product_queryfilter)
-            else:
-                kwargs["queryset"] = ProductVariety.objects.none()
-        if db_field.name == "product_size":
-            if product:
-                kwargs["queryset"] = MarketProductSize.objects.filter(**product_queryfilter)
-            else:
-                kwargs["queryset"] = MarketProductSize.objects.none()
-
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    class Media:
-        js = ('js/admin/forms/packhouses/catalogs/product_packaging.js',)
 
 
 class ExportingCompanyBeneficiaryInline(admin.StackedInline):
