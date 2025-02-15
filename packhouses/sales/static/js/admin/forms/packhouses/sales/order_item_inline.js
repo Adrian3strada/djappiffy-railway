@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let productPackagingOptions = [];
   let clientProperties = null;
 
+  const orderItemsByField = $("#id_order_items_by")
+  const pricingByField = $("#id_pricing_by")
+
   function updateFieldOptions(field, options) {
     if (field) {
       field.empty();
@@ -99,6 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('formset:added', (event) => {
     if (event.detail.formsetName === 'orderitem_set') {
+      alert(orderItemsByField.val())
+      alert(pricingByField.val())
       const newForm = event.target;
       const productSizeField = $(newForm).find('select[name$="-product_size"]');
       const productPhenologyField = $(newForm).find('select[name$="-product_phenology"]');

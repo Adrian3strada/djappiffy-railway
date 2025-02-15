@@ -51,7 +51,6 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            # Usar transacción y bloqueo de fila para evitar condiciones de carrera
             with transaction.atomic():
                 last_order = Order.objects.select_for_update().filter(organization=self.organization).order_by('ooid').last()
                 self.ooid = last_order.ooid + 1 if last_order else 1

@@ -38,9 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (productId) {
       return fetchOptions(`${API_BASE_URL}/catalogs/product/${productId}/`)
         .then(data => {
-          console.log("product", data);
           productProductKind = data.kind ? data.kind : null;
-          console.log("productProductKind", productProductKind);
         });
     } else {
       productProductKind = null;

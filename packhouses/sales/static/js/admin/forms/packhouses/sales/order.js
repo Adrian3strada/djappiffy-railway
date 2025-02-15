@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const incotermsField = $("#id_incoterms")
   const productField = $("#id_product")
   const productVarietyField = $("#id_product_variety")
-  const orderKindField = $("#id_order_kind")
+  const orderItemsByField = $("#id_order_items_by")
   const pricingByField = $("#id_pricing_by")
 
   let productProperties = null;
@@ -76,8 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
         (data) => {
           console.log("Product Variety options:", data);
           updateFieldOptions(productVarietyField, data);
-        }
-      );
+        });
     } else {
       updateFieldOptions(productVarietyField, []);
     }
@@ -90,18 +89,18 @@ document.addEventListener("DOMContentLoaded", function () {
           productProperties = data;
           console.log("productProperties", productProperties)
           if (data.price_measure_unit_category_display) {
+            orderItemsByField.find('option[value="product_measure_unit"]').text(data.price_measure_unit_category_display);
             pricingByField.find('option[value="product_measure_unit"]').text(data.price_measure_unit_category_display);
-            orderKindField.find('option[value="product_measure_unit"]').text(data.price_measure_unit_category_display);
+            orderItemsByField.trigger('change').select2();
             pricingByField.trigger('change').select2();
-            orderKindField.trigger('change').select2();
           }
         });
     } else {
       productProperties = null;
+      orderItemsByField.find('option[value="product_measure_unit"]').text('Product measure unit');
       pricingByField.find('option[value="product_measure_unit"]').text('Product measure unit');
-      orderKindField.find('option[value="product_measure_unit"]').text('Product measure unit');
+      orderItemsByField.trigger('change').select2();
       pricingByField.trigger('change').select2();
-      orderKindField.trigger('change').select2();
     }
   }
 
