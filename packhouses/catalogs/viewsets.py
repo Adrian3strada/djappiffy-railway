@@ -5,7 +5,7 @@ from rest_framework.exceptions import NotAuthenticated
 
 from .serializers import (MarketSerializer, ProductMarketClassSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
-                          ProductPhenologyKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, MarketProductSizeSerializer,
+                          ProductPhenologyKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
                           MaquiladoraSerializer, PackagingSerializer,
                           SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
@@ -14,7 +14,7 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
                      Product, Packaging,
-                     Supply, Orchard, HarvestingCrew, MarketProductSize, OrchardCertification
+                     Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification
                      )
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -136,8 +136,8 @@ class PackagingViewSet(viewsets.ModelViewSet):
         return Packaging.objects.filter(organization=self.request.organization)
 
 
-class MarketProductSizeViewSet(viewsets.ModelViewSet):
-    serializer_class = MarketProductSizeSerializer
+class ProductSizeViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductSizeSerializer
     filterset_fields = ['product', 'market', 'is_enabled']
     pagination_class = None
 
@@ -146,7 +146,7 @@ class MarketProductSizeViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return MarketProductSize.objects.all()
+        return ProductSize.objects.all()
 
 
 class ProviderViewSet(viewsets.ModelViewSet):

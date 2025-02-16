@@ -17,7 +17,7 @@ from cities_light.models import City, Country, Region
 from packhouses.catalogs.models import (Market, ProductMarketClass, Client, Maquiladora, Product, ProductVariety,
                                         ProductPhenologyKind,
                                         ProductPackaging, Packaging,
-                                        MarketProductSize)
+                                        ProductSize)
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from django.db.models import Max, Min, Q, F
 from .utils import incoterms_choices
@@ -73,7 +73,7 @@ class OrderItem(models.Model):
     - El mercado lo tengo del cliente
     """
 
-    product_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
+    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT)
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
     product_packaging = models.ForeignKey(Packaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT, null=True, blank=False)

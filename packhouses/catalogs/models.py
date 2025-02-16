@@ -198,12 +198,12 @@ class ProductRipeness(CleanProductMixin, models.Model):
         ]
 
 
-class MarketProductSize(CleanNameAndAliasProductMixin, models.Model):
+class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Varieties'), blank=False)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     standard_size = models.ForeignKey(CountryProductStandardSize, verbose_name=_('Standard size'), on_delete=models.PROTECT, null=True, blank=False)
-    name = models.CharField(max_length=160, verbose_name=_('Size name'))
+    name = models.CharField(max_length=160, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -213,12 +213,12 @@ class MarketProductSize(CleanNameAndAliasProductMixin, models.Model):
         return f"{self.name} ({self.product.name})"
 
     class Meta:
-        verbose_name = _('Market product size')
-        verbose_name_plural = _('Market product sizes')
+        verbose_name = _('product size')
+        verbose_name_plural = _('product sizes')
         ordering = ['sort_order']
         constraints = [
-            models.UniqueConstraint(fields=['name', 'product'], name='marketproductsize_unique_name_product'),
-            models.UniqueConstraint(fields=['alias', 'product'], name='marketproductsize_unique_alias_product'),
+            models.UniqueConstraint(fields=['name', 'product', 'market'], name='productsize_unique_name_product_market'),
+            models.UniqueConstraint(fields=['alias', 'product', 'market'], name='productsize_unique_alias_product_market'),
         ]
 
 # /Products
@@ -753,7 +753,7 @@ class MeshBagFilmKind(models.Model):
 class MeshBag(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    product_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product variety size'),
+    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product variety size'),
                                      on_delete=models.PROTECT)
     mesh_bags_per_box = models.PositiveIntegerField(verbose_name=_('Mesh bags per box'))
     pieces_per_mesh_bag = models.PositiveIntegerField(verbose_name=_('Pieces per mesh bags'))
@@ -780,7 +780,7 @@ class PackagingPresentation(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
-    product_variety_size = models.ForeignKey(MarketProductSize, verbose_name=_('Variety size'), on_delete=models.PROTECT)
+    product_variety_size = models.ForeignKey(ProductSize, verbose_name=_('Variety size'), on_delete=models.PROTECT)
 
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -930,7 +930,7 @@ class PalletConfiguration(CleanNameOrAliasAndOrganizationMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT, null=False, blank=False)
     market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product Variety'), on_delete=models.PROTECT, null=False, blank=False)
-    product_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product Size'), on_delete=models.PROTECT, null=False, blank=False)
+    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product Size'), on_delete=models.PROTECT, null=False, blank=False)
     maximum_boxes_per_pallet = models.PositiveIntegerField(verbose_name=_('Boxes quantity'), null=False, blank=False, help_text=_(
         "Maximum number of boxes per pallet"
     ))
@@ -1004,7 +1004,7 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
 
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Product varieties'), blank=False)
-    product_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product variety size'), on_delete=models.PROTECT)
+    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product variety size'), on_delete=models.PROTECT)
 
     packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)
     # TODO: detallar tipos de caja por tipo de producto?

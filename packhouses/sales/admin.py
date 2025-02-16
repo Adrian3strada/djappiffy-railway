@@ -11,7 +11,7 @@ from common.base.decorators import uppercase_formset_charfield, uppercase_alphan
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from .filters import ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter
 from common.base.mixins import ByOrganizationAdminMixin
-from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, MarketProductSize,
+from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
                                         ProductPackaging)
 from .models import Order, OrderItem
 from django.utils.safestring import mark_safe
@@ -46,9 +46,9 @@ class OrderItemInline(admin.StackedInline):
         queryset_organization_filter = {"organization": organization, "is_enabled": True}
 
         if db_field.name == "product_size":
-            kwargs["queryset"] = MarketProductSize.objects.none()
+            kwargs["queryset"] = ProductSize.objects.none()
             if parent_obj and parent_obj.product:
-                kwargs["queryset"] = MarketProductSize.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
+                kwargs["queryset"] = ProductSize.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: f"{item.name} ({item.description})" if item.description else f"{item.name}"
             return formfield

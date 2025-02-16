@@ -4,7 +4,7 @@ from import_export.admin import ImportExportModelAdmin, ExportMixin
 from django.contrib import admin
 from common.billing.models import LegalEntityCategory
 from .models import (
-    Market, Product, ProductMarketClass, ProductVariety, MarketProductSize,
+    Market, Product, ProductMarketClass, ProductVariety, ProductSize,
     ProductHarvestSizeKind, ProductMarketMeasureUnitManagementCost,
     ProductPhenologyKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
@@ -294,7 +294,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(MarketProductSize)
+@admin.register(ProductSize)
 class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [MarketProductSizeResource]
@@ -325,7 +325,7 @@ class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMi
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
-        obj = MarketProductSize.objects.get(id=object_id) if object_id else None
+        obj = ProductSize.objects.get(id=object_id) if object_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
@@ -371,7 +371,7 @@ class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMi
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
-        obj = MarketProductSize.objects.get(id=object_id) if object_id else None
+        obj = ProductSize.objects.get(id=object_id) if object_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
@@ -1340,7 +1340,7 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj,
-                                    exclude=[Product, ProductVariety, MarketProductSize, Market, ProductMarketClass,
+                                    exclude=[Product, ProductVariety, ProductSize, Market, ProductMarketClass,
                                              Packaging, Organization]):
             readonly_fields.extend(['name', 'alias', ])
         return readonly_fields
@@ -1374,9 +1374,9 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
                 kwargs["queryset"] = ProductVariety.objects.none()
         if db_field.name == "product_size":
             if variety:
-                kwargs["queryset"] = MarketProductSize.objects.filter(**product_queryfilter)
+                kwargs["queryset"] = ProductSize.objects.filter(**product_queryfilter)
             else:
-                kwargs["queryset"] = MarketProductSize.objects.none()
+                kwargs["queryset"] = ProductSize.objects.none()
         # Comentado ante discrepancias con desarrollo entre Cesar y Jaqueline
         #   La versión de arriba parece la asociada de un calibre dependiente de variedades
         """

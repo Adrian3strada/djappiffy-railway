@@ -1,5 +1,5 @@
 from import_export.fields import Field
-from .models import (Market, Product, MarketProductSize, Provider, Client, Vehicle, Gatherer, Maquiladora, Orchard, HarvestingCrew,
+from .models import (Market, Product, ProductSize, Provider, Client, Vehicle, Gatherer, Maquiladora, Orchard, HarvestingCrew,
                      Supply, Packaging, Service, WeighingScale, ColdChamber, PalletConfiguration, ProductPackaging,
                      ExportingCompany, Transfer, LocalTransporter, BorderToDestinationTransporter, CustomsBroker,
                      Vessel, Airline, InsuranceCompany, HarvestContainer)
@@ -68,7 +68,7 @@ class ProductResource(DehydrationResource, ExportResource):
 
 class MarketProductSizeResource(DehydrationResource, ExportResource):
     class Meta:
-        model = MarketProductSize
+        model = ProductSize
         exclude = tuple(default_excluded_fields + ("sort_order",))
 
 class ProviderResource(DehydrationResource, ExportResource):

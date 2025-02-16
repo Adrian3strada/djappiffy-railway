@@ -5,7 +5,6 @@
   "fields": {
     "name": "MEXICO",
     "alias": "MEX",
-    "management_cost_per_kg": 11.0,
     "is_mixable": true,
     "label_language": "es",
     "address_label": null,
@@ -22,7 +21,6 @@
   "fields": {
     "name": "MEXICO 2",
     "alias": "MX2",
-    "management_cost_per_kg": 12.0,
     "is_mixable": true,
     "label_language": "es",
     "address_label": null,
@@ -39,7 +37,6 @@
   "fields": {
     "name": "ESTADOS UNIDOS",
     "alias": "USA",
-    "management_cost_per_kg": 12.0,
     "is_mixable": false,
     "label_language": "en",
     "address_label": null,
@@ -56,7 +53,6 @@
   "fields": {
     "name": "CANADA",
     "alias": "CAN",
-    "management_cost_per_kg": 12.0,
     "is_mixable": true,
     "label_language": "en",
     "address_label": null,
@@ -73,7 +69,6 @@
   "fields": {
     "name": "COLOMBIA",
     "alias": "COL",
-    "management_cost_per_kg": 12.0,
     "is_mixable": true,
     "label_language": "es",
     "address_label": null,
@@ -90,7 +85,6 @@
   "fields": {
     "name": "EL SALVADOR",
     "alias": "SLV",
-    "management_cost_per_kg": 1.0,
     "is_mixable": true,
     "label_language": "es",
     "address_label": null,
@@ -156,7 +150,7 @@
     "kind": 8,
     "name": "VERDE",
     "description": null,
-    "price_measure_unit_category": "Kg",
+    "price_measure_unit_category": "L",
     "is_enabled": true,
     "organization": 1
   }
@@ -168,7 +162,7 @@
     "kind": 8,
     "name": "UNO",
     "description": null,
-    "price_measure_unit_category": "Kg",
+    "price_measure_unit_category": "g",
     "is_enabled": true,
     "organization": 1
   }
@@ -663,6 +657,222 @@
     "product": 1,
     "name": "MUY NEGRA",
     "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "standard_size": 1,
+    "name": "COMERCIAL",
+    "alias": "COM",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 1,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 2,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "standard_size": 4,
+    "name": "EXTRA",
+    "alias": "EXT",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 2,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 3,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "standard_size": 2,
+    "name": "MEDIANO",
+    "alias": "MED",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 3,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 4,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "standard_size": 3,
+    "name": "PRIMERA",
+    "alias": "PRI",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 4,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 5,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "standard_size": 5,
+    "name": "SUPER",
+    "alias": "SUP",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 5,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 6,
+  "fields": {
+    "product": 1,
+    "market": 3,
+    "standard_size": 28,
+    "name": "32",
+    "alias": "32",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 6,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 7,
+  "fields": {
+    "product": 1,
+    "market": 3,
+    "standard_size": 27,
+    "name": "36",
+    "alias": "36",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 7,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 8,
+  "fields": {
+    "product": 1,
+    "market": 3,
+    "standard_size": 26,
+    "name": "40",
+    "alias": "40",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 8,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 9,
+  "fields": {
+    "product": 1,
+    "market": 3,
+    "standard_size": 25,
+    "name": "48",
+    "alias": "48",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 9,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 10,
+  "fields": {
+    "product": 1,
+    "market": 3,
+    "standard_size": 24,
+    "name": "60",
+    "alias": "60",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 10,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 11,
+  "fields": {
+    "product": 1,
+    "market": 3,
+    "standard_size": 23,
+    "name": "70",
+    "alias": "70",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 11,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 12,
+  "fields": {
+    "product": 1,
+    "market": 3,
+    "standard_size": 22,
+    "name": "84",
+    "alias": "84",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 12,
+    "varieties": [
+      1,
+      2
+    ]
   }
 },
 {
@@ -1211,6 +1421,78 @@
     "comments": null,
     "is_enabled": true,
     "client": 1
+  }
+},
+{
+  "model": "catalogs.maquiladora",
+  "pk": 1,
+  "fields": {
+    "name": "LINCHLO",
+    "zone": "URUAPAN",
+    "tax_id": "XAXX010101000",
+    "state": 2282,
+    "city": 25791,
+    "district": 86343,
+    "neighborhood": "x",
+    "postal_code": "1",
+    "address": "X",
+    "external_number": "x",
+    "internal_number": null,
+    "email": "a@gmail.co",
+    "phone_number": "1",
+    "is_enabled": true,
+    "organization": 1,
+    "clients": [
+      13
+    ]
+  }
+},
+{
+  "model": "catalogs.maquiladora",
+  "pk": 2,
+  "fields": {
+    "name": "FRANCISCO RENTERIA CORRALES",
+    "zone": "MICHOACAN",
+    "tax_id": "XAXX010101000",
+    "state": 2282,
+    "city": 25742,
+    "district": 87096,
+    "neighborhood": "1",
+    "postal_code": "1",
+    "address": "1",
+    "external_number": "1",
+    "internal_number": null,
+    "email": "aaaa@gmail.com",
+    "phone_number": "1",
+    "is_enabled": true,
+    "organization": 1,
+    "clients": [
+      14
+    ]
+  }
+},
+{
+  "model": "catalogs.maquiladora",
+  "pk": 3,
+  "fields": {
+    "name": "CENTRO QUERETANO DE PRODUCCIÓN DE AVEZRUZ",
+    "zone": "TACAMBARO",
+    "tax_id": "CQP090929QM6",
+    "state": 2282,
+    "city": 25771,
+    "district": 86492,
+    "neighborhood": "SANTA ROSA JAUREGUI",
+    "postal_code": "1",
+    "address": "ESTANCIA DE LA ROCHERA",
+    "external_number": "1",
+    "internal_number": null,
+    "email": "aaaa@gmail.com",
+    "phone_number": "1",
+    "is_enabled": true,
+    "organization": 1,
+    "clients": [
+      13
+    ]
   }
 },
 {
