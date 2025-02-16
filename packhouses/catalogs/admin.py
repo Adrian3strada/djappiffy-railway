@@ -38,7 +38,9 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
                       ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
-                      ByClientCapitalFrameworkForOrganizationFilter,
+                      ByClientCapitalFrameworkForOrganizationFilter, BySupplyKindForOrganizationPackagingFilter,
+                      BySupplyForOrganizationPackagingFilter, ByProductForOrganizationPackagingFilter,
+                      ByMarketForOrganizationPackagingFilter,
                       ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
                       ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                       ByCityForOrganizationClientsFilter, ByPaymentKindForOrganizationFilter,
@@ -1113,9 +1115,10 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PackagingResource]
     form = PackagingKindForm
-    list_display = ('name',
-                    'max_product_amount_per_package',
-                    'is_enabled',
+    list_filter = (BySupplyKindForOrganizationPackagingFilter, BySupplyForOrganizationPackagingFilter,
+                   ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter, 'product_packaging_standard', 'is_enabled')
+    list_display = ('name', 'main_supply_kind', 'main_supply', 'product', 'markets_display',
+                    'product_packaging_standard_display', 'max_product_amount_per_package', 'is_enabled',
                     )
     fields = ('name',
               'main_supply_kind', 'main_supply', 'main_supply_quantity',
@@ -1123,6 +1126,16 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
               'is_enabled',
               )
     inlines = (PackagingSupplyInline, ContainedPackagingInline)
+
+    def markets_display(self, obj):
+        return ', '.join([market.name for market in obj.markets.all()])
+    markets_display.short_description = _('Markets')
+    markets_display.admin_order_field = 'name'
+
+    def product_packaging_standard_display(self, obj):
+        return f"{obj.product_packaging_standard.name} ({obj.product_packaging_standard.standard.name}: {obj.product_packaging_standard.standard.country})"
+    product_packaging_standard_display.short_description = _('Product packaging standard')
+    product_packaging_standard_display.admin_order_field = 'name'
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
@@ -1172,7 +1185,6 @@ class WeighingScaleAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
     def get_state_name(self, obj):
         return obj.state.name
-
     get_state_name.short_description = _('State')
     get_state_name.admin_order_field = 'state__name'
 
