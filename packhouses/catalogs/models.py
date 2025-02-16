@@ -826,10 +826,9 @@ class Packaging(CleanNameAndOrganizationMixin, models.Model):
 
     ### Máximo peso
     max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'))
-    #avg_tare_kg_per_package = models.FloatField(verbose_name=_('Average tare Kg per package'))
 
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
     product_packaging_standard = models.ForeignKey(CountryProductStandardPackaging, verbose_name=_('Product packaging standard'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)

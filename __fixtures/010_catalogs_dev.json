@@ -19,7 +19,7 @@
   "model": "catalogs.market",
   "pk": 2,
   "fields": {
-    "name": "MEXICO 2",
+    "name": "MEXICO DOS",
     "alias": "MX2",
     "is_mixable": true,
     "label_language": "es",
