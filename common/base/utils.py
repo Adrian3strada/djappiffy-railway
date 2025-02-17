@@ -24,6 +24,10 @@ class ReportExportAdminMixin(ExportMixin):
 
         response = self.report_function(request, export_data, model_name)
         return response
+    def get_export_resource_kwargs(self, request, *args, **kwargs):
+        kwargs = super().get_export_resource_kwargs(request, *args, **kwargs)
+        kwargs['export_format'] = 'pdf' 
+        return kwargs
 
 # Para exportar solo a excel
 class SheetExportAdminMixin(ExportMixin):
@@ -35,10 +39,12 @@ class SheetExportAdminMixin(ExportMixin):
 
         formats = [XLSX]
         queryset = self.get_export_queryset(request)
-        export_data = self.get_export_data(formats[0](), request, queryset)
-        model_name = self.model._meta.verbose_name
         
         return self._do_file_export(formats[0](), request, queryset)
+    def get_export_resource_kwargs(self, request, *args, **kwargs):
+        kwargs = super().get_export_resource_kwargs(request, *args, **kwargs)
+        kwargs['export_format'] = 'export-sheet' 
+        return kwargs
 
 # Para exportar a excel y PDF
 class SheetReportExportAdminMixin(ExportMixin):
@@ -50,6 +56,7 @@ class SheetReportExportAdminMixin(ExportMixin):
             raise PermissionDenied
         
         action = request.GET.get("export_type", "export-sheet") 
+        request.export_action_type = action 
 
         query_params = request.GET.copy()
         if 'export_type' in query_params:
@@ -75,6 +82,12 @@ class SheetReportExportAdminMixin(ExportMixin):
         else:
             raise ValueError("The action is not recognized.")
 
+    def get_export_resource_kwargs(self, request, *args, **kwargs):
+        kwargs = super().get_export_resource_kwargs(request, *args, **kwargs)
+        if hasattr(request, 'export_action_type'):
+            export_format = 'pdf' if request.export_action_type == 'export-pdf' else 'excel'
+            kwargs['export_format'] = export_format  
+        return kwargs
 
 # Change headers to it verbose
 class ExportResource(resources.ModelResource):
@@ -135,6 +148,9 @@ class DehydrationResource():
     
     def dehydrate_product_ripeness(self, obj):
         return obj.product_ripeness.name if obj.product_ripeness else ""
+    
+    def dehydrate_product_packaging_standard(self, obj):
+        return obj.product_packaging_standard.name if obj.product_packaging_standard else ""
 
     def dehydrate_organization(self, obj):
         return obj.organization.name if obj.organization else ""
