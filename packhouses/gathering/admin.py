@@ -149,7 +149,7 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.N
 class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     form = ScheduleHarvestForm
     fields = ('ooid', 'status', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
-              'product_variety', 'product_season_kind', 'product_harvest_size_kind','orchard', 'orchard_certification',
+              'product_variety', 'product_phenologies', 'product_harvest_size_kind', 'orchard', 'orchard_certification',
               'market', 'weight_expected', 'weighing_scale', 'meeting_point', 'comments' )
     list_display = ('ooid', 'harvest_date', 'category', 'product_provider', 'product','product_variety', 'market',
                     'weight_expected', 'status',  'generate_actions_buttons')

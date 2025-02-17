@@ -97,35 +97,49 @@
 <table class="folio-table">
     <tr>
         <td style="width: 10%; border-left: 10px solid #123782; background-color: #ffc600;">Folio</td>
-        <td style="width: 20%; color:red; background-color: #fff4cc;"> N° {{ requisition.ooid }}</td>
+        <td style="width: 20%; color:red; background-color: #fff4cc;"> N° {{ purchase_order.ooid }}</td>
         <td style="width: 70%;"></td>
     </tr>
 </table>
 
 <div>
-<p>Order Date: {{requisition.created_at}} </p>
-
-<p>{{request_text}}</p>
-
+<p><span style="font-weight: 500;">{{ provider_text }}: </span> {{ purchase_order.provider }}</p>
+<p><span style="font-weight: 500;">{{ order_date_text }}: </span> {{purchase_order.created_at}} Hrs.</p>
+<p><span style="font-weight: 500;">{{ payment_date_text }}: </span> : {{ purchase_order.payment_date }} </p>
 
 <table class="table_form">
     <thead>
         <tr>
             <th>Supply</th>
             <th>Quantity</th>
-            <th>Comments</th>
+            <th>Unit price</th>
+            <th>Total</th>
         </tr>
     </thead>
     <tbody>
-        {% for item in requisitionsupplyinline %}
+        {% for item in formatted_supply_values %}
         <tr>
             <td> {{ item.supply }} </td>
             <td style="text-align: center;"> {{ item.quantity }} </td>
-            <td>{{ item.comments|default:"" }}</td>
+            <td style="text-align: center;">${{ item.unit_price|default:"0.00" }} {{ currency }}</td>
+            <td style="text-align: center;">${{ item.total_price|default:"0.00" }} {{ currency }}</td>
         </tr>
         {% endfor %}
-
     </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3" style="text-align: right;">SUBTOTAL:</td>
+            <td style="text-align: center;">${{ subtotal }} {{ currency }}</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="text-align: right;">TAX ({{ percentage_tax }} %):</td>
+            <td style="text-align: center;">${{ tax }} {{ currency }}</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="text-align: right; font-weight: bold;">TOTAL:</td>
+            <td style="text-align: center; font-weight: bold;">${{ total }} {{ currency }}</td>
+        </tr>
+    </tfoot>
 </table>
 </div>
 

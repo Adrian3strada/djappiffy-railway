@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const productField = $("#id_product");
   const varietyField = $("#id_product_variety");
   const initialVarietyValue = varietyField.val();
-  const seasonField = $("#id_product_season_kind");
+  const seasonField = $("#id_product_phenologies");
   const initialSeasonValue = seasonField.val();
   const harvestSizeField = $("#id_product_harvest_size_kind");
   const initialHarvestSizeValue = harvestSizeField.val();
