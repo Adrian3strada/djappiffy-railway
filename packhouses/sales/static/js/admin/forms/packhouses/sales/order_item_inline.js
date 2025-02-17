@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
           clientProperties = data;
           console.log("clientProperties", clientProperties)
-          updateMarketClassOptions();
         })
         .then(() => {
           if (clientProperties && productProperties) {
@@ -83,19 +82,25 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("clientProperties", clientProperties)
     alert("updateProductOptions()")
     if (clientProperties && productProperties) {
-      fetchOptions(`/rest/v1/catalogs/product-size/?product=${productField.val()}&market=${clientProperties.market}&is_enabled=1`)
+      fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
         .then(data => {
           productSizeOptions = data;
         }).then(() => {
         console.log("productSizeOptions", productSizeOptions)
       });
-      fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productField.val()}&is_enabled=1`)
+      fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productProperties.id}&is_enabled=1`)
         .then(data => {
           productPhenologyOptions = data;
         }).then(() => {
         console.log("productPhenologyOptions", productPhenologyOptions)
       });
-      fetchOptions(`/rest/v1/catalogs/product-packaging/?product=${productField.val()}&is_enabled=1`)
+      fetchOptions(`/rest/v1/catalogs/product-market-class/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
+        .then(data => {
+          productMarketClassOptions = data
+        }).then(() => {
+        console.log("productMarketClassOptions 1", productMarketClassOptions)
+      });
+      fetchOptions(`/rest/v1/catalogs/product-packaging/?product=${productProperties.id}&is_enabled=1`)
         .then(data => {
           productPackagingOptions = data;
         }).then(() => {
@@ -110,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateMarketClassOptions() {
     if (clientProperties) {
-      fetchOptions(`/rest/v1/catalogs/product-market-class/?market=${clientProperties.market}`)
+      fetchOptions(`/rest/v1/catalogs/product-market-class/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
         .then(data => {
           console.log("updateMarketClassOptions data", data)
           productMarketClassOptions = data
@@ -138,8 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('formset:added', (event) => {
     if (event.detail.formsetName === 'orderitem_set') {
-      alert(orderItemsByField.val())
-      alert(pricingByField.val())
       const newForm = event.target;
       const productSizeField = $(newForm).find('select[name$="-product_size"]');
       const productPhenologyField = $(newForm).find('select[name$="-product_phenology"]');
@@ -154,8 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   setTimeout(() => {
-    // const existingForms = $('div[id^="orderitem_set-"]');
-    // se cambió la forma de obtener los elementos para que solo tome los que tienen un ID numérico (y evitar el group y el vacío)
     const existingForms = $('div[id^="orderitem_set-"]').filter((index, form) => {
       return /\d+$/.test(form.id);
     });

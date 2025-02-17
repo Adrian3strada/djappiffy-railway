@@ -118,19 +118,19 @@ class ProductMarketMeasureUnitManagementCost(models.Model):
 class ProductMarketClass(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    class_name = models.CharField(max_length=100, verbose_name=_('Class name'))
+    name = models.CharField(max_length=100, verbose_name=_('Class name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
-        return f"{self.product.name} ({self.market.name} ): {self.class_name}"
+        return f"{self.product.name} ({self.market.name} ): {self.name}"
 
     class Meta:
         verbose_name = _('Product market class')
         verbose_name_plural = _('Product market class')
-        ordering = ('market', 'product', 'class_name')
+        ordering = ('market', 'product', 'name')
         constraints = [
-            models.UniqueConstraint(fields=['product', 'market', 'class_name'],
-                                    name='productmarketclass_product_market_class_name'),
+            models.UniqueConstraint(fields=['product', 'market', 'name'],
+                                    name='productmarketclass_product_market_name'),
         ]
 
 
