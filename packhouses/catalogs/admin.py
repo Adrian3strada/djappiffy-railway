@@ -12,7 +12,7 @@ from .models import (
     HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
     MeshBag, Service, Packaging, WeighingScale, ColdChamber,
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
-    ProductPackaging, ExportingCompany, Transfer, LocalTransporter,
+    ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     PackagingSupply, RelationPackaging, ProductRipeness,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation,
@@ -1167,7 +1167,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/packaging.js',)
+        js = ('js/admin/forms/packhouses/catalogs/product_packaging.js',)
 
 
 @admin.register(WeighingScale)

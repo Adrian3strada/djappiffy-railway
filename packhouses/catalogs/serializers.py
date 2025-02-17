@@ -3,7 +3,7 @@ from packhouses.catalogs.models import (
     Market, ProductMarketClass, Vehicle, HarvestingCrewProvider,
     ProductVariety, ProductPhenologyKind, ProductMassVolumeKind, Maquiladora,
     CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, Packaging,
-    HarvestingCrew, OrchardCertification, ProductPackaging
+    HarvestingCrew, OrchardCertification
 )
 from django.utils.translation import gettext_lazy as _
 
@@ -81,12 +81,6 @@ class ProductMarketClassSerializer(serializers.ModelSerializer):
 class ProductVarietySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVariety
-        fields = '__all__'
-
-
-class ProductPackagingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductPackaging
         fields = '__all__'
 
 

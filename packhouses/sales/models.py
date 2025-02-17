@@ -16,7 +16,7 @@ from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from packhouses.catalogs.models import (Market, ProductMarketClass, Client, Maquiladora, Product, ProductVariety,
                                         ProductPhenologyKind,
-                                        ProductPackaging, Packaging,
+                                        Packaging,
                                         ProductSize)
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from django.db.models import Max, Min, Q, F

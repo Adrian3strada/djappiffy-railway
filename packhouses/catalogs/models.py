@@ -994,32 +994,6 @@ class PalletConfigurationPersonalExpense(models.Model):
 
 # configuración de productos
 
-class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('Name'))
-    alias = models.CharField(max_length=20, verbose_name=_('Alias'))
-
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    # market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
-
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    product_varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Product varieties'), blank=False)
-    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product variety size'), on_delete=models.PROTECT)
-
-    packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)
-    # TODO: detallar tipos de caja por tipo de producto?
-    # TODO: el is_dark creo que debería ir en pedido o en season
-    # is_dark = models.BooleanField(default=False, verbose_name=_('Is dark'))
-    # TODO: agregar campo para tipo de malla, o no se que va aquí pero falta uno
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Product Packaging')
-        verbose_name_plural = _('Product Packaging')
-        unique_together = ('name', 'organization')
 
 
 # Catálogos de exportación

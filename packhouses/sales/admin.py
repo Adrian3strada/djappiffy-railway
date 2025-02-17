@@ -12,7 +12,7 @@ from common.base.decorators import uppercase_form_charfield, uppercase_alphanume
 from .filters import ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter
 from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
-                                        ProductPackaging)
+                                        ProductPhenologyKind, ProductMarketClass, Packaging)
 from .models import Order, OrderItem
 from django.utils.safestring import mark_safe
 from django.db.models import Max, Min, Q, F
@@ -52,6 +52,27 @@ class OrderItemInline(admin.StackedInline):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: f"{item.name} ({item.description})" if item.description else f"{item.name}"
             return formfield
+
+        if db_field.name == "product_phenology":
+            kwargs["queryset"] = ProductPhenologyKind.objects.none()
+            if parent_obj and parent_obj.product:
+                kwargs["queryset"] = ProductPhenologyKind.objects.filter(product=parent_obj.product, is_enabled=True)
+
+        if db_field.name == "product_market_class":
+            kwargs["queryset"] = ProductMarketClass.objects.none()
+            if parent_obj and parent_obj.product and parent_obj.client.market:
+                kwargs["queryset"] = ProductMarketClass.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
+
+        if db_field.name == "product_market_class":
+            kwargs["queryset"] = ProductMarketClass.objects.none()
+            if parent_obj and parent_obj.product and parent_obj.client.market:
+                kwargs["queryset"] = ProductMarketClass.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
+
+        if db_field.name == "product_packaging":
+            kwargs["queryset"] = Packaging.objects.none()
+            if parent_obj and parent_obj.product:
+                kwargs["queryset"] = Packaging.objects.filter(product=parent_obj.product, markets=parent_obj.client.market, is_enabled=True)
+
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
