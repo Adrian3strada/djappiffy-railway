@@ -1,8 +1,8 @@
 from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
-from .models import (ProductKind, CountryProductStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
-                     CountryProductStandardPackaging,
+from .models import (ProductKind, CountryProductKindStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
+                     ProductPackagingStandard,
                      Incoterm, LocalDelivery, Currency)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
@@ -29,20 +29,20 @@ class CountryProductStandardSizeInline(admin.TabularInline):
     verbose_name_plural = 'Sizes'
 
 
-class CountryProductStandardPackagingInline(admin.TabularInline):
-    model = CountryProductStandardPackaging
+class ProductPackagingStandardInline(admin.TabularInline):
+    model = ProductPackagingStandard
     extra = 0
     verbose_name = 'Packaging'
     verbose_name_plural = 'Packaging'
 
 
-@admin.register(CountryProductStandard)
+@admin.register(CountryProductKindStandard)
 class CountryProductStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'product_kind', 'country', 'is_enabled', 'sort_order')
     list_filter = [ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter, 'is_enabled']
     search_fields = ['name']
     ordering = ['sort_order']
-    inlines = [CountryProductStandardSizeInline, CountryProductStandardPackagingInline]
+    inlines = [CountryProductStandardSizeInline, ProductPackagingStandardInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'product_kind':

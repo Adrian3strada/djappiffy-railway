@@ -12,7 +12,7 @@ from common.base.decorators import uppercase_form_charfield, uppercase_alphanume
 from .filters import ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter
 from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
-                                        ProductPhenologyKind, ProductMarketClass, Packaging)
+                                        ProductPhenologyKind, ProductMarketClass, ProductPackaging)
 from .models import Order, OrderItem
 from django.utils.safestring import mark_safe
 from django.db.models import Max, Min, Q, F
@@ -69,9 +69,9 @@ class OrderItemInline(admin.StackedInline):
                 kwargs["queryset"] = ProductMarketClass.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
 
         if db_field.name == "product_packaging":
-            kwargs["queryset"] = Packaging.objects.none()
+            kwargs["queryset"] = ProductPackaging.objects.none()
             if parent_obj and parent_obj.product:
-                kwargs["queryset"] = Packaging.objects.filter(product=parent_obj.product, markets=parent_obj.client.market, is_enabled=True)
+                kwargs["queryset"] = ProductPackaging.objects.filter(product=parent_obj.product, markets=parent_obj.client.market, is_enabled=True)
 
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)

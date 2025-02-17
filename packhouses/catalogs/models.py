@@ -17,7 +17,7 @@ from django.dispatch import receiver
 from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
     get_vehicle_category_choices, get_provider_categories_choices
 from django.core.exceptions import ValidationError
-from common.base.models import (ProductKind, CountryProductStandardSize, CountryProductStandardPackaging, CapitalFramework,
+from common.base.models import (ProductKind, CountryProductStandardSize, ProductPackagingStandard, CapitalFramework,
                                 LegalEntityCategory)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
@@ -816,7 +816,7 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 # Tipos de empaques
 
 
-class Packaging(CleanNameAndOrganizationMixin, models.Model):
+class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
 
     ### Embalaje principal
@@ -829,7 +829,7 @@ class Packaging(CleanNameAndOrganizationMixin, models.Model):
 
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
-    product_packaging_standard = models.ForeignKey(CountryProductStandardPackaging, verbose_name=_('Product packaging standard'), on_delete=models.PROTECT)
+    product_packaging_standard = models.ForeignKey(ProductPackagingStandard, verbose_name=_('Product packaging standard'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
@@ -837,8 +837,8 @@ class Packaging(CleanNameAndOrganizationMixin, models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Packaging')
-        verbose_name_plural = _('Packaging')
+        verbose_name = _('Product packaging')
+        verbose_name_plural = _('Product packaging')
         ordering = ('name', )
         constraints = [
             models.UniqueConstraint(fields=('name', 'organization'),
@@ -846,7 +846,7 @@ class Packaging(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 class PackagingSupply(models.Model):
-    packaging_kind = models.ForeignKey(Packaging, on_delete=models.PROTECT)
+    packaging_kind = models.ForeignKey(ProductPackaging, on_delete=models.PROTECT)
     supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Supply kind'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'))
@@ -862,8 +862,8 @@ class PackagingSupply(models.Model):
 
 
 class RelationPackaging(models.Model):
-    outside = models.ForeignKey(Packaging, on_delete=models.PROTECT, related_name='outside')
-    inside = models.ForeignKey(Packaging, on_delete=models.PROTECT, related_name='inside')
+    outside = models.ForeignKey(ProductPackaging, on_delete=models.PROTECT, related_name='outside')
+    inside = models.ForeignKey(ProductPackaging, on_delete=models.PROTECT, related_name='inside')
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'))
 
     class Meta:
@@ -938,7 +938,7 @@ class PalletConfiguration(CleanNameOrAliasAndOrganizationMixin, models.Model):
     ))
     kg_tare = models.FloatField(verbose_name=_('Kg tare'), null=True, blank=True)
     kg_per_box = models.FloatField(verbose_name=_('Kg per box'), null=False, blank=False)
-    packaging_kind = models.ForeignKey(Packaging, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)
+    packaging_kind = models.ForeignKey(ProductPackaging, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Creation date'))
     is_ripe = models.BooleanField(default=False, verbose_name=_('Is ripe'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))

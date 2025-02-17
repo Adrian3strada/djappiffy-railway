@@ -2,7 +2,6 @@ from itertools import product
 
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
-
 from .serializers import (MarketSerializer, ProductMarketClassSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
                           ProductPhenologyKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
@@ -13,7 +12,7 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
-                     Product, Packaging,
+                     Product, ProductPackaging,
                      Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification
                      )
 from django_filters.rest_framework import DjangoFilterBackend
@@ -123,7 +122,7 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
         return ProductVariety.objects.filter(product__organization=self.request.organization)
 
 
-class PackagingViewSet(viewsets.ModelViewSet):
+class ProductPackagingViewSet(viewsets.ModelViewSet):
     serializer_class = PackagingSerializer
     filterset_fields = ['product', 'markets', 'is_enabled']
     pagination_class = None
@@ -133,7 +132,7 @@ class PackagingViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return Packaging.objects.filter(organization=self.request.organization)
+        return ProductPackaging.objects.filter(organization=self.request.organization)
 
 
 class ProductSizeViewSet(viewsets.ModelViewSet):

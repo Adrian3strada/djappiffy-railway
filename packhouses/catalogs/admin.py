@@ -10,7 +10,7 @@ from .models import (
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
-    MeshBag, Service, Packaging, WeighingScale, ColdChamber,
+    MeshBag, Service, ProductPackaging, WeighingScale, ColdChamber,
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
@@ -1090,7 +1090,7 @@ class PackagingSupplyInline(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_obj_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = Packaging.objects.get(id=parent_obj_id) if parent_obj_id else None
+        parent_obj = ProductPackaging.objects.get(id=parent_obj_id) if parent_obj_id else None
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -1110,13 +1110,14 @@ class ContainedPackagingInline(admin.TabularInline):
     list_display = ('inside', 'quantity')
 
 
-@admin.register(Packaging)
-class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
+@admin.register(ProductPackaging)
+class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PackagingResource]
     form = PackagingKindForm
     list_filter = (BySupplyKindForOrganizationPackagingFilter, BySupplyForOrganizationPackagingFilter,
-                   ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter, 'product_packaging_standard', 'is_enabled')
+                   ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
+                   'product_packaging_standard', 'is_enabled')
     list_display = ('name', 'main_supply_kind', 'main_supply', 'product', 'markets_display',
                     'product_packaging_standard_display', 'max_product_amount_per_package', 'is_enabled',
                     )
@@ -1144,7 +1145,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = Packaging.objects.get(id=obj_id) if obj_id else None
+        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
         supply_kind = request.POST.get('main_supply_kind') if request.POST else obj.main_supply_kind if obj else None
@@ -1353,7 +1354,7 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj,
                                     exclude=[Product, ProductVariety, ProductSize, Market, ProductMarketClass,
-                                             Packaging, Organization]):
+                                             ProductPackaging, Organization]):
             readonly_fields.extend(['name', 'alias', ])
         return readonly_fields
 
@@ -1402,7 +1403,7 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
             return formfield
         """
         if db_field.name == "packaging_kind":
-            kwargs["queryset"] = Packaging.objects.filter(**organization_queryfilter)
+            kwargs["queryset"] = ProductPackaging.objects.filter(**organization_queryfilter)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

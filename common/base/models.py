@@ -33,10 +33,10 @@ class ProductKind(models.Model):
 #   - Estándar del APEAM para AGUACATE en ESTADOS UNIDOS
 #   - Estándar de X para LIMÓN-MEXICANO en MÉXICO
 #   - Estándar de X para LIMÓN-PERSA en ESTADOS UNIDOS
-class CountryProductStandard(models.Model):
+class CountryProductKindStandard(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
     country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     sort_order = models.PositiveIntegerField(default=0)
 
@@ -71,7 +71,7 @@ class CountryProductStandardSizeManager(Manager):
 #   - 110, 150, 175, 200, 230, 250, ... (de "ALGUNA ASOCIACIÓN" para LIMÓN-PERSA en ESTADOS UNIDOS)
 class CountryProductStandardSize(models.Model):
     name = models.CharField(max_length=255)
-    standard = models.ForeignKey(CountryProductStandard, on_delete=models.CASCADE)
+    standard = models.ForeignKey(CountryProductKindStandard, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -88,21 +88,21 @@ class CountryProductStandardSize(models.Model):
         ]
 
 
-class CountryProductStandardPackaging(models.Model):
+class ProductPackagingStandard(models.Model):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, verbose_name=_('Code'))
     description = models.CharField(max_length=255, null=True, blank=True)
-    standard = models.ForeignKey(CountryProductStandard, on_delete=models.CASCADE)
+    standard = models.ForeignKey(CountryProductKindStandard, on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = _('Product standard, Packaging')
-        verbose_name_plural = _('Product standard, Packaging')
+        verbose_name = _('Product packaging standard')
+        verbose_name_plural = _('Product packaging standard')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='productstandardpackaging_unique_name_code_standard')
+            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='productpackagingstandard_unique_name_code_standard')
         ]
 
 
