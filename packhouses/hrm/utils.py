@@ -64,7 +64,6 @@ EMERGENCY_CONTACT_RELATIONSHIP_CHOICES = [
     ('spouse', _('Spouse')),  
     ('father', _('Father')), 
     ('mother', _('Mother')), 
-    ('child', _('Child')),  
     ('sibling', _('Sibling')),  
     ('grandparent', _('Grandparent')),  
     ('grandchild', _('Grandchild')),  

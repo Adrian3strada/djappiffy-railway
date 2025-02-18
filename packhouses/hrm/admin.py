@@ -69,20 +69,64 @@ class EmployeeContactInformationInline(DisableInlineRelatedLinksMixin, nested_ad
         form = super().get_form(request, obj, **kwargs)
         return form
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        object_id = request.resolver_match.kwargs.get("object_id")
-        obj = EmployeeContactInformation.objects.get(id=object_id) if object_id else None
+    def get_formset(self, request, obj=None, **kwargs):
+        FormSet = super().get_formset(request, obj, **kwargs)
 
-        if db_field.name == "country":
-            kwargs["queryset"] = Country.objects.all()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda item: item.name
-            return formfield
-        
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        class InlineFormSet(FormSet):
+            def _construct_form(self, i, **kwargs):
+                form = super()._construct_form(i, **kwargs)
+
+                # Para obtener el valor del campo "country" del formulario inline,
+                # usamos el prefijo asignado al formulario.
+                market_field_name = form.add_prefix('country')
+                if request.method == "POST":
+                    country_id = request.POST.get(market_field_name)
+                else:
+                    # Si existe la instancia (edición), usar el valor almacenado.
+                    country_id = form.instance.country_id if form.instance.pk else None
+
+                # Ahora, para el campo "state" filtramos según el country_id obtenido
+                if country_id:
+                    form.fields['state'].queryset = Region.objects.filter(country_id=country_id)
+                else:
+                    form.fields['state'].queryset = Region.objects.none()
+
+                # Filtrar "city" usando el valor de "state"
+                state_field_name = form.add_prefix('state')
+                if request.method == "POST":
+                    state_id = request.POST.get(state_field_name)
+                else:
+                    state_id = form.instance.state_id if form.instance.pk else None
+
+                if state_id:
+                    form.fields['city'].queryset = SubRegion.objects.filter(region_id=state_id)
+                else:
+                    form.fields['city'].queryset = SubRegion.objects.none()
+
+                # Filtrar "district" usando el valor de "city"
+                city_field_name = form.add_prefix('city')
+                if request.method == "POST":
+                    city_id = request.POST.get(city_field_name)
+                else:
+                    city_id = form.instance.city_id if form.instance.pk else None
+
+                if city_id:
+                    form.fields['district'].queryset = City.objects.filter(subregion_id=city_id)
+                else:
+                    form.fields['district'].queryset = City.objects.none()
+
+                # Opcional: definir label_from_instance para cada campo
+                form.fields['state'].label_from_instance = lambda item: item.name
+                form.fields['city'].label_from_instance = lambda item: item.name
+                form.fields['district'].label_from_instance = lambda item: item.name
+
+                return form
+
+        return InlineFormSet
+    
 
     class Media:
-        js = ('js/admin/forms/common/country-state-city-district.js',)
+        js = ('js/admin/forms/packhouses/hrm/employee_address_contact_inline.js',)
 
     
 class EmployeeTaxAndMedicalInformationInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
