@@ -581,7 +581,6 @@
   "fields": {
     "name": "ESTANDAR",
     "is_enabled": true,
-    "packaging_supply_kind": 1,
     "product": 1,
     "sort_order": 0
   }
@@ -592,7 +591,6 @@
   "fields": {
     "name": "ENMALLADO",
     "is_enabled": true,
-    "packaging_supply_kind": 1,
     "product": 1,
     "sort_order": 1
   }
@@ -603,7 +601,6 @@
   "fields": {
     "name": "ORGÁNICO",
     "is_enabled": true,
-    "packaging_supply_kind": 1,
     "product": 1,
     "sort_order": 2
   }
@@ -614,7 +611,6 @@
   "fields": {
     "name": "ESTANDAR",
     "is_enabled": true,
-    "packaging_supply_kind": 1,
     "product": 2,
     "sort_order": 0
   }
@@ -625,7 +621,6 @@
   "fields": {
     "name": "ENMALLADO",
     "is_enabled": true,
-    "packaging_supply_kind": 1,
     "product": 2,
     "sort_order": 1
   }
@@ -636,7 +631,6 @@
   "fields": {
     "name": "ORGÁNICO",
     "is_enabled": true,
-    "packaging_supply_kind": 1,
     "product": 2,
     "sort_order": 2
   }
@@ -646,16 +640,25 @@
   "pk": 1,
   "fields": {
     "product": 1,
-    "name": "NEGRA",
+    "name": "NEGRO",
     "is_enabled": true
   }
 },
 {
   "model": "catalogs.productripeness",
-  "pk": 2,
+  "pk": 3,
   "fields": {
     "product": 1,
-    "name": "MUY NEGRA",
+    "name": "MUY NEGRO",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productripeness",
+  "pk": 4,
+  "fields": {
+    "product": 1,
+    "name": "PARA HOY",
     "is_enabled": true
   }
 },

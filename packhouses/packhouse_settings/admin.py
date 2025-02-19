@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (Status, Bank, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
                      PaymentKind, VehicleBrand, AuthorityPackagingKind,
                      OrchardCertificationVerifier,
-                     OrchardCertificationKind, SupplyKind)
+                     OrchardCertificationKind)
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget
 from organizations.models import Organization
 from common.utils import is_instance_used
@@ -193,21 +193,3 @@ class OrchardCertificationKindAdmin(ByOrganizationAdminMixin):
             kwargs['queryset'] = OrchardCertificationVerifier.objects.filter(organization=request.organization, is_enabled=True)
 
         return super().formfield_for_manytomany(db_field, request, **kwargs)
-
-
-@admin.register(SupplyKind)
-class SupplyKindAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'unit_kind', 'is_packaging', 'is_enabled')
-    list_filter = ('is_enabled',)
-    fields = ('name', 'unit_kind', 'is_packaging', 'is_enabled')
-
-    @uppercase_form_charfield('name')
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        return form
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Organization]):
-            readonly_fields.extend(['name', 'is_packaging', 'organization'])
-        return readonly_fields

@@ -18,15 +18,15 @@ from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices
     get_vehicle_category_choices, get_provider_categories_choices
 from django.core.exceptions import ValidationError
 from common.base.models import (ProductKind, CountryProductStandardSize, ProductPackagingStandard, CapitalFramework,
-                                LegalEntityCategory)
+                                LegalEntityCategory, SupplyKind)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   AuthorityPackagingKind,
                                                   OrchardCertificationVerifier,
-                                                  OrchardCertificationKind, SupplyKind)
+                                                  OrchardCertificationKind)
 from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES,
                        PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES)
-from packhouses.packhouse_settings.settings import SUPPLY_UNIT_KIND_CHOICES
+from common.base.settings import SUPPLY_UNIT_KIND_CHOICES
 
 from django.db.models import Max, Min
 from django.db.models import Q, F
@@ -170,7 +170,6 @@ class ProductHarvestSizeKind(CleanProductMixin, models.Model):
 class ProductMassVolumeKind(CleanNameAndProductMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     sort_order = models.PositiveIntegerField(default=0, verbose_name=_('Sort order'))
 

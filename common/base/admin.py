@@ -1,8 +1,8 @@
 from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
-from .models import (ProductKind, CountryProductKindStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
-                     ProductPackagingStandard,
+from .models import (ProductKind, ProductKindCountryStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
+                     ProductPackagingStandard, SupplyKind,
                      Incoterm, LocalDelivery, Currency)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
@@ -36,7 +36,7 @@ class ProductPackagingStandardInline(admin.TabularInline):
     verbose_name_plural = 'Standard packaging'
 
 
-@admin.register(CountryProductKindStandard)
+@admin.register(ProductKindCountryStandard)
 class CountryProductStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'product_kind', 'country', 'is_enabled', 'sort_order')
     list_filter = [ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter, 'is_enabled']
@@ -106,6 +106,18 @@ class CurrencyAdmin(admin.ModelAdmin):
     list_filter = ['is_enabled']
 
     @uppercase_form_charfield('code')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+
+
+@admin.register(SupplyKind)
+class SupplyKindAdmin(admin.ModelAdmin):
+    list_display = ('name', 'unit_kind', 'is_packaging', 'is_enabled')
+    list_filter = ('is_enabled',)
+    fields = ('name', 'unit_kind', 'is_packaging', 'is_enabled')
+
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form

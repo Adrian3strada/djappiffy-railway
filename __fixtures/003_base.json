@@ -180,7 +180,7 @@
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 1,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [MÉXICO]",
@@ -191,7 +191,7 @@
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 2,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [ALEMANIA - UNIÓN EUROPEA]",
@@ -202,7 +202,7 @@
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 3,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [CANADÁ]",
@@ -213,7 +213,7 @@
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 4,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [JAPÓN]",
@@ -224,7 +224,7 @@
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 5,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [ESTADOS UNIDOS]",
@@ -235,7 +235,7 @@
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 6,
   "fields": {
     "name": "ESTÁNDARES DE X SOBRE [LIMÓN - MEXICANO] PARA [MÉXICO]",
@@ -246,7 +246,7 @@
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 7,
   "fields": {
     "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [ESTADOS UNIDOS]",
@@ -257,7 +257,7 @@
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 8,
   "fields": {
     "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [JAPÓN - ASIA]",
@@ -268,7 +268,7 @@
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 9,
   "fields": {
     "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [ALEMANIA - UNIÓN EUROPEA]",
@@ -279,7 +279,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 1,
   "fields": {
     "name": "Comercial",
@@ -289,7 +289,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 2,
   "fields": {
     "name": "Mediano",
@@ -299,7 +299,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 3,
   "fields": {
     "name": "Primera",
@@ -309,7 +309,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 4,
   "fields": {
     "name": "Extra",
@@ -319,7 +319,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 5,
   "fields": {
     "name": "Super",
@@ -329,7 +329,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 6,
   "fields": {
     "name": "26",
@@ -339,7 +339,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 7,
   "fields": {
     "name": "24",
@@ -349,7 +349,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 8,
   "fields": {
     "name": "22",
@@ -359,7 +359,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 9,
   "fields": {
     "name": "18",
@@ -369,7 +369,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 10,
   "fields": {
     "name": "16",
@@ -379,7 +379,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 11,
   "fields": {
     "name": "14",
@@ -389,7 +389,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 12,
   "fields": {
     "name": "12",
@@ -399,7 +399,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 13,
   "fields": {
     "name": "26",
@@ -409,7 +409,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 14,
   "fields": {
     "name": "24",
@@ -419,7 +419,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 15,
   "fields": {
     "name": "22",
@@ -429,7 +429,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 16,
   "fields": {
     "name": "18",
@@ -439,7 +439,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 17,
   "fields": {
     "name": "16",
@@ -449,7 +449,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 18,
   "fields": {
     "name": "14",
@@ -459,7 +459,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 19,
   "fields": {
     "name": "12",
@@ -469,7 +469,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 20,
   "fields": {
     "name": "30",
@@ -479,7 +479,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 21,
   "fields": {
     "name": "24",
@@ -489,7 +489,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 22,
   "fields": {
     "name": "84",
@@ -499,7 +499,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 23,
   "fields": {
     "name": "70",
@@ -509,7 +509,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 24,
   "fields": {
     "name": "60",
@@ -519,7 +519,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 25,
   "fields": {
     "name": "48",
@@ -529,7 +529,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 26,
   "fields": {
     "name": "40",
@@ -539,7 +539,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 27,
   "fields": {
     "name": "36",
@@ -549,7 +549,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 28,
   "fields": {
     "name": "32",
@@ -559,7 +559,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 29,
   "fields": {
     "name": "600",
@@ -569,7 +569,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 30,
   "fields": {
     "name": "500",
@@ -579,7 +579,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 31,
   "fields": {
     "name": "400",
@@ -589,7 +589,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 32,
   "fields": {
     "name": "300",
@@ -599,7 +599,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 33,
   "fields": {
     "name": "250",
@@ -609,7 +609,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 34,
   "fields": {
     "name": "230",
@@ -619,7 +619,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 35,
   "fields": {
     "name": "200",
@@ -629,7 +629,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 36,
   "fields": {
     "name": "175",
@@ -639,7 +639,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 37,
   "fields": {
     "name": "150",
@@ -649,7 +649,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 38,
   "fields": {
     "name": "110",
@@ -659,7 +659,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 39,
   "fields": {
     "name": "54",
@@ -669,7 +669,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 40,
   "fields": {
     "name": "48",
@@ -679,7 +679,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 41,
   "fields": {
     "name": "44",
@@ -689,7 +689,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 42,
   "fields": {
     "name": "40",
@@ -699,7 +699,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 43,
   "fields": {
     "name": "36",
@@ -709,7 +709,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 44,
   "fields": {
     "name": "63",
@@ -719,7 +719,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 45,
   "fields": {
     "name": "54",
@@ -729,7 +729,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 46,
   "fields": {
     "name": "48",
@@ -739,7 +739,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 47,
   "fields": {
     "name": "42",
@@ -749,7 +749,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 1,
   "fields": {
     "name": "CARTÓN 11.3",
@@ -1715,6 +1715,94 @@
     "name_es": "Entrega a consignatario",
     "is_enabled": true,
     "sort_order": 5
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 1,
+  "fields": {
+    "name": "CAJA",
+    "unit_kind": "piece",
+    "is_packaging": true,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 2,
+  "fields": {
+    "name": "CHAROLA",
+    "unit_kind": "piece",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 3,
+  "fields": {
+    "name": "TARIMA",
+    "unit_kind": "piece",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 4,
+  "fields": {
+    "name": "ESQUINERO",
+    "unit_kind": "piece",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 5,
+  "fields": {
+    "name": "TAPA",
+    "unit_kind": "piece",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 6,
+  "fields": {
+    "name": "MALLA",
+    "unit_kind": "cm",
+    "is_packaging": true,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 7,
+  "fields": {
+    "name": "FILM",
+    "unit_kind": "cm",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 8,
+  "fields": {
+    "name": "FLEJE",
+    "unit_kind": "m",
+    "is_packaging": false,
+    "is_enabled": true,
+    "organization": 1
   }
 }
 ]

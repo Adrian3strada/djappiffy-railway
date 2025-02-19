@@ -2,11 +2,11 @@ from django.contrib import admin
 from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind,
-                     Gatherer, PaymentKind, SupplyKind, Supply, ProductPackaging,
+                     Gatherer, PaymentKind, Supply, ProductPackaging,
                      Provider, Client, CapitalFramework,
                      Maquiladora, WeighingScale, ExportingCompany, CustomsBroker, PalletConfiguration
                      )
-from common.base.models import ProductKind
+from common.base.models import ProductKind, SupplyKind
 from django.utils.translation import gettext_lazy as _
 
 
@@ -556,7 +556,7 @@ class ByCountryForOrganizationCustomsBrokersFilter(admin.SimpleListFilter):
         return queryset
 
 
-class BySupplyKindForOrganizationPackagingFilter(admin.SimpleListFilter):
+class BySupplyKindForProductPackagingFilter(admin.SimpleListFilter):
     title = _('Supply Kind')
     parameter_name = 'supply_kind'
 

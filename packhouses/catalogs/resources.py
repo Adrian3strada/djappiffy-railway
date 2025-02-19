@@ -9,7 +9,7 @@ from import_export import resources, fields
 from django.utils.translation import gettext_lazy as _
 from .utils import get_vehicle_category_choices, get_provider_categories_choices
 from .settings import ORCHARD_PRODUCT_CLASSIFICATION_CHOICES
-from packhouses.packhouse_settings.settings import SUPPLY_UNIT_KIND_CHOICES
+from common.base.settings import SUPPLY_UNIT_KIND_CHOICES
 from django.utils.safestring import mark_safe
 
 class MarketResource(DehydrationResource, ExportResource):

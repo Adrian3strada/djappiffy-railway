@@ -20,8 +20,7 @@ from .models import (
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
-                                                  VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier,
-                                                  SupplyKind, AuthorityPackagingKind,
+                                                  VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier
                                                   )
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
@@ -38,7 +37,7 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
                       ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
-                      ByClientCapitalFrameworkForOrganizationFilter, BySupplyKindForOrganizationPackagingFilter,
+                      ByClientCapitalFrameworkForOrganizationFilter, BySupplyKindForProductPackagingFilter,
                       BySupplyForOrganizationPackagingFilter, ByProductForOrganizationPackagingFilter,
                       ByMarketForOrganizationPackagingFilter,
                       ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
@@ -58,7 +57,7 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
-from common.base.models import ProductKind, CountryProductStandardSize, CapitalFramework
+from common.base.models import ProductKind, CountryProductStandardSize, CapitalFramework, SupplyKind
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, \
@@ -912,6 +911,11 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     @uppercase_alphanumeric_form_charfield('code')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        if 'kind' in form.base_fields:
+            form.base_fields['kind'].widget.can_add_related = False
+            form.base_fields['kind'].widget.can_change_related = False
+            form.base_fields['kind'].widget.can_delete_related = False
+            form.base_fields['kind'].widget.can_view_related = False
         return form
 
 
@@ -1115,7 +1119,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     report_function = staticmethod(basic_report)
     resource_classes = [PackagingResource]
     form = PackagingKindForm
-    list_filter = (BySupplyKindForOrganizationPackagingFilter, BySupplyForOrganizationPackagingFilter,
+    list_filter = (BySupplyKindForProductPackagingFilter, BySupplyForOrganizationPackagingFilter,
                    ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
                    'product_packaging_standard', 'is_enabled')
     list_display = ('name', 'main_supply_kind', 'main_supply', 'product', 'markets_display',
@@ -1141,6 +1145,11 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        if 'main_supply_kind' in form.base_fields:
+            form.base_fields['main_supply_kind'].widget.can_add_related = False
+            form.base_fields['main_supply_kind'].widget.can_change_related = False
+            form.base_fields['main_supply_kind'].widget.can_delete_related = False
+            form.base_fields['main_supply_kind'].widget.can_view_related = False
         return form
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -1168,8 +1177,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         supply_queryfilter = {'organization': organization, 'kind': supply_kind, 'is_enabled': True}
 
         if db_field.name == "main_supply_kind":
-            is_packaging_queryfilter = Q(is_packaging=True)
-            kwargs["queryset"] = SupplyKind.objects.filter(is_packaging_queryfilter, **organization_queryfilter)
+            kwargs["queryset"] = SupplyKind.objects.filter(is_packaging=True, is_enabled=True)
 
         if db_field.name == "main_supply":
             if supply_kind:

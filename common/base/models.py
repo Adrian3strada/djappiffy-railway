@@ -9,6 +9,7 @@ from django.db.models.functions import Cast
 
 # Create your models here.
 
+from .settings import SUPPLY_UNIT_KIND_CHOICES
 
 class ProductKind(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -33,7 +34,7 @@ class ProductKind(models.Model):
 #   - Estándar del APEAM para AGUACATE en ESTADOS UNIDOS
 #   - Estándar de X para LIMÓN-MEXICANO en MÉXICO
 #   - Estándar de X para LIMÓN-PERSA en ESTADOS UNIDOS
-class CountryProductKindStandard(models.Model):
+class ProductKindCountryStandard(models.Model):
     name = models.CharField(max_length=255, unique=True)
     country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)
     product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
@@ -44,8 +45,8 @@ class CountryProductKindStandard(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('Country product standard')
-        verbose_name_plural = _('Country product standards')
+        verbose_name = _('Product kind country standard')
+        verbose_name_plural = _('Product kind country standards')
         ordering = ['sort_order']
         constraints = [
             models.UniqueConstraint(fields=['product_kind', 'country'], name='countryproductsizestandard_unique_productkind_country')
@@ -71,7 +72,7 @@ class CountryProductStandardSizeManager(Manager):
 #   - 110, 150, 175, 200, 230, 250, ... (de "ALGUNA ASOCIACIÓN" para LIMÓN-PERSA en ESTADOS UNIDOS)
 class CountryProductStandardSize(models.Model):
     name = models.CharField(max_length=255)
-    standard = models.ForeignKey(CountryProductKindStandard, on_delete=models.CASCADE)
+    standard = models.ForeignKey(ProductKindCountryStandard, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -92,7 +93,7 @@ class ProductPackagingStandard(models.Model):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, verbose_name=_('Code'))
     description = models.CharField(max_length=255, null=True, blank=True)
-    standard = models.ForeignKey(CountryProductKindStandard, on_delete=models.CASCADE)
+    standard = models.ForeignKey(ProductKindCountryStandard, on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
@@ -186,3 +187,18 @@ class Currency(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['id', 'name'], name='currency_unique_id_name')
         ]
+
+
+class SupplyKind(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'), unique=True)
+    unit_kind = models.CharField(max_length=30, verbose_name=_('Unit kind'), choices=SUPPLY_UNIT_KIND_CHOICES)
+    is_packaging = models.BooleanField(default=False, verbose_name=_('Is packaging'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.name} ({self.get_unit_kind_display()})"
+
+    class Meta:
+        verbose_name = _('Supply kind')
+        verbose_name_plural = _('Supply kinds')
+        ordering = ('name',)

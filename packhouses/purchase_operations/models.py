@@ -15,7 +15,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   OrchardCertificationVerifier,
                                                   OrchardCertificationKind)
-from packhouses.catalogs.models import (SupplyKind,Supply,Provider)
+from packhouses.catalogs.models import Supply, Provider
 from common.settings import STATUS_CHOICES
 from django.contrib.auth import get_user_model
 import datetime
