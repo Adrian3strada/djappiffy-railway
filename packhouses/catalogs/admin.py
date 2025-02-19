@@ -9,7 +9,7 @@ from .models import (
     ProductPhenologyKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
-    HarvestingPaymentSetting, Supply, MeshBagKind, MeshBagFilmKind,
+    HarvestingPaymentSetting, Supply, MeshBagKind, ProductPackagingStandard,
     MeshBag, Service, ProductPackaging, WeighingScale, ColdChamber,
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ExportingCompany, Transfer, LocalTransporter,
@@ -162,11 +162,11 @@ class ProductMarketMeasureUnitManagementCostInline(admin.TabularInline):
 class ProductMarketClassInline(admin.TabularInline):
     model = ProductMarketClass
     extra = 0
-    fields = ('market', 'class_name', 'is_enabled')
+    fields = ('market', 'name', 'is_enabled')
     verbose_name = _('Class')
     verbose_name_plural = _('Classes')
 
-    @uppercase_formset_charfield('class_name')
+    @uppercase_formset_charfield('name')
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
@@ -1143,27 +1143,55 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         form = super().get_form(request, obj, **kwargs)
         return form
 
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+
+        if db_field.name == "markets":
+            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
         obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
         supply_kind = request.POST.get('main_supply_kind') if request.POST else obj.main_supply_kind if obj else None
+        markets = request.POST.getlist('markets') if request.POST else obj.markets.all() if obj else None
+        product_id = request.POST.get('product') if request.POST else obj.product_id if obj else None
+        product_kind = ProductKind.objects.get(id=Product.objects.get(id=product_id).kind_id) if product_id else None
 
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        supplykind_queryfilter = {'organization': organization, 'is_enabled': True}
         supply_queryfilter = {'organization': organization, 'kind': supply_kind, 'is_enabled': True}
 
         if db_field.name == "main_supply_kind":
-            packaging_or_tarima_query = Q(is_packaging=True) | Q(name='TARIMA')
-            # TODO:  | Q(name='TARIMA') ???
-            kwargs["queryset"] = SupplyKind.objects.filter(packaging_or_tarima_query, **supplykind_queryfilter)
+            is_packaging_queryfilter = Q(is_packaging=True)
+            kwargs["queryset"] = SupplyKind.objects.filter(is_packaging_queryfilter, **organization_queryfilter)
+
         if db_field.name == "main_supply":
-            print(supply_kind)
             if supply_kind:
                 kwargs["queryset"] = Supply.objects.filter(**supply_queryfilter)
             else:
                 kwargs["queryset"] = Supply.objects.none()
+
+        if db_field.name == "product":
+            if organization:
+                kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
+            else:
+                kwargs["queryset"] = Product.objects.none()
+
+        if db_field.name == "product_packaging_standard":
+            if organization and product_kind and markets:
+                print("product_kind", product_kind)
+                print("markets", markets)
+                markets_countries = list(set((Market.objects.filter(id__in=markets).values_list('countries', flat=True))))
+                print("markets_countries", markets_countries)
+                kwargs["queryset"] = ProductPackagingStandard.objects.filter(standard__product_kind=product_kind, standard__country__in=markets_countries)
+            else:
+                kwargs["queryset"] = ProductPackagingStandard.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

@@ -32,8 +32,8 @@ class CountryProductStandardSizeInline(admin.TabularInline):
 class ProductPackagingStandardInline(admin.TabularInline):
     model = ProductPackagingStandard
     extra = 0
-    verbose_name = 'Packaging'
-    verbose_name_plural = 'Packaging'
+    verbose_name = 'Standard packaging'
+    verbose_name_plural = 'Standard packaging'
 
 
 @admin.register(CountryProductKindStandard)
