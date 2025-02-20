@@ -196,7 +196,7 @@ class SupplyKind(models.Model):
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
-        return f"{self.name} ({self.get_unit_kind_display()})"
+        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Supply kind')

@@ -563,7 +563,8 @@ class BySupplyKindForProductPackagingFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         supply_kinds = SupplyKind.objects.all()
         if hasattr(request, 'organization'):
-            main_supply_kind_ids = list(ProductPackaging.objects.filter(organization=request.organization).values_list('main_supply_kind', flat=True).distinct())
+            main_supply_kind_ids = list(ProductPackaging.objects.filter(organization=request.organization).values_list(
+                'packaging_supply_kind', flat=True).distinct())
             supply_kinds = supply_kinds.filter(id__in=main_supply_kind_ids)
         return [(supply_kind.id, supply_kind.name) for supply_kind in supply_kinds]
 
@@ -580,7 +581,8 @@ class BySupplyForOrganizationPackagingFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         supplies = Supply.objects.all()
         if hasattr(request, 'organization'):
-            supply_ids = list(ProductPackaging.objects.filter(organization=request.organization).values_list('main_supply', flat=True).distinct())
+            supply_ids = list(ProductPackaging.objects.filter(organization=request.organization).values_list(
+                'packaging_supply', flat=True).distinct())
             supplies = supplies.filter(id__in=supply_ids)
         return [(supply.id, supply.name) for supply in supplies]
 

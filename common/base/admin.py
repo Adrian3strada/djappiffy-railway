@@ -11,7 +11,7 @@ from wagtail.images.models import Image
 from taggit.models import Tag
 from adminsortable2.admin import SortableAdminMixin
 from .decorators import uppercase_form_charfield
-
+from django.utils.translation import gettext_lazy as _
 
 #
 
@@ -116,6 +116,11 @@ class SupplyKindAdmin(admin.ModelAdmin):
     list_display = ('name', 'unit_kind', 'is_packaging', 'is_enabled')
     list_filter = ('is_enabled',)
     fields = ('name', 'unit_kind', 'is_packaging', 'is_enabled')
+
+    def unit_kind_name(self, obj):
+        return obj.get_unit_kind_display()
+    unit_kind_name.short_description = _('Unit kind')
+    unit_kind_name.admin_order_field = 'unit_kind'
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):

@@ -677,7 +677,7 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
     class Meta:
         verbose_name = _('Supply')
         verbose_name_plural = _('Supplies')
-        ordering = ('organization', 'name',)
+        ordering = ('organization', 'kind', 'name',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='supply_unique_name_organization'),
         ]
@@ -816,12 +816,12 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 
 
 class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    ### Insumo principal
+    packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
+    packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
+    main_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Main supply quantity'))
 
-    ### Embalaje principal
-    main_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Main supply kind'), on_delete=models.PROTECT)
-    main_supply = models.ForeignKey(Supply, verbose_name=_('Main supply'), on_delete=models.PROTECT)
-    main_supply_quantity = models.PositiveIntegerField(verbose_name=_('Main supply quantity'))
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
 
     ### Máximo peso
     max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'))
