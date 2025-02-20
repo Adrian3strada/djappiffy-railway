@@ -236,3 +236,8 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
             form.base_fields['provider'].widget.can_delete_related = False
             form.base_fields['provider'].widget.can_view_related = False
         return form
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.user = request.user
+        super().save_model(request, obj, form, change)
