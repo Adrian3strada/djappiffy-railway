@@ -7,8 +7,10 @@ from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
 from search import views as search_views
-from packhouses.gathering.views import harvest_order_pdf, good_harvest_practices_format, cancel_schedule_harvest
-from packhouses.purchase_operations.views import requisition_pdf, set_requisition_ready
+from packhouses.gathering.views import (harvest_order_pdf, good_harvest_practices_format, cancel_schedule_harvest,
+                                        set_scheduleharvest_ready)
+from packhouses.purchase_operations.views import (requisition_pdf, set_requisition_ready, purchase_order_supply_pdf,
+                                                  set_purchase_order_supply_ready)
 
 
 urlpatterns = [
@@ -19,6 +21,11 @@ urlpatterns = [
     path('dadmin/gathering/scheduleharvest/cancel_schedule_harvest/<int:pk>/', cancel_schedule_harvest, name='cancel_schedule_harvest'),
     path('dadmin/purchase_operations/requisition_pdf/<int:requisition_id>/', requisition_pdf, name='requisition_pdf'),
     path('dadmin/purchase_operations/set_requisition_ready/<int:requisition_id>/', set_requisition_ready, name='set_requisition_ready'),
+    path('dadmin/purchase_operations/purchase_order_supply_pdf/<int:purchase_order_supply_id>/', purchase_order_supply_pdf, name='purchase_order_supply_pdf'),
+    path('dadmin/purchase_operations/set_purchase_order_supply_ready/<int:requisition_id>/', set_purchase_order_supply_ready,
+         name='set_purchase_order_supply_ready'),
+    path('dadmin/gathering/scheduleharvest/set_scheduleharvest_ready/<int:harvest_id>/', set_scheduleharvest_ready,
+         name='set_scheduleharvest_ready'),
     # Admin URLs
     path("dadmin/", admin.site.urls),
     path("wadmin/", include(wagtailadmin_urls)),

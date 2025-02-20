@@ -21,9 +21,9 @@ from django.contrib.auth.decorators import login_required
 def harvest_order_pdf(request, harvest_id):
     # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
     if not request.user.is_authenticated:
-        login_url = reverse('admin:login') 
+        login_url = reverse('admin:login')
         return redirect(login_url)
-    
+
     # Obtener el registro
     harvest = get_object_or_404(ScheduleHarvest, pk=harvest_id)
 
@@ -101,9 +101,9 @@ def harvest_order_pdf(request, harvest_id):
 def good_harvest_practices_format(request, harvest_id):
     # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
     if not request.user.is_authenticated:
-        login_url = reverse('admin:login') 
+        login_url = reverse('admin:login')
         return redirect(login_url)
-    
+
     # Obtener el registro
     harvest = get_object_or_404(ScheduleHarvest, pk=harvest_id)
 
@@ -198,6 +198,27 @@ def cancel_schedule_harvest(request, pk):
     schedule_harvest.status = 'canceled'
     schedule_harvest.save()
     success_message = _('Harvest canceled successfully.')
+
+    return JsonResponse({
+        'success': True,
+        'message': success_message
+    })
+
+def set_scheduleharvest_ready(request, harvest_id):
+    scheduleharvest = get_object_or_404(
+        ScheduleHarvest,
+        pk=harvest_id,
+        organization=request.organization
+    )
+    if scheduleharvest.status not in ['open']:
+        return JsonResponse({
+            'success': False,
+            'message': 'You cannot send this harvest.'
+        }, status=403)
+
+    scheduleharvest.status = 'ready'
+    scheduleharvest.save()
+    success_message = _('Harvest sent to Fruit Receiving Area successfully.')
 
     return JsonResponse({
         'success': True,
