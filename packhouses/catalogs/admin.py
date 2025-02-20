@@ -1126,8 +1126,9 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                     'product_packaging_standard_display', 'max_product_amount_per_package', 'is_enabled',
                     )
     fields = (
+        'product', 'markets',
         'packaging_supply_kind', 'packaging_supply', 'name', 'main_supply_quantity',
-        'max_product_amount_per_package', 'product',  'markets', 'product_packaging_standard',
+        'max_product_amount_per_package', 'product_packaging_standard',
         'is_enabled'
     )
     inlines = (PackagingSupplyInline, ContainedPackagingInline)
@@ -1145,11 +1146,11 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'packaging_supply_kind' in form.base_fields:
-            form.base_fields['packaging_supply_kind'].widget.can_add_related = False
-            form.base_fields['packaging_supply_kind'].widget.can_change_related = False
-            form.base_fields['packaging_supply_kind'].widget.can_delete_related = False
-            form.base_fields['packaging_supply_kind'].widget.can_view_related = False
+        if 'packaging_supply_kind1' in form.base_fields:
+            form.base_fields['packaging_supply_kind1'].widget.can_add_related = False
+            form.base_fields['packaging_supply_kind1'].widget.can_change_related = False
+            form.base_fields['packaging_supply_kind1'].widget.can_delete_related = False
+            form.base_fields['packaging_supply_kind1'].widget.can_view_related = False
         return form
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):

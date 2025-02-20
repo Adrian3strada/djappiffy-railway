@@ -28,6 +28,11 @@ class CountryProductStandardSizeInline(admin.TabularInline):
     verbose_name = 'Size'
     verbose_name_plural = 'Sizes'
 
+# TODO: Remover este cuando todo packaging esté completo
+@admin.register(ProductPackagingStandard)
+class ProductPackagingStandardAdmin(admin.ModelAdmin):
+    pass
+
 
 class ProductPackagingStandardInline(admin.TabularInline):
     model = ProductPackagingStandard
