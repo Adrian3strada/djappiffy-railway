@@ -10,13 +10,15 @@ from packhouses.packhouse_settings.models import Bank
 from .utils import (EMPLOYEE_GENDER_CHOICES, EMPLOYEE_BLOOD_TYPE_CHOICES, EMPLOYEE_ACADEMIC_CHOICES, EMPLOYEE_PAYMENT_CHOICES, 
                     EMERGENCY_CONTACT_RELATIONSHIP_CHOICES, MARITAL_STATUS_CHOICES, PAYMENT_CHOICES, EMPLOYEE_PAYMENT_METHOD_CHOICES, )
 from django.core.exceptions import ValidationError
+from datetime import datetime
+from common.users.models import User
 
 # Create your models here.
 
 class EmployeeStatus(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Status'))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
-    payment_type = models.CharField(max_length=10, choices=PAYMENT_CHOICES, default='full', verbose_name=_("Payment Type"))
+    payment_type = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='full', verbose_name=_("Payment Type"))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -70,6 +72,19 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
     marital_status = models.CharField(max_length=20, choices=MARITAL_STATUS_CHOICES, verbose_name=_('Marital Status'))
     hire_date = models.DateField(verbose_name=_('Hire Date'), blank=False, null=False)
     termination_date = models.DateField(verbose_name=_('Termination Date'), blank=True, null=True)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)  
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
+    city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
+    district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT, null=True, blank=True)
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
+    address = models.CharField(max_length=255, verbose_name=_('Address'))
+    external_number = models.CharField(max_length=10, verbose_name=_('External number'))
+    internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
+    phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'))
+    email = models.EmailField(max_length=255, verbose_name=_('Email'))
+    is_staff = models.BooleanField(default=True, verbose_name=_('Is Staff'))
+    staff_username = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('Staff Username'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def get_full_name(self):
@@ -78,6 +93,18 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
             parts.append(self.middle_name)
         parts.append(self.last_name)
         return ' '.join(parts)
+    
+    def get_antiguedad(self):
+        today = datetime.now().date()
+        difference = today - self.hire_date
+        years = difference.days // 365
+        months = (difference.days % 365) // 30
+        days = (difference.days % 365) % 30
+
+        return _("%(years)d years, %(months)d months, %(days)d days") % {
+            "years": years, "months": months, "days": days
+        }
+    get_antiguedad.short_description = "Antigüedad"
     
     def save(self, *args, **kwargs):
         self.full_name = self.get_full_name()
@@ -125,7 +152,7 @@ class EmployeeTaxAndMedicalInformation(models.Model):
     has_chronic_illness = models.BooleanField(default=False, verbose_name=_('Has Chronic Illness'))
     chronic_illness_details = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('Chronic Illness Details'))
     medical_insurance_provider = models.CharField(max_length=100, verbose_name=_('Medical Insurance Provider'), blank=True, null=True)
-    medical_insurance_id = models.CharField(max_length=100, verbose_name=_('Medical Insurance ID'), blank=True, null=True)
+    medical_insurance_number = models.CharField(max_length=100, verbose_name=_('Medical Insurance Number'), blank=True, null=True)
     medical_insurance_start_date = models.DateField(verbose_name=_('Medical Insurance Start Date'), blank=True, null=True)
     medical_insurance_end_date = models.DateField(verbose_name=_('Medical Insurance End Date'), blank=True, null=True)
     has_private_insurance = models.BooleanField(default=False, verbose_name=_('Has Private Insurance'))
@@ -137,30 +164,8 @@ class EmployeeTaxAndMedicalInformation(models.Model):
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
     
     class Meta:
-        verbose_name = _('Tax and Medical Information')
-        verbose_name_plural = _('Tax and Medical Information Records')
-
-
-class EmployeeContactInformation(models.Model):
-    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)  
-    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
-    city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT, null=True, blank=True)
-    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
-    address = models.CharField(max_length=255, verbose_name=_('Address'))
-    external_number = models.CharField(max_length=10, verbose_name=_('External number'))
-    internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'))
-    email = models.EmailField(max_length=255, verbose_name=_('Email'))
-    employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
-    
-    def __str__(self):
-        return f"Address and Contact Information: {self.employee} "
-    
-    class Meta:
-        verbose_name = _('Address and Contact Information')
-        verbose_name_plural = _('Address and Contact Information Records')
+        verbose_name = _('Tax and Medical Record')
+        verbose_name_plural = _('Tax and Medical Records')
 
 class EmployeeAcademicAndWorkInfomation(models.Model):
     academic_status = models.CharField(max_length=20, choices=EMPLOYEE_ACADEMIC_CHOICES, verbose_name=_('Academic Formation'))
@@ -170,8 +175,8 @@ class EmployeeAcademicAndWorkInfomation(models.Model):
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
     
     class Meta:
-        verbose_name = _('Academic and Work Information')
-        verbose_name_plural = _('Academic and Work Information Records')
+        verbose_name = _('Academic and Work Record')
+        verbose_name_plural = _('Academic and Work Records')
 
 class EmployeeWorkExperience(models.Model):
     work_record = models.ForeignKey(EmployeeAcademicAndWorkInfomation, on_delete=models.CASCADE)

@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import (Employee, JobPosition, EmployeeJobPosition, EmployeeTaxAndMedicalInformation, EmployeeContactInformation, 
-                     EmployeeAcademicAndWorkInfomation, WorkShiftSchedule, EmployeeStatus, EmployeeCertificationInformation, EmployeeWorkExperience)
+from .models import (Employee, JobPosition, EmployeeJobPosition, EmployeeTaxAndMedicalInformation, EmployeeAcademicAndWorkInfomation, 
+                     WorkShiftSchedule, EmployeeStatus, EmployeeCertificationInformation, EmployeeWorkExperience)
 from django.utils.translation import gettext_lazy as _
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from cities_light.models import Country, Region, SubRegion, City
@@ -9,11 +9,12 @@ import nested_admin
 from common.base.utils import ReportExportAdminMixin, SheetExportAdminMixin, SheetReportExportAdminMixin
 from .views import basic_report
 from .resources import EmployeeResource
+from common.users.models import User
 
 @admin.register(EmployeeStatus)
 class EmployeeStatusAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'payment_type', 'is_enabled')
-    fields = ('name', 'description', 'payment_type', 'is_enabled')
+    fields = ('name', 'payment_type', 'description', 'is_enabled')
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('description')
     def get_form(self, request, obj=None, **kwargs):
@@ -60,78 +61,20 @@ class JobPositionAdmin(ByOrganizationAdminMixin):
 class EmployeeJobPositionInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeJobPosition
 
-class EmployeeContactInformationInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
-    model = EmployeeContactInformation
-    min_num = 1
-    @uppercase_form_charfield('neighborhood')
-    @uppercase_form_charfield('address')
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        return form
-
-    def get_formset(self, request, obj=None, **kwargs):
-        FormSet = super().get_formset(request, obj, **kwargs)
-
-        class InlineFormSet(FormSet):
-            def _construct_form(self, i, **kwargs):
-                form = super()._construct_form(i, **kwargs)
-
-                # Para obtener el valor del campo "country" del formulario inline,
-                # usamos el prefijo asignado al formulario.
-                market_field_name = form.add_prefix('country')
-                if request.method == "POST":
-                    country_id = request.POST.get(market_field_name)
-                else:
-                    # Si existe la instancia (edición), usar el valor almacenado.
-                    country_id = form.instance.country_id if form.instance.pk else None
-
-                # Ahora, para el campo "state" filtramos según el country_id obtenido
-                if country_id:
-                    form.fields['state'].queryset = Region.objects.filter(country_id=country_id)
-                else:
-                    form.fields['state'].queryset = Region.objects.none()
-
-                # Filtrar "city" usando el valor de "state"
-                state_field_name = form.add_prefix('state')
-                if request.method == "POST":
-                    state_id = request.POST.get(state_field_name)
-                else:
-                    state_id = form.instance.state_id if form.instance.pk else None
-
-                if state_id:
-                    form.fields['city'].queryset = SubRegion.objects.filter(region_id=state_id)
-                else:
-                    form.fields['city'].queryset = SubRegion.objects.none()
-
-                # Filtrar "district" usando el valor de "city"
-                city_field_name = form.add_prefix('city')
-                if request.method == "POST":
-                    city_id = request.POST.get(city_field_name)
-                else:
-                    city_id = form.instance.city_id if form.instance.pk else None
-
-                if city_id:
-                    form.fields['district'].queryset = City.objects.filter(subregion_id=city_id)
-                else:
-                    form.fields['district'].queryset = City.objects.none()
-
-                # Opcional: definir label_from_instance para cada campo
-                form.fields['state'].label_from_instance = lambda item: item.name
-                form.fields['city'].label_from_instance = lambda item: item.name
-                form.fields['district'].label_from_instance = lambda item: item.name
-
-                return form
-
-        return InlineFormSet
-    
-
     class Media:
-        js = ('js/admin/forms/packhouses/hrm/employee_address_contact_inline.js',)
+        js = ('js/admin/forms/packhouses/hrm/job-position-inline.js',)
 
-    
+
 class EmployeeTaxAndMedicalInformationInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeTaxAndMedicalInformation
+    extra = 0
+    fields = ('country', 'tax_id', 'legal_category', 'has_private_insurance', 'medical_insurance_provider', 'medical_insurance_number', 
+              'medical_insurance_start_date', 'medical_insurance_end_date', 'private_insurance_details','blood_type', 'has_disability', 
+              'disability_details', 'has_chronic_illness', 'chronic_illness_details', 'emergency_contact_name', 'emergency_contact_phone',
+              'emergency_contact_relationship')
 
+    class Media:
+        js = ('js/admin/forms/packhouses/hrm/tax-medical-inline.js',)
 
 class EmployeeCertificationInformationInline(nested_admin.NestedTabularInline):
     model = EmployeeCertificationInformation
@@ -149,22 +92,37 @@ class EmployeeAcademicAndWorkInfomationInline(DisableInlineRelatedLinksMixin, ne
 class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     report_function = staticmethod(basic_report)
     resource_classes = [EmployeeResource]
-    list_display = ('full_name', 'get_job_position', 'gender', 'hire_date','status')
-    list_filter = ('status',)
+    list_display = ('full_name', 'get_job_position', 'gender', 'hire_date', 'get_antiguedad', 'status', 'is_staff')
+    list_filter = ('status', 'is_staff')
     fields = ('status', 'name', 'middle_name', 'last_name', 'population_registry_code', 'gender', 
-              'marital_status', 'hire_date', 'termination_date')
+              'marital_status', 'country', 'state', 'city', 'district', 'postal_code', 
+              'neighborhood', 'address', 'external_number', 'internal_number', 'phone_number', 
+              'email', 'hire_date', 'termination_date', 'is_staff', 'staff_username')
     search_fields = ('full_name', )
-    inlines = [EmployeeJobPositionInline, EmployeeContactInformationInline,
-               EmployeeTaxAndMedicalInformationInline, EmployeeAcademicAndWorkInfomationInline,]
+    inlines = [EmployeeJobPositionInline, EmployeeTaxAndMedicalInformationInline, EmployeeAcademicAndWorkInfomationInline,]
 
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('middle_name')
     @uppercase_form_charfield('last_name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        form.base_fields['staff_username'].widget.can_add_related = False
+        form.base_fields['staff_username'].widget.can_change_related = False
+        form.base_fields['staff_username'].widget.can_view_related = False
         return form
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = Employee.objects.get(id=object_id) if object_id else None
+
+        if db_field.name == "staff_username":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = User.objects.filter(is_staff=True)
+            else:
+                kwargs["queryset"] = User.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+        
         if db_field.name == "status":
             if hasattr(request, 'organization'):
                 kwargs["queryset"] = EmployeeStatus.objects.filter(organization=request.organization, is_enabled=True)
@@ -172,9 +130,59 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
                 kwargs["queryset"] = EmployeeStatus.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
+
+        if db_field.name == "country":
+            kwargs["queryset"] = Country.objects.all()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "state":
+            if request.POST:
+                country_id = request.POST.get('country')
+            else:
+                country_id = obj.country_id if obj else None
+            if country_id:
+                kwargs["queryset"] = Region.objects.filter(country_id=country_id)
+            else:
+                kwargs["queryset"] = Region.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "city":
+            if request.POST:
+                state_id = request.POST.get('state')
+            else:
+                state_id = obj.state_id if obj else None
+            if state_id:
+                kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
+            else:
+                kwargs["queryset"] = SubRegion.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "district":
+            if request.POST:
+                city_id = request.POST.get('city')
+            else:
+                city_id = obj.city_id if obj else None
+            if city_id:
+                kwargs["queryset"] = City.objects.filter(subregion_id=city_id)
+            else:
+                kwargs["queryset"] = City.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
         
     def get_job_position(self, obj):
         if hasattr(obj, 'employeejobposition') and obj.employeejobposition.job_position:
             return obj.employeejobposition.job_position
     get_job_position.short_description = 'Job Position'
 
+    class Media:
+        js = ('js/admin/forms/common/country-state-city-district.js',)
