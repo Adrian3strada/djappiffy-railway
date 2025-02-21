@@ -9,7 +9,7 @@ from django.db.models.functions import Cast
 
 # Create your models here.
 
-from .settings import SUPPLY_UNIT_KIND_CHOICES, SUPPLY_CATEGORY_CHOICES
+from .settings import SUPPLY_USAGE_UNIT_KIND_CHOICES, SUPPLY_CATEGORY_CHOICES
 
 class ProductKind(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -192,9 +192,9 @@ class Currency(models.Model):
 
 class SupplyKind(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'), unique=True)
-    unit_kind = models.CharField(max_length=30, verbose_name=_('Unit kind'), choices=SUPPLY_UNIT_KIND_CHOICES)
+    usage_unit_kind = models.CharField(max_length=30, verbose_name=_('Usage unit kind'), choices=SUPPLY_USAGE_UNIT_KIND_CHOICES)
     category = models.CharField(max_length=40, verbose_name=_('Category'), choices=SUPPLY_CATEGORY_CHOICES)
-    is_packaging = models.BooleanField(default=False, verbose_name=_('Is packaging'))
+    # is_packaging = models.BooleanField(default=False, verbose_name=_('Is packaging'))  # TODO: eliminar luego de migraciones y fixtures (2021-02-21)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):

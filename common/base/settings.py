@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 
-SUPPLY_UNIT_KIND_CHOICES = [
+SUPPLY_USAGE_UNIT_KIND_CHOICES = [
     ('piece', _('Piece')),
     ('box', _('Box')),
     ('bag', _('Bag')),

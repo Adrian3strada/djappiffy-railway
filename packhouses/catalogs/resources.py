@@ -9,7 +9,7 @@ from import_export import resources, fields
 from django.utils.translation import gettext_lazy as _
 from .utils import get_vehicle_category_choices, get_provider_categories_choices
 from .settings import ORCHARD_PRODUCT_CLASSIFICATION_CHOICES
-from common.base.settings import SUPPLY_UNIT_KIND_CHOICES
+from common.base.settings import SUPPLY_USAGE_UNIT_KIND_CHOICES
 from django.utils.safestring import mark_safe
 
 class MarketResource(DehydrationResource, ExportResource):
@@ -231,8 +231,8 @@ class InsuranceCompanyResource(DehydrationResource, ExportResource):
 
 class HarvestContainerResource(DehydrationResource, ExportResource):
     def dehydrate_unit_kind(self, obj):
-        choices_dict = dict(SUPPLY_UNIT_KIND_CHOICES)
-        category_value = obj.unit_kind
+        choices_dict = dict(SUPPLY_USAGE_UNIT_KIND_CHOICES)
+        category_value = obj.usage_unit_kind
         category_display = choices_dict.get(category_value, "")
 
         return f"{category_display}"

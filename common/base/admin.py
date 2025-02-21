@@ -51,7 +51,7 @@ class ProductPackagingStandardInline(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'packaging_supply_kind':
-            kwargs['queryset'] = SupplyKind.objects.filter(is_packaging=True, is_enabled=True)
+            kwargs['queryset'] = SupplyKind.objects.filter(usage_unit_kind='packaging_containment', is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -133,8 +133,8 @@ class CurrencyAdmin(admin.ModelAdmin):
 
 @admin.register(SupplyKind)
 class SupplyKindAdmin(admin.ModelAdmin):
-    list_display = ('name', 'unit_kind', 'category', 'is_enabled')
-    list_filter = ('category', 'unit_kind', 'is_enabled',)
+    list_display = ('name', 'usage_unit_kind', 'category', 'is_enabled')
+    list_filter = ('category', 'usage_unit_kind', 'is_enabled',)
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):

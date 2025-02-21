@@ -1178,7 +1178,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         supply_queryfilter = {'organization': organization, 'kind': supply_kind, 'is_enabled': True}
 
         if db_field.name == "packaging_supply_kind":
-            kwargs["queryset"] = SupplyKind.objects.filter(is_packaging=True, is_enabled=True)
+            kwargs["queryset"] = SupplyKind.objects.filter(usage_unit_kind='packaging_containment', is_enabled=True)
 
         if db_field.name == "packaging_supply":
             if supply_kind:
@@ -1340,7 +1340,7 @@ class PalletConfigurationSupplyExpenseInLine(admin.StackedInline):
         if db_field.name == "supply":
             if hasattr(request, 'organization'):
                 kwargs["queryset"] = Supply.objects.filter(organization=request.organization, is_enabled=True,
-                                                           kind__is_packaging=False)
+                                                           kind__usage_unit_kind='packaging_pallet')
             else:
                 kwargs["queryset"] = Supply.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
