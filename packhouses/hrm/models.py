@@ -12,13 +12,16 @@ from .utils import (EMPLOYEE_GENDER_CHOICES, EMPLOYEE_BLOOD_TYPE_CHOICES, EMPLOY
 from django.core.exceptions import ValidationError
 from datetime import datetime
 from common.users.models import User
-
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 # Create your models here.
 
 class EmployeeStatus(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Status'))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
     payment_type = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='full', verbose_name=_("Payment Type"))
+    payment_percentage = models.PositiveIntegerField(default=100, verbose_name=_("Payment Percentage"), help_text=_("Enter the payment percentage (e.g., 100 for 100%, 60 for 60%, etc.)"))
+
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -84,7 +87,7 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
     phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'))
     email = models.EmailField(max_length=255, verbose_name=_('Email'))
     is_staff = models.BooleanField(default=True, verbose_name=_('Is Staff'))
-    staff_username = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('Staff Username'))
+    staff_username = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('Staff Username'), null=True, blank=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def get_full_name(self):
@@ -121,9 +124,11 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
 
 class EmployeeJobPosition(models.Model):
     job_position = models.ForeignKey(JobPosition, on_delete=models.CASCADE, verbose_name=_('Job Position'))
-    payment_per_hour = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_("Payment per Hour"))
+    payment_per_hour = models.DecimalField(default=0.0, max_digits=10, decimal_places=2, verbose_name=_("Payment per Hour"))
+    work_hours_per_day = models.IntegerField(default=0, verbose_name=_("Work Hours per Day"))
+    payment_per_day = models.DecimalField(default=0.0, max_digits=10, decimal_places=2, verbose_name=_("Payment per Day"))
     payment_frequency = models.CharField(max_length=20, choices=EMPLOYEE_PAYMENT_CHOICES, verbose_name=_('Payment Frecuency'))
-    payment_kind = models.CharField(max_length=30, choices=EMPLOYEE_PAYMENT_METHOD_CHOICES, verbose_name=_('Payment kind'))
+    payment_kind = models.CharField(max_length=30, choices=EMPLOYEE_PAYMENT_METHOD_CHOICES, verbose_name=_('Payment Kind'))
     bank = models.ForeignKey(Bank, on_delete=models.PROTECT, verbose_name=_("Bank"), null=True, blank=True)
     bank_account_number = models.CharField(max_length=25, verbose_name=_("Bank Account Number"), null=True, blank=True)
     clabe = models.CharField(max_length=18, verbose_name=_('CLABE'), null=True, blank=True)
@@ -197,3 +202,31 @@ class EmployeeCertificationInformation(models.Model):
     def __str__(self):
         return f"{self.certification_name}"
     
+class EmployeeStatusChange(CleanNameAndOrganizationMixin, models.Model):
+    name = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name=_("Employee"))
+    old_status = models.ForeignKey(EmployeeStatus, on_delete=models.SET_NULL, null=True, related_name='old_status_changes', verbose_name=_("Previous Status"))
+    new_status = models.ForeignKey(EmployeeStatus, on_delete=models.SET_NULL, null=True, related_name='new_status_changes', verbose_name=_("New Status"))
+    changed_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Changed at"))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name} changed from {self.old_status} to {self.new_status} at {self.changed_at}"
+
+
+@receiver(pre_save, sender=Employee)
+def log_status_change(sender, instance, **kwargs):
+    if not instance.pk:
+        return
+
+    try:
+        old_instance = sender.objects.get(pk=instance.pk)
+    except sender.DoesNotExist:
+        return
+
+    if old_instance.status != instance.status:
+        EmployeeStatusChange.objects.create(
+            name=instance,  # ForeignKey al Employee
+            old_status=old_instance.status,
+            new_status=instance.status,
+            organization=instance.organization  # ✅ Campo crítico añadido
+        )

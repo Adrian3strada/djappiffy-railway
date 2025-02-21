@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (Employee, JobPosition, EmployeeJobPosition, EmployeeTaxAndMedicalInformation, EmployeeAcademicAndWorkInfomation, 
-                     WorkShiftSchedule, EmployeeStatus, EmployeeCertificationInformation, EmployeeWorkExperience)
+                     WorkShiftSchedule, EmployeeStatus, EmployeeCertificationInformation, EmployeeWorkExperience, EmployeeStatusChange)
 from django.utils.translation import gettext_lazy as _
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from cities_light.models import Country, Region, SubRegion, City
@@ -13,8 +13,8 @@ from common.users.models import User
 
 @admin.register(EmployeeStatus)
 class EmployeeStatusAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'payment_type', 'is_enabled')
-    fields = ('name', 'payment_type', 'description', 'is_enabled')
+    list_display = ('name', 'payment_type', 'description', 'is_enabled')
+    fields = ('name', 'payment_type', 'payment_percentage', 'description', 'is_enabled')
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('description')
     def get_form(self, request, obj=None, **kwargs):
@@ -61,13 +61,14 @@ class JobPositionAdmin(ByOrganizationAdminMixin):
 class EmployeeJobPositionInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeJobPosition
 
+    
+    
     class Media:
         js = ('js/admin/forms/packhouses/hrm/job-position-inline.js',)
 
 
 class EmployeeTaxAndMedicalInformationInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeTaxAndMedicalInformation
-    extra = 0
     fields = ('country', 'tax_id', 'legal_category', 'has_private_insurance', 'medical_insurance_provider', 'medical_insurance_number', 
               'medical_insurance_start_date', 'medical_insurance_end_date', 'private_insurance_details','blood_type', 'has_disability', 
               'disability_details', 'has_chronic_illness', 'chronic_illness_details', 'emergency_contact_name', 'emergency_contact_phone',
@@ -186,3 +187,8 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
 
     class Media:
         js = ('js/admin/forms/common/country-state-city-district.js',)
+
+
+@admin.register(EmployeeStatusChange)
+class EmployeeStatusChangeAdmin(admin.ModelAdmin):
+    pass
