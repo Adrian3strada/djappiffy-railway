@@ -40,6 +40,21 @@ class ProductPackagingStandardInline(admin.TabularInline):
     verbose_name = 'Standard packaging'
     verbose_name_plural = 'Standard packaging'
 
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'packaging_supply_kind' in formset.form.base_fields:
+            formset.form.base_fields['packaging_supply_kind'].widget.can_add_related = False
+            formset.form.base_fields['packaging_supply_kind'].widget.can_change_related = False
+            formset.form.base_fields['packaging_supply_kind'].widget.can_delete_related = False
+            formset.form.base_fields['packaging_supply_kind'].widget.can_view_related = False
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'packaging_supply_kind':
+            kwargs['queryset'] = SupplyKind.objects.filter(is_packaging=True, is_enabled=True)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 @admin.register(ProductKindCountryStandard)
 class CountryProductStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
@@ -118,14 +133,8 @@ class CurrencyAdmin(admin.ModelAdmin):
 
 @admin.register(SupplyKind)
 class SupplyKindAdmin(admin.ModelAdmin):
-    list_display = ('name', 'unit_kind', 'is_packaging', 'is_enabled')
-    list_filter = ('is_enabled',)
-    fields = ('name', 'unit_kind', 'is_packaging', 'is_enabled')
-
-    def unit_kind_name(self, obj):
-        return obj.get_unit_kind_display()
-    unit_kind_name.short_description = _('Unit kind')
-    unit_kind_name.admin_order_field = 'unit_kind'
+    list_display = ('name', 'unit_kind', 'category', 'is_enabled')
+    list_filter = ('category', 'unit_kind', 'is_enabled',)
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):

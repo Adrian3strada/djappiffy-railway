@@ -1,5 +1,5 @@
 from modeltranslation.translator import register, TranslationOptions
-from .models import ProductKind, Incoterm, LocalDelivery, Currency
+from .models import ProductKind, Incoterm, LocalDelivery, Currency, SupplyKind
 
 
 @register(ProductKind)
@@ -16,6 +16,12 @@ class IncotermTranslationOptions(TranslationOptions):
 class LocalDeliveryTranslationOptions(TranslationOptions):
     fields = ('name',)
 
+
 @register(Currency)
 class CurrencyTranslationOptions(TranslationOptions):
+    fields = ('name',)
+
+
+@register(SupplyKind)
+class SupplyKindTranslationOptions(TranslationOptions):
     fields = ('name',)

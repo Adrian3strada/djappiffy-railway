@@ -9,7 +9,7 @@ from django.db.models.functions import Cast
 
 # Create your models here.
 
-from .settings import SUPPLY_UNIT_KIND_CHOICES
+from .settings import SUPPLY_UNIT_KIND_CHOICES, SUPPLY_CATEGORY_CHOICES
 
 class ProductKind(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -90,6 +90,7 @@ class CountryProductStandardSize(models.Model):
 
 
 class ProductPackagingStandard(models.Model):
+    packaging_supply_kind = models.ForeignKey('SupplyKind', on_delete=models.PROTECT)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, verbose_name=_('Code'))
     description = models.CharField(max_length=255, null=True, blank=True)
@@ -192,6 +193,7 @@ class Currency(models.Model):
 class SupplyKind(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'), unique=True)
     unit_kind = models.CharField(max_length=30, verbose_name=_('Unit kind'), choices=SUPPLY_UNIT_KIND_CHOICES)
+    category = models.CharField(max_length=40, verbose_name=_('Category'), choices=SUPPLY_CATEGORY_CHOICES)
     is_packaging = models.BooleanField(default=False, verbose_name=_('Is packaging'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
