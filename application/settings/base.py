@@ -364,7 +364,7 @@ JAZZMIN_SETTINGS = {
 
     # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
     "order_with_respect_to": [
-        "sales",
+        "catalogs",
         "gathering",
         "purchase_operations",
         "catalogs",
@@ -429,7 +429,7 @@ JAZZMIN_SETTINGS = {
         "export_catalogs": "fas fa-truck-moving",
         "firebase_auth": "fas fa-fire",
         "gathering": "fas fa-tractor",
-        "sales": "fas fa-dollar-sign",
+        "catalogs": "fas fa-dollar-sign",
         "parcels": "fas fa-map-marked-alt",
         "purchase_operations": "fas fa-shopping-cart",
 

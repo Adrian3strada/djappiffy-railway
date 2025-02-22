@@ -1169,7 +1169,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
-        supply_kind = request.POST.get('main_supply_kind') if request.POST else obj.packaging_supply_kind if obj else None
+        supply_kind = request.POST.get('packaging_supply_kind') if request.POST else obj.packaging_supply_kind if obj else None
         markets = request.POST.getlist('markets') if request.POST else obj.markets.all() if obj else None
         product_id = request.POST.get('product') if request.POST else obj.product_id if obj else None
         product_kind = ProductKind.objects.get(id=Product.objects.get(id=product_id).kind_id) if product_id else None
@@ -1177,20 +1177,20 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
         supply_queryfilter = {'organization': organization, 'kind': supply_kind, 'is_enabled': True}
 
+        if db_field.name == "product":
+            if organization:
+                kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
+            else:
+                kwargs["queryset"] = Product.objects.none()
+
         if db_field.name == "packaging_supply_kind":
-            kwargs["queryset"] = SupplyKind.objects.filter(usage_unit_kind='packaging_containment', is_enabled=True)
+            kwargs["queryset"] = SupplyKind.objects.filter(category='packaging_containment', is_enabled=True)
 
         if db_field.name == "packaging_supply":
             if supply_kind:
                 kwargs["queryset"] = Supply.objects.filter(**supply_queryfilter)
             else:
                 kwargs["queryset"] = Supply.objects.none()
-
-        if db_field.name == "product":
-            if organization:
-                kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
-            else:
-                kwargs["queryset"] = Product.objects.none()
 
         if db_field.name == "product_packaging_standard":
             if organization and product_kind and markets:

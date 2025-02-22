@@ -672,7 +672,7 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"{self.kind.name}: {self.name}"
+        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Supply')
@@ -816,6 +816,9 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 
 
 class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
+
     ### Insumo principal
     packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
     packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
@@ -826,8 +829,7 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     ### Máximo peso
     max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'))
 
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
+
     product_packaging_standard = models.ForeignKey(ProductPackagingStandard, verbose_name=_('Product packaging standard'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
@@ -843,6 +845,7 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
             models.UniqueConstraint(fields=('name', 'organization'),
                                     name='packaging_unique_name_organization'),
         ]
+
 
 class PackagingSupply(models.Model):
     packaging_kind = models.ForeignKey(ProductPackaging, on_delete=models.PROTECT)

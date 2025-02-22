@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   const packagingSupplyKindField = $('#id_packaging_supply_kind');
   const packagingSupplyField = $('#id_packaging_supply');
+  const nameField = $('#id_name');
 
   const API_BASE_URL = '/rest/v1';
 
@@ -25,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (packagingSupplyKindId) {
       fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&is_enabled=1`)
         .then(data => {
+          console.log("data", data);
           updateFieldOptions(packagingSupplyField, data);
         });
     } else {
@@ -32,8 +34,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  function updateName() {
+    if (packagingSupplyKindField.val() && packagingSupplyField.val()) {
+      nameField.val()
+    }
+  }
+
   packagingSupplyKindField.on('change', function () {
     updateSupply();
+  });
+
+  packagingSupplyField.on('change', function () {
+    updateName();
   });
 
   [packagingSupplyKindField, packagingSupplyField].forEach(field => field.select2());
