@@ -822,12 +822,13 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     ### Insumo principal
     packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
     packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
-    main_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Main supply quantity'))
+    main_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Main supply quantity'),
+                                                       help_text=_('Quantity of the main supply to discount from the inventory each time a package is created'))
 
     name = models.CharField(max_length=255, verbose_name=_('Name'))
 
     ### Máximo peso
-    max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'))
+    max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
 
 
     product_packaging_standard = models.ForeignKey(ProductPackagingStandard, verbose_name=_('Product packaging standard'), on_delete=models.PROTECT)

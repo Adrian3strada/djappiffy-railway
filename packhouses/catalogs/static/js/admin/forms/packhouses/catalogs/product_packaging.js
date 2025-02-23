@@ -1,7 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
+  const productField = $('#id_product');
   const packagingSupplyKindField = $('#id_packaging_supply_kind');
   const packagingSupplyField = $('#id_packaging_supply');
   const nameField = $('#id_name');
+
+  let productProperties = null;
 
   const API_BASE_URL = '/rest/v1';
 
@@ -21,6 +24,25 @@ document.addEventListener('DOMContentLoaded', function () {
     }).fail(error => console.error('Fetch error:', error));
   }
 
+    function getProductProperties() {
+    if (productField.val()) {
+      fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
+        .then(data => {
+          productProperties = data;
+          console.log("productProperties", productProperties)
+          const maxProductAmountLabel = $('label[for="id_max_product_amount_per_package"]');
+          console.log("maxProductAmountLabel", maxProductAmountLabel)
+          if (data.price_measure_unit_category_display) {
+            maxProductAmountLabel.text(`Max product ${data.price_measure_unit_category_display} per package`);
+          } else {
+            maxProductAmountLabel.text(`Max product amount per package`);
+          }
+        })
+    } else {
+      productProperties = null;
+    }
+  }
+
   function updateSupply() {
     const packagingSupplyKindId = packagingSupplyKindField.val();
     if (packagingSupplyKindId) {
@@ -36,9 +58,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateName() {
     if (packagingSupplyKindField.val() && packagingSupplyField.val()) {
-      nameField.val()
+      const packagingSupplyKindName = packagingSupplyKindField.find('option:selected').text();
+      const packagingSupplyName = packagingSupplyField.find('option:selected').text();
+      nameField.val(`${packagingSupplyKindName} ${packagingSupplyName}`)
+    } else {
+      nameField.val('')
     }
   }
+
+  productField.on('change', () => {
+    getProductProperties()
+  })
 
   packagingSupplyKindField.on('change', function () {
     updateSupply();
@@ -48,5 +78,5 @@ document.addEventListener('DOMContentLoaded', function () {
     updateName();
   });
 
-  [packagingSupplyKindField, packagingSupplyField].forEach(field => field.select2());
+  [productField, packagingSupplyKindField, packagingSupplyField].forEach(field => field.select2());
 });

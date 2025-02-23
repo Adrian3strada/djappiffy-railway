@@ -1,1 +1,285 @@
-[{"model": "packhouse_settings.bank", "pk": 1, "fields": {"name": "BBVA", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.bank", "pk": 2, "fields": {"name": "SANTANDER", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.bank", "pk": 3, "fields": {"name": "HSBC", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.bank", "pk": 4, "fields": {"name": "BANK OF AMERICA", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.bank", "pk": 5, "fields": {"name": "JPMORGAN CHASE & CO.", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.bank", "pk": 6, "fields": {"name": "WELLS FARGO", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehicleownershipkind", "pk": 1, "fields": {"name": "PROPIO", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehicleownershipkind", "pk": 2, "fields": {"name": "PRESTADO", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehicleownershipkind", "pk": 3, "fields": {"name": "RENTADO", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehiclekind", "pk": 1, "fields": {"name": "CAMIONETA", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehiclekind", "pk": 2, "fields": {"name": "AUTOMÓVIL", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehiclekind", "pk": 3, "fields": {"name": "AVIONETA", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehiclefuelkind", "pk": 1, "fields": {"name": "GASOLINA", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehiclefuelkind", "pk": 2, "fields": {"name": "DIÉSEL", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehiclefuelkind", "pk": 3, "fields": {"name": "TURBOSINA", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.paymentkind", "pk": 1, "fields": {"name": "EFECTIVO", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.paymentkind", "pk": 2, "fields": {"name": "TRANSFERENCIA BANCARIA", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.paymentkind", "pk": 3, "fields": {"name": "BITCOIN", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehiclebrand", "pk": 1, "fields": {"name": "CHEVROLET", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehiclebrand", "pk": 2, "fields": {"name": "NISSAN", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehiclebrand", "pk": 3, "fields": {"name": "TOYOTA", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehiclebrand", "pk": 4, "fields": {"name": "DODGE", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.vehiclebrand", "pk": 5, "fields": {"name": "FORD", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.orchardcertificationverifier", "pk": 1, "fields": {"name": "VERIFICADOR UNO 1", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.orchardcertificationverifier", "pk": 2, "fields": {"name": "VERIFICADOR DOS 1", "is_enabled": true, "organization": 2}}, {"model": "packhouse_settings.orchardcertificationverifier", "pk": 3, "fields": {"name": "VERIFICADOR DOS 2", "is_enabled": true, "organization": 2}}, {"model": "packhouse_settings.orchardcertificationverifier", "pk": 4, "fields": {"name": "VERIFICADOR UNO 2", "is_enabled": true, "organization": 1}}, {"model": "packhouse_settings.orchardcertificationkind", "pk": 1, "fields": {"name": "CERTIFICACIÓN V1", "extra_code_name": "CV1", "is_enabled": true, "organization": 1, "verifiers": [1]}}, {"model": "packhouse_settings.orchardcertificationkind", "pk": 2, "fields": {"name": "CERTIFICACIÓN V2", "extra_code_name": "CV2", "is_enabled": true, "organization": 1, "verifiers": [4]}}, {"model": "packhouse_settings.orchardcertificationkind", "pk": 3, "fields": {"name": "CERTIFICACIÓN V1+V2", "extra_code_name": "CV1V2", "is_enabled": true, "organization": 1, "verifiers": [1, 4]}}]
+[
+{
+  "model": "packhouse_settings.bank",
+  "pk": 1,
+  "fields": {
+    "name": "BBVA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.bank",
+  "pk": 2,
+  "fields": {
+    "name": "SANTANDER",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.bank",
+  "pk": 3,
+  "fields": {
+    "name": "HSBC",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.bank",
+  "pk": 4,
+  "fields": {
+    "name": "BANK OF AMERICA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.bank",
+  "pk": 5,
+  "fields": {
+    "name": "JPMORGAN CHASE & CO.",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.bank",
+  "pk": 6,
+  "fields": {
+    "name": "WELLS FARGO",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehicleownershipkind",
+  "pk": 1,
+  "fields": {
+    "name": "PROPIO",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehicleownershipkind",
+  "pk": 2,
+  "fields": {
+    "name": "PRESTADO",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehicleownershipkind",
+  "pk": 3,
+  "fields": {
+    "name": "RENTADO",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclekind",
+  "pk": 1,
+  "fields": {
+    "name": "CAMIONETA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclekind",
+  "pk": 2,
+  "fields": {
+    "name": "AUTOMÓVIL",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclekind",
+  "pk": 3,
+  "fields": {
+    "name": "AVIONETA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclefuelkind",
+  "pk": 1,
+  "fields": {
+    "name": "GASOLINA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclefuelkind",
+  "pk": 2,
+  "fields": {
+    "name": "DIÉSEL",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclefuelkind",
+  "pk": 3,
+  "fields": {
+    "name": "TURBOSINA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.paymentkind",
+  "pk": 1,
+  "fields": {
+    "name": "EFECTIVO",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.paymentkind",
+  "pk": 2,
+  "fields": {
+    "name": "TRANSFERENCIA BANCARIA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.paymentkind",
+  "pk": 3,
+  "fields": {
+    "name": "BITCOIN",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclebrand",
+  "pk": 1,
+  "fields": {
+    "name": "CHEVROLET",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclebrand",
+  "pk": 2,
+  "fields": {
+    "name": "NISSAN",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclebrand",
+  "pk": 3,
+  "fields": {
+    "name": "TOYOTA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclebrand",
+  "pk": 4,
+  "fields": {
+    "name": "DODGE",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclebrand",
+  "pk": 5,
+  "fields": {
+    "name": "FORD",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationverifier",
+  "pk": 1,
+  "fields": {
+    "name": "VERIFICADOR UNO 1",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationverifier",
+  "pk": 2,
+  "fields": {
+    "name": "VERIFICADOR DOS 1",
+    "is_enabled": true,
+    "organization": 2
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationverifier",
+  "pk": 3,
+  "fields": {
+    "name": "VERIFICADOR DOS 2",
+    "is_enabled": true,
+    "organization": 2
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationverifier",
+  "pk": 4,
+  "fields": {
+    "name": "VERIFICADOR UNO 2",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationkind",
+  "pk": 1,
+  "fields": {
+    "name": "CERTIFICACIÓN V1",
+    "extra_code_name": "CV1",
+    "is_enabled": true,
+    "organization": 1,
+    "verifiers": [
+      1
+    ]
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationkind",
+  "pk": 2,
+  "fields": {
+    "name": "CERTIFICACIÓN V2",
+    "extra_code_name": "CV2",
+    "is_enabled": true,
+    "organization": 1,
+    "verifiers": [
+      4
+    ]
+  }
+},
+{
+  "model": "packhouse_settings.orchardcertificationkind",
+  "pk": 3,
+  "fields": {
+    "name": "CERTIFICACIÓN V1+V2",
+    "extra_code_name": "CV1V2",
+    "is_enabled": true,
+    "organization": 1,
+    "verifiers": [
+      1,
+      4
+    ]
+  }
+}
+]
