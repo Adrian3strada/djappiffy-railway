@@ -42,16 +42,16 @@ class ProductPackagingStandardInline(admin.TabularInline):
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        if 'packaging_supply_kind' in formset.form.base_fields:
-            formset.form.base_fields['packaging_supply_kind'].widget.can_add_related = False
-            formset.form.base_fields['packaging_supply_kind'].widget.can_change_related = False
-            formset.form.base_fields['packaging_supply_kind'].widget.can_delete_related = False
-            formset.form.base_fields['packaging_supply_kind'].widget.can_view_related = False
+        if 'supply_kind' in formset.form.base_fields:
+            formset.form.base_fields['supply_kind'].widget.can_add_related = False
+            formset.form.base_fields['supply_kind'].widget.can_change_related = False
+            formset.form.base_fields['supply_kind'].widget.can_delete_related = False
+            formset.form.base_fields['supply_kind'].widget.can_view_related = False
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'packaging_supply_kind':
-            kwargs['queryset'] = SupplyKind.objects.filter(usage_unit_kind='packaging_containment', is_enabled=True)
+        if db_field.name == 'supply_kind':
+            kwargs['queryset'] = SupplyKind.objects.filter(category='packaging_containment', is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

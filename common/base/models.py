@@ -29,6 +29,22 @@ class ProductKind(models.Model):
         ordering = ['sort_order']
 
 
+class SupplyKind(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'), unique=True)
+    usage_unit_kind = models.CharField(max_length=30, verbose_name=_('Usage unit kind'), choices=SUPPLY_USAGE_UNIT_KIND_CHOICES)
+    category = models.CharField(max_length=40, verbose_name=_('Category'), choices=SUPPLY_CATEGORY_CHOICES)
+    # is_packaging = models.BooleanField(default=False, verbose_name=_('Is packaging'))  # TODO: eliminar luego de migraciones y fixtures (2021-02-21)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Supply kind')
+        verbose_name_plural = _('Supply kinds')
+        ordering = ('name',)
+
+
 # Ejemplo:
 #   - Estándar del APEAM para AGUACATE en MÉXICO
 #   - Estándar del APEAM para AGUACATE en ESTADOS UNIDOS
@@ -90,7 +106,7 @@ class CountryProductStandardSize(models.Model):
 
 
 class ProductPackagingStandard(models.Model):
-    packaging_supply_kind = models.ForeignKey('SupplyKind', on_delete=models.PROTECT)
+    supply_kind = models.ForeignKey(SupplyKind, on_delete=models.PROTECT)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, verbose_name=_('Code'))
     description = models.CharField(max_length=255, null=True, blank=True)
@@ -173,6 +189,7 @@ class LocalDelivery(models.Model):
         verbose_name_plural = _('Local Deliveries')
         ordering = ['sort_order']
 
+
 class Currency(models.Model):
     code = models.CharField(max_length=3, verbose_name=_('Code'))
     name = models.CharField(max_length=255)
@@ -189,18 +206,3 @@ class Currency(models.Model):
             models.UniqueConstraint(fields=['id', 'name'], name='currency_unique_id_name')
         ]
 
-
-class SupplyKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'), unique=True)
-    usage_unit_kind = models.CharField(max_length=30, verbose_name=_('Usage unit kind'), choices=SUPPLY_USAGE_UNIT_KIND_CHOICES)
-    category = models.CharField(max_length=40, verbose_name=_('Category'), choices=SUPPLY_CATEGORY_CHOICES)
-    # is_packaging = models.BooleanField(default=False, verbose_name=_('Is packaging'))  # TODO: eliminar luego de migraciones y fixtures (2021-02-21)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Supply kind')
-        verbose_name_plural = _('Supply kinds')
-        ordering = ('name',)
