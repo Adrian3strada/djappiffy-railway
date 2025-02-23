@@ -1127,8 +1127,9 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                     )
     fields = (
         'product', 'markets',
-        'packaging_supply_kind', 'packaging_supply', 'name', 'main_supply_quantity',
-        'max_product_amount_per_package', 'product_packaging_standard',
+        'packaging_supply_kind', 'product_packaging_standard',
+        'packaging_supply', 'name', 'main_supply_quantity',
+        'max_product_amount_per_package',
         'is_enabled'
     )
     inlines = (PackagingSupplyInline, ContainedPackagingInline)
