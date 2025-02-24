@@ -903,10 +903,10 @@ class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [SupplyResource]
-    list_display = ('name', 'kind', 'standard', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+    list_display = ('name', 'kind', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
     list_filter = ('kind', 'is_enabled')
     search_fields = ('name',)
-    fields = ('kind', 'standard', 'name', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+    fields = ('kind', 'name', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('code')
@@ -922,9 +922,6 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "kind":
             kwargs["queryset"] = SupplyKind.objects.filter(is_enabled=True)
-
-        if db_field.name == "standard":
-            kwargs["queryset"] = ProductKindCountryStandard.objects.filter(is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -1139,8 +1136,9 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     fields = (
         'product', 'markets',
         'packaging_supply_kind', 'product_packaging_standard',
-        'packaging_supply', 'name', 'main_supply_quantity',
+        'name', 'main_supply_quantity',
         'max_product_amount_per_package',
+        'packaging_supply',
         'is_enabled'
     )
     inlines = (PackagingSupplyInline, ContainedPackagingInline)

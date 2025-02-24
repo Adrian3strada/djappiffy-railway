@@ -665,8 +665,6 @@ class SupplyKindRelation(models.Model):
 
 class Supply(CleanNameAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
-    standard = models.ForeignKey(ProductKindCountryStandard, verbose_name=_('Product kind, packaging country standard'),
-                                 on_delete=models.PROTECT, blank=True, null=True)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     minimum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Minimum stock quantity'))
     maximum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Maximum stock quantity'))

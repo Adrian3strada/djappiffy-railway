@@ -66,7 +66,30 @@ class MarketViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return Market.objects.filter(organization=self.request.organization)
+        queryset = Market.objects.filter(organization=self.request.organization)
+        return queryset
+
+
+class ProviderViewSet(viewsets.ModelViewSet):
+    serializer_class = ProviderSerializer
+    filterset_fields = ['category', 'is_enabled', 'id']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = Provider.objects.filter(organization=self.request.organization)
+        categories = self.request.GET.get('categories')
+        if categories:
+            category_list = categories.split(',')
+            queryset = queryset.filter(category__in=category_list)
+
+        return queryset
+
+
+
 
 
 class ProductMarketClassViewSet(viewsets.ModelViewSet):
@@ -146,25 +169,6 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return ProductSize.objects.all()
-
-
-class ProviderViewSet(viewsets.ModelViewSet):
-    serializer_class = ProviderSerializer
-    filterset_fields = ['category', 'is_enabled', 'id']
-    pagination_class = None
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            raise NotAuthenticated()
-
-        queryset = Provider.objects.filter(organization=self.request.organization)
-        categories = self.request.GET.get('categories')
-        if categories:
-            category_list = categories.split(',')
-            queryset = queryset.filter(category__in=category_list)
-
-        return queryset
 
 
 class SupplyViewSet(viewsets.ModelViewSet):

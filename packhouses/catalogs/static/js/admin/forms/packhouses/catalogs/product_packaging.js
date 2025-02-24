@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
   const productField = $('#id_product');
+  const marketsField = $('#id_markets');
   const packagingSupplyKindField = $('#id_packaging_supply_kind');
   const packagingSupplyField = $('#id_packaging_supply');
   const nameField = $('#id_name');
 
   let productProperties = null;
+  let marketsCountries = [];
 
   const API_BASE_URL = '/rest/v1';
 
@@ -24,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }).fail(error => console.error('Fetch error:', error));
   }
 
-    function getProductProperties() {
+  function getProductProperties() {
     if (productField.val()) {
       fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
         .then(data => {
@@ -40,6 +42,27 @@ document.addEventListener('DOMContentLoaded', function () {
         })
     } else {
       productProperties = null;
+    }
+  }
+
+  function getMarketsCountries() {
+    if (marketsField.val()) {
+      let uniqueCountries = new Set();
+      let fetchPromises = marketsField.val().map(marketId => {
+        return fetchOptions(`/rest/v1/catalogs/market/${marketId}/`)
+          .then(data => {
+            data.countries.forEach(country => {
+              uniqueCountries.add(country);
+            });
+          });
+      });
+
+      Promise.all(fetchPromises).then(() => {
+        marketsCountries = Array.from(uniqueCountries);
+        console.log("marketsCountries", marketsCountries);
+      }).catch(error => console.error('Fetch error:', error));
+    } else {
+      marketsCountries = [];
     }
   }
 
@@ -70,6 +93,11 @@ document.addEventListener('DOMContentLoaded', function () {
     getProductProperties()
   })
 
+  marketsField.on('change', () => {
+    // console.log("marketsField.val()", marketsField.val())
+    getMarketsCountries()
+  });
+
   packagingSupplyKindField.on('change', function () {
     updateSupply();
   });
@@ -78,5 +106,5 @@ document.addEventListener('DOMContentLoaded', function () {
     updateName();
   });
 
-  [productField, packagingSupplyKindField, packagingSupplyField].forEach(field => field.select2());
+  [productField, marketsField, packagingSupplyKindField, packagingSupplyField].forEach(field => field.select2());
 });
