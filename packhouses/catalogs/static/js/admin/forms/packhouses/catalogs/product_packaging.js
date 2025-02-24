@@ -66,6 +66,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  function updateProductPackagingStandard() {
+
+  }
+
   function updateSupply() {
     const packagingSupplyKindId = packagingSupplyKindField.val();
     if (packagingSupplyKindId) {
@@ -94,7 +98,6 @@ document.addEventListener('DOMContentLoaded', function () {
   })
 
   marketsField.on('change', () => {
-    // console.log("marketsField.val()", marketsField.val())
     getMarketsCountries()
   });
 

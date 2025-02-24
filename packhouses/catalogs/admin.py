@@ -9,7 +9,7 @@ from .models import (
     ProductPhenologyKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
-    HarvestingPaymentSetting, Supply, MeshBagKind, ProductPackagingStandard,
+    HarvestingPaymentSetting, Supply, MeshBagKind, CountryProductStandardPackaging,
     MeshBag, Service, ProductPackaging, WeighingScale, ColdChamber,
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ExportingCompany, Transfer, LocalTransporter,
@@ -1129,16 +1129,17 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     form = PackagingKindForm
     list_filter = (BySupplyKindForProductPackagingFilter, BySupplyForOrganizationPackagingFilter,
                    ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
-                   'product_packaging_standard', 'is_enabled')
+                   'product_standard_packaging', 'is_enabled')
     list_display = ('name', 'packaging_supply_kind', 'packaging_supply', 'product', 'markets_display',
                     'product_packaging_standard_display', 'max_product_amount_per_package', 'is_enabled',
                     )
     fields = (
         'product', 'markets',
-        'packaging_supply_kind', 'product_packaging_standard',
-        'name', 'main_supply_quantity',
+        'packaging_supply_kind', 'product_standard_packaging',
+        'name',
         'max_product_amount_per_package',
         'packaging_supply',
+        'packaging_supply_quantity',
         'is_enabled'
     )
     inlines = (PackagingSupplyInline, ContainedPackagingInline)
@@ -1149,7 +1150,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     markets_display.admin_order_field = 'name'
 
     def product_packaging_standard_display(self, obj):
-        return f"{obj.product_packaging_standard.name} ({obj.product_packaging_standard.standard.name}: {obj.product_packaging_standard.standard.country})"
+        return f"{obj.product_standard_packaging.name} ({obj.product_standard_packaging.standard.name}: {obj.product_standard_packaging.standard.country})"
     product_packaging_standard_display.short_description = _('Product packaging standard')
     product_packaging_standard_display.admin_order_field = 'name'
 
@@ -1205,9 +1206,9 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         if db_field.name == "product_packaging_standard":
             if organization and product_kind and markets:
                 markets_countries = list(set((Market.objects.filter(id__in=markets).values_list('countries', flat=True))))
-                kwargs["queryset"] = ProductPackagingStandard.objects.filter(standard__product_kind=product_kind, standard__country__in=markets_countries)
+                kwargs["queryset"] = CountryProductStandardPackaging.objects.filter(standard__product_kind=product_kind, standard__country__in=markets_countries)
             else:
-                kwargs["queryset"] = ProductPackagingStandard.objects.none()
+                kwargs["queryset"] = CountryProductStandardPackaging.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

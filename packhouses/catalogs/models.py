@@ -17,7 +17,7 @@ from django.dispatch import receiver
 from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
     get_vehicle_category_choices, get_provider_categories_choices
 from django.core.exceptions import ValidationError
-from common.base.models import (ProductKind, CountryProductStandardSize, ProductPackagingStandard, CapitalFramework,
+from common.base.models import (ProductKind, CountryProductStandardSize, CountryProductStandardPackaging, CapitalFramework,
                                 ProductKindCountryStandard, LegalEntityCategory, SupplyKind)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
@@ -821,16 +821,19 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
 
     ### Insumo principal
     packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
-    packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
-    main_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Main supply quantity'),
-                                                       help_text=_('Quantity of the main supply to discount from the inventory each time a package is created'))
+    product_standard_packaging = models.ForeignKey(CountryProductStandardPackaging,
+                                                   verbose_name=_('Product packaging standard'),
+                                                   on_delete=models.PROTECT)
 
     name = models.CharField(max_length=255, verbose_name=_('Name'))
 
     ### Máximo peso
     max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
 
-    product_packaging_standard = models.ForeignKey(ProductPackagingStandard, verbose_name=_('Product packaging standard'), on_delete=models.PROTECT)
+    packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
+    packaging_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Packaging supply quantity'),
+                                                            help_text=_('Quantity of the packaging supply to discount from the inventory each time a product packaging is used'))
+
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 

@@ -2,7 +2,7 @@ from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
 from .models import (ProductKind, ProductKindCountryStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
-                     ProductPackagingStandard, SupplyKind,
+                     CountryProductStandardPackaging, SupplyKind,
                      Incoterm, LocalDelivery, Currency)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
@@ -29,13 +29,13 @@ class CountryProductStandardSizeInline(admin.TabularInline):
     verbose_name_plural = 'Sizes'
 
 # TODO: Remover este cuando todo packaging esté completo
-@admin.register(ProductPackagingStandard)
-class ProductPackagingStandardAdmin(admin.ModelAdmin):
+@admin.register(CountryProductStandardPackaging)
+class CountryProductStandardPackagingAdmin(admin.ModelAdmin):
     pass
 
 
-class ProductPackagingStandardInline(admin.TabularInline):
-    model = ProductPackagingStandard
+class CountryProductStandardPackagingInline(admin.TabularInline):
+    model = CountryProductStandardPackaging
     extra = 0
     verbose_name = 'Standard packaging'
     verbose_name_plural = 'Standard packaging'
@@ -62,7 +62,7 @@ class CountryProductStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_filter = [ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter, 'is_enabled']
     search_fields = ['name']
     ordering = ['sort_order']
-    inlines = [CountryProductStandardSizeInline, ProductPackagingStandardInline]
+    inlines = [CountryProductStandardSizeInline, CountryProductStandardPackagingInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'product_kind':
