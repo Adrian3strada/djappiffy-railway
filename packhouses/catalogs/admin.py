@@ -57,7 +57,8 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
-from common.base.models import ProductKind, CountryProductStandardSize, CapitalFramework, SupplyKind
+from common.base.models import (ProductKind, CountryProductStandardSize, CapitalFramework, SupplyKind,
+                                ProductKindCountryStandard)
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, \
@@ -902,10 +903,10 @@ class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [SupplyResource]
-    list_display = ('name', 'kind', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+    list_display = ('name', 'kind', 'standard', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
     list_filter = ('kind', 'is_enabled')
     search_fields = ('name',)
-    fields = ('kind', 'name', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+    fields = ('kind', 'standard', 'name', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('code')
@@ -917,6 +918,16 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             form.base_fields['kind'].widget.can_delete_related = False
             form.base_fields['kind'].widget.can_view_related = False
         return form
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "kind":
+            kwargs["queryset"] = SupplyKind.objects.filter(is_enabled=True)
+
+        if db_field.name == "standard":
+            kwargs["queryset"] = ProductKindCountryStandard.objects.filter(is_enabled=True)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 
 class CrewChiefInline(admin.TabularInline):
