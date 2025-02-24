@@ -830,7 +830,6 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     ### Máximo peso
     max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
 
-
     product_packaging_standard = models.ForeignKey(ProductPackagingStandard, verbose_name=_('Product packaging standard'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)

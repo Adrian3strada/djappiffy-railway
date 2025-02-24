@@ -6,6 +6,7 @@ from cities_light.models import City, Country, Region
 from django.db.models import Manager, QuerySet
 from django.db.models import Case, When, IntegerField, Value
 from django.db.models.functions import Cast
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 
@@ -108,6 +109,8 @@ class ProductPackagingStandard(models.Model):
     supply_kind = models.ForeignKey(SupplyKind, on_delete=models.PROTECT)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, verbose_name=_('Code'))
+    max_product_amount = models.FloatField(verbose_name=_('Max product amount'),
+                                                       validators=[MinValueValidator(0.01)])
     description = models.CharField(max_length=255, null=True, blank=True)
     standard = models.ForeignKey(ProductKindCountryStandard, on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
