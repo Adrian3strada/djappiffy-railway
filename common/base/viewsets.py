@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from .serializers import (ProductKindSerializer, CitySerializer, SubRegionSerializer, RegionSerializer,
-                          CapitalFrameworkSerializer,
+                          CapitalFrameworkSerializer, CountryProductStandardPackagingSerializer,
                           CountrySerializer, CountryProductStandardSizeSerializer)
-from .models import ProductKind, CountryProductStandardSize, CapitalFramework
+from .models import ProductKind, CountryProductStandardSize, CapitalFramework, CountryProductStandardPackaging
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
 from cities_light.contrib.restframework3 import SubRegionModelViewSet as BaseSubRegionModelViewSet
 from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
@@ -51,6 +51,27 @@ class CountryProductStandardSizeViewSet(viewsets.ModelViewSet):
 
         standards = queryset.values_list('standard', flat=True).distinct()
         self.multiple_standards = standards.count() > 1
+        return queryset
+
+
+class CountryProductStandardPackagingViewSet(viewsets.ModelViewSet):
+    serializer_class = CountryProductStandardPackagingSerializer
+    filterset_fields = ['supply_kind', 'standard', 'max_product_amount']
+    pagination_class = None
+
+    def get_queryset(self):
+        queryset = CountryProductStandardPackaging.objects.all()
+        supply_kind__category = self.request.GET.get('supply_kind__category')
+        max_product_amount__lte = self.request.GET.get('max_product_amount__lte')
+        max_product_amount__gte = self.request.GET.get('max_product_amount__gte')
+
+        if supply_kind__category:
+            queryset = queryset.filter(supply_kind__category=supply_kind__category)
+        if max_product_amount__lte:
+            queryset = queryset.filter(max_product_amount__lte=max_product_amount__lte)
+        if max_product_amount__gte:
+            queryset = queryset.filter(max_product_amount__gte=max_product_amount__gte)
+
         return queryset
 
 

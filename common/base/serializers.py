@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.utils import translation
-from .models import ProductKind, CountryProductStandardSize, CapitalFramework
+from .models import ProductKind, CountryProductStandardSize, CapitalFramework, CountryProductStandardPackaging
 from cities_light.contrib.restframework3 import CountrySerializer as BaseCountrySerializer
 from cities_light.contrib.restframework3 import RegionSerializer as BaseRegionSerializer
 from cities_light.contrib.restframework3 import SubRegionSerializer as BaseSubRegionSerializer
@@ -51,6 +51,12 @@ class ProductKindSerializer(serializers.ModelSerializer):
 class CountryProductStandardSizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CountryProductStandardSize
+        fields = "__all__"
+
+
+class CountryProductStandardPackagingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CountryProductStandardPackaging
         fields = "__all__"
 
 

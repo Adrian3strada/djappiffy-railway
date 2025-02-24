@@ -67,7 +67,16 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function updateProductPackagingStandard() {
-
+    const packagingSupplyKindId = packagingSupplyKindField.val();
+    if (packagingSupplyKindId) {
+      fetchOptions(`${API_BASE_URL}/catalogs/product_packaging_standard/?kind=${packagingSupplyKindId}&is_enabled=1`)
+        .then(data => {
+          console.log("data", data);
+          updateFieldOptions(packagingSupplyField, data);
+        });
+    } else {
+      updateFieldOptions(packagingSupplyField, []);
+    }
   }
 
   function updateSupply() {
@@ -102,7 +111,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   packagingSupplyKindField.on('change', function () {
-    updateSupply();
+    // updateSupply();
+    updateProductPackagingStandard();
   });
 
   packagingSupplyField.on('change', function () {
