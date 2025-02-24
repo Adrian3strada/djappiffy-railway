@@ -1504,6 +1504,7 @@
   "fields": {
     "kind": 1,
     "name": "CARTÓN 4 KG",
+    "size": 4.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
     "is_enabled": true,
@@ -1516,6 +1517,7 @@
   "fields": {
     "kind": 1,
     "name": "CARTÓN 6 KG",
+    "size": 6.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
     "is_enabled": true,
@@ -1528,6 +1530,7 @@
   "fields": {
     "kind": 1,
     "name": "CARTÓN 11.3 KG",
+    "size": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
     "is_enabled": true,
@@ -1540,6 +1543,7 @@
   "fields": {
     "kind": 1,
     "name": "MADERA 11.3 KG",
+    "size": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 100,
     "is_enabled": false,
@@ -1552,6 +1556,7 @@
   "fields": {
     "kind": 1,
     "name": "PLÁSTICO 11.3 KG",
+    "size": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 500,
     "is_enabled": true,
@@ -1564,6 +1569,7 @@
   "fields": {
     "kind": 5,
     "name": "CARTÓN",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 3000,
     "is_enabled": true,
@@ -1576,6 +1582,7 @@
   "fields": {
     "kind": 5,
     "name": "PLÁSTICO",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 500,
     "is_enabled": true,
@@ -1588,6 +1595,7 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 16",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -1600,6 +1608,7 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 18",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -1612,6 +1621,7 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 20",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -1624,6 +1634,7 @@
   "fields": {
     "kind": 2,
     "name": "EURO 23",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -1636,6 +1647,7 @@
   "fields": {
     "kind": 2,
     "name": "EURO 27",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -1648,6 +1660,7 @@
   "fields": {
     "kind": 2,
     "name": "EURO 30",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -1660,6 +1673,7 @@
   "fields": {
     "kind": 2,
     "name": "EURO 36A",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -1672,6 +1686,7 @@
   "fields": {
     "kind": 2,
     "name": "EURO 36B",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -1684,6 +1699,7 @@
   "fields": {
     "kind": 4,
     "name": "PLÁSTICO (TRANSPARENTE)",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 4000,
     "is_enabled": true,
@@ -1696,6 +1712,7 @@
   "fields": {
     "kind": 4,
     "name": "PLÁSTICO (NEGRO)",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 4000,
     "is_enabled": true,
@@ -1708,6 +1725,7 @@
   "fields": {
     "kind": 8,
     "name": "TRANSPARENTE",
+    "size": 140000.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 2500,
     "is_enabled": true,
@@ -1720,6 +1738,7 @@
   "fields": {
     "kind": 8,
     "name": "NEGRO",
+    "size": 120000.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 2500,
     "is_enabled": true,
@@ -1732,6 +1751,7 @@
   "fields": {
     "kind": 6,
     "name": "8 (BLANCA)",
+    "size": 14000.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 15000,
     "is_enabled": true,
@@ -1744,6 +1764,7 @@
   "fields": {
     "kind": 6,
     "name": "12 (MORADA)",
+    "size": 14000.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 15000,
     "is_enabled": true,
@@ -1756,6 +1777,7 @@
   "fields": {
     "kind": 3,
     "name": "MADERA 14",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 150,
     "is_enabled": true,
@@ -1768,6 +1790,7 @@
   "fields": {
     "kind": 3,
     "name": "PLÁSTICO 11",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 150,
     "is_enabled": true,
@@ -1780,6 +1803,7 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 24",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -1792,6 +1816,7 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 30",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -1804,6 +1829,7 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 35",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -1816,6 +1842,7 @@
   "fields": {
     "kind": 2,
     "name": "CHAROLA EURO 45",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -1828,6 +1855,7 @@
   "fields": {
     "kind": 2,
     "name": "CHAROLA EURO 49",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -1840,11 +1868,11 @@
   "fields": {
     "product": 1,
     "packaging_supply_kind": 1,
-    "packaging_supply": 1,
-    "main_supply_quantity": 1,
+    "product_standard_packaging": 1,
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
     "max_product_amount_per_package": 1.0,
-    "product_packaging_standard": 1,
+    "packaging_supply": 1,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1859,11 +1887,11 @@
   "fields": {
     "product": 1,
     "packaging_supply_kind": 1,
-    "packaging_supply": 3,
-    "main_supply_quantity": 1,
+    "product_standard_packaging": 1,
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
-    "max_product_amount_per_package": 1.0,
-    "product_packaging_standard": 1,
+    "max_product_amount_per_package": 11.3,
+    "packaging_supply": 3,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1878,11 +1906,11 @@
   "fields": {
     "product": 1,
     "packaging_supply_kind": 1,
-    "packaging_supply": 1,
-    "main_supply_quantity": 6,
+    "product_standard_packaging": 1,
     "name": "MALLA SENCILLA",
     "max_product_amount_per_package": 1.0,
-    "product_packaging_standard": 1,
+    "packaging_supply": 1,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1897,11 +1925,11 @@
   "fields": {
     "product": 1,
     "packaging_supply_kind": 1,
-    "packaging_supply": 1,
-    "main_supply_quantity": 1,
+    "product_standard_packaging": 1,
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
     "max_product_amount_per_package": 1.0,
-    "product_packaging_standard": 1,
+    "packaging_supply": 1,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1916,11 +1944,11 @@
   "fields": {
     "product": 1,
     "packaging_supply_kind": 1,
-    "packaging_supply": 1,
-    "main_supply_quantity": 1,
+    "product_standard_packaging": 1,
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
     "max_product_amount_per_package": 1.0,
-    "product_packaging_standard": 1,
+    "packaging_supply": 1,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1935,11 +1963,11 @@
   "fields": {
     "product": 1,
     "packaging_supply_kind": 1,
-    "packaging_supply": 1,
-    "main_supply_quantity": 3,
+    "product_standard_packaging": 1,
     "name": "PALLET 48'S + 70'S",
     "max_product_amount_per_package": 1.0,
-    "product_packaging_standard": 1,
+    "packaging_supply": 1,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1954,11 +1982,11 @@
   "fields": {
     "product": 1,
     "packaging_supply_kind": 1,
-    "packaging_supply": 1,
-    "main_supply_quantity": 3,
+    "product_standard_packaging": 1,
     "name": "PALLET 48'S + 70'S (ENMALLADOS)",
     "max_product_amount_per_package": 1.0,
-    "product_packaging_standard": 1,
+    "packaging_supply": 1,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
     "organization": 1,
     "markets": [
