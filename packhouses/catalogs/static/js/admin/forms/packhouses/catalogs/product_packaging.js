@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateProductPackagingStandard() {
     const packagingSupplyKindId = packagingSupplyKindField.val();
     if (packagingSupplyKindId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/product_packaging_standard/?kind=${packagingSupplyKindId}&is_enabled=1`)
+      fetchOptions(`${API_BASE_URL}/base/product-standard-packaging/?kind=${packagingSupplyKindId}&is_enabled=1`)
         .then(data => {
           console.log("data", data);
           updateFieldOptions(packagingSupplyField, data);
