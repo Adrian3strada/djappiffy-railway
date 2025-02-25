@@ -1,13 +1,5 @@
 from django.utils.translation import gettext_lazy as _
 
-PAYMENT_CHOICES = [
-        ('full_payment', _("Full Payment")),       
-        ('half_payment', _("Half Payment")),       
-        ('no_payment', _("No Payment")),         
-        ('double_payment', _("Double Payment")),  
-        ('other', _('Other')), 
-    ]
-
 EMPLOYEE_GENDER_CHOICES = [
     ('male', _('Male')),
     ('female', _('Female')),
@@ -40,9 +32,9 @@ EMPLOYEE_PAYMENT_METHOD_CHOICES = [
 ]
 
 EMPLOYEE_ACADEMIC_CHOICES = [
-    ('basic', _('Basic')),
-    ('upper_secondary', _('Upper Secondary')),
-    ('higher', _('Higher')),
+    ('basic_education', _('Basic Education')),
+    ('upper_secondary_education', _('Upper Secondary Education')),
+    ('higher_education', _('Higher Education')),
     ('none', _('None')),
 ]
 

@@ -3,12 +3,13 @@ from django.db import models
 from organizations.models import Organization
 from cities_light.models import City, Country, Region, SubRegion
 from django.utils.translation import gettext_lazy as _
-from common.mixins import CleanNameAndOrganizationMixin
+from common.mixins import CleanNameAndOrganizationMixin, CleanEmployeeAndOrganizationMixin
+from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.packhouse_settings.models import PaymentKind 
 from common.billing.models import LegalEntityCategory
 from packhouses.packhouse_settings.models import Bank
 from .utils import (EMPLOYEE_GENDER_CHOICES, EMPLOYEE_BLOOD_TYPE_CHOICES, EMPLOYEE_ACADEMIC_CHOICES, EMPLOYEE_PAYMENT_CHOICES, 
-                    EMERGENCY_CONTACT_RELATIONSHIP_CHOICES, MARITAL_STATUS_CHOICES, PAYMENT_CHOICES, EMPLOYEE_PAYMENT_METHOD_CHOICES, )
+                    EMERGENCY_CONTACT_RELATIONSHIP_CHOICES, MARITAL_STATUS_CHOICES, EMPLOYEE_PAYMENT_METHOD_CHOICES, )
 from django.core.exceptions import ValidationError
 from datetime import datetime
 from common.users.models import User
@@ -19,7 +20,6 @@ from django.dispatch import receiver
 class EmployeeStatus(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Status'))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
-    payment_type = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='full', verbose_name=_("Payment Type"))
     payment_percentage = models.PositiveIntegerField(default=100, verbose_name=_("Payment Percentage"), help_text=_("Enter the payment percentage (e.g., 100 for 100%, 60 for 60%, etc.)"))
 
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -86,7 +86,7 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
     internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
     phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'))
     email = models.EmailField(max_length=255, verbose_name=_('Email'))
-    is_staff = models.BooleanField(default=True, verbose_name=_('Is Staff'))
+    is_staff = models.BooleanField(default=False, verbose_name=_('Is Staff'))
     staff_username = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('Staff Username'), null=True, blank=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -99,7 +99,12 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
     
     def get_antiguedad(self):
         today = datetime.now().date()
-        difference = today - self.hire_date
+        if self.termination_date:  
+            end_date = self.termination_date  
+        else:
+            end_date = today  
+        
+        difference = end_date - self.hire_date
         years = difference.days // 365
         months = (difference.days % 365) // 30
         days = (difference.days % 365) % 30
@@ -165,18 +170,19 @@ class EmployeeTaxAndMedicalInformation(models.Model):
     emergency_contact_name = models.CharField(max_length=100, verbose_name=_('Emergency Contact Name'), blank=False, null=False, help_text=_('Name of the emergency contact'))
     emergency_contact_phone = models.CharField(max_length=20, verbose_name=_('Emergency Contact Phone'), blank=False, null=False, help_text=_('Phone number of the emergency contact'))
     emergency_contact_relationship = models.CharField(max_length=20, choices=EMERGENCY_CONTACT_RELATIONSHIP_CHOICES, verbose_name=_('Emergency Contact Relationship'), blank=False, null=False)
-    
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
     
     class Meta:
         verbose_name = _('Tax and Medical Record')
         verbose_name_plural = _('Tax and Medical Records')
 
-class EmployeeAcademicAndWorkInfomation(models.Model):
-    academic_status = models.CharField(max_length=20, choices=EMPLOYEE_ACADEMIC_CHOICES, verbose_name=_('Academic Formation'))
-    profession = models.CharField(max_length=255, verbose_name=_('Profession'), null=True, blank=True)
+class EmployeeAcademicAndWorkInformation(models.Model):
+    academic_status = models.CharField(default='none', max_length=30, choices=EMPLOYEE_ACADEMIC_CHOICES, verbose_name=_('Academic Formation'))
     degree = models.CharField(max_length=255, verbose_name=_('Degree'), null=True, blank=True)
     professional_license = models.CharField(max_length=255, verbose_name=_('Professional License'), null=True, blank=True)
+    institution = models.CharField(max_length=100, verbose_name=_('Institution'), blank=True, null=True)
+    graduation_year = models.DateField(verbose_name=_('Graduation Year'), blank=True, null=True)
+    field_of_study = models.CharField(max_length=100, verbose_name=_('Field of Study'), blank=True, null=True)
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
     
     class Meta:
@@ -184,16 +190,16 @@ class EmployeeAcademicAndWorkInfomation(models.Model):
         verbose_name_plural = _('Academic and Work Records')
 
 class EmployeeWorkExperience(models.Model):
-    work_record = models.ForeignKey(EmployeeAcademicAndWorkInfomation, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255, verbose_name=_('Previous Role'), null=True, blank=True)
-    company_name = models.CharField(max_length=255, verbose_name=_("Company Name"), null=True, blank=True)
-    time_in_position = models.CharField(max_length=20, verbose_name="Time in Position", help_text=_("Example: '2 years 3 months'"), null=True, blank=True)
+    work_record = models.ForeignKey(EmployeeAcademicAndWorkInformation, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255, verbose_name=_('Previous Role'))
+    company_name = models.CharField(max_length=255, verbose_name=_("Company Name"))
+    time_in_position = models.CharField(max_length=20, verbose_name="Time in Position", help_text=_("Example: '2 years 3 months'"))
     
     def __str__(self):
         return f"{self.title} at {self.company_name}" if self.company_name else self.title
 
 class EmployeeCertificationInformation(models.Model):
-    academic_record = models.ForeignKey(EmployeeAcademicAndWorkInfomation, on_delete=models.CASCADE)
+    academic_record = models.ForeignKey(EmployeeAcademicAndWorkInformation, on_delete=models.CASCADE)
     certification_name = models.CharField(max_length=200)
     issuing_organization = models.CharField(max_length=200)
     issue_date = models.DateField()
@@ -202,15 +208,15 @@ class EmployeeCertificationInformation(models.Model):
     def __str__(self):
         return f"{self.certification_name}"
     
-class EmployeeStatusChange(CleanNameAndOrganizationMixin, models.Model):
-    name = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name=_("Employee"))
+class EmployeeStatusChange(CleanEmployeeAndOrganizationMixin, models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name=_("Employee"))
     old_status = models.ForeignKey(EmployeeStatus, on_delete=models.SET_NULL, null=True, related_name='old_status_changes', verbose_name=_("Previous Status"))
     new_status = models.ForeignKey(EmployeeStatus, on_delete=models.SET_NULL, null=True, related_name='new_status_changes', verbose_name=_("New Status"))
     changed_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Changed at"))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"{self.name} changed from {self.old_status} to {self.new_status} at {self.changed_at}"
+        return f"{self.employee.name} changed from {self.old_status} to {self.new_status} at {self.changed_at}"
 
 
 @receiver(pre_save, sender=Employee)
@@ -225,8 +231,8 @@ def log_status_change(sender, instance, **kwargs):
 
     if old_instance.status != instance.status:
         EmployeeStatusChange.objects.create(
-            name=instance,  # ForeignKey al Employee
+            employee=instance,  
             old_status=old_instance.status,
             new_status=instance.status,
-            organization=instance.organization  # ✅ Campo crítico añadido
+            organization=instance.organization
         )

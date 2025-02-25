@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import (Employee, JobPosition, EmployeeJobPosition, EmployeeTaxAndMedicalInformation, EmployeeAcademicAndWorkInfomation, 
+from .models import (Employee, JobPosition, EmployeeJobPosition, EmployeeTaxAndMedicalInformation, EmployeeAcademicAndWorkInformation, 
                      WorkShiftSchedule, EmployeeStatus, EmployeeCertificationInformation, EmployeeWorkExperience, EmployeeStatusChange)
+from django.forms.models import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from cities_light.models import Country, Region, SubRegion, City
@@ -13,55 +14,70 @@ from common.users.models import User
 
 @admin.register(EmployeeStatus)
 class EmployeeStatusAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'payment_type', 'description', 'is_enabled')
-    fields = ('name', 'payment_type', 'payment_percentage', 'description', 'is_enabled')
+    list_display = ('name', 'payment_percentage', 'description', 'is_enabled')
+    fields = ('name', 'payment_percentage', 'description', 'is_enabled')
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('description')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
 
+class WorkShiftScheduleInlineFormSet(BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        # Si el objeto padre es nuevo (no tiene pk), asignamos datos iniciales para cada día
+        if 'instance' in kwargs and not kwargs['instance'].pk:
+            kwargs.setdefault('initial', [
+                {'day': _("Monday")},
+                {'day': _("Tuesday")},
+                {'day': _("Wednesday")},
+                {'day': _("Thursday")},
+                {'day': _("Friday")},
+                {'day': _("Saturday")},
+                {'day': _("Sunday")},
+            ])
+        super().__init__(*args, **kwargs)
 
 class WorkShiftScheduleInline(admin.TabularInline):
     model = WorkShiftSchedule
-    fields = ('day', 'entry_time', 'exit_time', 'is_enabled')  
-    extra = 0 
+    fields = ('day', 'entry_time', 'exit_time', 'is_enabled')
+    formset = WorkShiftScheduleInlineFormSet
+    extra = 0
+    can_delete = False
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj is None:
+            return 7
+        return 0
 
     def has_add_permission(self, request, obj=None):
+        if obj is None:
+            return True
         return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    def has_add_permission(self, request, obj=None):
+        return True if obj is None else False
     
+    class Media:
+        css = {
+            'all': ('css/admin_tabular.css',)  
+        }
+        js = ('js/admin/forms/packhouses/hrm/jobposition.js',)
+
 
 @admin.register(JobPosition)
 class JobPositionAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     fields = ('name', 'description', 'is_enabled')
     inlines = [WorkShiftScheduleInline]
+
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        return form
+        return super().get_form(request, obj, **kwargs)
 
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change) 
-        if not change:  
-            days_of_week = [
-                _("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"),
-                _("Friday"), _("Saturday"), _("Sunday")
-            ]
-            for day in days_of_week:
-                WorkShiftSchedule.objects.create(
-                    day=day,
-                    job_position=obj,  
-                )
 
 
 class EmployeeJobPositionInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeJobPosition
-
-    
     
     class Media:
         js = ('js/admin/forms/packhouses/hrm/job-position-inline.js',)
@@ -85,9 +101,15 @@ class EmployeeWorkExperienceInline(nested_admin.NestedTabularInline):
     model = EmployeeWorkExperience
     extra = 0
 
-class EmployeeAcademicAndWorkInfomationInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
-    model = EmployeeAcademicAndWorkInfomation
+class EmployeeAcademicAndWorkInformationInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
+    model = EmployeeAcademicAndWorkInformation
     inlines = [EmployeeCertificationInformationInline, EmployeeWorkExperienceInline]
+
+    class Media:
+        css = {
+            'all': ('css/admin_tabular.css',) 
+        }
+        js = ('js/admin/forms/packhouses/hrm/employee-academic-inline.js',)
 
 @admin.register(Employee)
 class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
@@ -100,11 +122,13 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
               'neighborhood', 'address', 'external_number', 'internal_number', 'phone_number', 
               'email', 'hire_date', 'termination_date', 'is_staff', 'staff_username')
     search_fields = ('full_name', )
-    inlines = [EmployeeJobPositionInline, EmployeeTaxAndMedicalInformationInline, EmployeeAcademicAndWorkInfomationInline,]
+    inlines = [EmployeeJobPositionInline, EmployeeTaxAndMedicalInformationInline, EmployeeAcademicAndWorkInformationInline,]
 
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('middle_name')
     @uppercase_form_charfield('last_name')
+    @uppercase_form_charfield('neighborhood')
+    @uppercase_form_charfield('address')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['staff_username'].widget.can_add_related = False
@@ -186,9 +210,10 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
     get_job_position.short_description = 'Job Position'
 
     class Media:
-        js = ('js/admin/forms/common/country-state-city-district.js',)
+        js = ('js/admin/forms/common/country-state-city-district.js',
+              'js/admin/forms/packhouses/hrm/employee-staff.js',)
 
 
 @admin.register(EmployeeStatusChange)
-class EmployeeStatusChangeAdmin(admin.ModelAdmin):
+class EmployeeStatusChangeAdmin(ByOrganizationAdminMixin):
     pass
