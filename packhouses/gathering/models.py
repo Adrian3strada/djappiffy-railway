@@ -124,8 +124,6 @@ class ScheduleHarvest(models.Model):
         verbose_name=_('Organization'),
     )
 
-
-
     def __str__(self):
         return f"{self.ooid}"
 
