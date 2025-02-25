@@ -1374,9 +1374,9 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
     report_function = staticmethod(basic_report)
     resource_classes = [PalletConfigurationResource]
     list_display = (
-    'name', 'alias', 'market', 'product', 'product_variety', 'get_product_size', 'is_ripe', 'is_enabled')
+    'name', 'alias', 'market', 'product', 'product_variety', 'get_product_size', 'is_enabled')
     list_filter = (ByMarketForOrganizationPalletConfigurationFilter, ByProductForOrganizationPalletConfigurationFilter,
-                   ByProductVarietyForOrganizationPalletConfigurationFilter, 'is_ripe', 'is_enabled',)
+                   ByProductVarietyForOrganizationPalletConfigurationFilter, 'is_enabled',)
     fields = (
     'name', 'alias', 'market', 'market_class', 'product', 'product_variety', 'product_size', 'maximum_boxes_per_pallet',
     'maximum_kg_per_pallet',
