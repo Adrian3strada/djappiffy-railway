@@ -9,7 +9,7 @@ from .models import (
     ProductPhenologyKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
-    HarvestingPaymentSetting, Supply, MeshBagKind, CountryProductStandardPackaging,
+    HarvestingPaymentSetting, Supply, MeshBagKind, ProductStandardPackaging,
     MeshBag, Service, ProductPackaging, WeighingScale, ColdChamber,
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ExportingCompany, Transfer, LocalTransporter,
@@ -1206,9 +1206,9 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         if db_field.name == "product_packaging_standard":
             if organization and product_kind and markets:
                 markets_countries = list(set((Market.objects.filter(id__in=markets).values_list('countries', flat=True))))
-                kwargs["queryset"] = CountryProductStandardPackaging.objects.filter(standard__product_kind=product_kind, standard__country__in=markets_countries)
+                kwargs["queryset"] = ProductStandardPackaging.objects.filter(standard__product_kind=product_kind, standard__country__in=markets_countries)
             else:
-                kwargs["queryset"] = CountryProductStandardPackaging.objects.none()
+                kwargs["queryset"] = ProductStandardPackaging.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

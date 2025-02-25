@@ -2,7 +2,7 @@ from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
 from .models import (ProductKind, ProductKindCountryStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
-                     CountryProductStandardPackaging, SupplyKind,
+                     ProductStandardPackaging, SupplyKind,
                      Incoterm, LocalDelivery, Currency)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
@@ -29,13 +29,13 @@ class CountryProductStandardSizeInline(admin.TabularInline):
     verbose_name_plural = 'Sizes'
 
 # TODO: Remover este cuando todo packaging esté completo
-@admin.register(CountryProductStandardPackaging)
+@admin.register(ProductStandardPackaging)
 class CountryProductStandardPackagingAdmin(admin.ModelAdmin):
     pass
 
 
 class CountryProductStandardPackagingInline(admin.TabularInline):
-    model = CountryProductStandardPackaging
+    model = ProductStandardPackaging
     extra = 0
     verbose_name = 'Standard packaging'
     verbose_name_plural = 'Standard packaging'

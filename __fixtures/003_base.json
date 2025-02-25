@@ -869,7 +869,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardpackaging",
+  "model": "base.productstandardpackaging",
   "pk": 1,
   "fields": {
     "supply_kind": 1,
@@ -882,7 +882,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardpackaging",
+  "model": "base.productstandardpackaging",
   "pk": 2,
   "fields": {
     "supply_kind": 1,
@@ -895,7 +895,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardpackaging",
+  "model": "base.productstandardpackaging",
   "pk": 3,
   "fields": {
     "supply_kind": 1,

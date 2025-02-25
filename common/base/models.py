@@ -105,7 +105,7 @@ class CountryProductStandardSize(models.Model):
         ]
 
 
-class CountryProductStandardPackaging(models.Model):
+class ProductStandardPackaging(models.Model):
     supply_kind = models.ForeignKey(SupplyKind, on_delete=models.PROTECT)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, verbose_name=_('Code'))
