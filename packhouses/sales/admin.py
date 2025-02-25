@@ -77,7 +77,7 @@ class OrderItemInline(admin.StackedInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/order_item_inline.js',)
+        js = ('js/admin/forms/packhouses/sales/order_item_inline.js',)
 
 
 
@@ -200,6 +200,6 @@ class OrderAdmin(ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/order.js',)
+        js = ('js/admin/forms/packhouses/sales/order.js',)
 
 
