@@ -1449,6 +1449,11 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
         """
         if db_field.name == "packaging_kind":
             kwargs["queryset"] = ProductPackaging.objects.filter(**organization_queryfilter)
+        if db_field.name == "product_ripeness":
+            if product:
+                kwargs["queryset"] = ProductRipeness.objects.filter(**product_queryfilter)
+            else:
+                kwargs["queryset"] = ProductRipeness.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

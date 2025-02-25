@@ -4,13 +4,15 @@ document.addEventListener('DOMContentLoaded', function () {
   const productField = $('#id_product');
   const productVarietyField = $('#id_product_variety');
   const productMarketSizeField = $('#id_product_size');
+  const productRipenessField = $('#id_product_ripeness');
 
   const API_BASE_URL = '/rest/v1';
 
-  function updateFieldOptions(field, options) {
+  function updateFieldOptions(field, options, labelKey = 'name') {
     field.empty().append(new Option('---------', '', true, true));
     options.forEach(option => {
-      field.append(new Option(option.name, option.id, false, false));
+        const label = option[labelKey];
+        field.append(new Option(label, option.id, false, false));
     });
     field.trigger('change').select2();
   }
@@ -29,10 +31,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (marketId && productId) {
       fetchOptions(`${API_BASE_URL}/catalogs/product-market-class/?market=${marketId}&product=${productId}&is_enabled=1`)
         .then(data => {
-          updateFieldOptions(marketClassField, data);
+          updateFieldOptions(marketClassField, data, 'class_name');
         });
     } else {
-      updateFieldOptions(marketClassField, []);
+      updateFieldOptions(marketClassField, [], 'class_name');
     }
   }
 
@@ -61,6 +63,17 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+  function updateProductRipness() {
+    const productId = productField.val();
+    if (productId) {
+      fetchOptions(`${API_BASE_URL}/catalogs/product-ripeness/?product=${productId}&is_enabled=1`)
+        .then(data => {
+          updateFieldOptions(productRipenessField, data)
+        });
+    } else {
+      updateFieldOptions(productRipenessField, [])
+    }
+  }
 
   marketField.on('change', function () {
     updateMarketClass();
@@ -70,8 +83,9 @@ document.addEventListener('DOMContentLoaded', function () {
   productField.on('change', function () {
     updateProductVariety();
     updateProductSize();
+    updateProductRipness();
   });
 
   [marketField, marketClassField,
-    productField, productVarietyField, productMarketSizeField].forEach(field => field.select2());
+    productField, productVarietyField, productMarketSizeField, productRipenessField].forEach(field => field.select2());
 });

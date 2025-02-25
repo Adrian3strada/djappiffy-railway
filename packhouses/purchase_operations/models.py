@@ -115,6 +115,11 @@ class PurchaseOrder(models.Model):
         verbose_name=_("Folio"),
         null=True, blank=True, unique=True
     )
+    user = models.ForeignKey(
+        User,
+        verbose_name=_("User"),
+        on_delete=models.PROTECT
+    )
     provider = models.ForeignKey(
         Provider,
         verbose_name=_("Provider"),
@@ -128,6 +133,11 @@ class PurchaseOrder(models.Model):
         Currency,
         verbose_name=_("Currency"),
         on_delete=models.PROTECT
+    )
+    tax = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        verbose_name=_("Tax (%)"),
+        null=True, blank = True
     )
     comments = models.TextField(
         verbose_name=_("Comments"),
@@ -146,6 +156,7 @@ class PurchaseOrder(models.Model):
     )
 
     def save(self, *args, **kwargs):
+        user = kwargs.pop('user_id', None)
         if not self.ooid:
             # Usar transacción y bloqueo de fila para evitar condiciones de carrera
             with transaction.atomic():
@@ -153,10 +164,13 @@ class PurchaseOrder(models.Model):
                     '-ooid').first()
                 self.ooid = (last_order.ooid + 1) if last_order and last_order.ooid is not None else 1
 
+        if user:
+            self.user = user
+
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Purchase Order {self.ooid}"
+        return f"{self.ooid}"
 
     class Meta:
         verbose_name = _("Purchase Order")

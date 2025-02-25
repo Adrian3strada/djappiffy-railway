@@ -1,0 +1,454 @@
+[
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 1,
+  "fields": {
+    "ooid": 1,
+    "harvest_date": "2025-02-15",
+    "product_provider": null,
+    "category": "gathering",
+    "gatherer": 1,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 1,
+    "product_season_kind": 3,
+    "product_harvest_size_kind": 6,
+    "orchard": 1,
+    "market": 1,
+    "weight_expected": 1000.0,
+    "weighing_scale": 1,
+    "meeting_point": "En la reja de la huerta.",
+    "status": "open",
+    "comments": "",
+    "created_at": "2025-02-14T20:04:42.568Z",
+    "organization": 1,
+    "orchard_certification": []
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 2,
+  "fields": {
+    "ooid": 2,
+    "harvest_date": "2025-02-15",
+    "product_provider": null,
+    "category": "maquila",
+    "gatherer": null,
+    "maquiladora": 1,
+    "product": 1,
+    "product_variety": 1,
+    "product_season_kind": 3,
+    "product_harvest_size_kind": 6,
+    "orchard": 2,
+    "market": 4,
+    "weight_expected": 1000.0,
+    "weighing_scale": 2,
+    "meeting_point": null,
+    "status": "open",
+    "comments": "",
+    "created_at": "2025-02-14T20:08:22.909Z",
+    "organization": 1,
+    "orchard_certification": [
+      1
+    ]
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 3,
+  "fields": {
+    "ooid": 3,
+    "harvest_date": "2025-02-15",
+    "product_provider": 2,
+    "category": "gathering",
+    "gatherer": 2,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 1,
+    "product_season_kind": 1,
+    "product_harvest_size_kind": 2,
+    "orchard": 3,
+    "market": 3,
+    "weight_expected": 1500.0,
+    "weighing_scale": 1,
+    "meeting_point": null,
+    "status": "open",
+    "comments": "",
+    "created_at": "2025-02-14T20:11:10.085Z",
+    "organization": 1,
+    "orchard_certification": []
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 4,
+  "fields": {
+    "ooid": 4,
+    "harvest_date": "2025-02-15",
+    "product_provider": 2,
+    "category": "maquila",
+    "gatherer": null,
+    "maquiladora": 1,
+    "product": 1,
+    "product_variety": 1,
+    "product_season_kind": 1,
+    "product_harvest_size_kind": 6,
+    "orchard": 4,
+    "market": 3,
+    "weight_expected": 1500.0,
+    "weighing_scale": 1,
+    "meeting_point": null,
+    "status": "open",
+    "comments": "",
+    "created_at": "2025-02-14T20:12:25.036Z",
+    "organization": 1,
+    "orchard_certification": []
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 5,
+  "fields": {
+    "ooid": 5,
+    "harvest_date": "2025-02-16",
+    "product_provider": 3,
+    "category": "gathering",
+    "gatherer": 3,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 2,
+    "product_season_kind": 1,
+    "product_harvest_size_kind": 4,
+    "orchard": 4,
+    "market": 1,
+    "weight_expected": 1000.0,
+    "weighing_scale": 3,
+    "meeting_point": null,
+    "status": "open",
+    "comments": "",
+    "created_at": "2025-02-14T20:29:41.573Z",
+    "organization": 1,
+    "orchard_certification": []
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 6,
+  "fields": {
+    "ooid": 6,
+    "harvest_date": "2025-02-16",
+    "product_provider": 3,
+    "category": "gathering",
+    "gatherer": null,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 2,
+    "product_season_kind": 3,
+    "product_harvest_size_kind": 1,
+    "orchard": 5,
+    "market": 4,
+    "weight_expected": 1500.0,
+    "weighing_scale": 4,
+    "meeting_point": null,
+    "status": "open",
+    "comments": "",
+    "created_at": "2025-02-14T20:32:06.559Z",
+    "organization": 1,
+    "orchard_certification": []
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 7,
+  "fields": {
+    "ooid": 7,
+    "harvest_date": "2025-02-16",
+    "product_provider": null,
+    "category": "gathering",
+    "gatherer": 4,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 2,
+    "product_season_kind": 4,
+    "product_harvest_size_kind": 4,
+    "orchard": 5,
+    "market": 3,
+    "weight_expected": 1500.0,
+    "weighing_scale": 3,
+    "meeting_point": null,
+    "status": "open",
+    "comments": "",
+    "created_at": "2025-02-14T20:33:47.147Z",
+    "organization": 1,
+    "orchard_certification": []
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 8,
+  "fields": {
+    "ooid": 8,
+    "harvest_date": "2025-02-17",
+    "product_provider": null,
+    "category": "gathering",
+    "gatherer": 5,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 1,
+    "product_season_kind": 1,
+    "product_harvest_size_kind": 1,
+    "orchard": 7,
+    "market": 1,
+    "weight_expected": 2000.0,
+    "weighing_scale": 5,
+    "meeting_point": null,
+    "status": "open",
+    "comments": "",
+    "created_at": "2025-02-14T20:35:18.151Z",
+    "organization": 1,
+    "orchard_certification": []
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 9,
+  "fields": {
+    "ooid": 9,
+    "harvest_date": "2025-02-17",
+    "product_provider": 4,
+    "category": "gathering",
+    "gatherer": 6,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 1,
+    "product_season_kind": 3,
+    "product_harvest_size_kind": 2,
+    "orchard": 8,
+    "market": 4,
+    "weight_expected": 2000.0,
+    "weighing_scale": 6,
+    "meeting_point": null,
+    "status": "open",
+    "comments": "",
+    "created_at": "2025-02-14T20:36:43.415Z",
+    "organization": 1,
+    "orchard_certification": []
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 10,
+  "fields": {
+    "ooid": 10,
+    "harvest_date": "2025-02-17",
+    "product_provider": null,
+    "category": "gathering",
+    "gatherer": 5,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 1,
+    "product_season_kind": 3,
+    "product_harvest_size_kind": 4,
+    "orchard": 9,
+    "market": 3,
+    "weight_expected": 2000.0,
+    "weighing_scale": 6,
+    "meeting_point": null,
+    "status": "open",
+    "comments": "",
+    "created_at": "2025-02-14T20:38:54.024Z",
+    "organization": 1,
+    "orchard_certification": []
+  }
+},
+{
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 1,
+  "fields": {
+    "harvest_cutting": 1,
+    "provider": 11,
+    "harvesting_crew": 4
+  }
+},
+{
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 2,
+  "fields": {
+    "harvest_cutting": 2,
+    "provider": 16,
+    "harvesting_crew": 1
+  }
+},
+{
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 3,
+  "fields": {
+    "harvest_cutting": 3,
+    "provider": 16,
+    "harvesting_crew": 1
+  }
+},
+{
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 4,
+  "fields": {
+    "harvest_cutting": 4,
+    "provider": 11,
+    "harvesting_crew": 5
+  }
+},
+{
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 5,
+  "fields": {
+    "harvest_cutting": 5,
+    "provider": 12,
+    "harvesting_crew": 7
+  }
+},
+{
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 6,
+  "fields": {
+    "harvest_cutting": 6,
+    "provider": 12,
+    "harvesting_crew": 8
+  }
+},
+{
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 7,
+  "fields": {
+    "harvest_cutting": 7,
+    "provider": 16,
+    "harvesting_crew": 2
+  }
+},
+{
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 8,
+  "fields": {
+    "harvest_cutting": 8,
+    "provider": 16,
+    "harvesting_crew": 3
+  }
+},
+{
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 9,
+  "fields": {
+    "harvest_cutting": 9,
+    "provider": 10,
+    "harvesting_crew": 10
+  }
+},
+{
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 10,
+  "fields": {
+    "harvest_cutting": 10,
+    "provider": 10,
+    "harvesting_crew": 10
+  }
+},
+{
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 1,
+  "fields": {
+    "harvest_cutting": 1,
+    "provider": 11,
+    "vehicle": 4,
+    "stamp_number": "SELLO_001"
+  }
+},
+{
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 2,
+  "fields": {
+    "harvest_cutting": 2,
+    "provider": 16,
+    "vehicle": 1,
+    "stamp_number": "SELLO_002"
+  }
+},
+{
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 3,
+  "fields": {
+    "harvest_cutting": 3,
+    "provider": 16,
+    "vehicle": 1,
+    "stamp_number": "SELLO_003"
+  }
+},
+{
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 4,
+  "fields": {
+    "harvest_cutting": 4,
+    "provider": 11,
+    "vehicle": 4,
+    "stamp_number": "SELLO_004"
+  }
+},
+{
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 5,
+  "fields": {
+    "harvest_cutting": 5,
+    "provider": 12,
+    "vehicle": 4,
+    "stamp_number": "SELLO_005"
+  }
+},
+{
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 6,
+  "fields": {
+    "harvest_cutting": 6,
+    "provider": 12,
+    "vehicle": 4,
+    "stamp_number": "SELLO_006"
+  }
+},
+{
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 7,
+  "fields": {
+    "harvest_cutting": 7,
+    "provider": 16,
+    "vehicle": 2,
+    "stamp_number": "SELLO_007"
+  }
+},
+{
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 8,
+  "fields": {
+    "harvest_cutting": 8,
+    "provider": 16,
+    "vehicle": 2,
+    "stamp_number": "SELLO_008"
+  }
+},
+{
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 9,
+  "fields": {
+    "harvest_cutting": 9,
+    "provider": 10,
+    "vehicle": 4,
+    "stamp_number": "SELLO_009"
+  }
+},
+{
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 10,
+  "fields": {
+    "harvest_cutting": 10,
+    "provider": 10,
+    "vehicle": 4,
+    "stamp_number": "SELLO_010"
+  }
+}
+]

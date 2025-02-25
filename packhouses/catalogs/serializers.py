@@ -3,7 +3,7 @@ from packhouses.catalogs.models import (
     Market, ProductMarketClass, Vehicle, HarvestingCrewProvider,
     ProductVariety, ProductPhenologyKind, ProductMassVolumeKind, Maquiladora,
     CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, ProductPackaging,
-    HarvestingCrew, OrchardCertification
+    HarvestingCrew, OrchardCertification, ProductRipeness
 )
 from django.utils.translation import gettext_lazy as _
 
@@ -145,3 +145,8 @@ class OrchardCertificationSerializer(serializers.ModelSerializer):
 
     def get_expired_text(self, obj):
         return _('Expired')
+
+class ProductRipenessSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductRipeness
+        fields = '__all__'

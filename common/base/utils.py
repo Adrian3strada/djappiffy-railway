@@ -25,6 +25,11 @@ class ReportExportAdminMixin(ExportMixin):
         response = self.report_function(request, export_data, model_name)
         return response
 
+    def get_export_resource_kwargs(self, request, *args, **kwargs):
+        kwargs = super().get_export_resource_kwargs(request, *args, **kwargs)
+        kwargs['export_format'] = 'pdf'
+        return kwargs
+
 # Para exportar solo a excel
 class SheetExportAdminMixin(ExportMixin):
     import_export_change_list_template = "admin/export/export_sheet/change_list_export.html"
@@ -37,8 +42,12 @@ class SheetExportAdminMixin(ExportMixin):
         queryset = self.get_export_queryset(request)
         export_data = self.get_export_data(formats[0](), request, queryset)
         model_name = self.model._meta.verbose_name
-
         return self._do_file_export(formats[0](), request, queryset)
+
+    def get_export_resource_kwargs(self, request, *args, **kwargs):
+        kwargs = super().get_export_resource_kwargs(request, *args, **kwargs)
+        kwargs['export_format'] = 'export-sheet'
+        return kwargs
 
 # Para exportar a excel y PDF
 class SheetReportExportAdminMixin(ExportMixin):
@@ -50,8 +59,10 @@ class SheetReportExportAdminMixin(ExportMixin):
             raise PermissionDenied
 
         action = request.GET.get("export_type", "export-sheet")
+        request.export_action_type = action
 
         query_params = request.GET.copy()
+
         if 'export_type' in query_params:
             del query_params['export_type']
         request.GET = query_params
@@ -75,6 +86,12 @@ class SheetReportExportAdminMixin(ExportMixin):
         else:
             raise ValueError("The action is not recognized.")
 
+    def get_export_resource_kwargs(self, request, *args, **kwargs):
+        kwargs = super().get_export_resource_kwargs(request, *args, **kwargs)
+        if hasattr(request, 'export_action_type'):
+            export_format = 'pdf' if request.export_action_type == 'export-pdf' else 'excel'
+            kwargs['export_format'] = export_format
+        return kwargs
 
 # Change headers to it verbose
 class ExportResource(resources.ModelResource):
@@ -109,7 +126,7 @@ class DehydrationResource():
         return obj.market.name if obj.market else ""
 
     def dehydrate_market_class(self, obj):
-        return obj.product_market_class.name if obj.product_market_class else ""
+        return obj.product_market_class.class_name if obj.product_market_class else ""
 
     def dehydrate_varieties(self, obj):
         return ", ".join(variety.name for variety in obj.varieties.all()) if obj.varieties.exists() else ""
@@ -132,6 +149,12 @@ class DehydrationResource():
 
     def dehydrate_product_size(self, obj):
         return obj.product_size.name if obj.product_size else ""
+
+    def dehydrate_product_ripeness(self, obj):
+        return obj.product_ripeness.name if obj.product_ripeness else ""
+
+    def dehydrate_product_packaging_standard(self, obj):
+        return obj.product_packaging_standard.name if obj.product_packaging_standard else ""
 
     def dehydrate_organization(self, obj):
         return obj.organization.name if obj.organization else ""
@@ -180,6 +203,12 @@ class DehydrationResource():
 
     def dehydrate_service_provider(self, obj):
         return obj.service_provider.name if obj.service_provider else ""
+
+    def dehydrate_capital_framework(self, obj):
+        return obj.capital_framework.name if obj.capital_framework else ""
+
+    def dehydrate_status(self, obj):
+        return obj.status.name if obj.status else ""
 
     def dehydrate_is_foreign(self, obj):
         return "✅" if obj.is_foreign else "❌"

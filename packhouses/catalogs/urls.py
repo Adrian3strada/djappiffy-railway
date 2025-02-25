@@ -6,7 +6,7 @@ from .viewsets import (
     MarketViewSet, ProductMarketClassViewSet, VehicleViewSet, HarvestingCrewProviderViewSet,
     CrewChiefViewSet, ProductVarietyViewSet, ProductHarvestSizeKindViewSet, ProductPhenologyKindViewSet,
     ProductMassVolumeKindViewSet, ClientViewSet, ProviderViewSet, ProductViewSet, MaquiladoraViewSet, SupplyViewSet, ProductSizeViewSet,
-    OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, ProductPackagingViewSet
+    OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, ProductPackagingViewSet, ProductRipenessViewSet
 )
 
 urlpatterns = []
@@ -30,6 +30,6 @@ drf_router.register(r'rest/v1/catalogs/orchard', OrchardViewSet, basename='orcha
 drf_router.register(r'rest/v1/catalogs/harvesting-crew', HarvestingCrewViewSet, basename='harvesting_crew')
 drf_router.register(r'rest/v1/catalogs/maquiladora', MaquiladoraViewSet, basename='maquiladora')
 drf_router.register(r'rest/v1/catalogs/orchard-certification', OrchardCertificationViewSet, basename='orchard_certification')
-
+drf_router.register(r'rest/v1/catalogs/product-ripeness', ProductRipenessViewSet, basename='product_ripeness')
 
 urlpatterns += drf_router.urls
