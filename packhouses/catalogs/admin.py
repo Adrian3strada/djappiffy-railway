@@ -1157,11 +1157,28 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'packaging_supply_kind1' in form.base_fields:
-            form.base_fields['packaging_supply_kind1'].widget.can_add_related = False
-            form.base_fields['packaging_supply_kind1'].widget.can_change_related = False
-            form.base_fields['packaging_supply_kind1'].widget.can_delete_related = False
-            form.base_fields['packaging_supply_kind1'].widget.can_view_related = False
+        if 'product' in form.base_fields:
+            form.base_fields['product'].widget.can_add_related = False
+            form.base_fields['product'].widget.can_change_related = False
+            form.base_fields['product'].widget.can_delete_related = False
+            form.base_fields['product'].widget.can_view_related = False
+        if 'markets' in form.base_fields:
+            form.base_fields['markets'].widget.can_add_related = False
+        if 'packaging_supply_kind' in form.base_fields:
+            form.base_fields['packaging_supply_kind'].widget.can_add_related = False
+            form.base_fields['packaging_supply_kind'].widget.can_change_related = False
+            form.base_fields['packaging_supply_kind'].widget.can_delete_related = False
+            form.base_fields['packaging_supply_kind'].widget.can_view_related = False
+        if 'product_standard_packaging' in form.base_fields:
+            form.base_fields['product_standard_packaging'].widget.can_add_related = False
+            form.base_fields['product_standard_packaging'].widget.can_change_related = False
+            form.base_fields['product_standard_packaging'].widget.can_delete_related = False
+            form.base_fields['product_standard_packaging'].widget.can_view_related = False
+        if 'packaging_supply' in form.base_fields:
+            form.base_fields['packaging_supply'].widget.can_add_related = False
+            form.base_fields['packaging_supply'].widget.can_change_related = False
+            form.base_fields['packaging_supply'].widget.can_delete_related = False
+            form.base_fields['packaging_supply'].widget.can_view_related = False
         return form
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
