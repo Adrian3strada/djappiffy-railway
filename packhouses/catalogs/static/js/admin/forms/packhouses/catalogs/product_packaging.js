@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let productProperties = null;
   let marketsCountries = [];
   let productStandardPackagingProperties = null;
+  let listenChanges = false;
 
   const API_BASE_URL = '/rest/v1';
 
@@ -170,13 +171,39 @@ document.addEventListener('DOMContentLoaded', function () {
 
   productStandardPackagingField.on('change', function () {
     if (productStandardPackagingField.val()) {
-      getproductStandardPackagingFieldProperties().then(() => {
-        updatePackagingSupply();
-        updateName();
-      });
+      if (listenChanges) {
+        getproductStandardPackagingFieldProperties().then(() => {
+          updatePackagingSupply();
+          updateName();
+        });
+      }
     }
   });
 
+  if (!productStandardPackagingField.val()) updateFieldOptions(productStandardPackagingField, []);
+
+  if (marketsField.val()) {
+    getMarketsCountries().then(() => {
+      if (packagingSupplyKindField.val() && marketsCountries.length) {
+        const productStandardPackagingId = productStandardPackagingField.val();
+        const countries = marketsCountries.join(',');
+        fetchOptions(`${API_BASE_URL}/base/product-standard-packaging/?supply_kind=${packagingSupplyKindField.val()}&standard__country__in=${countries}&is_enabled=1`)
+          .then(data => {
+            updateFieldOptions(productStandardPackagingField, data);
+            if (productStandardPackagingId) {
+              productStandardPackagingField.val(productStandardPackagingId).trigger('change');
+            }
+          })
+          .then(() => {
+            listenChanges = true;
+          });
+      } else {
+        listenChanges = true;
+      }
+    });
+  }
+
+
+
   [productField, marketsField, packagingSupplyKindField, productStandardPackagingField, packagingSupplyField].forEach(field => field.select2());
-  updateFieldOptions(productStandardPackagingField, []);
 });
