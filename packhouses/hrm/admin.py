@@ -1,6 +1,7 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from .models import (Employee, JobPosition, EmployeeJobPosition, EmployeeTaxAndMedicalInformation, EmployeeAcademicAndWorkInformation, 
-                     WorkShiftSchedule, EmployeeStatus, EmployeeCertificationInformation, EmployeeWorkExperience, EmployeeStatusChange)
+                     WorkShiftSchedule, EmployeeStatus, EmployeeCertificationInformation, EmployeeWorkExperience, EmployeeStatusChange, 
+                     EmployeeEvent)
 from django.forms.models import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
@@ -11,6 +12,11 @@ from common.base.utils import ReportExportAdminMixin, SheetExportAdminMixin, She
 from .views import basic_report
 from .resources import EmployeeResource
 from common.users.models import User
+from django.utils.html import format_html, format_html_join
+from django.urls import reverse, path
+from .forms import EmployeeEventForm
+from django.shortcuts import redirect
+
 
 @admin.register(EmployeeStatus)
 class EmployeeStatusAdmin(ByOrganizationAdminMixin):
@@ -58,9 +64,7 @@ class WorkShiftScheduleInline(admin.TabularInline):
         return True if obj is None else False
     
     class Media:
-        css = {
-            'all': ('css/admin_tabular.css',)  
-        }
+        css = {'all': ('css/admin_tabular.css',)}
         js = ('js/admin/forms/packhouses/hrm/jobposition.js',)
 
 
@@ -106,9 +110,7 @@ class EmployeeAcademicAndWorkInformationInline(DisableInlineRelatedLinksMixin, n
     inlines = [EmployeeCertificationInformationInline, EmployeeWorkExperienceInline]
 
     class Media:
-        css = {
-            'all': ('css/admin_tabular.css',) 
-        }
+        css = {'all': ('css/admin_tabular.css',) }
         js = ('js/admin/forms/packhouses/hrm/employee-academic-inline.js',)
 
 @admin.register(Employee)
@@ -217,3 +219,77 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
 @admin.register(EmployeeStatusChange)
 class EmployeeStatusChangeAdmin(ByOrganizationAdminMixin):
     pass
+
+@admin.register(EmployeeEvent)
+class EmployeeEventAdmin(ByOrganizationAdminMixin):
+    form = EmployeeEventForm
+    list_display = ('employee', 'event_type', 'start_date', 'end_date', 'approval_status', 'generate_actions_buttons')
+    list_filter = ('event_type__name',)
+    search_fields = ('employee__name', 'event_type__name')
+    fields = ('employee', 'event_type', 'start_date', 'end_date', 'description', 'parent_event')
+    
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'event_type' in form.base_fields:
+            form.base_fields['event_type'].queryset = EmployeeStatus.objects.filter(
+                organization=request.organization,
+                is_enabled=True
+            )
+        return form
+    
+    def generate_actions_buttons(self, obj):
+        if obj.approval_status == 'pending':
+            approve_url = reverse('admin:approve_event', args=[obj.pk])
+            reject_url = reverse('admin:reject_event', args=[obj.pk])
+
+            def create_button(url, color, icon, title):
+                return format_html(
+                    '''
+                    <a class="button" href="{}" style="color:{};" title="{}">
+                        <i class="fa-solid {}"></i>
+                    </a>
+                    ''',
+                    url, color, _(title), icon
+                )
+
+            approve_button = create_button(approve_url, '#4daf50', 'fa-check', "Approve")
+            reject_button = create_button(reject_url, '#f44336', 'fa-times', "Reject")
+
+            return format_html('{}&nbsp;{}', approve_button, reject_button)
+        return _("No actions")
+
+    generate_actions_buttons.short_description = _("Actions")
+    generate_actions_buttons.allow_tags = True
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                '<int:pk>/approve/',
+                self.admin_site.admin_view(self.process_event),
+                {'action': 'approve'},
+                name='approve_event'
+            ),
+            path(
+                '<int:pk>/reject/',
+                self.admin_site.admin_view(self.process_event),
+                {'action': 'reject'},
+                name='reject_event'
+            ),
+        ]
+        return custom_urls + urls
+
+    def process_event(self, request, pk, action):
+        event = EmployeeEvent.objects.get(pk=pk)
+        if action == 'approve':
+            event.approval_status = 'APPROVED'
+            message = f"Evento {event} aprobado."
+            message_type = messages.SUCCESS
+        elif action == 'reject':
+            event.approval_status = 'REJECTED'
+            message = f"Evento {event} rechazado."
+            message_type = messages.WARNING
+        event.approved_by = request.user
+        event.save()
+        self.message_user(request, message, message_type)
+        return redirect('admin:hrm_employeeevent_changelist')

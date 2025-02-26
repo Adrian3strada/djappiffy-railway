@@ -12,6 +12,7 @@ from .utils import (EMPLOYEE_GENDER_CHOICES, EMPLOYEE_BLOOD_TYPE_CHOICES, EMPLOY
                     EMERGENCY_CONTACT_RELATIONSHIP_CHOICES, MARITAL_STATUS_CHOICES, EMPLOYEE_PAYMENT_METHOD_CHOICES, )
 from django.core.exceptions import ValidationError
 from datetime import datetime
+from django.utils import timezone
 from common.users.models import User
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
@@ -208,7 +209,7 @@ class EmployeeCertificationInformation(models.Model):
     def __str__(self):
         return f"{self.certification_name}"
     
-class EmployeeStatusChange(CleanEmployeeAndOrganizationMixin, models.Model):
+class EmployeeStatusChange(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name=_("Employee"))
     old_status = models.ForeignKey(EmployeeStatus, on_delete=models.SET_NULL, null=True, related_name='old_status_changes', verbose_name=_("Previous Status"))
     new_status = models.ForeignKey(EmployeeStatus, on_delete=models.SET_NULL, null=True, related_name='new_status_changes', verbose_name=_("New Status"))
@@ -217,7 +218,6 @@ class EmployeeStatusChange(CleanEmployeeAndOrganizationMixin, models.Model):
 
     def __str__(self):
         return f"{self.employee.name} changed from {self.old_status} to {self.new_status} at {self.changed_at}"
-
 
 @receiver(pre_save, sender=Employee)
 def log_status_change(sender, instance, **kwargs):
@@ -234,5 +234,65 @@ def log_status_change(sender, instance, **kwargs):
             employee=instance,  
             old_status=old_instance.status,
             new_status=instance.status,
+            organization=instance.organization
+        )
+
+
+class EmployeeEvent(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name=_("Employee"))
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_("Organization"))
+    event_type = models.ForeignKey(EmployeeStatus, on_delete=models.PROTECT, limit_choices_to={'is_enabled': True}, verbose_name=_("Event Type"))
+    start_date = models.DateField(verbose_name=_("Start Date"))
+    end_date = models.DateField(verbose_name=_("End Date"))
+    description = models.TextField(verbose_name=_("Description"))
+    approval_status = models.CharField(max_length=20, choices=[('pending', _('Pending')), ('approved', _('Approved')), ('rejected', _('Rejected')),], default='pending', verbose_name=_("Approval Status"))
+    
+    # Para correcciones
+    parent_event = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return f"{self.employee} - {self.event_type.name} ({self.start_date})"
+    
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=EmployeeEvent)
+def apply_status_change(sender, instance, **kwargs):
+    if instance.approval_status == 'APPROVED':
+        # Aplicar el estado solo si el evento está vigente
+        today = timezone.now().date()
+        if instance.start_date <= today <= instance.end_date:
+            instance.employee.status = instance.event_type
+            instance.employee.save()
+
+@receiver(post_save, sender=EmployeeStatus)
+def create_default_events(sender, instance, created, **kwargs):
+    """Crea eventos predefinidos cuando se crea un nuevo estado"""
+    if created and instance.name.upper() in ['VACACIONES', 'LICENCIA MÉDICA']:
+        EmployeeEvent.objects.create(
+            event_type=instance,
+            organization=instance.organization,
+            description=f"Plantilla para {instance.name}"
+        )
+
+
+@receiver(post_save, sender=EmployeeEvent)
+def log_status_change(sender, instance, **kwargs):
+    # Verificar si el evento está aprobado y tiene un cambio de estado
+    if instance.approval_status == 'APPROVED' and instance.event_type:
+        # Obtener el estado anterior del empleado
+        old_status = instance.employee.status
+        
+        # Crear un registro en EmployeeStatusChange
+        EmployeeStatusChange.objects.create(
+            employee=instance.employee,
+            old_status=old_status,
+            new_status=instance.event_type,
             organization=instance.organization
         )
