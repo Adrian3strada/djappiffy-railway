@@ -95,6 +95,11 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
           updateFieldOptions(packagingSupplyField, data);
         });
+    } else if (packagingSupplyKindId) {
+      fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&is_enabled=1`)
+        .then(data => {
+          updateFieldOptions(packagingSupplyField, data);
+        });
     } else {
       updateFieldOptions(packagingSupplyField, []);
     }
@@ -153,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   packagingSupplyKindField.on('change', function () {
+    updatePackagingSupply();
     if (marketsCountries.length) {
       updateProductStandardPackaging();
     } else {
@@ -172,4 +178,5 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   [productField, marketsField, packagingSupplyKindField, productStandardPackagingField, packagingSupplyField].forEach(field => field.select2());
+  updateFieldOptions(productStandardPackagingField, []);
 });
