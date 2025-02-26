@@ -173,7 +173,7 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
 
 class SupplyViewSet(viewsets.ModelViewSet):
     serializer_class = SupplySerializer
-    filterset_fields = ['kind', 'is_enabled']
+    filterset_fields = ['kind', 'size', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -181,7 +181,17 @@ class SupplyViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return Supply.objects.all()
+        queryset = Supply.objects.all()
+
+        size__lte = self.request.GET.get('size__lte')
+        size__gte = self.request.GET.get('size__gte')
+
+        if size__lte:
+            queryset = queryset.filter(size__lte=size__lte)
+        if size__gte:
+            queryset = queryset.filter(size__gte=size__gte)
+
+        return queryset
 
 
 class VehicleViewSet(viewsets.ModelViewSet):
