@@ -220,8 +220,4 @@ class DehydrationResource():
     def dehydrate_is_mixable(self, obj):
         return "✅" if obj.is_mixable else "❌"
 
-    def dehydrate_is_ripe(self, obj):
-        return "✅" if obj.is_ripe else "❌"
-
-
 default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization', 'description')

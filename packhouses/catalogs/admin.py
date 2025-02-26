@@ -1157,11 +1157,28 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'packaging_supply_kind1' in form.base_fields:
-            form.base_fields['packaging_supply_kind1'].widget.can_add_related = False
-            form.base_fields['packaging_supply_kind1'].widget.can_change_related = False
-            form.base_fields['packaging_supply_kind1'].widget.can_delete_related = False
-            form.base_fields['packaging_supply_kind1'].widget.can_view_related = False
+        if 'product' in form.base_fields:
+            form.base_fields['product'].widget.can_add_related = False
+            form.base_fields['product'].widget.can_change_related = False
+            form.base_fields['product'].widget.can_delete_related = False
+            form.base_fields['product'].widget.can_view_related = False
+        if 'markets' in form.base_fields:
+            form.base_fields['markets'].widget.can_add_related = False
+        if 'packaging_supply_kind' in form.base_fields:
+            form.base_fields['packaging_supply_kind'].widget.can_add_related = False
+            form.base_fields['packaging_supply_kind'].widget.can_change_related = False
+            form.base_fields['packaging_supply_kind'].widget.can_delete_related = False
+            form.base_fields['packaging_supply_kind'].widget.can_view_related = False
+        if 'product_standard_packaging' in form.base_fields:
+            form.base_fields['product_standard_packaging'].widget.can_add_related = False
+            form.base_fields['product_standard_packaging'].widget.can_change_related = False
+            form.base_fields['product_standard_packaging'].widget.can_delete_related = False
+            form.base_fields['product_standard_packaging'].widget.can_view_related = False
+        if 'packaging_supply' in form.base_fields:
+            form.base_fields['packaging_supply'].widget.can_add_related = False
+            form.base_fields['packaging_supply'].widget.can_change_related = False
+            form.base_fields['packaging_supply'].widget.can_delete_related = False
+            form.base_fields['packaging_supply'].widget.can_view_related = False
         return form
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -1180,13 +1197,14 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
-        supply_kind = request.POST.get('packaging_supply_kind') if request.POST else obj.packaging_supply_kind if obj else None
+        packaging_supply_kind = request.POST.get('packaging_supply_kind') if request.POST else obj.packaging_supply_kind if obj else None
+        packaging_supply = request.POST.get('packaging_supply') if request.POST else obj.packaging_supply if obj else None
         markets = request.POST.getlist('markets') if request.POST else obj.markets.all() if obj else None
         product_id = request.POST.get('product') if request.POST else obj.product_id if obj else None
         product_kind = ProductKind.objects.get(id=Product.objects.get(id=product_id).kind_id) if product_id else None
 
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        supply_queryfilter = {'organization': organization, 'kind': supply_kind, 'is_enabled': True}
+        supply_queryfilter = {'organization': organization, 'kind': packaging_supply_kind, 'is_enabled': True}
 
         if db_field.name == "product":
             if organization:
@@ -1198,7 +1216,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
             kwargs["queryset"] = SupplyKind.objects.filter(category='packaging_containment', is_enabled=True)
 
         if db_field.name == "packaging_supply":
-            if supply_kind:
+            if packaging_supply_kind:
                 kwargs["queryset"] = Supply.objects.filter(**supply_queryfilter)
             else:
                 kwargs["queryset"] = Supply.objects.none()

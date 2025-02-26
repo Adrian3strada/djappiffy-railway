@@ -62,6 +62,7 @@ class ProductStandardPackagingViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = ProductStandardPackaging.objects.all()
         supply_kind__category = self.request.GET.get('supply_kind__category')
+        standard__country__in = self.request.GET.get('standard__country__in')
         max_product_amount__lte = self.request.GET.get('max_product_amount__lte')
         max_product_amount__gte = self.request.GET.get('max_product_amount__gte')
 
@@ -71,6 +72,9 @@ class ProductStandardPackagingViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(max_product_amount__lte=max_product_amount__lte)
         if max_product_amount__gte:
             queryset = queryset.filter(max_product_amount__gte=max_product_amount__gte)
+        if standard__country__in:
+            country_ids = standard__country__in.split(',')
+            queryset = queryset.filter(standard__country__in=country_ids)
 
         return queryset
 
