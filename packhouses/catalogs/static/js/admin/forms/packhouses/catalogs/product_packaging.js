@@ -94,12 +94,20 @@ document.addEventListener('DOMContentLoaded', function () {
     if (packagingSupplyKindId && productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
       fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&size=${productStandardPackagingProperties.max_product_amount}&is_enabled=1`)
         .then(data => {
+          const packagingSupplyFieldId = packagingSupplyField.val();
           updateFieldOptions(packagingSupplyField, data);
+          if (packagingSupplyFieldId) {
+            packagingSupplyField.val(packagingSupplyFieldId).trigger('change');
+          }
         });
     } else if (packagingSupplyKindId) {
       fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&is_enabled=1`)
         .then(data => {
+          const packagingSupplyFieldId = packagingSupplyField.val();
           updateFieldOptions(packagingSupplyField, data);
+          if (packagingSupplyFieldId) {
+            packagingSupplyField.val(packagingSupplyFieldId).trigger('change');
+          }
         });
     } else {
       updateFieldOptions(packagingSupplyField, []);
@@ -192,6 +200,16 @@ document.addEventListener('DOMContentLoaded', function () {
             updateFieldOptions(productStandardPackagingField, data);
             if (productStandardPackagingId) {
               productStandardPackagingField.val(productStandardPackagingId).trigger('change');
+
+              fetchOptions(`/rest/v1/base/product-standard-packaging/${productStandardPackagingId}/`)
+                .then(data => {
+                  productStandardPackagingProperties = data;
+                  updatePackagingSupply();
+                })
+                .catch(error => {
+                  console.error('Fetch error:', error);
+                });
+
             }
           })
           .then(() => {
@@ -202,7 +220,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
-
 
 
   [productField, marketsField, packagingSupplyKindField, productStandardPackagingField, packagingSupplyField].forEach(field => field.select2());
