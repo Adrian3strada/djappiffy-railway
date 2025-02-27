@@ -14,6 +14,14 @@ SUPPLY_USAGE_UNIT_KIND_CHOICES = [
     ('other', _('Other')),
 ]
 
+PRODUCT_CAPACITY_MEASURE_UNIT_CATEGORY_CHOICES = [
+    ('g', _('grams')),
+    ('Kg', _('Kilograms')),
+    ('Ton', _('Tons')),
+    ('ml', _('milliliters')),
+    ('L', _('Liters')),
+]
+
 SUPPLY_CATEGORY_CHOICES = [
     ('packaging_containment', _('Packaging Containment')),
     ('packaging_complement', _('Packaging Complement')),
