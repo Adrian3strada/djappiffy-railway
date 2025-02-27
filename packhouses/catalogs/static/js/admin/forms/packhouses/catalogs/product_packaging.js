@@ -14,10 +14,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const API_BASE_URL = '/rest/v1';
 
-  function updateFieldOptions(field, options) {
-    field.empty().append(new Option('---------', '', true, true));
+  function updateFieldOptions(field, options, selectedValue = null) {
+    console.log("updateFieldOptions", field, options, selectedValue);
+    field.empty().append(new Option('---------', '', !selectedValue, !selectedValue));
     options.forEach(option => {
-      field.append(new Option(option.name, option.id, false, false));
+      field.append(new Option(option.name, option.id, selectedValue === option.id, selectedValue === option.id));
     });
     field.trigger('change').select2();
   }
@@ -90,26 +91,35 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function updatePackagingSupply() {
+    alert("updatePackagingSupply");
     const packagingSupplyKindId = packagingSupplyKindField.val();
     if (packagingSupplyKindId && productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
+      alert(`packagingSupplyKindId ${packagingSupplyKindId}`)
       fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&size=${productStandardPackagingProperties.max_product_amount}&is_enabled=1`)
         .then(data => {
           const packagingSupplyFieldId = packagingSupplyField.val();
           updateFieldOptions(packagingSupplyField, data);
-          if (packagingSupplyFieldId) {
+          console.log("data", data);
+          console.log("packagingSupplyFieldId", packagingSupplyFieldId);
+          console.log("packagingSupplyFieldId", parseInt(packagingSupplyFieldId));
+          console.log("data.some(item => item.id === 3)", data.some(item => item.id === parseInt(packagingSupplyFieldId)));
+
+          if (packagingSupplyFieldId && data.some(item => item.id === parseInt(packagingSupplyFieldId))) {
             packagingSupplyField.val(packagingSupplyFieldId).trigger('change');
           }
         });
     } else if (packagingSupplyKindId) {
+      alert("dos")
       fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&is_enabled=1`)
         .then(data => {
           const packagingSupplyFieldId = packagingSupplyField.val();
           updateFieldOptions(packagingSupplyField, data);
-          if (packagingSupplyFieldId) {
+          if (packagingSupplyFieldId && data.some(item => item.id === parseInt(packagingSupplyFieldId))) {
             packagingSupplyField.val(packagingSupplyFieldId).trigger('change');
           }
         });
     } else {
+      alert("tres")
       updateFieldOptions(packagingSupplyField, []);
     }
   }
@@ -123,17 +133,12 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       nameField.val('')
     }
-    if (productStandardPackagingProperties) {
+    if (productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
       maxProductAmountPerPackageField.val(productStandardPackagingProperties.max_product_amount);
       maxProductAmountPerPackageField.attr('max', productStandardPackagingProperties.max_product_amount);
-      maxProductAmountPerPackageField.attr('min', 0.01);
-      maxProductAmountPerPackageField.attr('step', 0.01);
-
     } else {
       maxProductAmountPerPackageField.val('');
       maxProductAmountPerPackageField.removeAttr('max');
-      maxProductAmountPerPackageField.attr('min', 0.01);
-      maxProductAmountPerPackageField.attr('step', 0.01);
     }
   }
 
@@ -221,6 +226,19 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  if (productStandardPackagingField.val()) {
+    getproductStandardPackagingFieldProperties().then(() => {
+      console.log("productStandardPackagingProperties", productStandardPackagingProperties);
+      if (productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
+        maxProductAmountPerPackageField.val(productStandardPackagingProperties.max_product_amount);
+        maxProductAmountPerPackageField.attr('max', productStandardPackagingProperties.max_product_amount);
+      } else {
+        maxProductAmountPerPackageField.val('');
+        maxProductAmountPerPackageField.removeAttr('max');
+      }
+    });
+  }
 
+  maxProductAmountPerPackageField.attr('step', '0.01');
   [productField, marketsField, packagingSupplyKindField, productStandardPackagingField, packagingSupplyField].forEach(field => field.select2());
 });
