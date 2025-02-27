@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const nameField = $('#id_name');
   const maxProductAmountPerPackageField = $('#id_max_product_amount_per_package');
 
+  const maxProductAmountLabel = $('label[for="id_max_product_amount_per_package"]');
+
   let productProperties = null;
   let marketsCountries = [];
   let productStandardPackagingProperties = null;
@@ -36,11 +38,16 @@ document.addEventListener('DOMContentLoaded', function () {
       fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
         .then(data => {
           productProperties = data;
-          const maxProductAmountLabel = $('label[for="id_max_product_amount_per_package"]');
+          let maxProductAmountLabel = maxProductAmountLabel
+          const originalText = maxProductAmountLabel.contents().filter(function () {
+            return this.nodeType === 3;
+          }).text().trim();
+
           if (data.price_measure_unit_category_display) {
-            maxProductAmountLabel.text(`Max product ${data.price_measure_unit_category_display} per package`);
-          } else {
-            maxProductAmountLabel.text(`Max product amount per package`);
+            const newText = originalText.replace('amount', data.price_measure_unit_category_display);
+            maxProductAmountLabel.contents().filter(function () {
+              return this.nodeType === 3;
+            }).first().replaceWith(newText + ' ');
           }
         })
     } else {
@@ -91,10 +98,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function updatePackagingSupply() {
-    alert("updatePackagingSupply");
     const packagingSupplyKindId = packagingSupplyKindField.val();
     if (packagingSupplyKindId && productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
-      alert(`packagingSupplyKindId ${packagingSupplyKindId}`)
       fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&size=${productStandardPackagingProperties.max_product_amount}&is_enabled=1`)
         .then(data => {
           const packagingSupplyFieldId = packagingSupplyField.val();
@@ -109,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         });
     } else if (packagingSupplyKindId) {
-      alert("dos")
       fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&is_enabled=1`)
         .then(data => {
           const packagingSupplyFieldId = packagingSupplyField.val();
@@ -119,7 +123,6 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         });
     } else {
-      alert("tres")
       updateFieldOptions(packagingSupplyField, []);
     }
   }
@@ -240,5 +243,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   maxProductAmountPerPackageField.attr('step', '0.01');
+
   [productField, marketsField, packagingSupplyKindField, productStandardPackagingField, packagingSupplyField].forEach(field => field.select2());
 });
