@@ -173,7 +173,7 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
 
 class SupplyViewSet(viewsets.ModelViewSet):
     serializer_class = SupplySerializer
-    filterset_fields = ['kind', 'size', 'is_enabled']
+    filterset_fields = ['kind', 'capacity', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -183,13 +183,13 @@ class SupplyViewSet(viewsets.ModelViewSet):
 
         queryset = Supply.objects.all()
 
-        size__lte = self.request.GET.get('size__lte')
-        size__gte = self.request.GET.get('size__gte')
+        capacity__lte = self.request.GET.get('capacity__lte')
+        capacity__gte = self.request.GET.get('capacity__gte')
 
-        if size__lte:
-            queryset = queryset.filter(size__lte=size__lte)
-        if size__gte:
-            queryset = queryset.filter(size__gte=size__gte)
+        if capacity__lte:
+            queryset = queryset.filter(capacity__lte=capacity__lte)
+        if capacity__gte:
+            queryset = queryset.filter(capacity__gte=capacity__gte)
 
         return queryset
 

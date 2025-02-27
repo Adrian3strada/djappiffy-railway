@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updatePackagingSupply() {
     const packagingSupplyKindId = packagingSupplyKindField.val();
     if (packagingSupplyKindId && productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
-      fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&size=${productStandardPackagingProperties.max_product_amount}&is_enabled=1`)
+      fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&capacity=${productStandardPackagingProperties.max_product_amount}&is_enabled=1`)
         .then(data => {
           const packagingSupplyFieldId = packagingSupplyField.val();
           updateFieldOptions(packagingSupplyField, data);
