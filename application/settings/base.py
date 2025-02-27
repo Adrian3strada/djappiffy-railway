@@ -169,12 +169,18 @@ AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = "es"
+USE_L10N = True
 
 TIME_ZONE = "America/Mexico_City"
 
 USE_I18N = True
 
 USE_TZ = True
+
+USE_THOUSAND_SEPARATOR=True
+THOUSAND_SEPARATOR=','
+DECIMAL_SEPARATOR='.'
+NUMBER_GROUPING=3
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/

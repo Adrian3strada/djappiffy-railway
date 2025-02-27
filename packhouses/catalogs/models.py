@@ -27,7 +27,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
 from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES,
                        PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES)
 from common.base.settings import SUPPLY_USAGE_UNIT_KIND_CHOICES
-
+from .fields import SupplyCapacityField
 from django.db.models import Max, Min
 from django.db.models import Q, F
 
@@ -663,11 +663,15 @@ class SupplyKindRelation(models.Model):
         verbose_name_plural = _('Supply kind relations')
 
 
+
+
+
 class Supply(CleanNameAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    capacity = models.FloatField(verbose_name=_('Capacity'), validators=[MinValueValidator(0.01)],
+    capacity = SupplyCapacityField(verbose_name=_('Capacity'), kind_field='kind', validators=[MinValueValidator(0)],
                                  help_text=_('Capacity of the supply, based in the usage unit'))
+
     minimum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Minimum stock quantity'))
     maximum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Maximum stock quantity'))
     usage_discount_quantity = models.PositiveIntegerField(verbose_name=_('Usage discount quantity'),
