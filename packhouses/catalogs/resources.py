@@ -13,17 +13,6 @@ from common.base.settings import SUPPLY_USAGE_UNIT_KIND_CHOICES
 from django.utils.safestring import mark_safe
 
 class MarketResource(DehydrationResource, ExportResource):
-    market_class_name = Field(column_name=_("Market Class"), attribute="marketclass_set", readonly=True)
-
-    def dehydrate_market_class_name(self, market):
-        # Filtrar solo las clases activas
-        active_market_classes = market.marketclass_set.filter(is_enabled=True)
-
-        # Retornar en formato de lista HTML
-        if active_market_classes:
-            return "<ul>" + "".join([f"<li>{mc.name}</li>" for mc in active_market_classes]) + "</ul>"
-        return ''
-
     class Meta:
         model = Market
         exclude = tuple(default_excluded_fields + ("address_label",))
@@ -57,9 +46,9 @@ class ProductResource(DehydrationResource, ExportResource):
         if not product_classes:
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{pc.class_name} ({pc.market})</li>" for pc in product_classes]) + "</ul>"
+            return "<ul>" + "".join([f"<li>{pc.name} ({pc.market})</li>" for pc in product_classes]) + "</ul>"
         else:
-            return ", ".join([f"{pc.class_name} ({pc.market})" for pc in product_classes])
+            return ", ".join([f"{pc.name} ({pc.market})" for pc in product_classes])
     def dehydrate_product_variety(self, product):
         product_varieties = product.productvariety_set.filter(is_enabled=True)
         if not product_varieties:
@@ -140,6 +129,7 @@ class ProviderResource(DehydrationResource, ExportResource):
     class Meta:
         model = Provider
         exclude = tuple(default_excluded_fields + ("provider_provider", "vehicle_provider", "neighborhood", "address", "internal_number"))
+        export_order = ('id', 'name', 'category', 'country', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'tax_id', 'email', 'phone_number', 'crew_chief', 'is_enabled')
 
 class ClientResource(DehydrationResource, ExportResource):
     class Meta:
@@ -163,25 +153,25 @@ class GathererResource(DehydrationResource, ExportResource):
         exclude = tuple(default_excluded_fields + ("population_registry_code", "social_number_code"))
 
 class MaquiladoraResource(DehydrationResource, ExportResource):
-    maquiladora_clients = Field(column_name="Maquiladora Clients")
+    clients = Field(column_name="Clients")
 
     def __init__(self, export_format=None, **kwargs):
         super().__init__(**kwargs)
         self.export_format = export_format
 
-    def dehydrate_maquiladora_clients(self, obj):
-        maquiladora_clients = obj.maquiladora_clients.all()
+    def dehydrate_clients(self, obj):
+        clients = obj.clients.all()
 
         if self.export_format == "pdf":
-            return "<ul>" + "".join([f"<li>{mc}</li>" for mc in maquiladora_clients]) + "</ul>"
+            return "<ul>" + "".join([f"<li>{mc}</li>" for mc in clients]) + "</ul>"
         else:
-            return ", ".join([str(mc) for mc in maquiladora_clients])
+            return ", ".join([str(mc) for mc in clients])
 
     class Meta:
         model = Maquiladora
         exclude = default_excluded_fields
         exclude = default_excluded_fields
-        export_order = ('id', 'name', 'zone', 'tax_id', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'email', 'phone_number', 'maquiladora_clients', 'is_enabled')
+        export_order = ('id', 'name', 'zone', 'tax_id', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'email', 'phone_number', 'clients', 'is_enabled')
 
 
 class OrchardResource(DehydrationResource, ExportResource):
@@ -232,34 +222,36 @@ class SupplyResource(DehydrationResource, ExportResource):
         exclude = default_excluded_fields
 
 class PackagingResource(DehydrationResource, ExportResource):
-    packaging_kind = Field(column_name=_("Complementary Supplies"))
-    inside = Field(column_name=_("Relation Packaging"))
+    supply_kind = Field(column_name=_("Complementary Supplies"))
+    relation_packaging = Field(column_name=_("Relation Packaging"))
 
     def __init__(self, export_format=None, **kwargs):
         super().__init__(**kwargs)
         self.export_format = export_format
 
-    def dehydrate_packaging_kind(self, packaging):
+    def dehydrate_supply_kind(self, packaging):
         complementary_supplies = packaging.packagingsupply_set.all()
         if not complementary_supplies:
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{cs.packaging_kind.name}" for cs in complementary_supplies]) + "</ul>"
+            return "<ul>" + "".join([f"<li>{cs.supply_kind.name} ({cs.supply.name})" for cs in complementary_supplies]) + "</ul>"
         else:
-            return ", ".join([cs.packaging_kind.name for cs in complementary_supplies])
+            return ", ".join([f"{cs.supply_kind.name} ({cs.supply.name})" for cs in complementary_supplies])
 
-    def dehydrate_inside(self, packaging):
+    def dehydrate_relation_packaging(self, packaging):
         containers = packaging.outside.all()
         if not containers:
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{i.inside.name}" for i in containers]) + "</ul>"
+            return "<ul>" + "".join([f"<li>{i.inside.name} ({i.quantity})" for i in containers]) + "</ul>"
         else:
-            return ", ".join([i.inside.name for i in containers])
-
+            return ", ".join([f"{i.inside.name} ({i.quantity})" for i in containers])
+            
     class Meta:
         model = ProductPackaging
-        exclude = default_excluded_fieldsexport_order = ('id', 'name', 'main_supply_kind', 'main_supply', 'main_supply_quantity', 'max_product_amount_per_package', 'market', 'product', 'product_packaging_standard', 'packaging_kind', 'inside', 'is_enabled')
+        exclude = default_excluded_fields
+        export_order = ('id', 'name', 'packaging_supply_quantity', 'packaging_supply_kind', 'packaging_supply', 'product', 'markets', 'product_standard_packaging', 
+                        'max_product_amount_per_package', 'supply_kind', 'relation_packaging', 'is_enabled')
 
 class ServiceResource(DehydrationResource, ExportResource):
     class Meta:
@@ -292,6 +284,7 @@ class TransferResource(DehydrationResource, ExportResource):
     class Meta:
         model = Transfer
         exclude = default_excluded_fields
+    
 
 class LocalTransporterResource(DehydrationResource, ExportResource):
     class Meta:
@@ -326,7 +319,7 @@ class InsuranceCompanyResource(DehydrationResource, ExportResource):
 class HarvestContainerResource(DehydrationResource, ExportResource):
     def dehydrate_unit_kind(self, obj):
         choices_dict = dict(SUPPLY_USAGE_UNIT_KIND_CHOICES)
-        category_value = obj.usage_unit_kind
+        category_value = obj.unit_kind
         category_display = choices_dict.get(category_value, "")
 
         return f"{category_display}"

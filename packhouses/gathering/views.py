@@ -70,7 +70,7 @@ def harvest_order_pdf(request, harvest_id):
         }''')
 
     # Renderizar el template HTML
-    html_string = render_to_string('admin/packhouses/on-site-sales-report.html', {
+    html_string = render_to_string('admin/packhouses/schedule-harvest-report.html', {
         'packhouse_name': packhouse_name,
         'company_address': company_address,
         'pdf_title': pdf_title,
