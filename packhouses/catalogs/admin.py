@@ -1391,14 +1391,11 @@ class PalletConfigurationPersonalExpenseInline(admin.StackedInline):
 class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PalletConfigurationResource]
-    list_display = (
-    'name', 'alias', 'market', 'product', 'product_variety', 'get_product_size', 'product_ripeness', 'is_enabled')
+    list_display = ('name', 'alias', 'market', 'product', 'product_variety', 'get_product_size', 'packaging_kind', 'product_ripeness', 'is_enabled')
     list_filter = (ByMarketForOrganizationPalletConfigurationFilter, ByProductForOrganizationPalletConfigurationFilter,
                    ByProductVarietyForOrganizationPalletConfigurationFilter, 'product_ripeness', 'is_enabled',)
-    fields = (
-    'name', 'alias', 'market', 'market_class', 'product', 'product_variety', 'product_size', 'maximum_boxes_per_pallet',
-    'maximum_kg_per_pallet',
-    'kg_tare', 'kg_per_box', 'packaging_kind', 'product_ripeness', 'is_enabled')
+    fields = ('name', 'alias', 'product', 'market', 'market_class',  'product_variety', 'product_size', 'maximum_boxes_per_pallet', 
+              'maximum_kg_per_pallet', 'kg_tare', 'kg_per_box', 'packaging_kind', 'product_ripeness', 'is_enabled')
     search_fields = ('name', 'alias')
     inlines = [PalletConfigurationSupplyExpenseInLine, PalletConfigurationPersonalExpenseInline]
 
@@ -1417,7 +1414,7 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj,
                                     exclude=[Product, ProductVariety, ProductSize, Market, ProductMarketClass,
-                                             ProductPackaging, Organization]):
+                                             ProductPackaging, ProductRipeness, Organization]):
             readonly_fields.extend(['name', 'alias', ])
         return readonly_fields
 
@@ -1434,6 +1431,8 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
         market_queryfilter = {'market': market, 'is_enabled': True}
         product_queryfilter = {'product': product, 'is_enabled': True}
 
+        if db_field.name == "product":
+            kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
         if db_field.name == "market":
             kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
         if db_field.name == "market_class":
@@ -1441,8 +1440,6 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
                 kwargs["queryset"] = ProductMarketClass.objects.filter(**market_queryfilter)
             else:
                 kwargs["queryset"] = ProductMarketClass.objects.none()
-        if db_field.name == "product":
-            kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
         if db_field.name == "product_variety":
             if product:
                 kwargs["queryset"] = ProductVariety.objects.filter(**product_queryfilter)

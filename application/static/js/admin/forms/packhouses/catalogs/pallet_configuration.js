@@ -8,14 +8,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const API_BASE_URL = '/rest/v1';
 
-  function updateFieldOptions(field, options, labelKey = 'name') {
+  function updateFieldOptions(field, options) {
     field.empty().append(new Option('---------', '', true, true));
     options.forEach(option => {
-        const label = option[labelKey];
-        field.append(new Option(label, option.id, false, false));
+      field.append(new Option(option.name, option.id, false, false));
     });
     field.trigger('change').select2();
   }
+
 
   function fetchOptions(url) {
     return $.ajax({
@@ -31,10 +31,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (marketId && productId) {
       fetchOptions(`${API_BASE_URL}/catalogs/product-market-class/?market=${marketId}&product=${productId}&is_enabled=1`)
         .then(data => {
-          updateFieldOptions(marketClassField, data, 'class_name');
+          updateFieldOptions(marketClassField, data);
         });
     } else {
-      updateFieldOptions(marketClassField, [], 'class_name');
+      updateFieldOptions(marketClassField, []);
     }
   }
 
