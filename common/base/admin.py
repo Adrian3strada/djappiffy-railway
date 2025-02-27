@@ -133,8 +133,8 @@ class CurrencyAdmin(admin.ModelAdmin):
 
 @admin.register(SupplyKind)
 class SupplyKindAdmin(admin.ModelAdmin):
-    list_display = ('name', 'usage_unit_kind', 'category', 'is_enabled')
-    list_filter = ('category', 'usage_unit_kind', 'is_enabled',)
+    list_display = ('name', 'usage_discount_unit_category', 'category', 'is_enabled')
+    list_filter = ('category', 'usage_discount_unit_category', 'is_enabled',)
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):

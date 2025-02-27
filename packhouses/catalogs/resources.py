@@ -326,7 +326,7 @@ class InsuranceCompanyResource(DehydrationResource, ExportResource):
 class HarvestContainerResource(DehydrationResource, ExportResource):
     def dehydrate_unit_kind(self, obj):
         choices_dict = dict(SUPPLY_USAGE_UNIT_KIND_CHOICES)
-        category_value = obj.usage_unit_kind
+        category_value = obj.usage_discount_unit_category
         category_display = choices_dict.get(category_value, "")
 
         return f"{category_display}"
