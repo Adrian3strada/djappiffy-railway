@@ -75,16 +75,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  productField.on('change', function () {
+    updateProductVariety();
+    updateProductSize();
+    updateProductRipness();
+    updateMarketClass();
+  }); 
+
   marketField.on('change', function () {
     updateMarketClass();
     updateProductSize();
   });
 
-  productField.on('change', function () {
-    updateProductVariety();
-    updateProductSize();
-    updateProductRipness();
-  });
 
   [marketField, marketClassField,
     productField, productVarietyField, productMarketSizeField, productRipenessField].forEach(field => field.select2());

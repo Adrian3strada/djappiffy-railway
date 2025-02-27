@@ -1428,8 +1428,8 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
         product = request.POST.get('product') if request.POST else obj.product if obj else None
         variety = request.POST.get('product_variety') if request.POST else obj.product_variety if obj else None
 
-        market_queryfilter = {'market': market, 'is_enabled': True}
         product_queryfilter = {'product': product, 'is_enabled': True}
+        product_market_queryfilter = {'product': product, 'market': market, 'is_enabled': True}
 
         if db_field.name == "product":
             kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
@@ -1437,7 +1437,7 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
             kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
         if db_field.name == "market_class":
             if market:
-                kwargs["queryset"] = ProductMarketClass.objects.filter(**market_queryfilter)
+                kwargs["queryset"] = ProductMarketClass.objects.filter(**product_market_queryfilter).values_list("name", flat=True)
             else:
                 kwargs["queryset"] = ProductMarketClass.objects.none()
         if db_field.name == "product_variety":
