@@ -903,10 +903,17 @@ class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [SupplyResource]
-    list_display = ('name', 'kind', 'capacity', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+    list_display = ('name', 'kind', 'capacity_display', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
     list_filter = ('kind', 'is_enabled')
     search_fields = ('name',)
     fields = ('kind', 'name', 'capacity', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+
+    def capacity_display(self, obj):
+        if obj.capacity > 0:
+            return str(float(obj.capacity))
+        return "-"
+    capacity_display.short_description = _('Capacity')
+    capacity_display.admin_order_field = 'capacity'
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('code')
