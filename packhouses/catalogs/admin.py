@@ -906,7 +906,7 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     list_display = ('name', 'kind', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
     list_filter = ('kind', 'is_enabled')
     search_fields = ('name',)
-    fields = ('kind', 'name', 'capacity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+    fields = ('kind', 'name', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('code')
