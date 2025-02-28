@@ -15,6 +15,7 @@ SUPPLY_USAGE_UNIT_KIND_CHOICES = [
 ]
 
 PRODUCT_CAPACITY_MEASURE_UNIT_CATEGORY_CHOICES = [
+    ('pieces', _('Pieces')),
     ('g', _('grams')),
     ('Kg', _('Kilograms')),
     ('Ton', _('Tons')),

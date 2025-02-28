@@ -903,17 +903,22 @@ class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [SupplyResource]
-    list_display = ('name', 'kind', 'capacity_display', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+    list_display = ('name', 'kind', 'capacity_display', 'usage_discount_quantity_display', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
     list_filter = ('kind', 'is_enabled')
     search_fields = ('name',)
     fields = ('kind', 'name', 'capacity', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
 
     def capacity_display(self, obj):
         if obj.capacity > 0:
-            return str(float(obj.capacity))
+            return f"{str(float(obj.capacity))} {obj.kind.get_capacity_unit_category_display()}"
         return "-"
     capacity_display.short_description = _('Capacity')
     capacity_display.admin_order_field = 'capacity'
+
+    def usage_discount_quantity_display(self, obj):
+        return f"{str(obj.usage_discount_quantity)} {obj.kind.get_usage_discount_unit_category_display()}"
+    usage_discount_quantity_display.short_description = _('Usage discount quantity')
+    usage_discount_quantity_display.admin_order_field = 'usage_discount_quantity'
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('code')
@@ -932,7 +937,6 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
-
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
