@@ -26,7 +26,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   OrchardCertificationKind)
 from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES,
                        PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES)
-from common.base.settings import SUPPLY_USAGE_UNIT_KIND_CHOICES
+from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
 
 from django.db.models import Max, Min
 from django.db.models import Q, F
@@ -1196,7 +1196,7 @@ class InsuranceCompany(CleanNameAndOrganizationMixin, models.Model):
 class HarvestContainer(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     capacity = models.FloatField(verbose_name=_('Capacity'))
-    unit_kind = models.CharField(max_length=30, verbose_name=_('Unit kind'), choices=SUPPLY_USAGE_UNIT_KIND_CHOICES)
+    unit_kind = models.CharField(max_length=30, verbose_name=_('Unit kind'), choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 

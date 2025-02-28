@@ -10,8 +10,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 
-from .settings import (SUPPLY_USAGE_UNIT_KIND_CHOICES, SUPPLY_CATEGORY_CHOICES,
-                       PRODUCT_CAPACITY_MEASURE_UNIT_CATEGORY_CHOICES)
+from .settings import (SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES, SUPPLY_CATEGORY_CHOICES,
+                       PRODUCT_MEASURE_UNIT_CATEGORY_CHOICES)
 
 class ProductKind(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -37,11 +37,11 @@ class SupplyKind(models.Model):
     capacity_unit_category = models.CharField(max_length=30, verbose_name=_('Capacity unit category'),
                                               null=True, blank=True,
                                               help_text=_('Capacity unit to group supply kinds by his capacity'),
-                                              choices=PRODUCT_CAPACITY_MEASURE_UNIT_CATEGORY_CHOICES)
+                                              choices=PRODUCT_MEASURE_UNIT_CATEGORY_CHOICES)
     usage_discount_unit_category = models.CharField(max_length=30, verbose_name=_('Usage discount unit category'),
                                                     help_text=_(
                                                         'Usage unit kind to measure when supplies are consumed'),
-                                                    choices=SUPPLY_USAGE_UNIT_KIND_CHOICES)
+                                                    choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
