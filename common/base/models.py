@@ -32,15 +32,16 @@ class ProductKind(models.Model):
 
 
 class SupplyKind(models.Model):
+    category = models.CharField(max_length=40, verbose_name=_('Category'), choices=SUPPLY_CATEGORY_CHOICES)
     name = models.CharField(max_length=100, verbose_name=_('Name'), unique=True)
     capacity_unit_category = models.CharField(max_length=30, verbose_name=_('Capacity unit category'),
+                                              null=True, blank=True,
                                               help_text=_('Capacity unit to group supply kinds by his capacity'),
                                               choices=PRODUCT_CAPACITY_MEASURE_UNIT_CATEGORY_CHOICES)
     usage_discount_unit_category = models.CharField(max_length=30, verbose_name=_('Usage discount unit category'),
                                                     help_text=_(
                                                         'Usage unit kind to measure when supplies are consumed'),
                                                     choices=SUPPLY_USAGE_UNIT_KIND_CHOICES)
-    category = models.CharField(max_length=40, verbose_name=_('Category'), choices=SUPPLY_CATEGORY_CHOICES)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):

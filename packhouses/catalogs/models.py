@@ -27,7 +27,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
 from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES,
                        PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES)
 from common.base.settings import SUPPLY_USAGE_UNIT_KIND_CHOICES
-from .fields import SupplyCapacityField
+
 from django.db.models import Max, Min
 from django.db.models import Q, F
 
@@ -669,7 +669,7 @@ class SupplyKindRelation(models.Model):
 class Supply(CleanNameAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    capacity = SupplyCapacityField(verbose_name=_('Capacity'), kind_field='kind', validators=[MinValueValidator(0)],
+    capacity = models.FloatField(verbose_name=_('Capacity'), validators=[MinValueValidator(0)],
                                  help_text=_('Capacity of the supply, based in the usage unit'))
 
     minimum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Minimum stock quantity'))
@@ -683,6 +683,32 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+    def clean(self):
+        value = self.capacity
+        if self.kind.category in ['packaging_containment', 'packaging_presentation',
+                             'packaging_pallet', 'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel']:
+            min_value = 1 if self.kind.capacity_unit_category in ['pieces'] else 0.01
+            validation_error = _('Capacity must be at least 1 for this kind.') if self.kind.capacity_unit_category in ['pieces'] else _('Capacity must be at least 0.01 for this kind.')
+            if value < min_value:
+                raise ValidationError(
+                    validation_error,
+                    params={'capacity': value},
+                )
+        elif self.kind.category in ['packaging_separator']:
+            if value < 0:
+                raise ValidationError(
+                    _('Capacity cam be at minimum 0 for this kind.'),
+                    params={'capacity': value},
+                )
+        else:
+            if value != 0:
+                raise ValidationError(
+                    _('Capacity cannot be different than zero.'),
+                    params={'capacity': value},
+                )
+
+        return super().clean()
 
     class Meta:
         verbose_name = _('Supply')
