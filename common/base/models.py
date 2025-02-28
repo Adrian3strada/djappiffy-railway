@@ -35,7 +35,7 @@ class SupplyKind(models.Model):
     category = models.CharField(max_length=40, verbose_name=_('Category'), choices=SUPPLY_CATEGORY_CHOICES)
     name = models.CharField(max_length=100, verbose_name=_('Name'), unique=True)
     capacity_unit_category = models.CharField(max_length=30, verbose_name=_('Capacity unit category'),
-                                              null=True, blank=True,
+                                              null=True, blank=False,
                                               help_text=_('Capacity unit to group supply kinds by his capacity'),
                                               choices=PRODUCT_MEASURE_UNIT_CATEGORY_CHOICES)
     usage_discount_unit_category = models.CharField(max_length=30, verbose_name=_('Usage discount unit category'),
