@@ -130,7 +130,7 @@ class DehydrationResource():
         #return obj.market.name if obj.market else ""
 
     def dehydrate_market_class(self, obj):
-        return obj.product_market_class.class_name if obj.product_market_class else ""
+        return obj.market_class.name if obj.market_class else ""
 
     def dehydrate_varieties(self, obj):
         return ", ".join(variety.name for variety in obj.varieties.all()) if obj.varieties.exists() else ""
