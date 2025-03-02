@@ -940,6 +940,9 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    class Media:
+        js = ('js/admin/forms/supply.js',)
+
 
 
 class CrewChiefInline(admin.TabularInline):
