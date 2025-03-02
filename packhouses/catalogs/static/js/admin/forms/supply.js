@@ -31,17 +31,16 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(data => {
         console.log("updateCapacityUnitCategoryField fetchOptions", data);
         kindProperties = data;
-
-        if (kindProperties.capacity_unit_category && packagingContainerKinds.includes(kindProperties.capacity_unit_category)) {
+        if (kindProperties.capacity_unit_category && packagingContainerKinds.includes(kindProperties.category)) {
           capacityField.closest('.form-group').fadeIn();
         } else {
-          capacityField.val(null).trigger('change').select2();
+          capacityField.val(null);
           capacityField.closest('.form-group').fadeOut();
         }
       })
       .catch(error => {
         console.error('Fetch error:', error);
-        capacityField.val(null).trigger('change').select2();
+        capacityField.val(null);
         capacityField.closest('.form-group').fadeOut();
       });
   }
@@ -50,8 +49,10 @@ document.addEventListener('DOMContentLoaded', function () {
     updateCapacityUnitCategoryField();
   });
 
-  // capacityField.closest('.form-group').hide()
-  // if (kindField.val()) updateCapacityUnitCategoryField();
+  capacityField.closest('.form-group').hide();
 
-  [kindField, capacityField].forEach(field => field.select2());
+  if (kindField.val() && capacityField.val()) capacityField.closest('.form-group').show();
+  if (kindField.val()) updateCapacityUnitCategoryField();
+
+  [kindField].forEach(field => field.select2());
 });
