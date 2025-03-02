@@ -22,7 +22,7 @@ class SupplyKindViewSet(viewsets.ModelViewSet):
     serializer_class = SupplyKindSerializer
     pagination_class = None
     queryset = SupplyKind.objects.all()
-    filterset_fields = ['for_packaging', 'for_orchard', 'for_eudr', 'is_enabled']
+    filterset_fields = ['category', 'is_enabled']
 
 
 class CapitalFrameworkViewSet(viewsets.ModelViewSet):

@@ -663,9 +663,6 @@ class SupplyKindRelation(models.Model):
         verbose_name_plural = _('Supply kind relations')
 
 
-
-
-
 class Supply(CleanNameAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))

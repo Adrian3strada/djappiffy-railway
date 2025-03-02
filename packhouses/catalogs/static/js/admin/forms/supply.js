@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateCapacityUnitCategoryField() {
     console.log("updateCapacityUnitCategoryField", kindField.val());
     const packagingContainerKinds = ['packaging_containment', 'packaging_separator', 'packaging_presentation'];
-    fetchOptions(`${API_BASE_URL}/base/packaging-kind/${kindField.val()}/`)
+    fetchOptions(`${API_BASE_URL}/base/supply-kind/${kindField.val()}/`)
       .then(data => {
         console.log("updateCapacityUnitCategoryField fetchOptions", data);
         kindProperties = data;
@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', function () {
     updateCapacityUnitCategoryField();
   });
 
-  capacityField.closest('.form-group').hide()
-  if (kindField.val()) updateCapacityUnitCategoryField();
+  // capacityField.closest('.form-group').hide()
+  // if (kindField.val()) updateCapacityUnitCategoryField();
 
   [kindField, capacityField].forEach(field => field.select2());
 });
