@@ -1130,28 +1130,40 @@ class ServiceAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             return formfield
 
 
-class PackagingSupplyInline(admin.TabularInline):
+class PackagingComplementarySupplyInline(admin.TabularInline):
     model = PackagingSupply
     min_num = 0
     extra = 0
     list_display = ('supply_kind', 'supply', 'quantity')
+    verbose_name = _('Complementary supply')
+    verbose_name_plural = _('Complementary supplies')
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
+        if 'supply_kind' in formset.form.base_fields:
+            formset.form.base_fields['supply_kind'].widget.can_add_related = False
+            formset.form.base_fields['supply_kind'].widget.can_change_related = False
+            formset.form.base_fields['supply_kind'].widget.can_delete_related = False
+            formset.form.base_fields['supply_kind'].widget.can_view_related = False
+        if 'supply' in formset.form.base_fields:
+            formset.form.base_fields['supply'].widget.can_add_related = False
+            formset.form.base_fields['supply'].widget.can_change_related = False
+            formset.form.base_fields['supply'].widget.can_delete_related = False
+            formset.form.base_fields['supply'].widget.can_view_related = False
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_obj_id = request.resolver_match.kwargs.get("object_id")
         parent_obj = ProductPackaging.objects.get(id=parent_obj_id) if parent_obj_id else None
+        packaging_complement_categories = ['packaging_complement', 'packaging_separator', 'packaging_labeling', 'packaging_storage']
+
+        if db_field.name == "supply_kind":
+            kwargs["queryset"] = SupplyKind.objects.filter(category__in=packaging_complement_categories, is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    # class Meta:
-    verbose_name = _('Complementary Supply')
-    verbose_name_plural = _('Complementary Supplies')
-
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/packaging_complementary_supplies_inline.js',)
+        js = ('js/admin/forms/packaging_complementary_supplies_inline.js',)
 
 
 class ContainedPackagingInline(admin.TabularInline):
@@ -1182,7 +1194,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         'packaging_supply_quantity',
         'is_enabled'
     )
-    inlines = (PackagingSupplyInline, ContainedPackagingInline)
+    inlines = (PackagingComplementarySupplyInline, ContainedPackagingInline)
 
     def markets_display(self, obj):
         return ', '.join([market.name for market in obj.markets.all()])

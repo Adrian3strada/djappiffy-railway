@@ -888,15 +888,15 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
 
 
 class PackagingSupply(models.Model):
-    packaging_kind = models.ForeignKey(ProductPackaging, on_delete=models.PROTECT)
-    supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Supply kind'), on_delete=models.PROTECT)
+    product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
+    kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'))
 
     class Meta:
-        verbose_name = _('Packaging supply')
-        verbose_name_plural = _('Packaging supplies')
-        ordering = ('supply_kind', 'supply')
+        verbose_name = _('Complementary packaging supply')
+        verbose_name_plural = _('Complementary packaging supplies')
+        ordering = ('kind', 'supply')
         #constraints = [
         #    models.UniqueConstraint(fields=('packaging_kind', 'supply_kind'),
         #                            name='insidesupply_unique_packagingkind_supplykind'),

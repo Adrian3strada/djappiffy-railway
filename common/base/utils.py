@@ -184,7 +184,7 @@ class DehydrationResource():
         return obj.provider.name if obj.provider else ""
 
     def dehydrate_main_supply_kind(self, obj):
-        return obj.supply_kind.name if obj.supply_kind else ""
+        return obj.kind.name if obj.kind else ""
 
     def dehydrate_main_supply(self, obj):
         return obj.packaging_supply.name if obj.packaging_supply else ""
@@ -193,7 +193,7 @@ class DehydrationResource():
         return obj.kind.name if obj.kind else ""
 
     def dehydrate_packaging_kind(self, obj):
-        return obj.packaging_kind.name if obj.packaging_kind else ""
+        return obj.product_packaging.name if obj.product_packaging else ""
 
     def dehydrate_authority(self, obj):
         return obj.authority.name if obj.authority else ""
