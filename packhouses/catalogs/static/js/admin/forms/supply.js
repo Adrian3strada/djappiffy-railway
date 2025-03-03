@@ -26,7 +26,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateCapacityUnitCategoryField() {
     console.log("updateCapacityUnitCategoryField", kindField.val());
-    const packagingContainerKinds = ['packaging_containment', 'packaging_separator', 'packaging_presentation'];
+
+    const packagingContainerKinds = ['packaging_containment', 'packaging_presentation', 'packaging_separator', 'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel'];
     fetchOptions(`${API_BASE_URL}/base/supply-kind/${kindField.val()}/`)
       .then(data => {
         console.log("updateCapacityUnitCategoryField fetchOptions", data);

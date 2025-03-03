@@ -909,13 +909,17 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     fields = ('kind', 'capacity', 'name', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
 
     def capacity_display(self, obj):
-        if obj.capacity > 0:
-            return f"{str(float(obj.capacity))} {obj.kind.get_capacity_unit_category_display()}"
+        if obj.capacity and obj.capacity > 0:
+            capacity = str(int(obj.capacity) if obj.capacity.is_integer() else obj.capacity)
+            units = str(obj.kind.get_capacity_unit_category_display())
+            unit = units[:-1] if obj.capacity == 1 and units[-1].lower() == 's' else units
+            return f"{capacity} {unit}"
         return "-"
     capacity_display.short_description = _('Capacity')
     capacity_display.admin_order_field = 'capacity'
 
     def usage_discount_quantity_display(self, obj):
+
         return f"{str(obj.usage_discount_quantity)} {obj.kind.get_usage_discount_unit_category_display()}"
     usage_discount_quantity_display.short_description = _('Usage discount quantity')
     usage_discount_quantity_display.admin_order_field = 'usage_discount_quantity'
@@ -932,10 +936,28 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = Supply.objects.get(id=obj_id) if obj_id else None
+
         if db_field.name == "kind":
             kwargs["queryset"] = SupplyKind.objects.filter(is_enabled=True)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
+            return formfield
+
+        if db_field.name == "capacity":
+            packaging_container_categories = ['packaging_containment', 'packaging_presentation', 'packaging_separator', 'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel']
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            if request.POST:
+                kind_id = request.POST.get('kind')
+            else:
+                kind_id = obj.kind_id if obj else None
+            if kind_id:
+                kind = SupplyKind.objects.get(id=kind_id)
+                if kind.category in packaging_container_categories:
+                    formfield.required = True
+                else:
+                    formfield.required = False
             return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)

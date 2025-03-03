@@ -685,7 +685,7 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
     def clean(self):
         value = self.capacity
         if self.kind.category in ['packaging_containment', 'packaging_presentation',
-                             'packaging_pallet', 'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel']:
+                                  'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel']:
             min_value = 1 if self.kind.capacity_unit_category in ['pieces'] else 0.01
             validation_error = _('Capacity must be at least 1 for this kind.') if self.kind.capacity_unit_category in ['pieces'] else _('Capacity must be at least 0.01 for this kind.')
             if value < min_value:
@@ -700,9 +700,12 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
                     params={'capacity': value},
                 )
         else:
-            if value != 0:
+            print("self.kind.category", self.kind.category)
+            print("self.capacity", self.capacity)
+
+            if value is not None:
                 raise ValidationError(
-                    _('Capacity cannot be different than zero.'),
+                    _('Capacity cannot has value for this kind category.'),
                     params={'capacity': value},
                 )
 
