@@ -54,6 +54,159 @@
   }
 },
 {
+  "model": "packhouse_settings.vehicleownershipkind",
+  "pk": 1,
+  "fields": {
+    "name": "PROPIO",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehicleownershipkind",
+  "pk": 2,
+  "fields": {
+    "name": "PRESTADO",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehicleownershipkind",
+  "pk": 3,
+  "fields": {
+    "name": "RENTADO",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclekind",
+  "pk": 1,
+  "fields": {
+    "name": "CAMIONETA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclekind",
+  "pk": 2,
+  "fields": {
+    "name": "AUTOMÓVIL",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclekind",
+  "pk": 3,
+  "fields": {
+    "name": "AVIONETA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclefuelkind",
+  "pk": 1,
+  "fields": {
+    "name": "GASOLINA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclefuelkind",
+  "pk": 2,
+  "fields": {
+    "name": "DIÉSEL",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclefuelkind",
+  "pk": 3,
+  "fields": {
+    "name": "TURBOSINA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.paymentkind",
+  "pk": 1,
+  "fields": {
+    "name": "EFECTIVO",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.paymentkind",
+  "pk": 2,
+  "fields": {
+    "name": "TRANSFERENCIA BANCARIA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.paymentkind",
+  "pk": 3,
+  "fields": {
+    "name": "BITCOIN",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclebrand",
+  "pk": 1,
+  "fields": {
+    "name": "CHEVROLET",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclebrand",
+  "pk": 2,
+  "fields": {
+    "name": "NISSAN",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclebrand",
+  "pk": 3,
+  "fields": {
+    "name": "TOYOTA",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclebrand",
+  "pk": 4,
+  "fields": {
+    "name": "DODGE",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclebrand",
+  "pk": 5,
+  "fields": {
+    "name": "FORD",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
   "model": "packhouse_settings.orchardcertificationverifier",
   "pk": 1,
   "fields": {
@@ -127,247 +280,6 @@
       1,
       4
     ]
-  }
-},
-{
-  "model": "packhouse_settings.paymentkind",
-  "pk": 1,
-  "fields": {
-    "name": "EFECTIVO",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.paymentkind",
-  "pk": 2,
-  "fields": {
-    "name": "TRANSFERENCIA BANCARIA",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.paymentkind",
-  "pk": 3,
-  "fields": {
-    "name": "BITCOIN",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 1,
-  "fields": {
-    "name": "CAJA",
-    "unit_kind": "piece",
-    "is_packaging": true,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 2,
-  "fields": {
-    "name": "CHAROLA",
-    "unit_kind": "piece",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 3,
-  "fields": {
-    "name": "TARIMA",
-    "unit_kind": "piece",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 4,
-  "fields": {
-    "name": "ESQUINERO",
-    "unit_kind": "piece",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 5,
-  "fields": {
-    "name": "TAPA",
-    "unit_kind": "piece",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 6,
-  "fields": {
-    "name": "MALLA",
-    "unit_kind": "cm",
-    "is_packaging": true,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 7,
-  "fields": {
-    "name": "FILM",
-    "unit_kind": "cm",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.supplykind",
-  "pk": 8,
-  "fields": {
-    "name": "FLEJE",
-    "unit_kind": "m",
-    "is_packaging": false,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehiclebrand",
-  "pk": 1,
-  "fields": {
-    "name": "CHEVROLET",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehiclebrand",
-  "pk": 2,
-  "fields": {
-    "name": "NISSAN",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehiclebrand",
-  "pk": 3,
-  "fields": {
-    "name": "TOYOTA",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehiclebrand",
-  "pk": 4,
-  "fields": {
-    "name": "DODGE",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehiclebrand",
-  "pk": 5,
-  "fields": {
-    "name": "FORD",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehiclefuelkind",
-  "pk": 1,
-  "fields": {
-    "name": "GASOLINA",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehiclefuelkind",
-  "pk": 2,
-  "fields": {
-    "name": "DIÉSEL",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehiclefuelkind",
-  "pk": 3,
-  "fields": {
-    "name": "TURBOSINA",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehiclekind",
-  "pk": 1,
-  "fields": {
-    "name": "CAMIONETA",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehiclekind",
-  "pk": 2,
-  "fields": {
-    "name": "AUTOMÓVIL",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehiclekind",
-  "pk": 3,
-  "fields": {
-    "name": "AVIONETA",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehicleownershipkind",
-  "pk": 1,
-  "fields": {
-    "name": "PROPIO",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehicleownershipkind",
-  "pk": 2,
-  "fields": {
-    "name": "PRESTADO",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "packhouse_settings.vehicleownershipkind",
-  "pk": 3,
-  "fields": {
-    "name": "RENTADO",
-    "is_enabled": true,
-    "organization": 1
   }
 }
 ]

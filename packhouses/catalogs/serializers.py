@@ -2,21 +2,37 @@ from rest_framework import serializers
 from packhouses.catalogs.models import (
     Market, ProductMarketClass, Vehicle, HarvestingCrewProvider,
     ProductVariety, ProductPhenologyKind, ProductMassVolumeKind, Maquiladora,
-    CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, MarketProductSize, Orchard,
-    HarvestingCrew, OrchardCertification, ProductPackaging, ProductRipeness
+    CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, ProductPackaging,
+    HarvestingCrew, OrchardCertification, ProductRipeness
 )
 from django.utils.translation import gettext_lazy as _
 
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    price_measure_unit_category_display = serializers.SerializerMethodField()
+    price_measure_unit_category_display = serializers.SerializerMethodField(read_only=True)
+    product_market_classes = serializers.SerializerMethodField(read_only=True)
+    packaging = serializers.SerializerMethodField(read_only=True)
 
     def get_price_measure_unit_category_display(self, obj):
         return obj.get_price_measure_unit_category_display()
 
+    def get_product_market_classes(self, obj):
+        product_market_classes = ProductMarketClass.objects.filter(product=obj)
+        return ProductMarketClassSerializer(product_market_classes, many=True).data
+
+    def get_packaging(self, obj):
+        packaging = ProductPackaging.objects.filter(product=obj)
+        return PackagingSerializer(packaging, many=True).data
+
     class Meta:
         model = Product
+        fields = '__all__'
+
+
+class PackagingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductPackaging
         fields = '__all__'
 
 
@@ -68,15 +84,9 @@ class ProductVarietySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProductPackagingSerializer(serializers.ModelSerializer):
+class ProductSizeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ProductPackaging
-        fields = '__all__'
-
-
-class MarketProductSizeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MarketProductSize
+        model = ProductSize
         fields = '__all__'
 
 

@@ -36,12 +36,12 @@ class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.TabularInlin
         return None
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        parent_obj = self._get_parent_obj(request)
-        if db_field.name == "supply" and parent_obj:
-            kwargs["queryset"] = Supply.objects.filter(
-                organization=parent_obj.organization,
-                is_enabled=True,
-            )
+
+        if db_field.name == "supply":
+            if hasattr(request, 'organization'):
+                kwargs["queryset"] = Supply.objects.filter(organization=request.organization)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_readonly_fields(self, request, obj=None):
@@ -141,6 +141,7 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "requisition_supply":
+
             # Obtener el ID del Purchase Order actual
             parent_po_id = request.resolver_match.kwargs.get('object_id')
 
@@ -150,12 +151,15 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
             ).values_list('requisition_supply_id', flat=True)
 
             # Filtrar solo las RequisitionSupply con estado 'ready'
-            queryset = RequisitionSupply.objects.filter(requisition__status='ready').exclude(
+            queryset = RequisitionSupply.objects.filter(requisition__status='ready', ).exclude(
                 id__in=used_requisition_supplies
             )
+            if hasattr(request, 'organization'):
+                queryset = queryset.filter(requisition__organization=request.organization)
 
             kwargs["queryset"] = queryset
             kwargs["widget"] = SelectWidgetWithData(model=RequisitionSupply, data_fields=["quantity", "comments"])
+
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -166,11 +170,46 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
 
 @admin.register(PurchaseOrder)
 class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
-    list_display = ('ooid', 'provider', 'currency', 'status', 'created_at')
-    fields = ('ooid', 'provider','payment_date','currency', 'status', 'comments')
+    list_display = ('ooid', 'provider', 'currency', 'status', 'created_at', 'user', 'generate_actions_buttons')
+    fields = ('ooid', 'provider','payment_date','currency','tax', 'status', 'comments')
     list_filter = ('provider', 'currency', 'status')
     readonly_fields = ('ooid', 'status')
     inlines = [PurchaseOrderRequisitionSupplyInline]
+
+    def generate_actions_buttons(self, obj):
+        purchase_order_supply_pdf = reverse('purchase_order_supply_pdf', args=[obj.pk])
+        tooltip_purchase_order_supply_pdf = _('Generate Purchase Order Supply PDF')
+
+        tooltip_ready = _('Send to Payments Department')
+        ready_url = reverse('set_purchase_order_supply_ready', args=[obj.pk])
+        confirm_ready_text = _('Are you sure you want to send this purchase order supply to Payments Department?')
+        confirm_button_text = _('Yes, send')
+        cancel_button_text = _('No')
+
+        set_purchase_order_supply_ready_button = ''
+        if obj.status == 'open':
+            set_purchase_order_supply_ready_button = format_html(
+                '''
+                <a class="button btn-ready-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
+                   data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#4daf50;">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </a>
+                ''',
+                tooltip_ready, ready_url, confirm_ready_text, confirm_button_text, cancel_button_text
+            )
+
+        return format_html(
+            '''
+            <a class="button" href="{}" target="_blank" data-toggle="tooltip" title="{}">
+                <i class="fa-solid fa-print"></i>
+            </a>
+            {}
+            ''',
+            purchase_order_supply_pdf, tooltip_purchase_order_supply_pdf, set_purchase_order_supply_ready_button
+        )
+
+    generate_actions_buttons.short_description = _('Actions')
+    generate_actions_buttons.allow_tags = True
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
@@ -184,9 +223,21 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
         if db_field.name == "provider":
             if hasattr(request, 'organization'):
                 kwargs["queryset"] = Provider.objects.filter(organization=request.organization, is_enabled=True,
-                                                             category='supply_provider')
+                                                category='supply_provider')
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
-
-
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'provider' in form.base_fields:
+            form.base_fields['provider'].widget.can_add_related = False
+            form.base_fields['provider'].widget.can_change_related = False
+            form.base_fields['provider'].widget.can_delete_related = False
+            form.base_fields['provider'].widget.can_view_related = False
+        return form
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.user = request.user
+        super().save_model(request, obj, form, change)

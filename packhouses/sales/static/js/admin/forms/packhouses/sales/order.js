@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const incotermsField = $("#id_incoterms")
   const productField = $("#id_product")
   const productVarietyField = $("#id_product_variety")
-  const orderKindField = $("#id_order_kind")
+  const orderItemsByField = $("#id_order_items_by")
   const pricingByField = $("#id_pricing_by")
 
   let productProperties = null;
@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const API_BASE_URL = "/rest/v1";
 
   function updateFieldOptions(field, options) {
-    console.log("updateFieldOptions", field, options)
     field.empty();
     field.append(new Option("---------", "", true, true));
     options.forEach((option) => {
@@ -37,7 +36,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (clientCategory && clientCategory === 'packhouse') {
       fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&is_enabled=1`).then(
         (data) => {
-          console.log("Client options:", data);
           updateFieldOptions(clientField, data);
         }
       );
@@ -50,7 +48,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (clientCategory && clientCategory === 'maquiladora' && maquiladora) {
       fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&maquiladora=${maquiladora}&is_enabled=1`).then(
         (data) => {
-          console.log("Maquiladora Client options:", data);
           updateFieldOptions(clientField, data);
         }
       );
@@ -62,7 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (clientCategory && clientCategory === 'maquiladora') {
       fetchOptions(`${API_BASE_URL}/catalogs/maquiladora/?is_enabled=1`).then(
         (data) => {
-          console.log("Maquiladora options:", data);
           updateFieldOptions(maquiladoraField, data);
         }
       );
@@ -74,10 +70,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (product) {
       fetchOptions(`${API_BASE_URL}/catalogs/product-variety/?product=${product}&is_enabled=1`).then(
         (data) => {
-          console.log("Product Variety options:", data);
           updateFieldOptions(productVarietyField, data);
-        }
-      );
+        });
     } else {
       updateFieldOptions(productVarietyField, []);
     }
@@ -88,20 +82,19 @@ document.addEventListener("DOMContentLoaded", function () {
       fetchOptions(`${API_BASE_URL}/catalogs/product/${productField.val()}/`).then(
         (data) => {
           productProperties = data;
-          console.log("productProperties", productProperties)
           if (data.price_measure_unit_category_display) {
+            orderItemsByField.find('option[value="product_measure_unit"]').text(data.price_measure_unit_category_display);
             pricingByField.find('option[value="product_measure_unit"]').text(data.price_measure_unit_category_display);
-            orderKindField.find('option[value="product_measure_unit"]').text(data.price_measure_unit_category_display);
+            orderItemsByField.trigger('change').select2();
             pricingByField.trigger('change').select2();
-            orderKindField.trigger('change').select2();
           }
         });
     } else {
       productProperties = null;
+      orderItemsByField.find('option[value="product_measure_unit"]').text('Product measure unit');
       pricingByField.find('option[value="product_measure_unit"]').text('Product measure unit');
-      orderKindField.find('option[value="product_measure_unit"]').text('Product measure unit');
+      orderItemsByField.trigger('change').select2();
       pricingByField.trigger('change').select2();
-      orderKindField.trigger('change').select2();
     }
   }
 
@@ -147,7 +140,6 @@ document.addEventListener("DOMContentLoaded", function () {
       fetchOptions(`${API_BASE_URL}/catalogs/client/${client}/`).then(
         (data) => {
           setTimeout(() => {
-            console.log("Client data:", data);
             if (data.country === organization.country) {
               localDeliveryField.closest('.form-group').fadeIn();
             } else {
@@ -160,7 +152,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
     (data) => {
-      console.log("profiles/packhouse-exporter-profile:", data);
       if (data.count === 1) {
         organization = data.results.pop()
       }
@@ -184,7 +175,6 @@ document.addEventListener("DOMContentLoaded", function () {
   if (clientField.val()) {
     fetchOptions(`${API_BASE_URL}/catalogs/client/${clientField.val()}/`).then(
       (data) => {
-        console.log("Client data:", data);
         if (data.country === organization.country) {
           localDeliveryField.closest('.form-group').show();
         } else {

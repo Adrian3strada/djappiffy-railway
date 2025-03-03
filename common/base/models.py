@@ -6,9 +6,11 @@ from cities_light.models import City, Country, Region
 from django.db.models import Manager, QuerySet
 from django.db.models import Case, When, IntegerField, Value
 from django.db.models.functions import Cast
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 
+from .settings import SUPPLY_USAGE_UNIT_KIND_CHOICES, SUPPLY_CATEGORY_CHOICES
 
 class ProductKind(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -28,15 +30,30 @@ class ProductKind(models.Model):
         ordering = ['sort_order']
 
 
+class SupplyKind(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'), unique=True)
+    usage_unit_kind = models.CharField(max_length=30, verbose_name=_('Usage unit kind'), choices=SUPPLY_USAGE_UNIT_KIND_CHOICES)
+    category = models.CharField(max_length=40, verbose_name=_('Category'), choices=SUPPLY_CATEGORY_CHOICES)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Supply kind')
+        verbose_name_plural = _('Supply kinds')
+        ordering = ('name',)
+
+
 # Ejemplo:
 #   - Estándar del APEAM para AGUACATE en MÉXICO
 #   - Estándar del APEAM para AGUACATE en ESTADOS UNIDOS
 #   - Estándar de X para LIMÓN-MEXICANO en MÉXICO
 #   - Estándar de X para LIMÓN-PERSA en ESTADOS UNIDOS
-class CountryProductStandard(models.Model):
+class ProductKindCountryStandard(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
     country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     sort_order = models.PositiveIntegerField(default=0)
 
@@ -44,8 +61,8 @@ class CountryProductStandard(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('Country product standard')
-        verbose_name_plural = _('Country product standards')
+        verbose_name = _('Product kind country standard')
+        verbose_name_plural = _('Product kind country standards')
         ordering = ['sort_order']
         constraints = [
             models.UniqueConstraint(fields=['product_kind', 'country'], name='countryproductsizestandard_unique_productkind_country')
@@ -71,7 +88,7 @@ class CountryProductStandardSizeManager(Manager):
 #   - 110, 150, 175, 200, 230, 250, ... (de "ALGUNA ASOCIACIÓN" para LIMÓN-PERSA en ESTADOS UNIDOS)
 class CountryProductStandardSize(models.Model):
     name = models.CharField(max_length=255)
-    standard = models.ForeignKey(CountryProductStandard, on_delete=models.CASCADE)
+    standard = models.ForeignKey(ProductKindCountryStandard, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -88,21 +105,23 @@ class CountryProductStandardSize(models.Model):
         ]
 
 
-class CountryProductStandardPackaging(models.Model):
+class ProductStandardPackaging(models.Model):
+    supply_kind = models.ForeignKey(SupplyKind, on_delete=models.PROTECT)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, verbose_name=_('Code'))
+    max_product_amount = models.FloatField(verbose_name=_('Max product amount'), validators=[MinValueValidator(0.01)])
     description = models.CharField(max_length=255, null=True, blank=True)
-    standard = models.ForeignKey(CountryProductStandard, on_delete=models.CASCADE)
+    standard = models.ForeignKey(ProductKindCountryStandard, on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = _('Product standard, Packaging')
-        verbose_name_plural = _('Product standard, Packaging')
+        verbose_name = _('Product packaging standard')
+        verbose_name_plural = _('Product packaging standard')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='productstandardpackaging_unique_name_code_standard')
+            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='productpackagingstandard_unique_name_code_standard')
         ]
 
 
@@ -171,6 +190,7 @@ class LocalDelivery(models.Model):
         verbose_name_plural = _('Local Deliveries')
         ordering = ['sort_order']
 
+
 class Currency(models.Model):
     code = models.CharField(max_length=3, verbose_name=_('Code'))
     name = models.CharField(max_length=255)
@@ -186,3 +206,4 @@ class Currency(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['id', 'name'], name='currency_unique_id_name')
         ]
+

@@ -9,24 +9,25 @@ from django.utils.translation import gettext_lazy as _
 # Para exportar solo a PDF
 class ReportExportAdminMixin(ExportMixin):
     import_export_change_list_template = "admin/export/export_pdf/change_list_export.html"
-    report_function = None  
-        
+    report_function = None
+
     def export_action(self, request):
         if not self.has_export_permission(request):
             raise PermissionDenied
-        formats = [JSON] 
+        formats = [JSON]
         queryset = self.get_export_queryset(request)
         export_data = self.get_export_data(formats[0](), request, queryset)
         model_name = self.model._meta.verbose_name
-        
+
         if self.report_function is None:
             raise NotImplementedError("A report for this model is not available at the moment.")
 
         response = self.report_function(request, export_data, model_name)
         return response
+
     def get_export_resource_kwargs(self, request, *args, **kwargs):
         kwargs = super().get_export_resource_kwargs(request, *args, **kwargs)
-        kwargs['export_format'] = 'pdf' 
+        kwargs['export_format'] = 'pdf'
         return kwargs
 
 # Para exportar solo a excel
@@ -39,30 +40,33 @@ class SheetExportAdminMixin(ExportMixin):
 
         formats = [XLSX]
         queryset = self.get_export_queryset(request)
-        
+        export_data = self.get_export_data(formats[0](), request, queryset)
+        model_name = self.model._meta.verbose_name
         return self._do_file_export(formats[0](), request, queryset)
+
     def get_export_resource_kwargs(self, request, *args, **kwargs):
         kwargs = super().get_export_resource_kwargs(request, *args, **kwargs)
-        kwargs['export_format'] = 'export-sheet' 
+        kwargs['export_format'] = 'export-sheet'
         return kwargs
 
 # Para exportar a excel y PDF
 class SheetReportExportAdminMixin(ExportMixin):
     import_export_change_list_template = "admin/export/export_pdf_sheet/change_list_export.html"
-    report_function = None  
+    report_function = None
 
     def export_action(self, request):
         if not self.has_export_permission(request):
             raise PermissionDenied
-        
-        action = request.GET.get("export_type", "export-sheet") 
-        request.export_action_type = action 
+
+        action = request.GET.get("export_type", "export-sheet")
+        request.export_action_type = action
 
         query_params = request.GET.copy()
+
         if 'export_type' in query_params:
-            del query_params['export_type']                
+            del query_params['export_type']
         request.GET = query_params
-        
+
         queryset = self.get_export_queryset(request)
         model_name = self.model._meta.verbose_name
 
@@ -72,7 +76,7 @@ class SheetReportExportAdminMixin(ExportMixin):
             return self._do_file_export(formats[0](), request, queryset)
 
         elif action == "export-pdf":
-            formats = [JSON] 
+            formats = [JSON]
             export_data = self.get_export_data(formats[0](), request, queryset)
             if self.report_function is None:
                 raise NotImplementedError("A report for this model is not available at the moment.")
@@ -86,16 +90,16 @@ class SheetReportExportAdminMixin(ExportMixin):
         kwargs = super().get_export_resource_kwargs(request, *args, **kwargs)
         if hasattr(request, 'export_action_type'):
             export_format = 'pdf' if request.export_action_type == 'export-pdf' else 'excel'
-            kwargs['export_format'] = export_format  
+            kwargs['export_format'] = export_format
         return kwargs
 
 # Change headers to it verbose
 class ExportResource(resources.ModelResource):
     def get_export_fields(self, instance=None):
         fields = super().get_export_fields(instance)
-        model_class = self._meta.model  
+        model_class = self._meta.model
         for field in fields:
-            if hasattr(field, 'attribute'):  
+            if hasattr(field, 'attribute'):
                 try:
                     field.column_name = model_class._meta.get_field(field.attribute).verbose_name
                 except FieldDoesNotExist:
@@ -104,7 +108,7 @@ class ExportResource(resources.ModelResource):
 
 class DehydrationResource():
     def dehydrate_countries(self, obj):
-        return " ".join(country.name for country in obj.countries.all()) if obj.countries.exists() else ""
+        return ", ".join(country.name for country in obj.countries.all()) if obj.countries.exists() else ""
 
     def dehydrate_country(self, obj):
         return obj.country.name if obj.country else ""
@@ -121,46 +125,50 @@ class DehydrationResource():
     def dehydrate_market(self, obj):
         return obj.market.name if obj.market else ""
     
+    def dehydrate_markets(self, obj):
+        return ", ".join(market.name for market in obj.markets.all()) if obj.markets.exists() else ""
+        #return obj.market.name if obj.market else ""
+
     def dehydrate_market_class(self, obj):
-        return obj.market_class.class_name if obj.market_class else ""
-    
+        return obj.product_market_class.class_name if obj.product_market_class else ""
+
     def dehydrate_varieties(self, obj):
         return ", ".join(variety.name for variety in obj.varieties.all()) if obj.varieties.exists() else ""
 
     def dehydrate_standard_size(self, obj):
         return obj.standard_size.name if obj.standard_size else ""
-    
+
     def dehydrate_product(self, obj):
         # Si "product" es un ManyToManyField, devolver una lista de nombres
         if hasattr(obj.product, "all"):
             return ", ".join(product.name for product in obj.product.all()) if obj.product.exists() else ""
         # Si "product" es un ForeignKey, devolver directamente el nombre del producto
         return obj.product.name if obj.product else ""
-    
+
     def dehydrate_product_variety(self, obj):
         return obj.product_variety.name if obj.product_variety else ""
 
     def dehydrate_product_variety_size(self, obj):
         return obj.product_variety_size.name if obj.product_variety_size else ""
-    
+
     def dehydrate_product_size(self, obj):
         return obj.product_size.name if obj.product_size else ""
-    
+
     def dehydrate_product_ripeness(self, obj):
         return obj.product_ripeness.name if obj.product_ripeness else ""
-    
-    def dehydrate_product_packaging_standard(self, obj):
-        return obj.product_packaging_standard.name if obj.product_packaging_standard else ""
+
+    def dehydrate_product_standard_packaging(self, obj): 
+        return obj.product_standard_packaging.name if obj.product_standard_packaging else ""  
 
     def dehydrate_organization(self, obj):
         return obj.organization.name if obj.organization else ""
-    
+
     def dehydrate_producer(self, obj):
         return obj.producer.name if obj.producer else ""
 
     def dehydrate_brand(self, obj):
         return obj.brand.name if obj.brand else ""
-    
+
     def dehydrate_legal_category(self, obj):
         return obj.legal_category.name if obj.legal_category else ""
 
@@ -174,35 +182,32 @@ class DehydrationResource():
         return obj.vehicle.name if obj.vehicle else ""
 
     def dehydrate_maquiladora_clients(self, obj):
-        return ", ".join(client.name for client in obj.maquiladora_clients.all()) if obj.maquiladora_clients.exists() else ""
+        return ", ".join(client.name for client in obj.clients.all()) if obj.clients.exists() else ""
 
     def dehydrate_provider(self, obj):
         return obj.provider.name if obj.provider else ""
 
-    def dehydrate_main_supply_kind(self, obj):
-        return obj.main_supply_kind.name if obj.main_supply_kind else ""
-
-    def dehydrate_main_supply(self, obj):
-        return obj.main_supply.name if obj.main_supply else ""
-    
     def dehydrate_kind(self, obj):
         return obj.kind.name if obj.kind else ""
 
-    def dehydrate_packaging_kind(self, obj):
-        return obj.packaging_kind.name if obj.packaging_kind else ""
+    def dehydrate_packaging_supply_kind(self, obj): 
+        return obj.packaging_supply_kind.name if obj.packaging_supply_kind else "" 
+    
+    def dehydrate_packaging_supply(self, obj): 
+        return obj.packaging_supply.name if obj.packaging_supply else "" 
 
     def dehydrate_authority(self, obj):
         return obj.authority.name if obj.authority else ""
 
     def dehydrate_crew_chief(self, obj):
         return obj.crew_chief.name if obj.crew_chief else ""
-    
+
     def dehydrate_service_provider(self, obj):
         return obj.service_provider.name if obj.service_provider else ""
-    
+
     def dehydrate_capital_framework(self, obj):
         return obj.capital_framework.name if obj.capital_framework else ""
-    
+
     def dehydrate_status(self, obj):
         return obj.status.name if obj.status else ""
 
@@ -214,9 +219,5 @@ class DehydrationResource():
 
     def dehydrate_is_mixable(self, obj):
         return "✅" if obj.is_mixable else "❌"
-    
-    def dehydrate_is_ripe(self, obj):
-        return "✅" if obj.is_ripe else "❌"
-    
-        
+
 default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization', 'description')

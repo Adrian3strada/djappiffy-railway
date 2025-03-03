@@ -1,11 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
   const productField = $("#id_product");
   const clientField = $("#id_client");
+  const orderItemsByField = $("#id_order_items_by")
+  const pricingByField = $("#id_pricing_by")
+
   let productSizeOptions = [];
   let productPhenologyOptions = [];
-  let marketClassOptions = [];
+  let productMarketClassOptions = [];
   let productPackagingOptions = [];
+
   let clientProperties = null;
+  let productProperties = null;
+
 
   function updateFieldOptions(field, options) {
     if (field) {
@@ -28,24 +34,73 @@ document.addEventListener('DOMContentLoaded', () => {
     }).fail(error => console.error('Fetch error:', error));
   }
 
+  function getClientProperties() {
+    if (clientField.val()) {
+      fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
+        .then(data => {
+          clientProperties = data;
+          console.log("clientProperties", clientProperties)
+        })
+        .then(() => {
+          if (clientProperties && productProperties) {
+            alert("updateProductOptions() en getClientProperties()")
+            updateProductOptions();
+          }
+        });
+    } else {
+      clientProperties = null;
+    }
+  }
+
+  function getProductProperties() {
+    if (productField.val()) {
+      fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
+        .then(data => {
+          productProperties = data;
+          console.log("productProperties", productProperties)
+          const priceLabel = $('label[for$="-unit_price"]');
+          if (data.price_measure_unit_category_display) {
+            priceLabel.text(`Price (${data.price_measure_unit_category_display})`);
+          } else {
+            priceLabel.text(`Price`);
+          }
+        })
+        .then(() => {
+          if (clientProperties && productProperties) {
+            alert("updateProductOptions() en getProductProperties()")
+            updateProductOptions();
+          }
+        });
+    } else {
+      productProperties = null;
+    }
+  }
+
   function updateProductOptions() {
     console.log("updateProductOptions")
     console.log("productField.val()", productField.val())
     console.log("clientProperties", clientProperties)
-    if (productField.val() && clientProperties) {
-      fetchOptions(`/rest/v1/catalogs/product-size/?product=${productField.val()}&market=${clientProperties.market}&is_enabled=1`)
+    alert("updateProductOptions()")
+    if (clientProperties && productProperties) {
+      fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
         .then(data => {
           productSizeOptions = data;
         }).then(() => {
         console.log("productSizeOptions", productSizeOptions)
       });
-      fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productField.val()}&is_enabled=1`)
+      fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productProperties.id}&is_enabled=1`)
         .then(data => {
           productPhenologyOptions = data;
         }).then(() => {
         console.log("productPhenologyOptions", productPhenologyOptions)
       });
-      fetchOptions(`/rest/v1/catalogs/product-packaging/?product=${productField.val()}&is_enabled=1`)
+      fetchOptions(`/rest/v1/catalogs/product-market-class/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
+        .then(data => {
+          productMarketClassOptions = data
+        }).then(() => {
+        console.log("productMarketClassOptions 1", productMarketClassOptions)
+      });
+      fetchOptions(`/rest/v1/catalogs/product-packaging/?product=${productProperties.id}&is_enabled=1`)
         .then(data => {
           productPackagingOptions = data;
         }).then(() => {
@@ -58,76 +113,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function getClientProperties() {
-    if (clientField.val()) {
-      fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
-        .then(data => {
-          clientProperties = data;
-          console.log("clientProperties", clientProperties)
-        });
-    } else {
-      clientProperties = null;
-    }
-  }
-
   function updateMarketClassOptions() {
     if (clientProperties) {
-      fetchOptions(`/rest/v1/catalogs/product-market-class/?market=${clientProperties.market}`)
+      fetchOptions(`/rest/v1/catalogs/product-market-class/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
         .then(data => {
-          marketClassOptions = data
+          console.log("updateMarketClassOptions data", data)
+          productMarketClassOptions = data
         });
     } else {
-      marketClassOptions = [];
+      productMarketClassOptions = [];
     }
   }
 
-  productField.on('change', () => {
-    if (clientProperties) {
-      getClientProperties();
-      updateMarketClassOptions();
-    }
-    updateProductOptions();
+  clientField.on('change', () => {
+    getClientProperties();
   });
 
-  clientField.on('change', () => {
-    if (productField.val()) {
-      updateProductOptions();
-    }
-    getClientProperties();
-    updateMarketClassOptions();
+  productField.on('change', () => {
+    getProductProperties();
   });
+
+  if (clientField.val()) {
+    getClientProperties();
+  }
+
+  if (productField.val()) {
+    getProductProperties();
+  }
 
   document.addEventListener('formset:added', (event) => {
     if (event.detail.formsetName === 'orderitem_set') {
       const newForm = event.target;
       const productSizeField = $(newForm).find('select[name$="-product_size"]');
       const productPhenologyField = $(newForm).find('select[name$="-product_phenology"]');
-      const marketClassField = $(newForm).find('select[name$="-market_class"]');
+      const marketClassField = $(newForm).find('select[name$="-product_market_class"]');
       const productPackagingField = $(newForm).find('select[name$="-product_packaging"]');
 
       updateFieldOptions(productSizeField, productSizeOptions);
       updateFieldOptions(productPhenologyField, productPhenologyOptions);
-      updateFieldOptions(marketClassField, marketClassOptions);
+      updateFieldOptions(marketClassField, productMarketClassOptions);
       updateFieldOptions(productPackagingField, productPackagingOptions);
     }
   });
 
-  if (clientField.val()) {
-    // alert(clientField.val())
-    getClientProperties();
-    updateMarketClassOptions();
-  }
-
-  if (productField.val()) {
-    setTimeout(() => {
-      // alert(productField.val())
-      updateProductOptions();
-    }, 300);
-  }
-
   setTimeout(() => {
-    // const existingForms = $('div[id^="orderitem_set-"]');
-    // se cambió la forma de obtener los elementos para que solo tome los que tienen un ID numérico (y evitar el group y el vacío)
     const existingForms = $('div[id^="orderitem_set-"]').filter((index, form) => {
       return /\d+$/.test(form.id);
     });
@@ -135,12 +164,12 @@ document.addEventListener('DOMContentLoaded', () => {
     existingForms.each((index, form) => {
       const productSizeField = $(form).find(`select[name$="${index}-product_size"]`);
       const productPhenologyField = $(form).find(`select[name$="${index}-product_phenology"]`);
-      const marketClassField = $(form).find(`select[name$="${index}-market_class"]`);
+      const marketClassField = $(form).find(`select[name$="${index}-product_market_class"]`);
       const productPackagingField = $(form).find(`select[name$="${index}-product_packaging"]`);
 
       updateFieldOptions(productSizeField, productSizeOptions);
       updateFieldOptions(productPhenologyField, productPhenologyOptions);
-      updateFieldOptions(marketClassField, marketClassOptions);
+      updateFieldOptions(marketClassField, productMarketClassOptions);
       updateFieldOptions(productPackagingField, productPackagingOptions);
     });
   }, 2000);

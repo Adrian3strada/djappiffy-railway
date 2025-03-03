@@ -76,9 +76,9 @@ class ScheduleHarvest(models.Model):
         verbose_name=_("Product Variety"),
         on_delete=models.PROTECT,
     )
-    product_season_kind = models.ForeignKey(
+    product_phenologies = models.ForeignKey(
         ProductPhenologyKind,
-        verbose_name=_("Product season"),
+        verbose_name=_("Product phenology"),
         on_delete=models.PROTECT
     )
     product_harvest_size_kind = models.ForeignKey(
@@ -123,8 +123,6 @@ class ScheduleHarvest(models.Model):
         on_delete=models.PROTECT,
         verbose_name=_('Organization'),
     )
-
-
 
     def __str__(self):
         return f"{self.ooid}"

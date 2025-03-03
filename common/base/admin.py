@@ -1,8 +1,8 @@
 from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
-from .models import (ProductKind, CountryProductStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
-                     CountryProductStandardPackaging,
+from .models import (ProductKind, ProductKindCountryStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
+                     ProductStandardPackaging, SupplyKind,
                      Incoterm, LocalDelivery, Currency)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
@@ -11,7 +11,7 @@ from wagtail.images.models import Image
 from taggit.models import Tag
 from adminsortable2.admin import SortableAdminMixin
 from .decorators import uppercase_form_charfield
-
+from django.utils.translation import gettext_lazy as _
 
 #
 
@@ -28,15 +28,35 @@ class CountryProductStandardSizeInline(admin.TabularInline):
     verbose_name = 'Size'
     verbose_name_plural = 'Sizes'
 
+# TODO: Remover este cuando todo packaging esté completo
+@admin.register(ProductStandardPackaging)
+class CountryProductStandardPackagingAdmin(admin.ModelAdmin):
+    pass
+
 
 class CountryProductStandardPackagingInline(admin.TabularInline):
-    model = CountryProductStandardPackaging
+    model = ProductStandardPackaging
     extra = 0
-    verbose_name = 'Packaging'
-    verbose_name_plural = 'Packaging'
+    verbose_name = 'Standard packaging'
+    verbose_name_plural = 'Standard packaging'
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'supply_kind' in formset.form.base_fields:
+            formset.form.base_fields['supply_kind'].widget.can_add_related = False
+            formset.form.base_fields['supply_kind'].widget.can_change_related = False
+            formset.form.base_fields['supply_kind'].widget.can_delete_related = False
+            formset.form.base_fields['supply_kind'].widget.can_view_related = False
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'supply_kind':
+            kwargs['queryset'] = SupplyKind.objects.filter(category='packaging_containment', is_enabled=True)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(CountryProductStandard)
+@admin.register(ProductKindCountryStandard)
 class CountryProductStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'product_kind', 'country', 'is_enabled', 'sort_order')
     list_filter = [ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter, 'is_enabled']
@@ -106,6 +126,17 @@ class CurrencyAdmin(admin.ModelAdmin):
     list_filter = ['is_enabled']
 
     @uppercase_form_charfield('code')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+
+
+@admin.register(SupplyKind)
+class SupplyKindAdmin(admin.ModelAdmin):
+    list_display = ('name', 'usage_unit_kind', 'category', 'is_enabled')
+    list_filter = ('category', 'usage_unit_kind', 'is_enabled',)
+
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form

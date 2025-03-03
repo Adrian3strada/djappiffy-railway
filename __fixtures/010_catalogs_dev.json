@@ -5,7 +5,6 @@
   "fields": {
     "name": "MEXICO",
     "alias": "MEX",
-    "management_cost_per_kg": 11.0,
     "is_mixable": true,
     "label_language": "es",
     "address_label": null,
@@ -22,7 +21,6 @@
   "fields": {
     "name": "MEXICO 2",
     "alias": "MX2",
-    "management_cost_per_kg": 12.0,
     "is_mixable": true,
     "label_language": "es",
     "address_label": null,
@@ -39,7 +37,6 @@
   "fields": {
     "name": "ESTADOS UNIDOS",
     "alias": "USA",
-    "management_cost_per_kg": 12.0,
     "is_mixable": false,
     "label_language": "en",
     "address_label": null,
@@ -56,7 +53,6 @@
   "fields": {
     "name": "CANADA",
     "alias": "CAN",
-    "management_cost_per_kg": 12.0,
     "is_mixable": true,
     "label_language": "en",
     "address_label": null,
@@ -64,6 +60,38 @@
     "organization": 1,
     "countries": [
       38
+    ]
+  }
+},
+{
+  "model": "catalogs.market",
+  "pk": 5,
+  "fields": {
+    "name": "COLOMBIA",
+    "alias": "COL",
+    "is_mixable": true,
+    "label_language": "es",
+    "address_label": null,
+    "is_enabled": true,
+    "organization": 1,
+    "countries": [
+      49
+    ]
+  }
+},
+{
+  "model": "catalogs.market",
+  "pk": 6,
+  "fields": {
+    "name": "EL SALVADOR",
+    "alias": "SLV",
+    "is_mixable": true,
+    "label_language": "es",
+    "address_label": null,
+    "is_enabled": true,
+    "organization": 1,
+    "countries": [
+      211
     ]
   }
 },
@@ -111,7 +139,7 @@
     "name": "LIMÓN AMARILLO",
     "description": null,
     "price_measure_unit_category": "Kg",
-    "is_enabled": true,
+    "is_enabled": false,
     "organization": 1
   }
 },
@@ -122,7 +150,7 @@
     "kind": 8,
     "name": "VERDE",
     "description": null,
-    "price_measure_unit_category": "Kg",
+    "price_measure_unit_category": "L",
     "is_enabled": true,
     "organization": 1
   }
@@ -134,7 +162,7 @@
     "kind": 8,
     "name": "UNO",
     "description": null,
-    "price_measure_unit_category": "Kg",
+    "price_measure_unit_category": "g",
     "is_enabled": true,
     "organization": 1
   }
@@ -250,12 +278,22 @@
   }
 },
 {
+  "model": "catalogs.productmarketmeasureunitmanagementcost",
+  "pk": 4,
+  "fields": {
+    "product": 4,
+    "market": 4,
+    "measure_unit_management_cost": "40",
+    "is_enabled": true
+  }
+},
+{
   "model": "catalogs.productmarketclass",
   "pk": 1,
   "fields": {
     "product": 1,
     "market": 3,
-    "class_name": "1",
+    "name": "1",
     "is_enabled": true
   }
 },
@@ -265,7 +303,7 @@
   "fields": {
     "product": 1,
     "market": 3,
-    "class_name": "2",
+    "name": "2",
     "is_enabled": true
   }
 },
@@ -275,7 +313,7 @@
   "fields": {
     "product": 1,
     "market": 3,
-    "class_name": "3",
+    "name": "C",
     "is_enabled": true
   }
 },
@@ -285,7 +323,7 @@
   "fields": {
     "product": 1,
     "market": 1,
-    "class_name": "A",
+    "name": "C",
     "is_enabled": true
   }
 },
@@ -295,7 +333,7 @@
   "fields": {
     "product": 1,
     "market": 1,
-    "class_name": "B",
+    "name": "A",
     "is_enabled": true
   }
 },
@@ -305,7 +343,7 @@
   "fields": {
     "product": 1,
     "market": 1,
-    "class_name": "C",
+    "name": "B",
     "is_enabled": true
   }
 },
@@ -387,11 +425,22 @@
   }
 },
 {
+  "model": "catalogs.productvariety",
+  "pk": 8,
+  "fields": {
+    "name": "A1",
+    "alias": "A1",
+    "description": null,
+    "is_enabled": true,
+    "product": 4
+  }
+},
+{
   "model": "catalogs.productharvestsizekind",
   "pk": 1,
   "fields": {
     "product": 1,
-    "name": "180 g+",
+    "name": "210 g +",
     "is_enabled": true,
     "sort_order": 1
   }
@@ -401,7 +450,7 @@
   "pk": 2,
   "fields": {
     "product": 1,
-    "name": "270 g+",
+    "name": "120 g +",
     "is_enabled": true,
     "sort_order": 4
   }
@@ -411,7 +460,7 @@
   "pk": 4,
   "fields": {
     "product": 1,
-    "name": "240 g+",
+    "name": "150 g +",
     "is_enabled": true,
     "sort_order": 3
   }
@@ -421,7 +470,7 @@
   "pk": 5,
   "fields": {
     "product": 1,
-    "name": "210 g+",
+    "name": "180 g +",
     "is_enabled": true,
     "sort_order": 2
   }
@@ -431,7 +480,7 @@
   "pk": 6,
   "fields": {
     "product": 1,
-    "name": "300 g+",
+    "name": "120 g -",
     "is_enabled": true,
     "sort_order": 6
   }
@@ -443,7 +492,7 @@
     "product": 3,
     "name": "200 g +",
     "is_enabled": true,
-    "sort_order": 3
+    "sort_order": 1
   }
 },
 {
@@ -453,7 +502,7 @@
     "product": 3,
     "name": "210 g +",
     "is_enabled": true,
-    "sort_order": 4
+    "sort_order": 2
   }
 },
 {
@@ -463,7 +512,7 @@
     "product": 3,
     "name": "180 g +",
     "is_enabled": true,
-    "sort_order": 2
+    "sort_order": 0
   }
 },
 {
@@ -473,7 +522,7 @@
     "product": 3,
     "name": "250 g +",
     "is_enabled": true,
-    "sort_order": 5
+    "sort_order": 0
   }
 },
 {
@@ -483,7 +532,7 @@
     "product": 3,
     "name": "120 g +",
     "is_enabled": true,
-    "sort_order": 1
+    "sort_order": 0
   }
 },
 {
@@ -497,12 +546,41 @@
   }
 },
 {
+  "model": "catalogs.productharvestsizekind",
+  "pk": 13,
+  "fields": {
+    "product": 1,
+    "name": "Pela palo",
+    "is_enabled": true,
+    "sort_order": 7
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 14,
+  "fields": {
+    "product": 1,
+    "name": "Pepena",
+    "is_enabled": true,
+    "sort_order": 8
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 15,
+  "fields": {
+    "product": 1,
+    "name": "Revuelta / Parejo",
+    "is_enabled": true,
+    "sort_order": 9
+  }
+},
+{
   "model": "catalogs.productmassvolumekind",
   "pk": 1,
   "fields": {
     "name": "ESTANDAR",
     "is_enabled": true,
-    "packaging_supply_kind": 1,
     "product": 1,
     "sort_order": 0
   }
@@ -513,7 +591,6 @@
   "fields": {
     "name": "ENMALLADO",
     "is_enabled": true,
-    "packaging_supply_kind": 1,
     "product": 1,
     "sort_order": 1
   }
@@ -524,7 +601,6 @@
   "fields": {
     "name": "ORGÁNICO",
     "is_enabled": true,
-    "packaging_supply_kind": 1,
     "product": 1,
     "sort_order": 2
   }
@@ -535,7 +611,6 @@
   "fields": {
     "name": "ESTANDAR",
     "is_enabled": true,
-    "packaging_supply_kind": 1,
     "product": 2,
     "sort_order": 0
   }
@@ -546,7 +621,6 @@
   "fields": {
     "name": "ENMALLADO",
     "is_enabled": true,
-    "packaging_supply_kind": 1,
     "product": 2,
     "sort_order": 1
   }
@@ -557,7 +631,6 @@
   "fields": {
     "name": "ORGÁNICO",
     "is_enabled": true,
-    "packaging_supply_kind": 1,
     "product": 2,
     "sort_order": 2
   }
@@ -567,1699 +640,862 @@
   "pk": 1,
   "fields": {
     "product": 1,
-    "name": "NEGRA",
+    "name": "NEGRO",
     "is_enabled": true
   }
 },
 {
-  "model": "catalogs.vehicle",
-  "pk": 1,
-  "fields": {
-    "name": "CAMIONETA NISSAN D21 BLANCA",
-    "category": "packhouse",
-    "kind": 1,
-    "brand": 2,
-    "model": "2005",
-    "license_plate": "AEIOU2005",
-    "serial_number": "AAAAA1234567890",
-    "color": "BLANCA",
-    "ownership": 1,
-    "fuel": 1,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.vehicle",
-  "pk": 2,
-  "fields": {
-    "name": "CAMIONETA TOYOTA HILUX GRIS",
-    "category": "packhouse",
-    "kind": 1,
-    "brand": 3,
-    "model": "2016",
-    "license_plate": "AEIOU2016",
-    "serial_number": "BBBBB1234567890",
-    "color": "GRIS",
-    "ownership": 1,
-    "fuel": 1,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.vehicle",
+  "model": "catalogs.productripeness",
   "pk": 3,
   "fields": {
-    "name": "CAMIONETA NISSAN D21 ROJA",
-    "category": "harvesting_crew",
-    "kind": 1,
-    "brand": 2,
-    "model": "1992",
-    "license_plate": "AEIOU1992",
-    "serial_number": "VVVVV1234567890",
-    "color": "ROJO",
-    "ownership": 1,
-    "fuel": 1,
-    "comments": "Esta camioneta es de la cuadrilla y el ownership es PROPIO referido a la cuadrilla.",
-    "is_enabled": true,
-    "organization": 1
+    "product": 1,
+    "name": "MUY NEGRO",
+    "is_enabled": true
   }
 },
 {
-  "model": "catalogs.vehicle",
+  "model": "catalogs.productripeness",
   "pk": 4,
   "fields": {
-    "name": "CAMIONETA FORD RANGER XLT AZUL",
-    "category": "harvesting_crew",
-    "kind": 1,
-    "brand": 5,
-    "model": "1995",
-    "license_plate": "AEIOU1995",
-    "serial_number": "WWWWW0123456789",
-    "color": "AZUL",
-    "ownership": 1,
-    "fuel": 1,
-    "comments": "Esta camioneta es de la cuadrilla y el ownership es PROPIO referido a la cuadrilla.",
-    "is_enabled": true,
-    "organization": 1
+    "product": 1,
+    "name": "PARA HOY",
+    "is_enabled": true
   }
 },
 {
-  "model": "catalogs.vehicle",
-  "pk": 5,
-  "fields": {
-    "name": "AUTOMÓVIL CHEVROLET AVEO NEGRO",
-    "category": "packhouse",
-    "kind": 2,
-    "brand": 1,
-    "model": "2020",
-    "license_plate": "AEIOU2020",
-    "serial_number": "CCCCC01234567890",
-    "color": "NEGRO",
-    "ownership": 1,
-    "fuel": 1,
-    "comments": "Automóvil utilizado por los agentes de ventas",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.provider",
+  "model": "catalogs.productsize",
   "pk": 1,
   "fields": {
-    "name": "PROVEEDOR DE INTERNET",
-    "category": "service_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25743,
-    "district": 87521,
-    "postal_code": "58000",
-    "neighborhood": "MORELIA NHB",
-    "address": "MORELIA STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PROVIDER_INTERNET",
-    "email": "provider.internet@localhost",
-    "phone_number": "443 000 0000",
-    "comments": null,
+    "product": 1,
+    "market": 1,
+    "standard_size": 1,
+    "name": "COMERCIAL",
+    "alias": "COM",
+    "description": null,
     "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 2,
-  "fields": {
-    "name": "PROVEEDOR DE FRUTA EN PERIBAN",
-    "category": "product_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25758,
-    "district": 87387,
-    "postal_code": "60440",
-    "neighborhood": "PERIBAN NHB",
-    "address": "PERIBAN STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PROVIDER_FRUIT_PERIBAN",
-    "email": "provider.fruit.periban@localhost",
-    "phone_number": "354 000 0000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 3,
-  "fields": {
-    "name": "PROVEEDOR DE FRUTA EN TACÁMBARO",
-    "category": "product_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25772,
-    "district": 86917,
-    "postal_code": "61650",
-    "neighborhood": "TACÁMBARO NHB",
-    "address": "TACÁMBARO STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PROVIDER_FRUIT_TACÁMBARO",
-    "email": "provider.fruit.tacambaro@localhost",
-    "phone_number": "459 000 0000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 4,
-  "fields": {
-    "name": "PROVEEDOR DE FRUTA EN URUAPAN",
-    "category": "product_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25792,
-    "district": 86768,
-    "postal_code": "60000",
-    "neighborhood": "URUAPAN NHB",
-    "address": "URUAPAN STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PROVIDER_FRUIT_URUAPAN",
-    "email": "provider.fruit.uruapan@localhost",
-    "phone_number": "452 000 0000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 5,
-  "fields": {
-    "name": "PROVEEDOR DE ENERGÍA ELÉCTRICA",
-    "category": "service_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25743,
-    "district": 87521,
-    "postal_code": "58000",
-    "neighborhood": "MORELIA NHB",
-    "address": "MORELIA STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PROVIDER_ELECTRICITY",
-    "email": "provider.service.electricity@localhost",
-    "phone_number": "443 000 0000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 6,
-  "fields": {
-    "name": "PROVEEDOR DEL SERVICIO DE AGUA Y DRENAJE",
-    "category": "service_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25743,
-    "district": 87521,
-    "postal_code": "58000",
-    "neighborhood": "MORELIA NHB",
-    "address": "MORELIA STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PROVIDER_SEWERAGE",
-    "email": "provider.service.sewerage@localhost",
-    "phone_number": "443 000 0000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 7,
-  "fields": {
-    "name": "PROVEEDOR DE CAJAS HECHAS DE CARTÓN",
-    "category": "supply_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25743,
-    "district": 88900,
-    "postal_code": "58000",
-    "neighborhood": "MORELIA NHB",
-    "address": "MORELIA STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PROVIDER_SUPPLIES_01",
-    "email": "provider.supplies.01@localhost",
-    "phone_number": "443 000 0000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 8,
-  "fields": {
-    "name": "PROVEEDOR DE TARIMAS",
-    "category": "supply_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25743,
-    "district": 88902,
-    "postal_code": "58000",
-    "neighborhood": "MORELIA NHB",
-    "address": "MORELIA STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PROVIDER_SUPPLIES_02",
-    "email": "provider.supplies.02@localhost",
-    "phone_number": "443 000 0000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 9,
-  "fields": {
-    "name": "PROVEEDOR DE PLÁSTICOS",
-    "category": "supply_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25761,
-    "district": 87324,
-    "postal_code": "58500",
-    "neighborhood": "PURUÁNDIRO NHB",
-    "address": "PURUÁNDIRO STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PROVIDER_SUPPLIES_03",
-    "email": "provider.supplies.03@localhost",
-    "phone_number": "438 000 000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 10,
-  "fields": {
-    "name": "PROVEEDOR DE CUADRILLAS EN URUAPAN",
-    "category": "harvesting_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25792,
-    "district": 86768,
-    "postal_code": "60000",
-    "neighborhood": "URUAPAN NHB",
-    "address": "URUAPAN STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PROVIDER_HARVESTING_URUAPAN",
-    "email": "provider.harvesting.uruapan@localhost",
-    "phone_number": "452 000 0000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": [
-      4
-    ]
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 11,
-  "fields": {
-    "name": "PROVEEDOR DE CUADRILLAS EN PERIBAN",
-    "category": "harvesting_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25758,
-    "district": 87387,
-    "postal_code": "60440",
-    "neighborhood": "PERIBAN NHB",
-    "address": "PERIBAN STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PROVIDER_HARVESTING_PERIBAN",
-    "email": "provider.harvesting.periban@localhost",
-    "phone_number": "452 000 0000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": [
-      4
-    ]
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 12,
-  "fields": {
-    "name": "PROVEEDOR DE CUADRILLAS EN TACÁMBARO",
-    "category": "harvesting_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25772,
-    "district": 86917,
-    "postal_code": "61650",
-    "neighborhood": "TACÁMBARO NHB",
-    "address": "TACÁMBARO STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PROVIDER_HARVESTING_TACAMBARO",
-    "email": "provider.harvesting.tacambaro@localhost",
-    "phone_number": "459 000 0000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": [
-      4
-    ]
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 13,
-  "fields": {
-    "name": "PRODUCTOR DE AGUACATE EN URUAPAN",
-    "category": "product_producer",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25792,
-    "district": 86768,
-    "postal_code": "60000",
-    "neighborhood": "URUAPAN NHB",
-    "address": "URUAPAN STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PRODUCER_URUAPAN",
-    "email": "provider.producer.uruapan@localhost",
-    "phone_number": "452 000 000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 14,
-  "fields": {
-    "name": "PRODUCTOR DE AGUACATE EN PERIBAN",
-    "category": "product_producer",
-    "provider_provider": 2,
-    "country": 158,
-    "state": 2282,
-    "city": 25758,
-    "district": 87387,
-    "postal_code": "60440",
-    "neighborhood": "PERIBAN NHB",
-    "address": "PERIBAN STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PRODUCER_PERIBAN",
-    "email": "provider.producer.periban@localhost",
-    "phone_number": "354 000 0000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 15,
-  "fields": {
-    "name": "PRODUCTOR DE AGUACATE EN TACÁMBARO",
-    "category": "product_producer",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25772,
-    "district": 86917,
-    "postal_code": "61650",
-    "neighborhood": "TACÁMBARO NHB",
-    "address": "TACÁMBARO STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_PRODUCER_TACAMBARO",
-    "email": "provider.producer.tacambaro@localhost",
-    "phone_number": "459 000 0000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 16,
-  "fields": {
-    "name": "PROVEEDOR DE CUADRILLAS PROPIAS DEL EMPAQUE",
-    "category": "harvesting_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25743,
-    "district": 87521,
-    "postal_code": "58000",
-    "neighborhood": "MORELIA NHB",
-    "address": "MORELIA STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "TAX_SELF",
-    "email": "packers.self.harvesting@localhost",
-    "phone_number": "443 000 0000",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": [
+    "sort_order": 1,
+    "varieties": [
       1,
       2
     ]
   }
 },
 {
-  "model": "catalogs.crewchief",
-  "pk": 1,
-  "fields": {
-    "name": "AARÓN SÁNCHEZ",
-    "provider": 16,
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.crewchief",
+  "model": "catalogs.productsize",
   "pk": 2,
   "fields": {
-    "name": "BALDOMERO SANTOYO",
-    "provider": 16,
-    "is_enabled": true
+    "product": 1,
+    "market": 1,
+    "standard_size": 4,
+    "name": "EXTRA",
+    "alias": "EXT",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 2,
+    "varieties": [
+      1,
+      2
+    ]
   }
 },
 {
-  "model": "catalogs.crewchief",
+  "model": "catalogs.productsize",
   "pk": 3,
   "fields": {
-    "name": "CARLOS SANTANA",
-    "provider": 16,
-    "is_enabled": true
+    "product": 1,
+    "market": 1,
+    "standard_size": 2,
+    "name": "MEDIANO",
+    "alias": "MED",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 3,
+    "varieties": [
+      1,
+      2
+    ]
   }
 },
 {
-  "model": "catalogs.crewchief",
+  "model": "catalogs.productsize",
   "pk": 4,
   "fields": {
-    "name": "ÁLVARO PÉREZ",
-    "provider": 11,
-    "is_enabled": true
+    "product": 1,
+    "market": 1,
+    "standard_size": 3,
+    "name": "PRIMERA",
+    "alias": "PRI",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 4,
+    "varieties": [
+      1,
+      2
+    ]
   }
 },
 {
-  "model": "catalogs.crewchief",
+  "model": "catalogs.productsize",
   "pk": 5,
   "fields": {
-    "name": "BLAS PEREIRA",
-    "provider": 11,
-    "is_enabled": true
+    "product": 1,
+    "market": 1,
+    "standard_size": 5,
+    "name": "SUPER",
+    "alias": "SUP",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 5,
+    "varieties": [
+      1,
+      2
+    ]
   }
 },
 {
-  "model": "catalogs.crewchief",
+  "model": "catalogs.productsize",
   "pk": 6,
   "fields": {
-    "name": "CLAUDIO PEDRAZA",
-    "provider": 11,
-    "is_enabled": true
+    "product": 1,
+    "market": 3,
+    "standard_size": 28,
+    "name": "32",
+    "alias": "32",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 6,
+    "varieties": [
+      1,
+      2
+    ]
   }
 },
 {
-  "model": "catalogs.crewchief",
+  "model": "catalogs.productsize",
   "pk": 7,
   "fields": {
-    "name": "ARMANDO TAPIA",
-    "provider": 12,
-    "is_enabled": true
+    "product": 1,
+    "market": 3,
+    "standard_size": 27,
+    "name": "36",
+    "alias": "36",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 7,
+    "varieties": [
+      1,
+      2
+    ]
   }
 },
 {
-  "model": "catalogs.crewchief",
+  "model": "catalogs.productsize",
   "pk": 8,
   "fields": {
-    "name": "BRUNO TALAVERA",
-    "provider": 12,
-    "is_enabled": true
+    "product": 1,
+    "market": 3,
+    "standard_size": 26,
+    "name": "40",
+    "alias": "40",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 8,
+    "varieties": [
+      1,
+      2
+    ]
   }
 },
 {
-  "model": "catalogs.crewchief",
+  "model": "catalogs.productsize",
   "pk": 9,
   "fields": {
-    "name": "CRISTIAN TABOADA",
-    "provider": 12,
-    "is_enabled": true
+    "product": 1,
+    "market": 3,
+    "standard_size": 25,
+    "name": "48",
+    "alias": "48",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 9,
+    "varieties": [
+      1,
+      2
+    ]
   }
 },
 {
-  "model": "catalogs.crewchief",
+  "model": "catalogs.productsize",
   "pk": 10,
   "fields": {
-    "name": "AURELIO URIBE",
-    "provider": 10,
-    "is_enabled": true
+    "product": 1,
+    "market": 3,
+    "standard_size": 24,
+    "name": "60",
+    "alias": "60",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 10,
+    "varieties": [
+      1,
+      2
+    ]
   }
 },
 {
-  "model": "catalogs.crewchief",
+  "model": "catalogs.productsize",
   "pk": 11,
   "fields": {
-    "name": "BULMARO UGARTE",
-    "provider": 10,
-    "is_enabled": true
+    "product": 1,
+    "market": 3,
+    "standard_size": 23,
+    "name": "70",
+    "alias": "70",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 11,
+    "varieties": [
+      1,
+      2
+    ]
   }
 },
 {
-  "model": "catalogs.crewchief",
+  "model": "catalogs.productsize",
   "pk": 12,
   "fields": {
-    "name": "CUSTODIO ULLOA",
-    "provider": 10,
-    "is_enabled": true
+    "product": 1,
+    "market": 3,
+    "standard_size": 22,
+    "name": "84",
+    "alias": "84",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 12,
+    "varieties": [
+      1,
+      2
+    ]
   }
 },
 {
-  "model": "catalogs.service",
+  "model": "catalogs.provider",
   "pk": 1,
   "fields": {
-    "name": "SERVICIO DE ELECTRICIDAD",
-    "service_provider": 5,
-    "is_enabled": true,
-    "organization": 1
+    "name": "JUANITO",
+    "category": "service_provider",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2291,
+    "city": 25002,
+    "district": 88026,
+    "postal_code": "3",
+    "neighborhood": "3",
+    "address": "3",
+    "external_number": "3",
+    "internal_number": null,
+    "tax_id": "3",
+    "email": "aaaa@gmail.com",
+    "phone_number": "1",
+    "comments": null,
+    "is_enabled": false,
+    "organization": 1,
+    "vehicle_provider": []
   }
 },
 {
-  "model": "catalogs.service",
+  "model": "catalogs.provider",
   "pk": 2,
   "fields": {
-    "name": "SERVICIO DE INTERNET",
-    "service_provider": 1,
+    "name": "JUANITO",
+    "category": "product_producer",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2291,
+    "city": 25001,
+    "district": 88180,
+    "postal_code": "111",
+    "neighborhood": "1",
+    "address": "1",
+    "external_number": "1",
+    "internal_number": "1",
+    "tax_id": "1",
+    "email": "aaaa@gmail.com",
+    "phone_number": "1",
+    "comments": null,
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "vehicle_provider": []
   }
 },
 {
-  "model": "catalogs.service",
-  "pk": 3,
-  "fields": {
-    "name": "SERVICIO DE AGUA Y DRENAJE",
-    "service_provider": 6,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.orchard",
+  "model": "catalogs.client",
   "pk": 1,
   "fields": {
-    "name": "LA ALMENDRA [PERIBAN]",
-    "code": "HUE0001",
-    "category": "conventional",
-    "producer": 14,
-    "safety_authority_registration_date": "2025-02-13",
-    "state": 2282,
-    "city": 25758,
-    "district": 87387,
-    "ha": 10.0,
-    "sanitary_certificate": "PER12345",
+    "name": "MARKET AND SALES OF AMERICA",
+    "category": "packhouse",
+    "market": 4,
+    "country": 38,
+    "state": 474,
+    "city": 9022,
+    "district": 11644,
+    "postal_code": "00661",
+    "neighborhood": "GINZA",
+    "address": "SOUTH",
+    "external_number": "4598",
+    "internal_number": "Bodega 10",
+    "shipping_address": 1,
+    "capital_framework": 28,
+    "tax_id": "FRI16031262338",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 15.0,
+    "fda": null,
+    "swift": null,
+    "aba": null,
+    "clabe": null,
+    "bank": 1,
+    "contact_name": "1",
+    "contact_email": "a@gmail.com",
+    "contact_phone_number": "1",
     "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
+    "organization": 1
   }
 },
 {
-  "model": "catalogs.orchard",
+  "model": "catalogs.client",
   "pk": 2,
   "fields": {
-    "name": "LA BONANZA [PERIBAN]",
-    "code": "HUE0002",
-    "category": "conventional",
-    "producer": 14,
-    "safety_authority_registration_date": "2025-02-13",
-    "state": 2282,
-    "city": 25758,
-    "district": 87387,
-    "ha": 10.0,
-    "sanitary_certificate": "PER67890",
+    "name": "AVOCADOS  COMPANY",
+    "category": "packhouse",
+    "market": 4,
+    "country": 38,
+    "state": 467,
+    "city": 9035,
+    "district": 11521,
+    "postal_code": "01SFF51",
+    "neighborhood": "SECTOR 3",
+    "address": "LONG ISLAND",
+    "external_number": "45874",
+    "internal_number": null,
+    "shipping_address": null,
+    "capital_framework": 28,
+    "tax_id": "ARFE0811160LF",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 8.0,
+    "fda": null,
+    "swift": null,
+    "aba": null,
+    "clabe": "45621145200012241",
+    "bank": 2,
+    "contact_name": "LIAM LORAM",
+    "contact_email": "a@gmail.com",
+    "contact_phone_number": "1",
     "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
+    "organization": 1
   }
 },
 {
-  "model": "catalogs.orchard",
+  "model": "catalogs.client",
   "pk": 3,
   "fields": {
-    "name": "LA CANDELARIA [PERIBAN]",
-    "code": "HUE0003",
-    "category": "organic",
-    "producer": 14,
-    "safety_authority_registration_date": "2025-02-13",
-    "state": 2282,
-    "city": 25758,
-    "district": 87387,
-    "ha": 10.0,
-    "sanitary_certificate": "PER45678",
+    "name": "TIENDAS MEXICANAS DE FRUTA",
+    "category": "packhouse",
+    "market": 1,
+    "country": 158,
+    "state": 2271,
+    "city": 27097,
+    "district": 85191,
+    "postal_code": "54760",
+    "neighborhood": "SAN JUAN",
+    "address": "CARRETERA CUATITLAN ZUMPAGO LOTE 25",
+    "external_number": "MANZANA 82",
+    "internal_number": null,
+    "shipping_address": null,
+    "capital_framework": 2,
+    "tax_id": "TIMF50701RM1",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 8.0,
+    "fda": null,
+    "swift": "159853215654",
+    "aba": "7531598521492",
+    "clabe": "45621145200012241",
+    "bank": 1,
+    "contact_name": "GABRIELA MORELOS CARRASCO",
+    "contact_email": "comprasperecederos@gpochedraui.com",
+    "contact_phone_number": "591 917 9414",
     "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
+    "organization": 1
   }
 },
 {
-  "model": "catalogs.orchard",
+  "model": "catalogs.client",
   "pk": 4,
   "fields": {
-    "name": "LA DUNA [TACÁMBARO]",
-    "code": "HUE0004",
-    "category": "conventional",
-    "producer": 15,
-    "safety_authority_registration_date": "2025-02-13",
+    "name": "VENTA AL PUBLICO EN GENERAL",
+    "category": "packhouse",
+    "market": 1,
+    "country": 158,
     "state": 2282,
-    "city": 25772,
-    "district": 86917,
-    "ha": 10.0,
-    "sanitary_certificate": "TAC12345",
+    "city": 25742,
+    "district": 87096,
+    "postal_code": "0",
+    "neighborhood": "-",
+    "address": "-",
+    "external_number": "0",
+    "internal_number": null,
+    "shipping_address": null,
+    "capital_framework": null,
+    "tax_id": "XAXX010101000",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 0.0,
+    "fda": null,
+    "swift": null,
+    "aba": null,
+    "clabe": null,
+    "bank": null,
+    "contact_name": "-",
+    "contact_email": "a@gmail.com",
+    "contact_phone_number": "0",
     "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
+    "organization": 1
   }
 },
 {
-  "model": "catalogs.orchard",
+  "model": "catalogs.client",
   "pk": 5,
   "fields": {
-    "name": "LA ESTRELLA [TACÁMBARO]",
-    "code": "HUE0005",
-    "category": "conventional",
-    "producer": 15,
-    "safety_authority_registration_date": "2025-02-13",
-    "state": 2282,
-    "city": 25772,
-    "district": 86917,
-    "ha": 10.0,
-    "sanitary_certificate": "TAC67890",
+    "name": "SALES OF THE FOOD´S",
+    "category": "packhouse",
+    "market": 3,
+    "country": 234,
+    "state": 3650,
+    "city": 44706,
+    "district": 138589,
+    "postal_code": "60002",
+    "neighborhood": "ANAHEIM",
+    "address": "PARKWAY",
+    "external_number": "6001",
+    "internal_number": null,
+    "shipping_address": null,
+    "capital_framework": 15,
+    "tax_id": "MER012685",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 0.0,
+    "fda": null,
+    "swift": null,
+    "aba": null,
+    "clabe": null,
+    "bank": 1,
+    "contact_name": "JUAN LONDONGO",
+    "contact_email": "a@gmail.com",
+    "contact_phone_number": "1",
     "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
+    "organization": 1
   }
 },
 {
-  "model": "catalogs.orchard",
+  "model": "catalogs.client",
   "pk": 6,
   "fields": {
-    "name": "LA FINCA [TACÁMBARO]",
-    "code": "HUE0006",
-    "category": "organic",
-    "producer": 15,
-    "safety_authority_registration_date": "2025-02-13",
+    "name": "JULIO GARCIA LOPEZ",
+    "category": "packhouse",
+    "market": 1,
+    "country": 158,
     "state": 2282,
-    "city": 25772,
-    "district": 86917,
-    "ha": 10.0,
-    "sanitary_certificate": "TAC45678",
+    "city": 25791,
+    "district": 86343,
+    "postal_code": "61150",
+    "neighborhood": "CENTRO",
+    "address": "LA LOMA",
+    "external_number": "450",
+    "internal_number": null,
+    "shipping_address": null,
+    "capital_framework": null,
+    "tax_id": "XAXX010101000",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 15.0,
+    "fda": null,
+    "swift": null,
+    "aba": null,
+    "clabe": null,
+    "bank": 1,
+    "contact_name": "ALAN JOSUE ALCANTAR",
+    "contact_email": "aguacates@gmail.com",
+    "contact_phone_number": "4431252068",
     "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
+    "organization": 1
   }
 },
 {
-  "model": "catalogs.orchard",
+  "model": "catalogs.client",
   "pk": 7,
   "fields": {
-    "name": "LA GRANJA [URUAPAN]",
-    "code": "HUE0007",
-    "category": "conventional",
-    "producer": 13,
-    "safety_authority_registration_date": "2025-02-13",
-    "state": 2282,
-    "city": 25792,
-    "district": 86768,
-    "ha": 10.0,
-    "sanitary_certificate": "URU12345",
+    "name": "LOS DEL MONTE",
+    "category": "packhouse",
+    "market": 1,
+    "country": 158,
+    "state": 2269,
+    "city": 25891,
+    "district": 87098,
+    "postal_code": "1102589",
+    "neighborhood": "LOMAS SECTOR 4",
+    "address": "LOMA",
+    "external_number": "1458",
+    "internal_number": null,
+    "shipping_address": null,
+    "capital_framework": 2,
+    "tax_id": "XEXEXE010101",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 15.0,
+    "fda": null,
+    "swift": null,
+    "aba": null,
+    "clabe": null,
+    "bank": 1,
+    "contact_name": "IGNACION MERCADO",
+    "contact_email": "a@gmail.com",
+    "contact_phone_number": "42536254178",
     "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
+    "organization": 1
   }
 },
 {
-  "model": "catalogs.orchard",
+  "model": "catalogs.client",
   "pk": 8,
   "fields": {
-    "name": "LA HIGUERA [URUAPAN]",
-    "code": "HUE0008",
-    "category": "conventional",
-    "producer": 13,
-    "safety_authority_registration_date": "2025-02-13",
-    "state": 2282,
-    "city": 25792,
-    "district": 86768,
-    "ha": 10.0,
-    "sanitary_certificate": "URU67890",
+    "name": "GRUPO COMERCIAL DE FRUTAS",
+    "category": "packhouse",
+    "market": 6,
+    "country": 211,
+    "state": 3248,
+    "city": 39070,
+    "district": null,
+    "postal_code": "1102589",
+    "neighborhood": "LOMAS SECTOR 4",
+    "address": "LOMA",
+    "external_number": "1458",
+    "internal_number": null,
+    "shipping_address": null,
+    "capital_framework": null,
+    "tax_id": "XEXEXE010101",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 0.0,
+    "fda": null,
+    "swift": null,
+    "aba": null,
+    "clabe": null,
+    "bank": null,
+    "contact_name": "JAVIER MOLLINEDA",
+    "contact_email": "a@gmail.com",
+    "contact_phone_number": "1",
     "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
+    "organization": 1
   }
 },
 {
-  "model": "catalogs.orchard",
+  "model": "catalogs.client",
   "pk": 9,
   "fields": {
-    "name": "LA INMACULADA [URUAPAN]",
-    "code": "HUE0009",
-    "category": "organic",
-    "producer": 13,
-    "safety_authority_registration_date": "2025-02-13",
-    "state": 2282,
-    "city": 25792,
-    "district": 86768,
-    "ha": 10.0,
-    "sanitary_certificate": "URU45678",
-    "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
-  }
-},
-{
-  "model": "catalogs.orchardcertification",
-  "pk": 1,
-  "fields": {
-    "certification_kind": 1,
-    "certification_number": "CERT123",
-    "expiration_date": "2025-05-31",
-    "verifier": 1,
-    "extra_code": "123",
-    "is_enabled": true,
-    "orchard": 2
-  }
-},
-{
-  "model": "catalogs.orchardcertification",
-  "pk": 2,
-  "fields": {
-    "certification_kind": 2,
-    "certification_number": "CERT123",
-    "expiration_date": "2025-04-30",
-    "verifier": 4,
-    "extra_code": "123",
-    "is_enabled": true,
-    "orchard": 2
-  }
-},
-{
-  "model": "catalogs.harvestingcrew",
-  "pk": 1,
-  "fields": {
-    "provider": 16,
-    "name": "CUADRILLA ALPHA",
-    "certification_name": null,
-    "crew_chief": 1,
-    "persons_number": 5,
-    "comments": null,
+    "name": "AMERICA GLOBAL FOOD´S",
+    "category": "packhouse",
+    "market": 3,
+    "country": 234,
+    "state": 3621,
+    "city": 42349,
+    "district": 126145,
+    "postal_code": "66098",
+    "neighborhood": "MIDTOWN",
+    "address": "CAMERON AVE",
+    "external_number": "1",
+    "internal_number": null,
+    "shipping_address": null,
+    "capital_framework": null,
+    "tax_id": "XEXX010101000",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 15.0,
+    "fda": null,
+    "swift": null,
+    "aba": null,
+    "clabe": "1235412547854125",
+    "bank": 3,
+    "contact_name": "LARISSA GREEN",
+    "contact_email": "SALESANDFOODS@GMAIL.COM",
+    "contact_phone_number": "1",
     "is_enabled": true,
     "organization": 1
   }
 },
 {
-  "model": "catalogs.harvestingcrew",
-  "pk": 2,
-  "fields": {
-    "provider": 16,
-    "name": "CUADRILLA BETA",
-    "certification_name": null,
-    "crew_chief": 2,
-    "persons_number": 5,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.harvestingcrew",
-  "pk": 3,
-  "fields": {
-    "provider": 16,
-    "name": "CUADRILLA GAMMA",
-    "certification_name": null,
-    "crew_chief": 3,
-    "persons_number": 5,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.harvestingcrew",
-  "pk": 4,
-  "fields": {
-    "provider": 11,
-    "name": "CUADRILLA PERIBAN 1",
-    "certification_name": null,
-    "crew_chief": 4,
-    "persons_number": 5,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.harvestingcrew",
-  "pk": 5,
-  "fields": {
-    "provider": 11,
-    "name": "CUADRILLA PERIBAN 2",
-    "certification_name": null,
-    "crew_chief": 5,
-    "persons_number": 5,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.harvestingcrew",
-  "pk": 6,
-  "fields": {
-    "provider": 11,
-    "name": "CUADRILLA PERIBAN 3",
-    "certification_name": null,
-    "crew_chief": 6,
-    "persons_number": 5,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.harvestingcrew",
-  "pk": 7,
-  "fields": {
-    "provider": 12,
-    "name": "CUADRILLA TACÁMBARO 1",
-    "certification_name": null,
-    "crew_chief": 7,
-    "persons_number": 5,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.harvestingcrew",
-  "pk": 8,
-  "fields": {
-    "provider": 12,
-    "name": "CUADRILLA TACÁMBARO 2",
-    "certification_name": null,
-    "crew_chief": 8,
-    "persons_number": 5,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.harvestingcrew",
-  "pk": 9,
-  "fields": {
-    "provider": 12,
-    "name": "CUADRILLA TACÁMBARO 3",
-    "certification_name": null,
-    "crew_chief": 9,
-    "persons_number": 5,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.harvestingcrew",
+  "model": "catalogs.client",
   "pk": 10,
   "fields": {
-    "provider": 10,
-    "name": "CUADRILLA URUAPAN 1",
-    "certification_name": null,
-    "crew_chief": 10,
-    "persons_number": 5,
-    "comments": null,
+    "name": "TRATADO DE RESIDUOS ORGANICOS",
+    "category": "packhouse",
+    "market": 1,
+    "country": 158,
+    "state": 2282,
+    "city": 25741,
+    "district": 88514,
+    "postal_code": "54760",
+    "neighborhood": "CENTRO",
+    "address": "CALLE 1",
+    "external_number": "1",
+    "internal_number": null,
+    "shipping_address": null,
+    "capital_framework": 2,
+    "tax_id": "XAXX010101000",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 0.0,
+    "fda": null,
+    "swift": null,
+    "aba": null,
+    "clabe": null,
+    "bank": null,
+    "contact_name": "1",
+    "contact_email": "a@gmail.com",
+    "contact_phone_number": "1",
     "is_enabled": true,
     "organization": 1
   }
 },
 {
-  "model": "catalogs.harvestingcrew",
+  "model": "catalogs.client",
   "pk": 11,
   "fields": {
-    "provider": 10,
-    "name": "CUADRILLA URUAPAN 2",
-    "certification_name": null,
-    "crew_chief": 11,
-    "persons_number": 5,
-    "comments": null,
+    "name": "TARASCOS AVOCADOS",
+    "category": "packhouse",
+    "market": 1,
+    "country": 158,
+    "state": 2269,
+    "city": 25891,
+    "district": 87098,
+    "postal_code": "58230",
+    "neighborhood": "LUSTRES AI",
+    "address": "RIO GRANDE",
+    "external_number": "2450",
+    "internal_number": null,
+    "shipping_address": null,
+    "capital_framework": 4,
+    "tax_id": "TAV260312",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 0.0,
+    "fda": null,
+    "swift": null,
+    "aba": null,
+    "clabe": null,
+    "bank": 1,
+    "contact_name": "MERLEN ACUÑA",
+    "contact_email": "a@gmail.com",
+    "contact_phone_number": "1",
     "is_enabled": true,
     "organization": 1
   }
 },
 {
-  "model": "catalogs.harvestingcrew",
+  "model": "catalogs.client",
   "pk": 12,
   "fields": {
-    "provider": 10,
-    "name": "CUADRILLA URUAPAN 3",
-    "certification_name": null,
-    "crew_chief": 12,
-    "persons_number": 5,
-    "comments": null,
+    "name": "FRANCISCO RENTERIA CORRALES",
+    "category": "packhouse",
+    "market": 3,
+    "country": 234,
+    "state": 3650,
+    "city": 44706,
+    "district": 139390,
+    "postal_code": "002541",
+    "neighborhood": "LYON",
+    "address": "LION´S GATE",
+    "external_number": "2405",
+    "internal_number": null,
+    "shipping_address": null,
+    "capital_framework": null,
+    "tax_id": "CORF6801256E9",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 0.0,
+    "fda": null,
+    "swift": null,
+    "aba": null,
+    "clabe": null,
+    "bank": null,
+    "contact_name": "1",
+    "contact_email": "a@gmail.com",
+    "contact_phone_number": "1",
     "is_enabled": true,
     "organization": 1
   }
 },
 {
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 1,
-  "fields": {
-    "type_harvest": "local",
-    "more_than_kg": 10.0,
-    "pay_per_box_complete": 10.0,
-    "pay_per_kg_complete": 10.0,
-    "pay_per_day_complete": 10.0,
-    "pay_per_box_incomplete": 10.0,
-    "pay_per_kg_incomplete": 10.0,
-    "pay_per_day_incomplete": 10.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 1
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 2,
-  "fields": {
-    "type_harvest": "exportacion",
-    "more_than_kg": 15.0,
-    "pay_per_box_complete": 15.0,
-    "pay_per_kg_complete": 15.0,
-    "pay_per_day_complete": 15.0,
-    "pay_per_box_incomplete": 15.0,
-    "pay_per_kg_incomplete": 15.0,
-    "pay_per_day_incomplete": 15.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 1
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 3,
-  "fields": {
-    "type_harvest": "local",
-    "more_than_kg": 10.0,
-    "pay_per_box_complete": 10.0,
-    "pay_per_kg_complete": 10.0,
-    "pay_per_day_complete": 10.0,
-    "pay_per_box_incomplete": 10.0,
-    "pay_per_kg_incomplete": 10.0,
-    "pay_per_day_incomplete": 10.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 2
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 4,
-  "fields": {
-    "type_harvest": "exportacion",
-    "more_than_kg": 10.0,
-    "pay_per_box_complete": 10.0,
-    "pay_per_kg_complete": 10.0,
-    "pay_per_day_complete": 10.0,
-    "pay_per_box_incomplete": 10.0,
-    "pay_per_kg_incomplete": 10.0,
-    "pay_per_day_incomplete": 10.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 2
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 5,
-  "fields": {
-    "type_harvest": "local",
-    "more_than_kg": 10.0,
-    "pay_per_box_complete": 10.0,
-    "pay_per_kg_complete": 10.0,
-    "pay_per_day_complete": 10.0,
-    "pay_per_box_incomplete": 10.0,
-    "pay_per_kg_incomplete": 10.0,
-    "pay_per_day_incomplete": 10.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 3
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 6,
-  "fields": {
-    "type_harvest": "exportacion",
-    "more_than_kg": 15.0,
-    "pay_per_box_complete": 15.0,
-    "pay_per_kg_complete": 15.0,
-    "pay_per_day_complete": 15.0,
-    "pay_per_box_incomplete": 15.0,
-    "pay_per_kg_incomplete": 15.0,
-    "pay_per_day_incomplete": 15.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 3
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 7,
-  "fields": {
-    "type_harvest": "local",
-    "more_than_kg": 10.0,
-    "pay_per_box_complete": 10.0,
-    "pay_per_kg_complete": 10.0,
-    "pay_per_day_complete": 10.0,
-    "pay_per_box_incomplete": 10.0,
-    "pay_per_kg_incomplete": 10.0,
-    "pay_per_day_incomplete": 10.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 4
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 8,
-  "fields": {
-    "type_harvest": "exportacion",
-    "more_than_kg": 15.0,
-    "pay_per_box_complete": 15.0,
-    "pay_per_kg_complete": 15.0,
-    "pay_per_day_complete": 15.0,
-    "pay_per_box_incomplete": 15.0,
-    "pay_per_kg_incomplete": 15.0,
-    "pay_per_day_incomplete": 15.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 4
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 9,
-  "fields": {
-    "type_harvest": "local",
-    "more_than_kg": 10.0,
-    "pay_per_box_complete": 10.0,
-    "pay_per_kg_complete": 10.0,
-    "pay_per_day_complete": 10.0,
-    "pay_per_box_incomplete": 10.0,
-    "pay_per_kg_incomplete": 10.0,
-    "pay_per_day_incomplete": 10.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 5
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 10,
-  "fields": {
-    "type_harvest": "exportacion",
-    "more_than_kg": 15.0,
-    "pay_per_box_complete": 15.0,
-    "pay_per_kg_complete": 15.0,
-    "pay_per_day_complete": 15.0,
-    "pay_per_box_incomplete": 15.0,
-    "pay_per_kg_incomplete": 15.0,
-    "pay_per_day_incomplete": 15.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 5
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 11,
-  "fields": {
-    "type_harvest": "local",
-    "more_than_kg": 10.0,
-    "pay_per_box_complete": 10.0,
-    "pay_per_kg_complete": 10.0,
-    "pay_per_day_complete": 10.0,
-    "pay_per_box_incomplete": 10.0,
-    "pay_per_kg_incomplete": 10.0,
-    "pay_per_day_incomplete": 10.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 6
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 12,
-  "fields": {
-    "type_harvest": "exportacion",
-    "more_than_kg": 15.0,
-    "pay_per_box_complete": 15.0,
-    "pay_per_kg_complete": 15.0,
-    "pay_per_day_complete": 15.0,
-    "pay_per_box_incomplete": 15.0,
-    "pay_per_kg_incomplete": 15.0,
-    "pay_per_day_incomplete": 15.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 6
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
+  "model": "catalogs.client",
   "pk": 13,
   "fields": {
-    "type_harvest": "local",
-    "more_than_kg": 10.0,
-    "pay_per_box_complete": 10.0,
-    "pay_per_kg_complete": 10.0,
-    "pay_per_day_complete": 10.0,
-    "pay_per_box_incomplete": 10.0,
-    "pay_per_kg_incomplete": 10.0,
-    "pay_per_day_incomplete": 10.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 7
+    "name": "ARTURO PEREZ",
+    "category": "maquiladora",
+    "market": 1,
+    "country": 158,
+    "state": 2272,
+    "city": 25469,
+    "district": 83902,
+    "postal_code": "34634",
+    "neighborhood": "LOMITAS",
+    "address": "LOMA BONITA",
+    "external_number": "2345",
+    "internal_number": null,
+    "shipping_address": null,
+    "capital_framework": null,
+    "tax_id": "SADG1234234",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 0.0,
+    "fda": null,
+    "swift": null,
+    "aba": null,
+    "clabe": null,
+    "bank": null,
+    "contact_name": "RAPHAEL MEDINA",
+    "contact_email": "a@gmail.com",
+    "contact_phone_number": "1",
+    "is_enabled": true,
+    "organization": 1
   }
 },
 {
-  "model": "catalogs.harvestingpaymentsetting",
+  "model": "catalogs.client",
   "pk": 14,
   "fields": {
-    "type_harvest": "exportacion",
-    "more_than_kg": 15.0,
-    "pay_per_box_complete": 15.0,
-    "pay_per_kg_complete": 15.0,
-    "pay_per_day_complete": 15.0,
-    "pay_per_box_incomplete": 15.0,
-    "pay_per_kg_incomplete": 15.0,
-    "pay_per_day_incomplete": 15.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 7
+    "name": "FRUIT THE BEST",
+    "category": "maquiladora",
+    "market": 3,
+    "country": 234,
+    "state": 3650,
+    "city": 44712,
+    "district": 139146,
+    "postal_code": "15440",
+    "neighborhood": "NORTH ISLAND",
+    "address": "FIRTS ST",
+    "external_number": "15440",
+    "internal_number": null,
+    "shipping_address": null,
+    "capital_framework": null,
+    "tax_id": "FRAS120189",
+    "payment_kind": 1,
+    "max_money_credit_limit": 0.0,
+    "max_days_credit_limit": 0.0,
+    "fda": null,
+    "swift": null,
+    "aba": null,
+    "clabe": null,
+    "bank": 1,
+    "contact_name": "A",
+    "contact_email": "a@gmail.com",
+    "contact_phone_number": "1",
+    "is_enabled": true,
+    "organization": 1
   }
 },
 {
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 15,
-  "fields": {
-    "type_harvest": "local",
-    "more_than_kg": 10.0,
-    "pay_per_box_complete": 10.0,
-    "pay_per_kg_complete": 10.0,
-    "pay_per_day_complete": 10.0,
-    "pay_per_box_incomplete": 10.0,
-    "pay_per_kg_incomplete": 10.0,
-    "pay_per_day_incomplete": 10.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 8
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 16,
-  "fields": {
-    "type_harvest": "exportacion",
-    "more_than_kg": 15.0,
-    "pay_per_box_complete": 15.0,
-    "pay_per_kg_complete": 15.0,
-    "pay_per_day_complete": 15.0,
-    "pay_per_box_incomplete": 15.0,
-    "pay_per_kg_incomplete": 15.0,
-    "pay_per_day_incomplete": 15.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 8
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 17,
-  "fields": {
-    "type_harvest": "local",
-    "more_than_kg": 10.0,
-    "pay_per_box_complete": 10.0,
-    "pay_per_kg_complete": 10.0,
-    "pay_per_day_complete": 10.0,
-    "pay_per_box_incomplete": 10.0,
-    "pay_per_kg_incomplete": 10.0,
-    "pay_per_day_incomplete": 10.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 9
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 18,
-  "fields": {
-    "type_harvest": "exportacion",
-    "more_than_kg": 15.0,
-    "pay_per_box_complete": 15.0,
-    "pay_per_kg_complete": 15.0,
-    "pay_per_day_complete": 15.0,
-    "pay_per_box_incomplete": 15.0,
-    "pay_per_kg_incomplete": 15.0,
-    "pay_per_day_incomplete": 15.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 9
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 19,
-  "fields": {
-    "type_harvest": "local",
-    "more_than_kg": 10.0,
-    "pay_per_box_complete": 10.0,
-    "pay_per_kg_complete": 10.0,
-    "pay_per_day_complete": 10.0,
-    "pay_per_box_incomplete": 10.0,
-    "pay_per_kg_incomplete": 10.0,
-    "pay_per_day_incomplete": 10.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 10
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 20,
-  "fields": {
-    "type_harvest": "exportacion",
-    "more_than_kg": 15.0,
-    "pay_per_box_complete": 15.0,
-    "pay_per_kg_complete": 15.0,
-    "pay_per_day_complete": 15.0,
-    "pay_per_box_incomplete": 15.0,
-    "pay_per_kg_incomplete": 15.0,
-    "pay_per_day_incomplete": 15.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 10
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 21,
-  "fields": {
-    "type_harvest": "local",
-    "more_than_kg": 10.0,
-    "pay_per_box_complete": 10.0,
-    "pay_per_kg_complete": 10.0,
-    "pay_per_day_complete": 10.0,
-    "pay_per_box_incomplete": 10.0,
-    "pay_per_kg_incomplete": 10.0,
-    "pay_per_day_incomplete": 10.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 11
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 22,
-  "fields": {
-    "type_harvest": "exportacion",
-    "more_than_kg": 15.0,
-    "pay_per_box_complete": 15.0,
-    "pay_per_kg_complete": 15.0,
-    "pay_per_day_complete": 15.0,
-    "pay_per_box_incomplete": 15.0,
-    "pay_per_kg_incomplete": 15.0,
-    "pay_per_day_incomplete": 15.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 11
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 23,
-  "fields": {
-    "type_harvest": "local",
-    "more_than_kg": 10.0,
-    "pay_per_box_complete": 10.0,
-    "pay_per_kg_complete": 10.0,
-    "pay_per_day_complete": 10.0,
-    "pay_per_box_incomplete": 10.0,
-    "pay_per_kg_incomplete": 10.0,
-    "pay_per_day_incomplete": 10.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 12
-  }
-},
-{
-  "model": "catalogs.harvestingpaymentsetting",
-  "pk": 24,
-  "fields": {
-    "type_harvest": "exportacion",
-    "more_than_kg": 15.0,
-    "pay_per_box_complete": 15.0,
-    "pay_per_kg_complete": 15.0,
-    "pay_per_day_complete": 15.0,
-    "pay_per_box_incomplete": 15.0,
-    "pay_per_kg_incomplete": 15.0,
-    "pay_per_day_incomplete": 15.0,
-    "type_payment_for_false_out": "fixed_amount",
-    "amount_for_false_out": 1000.0,
-    "harvesting_crew": 12
-  }
-},
-{
-  "model": "catalogs.weighingscale",
+  "model": "catalogs.clientshippingaddress",
   "pk": 1,
   "fields": {
-    "name": "BÁSCULA PÚBLICA EN PERIBÁN",
-    "number": "BASC0001PER",
-    "state": 2282,
-    "city": 25758,
-    "district": 87387,
-    "neighborhood": "PERIBAN NHB",
-    "postal_code": "60440",
-    "address": "PERIBAN STREET",
-    "external_number": "123",
+    "address_name": "CORONA SALES COMPANY NC",
+    "country": 38,
+    "state": 474,
+    "city": 9022,
+    "district": 11644,
+    "postal_code": "00661",
+    "neighborhood": "LONG ISLAND",
+    "address": "AV. ST. LONG ISLAND",
+    "external_number": "1450",
     "internal_number": null,
+    "references": null,
+    "contact_name": null,
+    "contact_phone_number": null,
     "comments": null,
     "is_enabled": true,
-    "organization": 1
+    "client": 1
   }
 },
 {
-  "model": "catalogs.weighingscale",
-  "pk": 2,
-  "fields": {
-    "name": "BÁSCULA PRIVADA EN PERIBÁN",
-    "number": "BASC0002PER",
-    "state": 2282,
-    "city": 25758,
-    "district": 87387,
-    "neighborhood": "PERIBAN NHB",
-    "postal_code": "60440",
-    "address": "PERIBAN STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.weighingscale",
-  "pk": 3,
-  "fields": {
-    "name": "BÁSCULA PÚBLICA EN TACÁMBARO",
-    "number": "BASC0001TAC",
-    "state": 2282,
-    "city": 25772,
-    "district": 86917,
-    "neighborhood": "TACÁMBARO NHB",
-    "postal_code": "61650",
-    "address": "TACÁMBARO STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.weighingscale",
-  "pk": 4,
-  "fields": {
-    "name": "BÁSCULA PRIVADA EN TACÁMBARO",
-    "number": "BASC0002TAC",
-    "state": 2282,
-    "city": 25772,
-    "district": 86917,
-    "neighborhood": "TACÁMBARO NHB",
-    "postal_code": "61650",
-    "address": "TACÁMBARO STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.weighingscale",
-  "pk": 5,
-  "fields": {
-    "name": "BÁSCULA PÚBLICA EN URUAPAN",
-    "number": "BASC0001URU",
-    "state": 2282,
-    "city": 25792,
-    "district": 86768,
-    "neighborhood": "URUAPAN NHB",
-    "postal_code": "60000",
-    "address": "URUAPAN STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.weighingscale",
-  "pk": 6,
-  "fields": {
-    "name": "BASCULA PRIVADA EN URUAPAN",
-    "number": "BASC0002URU",
-    "state": 2282,
-    "city": 25792,
-    "district": 86768,
-    "neighborhood": "URUAPAN NHB",
-    "postal_code": "60000",
-    "address": "URUAPAN STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.gatherer",
+  "model": "catalogs.maquiladora",
   "pk": 1,
   "fields": {
-    "name": "ACOPIADOR PARA PERIBAN 01",
-    "zone": "PERIBAN",
-    "tax_registry_code": "TAX_ACOPIADOR_01",
-    "population_registry_code": null,
-    "social_number_code": "NSS_ACOPIADOR_01",
-    "state": 2282,
-    "city": 25758,
-    "district": 87387,
-    "postal_code": "60440",
-    "neighborhood": "PERIBAN NHB",
-    "address": "PERIBAN STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "email": "acopiador.periban.01@localhost",
-    "phone_number": "354 000 0000",
-    "vehicle": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.gatherer",
-  "pk": 2,
-  "fields": {
-    "name": "ACOPIADOR PARA PERIBAN 02",
-    "zone": "PERIBAN",
-    "tax_registry_code": "TAX_ACOPIADOR_02",
-    "population_registry_code": null,
-    "social_number_code": "NSS_ACOPIADOR_02",
-    "state": 2282,
-    "city": 25758,
-    "district": 87387,
-    "postal_code": "60440",
-    "neighborhood": "PERIBAN NHB",
-    "address": "PERIBAN STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "email": "acopiador.periban.02@localhost",
-    "phone_number": "354 000 0000",
-    "vehicle": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.gatherer",
-  "pk": 3,
-  "fields": {
-    "name": "ACOPIADOR PARA TACÁMBARO 01",
-    "zone": "TACÁMBARO",
-    "tax_registry_code": "TAX_ACOPIADOR_03",
-    "population_registry_code": null,
-    "social_number_code": "NSS_ACOPIADOR_03",
-    "state": 2282,
-    "city": 25772,
-    "district": 86917,
-    "postal_code": "61650",
-    "neighborhood": "TACÁMBARO NHB",
-    "address": "TACÁMBARO STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "email": "acopiador.tacambaro.01@localhost",
-    "phone_number": "459 000 0000",
-    "vehicle": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.gatherer",
-  "pk": 4,
-  "fields": {
-    "name": "ACOPIADOR PARA TACÁMBARO 02",
-    "zone": "TACÁMBARO",
-    "tax_registry_code": "TAX_ACOPIADOR_04",
-    "population_registry_code": null,
-    "social_number_code": "NSS_ACOPIADOR_04",
-    "state": 2282,
-    "city": 25772,
-    "district": 86917,
-    "postal_code": "61650",
-    "neighborhood": "TACÁMBARO NHB",
-    "address": "TACÁMBARO STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "email": "acopiador.tacambaro.02@localhost",
-    "phone_number": "459 000 0000",
-    "vehicle": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.gatherer",
-  "pk": 5,
-  "fields": {
-    "name": "ACOPIADOR PARA URUAPAN 01",
+    "name": "LINCHLO",
     "zone": "URUAPAN",
-    "tax_registry_code": "TAX_ACOPIADOR_05",
-    "population_registry_code": null,
-    "social_number_code": "NSS_ACOPIADOR_05",
+    "tax_id": "XAXX010101000",
     "state": 2282,
-    "city": 25792,
-    "district": 86768,
-    "postal_code": "60000",
-    "neighborhood": "URUAPAN NHB",
-    "address": "URUAPAN STREET",
-    "external_number": "123",
+    "city": 25791,
+    "district": 86343,
+    "neighborhood": "x",
+    "postal_code": "1",
+    "address": "X",
+    "external_number": "x",
     "internal_number": null,
-    "email": "acopiador.uruapan.01@localhost",
-    "phone_number": "452 000 0000",
-    "vehicle": 1,
+    "email": "a@gmail.co",
+    "phone_number": "1",
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "clients": [
+      13
+    ]
   }
 },
 {
-  "model": "catalogs.gatherer",
-  "pk": 6,
+  "model": "catalogs.maquiladora",
+  "pk": 2,
   "fields": {
-    "name": "ACOPIADOR PARA URUAPAN 02",
-    "zone": "URUAPAN",
-    "tax_registry_code": "TAX_ACOPIADOR_06",
-    "population_registry_code": null,
-    "social_number_code": "NSS_ACOPIADOR_06",
+    "name": "FRANCISCO RENTERIA CORRALES",
+    "zone": "MICHOACAN",
+    "tax_id": "XAXX010101000",
     "state": 2282,
-    "city": 25792,
-    "district": 86768,
-    "postal_code": "60000",
-    "neighborhood": "URUAPAN NHB",
-    "address": "URUAPAN STREET",
-    "external_number": "123",
+    "city": 25742,
+    "district": 87096,
+    "neighborhood": "1",
+    "postal_code": "1",
+    "address": "1",
+    "external_number": "1",
     "internal_number": null,
-    "email": "acopiador.uruapan.02@localhost",
-    "phone_number": "452 000 0000",
-    "vehicle": 1,
+    "email": "aaaa@gmail.com",
+    "phone_number": "1",
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "clients": [
+      14
+    ]
+  }
+},
+{
+  "model": "catalogs.maquiladora",
+  "pk": 3,
+  "fields": {
+    "name": "CENTRO QUERETANO DE PRODUCCIÓN DE AVEZRUZ",
+    "zone": "TACAMBARO",
+    "tax_id": "CQP090929QM6",
+    "state": 2282,
+    "city": 25771,
+    "district": 86492,
+    "neighborhood": "SANTA ROSA JAUREGUI",
+    "postal_code": "1",
+    "address": "ESTANCIA DE LA ROCHERA",
+    "external_number": "1",
+    "internal_number": null,
+    "email": "aaaa@gmail.com",
+    "phone_number": "1",
+    "is_enabled": true,
+    "organization": 1,
+    "clients": [
+      13
+    ]
   }
 },
 {
@@ -2267,7 +1503,8 @@
   "pk": 1,
   "fields": {
     "kind": 1,
-    "name": "CAJA CARTÓN 4 KG",
+    "name": "CARTÓN 4 KG",
+    "size": 4.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
     "is_enabled": true,
@@ -2279,7 +1516,8 @@
   "pk": 2,
   "fields": {
     "kind": 1,
-    "name": "CAJA CARTÓN 6 KG",
+    "name": "CARTÓN 6 KG",
+    "size": 6.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
     "is_enabled": true,
@@ -2291,7 +1529,8 @@
   "pk": 3,
   "fields": {
     "kind": 1,
-    "name": "CAJA CARTÓN 11.3 KG",
+    "name": "CARTÓN 11.3 KG",
+    "size": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
     "is_enabled": true,
@@ -2303,7 +1542,8 @@
   "pk": 4,
   "fields": {
     "kind": 1,
-    "name": "CAJA MADERA 11.3 KG",
+    "name": "MADERA 11.3 KG",
+    "size": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 100,
     "is_enabled": false,
@@ -2315,7 +1555,8 @@
   "pk": 5,
   "fields": {
     "kind": 1,
-    "name": "CAJA PLÁSTICO 11.3 KG",
+    "name": "PLÁSTICO 11.3 KG",
+    "size": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 500,
     "is_enabled": true,
@@ -2327,7 +1568,8 @@
   "pk": 6,
   "fields": {
     "kind": 5,
-    "name": "TAPA CARTÓN",
+    "name": "CARTÓN",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 3000,
     "is_enabled": true,
@@ -2339,7 +1581,8 @@
   "pk": 7,
   "fields": {
     "kind": 5,
-    "name": "TAPA PLÁSTICO",
+    "name": "PLÁSTICO",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 500,
     "is_enabled": true,
@@ -2351,7 +1594,8 @@
   "pk": 8,
   "fields": {
     "kind": 2,
-    "name": "CHAROLA ESTÁNDAR 16",
+    "name": "ESTÁNDAR 16",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -2363,7 +1607,8 @@
   "pk": 9,
   "fields": {
     "kind": 2,
-    "name": "CHAROLA ESTÁNDAR 18",
+    "name": "ESTÁNDAR 18",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -2375,7 +1620,8 @@
   "pk": 10,
   "fields": {
     "kind": 2,
-    "name": "CHAROLA ESTÁNDAR 20",
+    "name": "ESTÁNDAR 20",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -2387,7 +1633,8 @@
   "pk": 11,
   "fields": {
     "kind": 2,
-    "name": "CHAROLA EURO 23",
+    "name": "EURO 23",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -2399,7 +1646,8 @@
   "pk": 12,
   "fields": {
     "kind": 2,
-    "name": "CHAROLA EURO 27",
+    "name": "EURO 27",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -2411,7 +1659,8 @@
   "pk": 13,
   "fields": {
     "kind": 2,
-    "name": "CHAROLA EURO 30",
+    "name": "EURO 30",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -2423,7 +1672,8 @@
   "pk": 14,
   "fields": {
     "kind": 2,
-    "name": "CHAROLA EURO 36A",
+    "name": "EURO 36A",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -2435,7 +1685,8 @@
   "pk": 15,
   "fields": {
     "kind": 2,
-    "name": "CHAROLA EURO 36B",
+    "name": "EURO 36B",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -2447,7 +1698,8 @@
   "pk": 16,
   "fields": {
     "kind": 4,
-    "name": "ESQUINERO PLÁSTICO (TRANSPARENTE)",
+    "name": "PLÁSTICO (TRANSPARENTE)",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 4000,
     "is_enabled": true,
@@ -2459,7 +1711,8 @@
   "pk": 17,
   "fields": {
     "kind": 4,
-    "name": "ESQUINERO PLÁSTICO (NEGRO)",
+    "name": "PLÁSTICO (NEGRO)",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 4000,
     "is_enabled": true,
@@ -2471,7 +1724,8 @@
   "pk": 18,
   "fields": {
     "kind": 8,
-    "name": "FLEJE (TRANSPARENTE)",
+    "name": "TRANSPARENTE",
+    "size": 140000.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 2500,
     "is_enabled": true,
@@ -2483,7 +1737,8 @@
   "pk": 19,
   "fields": {
     "kind": 8,
-    "name": "FLEJE (NEGRO)",
+    "name": "NEGRO",
+    "size": 120000.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 2500,
     "is_enabled": true,
@@ -2495,7 +1750,8 @@
   "pk": 20,
   "fields": {
     "kind": 6,
-    "name": "MALLA EN ROLLO (BLANCA)",
+    "name": "8 (BLANCA)",
+    "size": 14000.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 15000,
     "is_enabled": true,
@@ -2507,7 +1763,8 @@
   "pk": 21,
   "fields": {
     "kind": 6,
-    "name": "MALLA EN ROLLO (MORADA)",
+    "name": "12 (MORADA)",
+    "size": 14000.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 15000,
     "is_enabled": true,
@@ -2519,7 +1776,8 @@
   "pk": 22,
   "fields": {
     "kind": 3,
-    "name": "TARIMA DE MADERA",
+    "name": "MADERA 14",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 150,
     "is_enabled": true,
@@ -2531,7 +1789,8 @@
   "pk": 23,
   "fields": {
     "kind": 3,
-    "name": "TARIMA DE PLÁSTICO",
+    "name": "PLÁSTICO 11",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 150,
     "is_enabled": true,
@@ -2543,7 +1802,8 @@
   "pk": 24,
   "fields": {
     "kind": 2,
-    "name": "CHAROLA ESTÁNDAR 24",
+    "name": "ESTÁNDAR 24",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -2555,7 +1815,8 @@
   "pk": 25,
   "fields": {
     "kind": 2,
-    "name": "CHAROLA ESTÁNDAR 30",
+    "name": "ESTÁNDAR 30",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -2567,7 +1828,8 @@
   "pk": 26,
   "fields": {
     "kind": 2,
-    "name": "CHAROLA ESTÁNDAR 35",
+    "name": "ESTÁNDAR 35",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -2580,6 +1842,7 @@
   "fields": {
     "kind": 2,
     "name": "CHAROLA EURO 45",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -2592,6 +1855,7 @@
   "fields": {
     "kind": 2,
     "name": "CHAROLA EURO 49",
+    "size": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "is_enabled": true,
@@ -2599,115 +1863,136 @@
   }
 },
 {
-  "model": "catalogs.packaging",
+  "model": "catalogs.productpackaging",
   "pk": 1,
   "fields": {
-    "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
-    "main_supply_kind": 1,
-    "main_supply": 3,
-    "main_supply_quantity": 1,
-    "max_product_amount_per_package": 1.0,
-    "market": 1,
     "product": 1,
-    "product_packaging_standard": 1,
+    "packaging_supply_kind": 1,
+    "product_standard_packaging": 1,
+    "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
+    "max_product_amount_per_package": 1.0,
+    "packaging_supply": 1,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "markets": [
+      3,
+      1
+    ]
   }
 },
 {
-  "model": "catalogs.packaging",
+  "model": "catalogs.productpackaging",
   "pk": 2,
   "fields": {
-    "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
-    "main_supply_kind": 1,
-    "main_supply": 3,
-    "main_supply_quantity": 1,
-    "max_product_amount_per_package": 1.0,
-    "market": 1,
     "product": 1,
-    "product_packaging_standard": 1,
+    "packaging_supply_kind": 1,
+    "product_standard_packaging": 1,
+    "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
+    "max_product_amount_per_package": 11.3,
+    "packaging_supply": 3,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "markets": [
+      3,
+      1
+    ]
   }
 },
 {
-  "model": "catalogs.packaging",
+  "model": "catalogs.productpackaging",
   "pk": 3,
   "fields": {
-    "name": "MALLA SENCILLA",
-    "main_supply_kind": 6,
-    "main_supply": 20,
-    "main_supply_quantity": 6,
-    "max_product_amount_per_package": 1.0,
-    "market": 1,
     "product": 1,
-    "product_packaging_standard": 1,
+    "packaging_supply_kind": 1,
+    "product_standard_packaging": 1,
+    "name": "MALLA SENCILLA",
+    "max_product_amount_per_package": 1.0,
+    "packaging_supply": 1,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "markets": [
+      3,
+      1
+    ]
   }
 },
 {
-  "model": "catalogs.packaging",
+  "model": "catalogs.productpackaging",
   "pk": 4,
   "fields": {
-    "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
-    "main_supply_kind": 1,
-    "main_supply": 3,
-    "main_supply_quantity": 1,
-    "max_product_amount_per_package": 1.0,
-    "market": 1,
     "product": 1,
-    "product_packaging_standard": 1,
+    "packaging_supply_kind": 1,
+    "product_standard_packaging": 1,
+    "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
+    "max_product_amount_per_package": 1.0,
+    "packaging_supply": 1,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "markets": [
+      3,
+      1
+    ]
   }
 },
 {
-  "model": "catalogs.packaging",
+  "model": "catalogs.productpackaging",
   "pk": 5,
   "fields": {
-    "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
-    "main_supply_kind": 1,
-    "main_supply": 3,
-    "main_supply_quantity": 1,
-    "max_product_amount_per_package": 1.0,
-    "market": 1,
     "product": 1,
-    "product_packaging_standard": 1,
+    "packaging_supply_kind": 1,
+    "product_standard_packaging": 1,
+    "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
+    "max_product_amount_per_package": 1.0,
+    "packaging_supply": 1,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "markets": [
+      3,
+      1
+    ]
   }
 },
 {
-  "model": "catalogs.packaging",
+  "model": "catalogs.productpackaging",
   "pk": 6,
   "fields": {
-    "name": "PALLET 48'S + 70'S",
-    "main_supply_kind": 3,
-    "main_supply": 23,
-    "main_supply_quantity": 3,
-    "max_product_amount_per_package": 1.0,
-    "market": 1,
     "product": 1,
-    "product_packaging_standard": 1,
+    "packaging_supply_kind": 1,
+    "product_standard_packaging": 1,
+    "name": "PALLET 48'S + 70'S",
+    "max_product_amount_per_package": 1.0,
+    "packaging_supply": 1,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "markets": [
+      3,
+      1
+    ]
   }
 },
 {
-  "model": "catalogs.packaging",
+  "model": "catalogs.productpackaging",
   "pk": 7,
   "fields": {
-    "name": "PALLET 48'S + 70'S (ENMALLADOS)",
-    "main_supply_kind": 3,
-    "main_supply": 23,
-    "main_supply_quantity": 3,
-    "max_product_amount_per_package": 1.0,
-    "market": 1,
     "product": 1,
-    "product_packaging_standard": 1,
+    "packaging_supply_kind": 1,
+    "product_standard_packaging": 1,
+    "name": "PALLET 48'S + 70'S (ENMALLADOS)",
+    "max_product_amount_per_package": 1.0,
+    "packaging_supply": 1,
+    "packaging_supply_quantity": 1,
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "markets": [
+      3,
+      1
+    ]
   }
 },
 {
@@ -2882,236 +2167,6 @@
     "outside": 7,
     "inside": 4,
     "quantity": 10
-  }
-},
-{
-  "model": "catalogs.client",
-  "pk": 1,
-  "fields": {
-    "name": "CLIENTE DEL EMPAQUE EN MEXICO",
-    "category": "packhouse",
-    "market": 1,
-    "country": 158,
-    "state": 2291,
-    "city": 25002,
-    "district": 88605,
-    "postal_code": "20000",
-    "neighborhood": "AGUASCALIENTES NHB",
-    "address": "AGUASCALIENTES STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": 2,
-    "tax_id": "TAX_CLIENT_SELF_01",
-    "payment_kind": 1,
-    "max_money_credit_limit": null,
-    "max_days_credit_limit": null,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": null,
-    "contact_name": "EMPLEADO DEL CLIENTE 01",
-    "contact_email": "cliente.self.01@localhost",
-    "contact_phone_number": "449 000 0000",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.client",
-  "pk": 2,
-  "fields": {
-    "name": "CLIENTE DEL EMPAQUE EN EEUU",
-    "category": "packhouse",
-    "market": 3,
-    "country": 234,
-    "state": 3650,
-    "city": 44697,
-    "district": 139468,
-    "postal_code": "90000",
-    "neighborhood": "LOS ANGELES NHB",
-    "address": "LOS ANGELES STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": null,
-    "tax_id": "TAX_CLIENT_SELF_02",
-    "payment_kind": 2,
-    "max_money_credit_limit": null,
-    "max_days_credit_limit": null,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": 4,
-    "contact_name": "EMPLEADO DEL CLIENTE 02",
-    "contact_email": "cliente.self.02@localhost",
-    "contact_phone_number": "+1 213 000 000",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.client",
-  "pk": 3,
-  "fields": {
-    "name": "CLIENTE DEL EMPAQUE EN CANADA",
-    "category": "packhouse",
-    "market": 4,
-    "country": 38,
-    "state": 468,
-    "city": 8633,
-    "district": 12264,
-    "postal_code": "V5L 4S1",
-    "neighborhood": "VANCOUVER NHB",
-    "address": "VANCOUVER STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": null,
-    "tax_id": "TAX_CLIENT_SELF_03",
-    "payment_kind": 2,
-    "max_money_credit_limit": null,
-    "max_days_credit_limit": null,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": 4,
-    "contact_name": "EMPLEADO DEL CLIENTE 03",
-    "contact_email": "cliente.self.03@localhost",
-    "contact_phone_number": "+1 604 000 0000",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.client",
-  "pk": 4,
-  "fields": {
-    "name": "CLIENTE DEL MAQUILADOR DE PERIBAN EN MÉXICO",
-    "category": "maquiladora",
-    "market": 1,
-    "country": 158,
-    "state": 2291,
-    "city": 25002,
-    "district": 88605,
-    "postal_code": "20000",
-    "neighborhood": "AGUASCALIENTES NHB",
-    "address": "AGUSCALIENTES STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": null,
-    "tax_id": "TAX_CLIENT_MAQ_PER_01",
-    "payment_kind": 1,
-    "max_money_credit_limit": null,
-    "max_days_credit_limit": null,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": null,
-    "contact_name": "EMPLEADO DEL CLIENTE [DEL MAQUILADOR] EN MÉXICO",
-    "contact_email": "cliente.maquilador.periban.01@localhost",
-    "contact_phone_number": "449 000 0000",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.client",
-  "pk": 5,
-  "fields": {
-    "name": "CLIENTE DEL MAQUILADOR DE PERIBAN EN EEUU",
-    "category": "maquiladora",
-    "market": 3,
-    "country": 234,
-    "state": 3650,
-    "city": 44697,
-    "district": 139468,
-    "postal_code": "90000",
-    "neighborhood": "LOS ANGELES NHB",
-    "address": "LOS ANGELES STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": null,
-    "tax_id": "TAX_CLIENT_MAQ_PER_02",
-    "payment_kind": 2,
-    "max_money_credit_limit": null,
-    "max_days_credit_limit": null,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": 4,
-    "contact_name": "EMPLEADO DEL CLIENTE [DEL MAQUILADOR] EN EEUU",
-    "contact_email": "cliente.maquilador.periban.02@localhost",
-    "contact_phone_number": "+1 213 000 000",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.client",
-  "pk": 6,
-  "fields": {
-    "name": "CLIENTE DEL MAQUILADOR DE PERIBAN EN CÁNADA",
-    "category": "maquiladora",
-    "market": 4,
-    "country": 38,
-    "state": 468,
-    "city": 8633,
-    "district": 12264,
-    "postal_code": "V5L 4S1",
-    "neighborhood": "VANCOUVER NHB",
-    "address": "VANCOUVER STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": null,
-    "tax_id": "TAX_CLIENT_MAQ_PER_03",
-    "payment_kind": 2,
-    "max_money_credit_limit": null,
-    "max_days_credit_limit": null,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": null,
-    "contact_name": "EMPLEADO DEL CLIENTE [DEL MAQUILADOR] EN CÁNADA",
-    "contact_email": "cliente.maquilador.periban.03@localhost",
-    "contact_phone_number": "+1 604 000 0000",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.maquiladora",
-  "pk": 1,
-  "fields": {
-    "name": "MAQUILADORA EN PERIBÁN",
-    "zone": "PERIBAN",
-    "tax_id": "TAX_MAQ_PERIBAN_01",
-    "state": 2282,
-    "city": 25758,
-    "district": 87387,
-    "neighborhood": "PERIBAN NHB",
-    "postal_code": "60440",
-    "address": "PERIBAN STREET",
-    "external_number": "123",
-    "internal_number": null,
-    "email": "maquiladora.periban.01@localhost",
-    "phone_number": "354 000 0000",
-    "is_enabled": true,
-    "organization": 1,
-    "maquiladora_clients": [
-      6,
-      5,
-      4
-    ]
   }
 }
 ]

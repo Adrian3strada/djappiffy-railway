@@ -11,8 +11,8 @@ from common.base.decorators import uppercase_formset_charfield, uppercase_alphan
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from .filters import ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter
 from common.base.mixins import ByOrganizationAdminMixin
-from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, MarketProductSize,
-                                        ProductPackaging)
+from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
+                                        ProductPhenologyKind, ProductMarketClass, ProductPackaging)
 from .models import Order, OrderItem
 from django.utils.safestring import mark_safe
 from django.db.models import Max, Min, Q, F
@@ -46,12 +46,33 @@ class OrderItemInline(admin.StackedInline):
         queryset_organization_filter = {"organization": organization, "is_enabled": True}
 
         if db_field.name == "product_size":
-            kwargs["queryset"] = MarketProductSize.objects.none()
+            kwargs["queryset"] = ProductSize.objects.none()
             if parent_obj and parent_obj.product:
-                kwargs["queryset"] = MarketProductSize.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
+                kwargs["queryset"] = ProductSize.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: f"{item.name} ({item.description})" if item.description else f"{item.name}"
             return formfield
+
+        if db_field.name == "product_phenology":
+            kwargs["queryset"] = ProductPhenologyKind.objects.none()
+            if parent_obj and parent_obj.product:
+                kwargs["queryset"] = ProductPhenologyKind.objects.filter(product=parent_obj.product, is_enabled=True)
+
+        if db_field.name == "product_market_class":
+            kwargs["queryset"] = ProductMarketClass.objects.none()
+            if parent_obj and parent_obj.product and parent_obj.client.market:
+                kwargs["queryset"] = ProductMarketClass.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
+
+        if db_field.name == "product_market_class":
+            kwargs["queryset"] = ProductMarketClass.objects.none()
+            if parent_obj and parent_obj.product and parent_obj.client.market:
+                kwargs["queryset"] = ProductMarketClass.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
+
+        if db_field.name == "product_packaging":
+            kwargs["queryset"] = ProductPackaging.objects.none()
+            if parent_obj and parent_obj.product:
+                kwargs["queryset"] = ProductPackaging.objects.filter(product=parent_obj.product, markets=parent_obj.client.market, is_enabled=True)
+
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -70,7 +91,7 @@ class OrderAdmin(ByOrganizationAdminMixin):
     fields = (
         'ooid', 'client_category', 'maquiladora', 'client', 'local_delivery', 'incoterms',
         'registration_date', 'shipment_date', 'delivery_date',
-        'product', 'product_variety', 'order_kind', 'pricing_by',
+        'product', 'product_variety', 'order_items_by', 'pricing_by',
         'observations', 'status'
     )
     ordering = ('-ooid',)

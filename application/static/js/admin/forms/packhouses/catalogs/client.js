@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+  const categoryField = $('#id_category');
   const marketField = $('#id_market');
   const countryField = $('#id_country');
   const stateField = $('#id_state');
@@ -11,7 +12,11 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateFieldOptions(field, options) {
     field.empty().append(new Option('---------', '', true, true));
     options.forEach(option => {
-      field.append(new Option(option.name, option.id, false, false));
+      if (field === capitalFrameworkField) {
+        field.append(new Option(option.code, option.id, false, false));
+      } else {
+        field.append(new Option(option.name, option.id, false, false));
+      }
     });
     field.trigger('change').select2();
   }
@@ -32,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(countries => {
           console.log("market countries", countries);
           updateFieldOptions(countryField, countries);
-          updateLegalEntityCategory();
+          updateCapitalFramework();
           updateState();
         });
     } else {
@@ -41,11 +46,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function updateLegalEntityCategory() {
+  function updateCapitalFramework() {
     const countryId = countryField.val();
     if (countryId) {
       fetchOptions(`${API_BASE_URL}/base/capital-framework/?country=${countryId}`)
-        .then(data => updateFieldOptions(capitalFrameworkField, data));
+        .then(data => {
+          console.log("capital framework", data);
+          if (data.length === 0) {
+            updateFieldOptions(capitalFrameworkField, []);
+            capitalFrameworkField.closest('.form-group').fadeOut();
+          } else {
+            capitalFrameworkField.closest('.form-group').fadeIn();
+            updateFieldOptions(capitalFrameworkField, data);
+          }
+        });
     } else {
       updateFieldOptions(capitalFrameworkField, []);
     }
@@ -95,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   countryField.on('change', function () {
     updateState();
-    updateLegalEntityCategory();
+    updateCapitalFramework();
   });
 
   stateField.on('change', function () {
@@ -105,6 +119,14 @@ document.addEventListener('DOMContentLoaded', function () {
   cityField.on('change', function () {
     updateDistrict();
   });
+
+  capitalFrameworkField.closest('.form-group').hide();
+
+  if (countryField.val()) {
+    if (!stateField.val()) updateState();
+    if (!capitalFrameworkField.val()) updateCapitalFramework();
+  }
+  if (capitalFrameworkField.val().length > 0) capitalFrameworkField.closest('.form-group').show();
 
   [marketField, countryField, stateField, cityField, districtField, capitalFrameworkField].forEach(field => field.select2());
 });

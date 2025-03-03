@@ -180,100 +180,220 @@
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.supplykind",
   "pk": 1,
   "fields": {
-    "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [MÉXICO]",
-    "product_kind": 8,
+    "name": "CAJA",
+    "name_en": "BOX",
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "CAJA",
+    "usage_unit_kind": "piece",
+    "category": "packaging_containment",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 2,
+  "fields": {
+    "name": "CHAROLA",
+    "name_en": "TRAY",
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "CHAROLA",
+    "usage_unit_kind": "piece",
+    "category": "packaging_separator",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 3,
+  "fields": {
+    "name": "TARIMA",
+    "name_en": "PALLET",
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "TARIMA",
+    "usage_unit_kind": "piece",
+    "category": "packaging_pallet",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 4,
+  "fields": {
+    "name": "ESQUINERO",
+    "name_en": "CORNER PROTECTOR",
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "ESQUINERO",
+    "usage_unit_kind": "piece",
+    "category": "packaging_pallet_protection",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 5,
+  "fields": {
+    "name": "TAPA",
+    "name_en": "LID",
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "TAPA",
+    "usage_unit_kind": "piece",
+    "category": "packaging_complement",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 6,
+  "fields": {
+    "name": "MALLA",
+    "name_en": "MESH",
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "MALLA",
+    "usage_unit_kind": "cm",
+    "category": "packaging_presentation",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 7,
+  "fields": {
+    "name": "FILM",
+    "name_en": "FILM",
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "FILM",
+    "usage_unit_kind": "cm",
+    "category": "packaging_presentation_complement",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.supplykind",
+  "pk": 8,
+  "fields": {
+    "name": "FLEJE",
+    "name_en": "STRAPPING",
+    "name_pt": null,
+    "name_fr": null,
+    "name_de": null,
+    "name_es": "FLEJE",
+    "usage_unit_kind": "m",
+    "category": "packaging_pallet_wrapping",
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.productkindcountrystandard",
+  "pk": 1,
+  "fields": {
+    "name": "APEAMMEX",
     "country": 158,
+    "product_kind": 8,
     "is_enabled": true,
     "sort_order": 1
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 2,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [ALEMANIA - UNIÓN EUROPEA]",
-    "product_kind": 8,
     "country": 57,
+    "product_kind": 8,
     "is_enabled": true,
     "sort_order": 2
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 3,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [CANADÁ]",
-    "product_kind": 8,
     "country": 38,
+    "product_kind": 8,
     "is_enabled": true,
     "sort_order": 3
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 4,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [JAPÓN]",
-    "product_kind": 8,
     "country": 114,
+    "product_kind": 8,
     "is_enabled": true,
     "sort_order": 4
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 5,
   "fields": {
     "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [ESTADOS UNIDOS]",
-    "product_kind": 8,
     "country": 234,
+    "product_kind": 8,
     "is_enabled": true,
     "sort_order": 5
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 6,
   "fields": {
     "name": "ESTÁNDARES DE X SOBRE [LIMÓN - MEXICANO] PARA [MÉXICO]",
-    "product_kind": 9,
     "country": 158,
+    "product_kind": 9,
     "is_enabled": true,
     "sort_order": 6
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 7,
   "fields": {
     "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [ESTADOS UNIDOS]",
-    "product_kind": 9,
     "country": 234,
+    "product_kind": 9,
     "is_enabled": true,
     "sort_order": 7
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 8,
   "fields": {
     "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [JAPÓN - ASIA]",
-    "product_kind": 9,
     "country": 114,
+    "product_kind": 9,
     "is_enabled": true,
     "sort_order": 8
   }
 },
 {
-  "model": "base.countryproductstandard",
+  "model": "base.productkindcountrystandard",
   "pk": 9,
   "fields": {
     "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [ALEMANIA - UNIÓN EUROPEA]",
-    "product_kind": 9,
     "country": 57,
+    "product_kind": 9,
     "is_enabled": true,
     "sort_order": 9
   }
@@ -749,13 +869,41 @@
   }
 },
 {
-  "model": "base.countryproductstandardpackaging",
+  "model": "base.productstandardpackaging",
   "pk": 1,
   "fields": {
-    "name": "CARTÓN 11.3",
+    "supply_kind": 1,
+    "name": "CARTÓN 11.3 (AGMX)",
     "code": "1",
+    "max_product_amount": 11.3,
     "description": null,
     "standard": 1,
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.productstandardpackaging",
+  "pk": 2,
+  "fields": {
+    "supply_kind": 1,
+    "name": "CARTÓN 11.3 (AGUS)",
+    "code": "1",
+    "max_product_amount": 11.3,
+    "description": null,
+    "standard": 5,
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.productstandardpackaging",
+  "pk": 3,
+  "fields": {
+    "supply_kind": 1,
+    "name": "CARTÓN 11.3 (AGJP)",
+    "code": "1",
+    "max_product_amount": 11.3,
+    "description": null,
+    "standard": 4,
     "is_enabled": true
   }
 },

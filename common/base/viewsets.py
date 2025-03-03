@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from .serializers import (ProductKindSerializer, CitySerializer, SubRegionSerializer, RegionSerializer,
-                          CapitalFrameworkSerializer,
+                          CapitalFrameworkSerializer, ProductStandardPackagingSerializer,
                           CountrySerializer, CountryProductStandardSizeSerializer)
-from .models import ProductKind, CountryProductStandardSize, CapitalFramework
+from .models import ProductKind, CountryProductStandardSize, CapitalFramework, ProductStandardPackaging
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
 from cities_light.contrib.restframework3 import SubRegionModelViewSet as BaseSubRegionModelViewSet
 from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
@@ -51,6 +51,31 @@ class CountryProductStandardSizeViewSet(viewsets.ModelViewSet):
 
         standards = queryset.values_list('standard', flat=True).distinct()
         self.multiple_standards = standards.count() > 1
+        return queryset
+
+
+class ProductStandardPackagingViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductStandardPackagingSerializer
+    filterset_fields = ['supply_kind', 'standard', 'max_product_amount']
+    pagination_class = None
+
+    def get_queryset(self):
+        queryset = ProductStandardPackaging.objects.all()
+        supply_kind__category = self.request.GET.get('supply_kind__category')
+        standard__country__in = self.request.GET.get('standard__country__in')
+        max_product_amount__lte = self.request.GET.get('max_product_amount__lte')
+        max_product_amount__gte = self.request.GET.get('max_product_amount__gte')
+
+        if supply_kind__category:
+            queryset = queryset.filter(supply_kind__category=supply_kind__category)
+        if max_product_amount__lte:
+            queryset = queryset.filter(max_product_amount__lte=max_product_amount__lte)
+        if max_product_amount__gte:
+            queryset = queryset.filter(max_product_amount__gte=max_product_amount__gte)
+        if standard__country__in:
+            country_ids = standard__country__in.split(',')
+            queryset = queryset.filter(standard__country__in=country_ids)
+
         return queryset
 
 

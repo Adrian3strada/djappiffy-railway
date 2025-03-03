@@ -52,12 +52,12 @@ def basic_report(request, json_data, model_name):
     year = date.year
     
     # orientation page
-    if len(headers) < 12:
+    if len(headers) < 10:
         css = CSS(string='''
         @page {
             size: letter portrait;
         }''')
-    elif len(headers) < 18: 
+    elif len(headers) < 16: 
         css = CSS(string='''
         @page {
             size: letter landscape;

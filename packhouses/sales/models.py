@@ -16,8 +16,8 @@ from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from packhouses.catalogs.models import (Market, ProductMarketClass, Client, Maquiladora, Product, ProductVariety,
                                         ProductPhenologyKind,
-                                        ProductPackaging, Packaging,
-                                        MarketProductSize)
+                                        ProductPackaging,
+                                        ProductSize)
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from django.db.models import Max, Min, Q, F
 from .utils import incoterms_choices
@@ -33,10 +33,10 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
     maquiladora = models.ForeignKey(Maquiladora, verbose_name=_("Maquiladora"), on_delete=models.PROTECT, null=True, blank=True)
     client = models.ForeignKey(Client, verbose_name=_("Client"), on_delete=models.PROTECT, help_text=_('Client must exists in Catalogs->Clients to be able to select it.'))
     local_delivery = models.ForeignKey(LocalDelivery, verbose_name=_('Local delivery'), on_delete=models.PROTECT, null=True, blank=True)
+    incoterms = models.ForeignKey(Incoterm, verbose_name=_('Incoterms'), on_delete=models.PROTECT, null=True, blank=True)
     registration_date = models.DateField(verbose_name=_('Registration date'), default=datetime.date.today)
     shipment_date = models.DateField(verbose_name=_('Shipment date'), default=datetime.date.today)
     delivery_date = models.DateField(verbose_name=_('Delivery date'))
-    incoterms = models.ForeignKey(Incoterm, verbose_name=_('Incoterms'), on_delete=models.PROTECT, null=True, blank=True)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
     order_items_by = models.CharField(max_length=20, verbose_name=_('Order items by'), choices=ORDER_ITEMS_CATEGORY_CHOICES)
@@ -51,7 +51,6 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            # Usar transacción y bloqueo de fila para evitar condiciones de carrera
             with transaction.atomic():
                 last_order = Order.objects.select_for_update().filter(organization=self.organization).order_by('ooid').last()
                 self.ooid = last_order.ooid + 1 if last_order else 1
@@ -74,10 +73,10 @@ class OrderItem(models.Model):
     - El mercado lo tengo del cliente
     """
 
-    product_size = models.ForeignKey(MarketProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
+    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT)
-    market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
-    product_packaging = models.ForeignKey(Packaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT, null=True, blank=False)
+    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
+    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT, null=True, blank=False)
     quantity_per_packaging = models.PositiveIntegerField(verbose_name=_('Quantity per packaging'), default=1)
     quantity = models.DecimalField(verbose_name=_('Quantity'), max_digits=12, decimal_places=2, validators=[MinValueValidator(0.01)])
     unit_price = models.DecimalField(verbose_name=_('Price'), max_digits=12, decimal_places=2, validators=[MinValueValidator(0.01)])

@@ -4,7 +4,6 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from common.mixins import (CleanNameAndOrganizationMixin, CleanNameAndMarketMixin, CleanUniqueNameForOrganizationMixin,
                            CleanNameAndCodeAndOrganizationMixin)
-from .settings import SUPPLY_UNIT_KIND_CHOICES
 # Create your models here.
 
 
@@ -155,20 +154,3 @@ class OrchardCertificationKind(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-class SupplyKind(CleanNameAndOrganizationMixin, models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    unit_kind = models.CharField(max_length=30, verbose_name=_('Unit kind'), choices=SUPPLY_UNIT_KIND_CHOICES)
-    is_packaging = models.BooleanField(default=False, verbose_name=_('Is packaging'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name} ({self.get_unit_kind_display()})"
-
-    class Meta:
-        verbose_name = _('Supply kind')
-        verbose_name_plural = _('Supply kinds')
-        ordering = ('organization', 'name',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='supplykind_unique_name_organization'),
-        ]

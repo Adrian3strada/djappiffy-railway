@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const productField = $("#id_product");
   const varietyField = $("#id_product_variety");
   const initialVarietyValue = varietyField.val();
-  const seasonField = $("#id_product_season_kind");
+  const seasonField = $("#id_product_phenologies");
   const initialSeasonValue = seasonField.val();
   const harvestSizeField = $("#id_product_harvest_size_kind");
   const initialHarvestSizeValue = harvestSizeField.val();
@@ -38,11 +38,12 @@ document.addEventListener("DOMContentLoaded", function() {
     var message = $(this).data("message");
     var confirmText = $(this).data("confirm");
     var cancelText = $(this).data("cancel");
+    var title = $(this).attr("title");
 
     var button = $(this);
 
     Swal.fire({
-      title: "¿Estás seguro?",
+      title: title,
       text: message,
       icon: "warning",
       showCancelButton: true,
@@ -72,6 +73,83 @@ document.addEventListener("DOMContentLoaded", function() {
               var row = button.closest("tr");
               var statusCell = row.find(".field-status");
               statusCell.text("Canceled");
+
+              Toastify({
+                text: data.message,
+                duration: 3000,
+                close: true,
+                gravity: "bottom",
+                position: "right",
+                backgroundColor: "#4caf50",
+              }).showToast();
+            } else {
+              Toastify({
+                text: data.message,
+                duration: 3000,
+                close: true,
+                gravity: "bottom",
+                position: "right",
+                backgroundColor: "#f44336",
+              }).showToast();
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            Toastify({
+              text: "An error occurred while processing your request.",
+              duration: 3000,
+              close: true,
+              gravity: "bottom",
+              position: "right",
+              backgroundColor: "#f44336",
+            }).showToast();
+          });
+      }
+    });
+  });
+
+  $(document).on("click", ".btn-ready-confirm", function (e) {
+    e.preventDefault();
+
+    var url = $(this).data("url");
+    var message = $(this).data("message");
+    var confirmText = $(this).data("confirm");
+    var cancelText = $(this).data("cancel");
+    var title = $(this).attr("title");
+
+    var button = $(this);
+
+    Swal.fire({
+      title: title,
+      text: message,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#4daf50",
+      cancelButtonColor: "#d33",
+      confirmButtonText: confirmText,
+      cancelButtonText: cancelText,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              button.hide();
+
+              var row = button.closest("tr");
+              var statusCell = row.find(".field-status");
+              statusCell.text("Ready");
 
               Toastify({
                 text: data.message,
@@ -231,7 +309,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function updateOrchardCertificationField() {
     const orchardId = orchardField.val();
     if (orchardId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/orchard_certification/?orchard=${orchardId}&is_enabled=true`)
+      fetchOptions(`${API_BASE_URL}/catalogs/orchard-certification/?orchard=${orchardId}&is_enabled=true`)
         .then((data) => {
           updateFieldOptions(orchardCertificationField, data);
           if (initialOrchardCertificationValue) {
