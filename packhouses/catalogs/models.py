@@ -887,7 +887,7 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-class PackagingSupply(models.Model):
+class PackagingComplementarySupply(models.Model):
     product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)

@@ -14,7 +14,7 @@ from .models import (
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    PackagingSupply, RelationPackaging, ProductRipeness,
+    PackagingComplementarySupply, RelationPackaging, ProductRipeness,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation,
     HarvestContainer
 )
@@ -1131,10 +1131,9 @@ class ServiceAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
 
 class PackagingComplementarySupplyInline(admin.TabularInline):
-    model = PackagingSupply
+    model = PackagingComplementarySupply
     min_num = 0
     extra = 0
-    list_display = ('supply_kind', 'supply', 'quantity')
     verbose_name = _('Complementary supply')
     verbose_name_plural = _('Complementary supplies')
 
@@ -1157,13 +1156,14 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
         parent_obj = ProductPackaging.objects.get(id=parent_obj_id) if parent_obj_id else None
         packaging_complement_categories = ['packaging_complement', 'packaging_separator', 'packaging_labeling', 'packaging_storage']
 
-        if db_field.name == "supply_kind":
+        if db_field.name == "kind":
             kwargs["queryset"] = SupplyKind.objects.filter(category__in=packaging_complement_categories, is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+
     class Media:
-        js = ('js/admin/forms/packaging_complementary_supplies_inline.js',)
+        js = ('js/admin/forms/packaging_complementary_supply_inline.js',)
 
 
 class ContainedPackagingInline(admin.TabularInline):
