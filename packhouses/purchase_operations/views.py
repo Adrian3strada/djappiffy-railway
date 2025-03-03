@@ -72,7 +72,7 @@ def requisition_pdf(request, requisition_id):
     applicant_email = requisition.user.email or ""
 
     # Renderizar el template HTML
-    html_string = render_to_string('admin/packhouses/receiving/recieving-ticket.html', {
+    html_string = render_to_string('admin/packhouses/sales-order-requisition-report.html', {
         'packhouse_name': packhouse_name,
         'company_address': company_address,
         'pdf_title': pdf_title,
