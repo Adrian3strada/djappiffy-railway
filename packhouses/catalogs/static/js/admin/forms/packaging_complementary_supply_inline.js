@@ -46,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-
   setTimeout(() => {
     const existingForms = document.querySelectorAll('tr[id^="packagingcomplementarysupply_set-"].form-row.has_original.dynamic-packagingcomplementarysupply_set');
     console.log("existingForms", existingForms)
