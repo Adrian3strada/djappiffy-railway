@@ -19,27 +19,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }).fail(error => console.error('Fetch error:', error));
   }
 
-
-  // Escuchar el evento cuando se agregue un nuevo formulario al formset
   document.addEventListener('formset:added', function (event) {
-    if (event.detail.formsetName === 'packagingsupply_set') {
-
+    if (event.detail.formsetName === 'packagingcomplementarysupply_set') {
       const newForm = event.target;
-
-      const supplyKindField = $(newForm).find('select[name$="supply_kind"]');
+      const kindField = $(newForm).find('select[name$="kind"]');
       const supplyField = $(newForm).find('select[name$="-supply"]');
+      const quantityField = $(newForm).find('input[name$="-quantity"]');
 
-      console.log(supplyKindField);
-      console.log(supplyField);
+      updateFieldOptions(supplyField, [])
 
-      // Agregar un event listener para cuando cambie el SupplyKind
-      supplyKindField.on('change', function () {
-        const supplyKindId = $(this).val(); // Obtenemos el ID del SupplyKind seleccionado
-
+      kindField.on('change', function () {
+        const supplyKindId = kindField.val();
         if (supplyKindId) {
           fetchOptions(`/rest/v1/catalogs/supply/?kind=${supplyKindId}&is_enabled=1`)
             .then(data => {
               updateFieldOptions(supplyField, data);
+              quantityField.val(null);
             })
             .catch(error => {
               console.error('Error al obtener los supplies:', error);
@@ -51,54 +46,47 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Repetir la misma lógica para los formularios ya existentes en la página
-  initializeExistingFormsListeners()
 
-  // Función para inicializar los listeners de SupplyKind en los formularios existentes
-
-  function initializeExistingFormsListeners() {
-    const existingForms = document.querySelectorAll('.form-row.has_original');
+  setTimeout(() => {
+    const existingForms = document.querySelectorAll('tr[id^="packagingcomplementarysupply_set-"].form-row.has_original.dynamic-packagingcomplementarysupply_set');
+    console.log("existingForms", existingForms)
 
     existingForms.forEach((form, index) => {
-
-      //console.log(index);
-      const supplyKindField = $(form).find(`select[name="packagingsupply_set-${index}-supply_kind"]`);
-      const supplyField = $(form).find(`select[name="packagingsupply_set-${index}-supply"]`);
-
-      const selectedSupplyKind = supplyKindField.val();
+      console.log("index, form", index, form)
+      const kindField = $(form).find(`select[name="packagingcomplementarysupply_set-${index}-kind"]`);
+      const supplyField = $(form).find(`select[name="packagingcomplementarysupply_set-${index}-supply"]`);
+      const quantityField = $(form).find(`input[name="packagingcomplementarysupply_set-${index}-quantity"]`);
       const selectedSupply = supplyField.val();
 
-      //console.log(index, 'supply_kind', supplyKindField.val());
-      //console.log(index, 'supply', supplyField.val());
-
-      const supplyKindId = supplyKindField.val();
-      const supplyFieldId = supplyField.val();
-
-      if (supplyKindId) {
-        fetchOptions(`/rest/v1/catalogs/supply/?kind=${supplyKindId}&is_enabled=1`)
+      if (kindField.val()) {
+        fetchOptions(`/rest/v1/catalogs/supply/?kind=${kindField.val()}&is_enabled=1`)
           .then(data => {
             updateFieldOptions(supplyField, data);
             supplyField.val(selectedSupply);
+          })
+          .catch(error => {
+            console.error('Error al obtener los supplies:', error);
           });
       } else {
         updateFieldOptions(supplyField, []);
-        supplyField.val(selectedSupply);
       }
 
-      supplyKindField.on('change', function () {
-        const supplyKindId = $(this).val();
+      kindField.on('change', function () {
+        const supplyKindId = kindField.val();
         if (supplyKindId) {
-          fetchOptions(`/rest/v1/catalogs/supply/?kind=${supplyKindId}`)
+          fetchOptions(`/rest/v1/catalogs/supply/?kind=${supplyKindId}&is_enabled=1`)
             .then(data => {
               updateFieldOptions(supplyField, data);
+              quantityField.val(null);
+            })
+            .catch(error => {
+              console.error('Error al obtener los supplies:', error);
             });
         } else {
           updateFieldOptions(supplyField, []);
         }
       });
-
     });
-    console.log(existingForms);
-  }
+  }, 1000);
 
 });
