@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const $staffValue = $staffField.prop('checked'); 
     
         if ($staffValue) {
-            $staffUserField.parent().parent().parent().fadeIn();
+            $staffUserField.closest('.form-group').fadeIn();
         } else {
-            $staffUserField.parent().parent().parent().hide();
+            $staffUserField.closest('.form-group').hide();
         }
     }
     

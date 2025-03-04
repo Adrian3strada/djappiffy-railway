@@ -14,7 +14,7 @@ from .resources import EmployeeResource
 from common.users.models import User
 from django.utils.html import format_html, format_html_join
 from django.urls import reverse, path
-from .forms import EmployeeEventForm
+from .forms import (EmployeeEventForm, EmployeeForm, JobPositionInlineForm, TaxAndMedicalInlineForm, AcademicAndWorkInlineForm)
 from django.shortcuts import redirect
 
 
@@ -82,6 +82,7 @@ class JobPositionAdmin(ByOrganizationAdminMixin):
 
 class EmployeeJobPositionInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeJobPosition
+    form = JobPositionInlineForm
     
     class Media:
         js = ('js/admin/forms/packhouses/hrm/job-position-inline.js',)
@@ -93,7 +94,7 @@ class EmployeeTaxAndMedicalInformationInline(DisableInlineRelatedLinksMixin, nes
               'medical_insurance_start_date', 'medical_insurance_end_date', 'private_insurance_details','blood_type', 'has_disability', 
               'disability_details', 'has_chronic_illness', 'chronic_illness_details', 'emergency_contact_name', 'emergency_contact_phone',
               'emergency_contact_relationship')
-
+    form = TaxAndMedicalInlineForm
     class Media:
         js = ('js/admin/forms/packhouses/hrm/tax-medical-inline.js',)
 
@@ -108,6 +109,7 @@ class EmployeeWorkExperienceInline(nested_admin.NestedTabularInline):
 class EmployeeAcademicAndWorkInformationInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeAcademicAndWorkInformation
     inlines = [EmployeeCertificationInformationInline, EmployeeWorkExperienceInline]
+    form = AcademicAndWorkInlineForm
 
     class Media:
         css = {'all': ('css/admin_tabular.css',) }
@@ -117,7 +119,7 @@ class EmployeeAcademicAndWorkInformationInline(DisableInlineRelatedLinksMixin, n
 class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     report_function = staticmethod(basic_report)
     resource_classes = [EmployeeResource]
-    list_display = ('full_name', 'get_job_position', 'gender', 'hire_date', 'get_antiguedad', 'status', 'is_staff')
+    list_display = ('full_name', 'get_job_position', 'gender', 'hire_date', 'get_seniority', 'status', 'is_staff')
     list_filter = ('status', 'is_staff')
     fields = ('status', 'name', 'middle_name', 'last_name', 'population_registry_code', 'gender', 
               'marital_status', 'country', 'state', 'city', 'district', 'postal_code', 
@@ -125,6 +127,7 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
               'email', 'hire_date', 'termination_date', 'is_staff', 'staff_username')
     search_fields = ('full_name', )
     inlines = [EmployeeJobPositionInline, EmployeeTaxAndMedicalInformationInline, EmployeeAcademicAndWorkInformationInline,]
+    form = EmployeeForm
 
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('middle_name')

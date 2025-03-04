@@ -98,7 +98,7 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
         parts.append(self.last_name)
         return ' '.join(parts)
     
-    def get_antiguedad(self):
+    def get_seniority(self):
         today = datetime.now().date()
         if self.termination_date:  
             end_date = self.termination_date  
@@ -113,7 +113,7 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
         return _("%(years)d years, %(months)d months, %(days)d days") % {
             "years": years, "months": months, "days": days
         }
-    get_antiguedad.short_description = "Antigüedad"
+    get_seniority.short_description = _("Seniority")
     
     def save(self, *args, **kwargs):
         self.full_name = self.get_full_name()

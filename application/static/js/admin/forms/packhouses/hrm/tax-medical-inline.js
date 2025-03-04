@@ -16,13 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
 
     function toggleFieldsBasedOnCategory() {
-        const $disabilityContainer = $disabilityField.parent().parent();
-        const $illnessContainer = $illnessField.parent().parent();
-        const $illnessDetailsContainer = $insuranceDetailsField.parent().parent();
-        const $insuranceProviderContainer = $insuranceProviderField.parent().parent();
-        const $insuranceNumberContainer = $insuranceNumberField.parent().parent();
-        const $insuranceStartDateContainer = $insuranceStartDateField.parent().parent().parent();
-        const $insuranceEndDateContainer = $insuranceEndDateField.parent().parent().parent();
+        const $disabilityContainer = $disabilityField.parents('div').eq(1);
+        const $illnessContainer = $illnessField.parents('div').eq(1);
+        const $illnessDetailsContainer = $insuranceDetailsField.parents('div').eq(1);
+        const $insuranceProviderContainer = $insuranceProviderField.parents('div').eq(1);
+        const $insuranceNumberContainer = $insuranceNumberField.parents('div').eq(1);
+        const $insuranceStartDateContainer = $insuranceStartDateField.parents('div').eq(1);
+        const $insuranceEndDateContainer = $insuranceEndDateField.parents('div').eq(1);
 
         if ($hasDisabilityField.is(':checked')) {
             $disabilityContainer.fadeIn();

@@ -13,24 +13,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const $paymentPerDayField = $inlineForm.find('input[name$="-payment_per_day"]');
 
     function toggleFieldsBasedOnCategory() {
-        const $paymentKindValue = $paymentKindField.val();
-        const $bankFieldContainer = $bankField.parent().parent().parent();
-        const $bankAccountNumberFieldContainer = $bankAccountNumberField.parent().parent();
-        const $clabeFieldContainer = $clabeField.parent().parent();
-        const $swiftFieldContainer = $swiftField.parent().parent();
+        const paymentKindValue = $paymentKindField.val();
+        const $bankFieldContainer = $bankField.parents('div').eq(2);
+        const $bankAccountNumberFieldContainer = $bankAccountNumberField.parents('div').eq(1);
+        const $clabeFieldContainer = $clabeField.parents('div').eq(1);
+        const $swiftFieldContainer = $swiftField.parents('div').eq(1);
     
-        if ($paymentKindValue === "bank_transfer" || $paymentKindValue === "cheque") {
+        if (paymentKindValue === "bank_transfer" || paymentKindValue === "cheque") {
             $bankFieldContainer.fadeIn();
             $bankAccountNumberFieldContainer.fadeIn();
             $clabeFieldContainer.fadeIn();
             $swiftFieldContainer.fadeIn();
-        } else{
+        } else {
             $bankFieldContainer.hide();
             $bankAccountNumberFieldContainer.hide();
             $clabeFieldContainer.hide();
             $swiftFieldContainer.hide();
         } 
-      }
+    }
     
     toggleFieldsBasedOnCategory();
 
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const paymentPerDay = paymentPerHour * workHoursPerDay;
 
         // Actualizar el campo de pago diario
-        $paymentPerDayField.val(paymentPerDay.toFixed(2)); // Redondear a 4 decimales
+        $paymentPerDayField.val(paymentPerDay.toFixed(2));
     }
 
     // Escuchar cambios en los campos de pago por hora y horas trabajadas por día

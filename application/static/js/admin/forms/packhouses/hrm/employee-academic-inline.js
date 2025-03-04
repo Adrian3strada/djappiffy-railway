@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Seleccionar el formulario inline
     const $inlineForm = $('[id*="employeeacademicandworkinformation-0"]');
     const $academicStatusField = $inlineForm.find('select[name$="-academic_status"]');    
     const $degreeField = $inlineForm.find('[name$="-degree"]');
@@ -8,12 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const $graduationYearField = $inlineForm.find('[name$="-graduation_year"]');
     const $fieldStudyField = $inlineForm.find('[name$="-field_of_study"]');
 
-    function toggleFieldsBasedOnCategory() {    
-        const $degreeFieldContainer = $degreeField.parent().parent();
-        const $professionalLicenseFieldContainer = $professionalLicenseField.parent().parent();
-        const $institutionFieldContainer = $institutionField.parent().parent();
-        const $graduationYearFieldContainer = $graduationYearField.parent().parent().parent();
-        const $fieldStudyFieldContainer = $fieldStudyField.parent().parent();
+    function toggleFieldsBasedOnCategory() {
+        const $degreeFieldContainer = $degreeField.parents('div').eq(1);
+        const $professionalLicenseFieldContainer = $professionalLicenseField.parents('div').eq(1);
+        const $institutionFieldContainer = $institutionField.parents('div').eq(1);
+        const $graduationYearFieldContainer = $graduationYearField.parents('div').eq(1);
+        const $fieldStudyFieldContainer = $fieldStudyField.parents('div').eq(1);
 
         if ($academicStatusField.val() === "basic_education" || $academicStatusField.val() === "none") {
             $degreeFieldContainer.hide();
@@ -38,5 +37,4 @@ document.addEventListener('DOMContentLoaded', () => {
     
     toggleFieldsBasedOnCategory();
     $academicStatusField.change(toggleFieldsBasedOnCategory);
-
 });
