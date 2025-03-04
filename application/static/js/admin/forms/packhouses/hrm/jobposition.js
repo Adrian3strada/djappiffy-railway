@@ -5,5 +5,13 @@ document.addEventListener('DOMContentLoaded', function () {
     deleteButtons.forEach(function(button) {
       button.style.display = 'none';
     });
+    var style = document.createElement('style');
+        style.innerHTML = `
+            .inline-deletelink {
+                display: none !important;
+                visibility: hidden !important;
+            }
+        `;
+        document.head.appendChild(style);
   });
   

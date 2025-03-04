@@ -4,8 +4,6 @@ from organizations.models import Organization
 from cities_light.models import City, Country, Region, SubRegion
 from django.utils.translation import gettext_lazy as _
 from common.mixins import CleanNameAndOrganizationMixin, CleanEmployeeAndOrganizationMixin
-from common.base.mixins import ByOrganizationAdminMixin
-from packhouses.packhouse_settings.models import PaymentKind 
 from common.billing.models import LegalEntityCategory
 from packhouses.packhouse_settings.models import Bank
 from .utils import (EMPLOYEE_GENDER_CHOICES, EMPLOYEE_BLOOD_TYPE_CHOICES, EMPLOYEE_ACADEMIC_CHOICES, EMPLOYEE_PAYMENT_CHOICES, 
@@ -14,6 +12,7 @@ from django.core.exceptions import ValidationError
 from datetime import datetime
 from django.utils import timezone
 from common.users.models import User
+from common.settings import WEEKDAYS_CHOICES
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 # Create your models here.
@@ -52,7 +51,7 @@ class JobPosition(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 class WorkShiftSchedule(models.Model):
-    day = models.CharField(max_length=50, verbose_name=_("Day"))
+    day = models.CharField(max_length=50, choices=WEEKDAYS_CHOICES, verbose_name=_("Day"))
     entry_time = models.TimeField(verbose_name=_('Entry Time'), blank=True, null=True, default="08:00:00" )
     exit_time = models.TimeField(verbose_name=_('Exit Time'), blank=True, null=True, default="18:00:00" )
     is_enabled = models.BooleanField(default=True, verbose_name=_("Is Enabled"))

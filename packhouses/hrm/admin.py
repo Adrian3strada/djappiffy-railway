@@ -16,6 +16,7 @@ from django.utils.html import format_html, format_html_join
 from django.urls import reverse, path
 from .forms import (EmployeeEventForm, EmployeeForm, JobPositionInlineForm, TaxAndMedicalInlineForm, AcademicAndWorkInlineForm)
 from django.shortcuts import redirect
+from django.core.exceptions import ValidationError
 
 
 @admin.register(EmployeeStatus)
@@ -29,17 +30,21 @@ class EmployeeStatusAdmin(ByOrganizationAdminMixin):
         return form
 
 class WorkShiftScheduleInlineFormSet(BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+        if self.total_form_count() > 7:
+            raise ValidationError("No se pueden agregar más de 7 horarios de trabajo.")
+        
     def __init__(self, *args, **kwargs):
-        # Si el objeto padre es nuevo (no tiene pk), asignamos datos iniciales para cada día
         if 'instance' in kwargs and not kwargs['instance'].pk:
             kwargs.setdefault('initial', [
-                {'day': _("Monday")},
-                {'day': _("Tuesday")},
-                {'day': _("Wednesday")},
-                {'day': _("Thursday")},
-                {'day': _("Friday")},
-                {'day': _("Saturday")},
-                {'day': _("Sunday")},
+                {'day': 'Monday'},
+                {'day': 'Tuesday'},
+                {'day': 'Wednesday'},
+                {'day': 'Thursday'},
+                {'day': 'Friday'},
+                {'day': 'Saturday'},
+                {'day': 'Sunday'},
             ])
         super().__init__(*args, **kwargs)
 
@@ -54,14 +59,9 @@ class WorkShiftScheduleInline(admin.TabularInline):
         if obj is None:
             return 7
         return 0
-
-    def has_add_permission(self, request, obj=None):
-        if obj is None:
-            return True
+    
+    def has_delete_permission(self, request, obj=None):
         return False
-
-    def has_add_permission(self, request, obj=None):
-        return True if obj is None else False
     
     class Media:
         css = {'all': ('css/admin_tabular.css',)}
