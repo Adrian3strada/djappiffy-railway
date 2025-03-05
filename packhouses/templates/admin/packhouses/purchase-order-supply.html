@@ -96,8 +96,8 @@
 
 <table class="folio-table">
     <tr>
-        <td style="width: 10%; border-left: 10px solid #123782; background-color: #ffc600;">Folio</td>
-        <td style="width: 20%; color:red; background-color: #fff4cc;"> N° {{ purchase_order.ooid }}</td>
+        <td style="width: 10%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Folio" %}</td>
+        <td style="width: 20%; color:red; background-color: #fff4cc;"> {% translate "N°" %} {{ purchase_order.ooid }}</td>
         <td style="width: 70%;"></td>
     </tr>
 </table>
@@ -110,10 +110,10 @@
 <table class="table_form">
     <thead>
         <tr>
-            <th>Supply</th>
-            <th>Quantity</th>
-            <th>Unit price</th>
-            <th>Total</th>
+            <th>{% translate "Supply" %}</th>
+            <th>{% translate "Quantity" %}</th>
+            <th>{% translate "Unit price" %}</th>
+            <th>{% translate "Total" %}</th>
         </tr>
     </thead>
     <tbody>
@@ -128,15 +128,15 @@
     </tbody>
     <tfoot>
         <tr>
-            <td colspan="3" style="text-align: right;">SUBTOTAL:</td>
+            <td colspan="3" style="text-align: right;">{% translate "SUBTOTAL:" %}</td>
             <td style="text-align: center;">${{ subtotal }} {{ currency }}</td>
         </tr>
         <tr>
-            <td colspan="3" style="text-align: right;">TAX ({{ percentage_tax }} %):</td>
+            <td colspan="3" style="text-align: right;">{% translate "TAX" %} ({{ percentage_tax }} %):</td>
             <td style="text-align: center;">${{ tax }} {{ currency }}</td>
         </tr>
         <tr>
-            <td colspan="3" style="text-align: right; font-weight: bold;">TOTAL:</td>
+            <td colspan="3" style="text-align: right; font-weight: bold;">{% translate "TOTAL:" %}</td>
             <td style="text-align: center; font-weight: bold;">${{ total }} {{ currency }}</td>
         </tr>
     </tfoot>
