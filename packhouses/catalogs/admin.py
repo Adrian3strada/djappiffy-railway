@@ -12,7 +12,7 @@ from .models import (
     HarvestingPaymentSetting, Supply, MeshBagKind, ProductStandardPackaging,
     MeshBag, Service, ProductPresentation, ProductPackaging, WeighingScale, ColdChamber,
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
-    ExportingCompany, Transfer, LocalTransporter,
+    ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     ProductPackagingComplementarySupply, RelationPackaging, ProductRipeness,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation,
@@ -1130,6 +1130,39 @@ class ServiceAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             return formfield
 
 
+class ProductPresentationComplementarySupplyInline(admin.TabularInline):
+    model = ProductPresentationComplementarySupply
+    min_num = 0
+    extra = 0
+    verbose_name = _('Complementary supply')
+    verbose_name_plural = _('Complementary supplies')
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'supply_kind' in formset.form.base_fields:
+            formset.form.base_fields['supply_kind'].widget.can_add_related = False
+            formset.form.base_fields['supply_kind'].widget.can_change_related = False
+            formset.form.base_fields['supply_kind'].widget.can_delete_related = False
+            formset.form.base_fields['supply_kind'].widget.can_view_related = False
+        if 'supply' in formset.form.base_fields:
+            formset.form.base_fields['supply'].widget.can_add_related = False
+            formset.form.base_fields['supply'].widget.can_change_related = False
+            formset.form.base_fields['supply'].widget.can_delete_related = False
+            formset.form.base_fields['supply'].widget.can_view_related = False
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_obj_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = ProductPresentation.objects.get(id=parent_obj_id) if parent_obj_id else None
+        packaging_complement_categories = ['packaging_complement', 'packaging_separator', 'packaging_labeling', 'packaging_storage']
+
+        if db_field.name == "kind":
+            kwargs["queryset"] = SupplyKind.objects.filter(category__in=packaging_complement_categories, is_enabled=True)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/product_presentation_complementary_supply_inline.js',)
 
 
 @admin.register(ProductPresentation)
@@ -1142,7 +1175,7 @@ class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
     search_fields = ('name',)
     fields = ('product', 'markets', 'presentation_supply_kind', 'presentation_supply', 'name',
               'presentation_supply_quantity', 'max_product_amount_per_presentation', 'is_enabled')
-    inlines = []
+    inlines = [ProductPresentationComplementarySupplyInline]
 
     def markets_display(self, obj):
         return ', '.join([market.name for market in obj.markets.all()])

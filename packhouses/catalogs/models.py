@@ -848,6 +848,7 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 
 # Tipos de empaques
 
+
 class ProductPresentation(CleanNameAndOrganizationMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
@@ -876,6 +877,23 @@ class ProductPresentation(CleanNameAndOrganizationMixin, models.Model):
                                     name='productpresentation_unique_product_name_organization'),
         ]
 
+
+class ProductPresentationComplementarySupply(models.Model):
+    product_presentation = models.ForeignKey(ProductPresentation, on_delete=models.CASCADE)
+    kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'),
+                             limit_choices_to={'category': 'packaging_presentation_complement'},
+                             on_delete=models.PROTECT)
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(0.01)])
+
+    class Meta:
+        verbose_name = _('Product presentation complementary supply')
+        verbose_name_plural = _('Product presentation complementary supplies')
+        ordering = ('kind', 'supply')
+        constraints = [
+            models.UniqueConstraint(fields=('product_presentation', 'kind', 'supply'),
+                                    name='productpresentationcomplementarysupply_unique_productpresentation_kind_supply'),
+        ]
 
 
 class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
