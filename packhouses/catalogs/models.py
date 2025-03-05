@@ -667,7 +667,7 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     capacity = models.FloatField(verbose_name=_('Capacity'), validators=[MinValueValidator(0)],
-                                 null=True, blank=False,
+                                 null=True, blank=True,
                                  help_text=_('Capacity of the supply, based in the usage unit'))
 
     minimum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Minimum stock quantity'))
