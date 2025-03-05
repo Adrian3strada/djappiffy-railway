@@ -12,7 +12,7 @@ from common.base.mixins import (
     DisableInlineRelatedLinksMixin, ByUserAdminMixin,
 )
 from django.core.exceptions import ObjectDoesNotExist
-from .forms import RequisitionForm
+from .forms import RequisitionForm, PurchaseOrderForm
 from django.utils.html import format_html, format_html_join
 from django.urls import reverse
 import nested_admin
@@ -114,15 +114,16 @@ class RequisitionAdmin(ByOrganizationAdminMixin, ByUserAdminMixin):
                 <i class="fa-solid fa-print"></i>
             </a>
             {}
+            {}
             ''',
-            requisition_pdf, tooltip_requisition_pdf, set_requisition_ready_button
+            requisition_pdf, tooltip_requisition_pdf, set_requisition_ready_button, set_requisition_open_button
         )
 
     generate_actions_buttons.short_description = _('Actions')
     generate_actions_buttons.allow_tags = True
 
     class Media:
-        js = ('js/admin/forms/packhouses/purchase_operations/requisition.js',)
+        js = ('js/admin/forms/packhouses/purchase/requisition.js',)
 
 
 class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
@@ -130,6 +131,33 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
     fields = ('requisition_supply', 'quantity', 'unit_price', 'total_price','comments')
     readonly_fields = ('total_price','comments',)
     extra = 0
+
+    def _get_parent_obj(self, request):
+        """Obtiene el objeto Purchase Order padre a partir del parámetro object_id."""
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        if parent_object_id:
+            try:
+                return PurchaseOrder.objects.get(id=parent_object_id)
+            except PurchaseOrder.DoesNotExist:
+                return None
+        return None
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+            # Todos los campos se vuelven de solo lectura si el estado es cerrado, cancelado o listo
+            readonly_fields.extend([
+                field.name for field in self.model._meta.fields
+                if field.name not in readonly_fields
+            ])
+        return readonly_fields
+
+    def has_delete_permission(self, request, obj=None):
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+            return False
+        return super().has_delete_permission(request, obj)
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -164,27 +192,35 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/purchase_operations/purchase_orders_supply.js',)
+        js = ('js/admin/forms/packhouses/purchase/purchase_orders_supply.js',)
 
 
 
 @admin.register(PurchaseOrder)
 class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
+    form = PurchaseOrderForm
     list_display = ('ooid', 'provider', 'currency', 'status', 'created_at', 'user', 'generate_actions_buttons')
-    fields = ('ooid', 'provider','payment_date','currency','tax', 'status', 'comments')
+    fields = ('ooid', 'provider','payment_date','currency','tax', 'status', 'comments', 'save_and_send')
     list_filter = ('provider', 'currency', 'status')
     readonly_fields = ('ooid', 'status')
     inlines = [PurchaseOrderRequisitionSupplyInline]
+
 
     def generate_actions_buttons(self, obj):
         purchase_order_supply_pdf = reverse('purchase_order_supply_pdf', args=[obj.pk])
         tooltip_purchase_order_supply_pdf = _('Generate Purchase Order Supply PDF')
 
-        tooltip_ready = _('Send to Payments Department')
+        tooltip_ready = _('Send to Storehouse')
         ready_url = reverse('set_purchase_order_supply_ready', args=[obj.pk])
-        confirm_ready_text = _('Are you sure you want to send this purchase order supply to Payments Department?')
+        confirm_ready_text = _('Are you sure you want to send this purchase order supply to Storehouse?')
         confirm_button_text = _('Yes, send')
         cancel_button_text = _('No')
+
+        tooltip_open = _('Reopen this purchase order')
+        open_url = reverse('set_purchase_order_supply_open', args=[obj.pk])
+        confirm_open_text = _(
+            'Are you sure you want to reopen this purchase order? It will no longer be available in the warehouse for entry and you can continue editing it.')
+        confirm_button_text_open = _('Yes, reopen')
 
         set_purchase_order_supply_ready_button = ''
         if obj.status == 'open':
@@ -198,14 +234,27 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
                 tooltip_ready, ready_url, confirm_ready_text, confirm_button_text, cancel_button_text
             )
 
+        set_purchase_order_supply_open_button = ''
+        if obj.status == 'ready':
+            set_purchase_order_supply_open_button = format_html(
+                '''
+                <a class="button btn-open-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
+                   data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#ffc107;">
+                    <i class="fa-solid fa-lock-open"></i>
+                </a>
+                ''',
+                tooltip_open, open_url, confirm_open_text, confirm_button_text_open, cancel_button_text
+            )
+
         return format_html(
             '''
+            {}
+            {}
             <a class="button" href="{}" target="_blank" data-toggle="tooltip" title="{}">
                 <i class="fa-solid fa-print"></i>
             </a>
-            {}
             ''',
-            purchase_order_supply_pdf, tooltip_purchase_order_supply_pdf, set_purchase_order_supply_ready_button
+            set_purchase_order_supply_ready_button, set_purchase_order_supply_open_button, purchase_order_supply_pdf, tooltip_purchase_order_supply_pdf
         )
 
     generate_actions_buttons.short_description = _('Actions')
@@ -216,6 +265,9 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
         if not obj or (obj and obj.pk):
             if 'ooid' not in readonly_fields:
                 readonly_fields.append('ooid')
+        if obj and obj.status in ['closed', 'canceled', 'ready']:
+            readonly_fields.extend([field for field in self.fields if hasattr(obj, field)])
+
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -240,4 +292,11 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.user = request.user
+
+        save_and_send = form.cleaned_data.get('save_and_send', False)
+        if save_and_send:
+            obj.status = 'ready'
         super().save_model(request, obj, form, change)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/purchase/purchase_orders.js',)

@@ -170,7 +170,7 @@ class PurchaseOrder(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.ooid}"
+        return f"{self.ooid} - {self.provider.name}"
 
     class Meta:
         verbose_name = _("Purchase Order")
@@ -210,6 +210,10 @@ class PurchaseOrderSupply(models.Model):
         max_length=255,
         verbose_name=_("Comments"),
         null=True, blank=True
+    )
+    is_in_inventory = models.BooleanField(
+        default=False,
+        verbose_name = _("Is in inventory")
     )
 
     def __str__(self):

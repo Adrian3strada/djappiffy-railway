@@ -8,7 +8,7 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
                           MaquiladoraSerializer, PackagingSerializer,
                           SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
-                          OrchardCertificationSerializer, ProductRipenessSerializer
+                          OrchardCertificationSerializer, ProductRipenessSerializer, PurchaseOrderSupplySerializer
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
@@ -16,6 +16,8 @@ from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider
                      Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness
                      )
 from django_filters.rest_framework import DjangoFilterBackend
+from packhouses.purchase.models import PurchaseOrderSupply
+
 
 class ProductHarvestSizeKindViewSet(viewsets.ModelViewSet):
     serializer_class = ProductHarvestSizeKindSerializer
@@ -312,6 +314,20 @@ class ProductRipenessViewSet(viewsets.ModelViewSet):
 
         return ProductRipeness.objects.filter(product__organization=self.request.organization)
 
+class PurchaseOrderSupplyViewSet(viewsets.ModelViewSet):
+    serializer_class = PurchaseOrderSupplySerializer
+    filterset_fields = ['purchase_order']  # Filtra por purchase_order
+    pagination_class = None  # Desactiva la paginación
 
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        # Filtra los PurchaseOrderSupply por purchase_order_id
+        purchase_order_id = self.request.query_params.get('purchase_order', None)
+        if purchase_order_id:
+            return PurchaseOrderSupply.objects.filter(purchase_order_id=purchase_order_id)
+        return PurchaseOrderSupply.objects.none()
 
 

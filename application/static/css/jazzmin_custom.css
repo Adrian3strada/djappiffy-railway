@@ -248,3 +248,8 @@ label:not(.form-check-label):not(.custom-file-label) {
   font-weight: normal !important;
 }
 
+.storehouse-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}

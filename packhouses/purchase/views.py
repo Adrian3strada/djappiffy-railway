@@ -252,9 +252,36 @@ def set_purchase_order_supply_ready(request, purchase_order_supply_id):
 
     purchase_order_supply.status = 'ready'
     purchase_order_supply.save()
-    success_message = _('Requisition sent to Payments Department successfully.')
+    success_message = _('Purchase order sent to Storehouse successfully.')
 
     return JsonResponse({
         'success': True,
         'message': success_message
+    })
+
+def set_purchase_order_supply_open(request, purchase_order_supply_id):
+    # Obtener el registro
+    purchase_order_supply = get_object_or_404(
+        PurchaseOrder,
+        pk=purchase_order_supply_id,
+        organization=request.organization
+    )
+    if purchase_order_supply.status not in ['ready']:
+        return JsonResponse({
+            'success': False,
+            'message': 'You cannot send this purchase order.',
+            'title': 'Error'
+        }, status=403)
+
+    purchase_order_supply.status = 'open'
+    purchase_order_supply.save()
+    title_message = _('Success')
+    success_message = _('Purchase order sent to Purchase successfully.')
+    button_text = _('Continue')
+
+    return JsonResponse({
+        'success': True,
+        'message': success_message,
+        'title': title_message,
+        'button': button_text
     })

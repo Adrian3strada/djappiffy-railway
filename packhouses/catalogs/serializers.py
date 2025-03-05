@@ -6,6 +6,7 @@ from packhouses.catalogs.models import (
     HarvestingCrew, OrchardCertification, ProductRipeness
 )
 from django.utils.translation import gettext_lazy as _
+from packhouses.purchase.models import PurchaseOrderSupply
 
 
 
@@ -150,3 +151,20 @@ class ProductRipenessSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductRipeness
         fields = '__all__'
+
+class PurchaseOrderSupplySerializer(serializers.ModelSerializer):
+    purchase_order_supply_options = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PurchaseOrderSupply
+        fields = '__all__'
+
+    def get_purchase_order_supply_options(self, obj):
+        # Obtener las opciones válidas para purchase_order_supply
+        return [
+            {
+                'id': pos.id,
+                'name': str(pos.requisition_supply.supply)  # Nombre del Supply
+            }
+            for pos in PurchaseOrderSupply.objects.filter(purchase_order=obj.purchase_order)
+        ]
