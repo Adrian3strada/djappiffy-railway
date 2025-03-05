@@ -1338,7 +1338,7 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
             if product:
                 kwargs["queryset"] = ProductRipeness.objects.filter(**product_queryfilter)
             else:
-                kwargs["queryset"] = ProductRipeness.objects.none()        
+                kwargs["queryset"] = ProductRipeness.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -1780,3 +1780,6 @@ class HarvestCuttingContainerAdmin(SheetReportExportAdminMixin, ByOrganizationAd
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
+
+
+

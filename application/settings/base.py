@@ -93,7 +93,8 @@ INSTALLED_APPS = [
     "packhouses.sales",
     "packhouses.gathering",
     "packhouses.hrm",
-    "packhouses.purchase_operations",
+    "packhouses.purchase",
+    "packhouses.storehouse",
 
     "eudr.parcels",
 
@@ -366,7 +367,8 @@ JAZZMIN_SETTINGS = {
     "order_with_respect_to": [
         "sales",
         "gathering",
-        "purchase_operations",
+        "purchase",
+        "storehouse",
         "catalogs",
         "catalogs.Market",
         "catalogs.Product",
@@ -432,8 +434,9 @@ JAZZMIN_SETTINGS = {
         "gathering": "fas fa-tractor",
         "sales": "fas fa-dollar-sign",
         "parcels": "fas fa-map-marked-alt",
-        "purchase_operations": "fas fa-shopping-cart",
+        "purchase": "fas fa-shopping-cart",
         "hrm": "fas fa-clipboard",
+        "storehouse": "fas fa-warehouse",
 
     },
     # Icons that are used when one is not manually specified
