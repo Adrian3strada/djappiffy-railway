@@ -688,21 +688,19 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
                                   'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel']:
             min_value = 1 if self.kind.capacity_unit_category in ['pieces'] else 0.01
             validation_error = _('Capacity must be at least 1 for this kind.') if self.kind.capacity_unit_category in ['pieces'] else _('Capacity must be at least 0.01 for this kind.')
-            if value < min_value:
+            if value and value < min_value:
                 raise ValidationError(
                     validation_error,
                     params={'capacity': value},
                 )
+
         elif self.kind.category in ['packaging_separator']:
-            if value < 0:
+            if value and value < 0:
                 raise ValidationError(
-                    _('Capacity cam be at minimum 0 for this kind.'),
+                    _('Capacity can be at minimum 0 for this kind.'),
                     params={'capacity': value},
                 )
         else:
-            print("self.kind.category", self.kind.category)
-            print("self.capacity", self.capacity)
-
             if value is not None:
                 raise ValidationError(
                     _('Capacity cannot has value for this kind category.'),

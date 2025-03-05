@@ -919,7 +919,6 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     capacity_display.admin_order_field = 'capacity'
 
     def usage_discount_quantity_display(self, obj):
-
         return f"{str(obj.usage_discount_quantity)} {obj.kind.get_usage_discount_unit_category_display()}"
     usage_discount_quantity_display.short_description = _('Usage discount quantity')
     usage_discount_quantity_display.admin_order_field = 'usage_discount_quantity'
@@ -938,6 +937,8 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
         obj = Supply.objects.get(id=obj_id) if obj_id else None
+        print("db_field", db_field)
+        print("db_field.name", db_field.name)
 
         if db_field.name == "kind":
             kwargs["queryset"] = SupplyKind.objects.filter(is_enabled=True)
@@ -945,22 +946,37 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             formfield.label_from_instance = lambda item: item.name
             return formfield
 
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = Supply.objects.get(id=obj_id) if obj_id else None
+
         if db_field.name == "capacity":
-            packaging_container_categories = ['packaging_containment', 'packaging_presentation', 'packaging_separator', 'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel']
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            print("capacity")
+            packaging_containment_categories = ['packaging_containment', 'packaging_presentation', 'packaging_separator', 'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel']
+            print("packaging_containment_categories", packaging_containment_categories)
+            print("request", request)
             if request.POST:
                 kind_id = request.POST.get('kind')
             else:
                 kind_id = obj.kind_id if obj else None
+            print("kind_id", kind_id)
             if kind_id:
                 kind = SupplyKind.objects.get(id=kind_id)
-                if kind.category in packaging_container_categories:
+                print("KIND", kind)
+                if kind.category in packaging_containment_categories:
+                    print("kind.category in packaging_containment_categories", kind.category)
+                    formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
                     formfield.required = True
+                    return formfield
                 else:
+                    print("else", kind.category)
+                    formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
                     formfield.required = False
-            return formfield
+                    return formfield
 
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
     class Media:
         js = ('js/admin/forms/supply.js',)
@@ -1154,10 +1170,10 @@ class ProductPresentationComplementarySupplyInline(admin.TabularInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_obj_id = request.resolver_match.kwargs.get("object_id")
         parent_obj = ProductPresentation.objects.get(id=parent_obj_id) if parent_obj_id else None
-        packaging_complement_categories = ['packaging_complement', 'packaging_separator', 'packaging_labeling', 'packaging_storage']
+        presentation_complement_categories = ['packaging_presentation_complement']
 
         if db_field.name == "kind":
-            kwargs["queryset"] = SupplyKind.objects.filter(category__in=packaging_complement_categories, is_enabled=True)
+            kwargs["queryset"] = SupplyKind.objects.filter(category__in=presentation_complement_categories, is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
