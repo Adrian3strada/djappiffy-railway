@@ -10,11 +10,11 @@ from .models import (
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, MeshBagKind, ProductStandardPackaging,
-    MeshBag, Service, ProductPackaging, WeighingScale, ColdChamber,
+    MeshBag, Service, ProductPresentation, ProductPackaging, WeighingScale, ColdChamber,
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ExportingCompany, Transfer, LocalTransporter,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    PackagingComplementarySupply, RelationPackaging, ProductRipeness,
+    ProductPackagingComplementarySupply, RelationPackaging, ProductRipeness,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation,
     HarvestContainer
 )
@@ -1131,7 +1131,7 @@ class ServiceAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
 
 class PackagingComplementarySupplyInline(admin.TabularInline):
-    model = PackagingComplementarySupply
+    model = ProductPackagingComplementarySupply
     min_num = 0
     extra = 0
     verbose_name = _('Complementary supply')
@@ -1161,9 +1161,37 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-
     class Media:
         js = ('js/admin/forms/packaging_complementary_supply_inline.js',)
+
+
+
+@admin.register(ProductPresentation)
+class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
+    report_function = staticmethod(basic_report)
+    # resource_classes = [ProductPresentationResource]
+    list_display = ('name', 'product', 'is_enabled')
+    list_filter = ('product', 'is_enabled')
+    search_fields = ('name',)
+    fields = ('product', 'name', 'is_enabled')
+    inlines = []
+
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "product":
+            organization = getattr(request, 'organization', None)
+            if organization:
+                kwargs["queryset"] = Product.objects.filter(organization=organization, is_enabled=True)
+            else:
+                kwargs["queryset"] = Product.objects.none()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/product_presentation.js',)
 
 
 class ContainedPackagingInline(admin.TabularInline):

@@ -813,11 +813,10 @@ class MeshBag(models.Model):
 class PackagingPresentation(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    markets = models.ManyToManyField(Market, verbose_name=_('Market'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
     product_variety_size = models.ForeignKey(ProductSize, verbose_name=_('Variety size'), on_delete=models.PROTECT)
-
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -831,7 +830,6 @@ class PackagingPresentation(models.Model):
 
 
 # Proveedores de servicios
-
 
 class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
@@ -848,8 +846,34 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
                                     name='service_unique_name_service_provider_organization'),
         ]
 
-
 # Tipos de empaques
+
+class ProductPresentation(CleanNameAndOrganizationMixin, models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
+    presentation_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'),
+                                                 limit_choices_to={'category': 'packaging_presentation'},
+                                                 on_delete=models.PROTECT)
+    presentation_supply = models.ForeignKey(Supply, verbose_name=_('Presentation supply'), on_delete=models.PROTECT)
+    presentation_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Presentation supply quantity'),
+                                                               help_text=_('Quantity of the packaging supply to discount from the inventory each time a product packaging is used'))
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    max_product_amount_per_presentation = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Product presentation')
+        verbose_name_plural = _('Product presentation')
+        ordering = ('name', )
+        constraints = [
+            models.UniqueConstraint(fields=('product', 'name', 'organization'),
+                                    name='productpresentation_unique_product_name_organization'),
+        ]
+
 
 
 class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
@@ -864,12 +888,11 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
 
     name = models.CharField(max_length=255, verbose_name=_('Name'))
 
-    ### Máximo peso
-    max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
-
     packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
     packaging_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Packaging supply quantity'),
                                                             help_text=_('Quantity of the packaging supply to discount from the inventory each time a product packaging is used'))
+    ### Máximo peso
+    max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
 
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
@@ -882,25 +905,25 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
         verbose_name_plural = _('Product packaging')
         ordering = ('name', )
         constraints = [
-            models.UniqueConstraint(fields=('name', 'organization'),
-                                    name='packaging_unique_name_organization'),
+            models.UniqueConstraint(fields=('product', 'name', 'organization'),
+                                    name='packaging_unique_product_name_organization'),
         ]
 
 
-class PackagingComplementarySupply(models.Model):
+class ProductPackagingComplementarySupply(models.Model):
     product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
-    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'))
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
 
     class Meta:
-        verbose_name = _('Complementary packaging supply')
-        verbose_name_plural = _('Complementary packaging supplies')
+        verbose_name = _('Product packaging complementary supply')
+        verbose_name_plural = _('Product packaging complementary supplies')
         ordering = ('kind', 'supply')
-        #constraints = [
-        #    models.UniqueConstraint(fields=('packaging_kind', 'supply_kind'),
-        #                            name='insidesupply_unique_packagingkind_supplykind'),
-        #]
+        constraints = [
+            models.UniqueConstraint(fields=('product_packaging', 'kind', 'supply'),
+                                    name='productpackagingcomplementarysupply_unique_productpackaging_kind_supply'),
+        ]
 
 
 class RelationPackaging(models.Model):

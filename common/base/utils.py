@@ -187,7 +187,7 @@ class DehydrationResource():
         return obj.kind.name if obj.kind else ""
 
     def dehydrate_main_supply(self, obj):
-        return obj.packaging_supply.name if obj.packaging_supply else ""
+        return obj.presentation_supply.name if obj.presentation_supply else ""
 
     def dehydrate_kind(self, obj):
         return obj.kind.name if obj.kind else ""
