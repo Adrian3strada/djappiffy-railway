@@ -376,6 +376,7 @@ JAZZMIN_SETTINGS = {
         "catalogs.Market",
         "catalogs.Product",
         "catalogs.MarketProductSize",
+        "catalogs.ProductPresentation",
         "catalogs.ProductPackaging",
         "catalogs.Provider",
         "catalogs.Client",

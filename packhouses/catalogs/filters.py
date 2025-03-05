@@ -610,7 +610,7 @@ class ByProductForOrganizationPackagingFilter(admin.SimpleListFilter):
         return queryset
 
 
-class ByMarketForOrganizationPackagingFilter(admin.SimpleListFilter):
+class ByMarketForOrganizationProductPackagingFilter(admin.SimpleListFilter):
     title = _('Market')
     parameter_name = 'market'
 

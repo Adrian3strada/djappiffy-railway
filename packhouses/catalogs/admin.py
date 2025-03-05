@@ -39,7 +39,7 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
                       ByClientCapitalFrameworkForOrganizationFilter, BySupplyKindForProductPackagingFilter,
                       BySupplyForOrganizationPackagingFilter, ByProductForOrganizationPackagingFilter,
-                      ByMarketForOrganizationPackagingFilter,
+                      ByMarketForOrganizationProductPackagingFilter,
                       ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
                       ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                       ByCityForOrganizationClientsFilter, ByPaymentKindForOrganizationFilter,
@@ -906,7 +906,7 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     list_display = ('name', 'kind', 'capacity_display', 'usage_discount_quantity_display', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
     list_filter = ('kind', 'is_enabled')
     search_fields = ('name',)
-    fields = ('kind', 'capacity', 'name', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+    fields = ('kind', 'name', 'capacity', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
 
     def capacity_display(self, obj):
         if obj.capacity and obj.capacity > 0:
@@ -1130,6 +1130,55 @@ class ServiceAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             return formfield
 
 
+
+
+@admin.register(ProductPresentation)
+class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
+    report_function = staticmethod(basic_report)
+    # resource_classes = [ProductPresentationResource]
+    list_display = ('name', 'product', 'markets_display', 'presentation_supply_kind', 'presentation_supply',
+                    'presentation_supply_quantity', 'max_product_amount_per_presentation', 'is_enabled')
+    list_filter = ('product', 'is_enabled')
+    search_fields = ('name',)
+    fields = ('product', 'markets', 'presentation_supply_kind', 'presentation_supply', 'name',
+              'presentation_supply_quantity', 'max_product_amount_per_presentation', 'is_enabled')
+    inlines = []
+
+    def markets_display(self, obj):
+        return ', '.join([market.name for market in obj.markets.all()])
+    markets_display.short_description = _('Markets')
+    markets_display.admin_order_field = 'name'
+
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+
+        if db_field.name == "markets":
+            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "product":
+            organization = getattr(request, 'organization', None)
+            if organization:
+                kwargs["queryset"] = Product.objects.filter(organization=organization, is_enabled=True)
+            else:
+                kwargs["queryset"] = Product.objects.none()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/product_presentation.js',)
+
+
 class PackagingComplementarySupplyInline(admin.TabularInline):
     model = ProductPackagingComplementarySupply
     min_num = 0
@@ -1165,35 +1214,6 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
         js = ('js/admin/forms/packaging_complementary_supply_inline.js',)
 
 
-
-@admin.register(ProductPresentation)
-class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
-    report_function = staticmethod(basic_report)
-    # resource_classes = [ProductPresentationResource]
-    list_display = ('name', 'product', 'is_enabled')
-    list_filter = ('product', 'is_enabled')
-    search_fields = ('name',)
-    fields = ('product', 'name', 'is_enabled')
-    inlines = []
-
-    @uppercase_form_charfield('name')
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        return form
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "product":
-            organization = getattr(request, 'organization', None)
-            if organization:
-                kwargs["queryset"] = Product.objects.filter(organization=organization, is_enabled=True)
-            else:
-                kwargs["queryset"] = Product.objects.none()
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    class Media:
-        js = ('js/admin/forms/product_presentation.js',)
-
-
 class ContainedPackagingInline(admin.TabularInline):
     model = RelationPackaging
     min_num = 0
@@ -1208,7 +1228,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     resource_classes = [PackagingResource]
     form = PackagingKindForm
     list_filter = (BySupplyKindForProductPackagingFilter, BySupplyForOrganizationPackagingFilter,
-                   ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
+                   ByProductForOrganizationPackagingFilter, ByMarketForOrganizationProductPackagingFilter,
                    'product_standard_packaging', 'is_enabled')
     list_display = ('name', 'packaging_supply_kind', 'packaging_supply', 'product', 'markets_display',
                     'product_packaging_standard_display', 'max_product_amount_per_package', 'is_enabled',
