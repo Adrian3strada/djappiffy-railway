@@ -114,9 +114,8 @@ class RequisitionAdmin(ByOrganizationAdminMixin, ByUserAdminMixin):
                 <i class="fa-solid fa-print"></i>
             </a>
             {}
-            {}
             ''',
-            requisition_pdf, tooltip_requisition_pdf, set_requisition_ready_button, set_requisition_open_button
+            requisition_pdf, tooltip_requisition_pdf, set_requisition_ready_button
         )
 
     generate_actions_buttons.short_description = _('Actions')
