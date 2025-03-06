@@ -37,6 +37,8 @@ class EmployeeStatusForm(forms.ModelForm):
         if is_paid and not payment_percentage:
             self.add_error('payment_percentage', _("This field is required when 'Is Paid' is checked."))
         
+        if not is_paid:
+            cleaned_data['payment_percentage'] = None
         return cleaned_data
     
 
@@ -78,6 +80,11 @@ class JobPositionInlineForm(forms.ModelForm):
                 self.add_error('clabe', _('This field is required when Payment Kind is not cash.'))
             if not swift:
                 self.add_error('swift', _('This field is required when Payment Kind is not cash.'))
+        if payment_kind == 'cash':
+            cleaned_data['bank'] = None
+            cleaned_data['bank_account_number'] = ''
+            cleaned_data['clabe'] = ''
+            cleaned_data['swift'] = ''
         return cleaned_data
     
 class TaxAndMedicalInlineForm(forms.ModelForm):
@@ -97,15 +104,10 @@ class TaxAndMedicalInlineForm(forms.ModelForm):
         medical_insurance_provider = cleaned_data.get('medical_insurance_provider')
         medical_insurance_number = cleaned_data.get('medical_insurance_number')
         medical_insurance_start_date = cleaned_data.get('medical_insurance_start_date')
+        medical_insurance_end_date = cleaned_data.get('medical_insurancee_end_date')
 
         private_insurance_details = cleaned_data.get('private_insurance_details')
 
-        if has_disability and not disability_details:
-            self.add_error('disability_details', _('This field is required when disability is checked.'))
-        
-        if has_chronic_illness and not chronic_illness_details:
-            self.add_error('chronic_illness_details', _('This field is required when Chronic Illness is checked.'))
-        
         if not has_private_insurance: 
             if not medical_insurance_provider:
                 self.add_error('medical_insurance_provider', _('This field is required.'))
@@ -113,9 +115,29 @@ class TaxAndMedicalInlineForm(forms.ModelForm):
                 self.add_error('medical_insurance_start_date', _('This field is required.'))
             if not medical_insurance_number:
                 self.add_error('medical_insurance_number', _('This field is required.'))
-        
+            cleaned_data['private_insurance_details'] = ''
+
         if has_private_insurance and not private_insurance_details:
             self.add_error('private_insurance_details', _('This field is requiered when Private Insurance us checked'))
+
+        if has_private_insurance:
+            cleaned_data['medical_insurance_provider'] = ''
+            cleaned_data['medical_insurance_number'] = ''
+            cleaned_data['medical_insurance_start_date'] = None
+            cleaned_data['medical_insurance_end_date'] = None          
+
+        if has_disability and not disability_details:
+            self.add_error('disability_details', _('This field is required when disability is checked.'))
+        
+        if not has_disability:
+            cleaned_data['disability_details'] = ''
+        
+        if has_chronic_illness and not chronic_illness_details:
+            self.add_error('chronic_illness_details', _('This field is required when Chronic Illness is checked.'))
+        
+        if not has_chronic_illness:
+            cleaned_data['chronic_illness_details'] = ''
+
         return cleaned_data
        
 
@@ -131,8 +153,21 @@ class  AcademicAndWorkInlineForm(forms.ModelForm):
         degree = cleaned_data.get('degree')
         institution = cleaned_data.get('institution')
 
+        if academic_status == 'none' or academic_status == 'basic_education':
+            cleaned_data['degree'] = ''
+            cleaned_data['professional_license'] = ''
+            cleaned_data['institution'] = ''
+            cleaned_data['graduation_year'] = None
+            cleaned_data['field_of_study'] = ''
+
         if academic_status == 'upper_secondary_education' and not graduation_year:
             self.add_error('graduation_year', _('This field is requiered when academic formation is "Upper Secondary Education"'))
+
+        if academic_status == 'upper_secondary_education':
+            cleaned_data['degree'] = ''
+            cleaned_data['professional_license'] = ''
+            cleaned_data['institution'] = ''
+            
         if academic_status == 'higher_education':
             if not degree:
                 self.add_error('degree', _('This field is requiered when academic formation is "Higher Education"'))

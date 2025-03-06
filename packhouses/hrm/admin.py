@@ -33,17 +33,6 @@ class WorkScheduleAdmin(ByOrganizationAdminMixin):
         form = super().get_form(request, obj, **kwargs)
         return form
     
-    
-@admin.register(JobPosition)
-class JobPositionAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'is_enabled')
-    fields = ('name', 'description', 'is_enabled')
-
-    @uppercase_form_charfield('name')
-    def get_form(self, request, obj=None, **kwargs):
-        return super().get_form(request, obj, **kwargs)
-
-
 class EmployeeWorkScheduleInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         if 'instance' in kwargs and not kwargs['instance'].pk:
@@ -78,6 +67,54 @@ class EmployeeWorkScheduleInlineFormSet(BaseInlineFormSet):
                     days.append(day)
 
 
+class WorkScheduleInline(admin.TabularInline):
+    model = EmployeeWorkSchedule
+    fields = ('day', 'schedule')
+    formset = EmployeeWorkScheduleInlineFormSet
+    fk_name = "employee"
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+        
+        if db_field.name == "schedule":
+            kwargs["queryset"] = WorkSchedule.objects.filter(**organization_queryfilter)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj is None or not obj.employeeworkschedule_set.exists():
+            return 7
+        return 0
+    
+class ScheduleInline(admin.TabularInline):
+    model = EmployeeWorkSchedule
+    fields = ('day', 'schedule')
+    formset = EmployeeWorkScheduleInlineFormSet
+    fk_name = "job_position"
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+        
+        if db_field.name == "schedule":
+            kwargs["queryset"] = WorkSchedule.objects.filter(**organization_queryfilter)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj is None or not obj.employeeworkschedule_set.exists():
+            return 7
+        return 0
+
+@admin.register(JobPosition)
+class JobPositionAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'is_enabled')
+    fields = ('name', 'description', 'is_enabled')
+    inlines = [ScheduleInline,]
+
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        return super().get_form(request, obj, **kwargs)
+
+
 class EmployeeWorkScheduleInline(admin.TabularInline, nested_admin.NestedStackedInline):
     model = EmployeeWorkSchedule
     fields = ('day', 'schedule')
@@ -88,7 +125,6 @@ class EmployeeWorkScheduleInline(admin.TabularInline, nested_admin.NestedStacked
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
         
         if db_field.name == "schedule":
-            print("hay un -schedule-")
             kwargs["queryset"] = WorkSchedule.objects.filter(**organization_queryfilter)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
     
@@ -240,7 +276,7 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
 @admin.register(EmployeeStatus)
 class EmployeeStatusAdmin(ByOrganizationAdminMixin):
     form = EmployeeStatusForm
-    list_display = ('name', 'payment_percentage', 'description', 'is_paid', 'is_enabled')
+    list_display = ('name', 'payment_percentage', 'is_paid', 'is_enabled')
     fields = ('name','is_paid', 'payment_percentage', 'description', 'is_enabled')
     @uppercase_form_charfield('name')
     @uppercase_form_charfield('description')

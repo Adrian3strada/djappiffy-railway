@@ -130,14 +130,19 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
 class EmployeeWorkSchedule(models.Model):
     day = models.CharField(max_length=50, choices=WEEKDAYS_CHOICES, verbose_name=_("Day"))
     schedule = models.ManyToManyField(WorkSchedule, verbose_name=_('Work Schedule'))
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
-
-    def __str__(self):
-        return f"{self.employee}"
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Employee'))
+    job_position = models.ForeignKey(JobPosition, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
-        verbose_name = _('Work Schedule')
-        verbose_name_plural = _('Work Schedule')
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    models.Q(employee__isnull=False, job_position__isnull=True) | 
+                    models.Q(employee__isnull=True, job_position__isnull=False)
+                ),
+                name='work_schedule_single_parent'
+            )
+        ]
 
 
 class EmployeeJobPosition(models.Model):
@@ -185,6 +190,9 @@ class EmployeeTaxAndMedicalInformation(models.Model):
     emergency_contact_relationship = models.CharField(max_length=20, choices=EMERGENCY_CONTACT_RELATIONSHIP_CHOICES, verbose_name=_('Emergency Contact Relationship'), blank=False, null=False)
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
     
+    def __str__(self):
+        return f"{self.employee} - {self.tax_id}"
+    
     class Meta:
         verbose_name = _('Tax and Medical Record')
         verbose_name_plural = _('Tax and Medical Records')
@@ -197,6 +205,9 @@ class EmployeeAcademicAndWorkInformation(models.Model):
     graduation_year = models.DateField(verbose_name=_('Graduation Year'), blank=True, null=True)
     field_of_study = models.CharField(max_length=100, verbose_name=_('Field of Study'), blank=True, null=True)
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
+    
+    def __str__(self):
+        return f"{self.employee} - {self.get_academic_status_display()}"
     
     class Meta:
         verbose_name = _('Academic and Work Record')
