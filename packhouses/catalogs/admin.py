@@ -9,14 +9,14 @@ from .models import (
     ProductPhenologyKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
-    HarvestingPaymentSetting, Supply, MeshBagKind, ProductStandardPackaging,
-    MeshBag, Service, ProductPresentation, ProductPackaging, ProductPackagingPresentation,
-    WeighingScale, ColdChamber,
+    HarvestingPaymentSetting, Supply, ProductStandardPackaging,
+    Service, ProductPresentation, Packaging,
+    WeighingScale, ColdChamber, PackagingPresentation,
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    ProductPackagingComplementarySupply, ProductRipeness,
-    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation,
+    PackagingComplementarySupply, ProductRipeness,
+    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary,
     HarvestContainer
 )
 
@@ -1107,23 +1107,6 @@ class HarvestingCrewAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin)
         js = ('js/admin/forms/packhouses/catalogs/harvesting_crew.js',)
 
 
-@admin.register(MeshBagKind)
-class MeshBagKindAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(MeshBag)
-class MeshBagAdmin(admin.ModelAdmin):
-    verbose_name = _('Mesh Bag (*)')
-    pass
-
-
-@admin.register(PackagingPresentation)
-class PackagingPresentationAdmin(admin.ModelAdmin):
-    verbose_name_plural = _('Packaging presentations') + ' (*)'
-    pass
-
-
 @admin.register(Service)
 class ServiceAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
@@ -1225,7 +1208,7 @@ class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
+        obj = Packaging.objects.get(id=obj_id) if obj_id else None
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
 
@@ -1247,8 +1230,8 @@ class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
         js = ('js/admin/forms/product_presentation.js',)
 
 
-class ProductPackagingComplementarySupplyInline(admin.TabularInline):
-    model = ProductPackagingComplementarySupply
+class PackagingComplementarySupplyInline(admin.TabularInline):
+    model = PackagingComplementarySupply
     min_num = 0
     extra = 0
     verbose_name = _('Complementary supply')
@@ -1270,7 +1253,7 @@ class ProductPackagingComplementarySupplyInline(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_obj_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = ProductPackaging.objects.get(id=parent_obj_id) if parent_obj_id else None
+        parent_obj = Packaging.objects.get(id=parent_obj_id) if parent_obj_id else None
         packaging_complement_categories = ['packaging_complement', 'packaging_separator', 'packaging_labeling', 'packaging_storage']
 
         if db_field.name == "kind":
@@ -1283,8 +1266,8 @@ class ProductPackagingComplementarySupplyInline(admin.TabularInline):
         # pass
 
 
-class ProductPackagingPresentationInline(admin.TabularInline):
-    model = ProductPackagingPresentation
+class PackagingPresentationInline(admin.TabularInline):
+    model = PackagingPresentation
     min_num = 0
     extra = 0
     verbose_name = _('Presentation')
@@ -1301,7 +1284,7 @@ class ProductPackagingPresentationInline(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_obj_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = ProductPackaging.objects.get(id=parent_obj_id) if parent_obj_id else None
+        parent_obj = Packaging.objects.get(id=parent_obj_id) if parent_obj_id else None
         organization = request.organization if hasattr(request, 'organization') else None
 
         if db_field.name == "presentation":
@@ -1313,8 +1296,8 @@ class ProductPackagingPresentationInline(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(ProductPackaging)
-class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
+@admin.register(Packaging)
+class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PackagingResource]
     form = PackagingKindForm
@@ -1333,7 +1316,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         'packaging_supply_quantity',
         'is_enabled'
     )
-    inlines = (ProductPackagingComplementarySupplyInline, ProductPackagingPresentationInline)
+    inlines = (PackagingComplementarySupplyInline, PackagingPresentationInline)
 
     def markets_display(self, obj):
         return ', '.join([market.name for market in obj.markets.all()])
@@ -1374,7 +1357,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
+        obj = Packaging.objects.get(id=obj_id) if obj_id else None
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
 
@@ -1385,7 +1368,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
+        obj = Packaging.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
         packaging_supply_kind = request.POST.get('packaging_supply_kind') if request.POST else obj.packaging_supply_kind if obj else None
@@ -1608,7 +1591,7 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj,
                                     exclude=[Product, ProductVariety, ProductSize, Market, ProductMarketClass,
-                                             ProductPackaging, Organization]):
+                                             Packaging, Organization]):
             readonly_fields.extend(['name', 'alias', ])
         return readonly_fields
 
@@ -1657,7 +1640,7 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
             return formfield
         """
         if db_field.name == "packaging_kind":
-            kwargs["queryset"] = ProductPackaging.objects.filter(**organization_queryfilter)
+            kwargs["queryset"] = Packaging.objects.filter(**organization_queryfilter)
         if db_field.name == "product_ripeness":
             if product:
                 kwargs["queryset"] = ProductRipeness.objects.filter(**product_queryfilter)

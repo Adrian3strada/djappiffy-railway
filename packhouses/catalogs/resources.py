@@ -1,6 +1,6 @@
 from import_export.fields import Field
 from .models import (Market, Product, ProductSize, Provider, Client, Vehicle, Gatherer, Maquiladora, Orchard, HarvestingCrew,
-                     Supply, ProductPackaging, Service, WeighingScale, ColdChamber, PalletConfiguration,
+                     Supply, Packaging, Service, WeighingScale, ColdChamber, PalletConfiguration,
                      ExportingCompany, Transfer, LocalTransporter, BorderToDestinationTransporter, CustomsBroker,
                      Vessel, Airline, InsuranceCompany, HarvestContainer)
 from django.http import HttpResponse
@@ -258,7 +258,7 @@ class PackagingResource(DehydrationResource, ExportResource):
             return ", ".join([i.inside.name for i in containers])
 
     class Meta:
-        model = ProductPackaging
+        model = Packaging
         exclude = default_excluded_fieldsexport_order = ('id', 'name', 'main_supply_kind', 'main_supply', 'main_supply_quantity', 'max_product_amount_per_package', 'market', 'product', 'product_packaging_standard', 'packaging_kind', 'inside', 'is_enabled')
 
 class ServiceResource(DehydrationResource, ExportResource):

@@ -12,7 +12,7 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
-                     Product, ProductPackaging,
+                     Product, Packaging,
                      Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness
                      )
 from django_filters.rest_framework import DjangoFilterBackend
@@ -155,7 +155,7 @@ class ProductPackagingViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return ProductPackaging.objects.filter(organization=self.request.organization)
+        return Packaging.objects.filter(organization=self.request.organization)
 
 
 class ProductSizeViewSet(viewsets.ModelViewSet):

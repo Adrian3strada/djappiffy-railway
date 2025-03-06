@@ -2,7 +2,7 @@ from django.contrib import admin
 from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind,
-                     Gatherer, PaymentKind, Supply, ProductPackaging,
+                     Gatherer, PaymentKind, Supply, Packaging,
                      Provider, Client, CapitalFramework,
                      Maquiladora, WeighingScale, ExportingCompany, CustomsBroker, PalletConfiguration
                      )
@@ -563,7 +563,7 @@ class BySupplyKindForProductPackagingFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         supply_kinds = SupplyKind.objects.all()
         if hasattr(request, 'organization'):
-            main_supply_kind_ids = list(ProductPackaging.objects.filter(organization=request.organization).values_list(
+            main_supply_kind_ids = list(Packaging.objects.filter(organization=request.organization).values_list(
                 'packaging_supply_kind', flat=True).distinct())
             supply_kinds = supply_kinds.filter(id__in=main_supply_kind_ids)
         return [(supply_kind.id, supply_kind.name) for supply_kind in supply_kinds]
@@ -581,7 +581,7 @@ class BySupplyForOrganizationPackagingFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         supplies = Supply.objects.all()
         if hasattr(request, 'organization'):
-            supply_ids = list(ProductPackaging.objects.filter(organization=request.organization).values_list(
+            supply_ids = list(Packaging.objects.filter(organization=request.organization).values_list(
                 'packaging_supply', flat=True).distinct())
             supplies = supplies.filter(id__in=supply_ids)
         return [(supply.id, supply.name) for supply in supplies]
@@ -600,7 +600,7 @@ class ByProductForOrganizationPackagingFilter(admin.SimpleListFilter):
         products = Product.objects.all()
         if hasattr(request, 'organization'):
             product_ids = list(
-                ProductPackaging.objects.filter(organization=request.organization).values_list('product', flat=True).distinct())
+                Packaging.objects.filter(organization=request.organization).values_list('product', flat=True).distinct())
             products = products.filter(id__in=product_ids).order_by('name')
         return [(product.id, product.name) for product in products]
 
@@ -617,7 +617,7 @@ class ByMarketForOrganizationProductPackagingFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         markets = Market.objects.all()
         if hasattr(request, 'organization'):
-            market_ids = list(set(ProductPackaging.objects.filter(organization=request.organization).values_list('markets', flat=True).distinct()))
+            market_ids = list(set(Packaging.objects.filter(organization=request.organization).values_list('markets', flat=True).distinct()))
             markets = markets.filter(id__in=market_ids).order_by('name')
         return [(market.id, market.name) for market in markets]
 
