@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function () {
       const newForm = event.target;
       const kindField = $(newForm).find('select[name$="kind"]');
       const supplyField = $(newForm).find('select[name$="-supply"]');
-      const quantityField = $(newForm).find('input[name$="-quantity"]');
 
       updateFieldOptions(supplyField, [])
 
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
           fetchOptions(`/rest/v1/catalogs/supply/?kind=${supplyKindId}&is_enabled=1`)
             .then(data => {
               updateFieldOptions(supplyField, data);
-              quantityField.val(null);
             })
             .catch(error => {
               console.error('Error al obtener los supplies:', error);
@@ -54,7 +52,6 @@ document.addEventListener('DOMContentLoaded', function () {
       console.log("index, form", index, form)
       const kindField = $(form).find(`select[name="productpresentationcomplementarysupply_set-${index}-kind"]`);
       const supplyField = $(form).find(`select[name="productpresentationcomplementarysupply_set-${index}-supply"]`);
-      const quantityField = $(form).find(`input[name="productpresentationcomplementarysupply_set-${index}-quantity"]`);
       const selectedSupply = supplyField.val();
 
       if (kindField.val()) {
@@ -76,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
           fetchOptions(`/rest/v1/catalogs/supply/?kind=${supplyKindId}&is_enabled=1`)
             .then(data => {
               updateFieldOptions(supplyField, data);
-              quantityField.val(null);
             })
             .catch(error => {
               console.error('Error al obtener los supplies:', error);

@@ -1157,11 +1157,11 @@ class ProductPresentationComplementarySupplyInline(admin.TabularInline):
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        if 'supply_kind' in formset.form.base_fields:
-            formset.form.base_fields['supply_kind'].widget.can_add_related = False
-            formset.form.base_fields['supply_kind'].widget.can_change_related = False
-            formset.form.base_fields['supply_kind'].widget.can_delete_related = False
-            formset.form.base_fields['supply_kind'].widget.can_view_related = False
+        if 'kind' in formset.form.base_fields:
+            formset.form.base_fields['kind'].widget.can_add_related = False
+            formset.form.base_fields['kind'].widget.can_change_related = False
+            formset.form.base_fields['kind'].widget.can_delete_related = False
+            formset.form.base_fields['kind'].widget.can_view_related = False
         if 'supply' in formset.form.base_fields:
             formset.form.base_fields['supply'].widget.can_add_related = False
             formset.form.base_fields['supply'].widget.can_change_related = False
@@ -1188,11 +1188,11 @@ class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
     report_function = staticmethod(basic_report)
     # resource_classes = [ProductPresentationResource]
     list_display = ('name', 'product', 'markets_display', 'presentation_supply_kind', 'presentation_supply',
-                    'presentation_supply_quantity', 'max_product_amount_per_presentation', 'is_enabled')
+                    'is_enabled')
     list_filter = ('product', 'is_enabled')
     search_fields = ('name',)
     fields = ('product', 'markets', 'presentation_supply_kind', 'presentation_supply', 'name',
-              'presentation_supply_quantity', 'max_product_amount_per_presentation', 'is_enabled')
+              'is_enabled')
     inlines = [ProductPresentationComplementarySupplyInline]
 
     def markets_display(self, obj):

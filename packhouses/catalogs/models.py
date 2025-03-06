@@ -850,16 +850,13 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 class ProductPresentation(CleanNameAndOrganizationMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
-    presentation_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'),
+    presentation_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Presentation supply kind'),
                                                  limit_choices_to={'category': 'packaging_presentation'},
                                                  on_delete=models.PROTECT)
     presentation_supply = models.ForeignKey(Supply, verbose_name=_('Presentation supply'),
                                             limit_choices_to={'kind__category': 'packaging_presentation'},
                                             on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    presentation_supply_quantity = models.PositiveIntegerField(verbose_name=_('Presentation supply quantity'),
-                                                               help_text=_('Quantity of the packaging supply to discount from the inventory each time a product presentation is used'))
-    max_product_amount_per_presentation = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
@@ -882,7 +879,6 @@ class ProductPresentationComplementarySupply(models.Model):
                              limit_choices_to={'category': 'packaging_presentation_complement'},
                              on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
-    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(0.01)])
 
     class Meta:
         verbose_name = _('Product presentation complementary supply')
