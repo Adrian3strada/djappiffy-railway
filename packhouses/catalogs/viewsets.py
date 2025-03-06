@@ -168,7 +168,7 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return ProductSize.objects.all()
+        return ProductSize.objects.filter(organization=self.request.organization)
 
 
 class SupplyViewSet(viewsets.ModelViewSet):
@@ -181,7 +181,7 @@ class SupplyViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        queryset = Supply.objects.all()
+        queryset = Supply.objects.filter(organization=self.request.organization)
         return queryset
 
 

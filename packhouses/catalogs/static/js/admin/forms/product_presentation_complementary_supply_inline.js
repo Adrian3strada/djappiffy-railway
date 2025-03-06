@@ -1,4 +1,3 @@
-// Asegúrate de que el script se ejecute una vez que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', function () {
 
   function updateFieldOptions(field, options) {
