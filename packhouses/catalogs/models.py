@@ -940,15 +940,6 @@ class ProductPackagingComplementarySupply(models.Model):
         ]
 
 
-class RelationPackaging(models.Model):
-    outside = models.ForeignKey(ProductPackaging, on_delete=models.PROTECT, related_name='outside')
-    inside = models.ForeignKey(ProductPackaging, on_delete=models.PROTECT, related_name='inside')
-    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'))
-
-    class Meta:
-        unique_together = ('outside', 'inside')
-
-
 # Básculas
 
 class WeighingScale(CleanNameAndOrganizationMixin, models.Model):

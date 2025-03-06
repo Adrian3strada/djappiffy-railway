@@ -14,7 +14,7 @@ from .models import (
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    ProductPackagingComplementarySupply, RelationPackaging, ProductRipeness,
+    ProductPackagingComplementarySupply, ProductRipeness,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation,
     HarvestContainer
 )
@@ -1203,6 +1203,23 @@ class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        if 'product' in form.base_fields:
+            form.base_fields['product'].widget.can_add_related = False
+            form.base_fields['product'].widget.can_change_related = False
+            form.base_fields['product'].widget.can_delete_related = False
+            form.base_fields['product'].widget.can_view_related = False
+        if 'markets' in form.base_fields:
+            form.base_fields['markets'].widget.can_add_related = False
+        if 'presentation_supply_kind' in form.base_fields:
+            form.base_fields['presentation_supply_kind'].widget.can_add_related = False
+            form.base_fields['presentation_supply_kind'].widget.can_change_related = False
+            form.base_fields['presentation_supply_kind'].widget.can_delete_related = False
+            form.base_fields['presentation_supply_kind'].widget.can_view_related = False
+        if 'presentation_supply' in form.base_fields:
+            form.base_fields['presentation_supply'].widget.can_add_related = False
+            form.base_fields['presentation_supply'].widget.can_change_related = False
+            form.base_fields['presentation_supply'].widget.can_delete_related = False
+            form.base_fields['presentation_supply'].widget.can_view_related = False
         return form
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -1239,11 +1256,11 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        if 'supply_kind' in formset.form.base_fields:
-            formset.form.base_fields['supply_kind'].widget.can_add_related = False
-            formset.form.base_fields['supply_kind'].widget.can_change_related = False
-            formset.form.base_fields['supply_kind'].widget.can_delete_related = False
-            formset.form.base_fields['supply_kind'].widget.can_view_related = False
+        if 'kind' in formset.form.base_fields:
+            formset.form.base_fields['kind'].widget.can_add_related = False
+            formset.form.base_fields['kind'].widget.can_change_related = False
+            formset.form.base_fields['kind'].widget.can_delete_related = False
+            formset.form.base_fields['kind'].widget.can_view_related = False
         if 'supply' in formset.form.base_fields:
             formset.form.base_fields['supply'].widget.can_add_related = False
             formset.form.base_fields['supply'].widget.can_change_related = False
@@ -1263,14 +1280,6 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
 
     class Media:
         js = ('js/admin/forms/packaging_complementary_supply_inline.js',)
-
-
-class ContainedPackagingInline(admin.TabularInline):
-    model = RelationPackaging
-    min_num = 0
-    extra = 0
-    fk_name = 'outside'
-    list_display = ('inside', 'quantity')
 
 
 @admin.register(ProductPackaging)
@@ -1293,7 +1302,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         'packaging_supply_quantity',
         'is_enabled'
     )
-    inlines = (PackagingComplementarySupplyInline, ContainedPackagingInline)
+    inlines = (PackagingComplementarySupplyInline,)
 
     def markets_display(self, obj):
         return ', '.join([market.name for market in obj.markets.all()])

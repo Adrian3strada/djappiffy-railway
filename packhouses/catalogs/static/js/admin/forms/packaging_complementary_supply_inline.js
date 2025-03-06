@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('formset:added', function (event) {
     if (event.detail.formsetName === 'packagingcomplementarysupply_set') {
       const newForm = event.target;
-      const kindField = $(newForm).find('select[name$="kind"]');
+      const kindField = $(newForm).find('select[name$="-kind"]');
       const supplyField = $(newForm).find('select[name$="-supply"]');
       const quantityField = $(newForm).find('input[name$="-quantity"]');
 
