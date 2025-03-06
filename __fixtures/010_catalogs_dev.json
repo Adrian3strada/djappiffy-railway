@@ -1868,7 +1868,7 @@
   "fields": {
     "kind": 2,
     "name": "CHAROLA EURO 45",
-    "capacity": 1.0,
+    "capacity": 0.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
     "usage_discount_quantity": 1,
@@ -1905,6 +1905,76 @@
   }
 },
 {
+  "model": "catalogs.supply",
+  "pk": 30,
+  "fields": {
+    "kind": 7,
+    "name": "GENERICO",
+    "capacity": null,
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 12000000,
+    "usage_discount_quantity": 3,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.productpresentation",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "presentation_supply_kind": 6,
+    "presentation_supply": 21,
+    "name": "MALLA MORADA 12 PZ",
+    "is_enabled": true,
+    "organization": 1,
+    "markets": [
+      3,
+      1
+    ]
+  }
+},
+{
+  "model": "catalogs.productpresentation",
+  "pk": 2,
+  "fields": {
+    "product": 1,
+    "presentation_supply_kind": 6,
+    "presentation_supply": 20,
+    "name": "MALLA BLANCA 8 PZ",
+    "is_enabled": true,
+    "organization": 1,
+    "markets": [
+      3,
+      1
+    ]
+  }
+},
+{
+  "model": "catalogs.productpresentation",
+  "pk": 3,
+  "fields": {
+    "product": 2,
+    "presentation_supply_kind": 6,
+    "presentation_supply": 21,
+    "name": "MALLA 12 (MORADA)",
+    "is_enabled": true,
+    "organization": 2,
+    "markets": [
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productpresentationcomplementarysupply",
+  "pk": 1,
+  "fields": {
+    "product_presentation": 2,
+    "kind": 7,
+    "supply": 30
+  }
+},
+{
   "model": "catalogs.productpackaging",
   "pk": 1,
   "fields": {
@@ -1912,9 +1982,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
-    "max_product_amount_per_package": 1.0,
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1931,9 +2001,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
-    "max_product_amount_per_package": 11.3,
     "packaging_supply": 3,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1950,9 +2020,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "MALLA SENCILLA",
-    "max_product_amount_per_package": 1.0,
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1969,9 +2039,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
-    "max_product_amount_per_package": 1.0,
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1988,9 +2058,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
-    "max_product_amount_per_package": 1.0,
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -2007,9 +2077,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "PALLET 48'S + 70'S",
-    "max_product_amount_per_package": 1.0,
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -2026,9 +2096,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "PALLET 48'S + 70'S (ENMALLADOS)",
-    "max_product_amount_per_package": 1.0,
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -2042,7 +2112,7 @@
   "pk": 1,
   "fields": {
     "product_packaging": 1,
-    "kind": 1,
+    "kind": 5,
     "supply": 6,
     "quantity": 1
   }
@@ -2052,7 +2122,7 @@
   "pk": 3,
   "fields": {
     "product_packaging": 2,
-    "kind": 1,
+    "kind": 2,
     "supply": 24,
     "quantity": 2
   }
@@ -2062,7 +2132,7 @@
   "pk": 4,
   "fields": {
     "product_packaging": 1,
-    "kind": 1,
+    "kind": 2,
     "supply": 26,
     "quantity": 2
   }
@@ -2072,7 +2142,7 @@
   "pk": 5,
   "fields": {
     "product_packaging": 2,
-    "kind": 1,
+    "kind": 5,
     "supply": 6,
     "quantity": 1
   }
@@ -2082,7 +2152,7 @@
   "pk": 6,
   "fields": {
     "product_packaging": 4,
-    "kind": 1,
+    "kind": 2,
     "supply": 26,
     "quantity": 2
   }
@@ -2092,7 +2162,7 @@
   "pk": 7,
   "fields": {
     "product_packaging": 4,
-    "kind": 1,
+    "kind": 5,
     "supply": 6,
     "quantity": 1
   }
@@ -2102,7 +2172,7 @@
   "pk": 8,
   "fields": {
     "product_packaging": 5,
-    "kind": 1,
+    "kind": 2,
     "supply": 24,
     "quantity": 2
   }
@@ -2112,7 +2182,7 @@
   "pk": 9,
   "fields": {
     "product_packaging": 5,
-    "kind": 1,
+    "kind": 5,
     "supply": 6,
     "quantity": 1
   }
@@ -2155,60 +2225,6 @@
     "kind": 1,
     "supply": 19,
     "quantity": 8
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 1,
-  "fields": {
-    "outside": 4,
-    "inside": 3,
-    "quantity": 10
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 2,
-  "fields": {
-    "outside": 5,
-    "inside": 3,
-    "quantity": 10
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 3,
-  "fields": {
-    "outside": 6,
-    "inside": 2,
-    "quantity": 6
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 4,
-  "fields": {
-    "outside": 6,
-    "inside": 1,
-    "quantity": 10
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 5,
-  "fields": {
-    "outside": 7,
-    "inside": 5,
-    "quantity": 6
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 6,
-  "fields": {
-    "outside": 7,
-    "inside": 4,
-    "quantity": 10
   }
 }
 ]
