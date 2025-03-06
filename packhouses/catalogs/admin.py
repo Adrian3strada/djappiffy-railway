@@ -1279,7 +1279,8 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packaging_complementary_supply_inline.js',)
+        # js = ('js/admin/forms/packaging_complementary_supply_inline.js',)
+        pass
 
 
 @admin.register(ProductPackaging)
