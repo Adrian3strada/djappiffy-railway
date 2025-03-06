@@ -19,9 +19,9 @@ from django.dispatch import receiver
 
 class EmployeeStatus(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Status'))
+    is_paid = models.BooleanField(default=True, verbose_name=_('Is Paid'))
+    payment_percentage = models.PositiveIntegerField(default=100, verbose_name=_("Payment Percentage"), blank=True, null=True, help_text=_("Enter the payment percentage (e.g., 100 for 100%, 60 for 60%, etc.)"))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
-    payment_percentage = models.PositiveIntegerField(default=100, verbose_name=_("Payment Percentage"), help_text=_("Enter the payment percentage (e.g., 100 for 100%, 60 for 60%, etc.)"))
-
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -50,19 +50,20 @@ class JobPosition(CleanNameAndOrganizationMixin, models.Model):
                                     name='jobposition_unique_name_organization'),
         ]
 
-class WorkShiftSchedule(models.Model):
-    day = models.CharField(max_length=50, choices=WEEKDAYS_CHOICES, verbose_name=_("Day"))
-    entry_time = models.TimeField(verbose_name=_('Entry Time'), blank=True, null=True, default="08:00:00" )
-    exit_time = models.TimeField(verbose_name=_('Exit Time'), blank=True, null=True, default="18:00:00" )
+class WorkSchedule(CleanNameAndOrganizationMixin, models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Schedule Name'))
+    start_time = models.TimeField(verbose_name=_('Start Time'), blank=False, null=False, default="08:00:00" )
+    end_time = models.TimeField(verbose_name=_('End Time'), blank=False, null=False, default="18:00:00" )
     is_enabled = models.BooleanField(default=True, verbose_name=_("Is Enabled"))
-    job_position = models.ForeignKey(JobPosition, on_delete=models.CASCADE, verbose_name=_('Job Position'))
-    
-    def __str__(self):
-        return self.day
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
+    def __str__(self):
+        return f"{self.name}: {self.start_time} - {self.end_time}"
+    
+    
     class Meta:
-        verbose_name = _('Work Shift Schedule')
-        verbose_name_plural = _('Work Shift Schedules')
+        verbose_name = _('Work Schedule')
+        verbose_name_plural = _('Work Schedules')
 
 class Employee(CleanNameAndOrganizationMixin, models.Model):
     status = models.ForeignKey(EmployeeStatus, on_delete=models.CASCADE, verbose_name=_('Status'))
@@ -125,6 +126,18 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
         verbose_name = _('Employee')
         verbose_name_plural = _('Employees')
         ordering = ('full_name',)
+
+class EmployeeWorkSchedule(models.Model):
+    day = models.CharField(max_length=50, choices=WEEKDAYS_CHOICES, verbose_name=_("Day"))
+    schedule = models.ManyToManyField(WorkSchedule, verbose_name=_('Work Schedule'))
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
+
+    def __str__(self):
+        return f"{self.employee}"
+
+    class Meta:
+        verbose_name = _('Work Schedule')
+        verbose_name_plural = _('Work Schedule')
 
 
 class EmployeeJobPosition(models.Model):

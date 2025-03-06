@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
 from .models import (Employee, JobPosition, EmployeeJobPosition, EmployeeTaxAndMedicalInformation, EmployeeAcademicAndWorkInformation, 
-                     WorkShiftSchedule, EmployeeStatus, EmployeeCertificationInformation, EmployeeWorkExperience, EmployeeStatusChange, 
-                     EmployeeEvent)
+                     EmployeeStatus, EmployeeCertificationInformation, EmployeeWorkExperience, EmployeeStatusChange, 
+                     EmployeeEvent, WorkSchedule, EmployeeWorkSchedule)
 from django.forms.models import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
@@ -14,27 +14,37 @@ from .resources import EmployeeResource
 from common.users.models import User
 from django.utils.html import format_html, format_html_join
 from django.urls import reverse, path
-from .forms import (EmployeeEventForm, EmployeeForm, JobPositionInlineForm, TaxAndMedicalInlineForm, AcademicAndWorkInlineForm)
+from .forms import (EmployeeEventForm, EmployeeForm, JobPositionInlineForm, TaxAndMedicalInlineForm, AcademicAndWorkInlineForm, 
+                    EmployeeStatusForm)
 from django.shortcuts import redirect
 from django.core.exceptions import ValidationError
+from django import forms
 
 
-@admin.register(EmployeeStatus)
-class EmployeeStatusAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'payment_percentage', 'description', 'is_enabled')
-    fields = ('name', 'payment_percentage', 'description', 'is_enabled')
+@admin.register(WorkSchedule)
+class WorkScheduleAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'start_time', 'end_time', 'is_enabled')
+    fields = ('name', 'start_time', 'end_time', 'is_enabled')
+    list_filter = ('is_enabled',)
+    search_fields = ('name',)
+
     @uppercase_form_charfield('name')
-    @uppercase_form_charfield('description')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
+    
+    
+@admin.register(JobPosition)
+class JobPositionAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'is_enabled')
+    fields = ('name', 'description', 'is_enabled')
 
-class WorkShiftScheduleInlineFormSet(BaseInlineFormSet):
-    def clean(self):
-        super().clean()
-        if self.total_form_count() > 7:
-            raise ValidationError("No se pueden agregar más de 7 horarios de trabajo.")
-        
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        return super().get_form(request, obj, **kwargs)
+
+
+class EmployeeWorkScheduleInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         if 'instance' in kwargs and not kwargs['instance'].pk:
             kwargs.setdefault('initial', [
@@ -48,37 +58,45 @@ class WorkShiftScheduleInlineFormSet(BaseInlineFormSet):
             ])
         super().__init__(*args, **kwargs)
 
-class WorkShiftScheduleInline(admin.TabularInline):
-    model = WorkShiftSchedule
-    fields = ('day', 'entry_time', 'exit_time', 'is_enabled')
-    formset = WorkShiftScheduleInlineFormSet
-    extra = 0
-    can_delete = False
+    def clean(self):
+        super().clean()
+        days = []
+        
+        valid_forms = [form for form in self.forms if form.cleaned_data and not self._should_delete_form(form)]
+        
+        # Verificar que no se agreguen más de 7 formularios
+        if len(valid_forms) > 7:
+            raise forms.ValidationError(_('You cannot have more than 7 days.'))
+        
+        # Verificar que no se repitan los días
+        for form in valid_forms:
+            if 'day' in form.cleaned_data:
+                day = form.cleaned_data['day']
+                if day in days:
+                    form.add_error('day', _('This day is already selected.'))
+                else:
+                    days.append(day)
 
+
+class EmployeeWorkScheduleInline(admin.TabularInline, nested_admin.NestedStackedInline):
+    model = EmployeeWorkSchedule
+    fields = ('day', 'schedule')
+    formset = EmployeeWorkScheduleInlineFormSet
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+        
+        if db_field.name == "schedule":
+            print("hay un -schedule-")
+            kwargs["queryset"] = WorkSchedule.objects.filter(**organization_queryfilter)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
     def get_extra(self, request, obj=None, **kwargs):
-        if obj is None:
+        if obj is None or not obj.employeeworkschedule_set.exists():
             return 7
         return 0
-    
-    def has_delete_permission(self, request, obj=None):
-        return False
-    
-    class Media:
-        css = {'all': ('css/admin_tabular.css',)}
-        js = ('js/admin/forms/packhouses/hrm/jobposition.js',)
-
-
-@admin.register(JobPosition)
-class JobPositionAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'is_enabled')
-    fields = ('name', 'description', 'is_enabled')
-    inlines = [WorkShiftScheduleInline]
-
-    @uppercase_form_charfield('name')
-    def get_form(self, request, obj=None, **kwargs):
-        return super().get_form(request, obj, **kwargs)
-
-
+  
 
 class EmployeeJobPositionInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeJobPosition
@@ -126,7 +144,7 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
               'neighborhood', 'address', 'external_number', 'internal_number', 'phone_number', 
               'email', 'hire_date', 'termination_date', 'is_staff', 'staff_username')
     search_fields = ('full_name', )
-    inlines = [EmployeeJobPositionInline, EmployeeTaxAndMedicalInformationInline, EmployeeAcademicAndWorkInformationInline,]
+    inlines = [EmployeeJobPositionInline, EmployeeWorkScheduleInline, EmployeeTaxAndMedicalInformationInline, EmployeeAcademicAndWorkInformationInline,]
     form = EmployeeForm
 
     @uppercase_form_charfield('name')
@@ -219,6 +237,19 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
               'js/admin/forms/packhouses/hrm/employee-staff.js',)
 
 
+@admin.register(EmployeeStatus)
+class EmployeeStatusAdmin(ByOrganizationAdminMixin):
+    form = EmployeeStatusForm
+    list_display = ('name', 'payment_percentage', 'description', 'is_paid', 'is_enabled')
+    fields = ('name','is_paid', 'payment_percentage', 'description', 'is_enabled')
+    @uppercase_form_charfield('name')
+    @uppercase_form_charfield('description')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        return form
+    class Media:
+        js = ('js/admin/forms/packhouses/hrm/employee-status.js',)
+
 @admin.register(EmployeeStatusChange)
 class EmployeeStatusChangeAdmin(ByOrganizationAdminMixin):
     pass
@@ -255,13 +286,13 @@ class EmployeeEventAdmin(ByOrganizationAdminMixin):
                     url, color, _(title), icon
                 )
 
-            approve_button = create_button(approve_url, '#4daf50', 'fa-check', "Approve")
-            reject_button = create_button(reject_url, '#f44336', 'fa-times', "Reject")
+            approve_button = create_button(approve_url, '#4daf50', 'fa-check', _('Approve'))
+            reject_button = create_button(reject_url, '#f44336', 'fa-times', _('Reject'))
 
             return format_html('{}&nbsp;{}', approve_button, reject_button)
-        return _("No actions")
+        return _('No actions')
 
-    generate_actions_buttons.short_description = _("Actions")
+    generate_actions_buttons.short_description = _('Actions')
     generate_actions_buttons.allow_tags = True
 
     def get_urls(self):
@@ -285,11 +316,11 @@ class EmployeeEventAdmin(ByOrganizationAdminMixin):
     def process_event(self, request, pk, action):
         event = EmployeeEvent.objects.get(pk=pk)
         if action == 'approve':
-            event.approval_status = 'APPROVED'
+            event.approval_status = _('APPROVED')
             message = f"Evento {event} aprobado."
             message_type = messages.SUCCESS
         elif action == 'reject':
-            event.approval_status = 'REJECTED'
+            event.approval_status = _('REJECTED')
             message = f"Evento {event} rechazado."
             message_type = messages.WARNING
         event.approved_by = request.user

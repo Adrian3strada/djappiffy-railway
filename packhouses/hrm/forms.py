@@ -2,8 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .models import (EmployeeEvent, EmployeeJobPosition, Employee, EmployeeTaxAndMedicalInformation, 
-                     EmployeeAcademicAndWorkInformation)
-
+                     EmployeeAcademicAndWorkInformation, EmployeeStatus)
 class EmployeeEventForm(forms.ModelForm):
     class Meta:
         model = EmployeeEvent
@@ -24,6 +23,22 @@ class EmployeeEventForm(forms.ModelForm):
             'data-cancel': cancel_button_text
         })
     )
+
+class EmployeeStatusForm(forms.ModelForm):
+    class Meta:
+        model = EmployeeStatus
+        fields = '__all__'
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        is_paid = cleaned_data.get('is_paid')
+        payment_percentage = cleaned_data.get('payment_percentage')
+
+        if is_paid and not payment_percentage:
+            self.add_error('payment_percentage', _("This field is required when 'Is Paid' is checked."))
+        
+        return cleaned_data
+    
 
 class EmployeeForm(forms.ModelForm):
     class Meta:
