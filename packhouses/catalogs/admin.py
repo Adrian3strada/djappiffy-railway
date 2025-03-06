@@ -10,7 +10,8 @@ from .models import (
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, MeshBagKind, ProductStandardPackaging,
-    MeshBag, Service, ProductPresentation, ProductPackaging, WeighingScale, ColdChamber,
+    MeshBag, Service, ProductPresentation, ProductPackaging, ProductPackagingPresentation,
+    WeighingScale, ColdChamber,
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
@@ -1233,7 +1234,6 @@ class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
 
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
-
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product":
             organization = getattr(request, 'organization', None)
@@ -1247,7 +1247,7 @@ class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
         js = ('js/admin/forms/product_presentation.js',)
 
 
-class PackagingComplementarySupplyInline(admin.TabularInline):
+class ProductPackagingComplementarySupplyInline(admin.TabularInline):
     model = ProductPackagingComplementarySupply
     min_num = 0
     extra = 0
@@ -1279,8 +1279,38 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        # js = ('js/admin/forms/packaging_complementary_supply_inline.js',)
-        pass
+        js = ('js/admin/forms/packaging_complementary_supply_inline.js',)
+        # pass
+
+
+class ProductPackagingPresentationInline(admin.TabularInline):
+    model = ProductPackagingPresentation
+    min_num = 0
+    extra = 0
+    verbose_name = _('Presentation')
+    verbose_name_plural = _('Presentations')
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'presentation' in formset.form.base_fields:
+            formset.form.base_fields['presentation'].widget.can_add_related = False
+            formset.form.base_fields['presentation'].widget.can_change_related = False
+            formset.form.base_fields['presentation'].widget.can_delete_related = False
+            formset.form.base_fields['presentation'].widget.can_view_related = False
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_obj_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = ProductPackaging.objects.get(id=parent_obj_id) if parent_obj_id else None
+        organization = request.organization if hasattr(request, 'organization') else None
+
+        if db_field.name == "presentation":
+            if organization:
+                kwargs["queryset"] = ProductPresentation.objects.filter(organization=organization, is_enabled=True)
+            else:
+                kwargs["queryset"] = ProductPresentation.objects.none()
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(ProductPackaging)
@@ -1303,7 +1333,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         'packaging_supply_quantity',
         'is_enabled'
     )
-    inlines = (PackagingComplementarySupplyInline,)
+    inlines = (ProductPackagingComplementarySupplyInline, ProductPackagingPresentationInline)
 
     def markets_display(self, obj):
         return ', '.join([market.name for market in obj.markets.all()])

@@ -940,6 +940,21 @@ class ProductPackagingComplementarySupply(models.Model):
         ]
 
 
+class ProductPackagingPresentation(models.Model):
+    product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
+    presentation = models.ForeignKey(ProductPresentation, verbose_name=_('presentation'), on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
+
+    class Meta:
+        verbose_name = _('Product packaging presentation')
+        verbose_name_plural = _('Product packaging presentations')
+        ordering = ('product_packaging', 'presentation')
+        constraints = [
+            models.UniqueConstraint(fields=('product_packaging', 'presentation'),
+                                    name='productpackagingpresentation_unique_productpackaging_presentation'),
+        ]
+
+
 # Básculas
 
 class WeighingScale(CleanNameAndOrganizationMixin, models.Model):
