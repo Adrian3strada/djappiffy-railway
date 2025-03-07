@@ -880,6 +880,21 @@ class PackagingPresentation(models.Model):
         ]
 
 
+class ProductPackaging(models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
+
+    class Meta:
+        verbose_name = _('Product packaging')
+        verbose_name_plural = _('Product packagings')
+        ordering = ('product', 'packaging')
+        constraints = [
+            models.UniqueConstraint(fields=('product', 'packaging'),
+                                    name='productpackaging_unique_product_packaging'),
+        ]
+
+
 # Básculas
 
 class WeighingScale(CleanNameAndOrganizationMixin, models.Model):
