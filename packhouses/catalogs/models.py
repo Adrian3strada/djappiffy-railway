@@ -850,7 +850,7 @@ class Packaging(CleanNameAndOrganizationMixin, models.Model):
 
 
 class PackagingComplementarySupply(models.Model):
-    product_packaging = models.ForeignKey(Packaging, on_delete=models.CASCADE)
+    packaging = models.ForeignKey(Packaging, on_delete=models.CASCADE)
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
@@ -860,22 +860,22 @@ class PackagingComplementarySupply(models.Model):
         verbose_name_plural = _('Product packaging complementary supplies')
         ordering = ('kind', 'supply')
         constraints = [
-            models.UniqueConstraint(fields=('product_packaging', 'kind', 'supply'),
-                                    name='productpackagingcomplementarysupply_unique_productpackaging_kind_supply'),
+            models.UniqueConstraint(fields=('packaging', 'kind', 'supply'),
+                                    name='productpackagingcomplementarysupply_unique_packaging_kind_supply'),
         ]
 
 
 class PackagingPresentation(models.Model):
-    product_packaging = models.ForeignKey(Packaging, on_delete=models.CASCADE)
+    packaging = models.ForeignKey(Packaging, on_delete=models.CASCADE)
     presentation = models.ForeignKey(ProductPresentation, verbose_name=_('presentation'), on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
 
     class Meta:
         verbose_name = _('Product packaging presentation')
         verbose_name_plural = _('Product packaging presentations')
-        ordering = ('product_packaging', 'presentation')
+        ordering = ('packaging', 'presentation')
         constraints = [
-            models.UniqueConstraint(fields=('product_packaging', 'presentation'),
+            models.UniqueConstraint(fields=('packaging', 'presentation'),
                                     name='productpackagingpresentation_unique_productpackaging_presentation'),
         ]
 

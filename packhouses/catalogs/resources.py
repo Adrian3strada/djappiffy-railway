@@ -244,9 +244,9 @@ class PackagingResource(DehydrationResource, ExportResource):
         if not complementary_supplies:
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{cs.product_packaging.name}" for cs in complementary_supplies]) + "</ul>"
+            return "<ul>" + "".join([f"<li>{cs.packaging.name}" for cs in complementary_supplies]) + "</ul>"
         else:
-            return ", ".join([cs.product_packaging.name for cs in complementary_supplies])
+            return ", ".join([cs.packaging.name for cs in complementary_supplies])
 
     def dehydrate_inside(self, packaging):
         containers = packaging.outside.all()
