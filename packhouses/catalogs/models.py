@@ -827,12 +827,11 @@ class Packaging(CleanNameAndOrganizationMixin, models.Model):
 
     name = models.CharField(max_length=255, verbose_name=_('Name'))
 
+    ### Máximo peso
+    max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
     packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
     packaging_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Packaging supply quantity'),
                                                             help_text=_('Quantity of the packaging supply to discount from the inventory each time a product packaging is used'))
-    ### Máximo peso
-    max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
-
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
@@ -881,13 +880,17 @@ class PackagingPresentation(models.Model):
 
 
 class ProductPackaging(models.Model):
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.PROTECT)
+    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
+    packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    alias = models.CharField(max_length=30, verbose_name=_('Alias'))
 
     class Meta:
         verbose_name = _('Product packaging')
-        verbose_name_plural = _('Product packagings')
+        verbose_name_plural = _('Product packaging')
         ordering = ('product', 'packaging')
         constraints = [
             models.UniqueConstraint(fields=('product', 'packaging'),

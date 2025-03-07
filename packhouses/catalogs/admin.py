@@ -1300,7 +1300,7 @@ class PackagingPresentationInline(admin.TabularInline):
 class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PackagingResource]
-    form = PackagingKindForm
+    # form = PackagingKindForm
     list_filter = (BySupplyKindForProductPackagingFilter, BySupplyForOrganizationPackagingFilter,
                    ByProductForOrganizationPackagingFilter, ByMarketForOrganizationProductPackagingFilter,
                    'product_standard_packaging', 'is_enabled')
@@ -1356,8 +1356,6 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return form
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
-        obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = Packaging.objects.get(id=obj_id) if obj_id else None
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
 
@@ -1372,7 +1370,6 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
         organization = request.organization if hasattr(request, 'organization') else None
         packaging_supply_kind = request.POST.get('packaging_supply_kind') if request.POST else obj.packaging_supply_kind if obj else None
-        packaging_supply = request.POST.get('packaging_supply') if request.POST else obj.packaging_supply if obj else None
         markets = request.POST.getlist('markets') if request.POST else obj.markets.all() if obj else None
         product_id = request.POST.get('product') if request.POST else obj.product_id if obj else None
         product_kind = ProductKind.objects.get(id=Product.objects.get(id=product_id).kind_id) if product_id else None
@@ -1405,7 +1402,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/product_packaging.js',)
+        js = ('js/admin/forms/packaging.js',)
 
 
 @admin.register(WeighingScale)

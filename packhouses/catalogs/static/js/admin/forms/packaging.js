@@ -6,12 +6,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const packagingSupplyField = $('#id_packaging_supply');
   const nameField = $('#id_name');
   const maxProductAmountPerPackageField = $('#id_max_product_amount_per_package');
-
-  const maxProductAmountLabel = $('label[for="id_max_product_amount_per_package"]');
+  const packagingSupplyQuantityField = $('#id_packaging_supply_quantity');
 
   let productProperties = null;
   let marketsCountries = [];
   let productStandardPackagingProperties = null;
+  let packagingSupplyKindProperties = null;
   let listenChanges = false;
 
   const API_BASE_URL = '/rest/v1';
@@ -78,6 +78,26 @@ document.addEventListener('DOMContentLoaded', function () {
       } else {
         marketsCountries = [];
         resolve(marketsCountries);
+      }
+    });
+  }
+
+  function getpackagingSupplyKindProperties() {
+    return new Promise((resolve, reject) => {
+      if (packagingSupplyKindField.val()) {
+        fetchOptions(`/rest/v1/base/supply-kind/${packagingSupplyKindField.val()}/`)
+          .then(data => {
+            packagingSupplyKindProperties = data;
+            console.log("packagingSupplyKindProperties", packagingSupplyKindProperties);
+            resolve(data);
+          })
+          .catch(error => {
+            console.error('Fetch error:', error);
+            reject(error);
+          });
+      } else {
+        packagingSupplyKindProperties = null;
+        resolve(null);
       }
     });
   }
@@ -175,14 +195,22 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   packagingSupplyKindField.on('change', function () {
-    updatePackagingSupply();
-    if (marketsCountries.length) {
-      updateProductStandardPackaging();
-    } else {
-      getMarketsCountries().then(() => {
+    getpackagingSupplyKindProperties().then(() => {
+      if (packagingSupplyKindField.val() && packagingSupplyKindProperties && packagingSupplyKindProperties.usage_discount_unit_category !== 'pieces') {
+        packagingSupplyQuantityField.closest('.form-group').fadeIn();
+      } else {
+        packagingSupplyQuantityField.val(1);
+        packagingSupplyQuantityField.closest('.form-group').fadeOut();
+      }
+      updatePackagingSupply();
+      if (marketsCountries.length) {
         updateProductStandardPackaging();
-      });
-    }
+      } else {
+        getMarketsCountries().then(() => {
+          updateProductStandardPackaging();
+        });
+      }
+    });
   });
 
   productStandardPackagingField.on('change', function () {
@@ -242,7 +270,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  if (packagingSupplyKindField.val()) {
+    getpackagingSupplyKindProperties().then(() => {
+      if (packagingSupplyKindField.val() && packagingSupplyKindProperties && packagingSupplyKindProperties.usage_discount_unit_category !== 'pieces') {
+        packagingSupplyQuantityField.closest('.form-group').fadeIn();
+      }
+    });
+  }
+
   maxProductAmountPerPackageField.attr('step', '0.01');
+  maxProductAmountPerPackageField.attr('min', '0.01');
+  packagingSupplyQuantityField.closest('.form-group').hide();
 
   [productField, marketsField, packagingSupplyKindField, productStandardPackagingField, packagingSupplyField].forEach(field => field.select2());
 });
