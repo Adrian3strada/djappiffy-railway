@@ -251,7 +251,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 .catch(error => {
                   console.error('Fetch error:', error);
                 });
-
+            } else {
+              // esconder campos
             }
           })
           .then(() => {
