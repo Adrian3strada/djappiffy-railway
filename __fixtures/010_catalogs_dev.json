@@ -878,6 +878,24 @@
     ]
   }
 },
+  {
+    "model": "catalogs.crewchief",
+    "pk": 1,
+    "fields": {
+        "name": "ANDRÉS BRUSTAMENTE",
+        "provider": 6,
+        "is_enabled": true
+    }
+},
+{
+    "model": "catalogs.crewchief",
+    "pk": 2,
+    "fields": {
+        "name": "FELIPE MELGAREJO",
+        "provider": 6,
+        "is_enabled": true
+    }
+},
 {
   "model": "catalogs.provider",
   "pk": 1,
@@ -927,6 +945,171 @@
     "organization": 1,
     "vehicle_provider": []
   }
+},
+  {
+    "model": "catalogs.provider",
+    "pk": 3,
+    "fields": {
+        "name": "INSUMOX",
+        "category": "supply_provider",
+        "provider_provider": null,
+        "country": 158,
+        "state": 2290,
+        "city": 24996,
+        "district": 89818,
+        "postal_code": "00000",
+        "neighborhood": "NA",
+        "address": "NA",
+        "external_number": "NA",
+        "internal_number": null,
+        "tax_id": "NA",
+        "email": "na@na.com",
+        "phone_number": "32242",
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1,
+        "vehicle_provider": []
+    }
+},
+{
+    "model": "catalogs.provider",
+    "pk": 4,
+    "fields": {
+        "name": "DIAUWA",
+        "category": "supply_provider",
+        "provider_provider": null,
+        "country": 234,
+        "state": 3624,
+        "city": 42846,
+        "district": 128062,
+        "postal_code": "na",
+        "neighborhood": "NA",
+        "address": "NA",
+        "external_number": "na",
+        "internal_number": null,
+        "tax_id": "na",
+        "email": "na@na.com",
+        "phone_number": "na",
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1,
+        "vehicle_provider": []
+    }
+},
+{
+    "model": "catalogs.provider",
+    "pk": 5,
+    "fields": {
+        "name": "JUAN PEREZ",
+        "category": "product_provider",
+        "provider_provider": null,
+        "country": 158,
+        "state": 2282,
+        "city": 25771,
+        "district": 90548,
+        "postal_code": "83749",
+        "neighborhood": "NA",
+        "address": "NA",
+        "external_number": "na",
+        "internal_number": null,
+        "tax_id": "JHD83",
+        "email": "GH@JD.COM",
+        "phone_number": "83774283",
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1,
+        "vehicle_provider": []
+    }
+},
+{
+    "model": "catalogs.provider",
+    "pk": 6,
+    "fields": {
+        "name": "AVOCADOX",
+        "category": "harvesting_provider",
+        "provider_provider": null,
+        "country": 158,
+        "state": 2282,
+        "city": 25742,
+        "district": 88478,
+        "postal_code": "58000",
+        "neighborhood": "CENTRO",
+        "address": "DOMICILIO CONOCIDO",
+        "external_number": "382",
+        "internal_number": null,
+        "tax_id": "JHD83",
+        "email": "hrc@email.com",
+        "phone_number": "38873764",
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1,
+        "vehicle_provider": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.harvestingcrew",
+    "pk": 1,
+    "fields": {
+        "provider": 6,
+        "name": "CUADRILLA 1",
+        "certification_name": null,
+        "crew_chief": 1,
+        "persons_number": 6,
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.harvestingcrew",
+    "pk": 2,
+    "fields": {
+        "provider": 6,
+        "name": "CUADRILLA 2",
+        "certification_name": "EXPORT 28",
+        "crew_chief": 2,
+        "persons_number": 8,
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+  {
+    "model": "catalogs.harvestingpaymentsetting",
+    "pk": 1,
+    "fields": {
+        "type_harvest": "local",
+        "more_than_kg": 1.0,
+        "pay_per_box_complete": 1.0,
+        "pay_per_kg_complete": 1.0,
+        "pay_per_day_complete": 1.0,
+        "pay_per_box_incomplete": 1.0,
+        "pay_per_kg_incomplete": 1.0,
+        "pay_per_day_incomplete": 1.0,
+        "type_payment_for_false_out": "fixed_amount",
+        "amount_for_false_out": 1.0,
+        "harvesting_crew": 1
+    }
+},
+{
+    "model": "catalogs.harvestingpaymentsetting",
+    "pk": 2,
+    "fields": {
+        "type_harvest": "exportacion",
+        "more_than_kg": 2.0,
+        "pay_per_box_complete": 2.0,
+        "pay_per_kg_complete": 2.0,
+        "pay_per_day_complete": 2.0,
+        "pay_per_box_incomplete": 2.0,
+        "pay_per_kg_incomplete": 2.0,
+        "pay_per_day_incomplete": 2.0,
+        "type_payment_for_false_out": "fixed_amount",
+        "amount_for_false_out": 2.0,
+        "harvesting_crew": 2
+    }
 },
 {
   "model": "catalogs.client",
@@ -2168,5 +2351,189 @@
     "inside": 4,
     "quantity": 10
   }
+},
+  {
+    "model": "catalogs.vehicle",
+    "pk": 1,
+    "fields": {
+        "name": "FORD ROJA",
+        "category": "harvesting_crew",
+        "kind": 1,
+        "brand": 5,
+        "model": "2018",
+        "license_plate": "6DH3-36DH",
+        "serial_number": "7638DHBD63HJF9866D36H",
+        "color": "ROJO",
+        "ownership": 1,
+        "fuel": 1,
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.vehicle",
+    "pk": 2,
+    "fields": {
+        "name": "NISSAN AZUL",
+        "category": "packhouse",
+        "kind": 1,
+        "brand": 2,
+        "model": "2020",
+        "license_plate": "J83-388DH",
+        "serial_number": "386DHC77292NF76CGHN27",
+        "color": "AZUL",
+        "ownership": 1,
+        "fuel": 2,
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.gatherer",
+    "pk": 1,
+    "fields": {
+        "name": "GOKU GONZALEZ",
+        "zone": "CENTRO",
+        "tax_registry_code": "D773HD8",
+        "population_registry_code": null,
+        "social_number_code": null,
+        "state": 2282,
+        "city": 25771,
+        "district": 86459,
+        "postal_code": "87482",
+        "neighborhood": "EL TESTARAZO",
+        "address": "DOMICILIO CONOCIDO",
+        "external_number": "827",
+        "internal_number": null,
+        "email": "email@email.com",
+        "phone_number": null,
+        "vehicle": 2,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.gatherer",
+    "pk": 2,
+    "fields": {
+        "name": "DONALD TRUMP",
+        "zone": "NORTE",
+        "tax_registry_code": "FU883DH",
+        "population_registry_code": null,
+        "social_number_code": null,
+        "state": 2274,
+        "city": 25098,
+        "district": 83611,
+        "postal_code": "58029",
+        "neighborhood": "IZTAPALAPA",
+        "address": "CERRO DE LA ESTRELLA",
+        "external_number": "273",
+        "internal_number": null,
+        "email": "POTUS@USA.COM",
+        "phone_number": null,
+        "vehicle": 2,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+  {
+    "model": "catalogs.orchard",
+    "pk": 1,
+    "fields": {
+        "name": "RANCHO VIEJO",
+        "code": "HUE36284082",
+        "category": "conventional",
+        "producer": 2,
+        "safety_authority_registration_date": "2022-03-07",
+        "state": 2282,
+        "city": 25771,
+        "district": 86492,
+        "ha": 22.0,
+        "sanitary_certificate": "9837294772",
+        "is_enabled": true,
+        "organization": 1,
+        "product": [
+            1
+        ]
+    }
+},
+{
+    "model": "catalogs.orchard",
+    "pk": 2,
+    "fields": {
+        "name": "LA APLANADORA",
+        "code": "HUE76182902",
+        "category": "organic",
+        "producer": 2,
+        "safety_authority_registration_date": "2023-03-07",
+        "state": 2282,
+        "city": 25698,
+        "district": 88099,
+        "ha": 24.0,
+        "sanitary_certificate": "1093515739",
+        "is_enabled": true,
+        "organization": 1,
+        "product": [
+            1
+        ]
+    }
+},
+  {
+    "model": "catalogs.orchardcertification",
+    "pk": 1,
+    "fields": {
+        "certification_kind": 1,
+        "certification_number": "1740092745",
+        "expiration_date": "2026-03-07",
+        "verifier": 1,
+        "extra_code": "88392",
+        "is_enabled": true,
+        "orchard": 1
+    }
+},
+{
+    "model": "catalogs.orchardcertification",
+    "pk": 2,
+    "fields": {
+        "certification_kind": 2,
+        "certification_number": "8837DND883",
+        "expiration_date": "2027-03-07",
+        "verifier": 4,
+        "extra_code": "ORG882",
+        "is_enabled": true,
+        "orchard": 2
+    }
+},
+  {
+    "model": "catalogs.weighingscale",
+    "pk": 1,
+    "fields": {
+        "name": "LA TIENDITA",
+        "number": "013",
+        "state": 2282,
+        "city": 25771,
+        "district": 86459,
+        "neighborhood": "TECARIO",
+        "postal_code": "87362",
+        "address": "CENTRO",
+        "external_number": "288",
+        "internal_number": null,
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+  {
+    "model": "catalogs.harvestcontainer",
+    "pk": 1,
+    "fields": {
+        "name": "CAJA DE CAMPO",
+        "capacity": 25.0,
+        "unit_kind": "Kg",
+        "is_enabled": true,
+        "organization": 1
+    }
 }
 ]
