@@ -48,16 +48,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   setTimeout(() => {
     const existingForms = document.querySelectorAll('tr[id^="packagingcomplementarysupply_set-"].form-row.has_original.dynamic-packagingcomplementarysupply_set');
-    console.log("existingForms", existingForms)
 
     existingForms.forEach((form, index) => {
-      console.log("index, form", index, form)
       const kindField = $(form).find(`select[name="packagingcomplementarysupply_set-${index}-kind"]`);
       const supplyField = $(form).find(`select[name="packagingcomplementarysupply_set-${index}-supply"]`);
       const quantityField = $(form).find(`input[name="packagingcomplementarysupply_set-${index}-quantity"]`);
       const selectedSupply = supplyField.val();
-      console.log("kindField", kindField)
-      console.log("kindField.val", kindField.val())
 
       if (kindField.val()) {
         fetchOptions(`/rest/v1/catalogs/supply/?kind=${kindField.val()}&is_enabled=1`)

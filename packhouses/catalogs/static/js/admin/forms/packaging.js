@@ -108,11 +108,18 @@ document.addEventListener('DOMContentLoaded', function () {
       const countries = marketsCountries.join(',');
       fetchOptions(`${API_BASE_URL}/base/product-standard-packaging/?supply_kind=${packagingSupplyKindId}&standard__country__in=${countries}&is_enabled=1`)
         .then(data => {
+          console.log("data", data);
           updateFieldOptions(productStandardPackagingField, data);
           updateName();
+          if (data.length > 0) {
+            productStandardPackagingField.closest('.form-group').fadeIn();
+          } else {
+            productStandardPackagingField.closest('.form-group').fadeOut();
+          }
         })
     } else {
       updateFieldOptions(productStandardPackagingField, []);
+      productStandardPackagingField.closest('.form-group').fadeOut();
       updateName();
     }
   }
@@ -288,6 +295,9 @@ document.addEventListener('DOMContentLoaded', function () {
   maxProductAmountPerPackageField.attr('step', '0.01');
   maxProductAmountPerPackageField.attr('min', '0.01');
   packagingSupplyQuantityField.closest('.form-group').hide();
+  productStandardPackagingField.closest('.form-group').hide();
+
+  if (productStandardPackagingField.val()) productStandardPackagingField.closest('.form-group').show();
 
   [productField, marketsField, packagingSupplyKindField, productStandardPackagingField, packagingSupplyField].forEach(field => field.select2());
 });
