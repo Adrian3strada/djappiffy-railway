@@ -1392,12 +1392,17 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             else:
                 kwargs["queryset"] = Supply.objects.none()
 
-        if db_field.name == "product_packaging_standard":
+        if db_field.name == "product_standard_packaging":
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.required = True
             if organization and product_kind and markets:
                 markets_countries = list(set((Market.objects.filter(id__in=markets).values_list('countries', flat=True))))
-                kwargs["queryset"] = ProductStandardPackaging.objects.filter(standard__product_kind=product_kind, standard__country__in=markets_countries)
+                queryset = ProductStandardPackaging.objects.filter(standard__product_kind=product_kind, standard__country__in=markets_countries)
+                kwargs["queryset"] = queryset
+                formfield.required = queryset.exists()
             else:
                 kwargs["queryset"] = ProductStandardPackaging.objects.none()
+            return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
