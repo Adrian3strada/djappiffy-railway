@@ -1504,9 +1504,10 @@
   "fields": {
     "kind": 1,
     "name": "CARTÓN 4 KG",
-    "size": 4.0,
+    "capacity": 4.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1517,9 +1518,10 @@
   "fields": {
     "kind": 1,
     "name": "CARTÓN 6 KG",
-    "size": 6.0,
+    "capacity": 6.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1530,9 +1532,10 @@
   "fields": {
     "kind": 1,
     "name": "CARTÓN 11.3 KG",
-    "size": 11.3,
+    "capacity": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1543,9 +1546,10 @@
   "fields": {
     "kind": 1,
     "name": "MADERA 11.3 KG",
-    "size": 11.3,
+    "capacity": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 100,
+    "usage_discount_quantity": 1,
     "is_enabled": false,
     "organization": 1
   }
@@ -1556,9 +1560,10 @@
   "fields": {
     "kind": 1,
     "name": "PLÁSTICO 11.3 KG",
-    "size": 11.3,
+    "capacity": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 500,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1569,9 +1574,10 @@
   "fields": {
     "kind": 5,
     "name": "CARTÓN",
-    "size": 1.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 3000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1582,9 +1588,10 @@
   "fields": {
     "kind": 5,
     "name": "PLÁSTICO",
-    "size": 1.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 500,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1595,9 +1602,10 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 16",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1608,9 +1616,10 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 18",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1621,9 +1630,10 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 20",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1634,9 +1644,10 @@
   "fields": {
     "kind": 2,
     "name": "EURO 23",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1647,9 +1658,10 @@
   "fields": {
     "kind": 2,
     "name": "EURO 27",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1660,9 +1672,10 @@
   "fields": {
     "kind": 2,
     "name": "EURO 30",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1673,9 +1686,10 @@
   "fields": {
     "kind": 2,
     "name": "EURO 36A",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1686,9 +1700,10 @@
   "fields": {
     "kind": 2,
     "name": "EURO 36B",
-    "size": 1.0,
+    "capacity": 0.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1699,9 +1714,10 @@
   "fields": {
     "kind": 4,
     "name": "PLÁSTICO (TRANSPARENTE)",
-    "size": 1.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 4000,
+    "usage_discount_quantity": 4,
     "is_enabled": true,
     "organization": 1
   }
@@ -1712,9 +1728,10 @@
   "fields": {
     "kind": 4,
     "name": "PLÁSTICO (NEGRO)",
-    "size": 1.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 4000,
+    "usage_discount_quantity": 4,
     "is_enabled": true,
     "organization": 1
   }
@@ -1725,9 +1742,10 @@
   "fields": {
     "kind": 8,
     "name": "TRANSPARENTE",
-    "size": 140000.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 2500,
+    "usage_discount_quantity": 18,
     "is_enabled": true,
     "organization": 1
   }
@@ -1738,9 +1756,10 @@
   "fields": {
     "kind": 8,
     "name": "NEGRO",
-    "size": 120000.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 2500,
+    "usage_discount_quantity": 18,
     "is_enabled": true,
     "organization": 1
   }
@@ -1751,9 +1770,10 @@
   "fields": {
     "kind": 6,
     "name": "8 (BLANCA)",
-    "size": 14000.0,
+    "capacity": 8.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 15000,
+    "usage_discount_quantity": 16,
     "is_enabled": true,
     "organization": 1
   }
@@ -1764,9 +1784,10 @@
   "fields": {
     "kind": 6,
     "name": "12 (MORADA)",
-    "size": 14000.0,
+    "capacity": 6.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 15000,
+    "usage_discount_quantity": 18,
     "is_enabled": true,
     "organization": 1
   }
@@ -1777,9 +1798,10 @@
   "fields": {
     "kind": 3,
     "name": "MADERA 14",
-    "size": 1.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 150,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1790,9 +1812,10 @@
   "fields": {
     "kind": 3,
     "name": "PLÁSTICO 11",
-    "size": 1.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 150,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1803,9 +1826,10 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 24",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1816,9 +1840,10 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 30",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1829,9 +1854,10 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 35",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1842,9 +1868,10 @@
   "fields": {
     "kind": 2,
     "name": "CHAROLA EURO 45",
-    "size": 1.0,
+    "capacity": 0.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
   }
@@ -1855,11 +1882,96 @@
   "fields": {
     "kind": 2,
     "name": "CHAROLA EURO 49",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
     "is_enabled": true,
     "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 29,
+  "fields": {
+    "kind": 1,
+    "name": "CARTÓN 10",
+    "capacity": 10.0,
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 1000000000,
+    "usage_discount_quantity": 1,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 30,
+  "fields": {
+    "kind": 7,
+    "name": "GENERICO",
+    "capacity": null,
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 12000000,
+    "usage_discount_quantity": 3,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.productpresentation",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "presentation_supply_kind": 6,
+    "presentation_supply": 21,
+    "name": "MALLA MORADA 12 PZ",
+    "is_enabled": true,
+    "organization": 1,
+    "markets": [
+      3,
+      1
+    ]
+  }
+},
+{
+  "model": "catalogs.productpresentation",
+  "pk": 2,
+  "fields": {
+    "product": 1,
+    "presentation_supply_kind": 6,
+    "presentation_supply": 20,
+    "name": "MALLA BLANCA 8 PZ",
+    "is_enabled": true,
+    "organization": 1,
+    "markets": [
+      3,
+      1
+    ]
+  }
+},
+{
+  "model": "catalogs.productpresentation",
+  "pk": 3,
+  "fields": {
+    "product": 2,
+    "presentation_supply_kind": 6,
+    "presentation_supply": 21,
+    "name": "MALLA 12 (MORADA)",
+    "is_enabled": true,
+    "organization": 2,
+    "markets": [
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productpresentationcomplementarysupply",
+  "pk": 1,
+  "fields": {
+    "product_presentation": 2,
+    "kind": 7,
+    "supply": 30
   }
 },
 {
@@ -1870,9 +1982,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
-    "max_product_amount_per_package": 1.0,
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1889,9 +2001,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
-    "max_product_amount_per_package": 11.3,
     "packaging_supply": 3,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1908,9 +2020,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "MALLA SENCILLA",
-    "max_product_amount_per_package": 1.0,
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1927,9 +2039,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
-    "max_product_amount_per_package": 1.0,
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1946,9 +2058,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
-    "max_product_amount_per_package": 1.0,
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1965,9 +2077,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "PALLET 48'S + 70'S",
-    "max_product_amount_per_package": 1.0,
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1984,9 +2096,9 @@
     "packaging_supply_kind": 1,
     "product_standard_packaging": 1,
     "name": "PALLET 48'S + 70'S (ENMALLADOS)",
-    "max_product_amount_per_package": 1.0,
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
+    "max_product_amount_per_package": 1.0,
     "is_enabled": true,
     "organization": 1,
     "markets": [
@@ -1996,177 +2108,123 @@
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 1,
   "fields": {
-    "packaging_kind": 1,
-    "supply_kind": 5,
+    "product_packaging": 1,
+    "kind": 5,
     "supply": 6,
     "quantity": 1
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 3,
   "fields": {
-    "packaging_kind": 2,
-    "supply_kind": 2,
+    "product_packaging": 2,
+    "kind": 2,
     "supply": 24,
     "quantity": 2
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 4,
   "fields": {
-    "packaging_kind": 1,
-    "supply_kind": 2,
+    "product_packaging": 1,
+    "kind": 2,
     "supply": 26,
     "quantity": 2
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 5,
   "fields": {
-    "packaging_kind": 2,
-    "supply_kind": 5,
+    "product_packaging": 2,
+    "kind": 5,
     "supply": 6,
     "quantity": 1
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 6,
   "fields": {
-    "packaging_kind": 4,
-    "supply_kind": 2,
+    "product_packaging": 4,
+    "kind": 2,
     "supply": 26,
     "quantity": 2
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 7,
   "fields": {
-    "packaging_kind": 4,
-    "supply_kind": 5,
+    "product_packaging": 4,
+    "kind": 5,
     "supply": 6,
     "quantity": 1
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 8,
   "fields": {
-    "packaging_kind": 5,
-    "supply_kind": 2,
+    "product_packaging": 5,
+    "kind": 2,
     "supply": 24,
     "quantity": 2
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 9,
   "fields": {
-    "packaging_kind": 5,
-    "supply_kind": 5,
+    "product_packaging": 5,
+    "kind": 5,
     "supply": 6,
     "quantity": 1
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 10,
   "fields": {
-    "packaging_kind": 6,
-    "supply_kind": 4,
+    "product_packaging": 6,
+    "kind": 1,
     "supply": 17,
     "quantity": 4
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 11,
   "fields": {
-    "packaging_kind": 6,
-    "supply_kind": 8,
+    "product_packaging": 6,
+    "kind": 1,
     "supply": 19,
     "quantity": 8
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 12,
   "fields": {
-    "packaging_kind": 7,
-    "supply_kind": 4,
+    "product_packaging": 7,
+    "kind": 1,
     "supply": 17,
     "quantity": 4
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 13,
   "fields": {
-    "packaging_kind": 7,
-    "supply_kind": 8,
+    "product_packaging": 7,
+    "kind": 1,
     "supply": 19,
     "quantity": 8
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 1,
-  "fields": {
-    "outside": 4,
-    "inside": 3,
-    "quantity": 10
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 2,
-  "fields": {
-    "outside": 5,
-    "inside": 3,
-    "quantity": 10
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 3,
-  "fields": {
-    "outside": 6,
-    "inside": 2,
-    "quantity": 6
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 4,
-  "fields": {
-    "outside": 6,
-    "inside": 1,
-    "quantity": 10
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 5,
-  "fields": {
-    "outside": 7,
-    "inside": 5,
-    "quantity": 6
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 6,
-  "fields": {
-    "outside": 7,
-    "inside": 4,
-    "quantity": 10
   }
 }
 ]

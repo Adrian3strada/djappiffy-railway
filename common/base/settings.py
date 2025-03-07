@@ -1,16 +1,28 @@
 from django.utils.translation import gettext_lazy as _
 
-SUPPLY_USAGE_UNIT_KIND_CHOICES = [
-    ('piece', _('Piece')),
-    ('box', _('Box')),
-    ('bag', _('Bag')),
-    ('pallet', _('Pallet')),
-    ('Km', _('Kilometers')),
-    ('m', _('Meters')),
-    ('cm', _('Centimeters')),
+SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES = [
+    ('pieces', _('Pieces')),
+    ('g', _('grams')),
     ('Kg', _('Kilograms')),
-    ('g', _('Grams')),
-    ('l', _('Liters')),
+    ('Ton', _('Tons')),
+    ('ml', _('milliliters')),
+    ('L', _('Liters')),
+    ('cm', _('Centimeters')),
+    ('m', _('Meters')),
+    ('Km', _('Kilometers')),
+    ('other', _('Other')),
+]
+
+PRODUCT_MEASURE_UNIT_CATEGORY_CHOICES = [
+    ('pieces', _('Pieces')),
+    ('g', _('grams')),
+    ('Kg', _('Kilograms')),
+    ('Ton', _('Tons')),
+    ('ml', _('milliliters')),
+    ('L', _('Liters')),
+    ('cm', _('Centimeters')),
+    ('m', _('Meters')),
+    ('Km', _('Kilometers')),
     ('other', _('Other')),
 ]
 

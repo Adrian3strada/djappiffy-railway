@@ -12,7 +12,7 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
-                     Product, ProductPackaging,
+                     Product, Packaging,
                      Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness
                      )
 from django_filters.rest_framework import DjangoFilterBackend
@@ -157,7 +157,7 @@ class ProductPackagingViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return ProductPackaging.objects.filter(organization=self.request.organization)
+        return Packaging.objects.filter(organization=self.request.organization)
 
 
 class ProductSizeViewSet(viewsets.ModelViewSet):
@@ -170,12 +170,12 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return ProductSize.objects.all()
+        return ProductSize.objects.filter(organization=self.request.organization)
 
 
 class SupplyViewSet(viewsets.ModelViewSet):
     serializer_class = SupplySerializer
-    filterset_fields = ['kind', 'size', 'is_enabled']
+    filterset_fields = ['kind', 'usage_discount_quantity', 'capacity', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -183,15 +183,15 @@ class SupplyViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        queryset = Supply.objects.all()
+        queryset = Supply.objects.filter(organization=self.request.organization)
 
-        size__lte = self.request.GET.get('size__lte')
-        size__gte = self.request.GET.get('size__gte')
+        capacity__gte = self.request.GET.get('capacity__gte')
+        capacity__lte = self.request.GET.get('capacity__lte')
 
-        if size__lte:
-            queryset = queryset.filter(size__lte=size__lte)
-        if size__gte:
-            queryset = queryset.filter(size__gte=size__gte)
+        if capacity__gte:
+            queryset = queryset.filter(capacity__gte=capacity__gte)
+        if capacity__lte:
+            queryset = queryset.filter(capacity__lte=capacity__lte)
 
         return queryset
 
