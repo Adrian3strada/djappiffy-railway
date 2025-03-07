@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   document.addEventListener('formset:added', function (event) {
-    if (event.detail.formsetName === 'productpackagingcomplementarysupply_set') {
+    if (event.detail.formsetName === 'packagingcomplementarysupply_set') {
       const newForm = event.target;
       const kindField = $(newForm).find('select[name$="-kind"]');
       const supplyField = $(newForm).find('select[name$="-supply"]');
@@ -47,14 +47,14 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   setTimeout(() => {
-    const existingForms = document.querySelectorAll('tr[id^="productpackagingcomplementarysupply_set-"].form-row.has_original.dynamic-productpackagingcomplementarysupply_set');
+    const existingForms = document.querySelectorAll('tr[id^="packagingcomplementarysupply_set-"].form-row.has_original.dynamic-packagingcomplementarysupply_set');
     console.log("existingForms", existingForms)
 
     existingForms.forEach((form, index) => {
       console.log("index, form", index, form)
-      const kindField = $(form).find(`select[name="productpackagingcomplementarysupply_set-${index}-kind"]`);
-      const supplyField = $(form).find(`select[name="productpackagingcomplementarysupply_set-${index}-supply"]`);
-      const quantityField = $(form).find(`input[name="productpackagingcomplementarysupply_set-${index}-quantity"]`);
+      const kindField = $(form).find(`select[name="packagingcomplementarysupply_set-${index}-kind"]`);
+      const supplyField = $(form).find(`select[name="packagingcomplementarysupply_set-${index}-supply"]`);
+      const quantityField = $(form).find(`input[name="packagingcomplementarysupply_set-${index}-quantity"]`);
       const selectedSupply = supplyField.val();
       console.log("kindField", kindField)
       console.log("kindField.val", kindField.val())
