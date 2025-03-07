@@ -1324,7 +1324,9 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     markets_display.admin_order_field = 'name'
 
     def product_packaging_standard_display(self, obj):
-        return f"{obj.product_standard_packaging.name} ({obj.product_standard_packaging.standard.name}: {obj.product_standard_packaging.standard.country})"
+        if obj.product_standard_packaging:
+            return f"{obj.product_standard_packaging.name} ({obj.product_standard_packaging.standard.name}: {obj.product_standard_packaging.standard.country})"
+        return f"-"
     product_packaging_standard_display.short_description = _('Product packaging standard')
     product_packaging_standard_display.admin_order_field = 'name'
 
@@ -1402,6 +1404,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                 formfield.required = queryset.exists()
             else:
                 kwargs["queryset"] = ProductStandardPackaging.objects.none()
+                formfield.required = False
             return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)

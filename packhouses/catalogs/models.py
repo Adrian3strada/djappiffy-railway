@@ -823,7 +823,7 @@ class Packaging(CleanNameAndOrganizationMixin, models.Model):
     packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
     product_standard_packaging = models.ForeignKey(ProductStandardPackaging,
                                                    verbose_name=_('Product standard packaging'),
-                                                   null=True, blank=False, on_delete=models.PROTECT)
+                                                   null=True, blank=True, on_delete=models.PROTECT)
 
     name = models.CharField(max_length=255, verbose_name=_('Name'))
 
