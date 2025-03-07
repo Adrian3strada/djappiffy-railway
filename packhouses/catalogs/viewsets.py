@@ -173,7 +173,7 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
 
 class SupplyViewSet(viewsets.ModelViewSet):
     serializer_class = SupplySerializer
-    filterset_fields = ['kind', 'usage_discount_quantity', 'is_enabled']
+    filterset_fields = ['kind', 'usage_discount_quantity', 'capacity', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -182,6 +182,15 @@ class SupplyViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         queryset = Supply.objects.filter(organization=self.request.organization)
+
+        capacity__gte = self.request.GET.get('capacity__gte')
+        capacity__lte = self.request.GET.get('capacity__lte')
+
+        if capacity__gte:
+            queryset = queryset.filter(capacity__gte=capacity__gte)
+        if capacity__lte:
+            queryset = queryset.filter(capacity__lte=capacity__lte)
+
         return queryset
 
 
