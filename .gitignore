@@ -8,6 +8,8 @@
 db.spatialite
 */migrations/0*
 */*/migrations/0*
+application/settings/local.py
+__fixtures/000_cities_light_fixture.json
 
 
 ### Emacs ###
