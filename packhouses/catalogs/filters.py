@@ -556,7 +556,7 @@ class ByCountryForOrganizationCustomsBrokersFilter(admin.SimpleListFilter):
         return queryset
 
 
-class BySupplyKindForProductPackagingFilter(admin.SimpleListFilter):
+class BySupplyKindForPackagingFilter(admin.SimpleListFilter):
     title = _('Supply Kind')
     parameter_name = 'supply_kind'
 
@@ -610,7 +610,7 @@ class ByProductForOrganizationPackagingFilter(admin.SimpleListFilter):
         return queryset
 
 
-class ByMarketForOrganizationProductPackagingFilter(admin.SimpleListFilter):
+class ByMarketForOrganizationPackagingFilter(admin.SimpleListFilter):
     title = _('Market')
     parameter_name = 'market'
 

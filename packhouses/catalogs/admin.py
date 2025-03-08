@@ -10,7 +10,7 @@ from .models import (
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, ProductStandardPackaging,
-    Service, ProductPresentation, Packaging,
+    Service, ProductPresentation, Packaging, ProductPackaging,
     WeighingScale, ColdChamber, PackagingPresentation,
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
@@ -38,9 +38,9 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
                       ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
-                      ByClientCapitalFrameworkForOrganizationFilter, BySupplyKindForProductPackagingFilter,
+                      ByClientCapitalFrameworkForOrganizationFilter, BySupplyKindForPackagingFilter,
                       BySupplyForOrganizationPackagingFilter, ByProductForOrganizationPackagingFilter,
-                      ByMarketForOrganizationProductPackagingFilter,
+                      ByMarketForOrganizationPackagingFilter,
                       ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
                       ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                       ByCityForOrganizationClientsFilter, ByPaymentKindForOrganizationFilter,
@@ -1301,20 +1301,15 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PackagingResource]
     # form = PackagingKindForm
-    list_filter = (BySupplyKindForProductPackagingFilter, BySupplyForOrganizationPackagingFilter,
-                   ByProductForOrganizationPackagingFilter, ByMarketForOrganizationProductPackagingFilter,
+    list_filter = (BySupplyKindForPackagingFilter, BySupplyForOrganizationPackagingFilter,
+                   ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
                    'product_standard_packaging', 'is_enabled')
     list_display = ('name', 'packaging_supply_kind', 'packaging_supply', 'product', 'markets_display',
                     'product_packaging_standard_display', 'max_product_amount_per_package', 'is_enabled',
                     )
     fields = (
-        'product', 'markets',
-        'packaging_supply_kind', 'product_standard_packaging',
-        'name',
-        'max_product_amount_per_package',
-        'packaging_supply',
-        'packaging_supply_quantity',
-        'is_enabled'
+        'product', 'markets', 'packaging_supply_kind', 'product_standard_packaging',
+        'name', 'max_product_amount_per_package', 'packaging_supply', 'packaging_supply_quantity', 'is_enabled'
     )
     inlines = (PackagingComplementarySupplyInline, PackagingPresentationInline)
 
@@ -1411,6 +1406,87 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
     class Media:
         js = ('js/admin/forms/packaging.js',)
+
+
+@admin.register(ProductPackaging)
+class ProductPackagingAdmin(admin.ModelAdmin):
+    report_function = staticmethod(basic_report)
+    # resource_classes = [ProductPackagingResource]
+    list_filter = ['market', 'product', 'product_size', 'packaging', 'is_enabled']
+    search_fields = ('name', 'alias')
+    list_display = ['name', 'alias', 'markets_display', 'product', 'product_size', 'packaging', 'quantity', 'is_enabled']
+    fields = ['market', 'product', 'product_size', 'packaging', 'quantity', 'name', 'alias', 'is_enabled']
+
+    def markets_display(self, obj):
+        return ', '.join([market.name for market in obj.markets.all()])
+    markets_display.short_description = _('Markets')
+    markets_display.admin_order_field = 'name'
+
+    @uppercase_form_charfield('name')
+    @uppercase_alphanumeric_form_charfield('alias')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'markets' in form.base_fields:
+            form.base_fields['markets'].widget.can_add_related = False
+        if 'product' in form.base_fields:
+            form.base_fields['product'].widget.can_add_related = False
+            form.base_fields['product'].widget.can_change_related = False
+            form.base_fields['product'].widget.can_delete_related = False
+            form.base_fields['product'].widget.can_view_related = False
+        if 'product_size' in form.base_fields:
+            form.base_fields['product_size'].widget.can_add_related = False
+            form.base_fields['product_size'].widget.can_change_related = False
+            form.base_fields['product_size'].widget.can_delete_related = False
+            form.base_fields['product_size'].widget.can_view_related = False
+        if 'packaging' in form.base_fields:
+            form.base_fields['packaging'].widget.can_add_related = False
+            form.base_fields['packaging'].widget.can_change_related = False
+            form.base_fields['packaging'].widget.can_delete_related = False
+            form.base_fields['packaging'].widget.can_view_related = False
+        return form
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
+
+        organization = request.organization if hasattr(request, 'organization') else None
+        market = request.POST.get('market') if request.POST else obj.market_id if obj else None
+        product_id = request.POST.get('product') if request.POST else obj.product_id if obj else None
+        product_size_id = request.POST.get('product_size') if request.POST else obj.product_size_id if obj else None
+        packaging_id = request.POST.get('packaging') if request.POST else obj.packaging_id if obj else None
+
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+
+        if db_field.name == "market":
+            if organization:
+                kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+            else:
+                kwargs["queryset"] = Market.objects.none()
+
+        if db_field.name == "product":
+            if organization:
+                kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
+            else:
+                kwargs["queryset"] = Product.objects.none()
+
+        if db_field.name == "product_size":
+            if organization:
+                kwargs["queryset"] = ProductSize.objects.filter(**organization_queryfilter)
+            else:
+                kwargs["queryset"] = ProductSize.objects.none()
+
+        if db_field.name == "packaging":
+            if organization:
+                kwargs["queryset"] = Packaging.objects.filter(**organization_queryfilter)
+            else:
+                kwargs["queryset"] = Packaging.objects.none()
+
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/product_packaging.js',)
+
 
 
 @admin.register(WeighingScale)
