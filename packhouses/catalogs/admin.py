@@ -1450,7 +1450,7 @@ class ProductPackagingAdmin(admin.ModelAdmin):
         obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
-        market = request.POST.get('market') if request.POST else obj.market_id if obj else None
+        market_id = request.POST.get('market') if request.POST else obj.market_id if obj else None
         product_id = request.POST.get('product') if request.POST else obj.product_id if obj else None
         product_size_id = request.POST.get('product_size') if request.POST else obj.product_size_id if obj else None
         packaging_id = request.POST.get('packaging') if request.POST else obj.packaging_id if obj else None
@@ -1471,7 +1471,13 @@ class ProductPackagingAdmin(admin.ModelAdmin):
 
         if db_field.name == "product_size":
             if organization:
-                kwargs["queryset"] = ProductSize.objects.filter(**organization_queryfilter)
+                queryset = ProductSize.objects.filter(Q(product__organization=organization) | Q(market__organization=organization)).filter(is_enabled=True)
+                if market_id:
+                    queryset = queryset.filter(market_id=market_id)
+                if product_id:
+                    queryset = queryset.filter(product_id=product_id)
+                else:
+                    kwargs["queryset"] = queryset
             else:
                 kwargs["queryset"] = ProductSize.objects.none()
 
