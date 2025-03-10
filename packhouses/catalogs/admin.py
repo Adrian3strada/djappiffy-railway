@@ -1426,7 +1426,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                    ByProductSizeForProductOrganizationFilter, ByPackagingForOrganizationFilter, 'is_enabled']
     search_fields = ('name', 'alias')
     list_display = ['name', 'alias', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging', 'is_enabled']
-    fields = ['market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging', 'name', 'alias', 'is_enabled']
+    fields = ['market', 'product', 'product_size', 'packaging', 'name', 'alias', 'product_amount_per_packaging', 'is_enabled']
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')

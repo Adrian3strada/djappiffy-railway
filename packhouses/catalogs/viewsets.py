@@ -170,7 +170,7 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return ProductSize.objects.filter(organization=self.request.organization)
+        return ProductSize.objects.filter(product__organization=self.request.organization)
 
 
 class SupplyViewSet(viewsets.ModelViewSet):

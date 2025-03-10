@@ -83,9 +83,26 @@ document.addEventListener('DOMContentLoaded', function () {
     nameField.val(nameString)
   }
 
+  function updateProductSize() {
+    if (productField.val() && marketField.val()) {
+      fetchOptions(`/rest/v1/catalogs/product-size/?product=${productField.val()}&market=${marketField.val()}`)
+        .then(data => {
+          console.log("updateProductSize", data);
+          updateFieldOptions(productSizeField, data);
+        })
+    } else {
+      updateFieldOptions(productSizeField, []);
+    }
+  }
+
   productField.on('change', () => {
-    getProductProperties()
+    getProductProperties();
+    updateProductSize();
   })
+
+  marketField.on('change', () => {
+    updateProductSize();
+  });
 
   maxProductAmountPerPackageField.attr('step', '0.01');
   maxProductAmountPerPackageField.attr('min', '0.01');

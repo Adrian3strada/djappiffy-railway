@@ -882,7 +882,7 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.CASCADE)
-    product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'), validators=[MinValueValidator(1)])
+    product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'), validators=[MinValueValidator(0.01)])
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     alias = models.CharField(max_length=30, verbose_name=_('Alias'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
