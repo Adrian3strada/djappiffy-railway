@@ -260,9 +260,9 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductResource]
     list_display = ('name', 'kind', 'is_enabled')
-    list_filter = (ProductKindForPackagingFilter, 'price_measure_unit_category', 'is_enabled',)
+    list_filter = (ProductKindForPackagingFilter, 'price_measure_unit_category', ByMarketsForOrganizationFilter, 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
-    fields = ('kind', 'name', 'description', 'price_measure_unit_category', 'is_enabled')
+    fields = ('kind', 'name', 'description', 'price_measure_unit_category', 'markets', 'is_enabled')
     inlines = [ProductMarketMeasureUnitManagementCostInline, ProductMarketClassInline,
                ProductVarietyInline,
                ProductPhenologyKindInline, ProductHarvestSizeKindInline,
@@ -283,6 +283,15 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         if obj and is_instance_used(obj, exclude=[ProductKind, Organization]):
             readonly_fields.extend(['kind', 'name', 'price_measure_unit_category', 'organization'])
         return readonly_fields
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+
+        if db_field.name == "markets":
+            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "kind":

@@ -27,6 +27,8 @@ class ProductKindForPackagingFilter(admin.SimpleListFilter):
         return queryset
 
 
+
+
 class ByProductForOrganizationFilter(admin.SimpleListFilter):
     title = _('Product')
     parameter_name = 'product'
@@ -74,8 +76,8 @@ class ByMarketsForOrganizationFilter(admin.SimpleListFilter):
     parameter_name = 'markets'
 
     def lookups(self, request, model_admin):
-        marketses = Market.objects.filter(organization=request.organization, is_enabled=True)
-        return [(market.id, market.name) for market in marketses]
+        markets = Market.objects.filter(organization=request.organization, is_enabled=True)
+        return [(market.id, market.name) for market in markets]
 
     def queryset(self, request, queryset):
         if self.value():

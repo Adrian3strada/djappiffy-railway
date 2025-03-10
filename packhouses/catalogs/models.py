@@ -68,6 +68,7 @@ class Product(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
     price_measure_unit_category = models.CharField(max_length=30, verbose_name=_('Price measure unit'), choices=PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES)
+    markets = models.ManyToManyField(Market, verbose_name=_('Markets'), blank=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
