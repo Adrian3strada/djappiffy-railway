@@ -36,6 +36,7 @@ from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizationMarketsFilter,
                       ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
+                      ByProductSizeForProductOrganizationFilter,
                       ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
                       ByClientCapitalFrameworkForOrganizationFilter, BySupplyKindForPackagingFilter,
@@ -44,7 +45,7 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
                       ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                       ByCityForOrganizationClientsFilter, ByPaymentKindForOrganizationFilter,
-                      ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
+                      ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
                       ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
@@ -260,7 +261,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductResource]
     list_display = ('name', 'kind', 'is_enabled')
-    list_filter = (ProductKindForPackagingFilter, 'price_measure_unit_category', ByMarketsForOrganizationFilter, 'is_enabled',)
+    list_filter = (ProductKindForPackagingFilter, 'price_measure_unit_category', ByMarketForOrganizationFilter, 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
     fields = ('kind', 'name', 'description', 'price_measure_unit_category', 'markets', 'is_enabled')
     inlines = [ProductMarketMeasureUnitManagementCostInline, ProductMarketClassInline,
@@ -313,7 +314,7 @@ class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMi
     list_display = (
         'name', 'alias', 'product', 'get_varieties', 'market', 'is_enabled', 'sort_order')
     list_filter = (
-        ByProductForOrganizationFilter, ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
+        ByProductForOrganizationFilter, ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
         'is_enabled'
     )
     search_fields = ('name', 'alias')
@@ -1308,7 +1309,7 @@ class PackagingPresentationInline(admin.TabularInline):
 @admin.register(Packaging)
 class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
-    resource_classes = [PackagingResource]
+    # resource_classes = [PackagingResource]
     # form = PackagingKindForm
     list_filter = (BySupplyKindForPackagingFilter, BySupplyForOrganizationPackagingFilter,
                    ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
@@ -1418,18 +1419,14 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
 
 @admin.register(ProductPackaging)
-class ProductPackagingAdmin(admin.ModelAdmin):
+class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
-    # resource_classes = [ProductPackagingResource]
-    list_filter = ['market', 'product', 'product_size', 'packaging', 'is_enabled']
+    # resource_classes = [PackagingResource]
+    list_filter = [ByMarketForOrganizationFilter, ByProductForOrganizationFilter,
+                   ByProductSizeForProductOrganizationFilter, 'packaging', 'is_enabled']
     search_fields = ('name', 'alias')
-    list_display = ['name', 'alias', 'markets_display', 'product', 'product_size', 'packaging', 'quantity', 'is_enabled']
+    list_display = ['name', 'alias', 'market', 'product', 'product_size', 'packaging', 'quantity', 'is_enabled']
     fields = ['market', 'product', 'product_size', 'packaging', 'quantity', 'name', 'alias', 'is_enabled']
-
-    def markets_display(self, obj):
-        return ', '.join([market.name for market in obj.markets.all()])
-    markets_display.short_description = _('Markets')
-    markets_display.admin_order_field = 'name'
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
@@ -1495,7 +1492,6 @@ class ProductPackagingAdmin(admin.ModelAdmin):
                 kwargs["queryset"] = Packaging.objects.filter(**organization_queryfilter)
             else:
                 kwargs["queryset"] = Packaging.objects.none()
-
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

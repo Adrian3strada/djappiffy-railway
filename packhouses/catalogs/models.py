@@ -210,7 +210,7 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     sort_order = models.PositiveIntegerField(default=0, verbose_name=_('Sort order'))
 
     def __str__(self):
-        return f"{self.name} ({self.product.name})"
+        return f"{self.name}"
 
     class Meta:
         verbose_name = _('product size')
@@ -836,9 +836,6 @@ class Packaging(CleanNameAndOrganizationMixin, models.Model):
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
-    def __str__(self):
-        return f"{self.name}"
-
     class Meta:
         verbose_name = _('packaging')
         verbose_name_plural = _('packaging')
@@ -880,7 +877,7 @@ class PackagingPresentation(models.Model):
         ]
 
 
-class ProductPackaging(models.Model):
+class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)

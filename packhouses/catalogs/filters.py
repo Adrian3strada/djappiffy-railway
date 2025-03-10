@@ -2,7 +2,7 @@ from django.contrib import admin
 from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind,
-                     Gatherer, PaymentKind, Supply, Packaging,
+                     Gatherer, PaymentKind, Supply, Packaging, ProductSize,
                      Provider, Client, CapitalFramework,
                      Maquiladora, WeighingScale, ExportingCompany, CustomsBroker, PalletConfiguration
                      )
@@ -43,6 +43,20 @@ class ByProductForOrganizationFilter(admin.SimpleListFilter):
         return queryset
 
 
+class ByProductSizeForProductOrganizationFilter(admin.SimpleListFilter):
+    title = _('Product Size')
+    parameter_name = 'product_size'
+
+    def lookups(self, request, model_admin):
+        product_sizes = ProductSize.objects.filter(product__organization=request.organization, is_enabled=True)
+        return [(product_size.id, f"{product_size.name} ({product_size.product.name}: {product_size.market.alias})") for product_size in product_sizes]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(product_size__id=self.value())
+        return queryset
+
+
 class ByProductVarietiesForOrganizationFilter(admin.SimpleListFilter):
     title = _('Variety')
     parameter_name = 'product_varieties'
@@ -71,7 +85,7 @@ class ByProductVarietyForOrganizationFilter(admin.SimpleListFilter):
         return queryset
 
 
-class ByMarketsForOrganizationFilter(admin.SimpleListFilter):
+class ByMarketForOrganizationFilter(admin.SimpleListFilter):
     title = _('Market')
     parameter_name = 'markets'
 

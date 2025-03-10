@@ -253,6 +253,7 @@ class PackagingResource(DehydrationResource, ExportResource):
         export_order = ('id', 'name', 'packaging_supply_quantity', 'packaging_supply_kind', 'packaging_supply', 'product', 'markets', 'product_standard_packaging',
                         'max_product_amount_per_package', 'supply_kind', 'relation_packaging', 'is_enabled')
 
+
 class ServiceResource(DehydrationResource, ExportResource):
     class Meta:
         model = Service

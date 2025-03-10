@@ -10,18 +10,18 @@ from cities_light.models import Country, Region, SubRegion, City
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from packhouses.catalogs.filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizationMarketsFilter,
-                      ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
-                      ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
-                      ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
-                      ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
-                      ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
-                      ByCityForOrganizationClientsFilter,
-                      ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
-                      ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
-                      ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
-                      ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
-                      ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter
-                      )
+                                         ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
+                                         ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
+                                         ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
+                                         ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
+                                         ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
+                                         ByCityForOrganizationClientsFilter,
+                                         ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
+                                         ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
+                                         ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
+                                         ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
+                                         ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter
+                                         )
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, Market, WeighingScale,
                                         ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind, HarvestContainer,
                                         OrchardCertification)
