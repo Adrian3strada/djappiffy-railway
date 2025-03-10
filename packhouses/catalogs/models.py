@@ -817,8 +817,8 @@ class ProductPresentationComplementarySupply(models.Model):
 
 
 class Packaging(CleanNameAndOrganizationMixin, models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
 
     ### Insumo principal
     packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
@@ -882,7 +882,7 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
+    product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'), validators=[MinValueValidator(1)])
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     alias = models.CharField(max_length=30, verbose_name=_('Alias'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -891,7 +891,7 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     class Meta:
         verbose_name = _('Product packaging')
         verbose_name_plural = _('Product packaging')
-        ordering = ('product', 'packaging')
+        ordering = ('name', 'product', 'packaging')
         constraints = [
             models.UniqueConstraint(fields=('market', 'product', 'product_size', 'packaging', 'organization'),
                                     name='productpackaging_unique_market_product_product_size_packaging_organization'),

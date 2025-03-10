@@ -57,6 +57,20 @@ class ByProductSizeForProductOrganizationFilter(admin.SimpleListFilter):
         return queryset
 
 
+class ByPackagingForOrganizationFilter(admin.SimpleListFilter):
+    title = _('Packaging')
+    parameter_name = 'packaging'
+
+    def lookups(self, request, model_admin):
+        packagings = Packaging.objects.filter(organization=request.organization, is_enabled=True)
+        return [(packaging.id, packaging.name) for packaging in packagings]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(packaging__id=self.value())
+        return queryset
+
+
 class ByProductVarietiesForOrganizationFilter(admin.SimpleListFilter):
     title = _('Variety')
     parameter_name = 'product_varieties'

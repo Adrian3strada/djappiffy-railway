@@ -36,7 +36,7 @@ from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizationMarketsFilter,
                       ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
-                      ByProductSizeForProductOrganizationFilter,
+                      ByProductSizeForProductOrganizationFilter, ByPackagingForOrganizationFilter,
                       ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
                       ByClientCapitalFrameworkForOrganizationFilter, BySupplyKindForPackagingFilter,
@@ -1318,7 +1318,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                     'product_packaging_standard_display', 'max_product_amount_per_package', 'is_enabled',
                     )
     fields = (
-        'product', 'markets', 'packaging_supply_kind', 'product_standard_packaging',
+        'markets', 'product', 'packaging_supply_kind', 'product_standard_packaging',
         'name', 'max_product_amount_per_package', 'packaging_supply', 'packaging_supply_quantity', 'is_enabled'
     )
     inlines = (PackagingComplementarySupplyInline, PackagingPresentationInline)
@@ -1423,10 +1423,10 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     report_function = staticmethod(basic_report)
     # resource_classes = [PackagingResource]
     list_filter = [ByMarketForOrganizationFilter, ByProductForOrganizationFilter,
-                   ByProductSizeForProductOrganizationFilter, 'packaging', 'is_enabled']
+                   ByProductSizeForProductOrganizationFilter, ByPackagingForOrganizationFilter, 'is_enabled']
     search_fields = ('name', 'alias')
-    list_display = ['name', 'alias', 'market', 'product', 'product_size', 'packaging', 'quantity', 'is_enabled']
-    fields = ['market', 'product', 'product_size', 'packaging', 'quantity', 'name', 'alias', 'is_enabled']
+    list_display = ['name', 'alias', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging', 'is_enabled']
+    fields = ['market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging', 'name', 'alias', 'is_enabled']
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
