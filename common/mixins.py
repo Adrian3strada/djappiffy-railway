@@ -530,7 +530,7 @@ class IncotermsAndLocalDeliveryMarketMixin(models.Model):
 class CleanNameAndServiceProviderAndOrganizationMixin(models.Model):
     def __str__(self):
         return f"{self.name}"
-    
+
     def clean(self):
         self.name = getattr(self, 'name', None)
         self.service_provider = getattr(self, 'service_provider', None)
@@ -543,7 +543,7 @@ class CleanNameAndServiceProviderAndOrganizationMixin(models.Model):
 
         errors = {}
 
-        try: 
+        try:
             super().clean()
         except ValidationError as e:
             errors = e.message_dict
@@ -553,7 +553,7 @@ class CleanNameAndServiceProviderAndOrganizationMixin(models.Model):
 
                 errors['name'] = _('Name and service provider must be unique together.')
                 errors['service_provider'] = _('Name and service provider must be unique together.')
-                
+
         if errors:
             raise ValidationError(errors)
 

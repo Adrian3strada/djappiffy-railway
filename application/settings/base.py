@@ -179,6 +179,11 @@ USE_I18N = True
 
 USE_TZ = True
 
+USE_THOUSAND_SEPARATOR=True
+THOUSAND_SEPARATOR=','
+DECIMAL_SEPARATOR='.'
+NUMBER_GROUPING = (3, 2, 0)
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -376,7 +381,9 @@ JAZZMIN_SETTINGS = {
         "catalogs.Market",
         "catalogs.Product",
         "catalogs.MarketProductSize",
-        "catalogs.ProductPackaging",
+        "catalogs.Supply",
+        "catalogs.ProductPresentation",
+        "catalogs.Packaging",
         "catalogs.Provider",
         "catalogs.Client",
         "catalogs.Vehicle",
@@ -385,7 +392,6 @@ JAZZMIN_SETTINGS = {
         "catalogs.Orchard",
         "catalogs.HarvestingCrew",
         "catalogs.Crew",
-        "catalogs.Supply",
         "catalogs.PackagingPresentation",
         "catalogs.MeshBag",
         "catalogs.Service",

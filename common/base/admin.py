@@ -1,3 +1,5 @@
+from unicodedata import category
+
 from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
@@ -133,10 +135,33 @@ class CurrencyAdmin(admin.ModelAdmin):
 
 @admin.register(SupplyKind)
 class SupplyKindAdmin(admin.ModelAdmin):
-    list_display = ('name', 'usage_unit_kind', 'category', 'is_enabled')
-    list_filter = ('category', 'usage_unit_kind', 'is_enabled',)
+    list_display = ('name', 'category', 'capacity_unit_category', 'usage_discount_unit_category', 'is_enabled')
+    list_filter = ('category', 'capacity_unit_category', 'usage_discount_unit_category', 'is_enabled',)
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
+
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = SupplyKind.objects.get(id=object_id) if object_id else None
+        packaging_container_kinds = ['packaging_containment', 'packaging_separator', 'packaging_presentation']
+
+        if db_field.name == 'capacity_unit_category':
+            if request.POST:
+                category = request.POST.get('category')
+            else:
+                category = obj.category if obj else None
+            if category:
+                formfield = super().formfield_for_choice_field(db_field, request, **kwargs)
+                formfield.required = category in packaging_container_kinds
+                return formfield
+            formfield = super().formfield_for_choice_field(db_field, request, **kwargs)
+            formfield.required = False
+            return formfield
+
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/supply_kind.js',)

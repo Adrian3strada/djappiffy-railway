@@ -9,13 +9,14 @@ from .models import (
     ProductPhenologyKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
-    HarvestingPaymentSetting, Supply, MeshBagKind, ProductStandardPackaging,
-    MeshBag, Service, ProductPackaging, WeighingScale, ColdChamber,
+    HarvestingPaymentSetting, Supply, ProductStandardPackaging,
+    Service, ProductPresentation, Packaging,
+    WeighingScale, ColdChamber, PackagingPresentation,
     PalletConfiguration, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
-    ExportingCompany, Transfer, LocalTransporter,
+    ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    PackagingSupply, RelationPackaging, ProductRipeness,
-    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, PackagingPresentation,
+    PackagingComplementarySupply, ProductRipeness,
+    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary,
     HarvestContainer
 )
 
@@ -39,7 +40,7 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
                       ByClientCapitalFrameworkForOrganizationFilter, BySupplyKindForProductPackagingFilter,
                       BySupplyForOrganizationPackagingFilter, ByProductForOrganizationPackagingFilter,
-                      ByMarketForOrganizationPackagingFilter,
+                      ByMarketForOrganizationProductPackagingFilter,
                       ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
                       ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                       ByCityForOrganizationClientsFilter, ByPaymentKindForOrganizationFilter,
@@ -903,10 +904,27 @@ class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [SupplyResource]
-    list_display = ('name', 'kind', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+    list_display = ('name', 'kind', 'capacity_display', 'usage_discount_quantity_display', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
     list_filter = ('kind', 'is_enabled')
     search_fields = ('name',)
-    fields = ('kind', 'name', 'size', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+    fields = ('kind', 'name', 'capacity', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+
+    def capacity_display(self, obj):
+        if obj.capacity and obj.capacity > 0:
+            capacity = str(int(obj.capacity) if obj.capacity.is_integer() else obj.capacity)
+            units = str(obj.kind.get_capacity_unit_category_display())
+            unit = units[:-1] if obj.capacity == 1 and units[-1].lower() == 's' else units
+            return f"{capacity} {unit}"
+        return "-"
+    capacity_display.short_description = _('Capacity')
+    capacity_display.admin_order_field = 'capacity'
+
+    def usage_discount_quantity_display(self, obj):
+        units = str(obj.kind.get_usage_discount_unit_category_display())
+        unit = units[:-1] if obj.usage_discount_quantity == 1 and units[-1].lower() == 's' else units
+        return f"{str(obj.usage_discount_quantity)} {unit}"
+    usage_discount_quantity_display.short_description = _('Usage discount quantity')
+    usage_discount_quantity_display.admin_order_field = 'usage_discount_quantity'
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('code')
@@ -920,10 +938,51 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = Supply.objects.get(id=obj_id) if obj_id else None
+        print("db_field", db_field)
+        print("db_field.name", db_field.name)
+
         if db_field.name == "kind":
             kwargs["queryset"] = SupplyKind.objects.filter(is_enabled=True)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda item: item.name
+            return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = Supply.objects.get(id=obj_id) if obj_id else None
+
+        if db_field.name == "capacity":
+            print("capacity")
+            packaging_containment_categories = ['packaging_containment', 'packaging_presentation', 'packaging_separator', 'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel']
+            print("packaging_containment_categories", packaging_containment_categories)
+            print("request", request)
+            if request.POST:
+                kind_id = request.POST.get('kind')
+            else:
+                kind_id = obj.kind_id if obj else None
+            print("kind_id", kind_id)
+            if kind_id:
+                kind = SupplyKind.objects.get(id=kind_id)
+                print("KIND", kind)
+                if kind.category in packaging_containment_categories:
+                    print("kind.category in packaging_containment_categories", kind.category)
+                    formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+                    formfield.required = True
+                    return formfield
+                else:
+                    print("else", kind.category)
+                    formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+                    formfield.required = False
+                    return formfield
+
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/supply.js',)
 
 
 
@@ -1048,23 +1107,6 @@ class HarvestingCrewAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin)
         js = ('js/admin/forms/packhouses/catalogs/harvesting_crew.js',)
 
 
-@admin.register(MeshBagKind)
-class MeshBagKindAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(MeshBag)
-class MeshBagAdmin(admin.ModelAdmin):
-    verbose_name = _('Mesh Bag (*)')
-    pass
-
-
-@admin.register(PackagingPresentation)
-class PackagingPresentationAdmin(admin.ModelAdmin):
-    verbose_name_plural = _('Packaging presentations') + ' (*)'
-    pass
-
-
 @admin.register(Service)
 class ServiceAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
@@ -1090,45 +1132,177 @@ class ServiceAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             return formfield
 
 
-class PackagingSupplyInline(admin.TabularInline):
-    model = PackagingSupply
+class ProductPresentationComplementarySupplyInline(admin.TabularInline):
+    model = ProductPresentationComplementarySupply
     min_num = 0
     extra = 0
-    list_display = ('supply_kind', 'supply', 'quantity')
+    verbose_name = _('Complementary supply')
+    verbose_name_plural = _('Complementary supplies')
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
+        if 'kind' in formset.form.base_fields:
+            formset.form.base_fields['kind'].widget.can_add_related = False
+            formset.form.base_fields['kind'].widget.can_change_related = False
+            formset.form.base_fields['kind'].widget.can_delete_related = False
+            formset.form.base_fields['kind'].widget.can_view_related = False
+        if 'supply' in formset.form.base_fields:
+            formset.form.base_fields['supply'].widget.can_add_related = False
+            formset.form.base_fields['supply'].widget.can_change_related = False
+            formset.form.base_fields['supply'].widget.can_delete_related = False
+            formset.form.base_fields['supply'].widget.can_view_related = False
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_obj_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = ProductPackaging.objects.get(id=parent_obj_id) if parent_obj_id else None
+        parent_obj = ProductPresentation.objects.get(id=parent_obj_id) if parent_obj_id else None
+        presentation_complement_categories = ['packaging_presentation_complement']
+
+        if db_field.name == "kind":
+            kwargs["queryset"] = SupplyKind.objects.filter(category__in=presentation_complement_categories, is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    # class Meta:
-    verbose_name = _('Complementary Supply')
-    verbose_name_plural = _('Complementary Supplies')
+    class Media:
+        js = ('js/admin/forms/product_presentation_complementary_supply_inline.js',)
+
+
+@admin.register(ProductPresentation)
+class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
+    report_function = staticmethod(basic_report)
+    # resource_classes = [ProductPresentationResource]
+    list_display = ('name', 'product', 'markets_display', 'presentation_supply_kind', 'presentation_supply',
+                    'is_enabled')
+    list_filter = ('product', 'is_enabled')
+    search_fields = ('name',)
+    fields = ('product', 'markets', 'presentation_supply_kind', 'presentation_supply', 'name',
+              'is_enabled')
+    inlines = [ProductPresentationComplementarySupplyInline]
+
+    def markets_display(self, obj):
+        return ', '.join([market.name for market in obj.markets.all()])
+    markets_display.short_description = _('Markets')
+    markets_display.admin_order_field = 'name'
+
+    @uppercase_form_charfield('name')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'product' in form.base_fields:
+            form.base_fields['product'].widget.can_add_related = False
+            form.base_fields['product'].widget.can_change_related = False
+            form.base_fields['product'].widget.can_delete_related = False
+            form.base_fields['product'].widget.can_view_related = False
+        if 'markets' in form.base_fields:
+            form.base_fields['markets'].widget.can_add_related = False
+        if 'presentation_supply_kind' in form.base_fields:
+            form.base_fields['presentation_supply_kind'].widget.can_add_related = False
+            form.base_fields['presentation_supply_kind'].widget.can_change_related = False
+            form.base_fields['presentation_supply_kind'].widget.can_delete_related = False
+            form.base_fields['presentation_supply_kind'].widget.can_view_related = False
+        if 'presentation_supply' in form.base_fields:
+            form.base_fields['presentation_supply'].widget.can_add_related = False
+            form.base_fields['presentation_supply'].widget.can_change_related = False
+            form.base_fields['presentation_supply'].widget.can_delete_related = False
+            form.base_fields['presentation_supply'].widget.can_view_related = False
+        return form
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = Packaging.objects.get(id=obj_id) if obj_id else None
+        organization = request.organization if hasattr(request, 'organization') else None
+        organization_queryfilter = {'organization': organization, 'is_enabled': True}
+
+        if db_field.name == "markets":
+            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "product":
+            organization = getattr(request, 'organization', None)
+            if organization:
+                kwargs["queryset"] = Product.objects.filter(organization=organization, is_enabled=True)
+            else:
+                kwargs["queryset"] = Product.objects.none()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/packaging_complementary_supplies_inline.js',)
+        js = ('js/admin/forms/product_presentation.js',)
 
 
-class ContainedPackagingInline(admin.TabularInline):
-    model = RelationPackaging
+class PackagingComplementarySupplyInline(admin.TabularInline):
+    model = PackagingComplementarySupply
     min_num = 0
     extra = 0
-    fk_name = 'outside'
-    list_display = ('inside', 'quantity')
+    verbose_name = _('Complementary supply')
+    verbose_name_plural = _('Complementary supplies')
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'kind' in formset.form.base_fields:
+            formset.form.base_fields['kind'].widget.can_add_related = False
+            formset.form.base_fields['kind'].widget.can_change_related = False
+            formset.form.base_fields['kind'].widget.can_delete_related = False
+            formset.form.base_fields['kind'].widget.can_view_related = False
+        if 'supply' in formset.form.base_fields:
+            formset.form.base_fields['supply'].widget.can_add_related = False
+            formset.form.base_fields['supply'].widget.can_change_related = False
+            formset.form.base_fields['supply'].widget.can_delete_related = False
+            formset.form.base_fields['supply'].widget.can_view_related = False
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_obj_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = Packaging.objects.get(id=parent_obj_id) if parent_obj_id else None
+        packaging_complement_categories = ['packaging_complement', 'packaging_separator', 'packaging_labeling', 'packaging_storage']
+
+        if db_field.name == "kind":
+            kwargs["queryset"] = SupplyKind.objects.filter(category__in=packaging_complement_categories, is_enabled=True)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packaging_complementary_supply_inline.js',)
+        # pass
 
 
-@admin.register(ProductPackaging)
-class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
+class PackagingPresentationInline(admin.TabularInline):
+    model = PackagingPresentation
+    min_num = 0
+    extra = 0
+    verbose_name = _('Presentation')
+    verbose_name_plural = _('Presentations')
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'presentation' in formset.form.base_fields:
+            formset.form.base_fields['presentation'].widget.can_add_related = False
+            formset.form.base_fields['presentation'].widget.can_change_related = False
+            formset.form.base_fields['presentation'].widget.can_delete_related = False
+            formset.form.base_fields['presentation'].widget.can_view_related = False
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_obj_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = Packaging.objects.get(id=parent_obj_id) if parent_obj_id else None
+        organization = request.organization if hasattr(request, 'organization') else None
+
+        if db_field.name == "presentation":
+            if organization:
+                kwargs["queryset"] = ProductPresentation.objects.filter(organization=organization, is_enabled=True)
+            else:
+                kwargs["queryset"] = ProductPresentation.objects.none()
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+@admin.register(Packaging)
+class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PackagingResource]
-    form = PackagingKindForm
+    # form = PackagingKindForm
     list_filter = (BySupplyKindForProductPackagingFilter, BySupplyForOrganizationPackagingFilter,
-                   ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
+                   ByProductForOrganizationPackagingFilter, ByMarketForOrganizationProductPackagingFilter,
                    'product_standard_packaging', 'is_enabled')
     list_display = ('name', 'packaging_supply_kind', 'packaging_supply', 'product', 'markets_display',
                     'product_packaging_standard_display', 'max_product_amount_per_package', 'is_enabled',
@@ -1142,7 +1316,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         'packaging_supply_quantity',
         'is_enabled'
     )
-    inlines = (PackagingSupplyInline, ContainedPackagingInline)
+    inlines = (PackagingComplementarySupplyInline, PackagingPresentationInline)
 
     def markets_display(self, obj):
         return ', '.join([market.name for market in obj.markets.all()])
@@ -1150,7 +1324,9 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     markets_display.admin_order_field = 'name'
 
     def product_packaging_standard_display(self, obj):
-        return f"{obj.product_standard_packaging.name} ({obj.product_standard_packaging.standard.name}: {obj.product_standard_packaging.standard.country})"
+        if obj.product_standard_packaging:
+            return f"{obj.product_standard_packaging.name} ({obj.product_standard_packaging.standard.name}: {obj.product_standard_packaging.standard.country})"
+        return f"-"
     product_packaging_standard_display.short_description = _('Product packaging standard')
     product_packaging_standard_display.admin_order_field = 'name'
 
@@ -1182,8 +1358,6 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         return form
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
-        obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
 
@@ -1194,11 +1368,10 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
+        obj = Packaging.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
         packaging_supply_kind = request.POST.get('packaging_supply_kind') if request.POST else obj.packaging_supply_kind if obj else None
-        packaging_supply = request.POST.get('packaging_supply') if request.POST else obj.packaging_supply if obj else None
         markets = request.POST.getlist('markets') if request.POST else obj.markets.all() if obj else None
         product_id = request.POST.get('product') if request.POST else obj.product_id if obj else None
         product_kind = ProductKind.objects.get(id=Product.objects.get(id=product_id).kind_id) if product_id else None
@@ -1221,17 +1394,23 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
             else:
                 kwargs["queryset"] = Supply.objects.none()
 
-        if db_field.name == "product_packaging_standard":
+        if db_field.name == "product_standard_packaging":
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.required = True
             if organization and product_kind and markets:
                 markets_countries = list(set((Market.objects.filter(id__in=markets).values_list('countries', flat=True))))
-                kwargs["queryset"] = ProductStandardPackaging.objects.filter(standard__product_kind=product_kind, standard__country__in=markets_countries)
+                queryset = ProductStandardPackaging.objects.filter(standard__product_kind=product_kind, standard__country__in=markets_countries)
+                kwargs["queryset"] = queryset
+                formfield.required = queryset.exists()
             else:
                 kwargs["queryset"] = ProductStandardPackaging.objects.none()
+                formfield.required = False
+            return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/product_packaging.js',)
+        js = ('js/admin/forms/packaging.js',)
 
 
 @admin.register(WeighingScale)
@@ -1394,7 +1573,7 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
     list_display = ('name', 'alias', 'market', 'product', 'product_variety', 'get_product_size', 'packaging_kind', 'product_ripeness', 'is_enabled')
     list_filter = (ByMarketForOrganizationPalletConfigurationFilter, ByProductForOrganizationPalletConfigurationFilter,
                    ByProductVarietyForOrganizationPalletConfigurationFilter, 'product_ripeness', 'is_enabled',)
-    fields = ('name', 'alias', 'product', 'market', 'market_class',  'product_variety', 'product_size', 'maximum_boxes_per_pallet', 
+    fields = ('name', 'alias', 'product', 'market', 'market_class',  'product_variety', 'product_size', 'maximum_boxes_per_pallet',
               'maximum_kg_per_pallet', 'kg_tare', 'kg_per_box', 'packaging_kind', 'product_ripeness', 'is_enabled')
     search_fields = ('name', 'alias')
     inlines = [PalletConfigurationSupplyExpenseInLine, PalletConfigurationPersonalExpenseInline]
@@ -1414,7 +1593,7 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj,
                                     exclude=[Product, ProductVariety, ProductSize, Market, ProductMarketClass,
-                                             ProductPackaging, ProductRipeness, Organization]):
+                                             Packaging, ProductRipeness, Organization]):
             readonly_fields.extend(['name', 'alias', ])
         return readonly_fields
 
@@ -1451,7 +1630,7 @@ class PalletConfigurationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
             else:
                 kwargs["queryset"] = ProductSize.objects.none()
         if db_field.name == "packaging_kind":
-            kwargs["queryset"] = ProductPackaging.objects.filter(**organization_queryfilter)
+            kwargs["queryset"] = Packaging.objects.filter(**organization_queryfilter)
         if db_field.name == "product_ripeness":
             if product:
                 kwargs["queryset"] = ProductRipeness.objects.filter(**product_queryfilter)
@@ -1848,6 +2027,3 @@ class HarvestCuttingContainerAdmin(SheetReportExportAdminMixin, ByOrganizationAd
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
-
-
-

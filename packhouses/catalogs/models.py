@@ -26,7 +26,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   OrchardCertificationKind)
 from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES,
                        PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES)
-from common.base.settings import SUPPLY_USAGE_UNIT_KIND_CHOICES
+from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
 
 from django.db.models import Max, Min
 from django.db.models import Q, F
@@ -666,14 +666,48 @@ class SupplyKindRelation(models.Model):
 class Supply(CleanNameAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    size = models.FloatField(verbose_name=_('Size'), validators=[MinValueValidator(0.01)], help_text=_('Size or capacity of the supply, measured based in the usage unit of the supply kind'))
+    capacity = models.FloatField(verbose_name=_('Capacity'), validators=[MinValueValidator(0)],
+                                 null=True, blank=True,
+                                 help_text=_('Capacity of the supply, based in the usage unit'))
+
     minimum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Minimum stock quantity'))
     maximum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Maximum stock quantity'))
+    usage_discount_quantity = models.PositiveIntegerField(verbose_name=_('Usage discount quantity'),
+                                                          validators=[MinValueValidator(1)],
+                                                          help_text=_(
+                                                              'Amount of units to discount when a supply is consumed, based in the usage unit of the supply kind'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.name}"
+
+    def clean(self):
+        value = self.capacity
+        if self.kind.category in ['packaging_containment', 'packaging_presentation',
+                                  'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel']:
+            min_value = 1 if self.kind.capacity_unit_category in ['pieces'] else 0.01
+            validation_error = _('Capacity must be at least 1 for this kind.') if self.kind.capacity_unit_category in ['pieces'] else _('Capacity must be at least 0.01 for this kind.')
+            if value and value < min_value:
+                raise ValidationError(
+                    validation_error,
+                    params={'capacity': value},
+                )
+
+        elif self.kind.category in ['packaging_separator']:
+            if value and value < 0:
+                raise ValidationError(
+                    _('Capacity can be at minimum 0 for this kind.'),
+                    params={'capacity': value},
+                )
+        else:
+            if value is not None:
+                raise ValidationError(
+                    _('Capacity cannot has value for this kind category.'),
+                    params={'capacity': value},
+                )
+
+        return super().clean()
 
     class Meta:
         verbose_name = _('Supply')
@@ -718,84 +752,7 @@ class ProviderSupply(models.Model):
         ]
 
 
-
-# Presentaciones de mallas
-
-
-class MeshBagKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Mesh Bag Kind')
-        verbose_name_plural = _('Mesh Bag Kinds')
-        unique_together = ('name', 'organization')
-
-
-class MeshBagFilmKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Mesh bag film kind')
-        verbose_name_plural = _('Mesh bag film kinds')
-        unique_together = ('name', 'organization')
-
-
-class MeshBag(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product variety size'),
-                                     on_delete=models.PROTECT)
-    mesh_bags_per_box = models.PositiveIntegerField(verbose_name=_('Mesh bags per box'))
-    pieces_per_mesh_bag = models.PositiveIntegerField(verbose_name=_('Pieces per mesh bags'))
-    mesh_bag_kind = models.ForeignKey(MeshBagKind, verbose_name=_('Mesh bag kind'), on_delete=models.PROTECT)
-    mesh_bag_film_kind = models.ForeignKey(MeshBagFilmKind, verbose_name=_('Mesh bag film kind'),
-                                           on_delete=models.PROTECT)
-    mesh_bag_discount = models.FloatField(verbose_name=_('Mesh bag discount'))
-    mesh_bag_film_discount = models.FloatField(verbose_name=_('Mesh bag film discount'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Mesh bag')
-        verbose_name_plural = _('Mesh bags')
-        unique_together = ('name', 'organization')
-
-
-class PackagingPresentation(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
-    product_variety_size = models.ForeignKey(ProductSize, verbose_name=_('Variety size'), on_delete=models.PROTECT)
-
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Packaging presentation')
-        verbose_name_plural = _('Packaging presentations')
-        unique_together = ('name', 'organization')
-
-
 # Proveedores de servicios
-
 
 class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
@@ -812,29 +769,19 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
                                     name='service_unique_name_service_provider_organization'),
         ]
 
-
 # Tipos de empaques
 
 
-class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
+class ProductPresentation(CleanNameAndOrganizationMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
-
-    ### Insumo principal
-    packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
-    product_standard_packaging = models.ForeignKey(ProductStandardPackaging,
-                                                   verbose_name=_('Product standard packaging'),
-                                                   on_delete=models.PROTECT)
-
+    presentation_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Presentation supply kind'),
+                                                 limit_choices_to={'category': 'packaging_presentation'},
+                                                 on_delete=models.PROTECT)
+    presentation_supply = models.ForeignKey(Supply, verbose_name=_('Presentation supply'),
+                                            limit_choices_to={'kind__category': 'packaging_presentation'},
+                                            on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-
-    ### Máximo peso
-    max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
-
-    packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
-    packaging_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Packaging supply quantity'),
-                                                            help_text=_('Quantity of the packaging supply to discount from the inventory each time a product packaging is used'))
-
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
@@ -842,38 +789,113 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Product packaging')
-        verbose_name_plural = _('Product packaging')
+        verbose_name = _('Product presentation')
+        verbose_name_plural = _('Product presentations')
         ordering = ('name', )
         constraints = [
-            models.UniqueConstraint(fields=('name', 'organization'),
-                                    name='packaging_unique_name_organization'),
+            models.UniqueConstraint(fields=('product', 'name', 'organization'),
+                                    name='productpresentation_unique_product_name_organization'),
         ]
 
 
-class PackagingSupply(models.Model):
-    packaging_kind = models.ForeignKey(ProductPackaging, on_delete=models.PROTECT)
-    supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Supply kind'), on_delete=models.PROTECT)
+class ProductPresentationComplementarySupply(models.Model):
+    product_presentation = models.ForeignKey(ProductPresentation, on_delete=models.CASCADE)
+    kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'),
+                             limit_choices_to={'category': 'packaging_presentation_complement'},
+                             on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
-    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'))
 
     class Meta:
-        verbose_name = _('Packaging supply')
-        verbose_name_plural = _('Packaging supplies')
-        ordering = ('supply_kind', 'supply')
-        #constraints = [
-        #    models.UniqueConstraint(fields=('packaging_kind', 'supply_kind'),
-        #                            name='insidesupply_unique_packagingkind_supplykind'),
-        #]
+        verbose_name = _('Product presentation complementary supply')
+        verbose_name_plural = _('Product presentation complementary supplies')
+        ordering = ('kind', 'supply')
+        constraints = [
+            models.UniqueConstraint(fields=('product_presentation', 'kind', 'supply'),
+                                    name='productpresentationcomplementarysupply_unique_productpresentation_kind_supply'),
+        ]
 
 
-class RelationPackaging(models.Model):
-    outside = models.ForeignKey(ProductPackaging, on_delete=models.PROTECT, related_name='outside')
-    inside = models.ForeignKey(ProductPackaging, on_delete=models.PROTECT, related_name='inside')
-    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'))
+class Packaging(CleanNameAndOrganizationMixin, models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
+
+    ### Insumo principal
+    packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
+    product_standard_packaging = models.ForeignKey(ProductStandardPackaging,
+                                                   verbose_name=_('Product standard packaging'),
+                                                   null=True, blank=True, on_delete=models.PROTECT)
+
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+
+    ### Máximo peso
+    max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
+    packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
+    packaging_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Packaging supply quantity'),
+                                                            help_text=_('Quantity of the packaging supply to discount from the inventory each time a product packaging is used'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name}"
 
     class Meta:
-        unique_together = ('outside', 'inside')
+        verbose_name = _('packaging')
+        verbose_name_plural = _('packaging')
+        ordering = ('name', )
+        constraints = [
+            models.UniqueConstraint(fields=('product', 'name', 'organization'),
+                                    name='packaging_unique_product_name_organization'),
+        ]
+
+
+class PackagingComplementarySupply(models.Model):
+    packaging = models.ForeignKey(Packaging, on_delete=models.CASCADE)
+    kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
+
+    class Meta:
+        verbose_name = _('Product packaging complementary supply')
+        verbose_name_plural = _('Product packaging complementary supplies')
+        ordering = ('kind', 'supply')
+        constraints = [
+            models.UniqueConstraint(fields=('packaging', 'kind', 'supply'),
+                                    name='productpackagingcomplementarysupply_unique_packaging_kind_supply'),
+        ]
+
+
+class PackagingPresentation(models.Model):
+    packaging = models.ForeignKey(Packaging, on_delete=models.CASCADE)
+    presentation = models.ForeignKey(ProductPresentation, verbose_name=_('presentation'), on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
+
+    class Meta:
+        verbose_name = _('Product packaging presentation')
+        verbose_name_plural = _('Product packaging presentations')
+        ordering = ('packaging', 'presentation')
+        constraints = [
+            models.UniqueConstraint(fields=('packaging', 'presentation'),
+                                    name='productpackagingpresentation_unique_productpackaging_presentation'),
+        ]
+
+
+class ProductPackaging(models.Model):
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
+    packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    alias = models.CharField(max_length=30, verbose_name=_('Alias'))
+
+    class Meta:
+        verbose_name = _('Product packaging')
+        verbose_name_plural = _('Product packaging')
+        ordering = ('product', 'packaging')
+        constraints = [
+            models.UniqueConstraint(fields=('product', 'packaging'),
+                                    name='productpackaging_unique_product_packaging'),
+        ]
 
 
 # Básculas
@@ -944,7 +966,7 @@ class PalletConfiguration(CleanNameOrAliasAndOrganizationMixin, models.Model):
     ))
     kg_tare = models.FloatField(verbose_name=_('Kg tare'), null=True, blank=True)
     kg_per_box = models.FloatField(verbose_name=_('Kg per box'), null=False, blank=False)
-    packaging_kind = models.ForeignKey(ProductPackaging, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)
+    packaging_kind = models.ForeignKey(Packaging, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Creation date'))
     # is_ripe = models.BooleanField(default=False, verbose_name=_('Is ripe'))
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product Ripeness'), on_delete=models.PROTECT, null=True, blank=True)
@@ -1161,7 +1183,7 @@ class InsuranceCompany(CleanNameAndOrganizationMixin, models.Model):
 class HarvestContainer(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     capacity = models.FloatField(verbose_name=_('Capacity'))
-    unit_kind = models.CharField(max_length=30, verbose_name=_('Unit kind'), choices=SUPPLY_USAGE_UNIT_KIND_CHOICES)
+    unit_kind = models.CharField(max_length=30, verbose_name=_('Unit kind'), choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 

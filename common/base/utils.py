@@ -124,7 +124,7 @@ class DehydrationResource():
 
     def dehydrate_market(self, obj):
         return obj.market.name if obj.market else ""
-    
+
     def dehydrate_markets(self, obj):
         return ", ".join(market.name for market in obj.markets.all()) if obj.markets.exists() else ""
         #return obj.market.name if obj.market else ""
@@ -157,8 +157,8 @@ class DehydrationResource():
     def dehydrate_product_ripeness(self, obj):
         return obj.product_ripeness.name if obj.product_ripeness else ""
 
-    def dehydrate_product_standard_packaging(self, obj): 
-        return obj.product_standard_packaging.name if obj.product_standard_packaging else ""  
+    def dehydrate_product_standard_packaging(self, obj):
+        return obj.product_standard_packaging.name if obj.product_standard_packaging else ""
 
     def dehydrate_organization(self, obj):
         return obj.organization.name if obj.organization else ""
@@ -187,14 +187,20 @@ class DehydrationResource():
     def dehydrate_provider(self, obj):
         return obj.provider.name if obj.provider else ""
 
+    def dehydrate_main_supply_kind(self, obj):
+        return obj.kind.name if obj.kind else ""
+
+    def dehydrate_main_supply(self, obj):
+        return obj.presentation_supply.name if obj.presentation_supply else ""
+
     def dehydrate_kind(self, obj):
         return obj.kind.name if obj.kind else ""
 
-    def dehydrate_packaging_supply_kind(self, obj): 
-        return obj.packaging_supply_kind.name if obj.packaging_supply_kind else "" 
-    
-    def dehydrate_packaging_supply(self, obj): 
-        return obj.packaging_supply.name if obj.packaging_supply else "" 
+    def dehydrate_packaging_supply_kind(self, obj):
+        return obj.packaging_supply_kind.name if obj.packaging_supply_kind else ""
+
+    def dehydrate_packaging_supply(self, obj):
+        return obj.packaging_supply.name if obj.packaging_supply else ""
 
     def dehydrate_authority(self, obj):
         return obj.authority.name if obj.authority else ""

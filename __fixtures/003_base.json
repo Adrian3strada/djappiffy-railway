@@ -183,14 +183,15 @@
   "model": "base.supplykind",
   "pk": 1,
   "fields": {
+    "category": "packaging_containment",
     "name": "CAJA",
     "name_en": "BOX",
     "name_pt": null,
     "name_fr": null,
     "name_de": null,
     "name_es": "CAJA",
-    "usage_unit_kind": "piece",
-    "category": "packaging_containment",
+    "capacity_unit_category": "Kg",
+    "usage_discount_unit_category": "pieces",
     "is_enabled": true
   }
 },
@@ -198,14 +199,15 @@
   "model": "base.supplykind",
   "pk": 2,
   "fields": {
+    "category": "packaging_separator",
     "name": "CHAROLA",
     "name_en": "TRAY",
     "name_pt": null,
     "name_fr": null,
     "name_de": null,
     "name_es": "CHAROLA",
-    "usage_unit_kind": "piece",
-    "category": "packaging_separator",
+    "capacity_unit_category": "pieces",
+    "usage_discount_unit_category": "pieces",
     "is_enabled": true
   }
 },
@@ -213,14 +215,15 @@
   "model": "base.supplykind",
   "pk": 3,
   "fields": {
+    "category": "packaging_pallet",
     "name": "TARIMA",
     "name_en": "PALLET",
     "name_pt": null,
     "name_fr": null,
     "name_de": null,
     "name_es": "TARIMA",
-    "usage_unit_kind": "piece",
-    "category": "packaging_pallet",
+    "capacity_unit_category": null,
+    "usage_discount_unit_category": "pieces",
     "is_enabled": true
   }
 },
@@ -228,14 +231,15 @@
   "model": "base.supplykind",
   "pk": 4,
   "fields": {
+    "category": "packaging_pallet_protection",
     "name": "ESQUINERO",
     "name_en": "CORNER PROTECTOR",
     "name_pt": null,
     "name_fr": null,
     "name_de": null,
     "name_es": "ESQUINERO",
-    "usage_unit_kind": "piece",
-    "category": "packaging_pallet_protection",
+    "capacity_unit_category": null,
+    "usage_discount_unit_category": "pieces",
     "is_enabled": true
   }
 },
@@ -243,14 +247,15 @@
   "model": "base.supplykind",
   "pk": 5,
   "fields": {
+    "category": "packaging_complement",
     "name": "TAPA",
     "name_en": "LID",
     "name_pt": null,
     "name_fr": null,
     "name_de": null,
     "name_es": "TAPA",
-    "usage_unit_kind": "piece",
-    "category": "packaging_complement",
+    "capacity_unit_category": null,
+    "usage_discount_unit_category": "pieces",
     "is_enabled": true
   }
 },
@@ -258,14 +263,15 @@
   "model": "base.supplykind",
   "pk": 6,
   "fields": {
+    "category": "packaging_presentation",
     "name": "MALLA",
     "name_en": "MESH",
     "name_pt": null,
     "name_fr": null,
     "name_de": null,
     "name_es": "MALLA",
-    "usage_unit_kind": "cm",
-    "category": "packaging_presentation",
+    "capacity_unit_category": "pieces",
+    "usage_discount_unit_category": "cm",
     "is_enabled": true
   }
 },
@@ -273,14 +279,15 @@
   "model": "base.supplykind",
   "pk": 7,
   "fields": {
+    "category": "packaging_presentation_complement",
     "name": "FILM",
     "name_en": "FILM",
     "name_pt": null,
     "name_fr": null,
     "name_de": null,
     "name_es": "FILM",
-    "usage_unit_kind": "cm",
-    "category": "packaging_presentation_complement",
+    "capacity_unit_category": null,
+    "usage_discount_unit_category": "cm",
     "is_enabled": true
   }
 },
@@ -288,14 +295,15 @@
   "model": "base.supplykind",
   "pk": 8,
   "fields": {
+    "category": "packaging_pallet_wrapping",
     "name": "FLEJE",
     "name_en": "STRAPPING",
     "name_pt": null,
     "name_fr": null,
     "name_de": null,
     "name_es": "FLEJE",
-    "usage_unit_kind": "m",
-    "category": "packaging_pallet_wrapping",
+    "capacity_unit_category": null,
+    "usage_discount_unit_category": "m",
     "is_enabled": true
   }
 },
@@ -904,6 +912,19 @@
     "max_product_amount": 11.3,
     "description": null,
     "standard": 4,
+    "is_enabled": true
+  }
+},
+{
+  "model": "base.productstandardpackaging",
+  "pk": 4,
+  "fields": {
+    "supply_kind": 1,
+    "name": "CARTÓN 10 (AGMX)",
+    "code": "2",
+    "max_product_amount": 10.0,
+    "description": null,
+    "standard": 1,
     "is_enabled": true
   }
 },
