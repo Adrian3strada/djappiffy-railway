@@ -86,13 +86,37 @@ document.addEventListener('DOMContentLoaded', function() {
                                 const option = document.createElement('option');
                                 option.value = optionData.id;
                                 option.textContent = optionData.name;
-                                if (optionData.id === supply.id) {
+                                option.setAttribute('data-unit', optionData.unit);
+
+                                if (String(optionData.id) === String(supply.id)) {
                                     option.selected = true;
                                 }
+
                                 purchaseOrderSupplySelect.appendChild(option);
                             });
+
                             purchaseOrderSupplySelect.classList.add('disabled-field');
+
+                            const inventoriedQuantityInput = newInlineForm.querySelector('input[name$="-inventoried_quantity"]');
+                            if (inventoriedQuantityInput) {
+                                const selectedOption = purchaseOrderSupplySelect.options[purchaseOrderSupplySelect.selectedIndex];
+                                if (selectedOption) {
+                                    const unit = selectedOption.getAttribute('data-unit');
+
+                                    let existingSpan = inventoriedQuantityInput.parentNode.querySelector('.unit-span');
+                                    if (existingSpan) {
+                                        existingSpan.remove();
+                                    }
+                                    const unitSpan = document.createElement('span');
+                                    unitSpan.classList.add('unit-span');
+                                    unitSpan.textContent = ` ${unit}`;
+
+                                    inventoriedQuantityInput.insertAdjacentElement("afterend", unitSpan);
+                                }
+                            }
+
                         }
+
 
                         const receivedQuantityInput = newInlineForm.querySelector('input[name$="-received_quantity"]');
                         if (receivedQuantityInput) {
@@ -108,7 +132,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         newInlineForm.classList.remove('empty-form', 'last-related');
                         inlineFormContainer.insertBefore(newInlineForm, emptyForm);
                         totalForms += 1;
+
                     });
+
+
 
                     totalFormsInput.value = totalForms;
                     //Botón para devolver a Purchase
@@ -146,8 +173,37 @@ document.addEventListener('DOMContentLoaded', function() {
             if (tabLink) {
                 tabLink.click();
             }
+        }else{
+          const inlineFormContainer = document.querySelector('#storehouseentrysupply_set-group .card-body');
+          if (inlineFormContainer) {
+            const totalFormsInput = document.querySelector('#id_storehouseentrysupply_set-TOTAL_FORMS');
+            inlineFormContainer.querySelectorAll('.dynamic-inline-form').forEach(form => form.remove());
+            totalFormsInput.value = 0;
+            $(".storehouse-button-container").remove();
+          }
+
         }
     });
+
+    $(document).on('change', 'select[name$="-purchase_order_supply"]', function() {
+    // Obtener la opción seleccionada
+    const selectedOption = this.options[this.selectedIndex];
+
+    // Obtener el atributo data-unit
+    const unit = selectedOption.getAttribute('data-unit') || '';
+
+    // Buscar el input correspondiente a inventoried_quantity en el mismo inline form
+    const inlineForm = this.closest('.dynamic-inline-form');
+    if (inlineForm) {
+        const inventoriedQuantityInput = inlineForm.querySelector('input[name$="-inventoried_quantity"]');
+
+        if (inventoriedQuantityInput) {
+            // Agregar el unit como placeholder o valor si es necesario
+            inventoriedQuantityInput.placeholder = unit;
+        }
+    }
+});
+
 
     $(document).on('click', '#return-to-purchase-btn', function(e) {
         e.preventDefault();
