@@ -1,6 +1,3 @@
-from unicodedata import category
-from import_export.admin import ImportExportModelAdmin, ExportMixin
-
 from django.contrib import admin
 from common.billing.models import LegalEntityCategory
 from .models import (
@@ -29,11 +26,10 @@ from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFor
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet,
                     PackagingKindForm, ProviderForm)
 from django_ckeditor_5.widgets import CKEditor5Widget
-from organizations.models import Organization, OrganizationUser
+from organizations.models import Organization
 from cities_light.models import Country, Region, SubRegion, City
 import nested_admin
 from django.utils.translation import gettext_lazy as _
-from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizationMarketsFilter,
                       ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
                       ByProductSizeForProductOrganizationFilter, ByPackagingForOrganizationFilter,
@@ -1234,6 +1230,14 @@ class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
                 kwargs["queryset"] = Product.objects.filter(organization=organization, is_enabled=True)
             else:
                 kwargs["queryset"] = Product.objects.none()
+
+        if db_field.name == "presentation_supply":
+            organization = getattr(request, 'organization', None)
+            if organization:
+                kwargs["queryset"] = Supply.objects.filter(organization=organization, is_enabled=True)
+            else:
+                kwargs["queryset"] = Supply.objects.none()
+
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:

@@ -12,10 +12,8 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django_ckeditor_5.fields import CKEditor5Field
 from django.conf import settings
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from .utils import vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices, \
-    get_vehicle_category_choices, get_provider_categories_choices
+from .utils import (vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices,
+                    get_vehicle_category_choices, get_provider_categories_choices)
 from django.core.exceptions import ValidationError
 from common.base.models import (ProductKind, CountryProductStandardSize, ProductStandardPackaging, CapitalFramework,
                                 ProductKindCountryStandard, LegalEntityCategory, SupplyKind)
@@ -27,10 +25,6 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
 from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES,
                        PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES)
 from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
-
-from django.db.models import Max, Min
-from django.db.models import Q, F
-
 
 # Create your models here.
 
@@ -82,7 +76,6 @@ class Product(CleanNameAndOrganizationMixin, models.Model):
 
 
 class ProductPhenologyKind(CleanNameAndProductMixin, models.Model):
-    # Normal, roña, etc
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
@@ -209,9 +202,6 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     sort_order = models.PositiveIntegerField(default=0, verbose_name=_('Sort order'))
 
-    def __str__(self):
-        return f"{self.name}"
-
     class Meta:
         verbose_name = _('product size')
         verbose_name_plural = _('product sizes')
@@ -333,7 +323,7 @@ class ProviderFinancialBalance(models.Model):
     provider = models.OneToOneField(Provider, on_delete=models.CASCADE, verbose_name=_('Provider'))
 
     def __str__(self):
-        return f"{self.provider.name}"
+        return f"{self.pk}: {self.provider.name}"
 
     class Meta:
         verbose_name = _('Provider financial balance')
@@ -343,7 +333,6 @@ class ProviderFinancialBalance(models.Model):
 
 
 # Clientes
-
 
 class Client(CleanNameAndCategoryAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
@@ -365,10 +354,7 @@ class Client(CleanNameAndCategoryAndOrganizationMixin, models.Model):
                                         on_delete=models.PROTECT, null=True, blank=True, related_name='shipping_address_clients')
     capital_framework = models.ForeignKey(CapitalFramework, verbose_name=_('Capital framework'),
                                           null=True, blank=True,
-                                          on_delete=models.PROTECT, help_text=_(
-            'Legal category of the client, must have a country selected to show that country legal categories.'))
-    # has_instructions_letter = models.BooleanField(default=False, verbose_name=_('Has instructions letter'), help_text=_('This must be checked if it wants to be able to make instructions letter for this client'))
-
+                                          on_delete=models.PROTECT, help_text=_('Legal category of the client, must have a country selected to show that country legal categories.'))
     tax_id = models.CharField(max_length=30, verbose_name=_('Client tax ID'))
     payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment kind'), on_delete=models.PROTECT)
     max_money_credit_limit = models.FloatField(default=0, verbose_name=_('Max money credit limit'))
@@ -445,7 +431,6 @@ class HarvestingCrewProvider(models.Model):
 
 # Acopiadores
 
-
 class Gatherer(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     zone = models.CharField(max_length=200, verbose_name=_('Zone'))
@@ -480,8 +465,6 @@ class Maquiladora(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Full name'))
     zone = models.CharField(max_length=200, verbose_name=_('Zone'))
     tax_id = models.CharField(max_length=20, verbose_name=_('Tax ID'))
-    # population_registry_code = models.CharField(max_length=20, verbose_name=_('Population registry code'), null=True, blank=True)
-    # social_number_code = models.CharField(max_length=20, verbose_name=_('Social number code'), null=True, blank=True)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT)
@@ -546,7 +529,7 @@ class OrchardCertification(models.Model):
     orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.orchard.name} : {self.certification_kind.name}"
+        return f"{self.orchard.name}: {self.certification_kind.name}"
 
     class Meta:
         verbose_name = _('Orchard certification')
@@ -643,25 +626,7 @@ class HarvestingPaymentSetting(models.Model):
         ]
 
 
-#  Proveedores de insumos
-
-
-class SupplyKindRelation(models.Model):
-    from_kind = models.ForeignKey(SupplyKind, related_name='from_kind_relations', on_delete=models.CASCADE)
-    to_kind = models.ForeignKey(SupplyKind, related_name='to_kind_relations', on_delete=models.CASCADE)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-
-    def __str__(self):
-        return f"{self.from_kind} -> {self.to_kind}"
-
-    def clean(self):
-        super().clean()
-        if self.from_kind.organization != self.to_kind.organization:
-            raise ValidationError(_('The organizations of from_kind and to_kind must be the same.'))
-
-    class Meta:
-        verbose_name = _('Supply kind relation')
-        verbose_name_plural = _('Supply kind relations')
+# Insumos
 
 
 class Supply(CleanNameAndOrganizationMixin, models.Model):
@@ -681,6 +646,10 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
+        if self.kind.category == 'packaging_presentation':
+            capacity = int(self.capacity) if self.capacity % 1 == 0 else self.capacity
+            unit = _('piece') if self.kind.capacity_unit_category == 'pieces' and capacity == 1 else self.kind.capacity_unit_category
+            return f"{self.name} ({capacity} {unit})"
         return f"{self.name}"
 
     def clean(self):
@@ -819,16 +788,11 @@ class ProductPresentationComplementarySupply(models.Model):
 class Packaging(CleanNameAndOrganizationMixin, models.Model):
     markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-
-    ### Insumo principal
     packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
     product_standard_packaging = models.ForeignKey(ProductStandardPackaging,
                                                    verbose_name=_('Product standard packaging'),
                                                    null=True, blank=True, on_delete=models.PROTECT)
-
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-
-    ### Máximo peso
     max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
     packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
     packaging_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Packaging supply quantity'),
@@ -1030,12 +994,10 @@ class PalletConfigurationPersonalExpense(models.Model):
 # Catálogos de exportación
 class ExportingCompany(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name / Legal name'))
-     ### Localization fields
     country = models.ForeignKey(Country, on_delete=models.PROTECT, verbose_name=_('Country'))
     state = models.ForeignKey(Region, on_delete=models.PROTECT, verbose_name=_('State'))
     city = models.ForeignKey(SubRegion, on_delete=models.PROTECT, verbose_name=_('City'))
     district = models.ForeignKey(City, blank=True, null=True, on_delete=models.PROTECT, verbose_name=_('District'))
-
     postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
     neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
     address = models.CharField(max_length=255, verbose_name=_('Address'))
@@ -1045,7 +1007,6 @@ class ExportingCompany(CleanNameAndOrganizationMixin, models.Model):
     tax_id = models.CharField(max_length=30, verbose_name=_('Tax ID'))
 
     contact_name = models.CharField(max_length=255, verbose_name=_('Contact person full name'))
-    ### Contact fields
     email = models.EmailField(max_length=255, verbose_name=_('Email'))
     phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
