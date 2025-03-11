@@ -1975,7 +1975,7 @@
   }
 },
 {
-  "model": "catalogs.productpackaging",
+  "model": "catalogs.packaging",
   "pk": 1,
   "fields": {
     "product": 1,
@@ -1994,7 +1994,7 @@
   }
 },
 {
-  "model": "catalogs.productpackaging",
+  "model": "catalogs.packaging",
   "pk": 2,
   "fields": {
     "product": 1,
@@ -2013,7 +2013,7 @@
   }
 },
 {
-  "model": "catalogs.productpackaging",
+  "model": "catalogs.packaging",
   "pk": 3,
   "fields": {
     "product": 1,
@@ -2032,7 +2032,7 @@
   }
 },
 {
-  "model": "catalogs.productpackaging",
+  "model": "catalogs.packaging",
   "pk": 4,
   "fields": {
     "product": 1,
@@ -2051,7 +2051,7 @@
   }
 },
 {
-  "model": "catalogs.productpackaging",
+  "model": "catalogs.packaging",
   "pk": 5,
   "fields": {
     "product": 1,
@@ -2070,7 +2070,7 @@
   }
 },
 {
-  "model": "catalogs.productpackaging",
+  "model": "catalogs.packaging",
   "pk": 6,
   "fields": {
     "product": 1,
@@ -2089,7 +2089,7 @@
   }
 },
 {
-  "model": "catalogs.productpackaging",
+  "model": "catalogs.packaging",
   "pk": 7,
   "fields": {
     "product": 1,
@@ -2108,120 +2108,120 @@
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 1,
   "fields": {
-    "product_packaging": 1,
+    "packaging": 1,
     "kind": 5,
     "supply": 6,
     "quantity": 1
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 3,
   "fields": {
-    "product_packaging": 2,
+    "packaging": 2,
     "kind": 2,
     "supply": 24,
     "quantity": 2
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 4,
   "fields": {
-    "product_packaging": 1,
+    "packaging": 1,
     "kind": 2,
     "supply": 26,
     "quantity": 2
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 5,
   "fields": {
-    "product_packaging": 2,
+    "packaging": 2,
     "kind": 5,
     "supply": 6,
     "quantity": 1
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 6,
   "fields": {
-    "product_packaging": 4,
+    "packaging": 4,
     "kind": 2,
     "supply": 26,
     "quantity": 2
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 7,
   "fields": {
-    "product_packaging": 4,
+    "packaging": 4,
     "kind": 5,
     "supply": 6,
     "quantity": 1
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 8,
   "fields": {
-    "product_packaging": 5,
+    "packaging": 5,
     "kind": 2,
     "supply": 24,
     "quantity": 2
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 9,
   "fields": {
-    "product_packaging": 5,
+    "packaging": 5,
     "kind": 5,
     "supply": 6,
     "quantity": 1
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 10,
   "fields": {
-    "product_packaging": 6,
+    "packaging": 6,
     "kind": 1,
     "supply": 17,
     "quantity": 4
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 11,
   "fields": {
-    "product_packaging": 6,
+    "packaging": 6,
     "kind": 1,
     "supply": 19,
     "quantity": 8
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 12,
   "fields": {
-    "product_packaging": 7,
+    "packaging": 7,
     "kind": 1,
     "supply": 17,
     "quantity": 4
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 13,
   "fields": {
-    "product_packaging": 7,
+    "packaging": 7,
     "kind": 1,
     "supply": 19,
     "quantity": 8

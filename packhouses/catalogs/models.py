@@ -687,40 +687,6 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
             models.UniqueConstraint(fields=['name', 'organization'], name='supply_unique_name_organization'),
         ]
 
-class SupplyPackage(models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('Name'))
-    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
-    quantity = models.FloatField(verbose_name=_('Quantity'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-
-    def __str__(self):
-        return f"{self.name} ({self.supply.name})"
-
-    class Meta:
-        verbose_name = _('Supply package')
-        verbose_name_plural = _('Supply packages')
-        ordering = ('supply', 'name',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'supply'], name='supplypackage_unique_name_supply'),
-        ]
-
-
-class ProviderSupply(models.Model):
-    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    provider = models.ForeignKey(Provider, verbose_name=_('Provider'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.supply.name} ({self.provider.name})"
-
-    class Meta:
-        verbose_name = _('Supply from provider')
-        verbose_name_plural = _('Supplies from providers')
-        ordering = ('provider', 'supply')
-        constraints = [
-            models.UniqueConstraint(fields=['supply', 'provider'], name='providersupply_unique_supply_provider'),
-        ]
-
 
 # Proveedores de servicios
 
