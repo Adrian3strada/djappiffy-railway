@@ -1,26 +1,33 @@
-
 from django.db import models
+import os
 from django.utils.translation import gettext_lazy as _
 from common.base.models import ProductKind
 from packhouses.catalogs.models import Product, Organization
 from common.mixins import (CleanNameOrAliasAndOrganizationMixin)
+from django.core.validators import FileExtensionValidator
 
 class CertificationCatalog(models.Model):
     certifier = models.CharField(max_length=255)
     certification = models.CharField(max_length=255)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.certifier} -- {self.certification} -- {self.is_enabled}"
 
 class RequirementsCertification(models.Model):
     name = models.CharField(max_length=255)
-    route = models.FileField(upload_to='documentos/', verbose_name=_('Document'))
+    route = models.FileField(
+        upload_to='certifications/requirements/', 
+        validators=[FileExtensionValidator(allowed_extensions=['docx'])],
+        verbose_name=_('Document')
+        )
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     certification_catalog = models.ForeignKey(CertificationCatalog, on_delete=models.CASCADE)
 
-    def _str_(self):
-        return f"{self.name} -- {self.is_enabled} -- {self.certification_catalog}"
+    def __str__(self):
+        # print(f"DEBUG: route.name = {self.route.name if self.route else 'No file'}")  # <-- Línea de depuración
+        file_name = os.path.basename(self.route.name) if self.route else "No file"
+        return f"{self.name} -- {file_name} -- {self.is_enabled} -- {self.certification_catalog}"
 
 # # class ReportsCertification(models.Model):
 # #     name = models.CharField(max_length=255)
@@ -33,7 +40,7 @@ class RequirementsCertification(models.Model):
 
 class CertificationProducts(models.Model): 
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), null=True, blank=True, on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     certification_catalog = models.ForeignKey(CertificationCatalog, verbose_name=_('Certification Catalog'), on_delete=models.CASCADE)
 
@@ -44,7 +51,7 @@ class Certifications(CleanNameOrAliasAndOrganizationMixin, models.Model):
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
     certification_catalog = models.ForeignKey(CertificationCatalog, on_delete=models.CASCADE)
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.company}  -- {self.certification_catalog}"
 
     class Meta:
@@ -52,14 +59,18 @@ class Certifications(CleanNameOrAliasAndOrganizationMixin, models.Model):
         verbose_name_plural = _('CertificationProducts')
         ordering = ('organization', 'certification_catalog')
         constraints = [
-            models.UniqueConstraint(fields=['organization'], name='CertificationProducts_unique_name_organization'),
+            models.UniqueConstraint(fields=['certification_catalog', 'organization'], name='CertificationProducts_unique_name_organization'),
         ]
 
 class CertificationsDocuments(models.Model):
-    certification = models.FileField(upload_to='documentos/', verbose_name=_('Certification'))
+    certification = models.FileField(
+        upload_to='certifications/certifications/', 
+        validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
+        verbose_name=_('Certification')
+        )
     registration_date = models.DateField()
     expiration_date = models.DateField()
     certification = models.ForeignKey(Certifications, on_delete=models.CASCADE)
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.certification} -- {self.registration_date}  -- {self.expiration_date}  -- {self.certification}"
