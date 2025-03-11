@@ -77,10 +77,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function updateName() {
-    const productName = productField.find('option:selected').text();
+    const packagingName = packagingField.find('option:selected').text();
     const productSizeName = productSizeField.find('option:selected').text();
-    const nameString = `${productName} ${productSizeName}`
+    const nameString = `${packagingName} ${productSizeName}`
     nameField.val(nameString)
+    aliasField.val(null)
   }
 
   function updateProductSize() {
@@ -95,14 +96,36 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  function updatePackaging() {
+    if (productField.val() && marketField.val()) {
+      fetchOptions(`/rest/v1/catalogs/packaging/?product=${productField.val()}&markets=${marketField.val()}`)
+        .then(data => {
+          console.log("updatePackaging", data);
+          updateFieldOptions(packagingField, data);
+        })
+    } else {
+      updateFieldOptions(packagingField, []);
+    }
+  }
+
   productField.on('change', () => {
     getProductProperties();
     updateProductSize();
+    updatePackaging();
   })
 
   marketField.on('change', () => {
     updateProductSize();
+    updatePackaging();
   });
+
+  packagingField.on('change', () => {
+    updateName();
+  })
+
+  productSizeField.on('change', () => {
+    updateName();
+  })
 
   maxProductAmountPerPackageField.attr('step', '0.01');
   maxProductAmountPerPackageField.attr('min', '0.01');

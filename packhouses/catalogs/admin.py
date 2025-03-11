@@ -1280,6 +1280,7 @@ class PackagingPresentationInline(admin.TabularInline):
     model = PackagingPresentation
     min_num = 0
     extra = 0
+    max_num = 1
     verbose_name = _('Presentation')
     verbose_name_plural = _('Presentations')
 

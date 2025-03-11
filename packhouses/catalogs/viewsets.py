@@ -147,7 +147,7 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
         return ProductVariety.objects.filter(product__organization=self.request.organization)
 
 
-class ProductPackagingViewSet(viewsets.ModelViewSet):
+class PackagingViewSet(viewsets.ModelViewSet):
     serializer_class = PackagingSerializer
     filterset_fields = ['product', 'markets', 'is_enabled']
     pagination_class = None
@@ -157,7 +157,9 @@ class ProductPackagingViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return Packaging.objects.filter(organization=self.request.organization)
+        queryset = Packaging.objects.filter(organization=self.request.organization)
+
+        return queryset
 
 
 class ProductSizeViewSet(viewsets.ModelViewSet):
