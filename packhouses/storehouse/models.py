@@ -87,8 +87,8 @@ class StorehouseEntrySupply(models.Model):
         if not self.expected_quantity:
             self.expected_quantity = self.purchase_order_supply.quantity
 
-        # Obtener la unidad base definida en SupplyKind (usage_unit_kind)
-        usage_unit = self.purchase_order_supply.requisition_supply.supply.kind.usage_unit_kind
+        # Obtener la unidad base definida en SupplyKind (usage_discount_unit_category)
+        usage_unit = self.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category
 
         factor = 1
         if usage_unit == "cm":
