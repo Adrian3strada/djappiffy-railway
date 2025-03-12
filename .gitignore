@@ -10,6 +10,7 @@ db.spatialite
 */*/migrations/0*
 application/settings/local.py
 __fixtures/000_cities_light_fixture.json
+__fixtures/010_catalogs_dev.json
 
 
 ### Emacs ###
