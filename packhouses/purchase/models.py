@@ -102,7 +102,7 @@ class RequisitionSupply(models.Model):
     )
 
     def __str__(self):
-        return f"(Req. {self.requisition.ooid}) - {self.supply} - {self.quantity}"
+        return f"(Req. {self.requisition.ooid}) - {self.supply.kind}: {self.supply}"
 
     class Meta:
         verbose_name = _("Requisition Supply")

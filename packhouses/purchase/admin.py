@@ -36,11 +36,11 @@ class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.TabularInlin
         return None
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-
         if db_field.name == "supply":
             if hasattr(request, 'organization'):
                 kwargs["queryset"] = Supply.objects.filter(organization=request.organization)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: f"{obj.kind.name}: {obj.name}"
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
