@@ -22,7 +22,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   AuthorityPackagingKind,
                                                   OrchardCertificationVerifier,
                                                   OrchardCertificationKind)
-from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES,
+from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES, PRODUCT_PACKAGING_CATEGORY_CHOICES,
                        PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES)
 from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
 
@@ -803,16 +803,24 @@ class PackagingPresentation(models.Model):
         ordering = ('packaging', 'presentation')
         constraints = [
             models.UniqueConstraint(fields=('packaging', 'presentation'),
-                                    name='productpackagingpresentation_unique_productpackaging_presentation'),
+                                    name='packagingpresentation_unique_productpackaging_presentation'),
         ]
 
 
 class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
+    category = models.CharField(max_length=20, choices=PRODUCT_PACKAGING_CATEGORY_CHOICES, verbose_name=_('Category'))
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.CASCADE)
-    product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'), validators=[MinValueValidator(0.01)])
+    product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'),
+                                                               null=True, blank=True,
+                                                               validators=[MinValueValidator(0.01)])
+    product_presentation = models.ForeignKey(ProductPresentation, verbose_name=_('presentation'),
+                                             null=True, blank=True, on_delete=models.CASCADE)
+    product_presentation_amount_per_packaging = models.PositiveIntegerField(
+        verbose_name=_('Product presentation amount per packaging'),
+        null=True, blank=True, validators=[MinValueValidator(1)])
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     alias = models.CharField(max_length=30, verbose_name=_('Alias'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -827,6 +835,22 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
                                     name='productpackaging_unique_market_product_product_size_packaging_organization'),
             models.UniqueConstraint(fields=('name', 'alias', 'organization'),
                                     name='productpackaging_unique_market_name_alias_organization'),
+        ]
+
+
+
+class ProductPackagingPresentation(models.Model):
+    product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
+    product_presentation = models.ForeignKey(ProductPresentation, verbose_name=_('presentation'), on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), help_text=_('Amount of product presentations for this product packaging'), validators=[MinValueValidator(1)])
+
+    class Meta:
+        verbose_name = _('Product packaging presentation')
+        verbose_name_plural = _('Product packaging presentations')
+        ordering = ('product_packaging', 'product_presentation')
+        constraints = [
+            models.UniqueConstraint(fields=('product_packaging', 'product_presentation'),
+                                    name='productpackagingpresentation_unique_productpackaging_presentation'),
         ]
 
 
