@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const productStandardPackagingField = $('#id_product_standard_packaging');
   const packagingSupplyField = $('#id_packaging_supply');
   const nameField = $('#id_name');
-  const maxProductAmountPerPackageField = $('#id_max_product_amount_per_package');
+  // const maxProductAmountPerPackageField = $('#id_max_product_amount_per_package');
   const packagingSupplyQuantityField = $('#id_packaging_supply_quantity');
 
   let productProperties = null;
@@ -162,11 +162,11 @@ document.addEventListener('DOMContentLoaded', function () {
       nameField.val('')
     }
     if (productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
-      maxProductAmountPerPackageField.val(productStandardPackagingProperties.max_product_amount);
-      maxProductAmountPerPackageField.attr('max', productStandardPackagingProperties.max_product_amount);
+      // maxProductAmountPerPackageField.val(productStandardPackagingProperties.max_product_amount);
+      // maxProductAmountPerPackageField.attr('max', productStandardPackagingProperties.max_product_amount);
     } else {
-      maxProductAmountPerPackageField.val('');
-      maxProductAmountPerPackageField.removeAttr('max');
+      // maxProductAmountPerPackageField.val('');
+      // maxProductAmountPerPackageField.removeAttr('max');
     }
   }
 
@@ -227,15 +227,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  maxProductAmountPerPackageField.on('change', function () {
-    if (maxProductAmountPerPackageField.val() && productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
-      const maxProductAmount = parseFloat(productStandardPackagingProperties.max_product_amount);
-      const maxProductAmountPerPackage = parseFloat(maxProductAmountPerPackageField.val());
-      if (maxProductAmountPerPackage > maxProductAmount) {
-        maxProductAmountPerPackageField.val(maxProductAmount);
+  /*
+    maxProductAmountPerPackageField.on('change', function () {
+      if (maxProductAmountPerPackageField.val() && productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
+        const maxProductAmount = parseFloat(productStandardPackagingProperties.max_product_amount);
+        const maxProductAmountPerPackage = parseFloat(maxProductAmountPerPackageField.val());
+        if (maxProductAmountPerPackage > maxProductAmount) {
+          maxProductAmountPerPackageField.val(maxProductAmount);
+        }
       }
-    }
-  });
+    });
+  */
 
   if (!productStandardPackagingField.val()) updateFieldOptions(productStandardPackagingField, []);
 
@@ -275,11 +277,11 @@ document.addEventListener('DOMContentLoaded', function () {
     getproductStandardPackagingFieldProperties().then(() => {
       console.log("productStandardPackagingProperties", productStandardPackagingProperties);
       if (productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
-        maxProductAmountPerPackageField.val(maxProductAmountPerPackageField.val() || productStandardPackagingProperties.max_product_amount);
-        maxProductAmountPerPackageField.attr('max', productStandardPackagingProperties.max_product_amount);
+        // maxProductAmountPerPackageField.val(maxProductAmountPerPackageField.val() || productStandardPackagingProperties.max_product_amount);
+        // maxProductAmountPerPackageField.attr('max', productStandardPackagingProperties.max_product_amount);
       } else {
-        maxProductAmountPerPackageField.val(maxProductAmountPerPackageField.val() || '');
-        maxProductAmountPerPackageField.removeAttr('max');
+        // maxProductAmountPerPackageField.val(maxProductAmountPerPackageField.val() || '');
+        // maxProductAmountPerPackageField.removeAttr('max');
       }
     });
   }
@@ -292,8 +294,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  maxProductAmountPerPackageField.attr('step', '0.01');
-  maxProductAmountPerPackageField.attr('min', '0.01');
+  // maxProductAmountPerPackageField.attr('step', '0.01');
+  // maxProductAmountPerPackageField.attr('min', '0.01');
   packagingSupplyQuantityField.closest('.form-group').hide();
   productStandardPackagingField.closest('.form-group').hide();
 

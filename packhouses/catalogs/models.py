@@ -759,7 +759,7 @@ class Packaging(CleanNameAndOrganizationMixin, models.Model):
                                                    verbose_name=_('Product standard packaging'),
                                                    null=True, blank=True, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
+    # max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
     packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
     packaging_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Packaging supply quantity'),
                                                             help_text=_('Quantity of the packaging supply to discount from the inventory each time a product packaging is used'))
@@ -816,10 +816,10 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'),
                                                                null=True, blank=True,
                                                                validators=[MinValueValidator(0.01)])
-    product_presentation = models.ForeignKey(ProductPresentation, verbose_name=_('presentation'),
+    product_presentation = models.ForeignKey(ProductPresentation, verbose_name=_('Product presentation'),
                                              null=True, blank=True, on_delete=models.CASCADE)
-    product_presentation_amount_per_packaging = models.PositiveIntegerField(
-        verbose_name=_('Product presentation amount per packaging'),
+    product_presentation_quantity_per_packaging = models.PositiveIntegerField(
+        verbose_name=_('Product presentation quantity per packaging'),
         null=True, blank=True, validators=[MinValueValidator(1)])
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     alias = models.CharField(max_length=30, verbose_name=_('Alias'))

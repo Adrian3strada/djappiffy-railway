@@ -1320,11 +1320,11 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                    ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
                    'product_standard_packaging', 'is_enabled')
     list_display = ('name', 'packaging_supply_kind', 'packaging_supply', 'product', 'markets_display',
-                    'product_packaging_standard_display', 'max_product_amount_per_package', 'is_enabled',
+                    'product_packaging_standard_display', 'is_enabled',
                     )
     fields = (
         'markets', 'product', 'packaging_supply_kind', 'product_standard_packaging',
-        'name', 'max_product_amount_per_package', 'packaging_supply', 'packaging_supply_quantity', 'is_enabled'
+        'name', 'packaging_supply', 'packaging_supply_quantity', 'is_enabled'
     )
     inlines = (PackagingComplementarySupplyInline, PackagingPresentationInline)
 
@@ -1464,7 +1464,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     list_display = ['name', 'alias', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging', 'is_enabled']
     fields = ['category', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging',
               'product_presentation',
-              'product_presentation_amount_per_packaging',  'name', 'alias', 'is_enabled']
+              'product_presentation_quantity_per_packaging', 'name', 'alias', 'is_enabled']
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
@@ -1532,6 +1532,28 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                 kwargs["queryset"] = ProductPresentation.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        obj_id = request.resolver_match.kwargs.get("object_id")
+        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
+
+        category = request.POST.get('category') if request.POST else obj.category if obj else None
+
+        if db_field.name == "product_amount_per_packaging":
+            formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+            formfield.required = True
+            if category == 'presentation' and request.POST:
+                formfield.required = False
+            return formfield
+
+        if db_field.name == "product_presentation_quantity_per_packaging":
+            formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+            formfield.required = True
+            if category == 'packaging' and request.POST:
+                formfield.required = False
+            return formfield
+
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
     class Media:
         js = ('js/admin/forms/product_packaging.js',)

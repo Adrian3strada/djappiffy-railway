@@ -1,14 +1,15 @@
 document.addEventListener('DOMContentLoaded', function () {
+  const categoryField = $('#id_category');
   const marketField = $('#id_market');
   const productField = $('#id_product');
   const productSizeField = $('#id_product_size');
   const packagingField = $('#id_packaging');
-  const quantityField = $('#id_quantity');
+  const productPresentationField = $('#id_product_presentation');
   const nameField = $('#id_name');
   const aliasField = $('#id_alias');
 
-  const maxProductAmountPerPackageField = $('#id_max_product_amount_per_package');
-  const packagingSupplyQuantityField = $('#id_packaging_supply_quantity');
+  const productAmountPerPackagingField = $('#id_product_amount_per_packaging');
+  const productPresentationQuantityPerPackagingField = $('#id_product_presentation_quantity_per_packaging');
 
   let productProperties = null;
   let marketsCountries = [];
@@ -16,10 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let packagingSupplyKindProperties = null;
   let listenChanges = false;
 
-  const API_BASE_URL = '/rest/v1';
-
   function updateFieldOptions(field, options, selectedValue = null) {
-    console.log("updateFieldOptions", field, options, selectedValue);
     field.empty().append(new Option('---------', '', !selectedValue, !selectedValue));
     options.forEach(option => {
       field.append(new Option(option.name, option.id, selectedValue === option.id, selectedValue === option.id));
@@ -57,30 +55,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function getMarketCountries() {
-    return new Promise((resolve, reject) => {
-      if (marketField.val()) {
-        let fetchPromises = fetchOptions(`/rest/v1/catalogs/market/${marketField.val()}/`)
-        Promise.all(fetchPromises).then(() => {
-          marketsCountries = fetchPromises.countries;
-          console.log("marketsCountries", marketsCountries);
-          resolve(marketsCountries);
-        }).catch(error => {
-          console.error('Fetch error:', error);
-          reject(error);
-        });
-      } else {
-        marketsCountries = [];
-        resolve(marketsCountries);
-      }
-    });
-  }
-
   function updateName() {
-    const packagingName = packagingField.find('option:selected').text();
-    const productSizeName = productSizeField.find('option:selected').text();
+    const packagingName = packagingField.val() ? packagingField.find('option:selected').text() : '';
+    const productSizeName = productSizeField.val() ? productSizeField.find('option:selected').text() : '';
     const nameString = `${packagingName} ${productSizeName}`
-    nameField.val(nameString)
+    nameField.val(nameString.trim())
     aliasField.val(null)
   }
 
@@ -108,6 +87,28 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  categoryField.on('change', () => {
+    productAmountPerPackagingField.val(null);
+    productPresentationField.val(null).trigger('change').select2();
+    productPresentationQuantityPerPackagingField.val(null)
+
+    if (categoryField.val()) {
+      if (categoryField.val() === 'packaging') {
+        productPresentationField.closest('.form-group').fadeOut();
+        productPresentationQuantityPerPackagingField.closest('.form-group').fadeOut();
+        productAmountPerPackagingField.closest('.form-group').fadeIn();
+      } else if (categoryField.val() === 'presentation') {
+        productAmountPerPackagingField.closest('.form-group').fadeOut();
+        productPresentationField.closest('.form-group').fadeIn();
+        productPresentationQuantityPerPackagingField.closest('.form-group').fadeIn();
+      } else {
+        productAmountPerPackagingField.closest('.form-group').fadeOut();
+        productPresentationField.closest('.form-group').fadeOut();
+        productPresentationQuantityPerPackagingField.closest('.form-group').fadeOut();
+      }
+    }
+  });
+
   productField.on('change', () => {
     getProductProperties();
     updateProductSize();
@@ -127,9 +128,10 @@ document.addEventListener('DOMContentLoaded', function () {
     updateName();
   })
 
-  maxProductAmountPerPackageField.attr('step', '0.01');
-  maxProductAmountPerPackageField.attr('min', '0.01');
-  packagingSupplyQuantityField.closest('.form-group').hide();
+  productAmountPerPackagingField.attr('step', '0.01');
+  productAmountPerPackagingField.attr('min', '0.01');
 
-  [productField, marketField].forEach(field => field.select2());
+  updatePackaging();
+
+  [productField, marketField, productPresentationField].forEach(field => field.select2());
 });
