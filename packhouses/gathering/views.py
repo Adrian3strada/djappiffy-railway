@@ -15,7 +15,7 @@ from django.db.models import Sum
 from django.urls import reverse
 from django.http import HttpResponseForbidden
 from django.http import JsonResponse
-
+from packhouses.receiving.models import IncomingProduct
 from django.contrib.auth.decorators import login_required
 
 def harvest_order_pdf(request, harvest_id):
@@ -217,6 +217,8 @@ def set_scheduleharvest_ready(request, harvest_id):
         }, status=403)
 
     scheduleharvest.status = 'ready'
+    incoming_product = IncomingProduct.objects.create(organization=scheduleharvest.organization)
+    scheduleharvest.incoming_product = incoming_product
     scheduleharvest.save()
     success_message = _('Harvest sent to Fruit Receiving Area successfully.')
 
