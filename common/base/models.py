@@ -7,6 +7,7 @@ from django.db.models import Manager, QuerySet
 from django.db.models import Case, When, IntegerField, Value
 from django.db.models.functions import Cast
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import FileExtensionValidator
 
 # Create your models here.
 
@@ -215,3 +216,61 @@ class Currency(models.Model):
             models.UniqueConstraint(fields=['id', 'name'], name='currency_unique_id_name')
         ]
 
+class CertificationEntity(models.Model):
+    entity = models.CharField(max_length=255)
+    certification = models.CharField(max_length=255)
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), null=True, blank=True, on_delete=models.PROTECT)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.entity} -- {self.certification} -- {self.product_kind}"
+
+    class Meta:
+        verbose_name = _('Certification Entity')
+        verbose_name_plural = _('Certification Entities')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['entity', 'certification'], 
+                name='certificationEntity_unique_certification_entity'
+            )
+        ]
+
+def certification_file_path(instance, filename):
+
+    certification_id = instance.certification_entity.id
+    certification_entity = slugify(instance.certification_entity.entity.replace(" ", ""))
+    certification_product_kind = slugify(instance.certification_entity.product_kind).replace(" ", "")
+
+    file_extension = os.path.splitext(filename)[1]
+    file_name = slugify(instance.name.replace(" ", ""))
+
+    return f'certifications/requirements/{certification_id}_{certification_product_kind}_{certification_entity}_{file_name}{file_extension}'
+
+class RequirementCertification(models.Model):
+    name = models.CharField(max_length=255)
+    route = models.FileField(
+        upload_to=certification_file_path, 
+        validators=[FileExtensionValidator(allowed_extensions=['docx'])],
+        verbose_name=_('Document')
+        )
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    certification_entity = models.ForeignKey(CertificationEntity, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name} -- {self.is_enabled} -- {self.certification_entity}"
+
+    def save(self, *args, **kwargs):
+        try:
+            old_instance = RequirementsCertification.objects.get(pk=self.pk)
+            if old_instance.route and old_instance.route != self.route:
+                if os.path.isfile(old_instance.route.path):
+                    os.remove(old_instance.route.path)
+        except RequirementsCertification.DoesNotExist:
+            pass 
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.route and os.path.isfile(self.route.path):
+            os.remove(self.route.path)
+        super().delete(*args, **kwargs)

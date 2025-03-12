@@ -5,7 +5,8 @@ from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
 from .models import (ProductKind, ProductKindCountryStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
                      ProductStandardPackaging, SupplyKind,
-                     Incoterm, LocalDelivery, Currency)
+                     Incoterm, LocalDelivery, Currency,
+                     CertificationEntity, RequirementCertification)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
 from wagtail.documents.models import Document
@@ -165,3 +166,13 @@ class SupplyKindAdmin(admin.ModelAdmin):
 
     class Media:
         js = ('js/admin/forms/supply_kind.js',)
+
+class RequirementCertificationInline(admin.TabularInline):
+    model = RequirementCertification
+    extra = 0
+
+@admin.register(CertificationEntity)
+class CertificationEntityAdmin(admin.ModelAdmin):
+    list_display = ('entity', 'certification', 'is_enabled')
+    list_filter = ['entity', 'certification', 'is_enabled']
+    inlines = [RequirementCertificationInline]
