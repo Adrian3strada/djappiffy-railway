@@ -5,14 +5,14 @@ from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketSerializer, ProductMarketClassSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
                           ProductPhenologyKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
-                          MaquiladoraSerializer, PackagingSerializer,
+                          MaquiladoraSerializer, PackagingSerializer, ProductPresentationSerializer,
                           SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
                           OrchardCertificationSerializer, ProductRipenessSerializer, PurchaseOrderSupplySerializer
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
-                     Product, Packaging,
+                     Product, Packaging, ProductPresentation,
                      Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness
                      )
 from django_filters.rest_framework import DjangoFilterBackend
@@ -173,6 +173,19 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return ProductSize.objects.filter(product__organization=self.request.organization)
+
+
+class ProductPresentationViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductPresentationSerializer
+    filterset_fields = ['product', 'markets', 'presentation_supply_kind', 'presentation_supply', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return ProductPresentation.objects.filter(organization=self.request.organization)
 
 
 class SupplyViewSet(viewsets.ModelViewSet):
