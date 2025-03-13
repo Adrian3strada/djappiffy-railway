@@ -1503,6 +1503,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         category = request.POST.get('category') if request.POST else obj.category if obj else None
 
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
+        print("organization_queryfilter", organization_queryfilter)
 
         if db_field.name == "market":
             if organization:
@@ -1534,18 +1535,14 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                 kwargs["queryset"] = Packaging.objects.none()
 
         if db_field.name == "product_presentation":
+            queryset = ProductPresentation.objects.none()
+            if organization:
+                queryset = ProductPresentation.objects.filter(**organization_queryfilter)
+            kwargs["queryset"] = queryset
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.required = True
-            if organization:
-                kwargs["queryset"] = ProductPresentation.objects.filter(**organization_queryfilter)
-                print("queryset", kwargs["queryset"])
-            else:
-                kwargs["queryset"] = ProductPresentation.objects.none()
             if category == 'packaging' and request.POST:
                 formfield.required = False
-
-            print("kwargs[queryset]", kwargs["queryset"])
-            print("formfield", formfield)
             return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
