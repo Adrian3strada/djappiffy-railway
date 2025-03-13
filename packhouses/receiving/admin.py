@@ -11,7 +11,8 @@ from .mixins import CustomNestedStackedInlineMixin
 
 class ScheduleHarvestHarvestingCrewInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = ScheduleHarvestHarvestingCrew
-    readonly_fields = [field.name for field in ScheduleHarvestHarvestingCrew._meta.fields] 
+    fields = ('provider', 'harvesting_crew')
+    readonly_fields = ('provider', 'harvesting_crew') 
     extra = 0
     can_delete = False 
     show_title = True
@@ -19,7 +20,9 @@ class ScheduleHarvestHarvestingCrewInline(CustomNestedStackedInlineMixin, admin.
 
 class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = ScheduleHarvestVehicle
-    readonly_fields = [field.name for field in ScheduleHarvestVehicle._meta.fields] 
+    fields = ('provider', 'vehicle')
+    readonly_fields = ('provider', 'vehicle')
+    exclude = ('stamp_number',)
     extra = 0
     can_delete = False 
     show_title = True 
@@ -44,13 +47,13 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
 
 @admin.register(IncomingProduct)
 class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
-   
-    list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_product', 'get_scheduleharvest_orchard',
-                    'guide_number', 'pythosanitary_certificate')  
-    inlines = [ScheduleHarvestInline] 
-    exclude = ('organization',)
+    
+    #list_display = ('get_scheduleharvest_ooid', 'status', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_product', 'get_scheduleharvest_orchard',
+    #                'guide_number', 'pythosanitary_certificate')  
+    #inlines = [ScheduleHarvestInline] 
+    #exclude = ('organization',)
 
-    def get_scheduleharvest_ooid(self, obj):
+    """def get_scheduleharvest_ooid(self, obj):
         schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=obj).first()
         return schedule_harvest.ooid if schedule_harvest else None
     def get_scheduleharvest_harvest_date(self, obj):
@@ -66,4 +69,4 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     get_scheduleharvest_ooid.short_description = _('Harvest Number')
     get_scheduleharvest_harvest_date.short_description = _('Harvest Date')
     get_scheduleharvest_product.short_description = _('Product')
-    get_scheduleharvest_orchard.short_description = _('Orchard')
+    get_scheduleharvest_orchard.short_description = _('Orchard')"""
