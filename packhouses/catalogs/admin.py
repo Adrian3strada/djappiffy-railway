@@ -1463,15 +1463,17 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     search_fields = ('name', 'alias')
     list_display = ['name', 'alias', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging', 'is_enabled']
     fields = ['category', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging',
-              'product_presentation',
-              'product_presentation_quantity_per_packaging', 'name', 'alias', 'is_enabled']
+              'product_presentation', 'product_presentation_quantity_per_packaging', 'name', 'alias', 'is_enabled']
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'markets' in form.base_fields:
-            form.base_fields['markets'].widget.can_add_related = False
+        if 'market' in form.base_fields:
+            form.base_fields['market'].widget.can_add_related = False
+            form.base_fields['market'].widget.can_change_related = False
+            form.base_fields['market'].widget.can_delete_related = False
+            form.base_fields['market'].widget.can_view_related = False
         if 'product' in form.base_fields:
             form.base_fields['product'].widget.can_add_related = False
             form.base_fields['product'].widget.can_change_related = False
@@ -1536,10 +1538,14 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
             formfield.required = True
             if organization:
                 kwargs["queryset"] = ProductPresentation.objects.filter(**organization_queryfilter)
+                print("queryset", kwargs["queryset"])
             else:
                 kwargs["queryset"] = ProductPresentation.objects.none()
             if category == 'packaging' and request.POST:
                 formfield.required = False
+
+            print("kwargs[queryset]", kwargs["queryset"])
+            print("formfield", formfield)
             return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)

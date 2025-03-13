@@ -56,7 +56,10 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateName() {
     const packagingName = packagingField.val() ? packagingField.find('option:selected').text() : '';
     const productSizeName = productSizeField.val() ? productSizeField.find('option:selected').text() : '';
-    const nameString = `${packagingName} ${productSizeName}`
+    let nameString = `${packagingName} ${productSizeName}`
+    if (categoryField.val() === 'presentation' && productPresentationField.val()) {
+      nameString = `${nameString} ${productPresentationField.val()}`;
+    }
     nameField.val(nameString.trim())
     aliasField.val(null)
   }
