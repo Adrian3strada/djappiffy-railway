@@ -1489,6 +1489,11 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
             form.base_fields['packaging'].widget.can_change_related = False
             form.base_fields['packaging'].widget.can_delete_related = False
             form.base_fields['packaging'].widget.can_view_related = False
+        if 'product_presentation' in form.base_fields:
+            form.base_fields['product_presentation'].widget.can_add_related = False
+            form.base_fields['product_presentation'].widget.can_change_related = False
+            form.base_fields['product_presentation'].widget.can_delete_related = False
+            form.base_fields['product_presentation'].widget.can_view_related = False
         return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

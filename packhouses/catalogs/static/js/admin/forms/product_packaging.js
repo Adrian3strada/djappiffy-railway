@@ -13,7 +13,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let productProperties = null;
   let packagingProperties = null;
+  let presentationProperties = null;
   let packagingSupplyProperties = null;
+  let presentationSupplyProperties = null;
+
 
   function updateFieldOptions(field, options, selectedValue = null) {
     field.empty().append(new Option('---------', '', !selectedValue, !selectedValue));
@@ -58,7 +61,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const productSizeName = productSizeField.val() ? productSizeField.find('option:selected').text() : '';
     let nameString = `${packagingName} ${productSizeName}`
     if (categoryField.val() === 'presentation' && productPresentationField.val()) {
-      nameString = `${nameString} ${productPresentationField.val()}`;
+      const productPresentationName = productPresentationField.find('option:selected').text();
+      nameString = `${nameString} ${productPresentationName}`;
     }
     nameField.val(nameString.trim())
     aliasField.val(null)
@@ -92,11 +96,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (packagingField.val()) {
       fetchOptions(`/rest/v1/catalogs/packaging/${packagingField.val()}/`)
         .then(packaging_data => {
-          console.log("updatePackagingProductAmount", packaging_data);
           packagingProperties = packaging_data;
           fetchOptions(`/rest/v1/catalogs/supply/${packaging_data.packaging_supply}/`)
             .then(supply_data => {
-              console.log("updatePackagingProductAmount supply", supply_data);
               packagingSupplyProperties = supply_data;
               productAmountPerPackagingField.val(supply_data.capacity);
               productAmountPerPackagingField.attr('max', supply_data.capacity);
@@ -109,6 +111,31 @@ document.addEventListener('DOMContentLoaded', function () {
       productAmountPerPackagingField.val(null);
       productAmountPerPackagingField.removeAttr('max');
       productAmountPerPackagingField.removeAttr('min');
+    }
+  }
+
+  function updateProductPresentationQuantityPerPackaging() {
+    if (productPresentationField.val()) {
+      fetchOptions(`/rest/v1/catalogs/product-presentation/${productPresentationField.val()}/`)
+        .then(productpresentation_data => {
+          presentationProperties = productpresentation_data;
+          console.log("productPresentationField data", productpresentation_data);
+          fetchOptions(`/rest/v1/catalogs/supply/${productpresentation_data.presentation_supply}/`)
+            .then(supply_data => {
+              presentationSupplyProperties = supply_data;
+              console.log("supply_data", supply_data);
+              productPresentationQuantityPerPackagingField.val(supply_data.capacity);
+              productPresentationQuantityPerPackagingField.attr('max', supply_data.capacity);
+              productPresentationQuantityPerPackagingField.attr('min', 1);
+              productPresentationQuantityPerPackagingField.attr('step', 1);
+
+            });
+        });
+    } else {
+      presentationProperties = null;
+      presentationSupplyProperties = null;
+      productPresentationQuantityPerPackagingField.removeAttr('max');
+      productPresentationQuantityPerPackagingField.removeAttr('min');
     }
   }
 
@@ -132,6 +159,15 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
   });
+
+  productPresentationQuantityPerPackagingField.on('change', () => {
+    if (productPresentationQuantityPerPackagingField.val() && categoryField.val() === 'presentation') {
+      const maxCapacity = parseInt(presentationSupplyProperties.capacity);
+      if (parseInt(productPresentationQuantityPerPackagingField.val()) > maxCapacity) {
+        productPresentationQuantityPerPackagingField.val(maxCapacity);
+      }
+    }
+  })
 
   categoryField.on('change', () => {
     productAmountPerPackagingField.val(null);
@@ -182,6 +218,11 @@ document.addEventListener('DOMContentLoaded', function () {
     updateName();
   })
 
+  productPresentationField.on('change', () => {
+    updateProductPresentationQuantityPerPackaging();
+    updateName();
+  })
+
   productSizeField.on('change', () => {
     updateName();
   })
@@ -203,6 +244,8 @@ document.addEventListener('DOMContentLoaded', function () {
       productPresentationField.closest('.form-group').fadeOut();
       productPresentationQuantityPerPackagingField.closest('.form-group').fadeOut();
     }
+    updatePackagingProductAmount();
+    updateProductPresentationQuantityPerPackaging();
   } else {
     productAmountPerPackagingField.closest('.form-group').fadeOut();
     productPresentationField.closest('.form-group').fadeOut();
