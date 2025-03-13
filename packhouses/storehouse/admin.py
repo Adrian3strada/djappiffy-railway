@@ -6,12 +6,63 @@ from common.base.mixins import (
 from .models import StorehouseEntry, StorehouseEntrySupply
 from packhouses.purchase.models import PurchaseOrderSupply
 from .forms import StorehouseEntrySupplyInlineFormSet
+from django.utils.translation import gettext_lazy as _
+
 
 class StorehouseEntrySupplyInline(admin.StackedInline):
     model = StorehouseEntrySupply
     formset = StorehouseEntrySupplyInlineFormSet
     extra = 0
     can_delete = False
+
+    def get_fields(self, request, obj=None):
+        if obj and obj.purchase_order.status == "closed":
+            return (
+                'purchase_order_supply',
+                'expected_quantity',
+                'received_quantity',
+                'display_inventoried_quantity',
+                'display_converted_inventoried_quantity',
+                'comments',
+            )
+        else:
+            return (
+                'purchase_order_supply',
+                'expected_quantity',
+                'received_quantity',
+                'inventoried_quantity',
+                'comments',
+            )
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.purchase_order.status == "closed":
+            # Si está cerrado, todos los campos son de solo lectura (incluyendo los métodos display)
+            return self.get_fields(request, obj)
+        else:
+            # En modo edición, solo el campo que muestra el convertido se muestra como readonly.
+            return ('display_converted_inventoried_quantity',)
+
+    def display_inventoried_quantity(self, obj):
+        if not obj.pk:
+            return ""
+        usage_unit = obj.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category
+        if usage_unit == "cm":
+            unit = "meters"
+        elif usage_unit == "gr":
+            unit = "kg"
+        elif usage_unit == "ml":
+            unit = "liters"
+        else:
+            unit = obj.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category
+        return f"{obj.inventoried_quantity} {unit}"
+    display_inventoried_quantity.short_description = _("Quantity in Inventory")
+
+    def display_converted_inventoried_quantity(self, obj):
+        if not obj.pk:
+            return ""
+        usage_unit = obj.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category
+        return f"{obj.converted_inventoried_quantity} {usage_unit}"
+    display_converted_inventoried_quantity.short_description = _("Equivalent in inventory for discount")
 
 
 @admin.register(StorehouseEntry)
@@ -25,7 +76,6 @@ class StorehouseEntryAdmin(ByOrganizationAdminMixin):
         inline_instances = super().get_inline_instances(request, obj)
         if obj and obj.purchase_order.status == "closed":
             for inline in inline_instances:
-                inline.readonly_fields = inline.fields or [field.name for field in inline.model._meta.fields]
                 inline.can_delete = False
                 inline.extra = 0
         return inline_instances

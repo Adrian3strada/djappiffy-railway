@@ -68,9 +68,8 @@ class StorehouseEntrySupply(models.Model):
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0)]
     )
-    # Nuevo campo para almacenar la cantidad convertida
     converted_inventoried_quantity = models.DecimalField(
-        verbose_name=_("Converted Quantity in Inventory"),
+        verbose_name=_("Equivalent in inventory for discount"),
         max_digits=10, decimal_places=2,
         editable=False,
         null=True,
@@ -98,13 +97,12 @@ class StorehouseEntrySupply(models.Model):
         elif usage_unit == "ml":
             factor = 1000  # De litros a mililitros (1 l = 1000 ml)
 
-        # Realizar la conversión
         self.converted_inventoried_quantity = self.inventoried_quantity * factor
 
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.purchase_order_supply.requisition_supply.supply}"
+        return f"{self.purchase_order_supply.requisition_supply.supply.kind.name}: {self.purchase_order_supply.requisition_supply.supply}"
 
     class Meta:
         verbose_name = _("Storehouse Entry Supply")

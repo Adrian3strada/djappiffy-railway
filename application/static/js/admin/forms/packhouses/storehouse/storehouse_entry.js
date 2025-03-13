@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             supply.purchase_order_supply_options.forEach(optionData => {
                                 const option = document.createElement('option');
                                 option.value = optionData.id;
-                                option.textContent = optionData.name;
+                                option.textContent = optionData.kind+": "+optionData.name;
                                 option.setAttribute('data-unit', optionData.unit);
 
                                 if (String(optionData.id) === String(supply.id)) {
