@@ -131,7 +131,23 @@ document.addEventListener('DOMContentLoaded', function () {
   productAmountPerPackagingField.attr('step', '0.01');
   productAmountPerPackagingField.attr('min', '0.01');
 
-  updatePackaging();
+  // updatePackaging();
+
+  if (categoryField.val()) {
+    if (categoryField.val() === 'packaging') {
+      productPresentationField.closest('.form-group').fadeOut();
+      productPresentationQuantityPerPackagingField.closest('.form-group').fadeOut();
+      productAmountPerPackagingField.closest('.form-group').fadeIn();
+    } else if (categoryField.val() === 'presentation') {
+      productAmountPerPackagingField.closest('.form-group').fadeOut();
+      productPresentationField.closest('.form-group').fadeIn();
+      productPresentationQuantityPerPackagingField.closest('.form-group').fadeIn();
+    } else {
+      productAmountPerPackagingField.closest('.form-group').fadeOut();
+      productPresentationField.closest('.form-group').fadeOut();
+      productPresentationQuantityPerPackagingField.closest('.form-group').fadeOut();
+    }
+  }
 
   [productField, marketField, productPresentationField].forEach(field => field.select2());
 });
