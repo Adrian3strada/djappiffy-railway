@@ -4,7 +4,7 @@ from common.profiles.models import UserProfile, OrganizationProfile, PackhouseEx
 from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind,
                      Gatherer, PaymentKind, Supply, Packaging, ProductSize,
                      Provider, Client, CapitalFramework,
-                     Maquiladora, WeighingScale, ExportingCompany, CustomsBroker, PalletConfiguration
+                     Maquiladora, WeighingScale, ExportingCompany, CustomsBroker, ProductPackagingPallet
                      )
 from common.base.models import ProductKind, SupplyKind
 from django.utils.translation import gettext_lazy as _
@@ -658,7 +658,7 @@ class ByMarketForOrganizationPackagingFilter(admin.SimpleListFilter):
 
 
 
-class ByProductForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
+class ByProductForOrganizationProductPackagingPalletFilter(admin.SimpleListFilter):
     title = _('Product')
     parameter_name = 'product'
 
@@ -666,7 +666,7 @@ class ByProductForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
         products = Product.objects.all()
         if hasattr(request, 'organization'):
             product_ids = list(
-                PalletConfiguration.objects.filter(organization=request.organization).values_list('product', flat=True).distinct())
+                ProductPackagingPallet.objects.filter(organization=request.organization).values_list('product', flat=True).distinct())
             products = products.filter(id__in=product_ids).order_by('name')
         return [(product.id, product.name) for product in products]
 
@@ -675,7 +675,9 @@ class ByProductForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
             return queryset.filter(product__id=self.value())
         return queryset
 
-class ByMarketForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
+
+
+class ByMarketForOrganizationProductPackagingPalletFilter(admin.SimpleListFilter):
     title = _('Market')
     parameter_name = 'market'
 
@@ -683,7 +685,7 @@ class ByMarketForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
         markets = Market.objects.all()
         if hasattr(request, 'organization'):
             market_ids = list(
-                PalletConfiguration.objects.filter(organization=request.organization).values_list('market', flat=True).distinct())
+                ProductPackagingPallet.objects.filter(organization=request.organization).values_list('market', flat=True).distinct())
             markets = markets.filter(id__in=market_ids).order_by('name')
         return [(market.id, market.name) for market in markets]
 
@@ -701,7 +703,7 @@ class ByProductVarietyForOrganizationPalletConfigurationFilter(admin.SimpleListF
         product_varieties = ProductVariety.objects.all()
         if hasattr(request, 'organization'):
             product_varieties_ids = list(
-                PalletConfiguration.objects.filter(organization=request.organization).values_list('product_variety', flat=True).distinct())
+                ProductPackagingPallet.objects.filter(organization=request.organization).values_list('product_variety', flat=True).distinct())
             product_varieties = product_varieties.filter(id__in=product_varieties_ids).order_by('name')
         return [(product_variety.id, product_variety.name) for product_variety in product_varieties]
 

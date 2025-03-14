@@ -894,26 +894,13 @@ class ColdChamber(models.Model):
 
 
 # Pallets
-class PalletConfiguration(CleanNameOrAliasAndOrganizationMixin, models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
-    alias = models.CharField(max_length=20, verbose_name=_('Alias'), null=False, blank=False)
+
+class ProductPackagingPallet(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT, null=False, blank=False)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT, null=False, blank=False)
-    market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
-    product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product Variety'), on_delete=models.PROTECT, null=False, blank=False)
-    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product Size'), on_delete=models.PROTECT, null=False, blank=False)
-    maximum_boxes_per_pallet = models.PositiveIntegerField(verbose_name=_('Boxes quantity'), null=False, blank=False, help_text=_(
-        "Maximum number of boxes per pallet"
-    ))
-    maximum_kg_per_pallet = models.FloatField(verbose_name=_('Kg amount'), null=False, blank=False, help_text=_(
-        "Maximum Kg per pallet"
-    ))
-    kg_tare = models.FloatField(verbose_name=_('Kg tare'), null=True, blank=True)
-    kg_per_box = models.FloatField(verbose_name=_('Kg per box'), null=False, blank=False)
-    packaging_kind = models.ForeignKey(Packaging, verbose_name=_('Packaging kind'), on_delete=models.PROTECT)
-    creation_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Creation date'))
-    # is_ripe = models.BooleanField(default=False, verbose_name=_('Is ripe'))
-    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product Ripeness'), on_delete=models.PROTECT, null=True, blank=True)
+    name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
+    alias = models.CharField(max_length=20, verbose_name=_('Alias'), null=False, blank=False)
+    pallet_supply = models.ForeignKey(Supply, verbose_name=_('Pallet supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet'})
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -921,18 +908,19 @@ class PalletConfiguration(CleanNameOrAliasAndOrganizationMixin, models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Pallet Configuration')
-        verbose_name_plural = _('Pallet Configuration')
-        ordering = ('name','alias')
+        verbose_name = _('Product packaging pallet')
+        verbose_name_plural = _('Product packaging pallets')
+        ordering = ('name','product', 'market')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='pallet_configuration_unique_name_organization'),
+            models.UniqueConstraint(fields=['market', 'product', 'name', 'organization'], name='pallet_configuration_unique_market_product_name_organization'),
             models.UniqueConstraint(fields=['alias', 'organization'], name='pallet_configuration_unique_alias_organization')
         ]
+
 
 class PalletConfigurationSupplyExpense(models.Model):
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, null=False, blank=False)
     quantity = models.FloatField(verbose_name=_('Quantity'), null=False, blank=False)
-    pallet_configuration = models.ForeignKey(PalletConfiguration, verbose_name='Pallet Configuration', on_delete=models.PROTECT,
+    pallet_configuration = models.ForeignKey(ProductPackagingPallet, verbose_name='Pallet Configuration', on_delete=models.PROTECT,
                                              related_name="pallet_configuration_supply_expense")
 
     def __str__(self):
@@ -946,11 +934,12 @@ class PalletConfigurationSupplyExpense(models.Model):
             models.UniqueConstraint(fields=['supply', 'pallet_configuration'],name='unique_supply_expense_per_pallet_configuration')
         ]
 
+
 class PalletConfigurationPersonalExpense(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
     cost = models.FloatField(verbose_name=_('Cost'), null=False, blank=False)
-    pallet_configuration = models.ForeignKey(PalletConfiguration, verbose_name='Pallet Configuration', on_delete=models.PROTECT,
+    pallet_configuration = models.ForeignKey(ProductPackagingPallet, verbose_name='Pallet Configuration', on_delete=models.PROTECT,
                                              related_name="pallet_configuration_personal_expense")
 
     def __str__(self):

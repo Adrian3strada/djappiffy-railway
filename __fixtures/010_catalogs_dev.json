@@ -1984,13 +1984,9 @@
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
-    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
+    "market": 1
   }
 },
 {
@@ -2003,32 +1999,9 @@
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
     "packaging_supply": 3,
     "packaging_supply_quantity": 1,
-    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
-  }
-},
-{
-  "model": "catalogs.packaging",
-  "pk": 3,
-  "fields": {
-    "product": 1,
-    "packaging_supply_kind": 1,
-    "product_standard_packaging": 1,
-    "name": "MALLA SENCILLA",
-    "packaging_supply": 1,
-    "packaging_supply_quantity": 1,
-    "max_product_amount_per_package": 1.0,
-    "is_enabled": true,
-    "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
+    "market": 1
   }
 },
 {
@@ -2041,13 +2014,9 @@
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
-    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
+    "market": 3
   }
 },
 {
@@ -2060,51 +2029,9 @@
     "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
     "packaging_supply": 1,
     "packaging_supply_quantity": 1,
-    "max_product_amount_per_package": 11.3,
     "is_enabled": true,
     "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
-  }
-},
-{
-  "model": "catalogs.packaging",
-  "pk": 6,
-  "fields": {
-    "product": 1,
-    "packaging_supply_kind": 1,
-    "product_standard_packaging": 1,
-    "name": "PALLET 48'S + 70'S",
-    "packaging_supply": 1,
-    "packaging_supply_quantity": 1,
-    "max_product_amount_per_package": 1.0,
-    "is_enabled": true,
-    "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
-  }
-},
-{
-  "model": "catalogs.packaging",
-  "pk": 7,
-  "fields": {
-    "product": 1,
-    "packaging_supply_kind": 1,
-    "product_standard_packaging": 1,
-    "name": "PALLET 48'S + 70'S (ENMALLADOS)",
-    "packaging_supply": 1,
-    "packaging_supply_quantity": 1,
-    "max_product_amount_per_package": 1.0,
-    "is_enabled": true,
-    "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
+    "market": 1
   }
 },
 {
@@ -2185,46 +2112,6 @@
     "kind": 5,
     "supply": 6,
     "quantity": 1
-  }
-},
-{
-  "model": "catalogs.packagingcomplementarysupply",
-  "pk": 10,
-  "fields": {
-    "packaging": 6,
-    "kind": 1,
-    "supply": 17,
-    "quantity": 4
-  }
-},
-{
-  "model": "catalogs.packagingcomplementarysupply",
-  "pk": 11,
-  "fields": {
-    "packaging": 6,
-    "kind": 1,
-    "supply": 19,
-    "quantity": 8
-  }
-},
-{
-  "model": "catalogs.packagingcomplementarysupply",
-  "pk": 12,
-  "fields": {
-    "packaging": 7,
-    "kind": 1,
-    "supply": 17,
-    "quantity": 4
-  }
-},
-{
-  "model": "catalogs.packagingcomplementarysupply",
-  "pk": 13,
-  "fields": {
-    "packaging": 7,
-    "kind": 1,
-    "supply": 19,
-    "quantity": 8
   }
 }
 ]
