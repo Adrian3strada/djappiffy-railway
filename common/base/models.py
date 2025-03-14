@@ -272,3 +272,9 @@ class RequirementCertification(CleanDocumentsMixin, models.Model):
                 name='requirementCertification_unique_certification_entity_name'
             )
         ]
+
+# class RequirementProxy(RequirementCertification):
+#     class Meta:
+#         proxy = True  # No crea una nueva tabla en la BD
+#         verbose_name = "Requirement"
+#         verbose_name_plural = "Requirements"

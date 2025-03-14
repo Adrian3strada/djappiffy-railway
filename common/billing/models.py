@@ -3,7 +3,7 @@ from wagtail.models import Orderable
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from django.utils.translation import gettext_lazy as _
-from common.base.models import LegalEntityCategory, CapitalFramework
+from common.base.models import LegalEntityCategory, CapitalFramework, Currency
 
 # Create your models here.
 
@@ -52,3 +52,16 @@ class BillingSerie(models.Model):
         verbose_name = _('Billing Serie')
         verbose_name_plural = _('Billing Series')
         unique_together = ('serie', 'folio', 'kind', 'legal_entity')
+
+class ExchangeRate(models.Model):
+    currency_unit = models.DecimalField(max_digits=10, decimal_places=2, default=1)
+    currency = models.ForeignKey(Currency, related_name='exchange_rates_from', on_delete=models.PROTECT)
+    exchange_rate_value = models.DecimalField(max_digits=10, decimal_places=2)
+    target_currency = models.ForeignKey(Currency, related_name='exchange_rates_to', on_delete=models.PROTECT) 
+    registration_date = models.DateTimeField(auto_now_add=True)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = _('Exchange Rate')
+        verbose_name_plural = _('Exchange Rates')
