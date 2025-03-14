@@ -1495,7 +1495,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
             if organization:
                 queryset = Packaging.objects.filter(**organization_queryfilter)
                 if market_id:
-                    queryset = queryset.filter(markets=market_id)
+                    queryset = queryset.filter(market=market_id)
                 if product_id:
                     queryset = queryset.filter(product_id=product_id)
                 kwargs["queryset"] = queryset
