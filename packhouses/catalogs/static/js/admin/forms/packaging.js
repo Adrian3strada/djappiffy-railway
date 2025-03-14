@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
   const productField = $('#id_product');
-  const marketsField = $('#id_markets');
+  const marketField = $('#id_market');
   const packagingSupplyKindField = $('#id_packaging_supply_kind');
   const productStandardPackagingField = $('#id_product_standard_packaging');
   const packagingSupplyField = $('#id_packaging_supply');
@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const packagingSupplyQuantityField = $('#id_packaging_supply_quantity');
 
   let productProperties = null;
-  let marketsCountries = [];
+  let marketCountries = [];
   let productStandardPackagingProperties = null;
   let packagingSupplyKindProperties = null;
   let listenChanges = false;
@@ -57,27 +57,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function getMarketsCountries() {
     return new Promise((resolve, reject) => {
-      if (marketsField.val()) {
+      if (marketField.val()) {
         let uniqueCountries = new Set();
-        let fetchPromises = marketsField.val().map(marketId => {
-          return fetchOptions(`/rest/v1/catalogs/market/${marketId}/`)
+        let fetchPromises = [];
+        fetchPromises.push(
+          fetchOptions(`/rest/v1/catalogs/market/${marketField.val()}/`)
             .then(data => {
               data.countries.forEach(country => {
                 uniqueCountries.add(country);
               });
-            });
-        });
+            })
+        )
 
         Promise.all(fetchPromises).then(() => {
-          marketsCountries = Array.from(uniqueCountries);
-          resolve(marketsCountries);
+          marketCountries = Array.from(uniqueCountries);
+          resolve(marketCountries);
         }).catch(error => {
           console.error('Fetch error:', error);
           reject(error);
         });
       } else {
-        marketsCountries = [];
-        resolve(marketsCountries);
+        marketCountries = [];
+        resolve(marketCountries);
       }
     });
   }
@@ -104,8 +105,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateProductStandardPackaging() {
     const packagingSupplyKindId = packagingSupplyKindField.val();
-    if (packagingSupplyKindId && marketsCountries.length) {
-      const countries = marketsCountries.join(',');
+    if (packagingSupplyKindId && marketCountries.length) {
+      const countries = marketCountries.join(',');
       fetchOptions(`${API_BASE_URL}/base/product-standard-packaging/?supply_kind=${packagingSupplyKindId}&standard__country__in=${countries}&is_enabled=1`)
         .then(data => {
           console.log("data", data);
@@ -193,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
     getProductProperties()
   })
 
-  marketsField.on('change', () => {
+  marketField.on('change', () => {
     getMarketsCountries().then(() => {
       updateProductStandardPackaging();
     });
@@ -208,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
         packagingSupplyQuantityField.closest('.form-group').fadeOut();
       }
       updatePackagingSupply();
-      if (marketsCountries.length) {
+      if (marketCountries.length) {
         updateProductStandardPackaging();
       } else {
         getMarketsCountries().then(() => {
@@ -220,10 +221,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   productStandardPackagingField.on('change', function () {
     if (listenChanges) {
-        getproductStandardPackagingFieldProperties().then(() => {
-          updatePackagingSupply();
-          updateName();
-        });
+      getproductStandardPackagingFieldProperties().then(() => {
+        updatePackagingSupply();
+        updateName();
+      });
     }
   });
 
@@ -241,11 +242,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (!productStandardPackagingField.val()) updateFieldOptions(productStandardPackagingField, []);
 
-  if (marketsField.val()) {
+  if (marketField.val()) {
     getMarketsCountries().then(() => {
-      if (packagingSupplyKindField.val() && marketsCountries.length) {
+      if (packagingSupplyKindField.val() && marketCountries.length) {
         const productStandardPackagingId = productStandardPackagingField.val();
-        const countries = marketsCountries.join(',');
+        const countries = marketCountries.join(',');
         fetchOptions(`${API_BASE_URL}/base/product-standard-packaging/?supply_kind=${packagingSupplyKindField.val()}&standard__country__in=${countries}&is_enabled=1`)
           .then(data => {
             updateFieldOptions(productStandardPackagingField, data);
@@ -301,5 +302,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (productStandardPackagingField.val()) productStandardPackagingField.closest('.form-group').show();
 
-  [productField, marketsField, packagingSupplyKindField, productStandardPackagingField, packagingSupplyField].forEach(field => field.select2());
+  [productField, marketField, packagingSupplyKindField, productStandardPackagingField, packagingSupplyField].forEach(field => field.select2());
 });

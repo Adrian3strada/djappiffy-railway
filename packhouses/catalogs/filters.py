@@ -647,7 +647,7 @@ class ByMarketForOrganizationPackagingFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         markets = Market.objects.all()
         if hasattr(request, 'organization'):
-            market_ids = list(set(Packaging.objects.filter(organization=request.organization).values_list('markets', flat=True).distinct()))
+            market_ids = list(set(Packaging.objects.filter(organization=request.organization).values_list('market', flat=True).distinct()))
             markets = markets.filter(id__in=market_ids).order_by('name')
         return [(market.id, market.name) for market in markets]
 

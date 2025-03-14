@@ -751,28 +751,31 @@ class ProductPresentationComplementarySupply(models.Model):
         ]
 
 
-class Packaging(CleanNameAndOrganizationMixin, models.Model):
-    markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
+class Packaging(models.Model):
+    # markets = models.ManyToManyField(Market, verbose_name=_('Markets'), related_name='markets_packagings')
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
     product_standard_packaging = models.ForeignKey(ProductStandardPackaging,
                                                    verbose_name=_('Product standard packaging'),
                                                    null=True, blank=True, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    # max_product_amount_per_package = models.FloatField(verbose_name=_('Max product amount per package'), validators=[MinValueValidator(0.01)])
     packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
     packaging_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Packaging supply quantity'),
                                                             help_text=_('Quantity of the packaging supply to discount from the inventory each time a product packaging is used'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.name}"
+
     class Meta:
         verbose_name = _('packaging')
         verbose_name_plural = _('packaging')
         ordering = ('name', )
         constraints = [
-            models.UniqueConstraint(fields=('product', 'name', 'organization'),
-                                    name='packaging_unique_product_name_organization'),
+            models.UniqueConstraint(fields=('market', 'product', 'name', 'organization'),
+                                    name='packaging_unique_market_product_name_organization'),
         ]
 
 
@@ -789,21 +792,6 @@ class PackagingComplementarySupply(models.Model):
         constraints = [
             models.UniqueConstraint(fields=('packaging', 'kind', 'supply'),
                                     name='productpackagingcomplementarysupply_unique_packaging_kind_supply'),
-        ]
-
-
-class PackagingPresentation(models.Model):
-    packaging = models.ForeignKey(Packaging, on_delete=models.CASCADE)
-    presentation = models.ForeignKey(ProductPresentation, verbose_name=_('presentation'), on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
-
-    class Meta:
-        verbose_name = _('Product packaging presentation')
-        verbose_name_plural = _('Product packaging presentations')
-        ordering = ('packaging', 'presentation')
-        constraints = [
-            models.UniqueConstraint(fields=('packaging', 'presentation'),
-                                    name='packagingpresentation_unique_productpackaging_presentation'),
         ]
 
 
