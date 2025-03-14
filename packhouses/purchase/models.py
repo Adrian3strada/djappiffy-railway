@@ -102,7 +102,7 @@ class RequisitionSupply(models.Model):
     )
 
     def __str__(self):
-        return f"(Req. {self.requisition.ooid}) - {self.supply} - {self.quantity}"
+        return f"(Req. {self.requisition.ooid}) - {self.supply.kind}: {self.supply}"
 
     class Meta:
         verbose_name = _("Requisition Supply")
@@ -147,6 +147,10 @@ class PurchaseOrder(models.Model):
         max_length=255,
         choices=STATUS_CHOICES,
         default='open',
+    )
+    is_in_payments = models.BooleanField(
+        default=False,
+        verbose_name = _("Is in payments")
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(

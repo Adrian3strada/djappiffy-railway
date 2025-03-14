@@ -51,12 +51,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
   $(document).on("click", ".btn-ready-confirm", function (e) {
-    var url = $(this).data("url");
-    var message = $(this).data("message");
-    var confirmText = $(this).data("confirm");
-    var cancelText = $(this).data("cancel");
-
-    var button = $(this);
+    e.preventDefault();
+    let url = $(this).data("url");
+    let message = $(this).data("message");
+    let confirmText = $(this).data("confirm");
+    let cancelText = $(this).data("cancel");
 
     Swal.fire({
       html: message,
@@ -106,12 +105,64 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   $(document).on("click", ".btn-open-confirm", function (e) {
-    var url = $(this).data("url");
-    var message = $(this).data("message");
-    var confirmText = $(this).data("confirm");
-    var cancelText = $(this).data("cancel");
+    e.preventDefault();
+    let url = $(this).data("url");
+    let message = $(this).data("message");
+    let confirmText = $(this).data("confirm");
+    let cancelText = $(this).data("cancel");
 
-    var button = $(this);
+    Swal.fire({
+      html: message,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#4daf50",
+      cancelButtonColor: "#d33",
+      confirmButtonText: confirmText,
+      cancelButtonText: cancelText,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              window.location.reload();
+            } else {
+              Toastify({
+                text: data.message,
+                duration: 3000,
+                close: true,
+                gravity: "bottom",
+                position: "right",
+                backgroundColor: "#f44336",
+              }).showToast();
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            Toastify({
+              text: "An error occurred while processing your request.",
+              duration: 3000,
+              close: true,
+              gravity: "bottom",
+              position: "right",
+              backgroundColor: "#f44336",
+            }).showToast();
+          });
+      }
+    });
+  });
+
+  $(document).on("click", ".btn-payment-confirm", function (e) {
+    let url = $(this).data("url");
+    let message = $(this).data("message");
+    let confirmText = $(this).data("confirm");
+    let cancelText = $(this).data("cancel");
 
     Swal.fire({
       html: message,

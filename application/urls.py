@@ -10,7 +10,8 @@ from search import views as search_views
 from packhouses.gathering.views import (harvest_order_pdf, good_harvest_practices_format, cancel_schedule_harvest,
                                         set_scheduleharvest_ready)
 from packhouses.purchase.views import (requisition_pdf, set_requisition_ready, purchase_order_supply_pdf,
-                                       set_purchase_order_supply_ready, set_purchase_order_supply_open)
+                                       set_purchase_order_supply_ready, set_purchase_order_supply_open,
+                                       set_purchase_order_supply_payment)
 
 
 urlpatterns = [
@@ -29,6 +30,9 @@ urlpatterns = [
     path('dadmin/purchase/set_purchase_order_supply_open/<int:purchase_order_supply_id>/',
          set_purchase_order_supply_open,
          name='set_purchase_order_supply_open'),
+path('dadmin/purchase/set_purchase_order_supply_payment/<int:purchase_order_supply_id>/',
+         set_purchase_order_supply_payment,
+         name='set_purchase_order_supply_payment'),
     # Admin URLs
     path("dadmin/", admin.site.urls),
     path("wadmin/", include(wagtailadmin_urls)),
