@@ -878,6 +878,24 @@
     ]
   }
 },
+  {
+    "model": "catalogs.crewchief",
+    "pk": 1,
+    "fields": {
+        "name": "ANDRÉS BRUSTAMENTE",
+        "provider": 6,
+        "is_enabled": true
+    }
+},
+{
+    "model": "catalogs.crewchief",
+    "pk": 2,
+    "fields": {
+        "name": "FELIPE MELGAREJO",
+        "provider": 6,
+        "is_enabled": true
+    }
+},
 {
   "model": "catalogs.provider",
   "pk": 1,
@@ -927,6 +945,171 @@
     "organization": 1,
     "vehicle_provider": []
   }
+},
+  {
+    "model": "catalogs.provider",
+    "pk": 3,
+    "fields": {
+        "name": "INSUMOX",
+        "category": "supply_provider",
+        "provider_provider": null,
+        "country": 158,
+        "state": 2290,
+        "city": 24996,
+        "district": 89818,
+        "postal_code": "00000",
+        "neighborhood": "NA",
+        "address": "NA",
+        "external_number": "NA",
+        "internal_number": null,
+        "tax_id": "NA",
+        "email": "na@na.com",
+        "phone_number": "32242",
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1,
+        "vehicle_provider": []
+    }
+},
+{
+    "model": "catalogs.provider",
+    "pk": 4,
+    "fields": {
+        "name": "DIAUWA",
+        "category": "supply_provider",
+        "provider_provider": null,
+        "country": 234,
+        "state": 3624,
+        "city": 42846,
+        "district": 128062,
+        "postal_code": "na",
+        "neighborhood": "NA",
+        "address": "NA",
+        "external_number": "na",
+        "internal_number": null,
+        "tax_id": "na",
+        "email": "na@na.com",
+        "phone_number": "na",
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1,
+        "vehicle_provider": []
+    }
+},
+{
+    "model": "catalogs.provider",
+    "pk": 5,
+    "fields": {
+        "name": "JUAN PEREZ",
+        "category": "product_provider",
+        "provider_provider": null,
+        "country": 158,
+        "state": 2282,
+        "city": 25771,
+        "district": 90548,
+        "postal_code": "83749",
+        "neighborhood": "NA",
+        "address": "NA",
+        "external_number": "na",
+        "internal_number": null,
+        "tax_id": "JHD83",
+        "email": "GH@JD.COM",
+        "phone_number": "83774283",
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1,
+        "vehicle_provider": []
+    }
+},
+{
+    "model": "catalogs.provider",
+    "pk": 6,
+    "fields": {
+        "name": "AVOCADOX",
+        "category": "harvesting_provider",
+        "provider_provider": null,
+        "country": 158,
+        "state": 2282,
+        "city": 25742,
+        "district": 88478,
+        "postal_code": "58000",
+        "neighborhood": "CENTRO",
+        "address": "DOMICILIO CONOCIDO",
+        "external_number": "382",
+        "internal_number": null,
+        "tax_id": "JHD83",
+        "email": "hrc@email.com",
+        "phone_number": "38873764",
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1,
+        "vehicle_provider": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.harvestingcrew",
+    "pk": 1,
+    "fields": {
+        "provider": 6,
+        "name": "CUADRILLA 1",
+        "certification_name": null,
+        "crew_chief": 1,
+        "persons_number": 6,
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.harvestingcrew",
+    "pk": 2,
+    "fields": {
+        "provider": 6,
+        "name": "CUADRILLA 2",
+        "certification_name": "EXPORT 28",
+        "crew_chief": 2,
+        "persons_number": 8,
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+  {
+    "model": "catalogs.harvestingpaymentsetting",
+    "pk": 1,
+    "fields": {
+        "type_harvest": "local",
+        "more_than_kg": 1.0,
+        "pay_per_box_complete": 1.0,
+        "pay_per_kg_complete": 1.0,
+        "pay_per_day_complete": 1.0,
+        "pay_per_box_incomplete": 1.0,
+        "pay_per_kg_incomplete": 1.0,
+        "pay_per_day_incomplete": 1.0,
+        "type_payment_for_false_out": "fixed_amount",
+        "amount_for_false_out": 1.0,
+        "harvesting_crew": 1
+    }
+},
+{
+    "model": "catalogs.harvestingpaymentsetting",
+    "pk": 2,
+    "fields": {
+        "type_harvest": "exportacion",
+        "more_than_kg": 2.0,
+        "pay_per_box_complete": 2.0,
+        "pay_per_kg_complete": 2.0,
+        "pay_per_day_complete": 2.0,
+        "pay_per_box_incomplete": 2.0,
+        "pay_per_kg_incomplete": 2.0,
+        "pay_per_day_incomplete": 2.0,
+        "type_payment_for_false_out": "fixed_amount",
+        "amount_for_false_out": 2.0,
+        "harvesting_crew": 2
+    }
 },
 {
   "model": "catalogs.client",

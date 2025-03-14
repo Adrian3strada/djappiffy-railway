@@ -158,19 +158,35 @@ class ProductRipenessSerializer(serializers.ModelSerializer):
         model = ProductRipeness
         fields = '__all__'
 
+
 class PurchaseOrderSupplySerializer(serializers.ModelSerializer):
     purchase_order_supply_options = serializers.SerializerMethodField()
 
     class Meta:
         model = PurchaseOrderSupply
-        fields = '__all__'
+        fields = ("id", "requisition_supply", "quantity",
+                  "comments", "is_in_inventory", "purchase_order_supply_options")
 
     def get_purchase_order_supply_options(self, obj):
-        # Obtener las opciones válidas para purchase_order_supply
+        unit_mapping = {
+            "cm": _("meters"),
+            "ml": _("liters"),
+            "gr": _("kilograms"),
+            "piece": _("pieces"),
+        }
+
         return [
             {
-                'id': pos.id,
-                'name': str(pos.requisition_supply.supply)  # Nombre del Supply
+                "id": pos.id,
+                "kind": str(pos.requisition_supply.supply.kind),
+                "name": str(pos.requisition_supply.supply),
+                "unit": unit_mapping.get(
+                    getattr(pos.requisition_supply.supply.kind, "usage_discount_unit_category", ""),
+                    getattr(pos.requisition_supply.supply.kind, "usage_discount_unit_category", "")
+                ),
+                "real_unit": str(pos.requisition_supply.supply.kind.usage_discount_unit_category),
             }
             for pos in PurchaseOrderSupply.objects.filter(purchase_order=obj.purchase_order)
         ]
+
+
