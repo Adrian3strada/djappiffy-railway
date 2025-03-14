@@ -8,6 +8,9 @@ from django.db.models import Case, When, IntegerField, Value
 from django.db.models.functions import Cast
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import FileExtensionValidator
+from common.mixins import CleanDocumentsMixin
+from django.utils.text import slugify
+import os
 
 # Create your models here.
 
@@ -219,7 +222,8 @@ class Currency(models.Model):
 class CertificationEntity(models.Model):
     entity = models.CharField(max_length=255)
     certification = models.CharField(max_length=255)
-    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), null=True, blank=True, on_delete=models.PROTECT)
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True, on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
@@ -246,7 +250,7 @@ def certification_file_path(instance, filename):
 
     return f'certifications/requirements/{certification_id}_{certification_product_kind}_{certification_entity}_{file_name}{file_extension}'
 
-class RequirementCertification(models.Model):
+class RequirementCertification(CleanDocumentsMixin, models.Model):
     name = models.CharField(max_length=255)
     route = models.FileField(
         upload_to=certification_file_path, 
@@ -259,18 +263,12 @@ class RequirementCertification(models.Model):
     def __str__(self):
         return f"{self.name} -- {self.is_enabled} -- {self.certification_entity}"
 
-    def save(self, *args, **kwargs):
-        try:
-            old_instance = RequirementsCertification.objects.get(pk=self.pk)
-            if old_instance.route and old_instance.route != self.route:
-                if os.path.isfile(old_instance.route.path):
-                    os.remove(old_instance.route.path)
-        except RequirementsCertification.DoesNotExist:
-            pass 
-
-        super().save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        if self.route and os.path.isfile(self.route.path):
-            os.remove(self.route.path)
-        super().delete(*args, **kwargs)
+    class Meta:
+        verbose_name = _('Requirement Certification')
+        verbose_name_plural = _('Requirement Certification')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'certification_entity'], 
+                name='requirementCertification_unique_certification_entity_name'
+            )
+        ]

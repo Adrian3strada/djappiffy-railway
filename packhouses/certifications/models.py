@@ -1,10 +1,12 @@
 import os
 from django.db import models
+from datetime import datetime
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from packhouses.catalogs.models import Organization
 from common.base.models import CertificationEntity
 from django.core.validators import FileExtensionValidator
+from common.mixins import CleanDocumentsMixin
 
 class Certifications(models.Model):
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -21,15 +23,26 @@ class Certifications(models.Model):
             models.UniqueConstraint(fields=['certification_entity'], name='certification_unique_certification_entity_organization'),
         ]
 
-# class CertificationsDocuments(models.Model):
-#     certification = models.FileField(
-#         upload_to='certifications/certifications/', 
-#         validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
-#         verbose_name=_('Certification')
-#         )
-#     registration_date = models.DateField()
-#     expiration_date = models.DateField()
-#     certification = models.ForeignKey(Certifications, on_delete=models.CASCADE)
+def certification_file_path(instance, filename):
 
-#     def __str__(self):
-#         return f"{self.certification} -- {self.registration_date}  -- {self.expiration_date}  -- {self.certification}"
+    organization_name = slugify(instance.certification.organization.name).replace(" ", "")
+    entity = slugify(instance.certification.certification_entity.entity).replace(" ", "")
+    certification = slugify(instance.certification.certification_entity.certification).replace(" ", "")
+    year = datetime.now().year
+    file_extension = os.path.splitext(filename)[1]
+
+    return f'{organization_name}/certifications/{entity}_{certification}_{year}_{filename}{file_extension}'
+
+class CertificationsDocuments(CleanDocumentsMixin, models.Model):
+    route = models.FileField(
+        upload_to=certification_file_path,
+        validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
+        verbose_name=_('Certification')
+        )
+    registration_date = models.DateField()
+    expiration_date = models.DateField()
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    certification = models.ForeignKey(Certifications, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.route} -- {self.registration_date}  -- {self.expiration_date}  -- {self.certification}"

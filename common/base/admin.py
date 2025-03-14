@@ -173,6 +173,6 @@ class RequirementCertificationInline(admin.TabularInline):
 
 @admin.register(CertificationEntity)
 class CertificationEntityAdmin(admin.ModelAdmin):
-    list_display = ('entity', 'certification', 'is_enabled')
-    list_filter = ['entity', 'certification', 'is_enabled']
+    list_display = ('entity', 'certification', 'country', 'is_enabled')
+    list_filter = ['entity', 'certification', 'country', 'is_enabled']
     inlines = [RequirementCertificationInline]
