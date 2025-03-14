@@ -80,7 +80,6 @@ class OrderItemInline(admin.StackedInline):
         js = ('js/admin/forms/packhouses/sales/order_item_inline.js',)
 
 
-
 @admin.register(Order)
 class OrderAdmin(ByOrganizationAdminMixin):
     list_display = ('ooid', 'client_category', 'maquiladora', 'client',

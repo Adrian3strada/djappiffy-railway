@@ -61,8 +61,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const productSizeName = productSizeField.val() ? productSizeField.find('option:selected').text() : '';
     let nameString = `${packagingName} ${productSizeName}`
     if (categoryField.val() === 'presentation' && productPresentationField.val()) {
+      let productPresentationQuantityPerPackaging = ' ';
+      if (productPresentationQuantityPerPackagingField.val()) {
+        productPresentationQuantityPerPackaging = ` ${productPresentationQuantityPerPackagingField.val()} `;
+      }
       const productPresentationName = productPresentationField.find('option:selected').text();
-      nameString = `${nameString} ${productPresentationName}`;
+      nameString = `${nameString}${productPresentationQuantityPerPackaging}${productPresentationName}`;
     }
     nameField.val(nameString.trim())
     aliasField.val(null)
@@ -124,18 +128,11 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(supply_data => {
               presentationSupplyProperties = supply_data;
               console.log("supply_data", supply_data);
-              productPresentationQuantityPerPackagingField.val(supply_data.capacity);
-              productPresentationQuantityPerPackagingField.attr('max', supply_data.capacity);
-              productPresentationQuantityPerPackagingField.attr('min', 1);
-              productPresentationQuantityPerPackagingField.attr('step', 1);
-
             });
         });
     } else {
       presentationProperties = null;
       presentationSupplyProperties = null;
-      productPresentationQuantityPerPackagingField.removeAttr('max');
-      productPresentationQuantityPerPackagingField.removeAttr('min');
     }
   }
 
@@ -161,13 +158,20 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   productPresentationQuantityPerPackagingField.on('change', () => {
-    if (productPresentationQuantityPerPackagingField.val() && categoryField.val() === 'presentation') {
-      const maxCapacity = parseInt(presentationSupplyProperties.capacity);
-      if (parseInt(productPresentationQuantityPerPackagingField.val()) > maxCapacity) {
-        productPresentationQuantityPerPackagingField.val(maxCapacity);
+    let value = productPresentationQuantityPerPackagingField.val();
+    console.log(value);
+    if (!isNaN(value)) {
+      productPresentationQuantityPerPackagingField.val('');
+    }
+    if (value && categoryField.val() === 'presentation') {
+      value = value.replace(/[^\d.]/g, '');
+      const quantity = Math.floor(parseFloat(value));
+      if (!isNaN(quantity)) {
+        productPresentationQuantityPerPackagingField.val(quantity);
       }
     }
-  })
+    updateName();
+  });
 
   categoryField.on('change', () => {
     productAmountPerPackagingField.val(null);
@@ -219,7 +223,6 @@ document.addEventListener('DOMContentLoaded', function () {
   })
 
   productPresentationField.on('change', () => {
-    updateProductPresentationQuantityPerPackaging();
     updateName();
   })
 
@@ -229,6 +232,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   productAmountPerPackagingField.attr('step', '0.01');
   productAmountPerPackagingField.attr('min', '0.01');
+  productPresentationQuantityPerPackagingField.attr('step', 1);
+  productPresentationQuantityPerPackagingField.attr('min', 1);
 
   if (categoryField.val()) {
     if (categoryField.val() === 'packaging') {
@@ -245,7 +250,6 @@ document.addEventListener('DOMContentLoaded', function () {
       productPresentationQuantityPerPackagingField.closest('.form-group').fadeOut();
     }
     updatePackagingProductAmount();
-    updateProductPresentationQuantityPerPackaging();
   } else {
     productAmountPerPackagingField.closest('.form-group').fadeOut();
     productPresentationField.closest('.form-group').fadeOut();
