@@ -14,6 +14,7 @@ from django.db.models import Sum
 from django.urls import reverse
 from django.http import HttpResponseForbidden
 from django.http import JsonResponse
+from packhouses.storehouse.models import StorehouseEntrySupply
 
 def requisition_pdf(request, requisition_id):
     # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
@@ -167,21 +168,29 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
     # Obtener los inlines relacionados
     purchaseordersupplyinline = PurchaseOrderSupply.objects.filter(purchase_order=purchase_order_supply)
 
-    formatted_supply_values = [
-        {
-            'supply': f"{obj.requisition_supply.supply}",
-            'quantity': obj.quantity,
-            'unit_price': obj.unit_price,
-            'total_price': obj.total_price,
+    formatted_supply_values = []
+    for obj in purchaseordersupplyinline:
+        # Si el objeto está en inventario, buscar la cantidad recibida en StorehouseEntrySupply
+        if obj.is_in_inventory:
+            storehouse_entry_supply = StorehouseEntrySupply.objects.filter(
+                purchase_order_supply=obj
+            ).first()
+            quantity = storehouse_entry_supply.received_quantity if storehouse_entry_supply else obj.quantity
+        else:
+            quantity = obj.quantity
 
-        }
-        for obj in purchaseordersupplyinline
-    ]
+        formatted_supply_values.append({
+            'supply': f"{obj.requisition_supply.supply}",
+            'quantity': quantity,
+            'unit_price': obj.unit_price,
+            'total_price': round(obj.unit_price * quantity,2),
+        })
+
     subtotal = sum(item['total_price'] for item in formatted_supply_values)
     percentage_tax = purchase_order_supply.tax
     tax = round(subtotal * (purchase_order_supply.tax / 100), 2)
 
-    total = subtotal + tax
+    total = round(subtotal + tax,2)
 
     currency = purchase_order_supply.currency.code
 
@@ -277,6 +286,33 @@ def set_purchase_order_supply_open(request, purchase_order_supply_id):
     purchase_order_supply.save()
     title_message = _('Success')
     success_message = _('Purchase order sent to Purchase successfully.')
+    button_text = _('Continue')
+
+    return JsonResponse({
+        'success': True,
+        'message': success_message,
+        'title': title_message,
+        'button': button_text
+    })
+
+def set_purchase_order_supply_payment(request, purchase_order_supply_id):
+    # Obtener el registro
+    purchase_order_supply = get_object_or_404(
+        PurchaseOrder,
+        pk=purchase_order_supply_id,
+        organization=request.organization
+    )
+    if purchase_order_supply.status not in ['closed']:
+        return JsonResponse({
+            'success': False,
+            'message': 'You cannot send this purchase order.',
+            'title': 'Error'
+        }, status=403)
+
+    purchase_order_supply.is_in_payments = True
+    purchase_order_supply.save()
+    title_message = _('Success')
+    success_message = _('Purchase order sent to Payments successfully.')
     button_text = _('Continue')
 
     return JsonResponse({

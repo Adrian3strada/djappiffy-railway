@@ -218,7 +218,7 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
         tooltip_open = _('Reopen this purchase order')
         open_url = reverse('set_purchase_order_supply_open', args=[obj.pk])
         confirm_open_text = _(
-            'Are you sure you want to reopen this purchase order? It will no longer be available in the warehouse for entry and you can continue editing it.')
+            'Are you sure you want to reopen this purchase order? It will no longer be available in the storehouse for entry and you can continue editing it.')
         confirm_button_text_open = _('Yes, reopen')
 
         set_purchase_order_supply_ready_button = ''
@@ -245,15 +245,33 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
                 tooltip_open, open_url, confirm_open_text, confirm_button_text_open, cancel_button_text
             )
 
+        tooltip_payment = _('Send this purchase order to payments')
+        payment_url = reverse('set_purchase_order_supply_payment', args=[obj.pk])
+        confirm_payment_text = _(
+            'Are you sure you want to send this purchase order to payments?')
+
+        set_purchase_order_supply_payment_button = ''
+        if obj.status == "closed" and not obj.is_in_payments:
+            set_purchase_order_supply_payment_button = format_html(
+                '''
+                <a class="button btn-payment-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
+                    data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#000;">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                </a>
+                ''',
+                tooltip_payment, payment_url, confirm_payment_text, confirm_button_text, cancel_button_text
+            )
+
         return format_html(
             '''
+            {}
             {}
             {}
             <a class="button" href="{}" target="_blank" data-toggle="tooltip" title="{}">
                 <i class="fa-solid fa-print"></i>
             </a>
             ''',
-            set_purchase_order_supply_ready_button, set_purchase_order_supply_open_button, purchase_order_supply_pdf, tooltip_purchase_order_supply_pdf
+            set_purchase_order_supply_payment_button, set_purchase_order_supply_ready_button, set_purchase_order_supply_open_button, purchase_order_supply_pdf, tooltip_purchase_order_supply_pdf
         )
 
     generate_actions_buttons.short_description = _('Actions')

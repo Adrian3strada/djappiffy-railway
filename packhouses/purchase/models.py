@@ -148,6 +148,10 @@ class PurchaseOrder(models.Model):
         choices=STATUS_CHOICES,
         default='open',
     )
+    is_in_payments = models.BooleanField(
+        default=False,
+        verbose_name = _("Is in payments")
+    )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(
         Organization,
