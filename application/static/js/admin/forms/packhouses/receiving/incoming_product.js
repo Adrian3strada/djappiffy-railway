@@ -1,45 +1,72 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const $harvestField = $('#id_harvest'); 
-    const $harvestDateField = $('#id_harvest_date'); 
-    const $categoryField = $('#id_category'); 
-    const $productField = $('#id_product'); 
-    const $marketField = $('#id_market'); 
-    const $weightExpectedField = $('#id_weight_expected'); 
-    const $orchardField = $('#id_orchard'); 
-    const $orchardCertificationField = $('#id_orchard_certification'); 
-    const $weighingScaleField = $('#id_weighing_scale'); 
+document.addEventListener("DOMContentLoaded", function() {
+    const API_BASE_URL = '/rest/v1';
 
-    function toggleFieldsBasedOnChoice() {
-        const harvestValue = $harvestField.val(); // Obtener la opción seleccionada
+    document.querySelectorAll(".djn-add-item .add-handler").forEach(button => {
+        button.style.display = "none"; 
+    });
+    document.querySelectorAll("td.original").forEach(row => {
+        row.style.display = "none"; 
+    });
+    document.querySelectorAll("th.original").forEach(row => {
+        row.style.display = "none";  
+    });
 
-        if (harvestValue && harvestValue !== '') {
-            // Mostrar los campos
-            $harvestDateField.closest('.form-group').show();
-            $categoryField.closest('.form-group').show();
-            $productField.closest('.form-group').show();
-            $marketField.closest('.form-group').show();
-            $weightExpectedField.closest('.form-group').show();
-            $orchardField.closest('.form-group').show();
-            $orchardCertificationField.closest('.form-group').show();
-            $weighingScaleField.closest('.form-group').show();
+    const vehicleRows = document.querySelectorAll('tbody[id^="scheduleharvest_set-0-scheduleharvestvehicle_set-"]');
 
-           
-        } else {
-            // Ocultar los campos si no hay selección
-            $harvestDateField.closest('.form-group').hide();
-            $categoryField.closest('.form-group').hide();
-            $productField.closest('.form-group').hide();
-            $marketField.closest('.form-group').hide();
-            $weightExpectedField.closest('.form-group').hide();
-            $orchardField.closest('.form-group').hide();
-            $orchardCertificationField.closest('.form-group').hide();
-            $weighingScaleField.closest('.form-group').hide();
-        }
-    }
+    document.querySelectorAll('div[id^="scheduleharvest_set-"]').forEach(harvestInline => {
+        const harvestId = harvestInline.querySelector('input[name$="-id"]').value;
+        console.log("Harvest ID:", harvestId);
+      });
 
-    // Ejecutar al cargar la página
-    toggleFieldsBasedOnChoice();
+    vehicleRows.forEach(row => {
+    // Obtener datos del vehículo
+    const provider = row.querySelector('.field-provider a').innerText;
+    const vehicle = row.querySelector('.field-vehicle a').innerText;
+    const stampNumber = row.querySelector('input[name$="-stamp_vehicle_number"]').value;
+    const vehicleId = row.querySelector('input[name$="-id"]').value;
 
-    // Agregar evento de cambio
-    $harvestField.change(toggleFieldsBasedOnChoice);
+    // Obtener el índice del registro (último número del ID)
+    const index = row.id.split('-').pop();
+
+    console.log(`Vehículo ${index}:`, {
+        provider,
+        vehicle,
+        stampNumber,
+        vehicleId
+    });
+    });
+
+    const testEndpoint = (url, options = {}) => {
+        return fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            // 'Authorization': 'Bearer TU_TOKEN' // Agrega si necesitas autenticación
+          },
+          ...options
+        })
+        .then(response => {
+          if (!response.ok) throw new Error(`Error ${response.status}`);
+          return response.json();
+        })
+        .catch(error => {
+          console.error('Falló el endpoint:', url, error);
+          throw error;
+        });
+      };
+      
+      // Ejemplo de uso:
+      testEndpoint(`${API_BASE_URL}/gathering/harvest-cutting-vehicle=1`)
+        .then(data => {
+          console.log('Vehículos:', data);
+          // Actualizar UI aquí
+        })
+        .catch(() => {
+          console.log('Mostrar error al usuario');
+        });
+
+
+
 });
+
+

@@ -87,29 +87,33 @@
                 {% else %}
                 {% for fieldset in inline_admin_form %}
                   <div class="fieldset">
-                      {% for line in fieldset %}
-                          {% for field in line %}
-                              <div class="row mb-3" style="margin-top:15px;">
-                                  <div class="col-md-4" style="font-weight: 510 !important;">
-                                      {{ field.label_tag }}
-                                    {% if field.field.field.required %}
-                                      <span class="text-red">* </span>
-                                    {% endif %}
-                                  </div>
-                                  <div class="col-md-7">
-                                      {{ field.contents }}
-                                  </div>
-                              </div>
-                              {% if field.errors %}
-                                  <div class="row mb-3" style="margin-top:-15px;">
-                                      <div class="col-md-4"></div>
-                                      <div class="col-md-7 help-block text-red">
-                                          {{ field.errors }}
-                                      </div>
-                                  </div>
-                              {% endif %}
-                          {% endfor %}
-                      {% endfor %}
+                    {% for line in fieldset %}
+                    {% for field in line %}
+                        <div class="row mb-3" style="margin-top:15px;">
+                            <div class="col-md-4" style="font-weight: 510 !important;">
+                                {{ field.label_tag }}
+                                {% if field.field.field.required %}
+                                    <span class="text-red">* </span>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-7">
+                                {% if field.is_readonly %}  <!-- Nueva condición -->
+                                    {{ field.contents }}
+                                {% else %}
+                                    {{ field.field }}  <!-- Widget editable -->
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if field.errors %}
+                            <div class="row mb-3" style="margin-top:-15px;">
+                                <div class="col-md-4"></div>
+                                <div class="col-md-7 help-block text-red">
+                                    {{ field.errors }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
                   </div>
               {% endfor %}
 
@@ -136,3 +140,6 @@
 {% endwith %}{# ends with inline_admin_formset.opts as inline_opts #}
 
 {% endwith %}{# ends {% with inline_admin_formset.formset.is_nested as is_nested %} #}
+
+
+
