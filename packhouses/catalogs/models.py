@@ -908,7 +908,7 @@ class Pallet(models.Model):
     class Meta:
         verbose_name = _('Product packaging pallet')
         verbose_name_plural = _('Product packaging pallets')
-        ordering = ('name','product', 'market')
+        ordering = ('name', 'organization')
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='pallet_configuration_unique_name_organization'),
             models.UniqueConstraint(fields=['alias', 'organization'], name='pallet_configuration_unique_alias_organization')

@@ -1724,7 +1724,7 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/pallet_configuration.js',)
+        js = ('js/admin/forms/pallet.js',)
 
 
 class ExportingCompanyBeneficiaryInline(admin.StackedInline):
