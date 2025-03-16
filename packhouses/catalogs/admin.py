@@ -9,7 +9,7 @@ from .models import (
     HarvestingPaymentSetting, Supply, ProductStandardPackaging,
     Service, ProductPresentation, Packaging, ProductPackaging,
     WeighingScale, ColdChamber,
-    ProductPackagingPallet, PalletConfigurationSupplyExpense, PalletConfigurationPersonalExpense,
+    Pallet, ProductPackagingPalletComplementarySupply, PalletConfigurationPersonalExpense,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     PackagingComplementarySupply, ProductRipeness, ProductPackagingPresentation,
@@ -1669,14 +1669,18 @@ class ColdChamberAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         js = ('js/admin/forms/packhouses/catalogs/cold_chambers.js',)
 
 
-class PalletConfigurationSupplyExpenseInLine(admin.StackedInline):
-    model = PalletConfigurationSupplyExpense
+class ProductPackagingPalletComplementarySupplyInLine(admin.TabularInline):
+    model = ProductPackagingPalletComplementarySupply
     extra = 0
+    verbose_name = _('Complementary supply')
+    verbose_name_plural = _('Complementary supplies')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        organization = request.organization if hasattr(request, 'organization') else None
+
         if db_field.name == "supply":
-            if hasattr(request, 'organization'):
-                kwargs["queryset"] = Supply.objects.filter(organization=request.organization, is_enabled=True,
+            if organization:
+                kwargs["queryset"] = Supply.objects.filter(organization=organization, is_enabled=True,
                                                            kind__usage_discount_unit_category='packaging_pallet')
             else:
                 kwargs["queryset"] = Supply.objects.none()
@@ -1684,17 +1688,16 @@ class PalletConfigurationSupplyExpenseInLine(admin.StackedInline):
             return formfield
 
 
-@admin.register(ProductPackagingPallet)
-class ProductPackagingPalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
+@admin.register(Pallet)
+class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PalletConfigurationResource]
-    list_display = ('name', 'alias', 'market', 'product', 'pallet_supply', 'is_enabled')
-    list_filter = (ByMarketForOrganizationProductPackagingPalletFilter,
-                   ByProductForOrganizationProductPackagingPalletFilter,
-                   'is_enabled',)
-    fields = ( 'market', 'product', 'name', 'alias', 'pallet_supply', 'is_enabled')
+    list_display = ('name', 'alias', 'pallet_supply', 'is_enabled')
+    # list_filter = (ByMarketForOrganizationProductPackagingPalletFilter, ByProductForOrganizationProductPackagingPalletFilter, 'is_enabled')
+    list_filter = ('pallet_supply', 'is_enabled')
+    fields = ('name', 'alias', 'pallet_supply', 'is_enabled')
     search_fields = ('name', 'alias')
-    inlines = [PalletConfigurationSupplyExpenseInLine]
+    inlines = [ProductPackagingPalletComplementarySupplyInLine]
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
@@ -1705,38 +1708,20 @@ class ProductPackagingPalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdm
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj,
-                                    exclude=[Product, ProductVariety, ProductSize, Market, ProductMarketClass,
-                                             Packaging, ProductRipeness, Organization]):
-            readonly_fields.extend(['name', 'alias', ])
+                                    exclude=[Market, Product, Supply, Organization]):
+            readonly_fields.extend(['market', 'product', 'name', 'alias', 'supply'])
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductPackagingPallet.objects.get(id=obj_id) if obj_id else None
+        obj = Pallet.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        market = request.POST.get('market') if request.POST else obj.market if obj else None
-        product = request.POST.get('product') if request.POST else obj.product if obj else None
 
-        product_queryfilter = {'product': product, 'is_enabled': True}
-        market_queryfilter = {'market': market, 'is_enabled': True}
-        product_market_queryfilter = {'product': product, 'market': market, 'is_enabled': True}
-
-        if db_field.name == "market":
-            if organization:
-                kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
-            else:
-                Market.objects.none()
-        if db_field.name == "product":
-            if organization:
-                kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
-            else:
-                Product.objects.none()
         if db_field.name == "pallet_supply":
             kwargs["queryset"] = Supply.objects.filter(**organization_queryfilter, kind__category='packaging_pallet')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
 
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/pallet_configuration.js',)

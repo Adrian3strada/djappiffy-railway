@@ -895,9 +895,7 @@ class ColdChamber(models.Model):
 
 # Pallets
 
-class ProductPackagingPallet(models.Model):
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT, null=False, blank=False)
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT, null=False, blank=False)
+class Pallet(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
     alias = models.CharField(max_length=20, verbose_name=_('Alias'), null=False, blank=False)
     pallet_supply = models.ForeignKey(Supply, verbose_name=_('Pallet supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet'})
@@ -912,26 +910,25 @@ class ProductPackagingPallet(models.Model):
         verbose_name_plural = _('Product packaging pallets')
         ordering = ('name','product', 'market')
         constraints = [
-            models.UniqueConstraint(fields=['market', 'product', 'name', 'organization'], name='pallet_configuration_unique_market_product_name_organization'),
+            models.UniqueConstraint(fields=['name', 'organization'], name='pallet_configuration_unique_name_organization'),
             models.UniqueConstraint(fields=['alias', 'organization'], name='pallet_configuration_unique_alias_organization')
         ]
 
 
-class PalletConfigurationSupplyExpense(models.Model):
+class ProductPackagingPalletComplementarySupply(models.Model):
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, null=False, blank=False)
     quantity = models.FloatField(verbose_name=_('Quantity'), null=False, blank=False)
-    pallet_configuration = models.ForeignKey(ProductPackagingPallet, verbose_name='Pallet Configuration', on_delete=models.PROTECT,
-                                             related_name="pallet_configuration_supply_expense")
+    product_packaging_pallet = models.ForeignKey(Pallet, verbose_name='Pallet Configuration', on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.supply}"
 
     class Meta:
-        verbose_name = _('Supply Expense')
-        verbose_name_plural = _('Supply Expenses')
-        ordering = ('supply', )
+        verbose_name = _('Product packaging pallet, Complementary supply')
+        verbose_name_plural = _('Product packaging pallet, Complementary supplies')
+        ordering = ('supply', 'product_packaging_pallet')
         constraints = [
-            models.UniqueConstraint(fields=['supply', 'pallet_configuration'],name='unique_supply_expense_per_pallet_configuration')
+            models.UniqueConstraint(fields=['supply', 'product_packaging_pallet'],name='productpackagingpalletcomplementarysupply_unique_supply_product_packaging_pallet')
         ]
 
 
@@ -939,7 +936,7 @@ class PalletConfigurationPersonalExpense(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
     cost = models.FloatField(verbose_name=_('Cost'), null=False, blank=False)
-    pallet_configuration = models.ForeignKey(ProductPackagingPallet, verbose_name='Pallet Configuration', on_delete=models.PROTECT,
+    pallet_configuration = models.ForeignKey(Pallet, verbose_name='Pallet Configuration', on_delete=models.PROTECT,
                                              related_name="pallet_configuration_personal_expense")
 
     def __str__(self):
