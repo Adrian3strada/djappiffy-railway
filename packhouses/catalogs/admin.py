@@ -1684,8 +1684,8 @@ class ProductPackagingPalletComplementarySupplyInLine(admin.TabularInline):
                                                            kind__category='packaging_pallet_complement')
             else:
                 kwargs["queryset"] = Supply.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(Pallet)

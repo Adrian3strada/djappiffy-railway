@@ -916,9 +916,10 @@ class Pallet(models.Model):
 
 
 class ProductPackagingPalletComplementarySupply(models.Model):
+    product_packaging_pallet = models.ForeignKey(Pallet, verbose_name='Pallet Configuration', on_delete=models.CASCADE)
+    kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet_complement'})
     quantity = models.FloatField(verbose_name=_('Quantity'))
-    product_packaging_pallet = models.ForeignKey(Pallet, verbose_name='Pallet Configuration', on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.supply}"
@@ -926,9 +927,9 @@ class ProductPackagingPalletComplementarySupply(models.Model):
     class Meta:
         verbose_name = _('Product packaging pallet, Complementary supply')
         verbose_name_plural = _('Product packaging pallet, Complementary supplies')
-        ordering = ('supply', 'product_packaging_pallet')
+        ordering = ('supply', 'kind', 'product_packaging_pallet')
         constraints = [
-            models.UniqueConstraint(fields=['supply', 'product_packaging_pallet'],name='productpackagingpalletcomplementarysupply_unique_supply_product_packaging_pallet')
+            models.UniqueConstraint(fields=['kind', 'supply', 'product_packaging_pallet'],name='productpackagingpalletcomplementarysupply_unique_supply_product_packaging_pallet')
         ]
 
 
