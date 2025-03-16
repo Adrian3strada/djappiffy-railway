@@ -9,7 +9,7 @@ from .models import (
     HarvestingPaymentSetting, Supply, ProductStandardPackaging,
     Service, ProductPresentation, Packaging, ProductPackaging,
     WeighingScale, ColdChamber,
-    Pallet, ProductPackagingPalletComplementarySupply, PalletConfigurationPersonalExpense,
+    Pallet, ProductPackagingPalletComplementarySupply,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     PackagingComplementarySupply, ProductRipeness, ProductPackagingPresentation,
@@ -1675,8 +1675,25 @@ class ProductPackagingPalletComplementarySupplyInLine(admin.TabularInline):
     verbose_name = _('Complementary supply')
     verbose_name_plural = _('Complementary supplies')
 
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'kind' in formset.form.base_fields:
+            formset.form.base_fields['kind'].widget.can_add_related = False
+            formset.form.base_fields['kind'].widget.can_change_related = False
+            formset.form.base_fields['kind'].widget.can_delete_related = False
+            formset.form.base_fields['kind'].widget.can_view_related = False
+        if 'supply' in formset.form.base_fields:
+            formset.form.base_fields['supply'].widget.can_add_related = False
+            formset.form.base_fields['supply'].widget.can_change_related = False
+            formset.form.base_fields['supply'].widget.can_delete_related = False
+            formset.form.base_fields['supply'].widget.can_view_related = False
+        return formset
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = request.organization if hasattr(request, 'organization') else None
+
+        if db_field.name == "kind":
+            kwargs["queryset"] = SupplyKind.objects.filter(category='packaging_pallet_complement', is_enabled=True)
 
         if db_field.name == "supply":
             if organization:
@@ -1686,6 +1703,9 @@ class ProductPackagingPalletComplementarySupplyInLine(admin.TabularInline):
                 kwargs["queryset"] = Supply.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/product_packaging_pallet_complementary_supply_inline.js',)
 
 
 @admin.register(Pallet)

@@ -917,9 +917,9 @@ class Pallet(models.Model):
 
 class ProductPackagingPalletComplementarySupply(models.Model):
     product_packaging_pallet = models.ForeignKey(Pallet, verbose_name='Pallet Configuration', on_delete=models.CASCADE)
-    kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
+    kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT, limit_choices_to={'category': 'packaging_pallet_complement'})
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet_complement'})
-    quantity = models.FloatField(verbose_name=_('Quantity'))
+    quantity = models.FloatField(verbose_name=_('Quantity'), validators=[MinValueValidator(0)])
 
     def __str__(self):
         return f"{self.supply}"
@@ -930,25 +930,6 @@ class ProductPackagingPalletComplementarySupply(models.Model):
         ordering = ('supply', 'kind', 'product_packaging_pallet')
         constraints = [
             models.UniqueConstraint(fields=['kind', 'supply', 'product_packaging_pallet'],name='productpackagingpalletcomplementarysupply_unique_supply_product_packaging_pallet')
-        ]
-
-
-class PalletConfigurationPersonalExpense(models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
-    description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
-    cost = models.FloatField(verbose_name=_('Cost'), null=False, blank=False)
-    pallet_configuration = models.ForeignKey(Pallet, verbose_name='Pallet Configuration', on_delete=models.PROTECT,
-                                             related_name="pallet_configuration_personal_expense")
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Personal Expense')
-        verbose_name_plural = _('Personal Expenses')
-        ordering = ('name', )
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'pallet_configuration'],name='unique_personal_expense_per_pallet_configuration')
         ]
 
 
