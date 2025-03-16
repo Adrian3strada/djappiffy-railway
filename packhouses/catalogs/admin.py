@@ -1681,7 +1681,7 @@ class ProductPackagingPalletComplementarySupplyInLine(admin.TabularInline):
         if db_field.name == "supply":
             if organization:
                 kwargs["queryset"] = Supply.objects.filter(organization=organization, is_enabled=True,
-                                                           kind__usage_discount_unit_category='packaging_pallet')
+                                                           kind__category='packaging_pallet_complement')
             else:
                 kwargs["queryset"] = Supply.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)

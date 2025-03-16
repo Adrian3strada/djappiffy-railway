@@ -35,8 +35,6 @@ SUPPLY_CATEGORY_CHOICES = [
     ('packaging_protection', _('Packaging Protection')),
     ('packaging_pallet', _('Packaging Pallet')),
     ('packaging_pallet_complement', _('Packaging Pallet Complement')),
-    ('packaging_pallet_protection', _('Packaging Pallet Protection')),
-    ('packaging_pallet_wrapping', _('Packaging Pallet Wrapping')),
     ('packaging_labeling', _('Packaging Labeling')),
     ('packaging_storage', _('Packaging Storage')),
     ('packhouse_stationery', _('Packhouse Stationery')),

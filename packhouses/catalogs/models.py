@@ -906,8 +906,8 @@ class Pallet(models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Product packaging pallet')
-        verbose_name_plural = _('Product packaging pallets')
+        verbose_name = _('Ppallet')
+        verbose_name_plural = _('Pallets')
         ordering = ('name', 'organization')
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='pallet_configuration_unique_name_organization'),
@@ -916,8 +916,8 @@ class Pallet(models.Model):
 
 
 class ProductPackagingPalletComplementarySupply(models.Model):
-    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, null=False, blank=False)
-    quantity = models.FloatField(verbose_name=_('Quantity'), null=False, blank=False)
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet_complement'})
+    quantity = models.FloatField(verbose_name=_('Quantity'))
     product_packaging_pallet = models.ForeignKey(Pallet, verbose_name='Pallet Configuration', on_delete=models.CASCADE)
 
     def __str__(self):
