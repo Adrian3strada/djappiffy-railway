@@ -847,7 +847,7 @@ class ProductPackagingPresentation(models.Model):
 class Pallet(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
     alias = models.CharField(max_length=20, verbose_name=_('Alias'), null=False, blank=False)
-    pallet_supply = models.ForeignKey(Supply, verbose_name=_('Pallet supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet'})
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet'})
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -907,7 +907,7 @@ class PackagingPallet(models.Model):
 class ProductPackagingPallet(models.Model):
     packaging_pallet = models.ForeignKey(PackagingPallet, verbose_name=_('Packaging pallet'), on_delete=models.CASCADE)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
-    product_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product class'), on_delete=models.PROTECT)
+    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
 
     def __str__(self):
@@ -918,7 +918,8 @@ class ProductPackagingPallet(models.Model):
         verbose_name_plural = _('Product packaging pallets')
         ordering = ( 'product_packaging', 'packaging_pallet')
         constraints = [
-            models.UniqueConstraint(fields=['packaging_pallet' 'product_packaging', 'product_class'])
+            models.UniqueConstraint(fields=['packaging_pallet', 'product_packaging', 'product_market_class'],
+                                    name='productpackagingpallet_unique_packaging_pallet_product_packaging_product_market_class')
         ]
 
 

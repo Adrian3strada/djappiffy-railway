@@ -1552,12 +1552,12 @@ class PalletComplementarySupplyInLine(admin.TabularInline):
             formset.form.base_fields['kind'].widget.can_add_related = False
             formset.form.base_fields['kind'].widget.can_change_related = False
             formset.form.base_fields['kind'].widget.can_delete_related = False
-            formset.form.base_fields['kind'].widget.can_view_related = False
+            formset.form.base_fields['kind'].widget.can_view_related = True
         if 'supply' in formset.form.base_fields:
             formset.form.base_fields['supply'].widget.can_add_related = False
             formset.form.base_fields['supply'].widget.can_change_related = False
             formset.form.base_fields['supply'].widget.can_delete_related = False
-            formset.form.base_fields['supply'].widget.can_view_related = False
+            formset.form.base_fields['supply'].widget.can_view_related = True
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -1583,10 +1583,10 @@ class PalletComplementarySupplyInLine(admin.TabularInline):
 class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PalletResource]
-    list_display = ('name', 'alias', 'pallet_supply', 'is_enabled')
+    list_display = ('name', 'alias', 'supply', 'is_enabled')
     # list_filter = (ByMarketForOrganizationProductPackagingPalletFilter, ByProductForOrganizationProductPackagingPalletFilter, 'is_enabled')
-    list_filter = ('pallet_supply', 'is_enabled')
-    fields = ('name', 'alias', 'pallet_supply', 'is_enabled')
+    list_filter = ('supply', 'is_enabled')
+    fields = ('name', 'alias', 'supply', 'is_enabled')
     search_fields = ('name', 'alias')
     inlines = [PalletComplementarySupplyInLine]
 
@@ -1594,6 +1594,11 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     @uppercase_alphanumeric_form_charfield('alias')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        if 'supply' in form.base_fields:
+            form.base_fields['supply'].widget.can_add_related = False
+            form.base_fields['supply'].widget.can_change_related = False
+            form.base_fields['supply'].widget.can_delete_related = False
+            form.base_fields['supply'].widget.can_view_related = True
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -1636,6 +1641,11 @@ class ProductPackagingPalletInLine(admin.TabularInline):
             formset.form.base_fields['product_packaging'].widget.can_change_related = False
             formset.form.base_fields['product_packaging'].widget.can_delete_related = False
             formset.form.base_fields['product_packaging'].widget.can_view_related = False
+        if 'product_market_class' in formset.form.base_fields:
+            formset.form.base_fields['product_market_class'].widget.can_add_related = False
+            formset.form.base_fields['product_market_class'].widget.can_change_related = False
+            formset.form.base_fields['product_market_class'].widget.can_delete_related = False
+            formset.form.base_fields['product_market_class'].widget.can_view_related = False
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -1651,9 +1661,9 @@ class ProductPackagingPalletInLine(admin.TabularInline):
                 kwargs["queryset"] = ProductPackaging.objects.filter(organization=organization, is_enabled=True)
             else:
                 kwargs["queryset"] = ProductPackaging.objects.none()
-        if db_field.name == "product_class":
+        if db_field.name == "product_market_class":
             if organization:
-                kwargs["queryset"] = ProductMarketClass.objects.filter(organization=organization, is_enabled=True)
+                kwargs["queryset"] = ProductMarketClass.objects.filter(product__organization=organization, is_enabled=True)
             else:
                 kwargs["queryset"] = ProductMarketClass.objects.none()
 
@@ -1661,7 +1671,7 @@ class ProductPackagingPalletInLine(admin.TabularInline):
 
 
 @admin.register(PackagingPallet)
-class PackagingPallet(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
+class PackagingPalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductPackagingPalletResource]
     list_display = ['name', 'alias', 'market', 'product', 'pallet', 'is_enabled']
@@ -1689,19 +1699,19 @@ class PackagingPallet(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
         if db_field.name == "market":
             if organization:
-                kwargs["queryset"] = Market.objects.filter(**organization_queryfilter, kind__category='packaging_pallet')
+                kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
             else:
                 kwargs["queryset"] = Market.objects.none()
 
         if db_field.name == "product":
             if organization:
-                kwargs["queryset"] = Product.objects.filter(**organization_queryfilter, kind__category='packaging_pallet')
+                kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
             else:
                 kwargs["queryset"] = Product.objects.none()
 
         if db_field.name == "pallet":
             if organization:
-                kwargs["queryset"] = Pallet.objects.filter(**organization_queryfilter, kind__category='packaging_pallet')
+                kwargs["queryset"] = Pallet.objects.filter(**organization_queryfilter)
             else:
                 kwargs["queryset"] = Pallet.objects.none()
 
