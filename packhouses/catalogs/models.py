@@ -845,9 +845,11 @@ class ProductPackagingPresentation(models.Model):
 
 
 class Pallet(models.Model):
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet'})
     name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
     alias = models.CharField(max_length=20, verbose_name=_('Alias'), null=False, blank=False)
-    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet'})
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -859,6 +861,7 @@ class Pallet(models.Model):
         verbose_name_plural = _('Pallets')
         ordering = ('name', 'organization')
         constraints = [
+            models.UniqueConstraint(fields=['market', 'product', 'supply'], name='pallet_configuration_unique_market_product_supply'),
             models.UniqueConstraint(fields=['name', 'organization'], name='pallet_configuration_unique_name_organization'),
             models.UniqueConstraint(fields=['alias', 'organization'], name='pallet_configuration_unique_alias_organization')
         ]

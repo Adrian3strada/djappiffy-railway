@@ -1583,10 +1583,10 @@ class PalletComplementarySupplyInLine(admin.TabularInline):
 class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PalletResource]
-    list_display = ('name', 'alias', 'supply', 'is_enabled')
+    list_display = ('name', 'alias', 'market', 'product', 'supply', 'is_enabled')
     # list_filter = (ByMarketForOrganizationProductPackagingPalletFilter, ByProductForOrganizationProductPackagingPalletFilter, 'is_enabled')
-    list_filter = ('supply', 'is_enabled')
-    fields = ('name', 'alias', 'supply', 'is_enabled')
+    list_filter = ('market', 'product', 'supply', 'is_enabled')
+    fields = ('market', 'product', 'supply', 'name', 'alias', 'is_enabled')
     search_fields = ('name', 'alias')
     inlines = [PalletComplementarySupplyInLine]
 
@@ -1594,6 +1594,16 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     @uppercase_alphanumeric_form_charfield('alias')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        if 'market' in form.base_fields:
+            form.base_fields['market'].widget.can_add_related = False
+            form.base_fields['market'].widget.can_change_related = False
+            form.base_fields['market'].widget.can_delete_related = False
+            form.base_fields['market'].widget.can_view_related = True
+        if 'product' in form.base_fields:
+            form.base_fields['product'].widget.can_add_related = False
+            form.base_fields['product'].widget.can_change_related = False
+            form.base_fields['product'].widget.can_delete_related = False
+            form.base_fields['product'].widget.can_view_related = True
         if 'supply' in form.base_fields:
             form.base_fields['supply'].widget.can_add_related = False
             form.base_fields['supply'].widget.can_change_related = False
@@ -1680,6 +1690,21 @@ class PackagingPalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        if 'market' in form.base_fields:
+            form.base_fields['market'].widget.can_add_related = False
+            form.base_fields['market'].widget.can_change_related = False
+            form.base_fields['market'].widget.can_delete_related = False
+            form.base_fields['market'].widget.can_view_related = True
+        if 'product' in form.base_fields:
+            form.base_fields['product'].widget.can_add_related = False
+            form.base_fields['product'].widget.can_change_related = False
+            form.base_fields['product'].widget.can_delete_related = False
+            form.base_fields['product'].widget.can_view_related = True
+        if 'pallet' in form.base_fields:
+            form.base_fields['pallet'].widget.can_add_related = False
+            form.base_fields['pallet'].widget.can_change_related = False
+            form.base_fields['pallet'].widget.can_delete_related = False
+            form.base_fields['pallet'].widget.can_view_related = True
         return form
 
     def get_readonly_fields(self, request, obj=None):
