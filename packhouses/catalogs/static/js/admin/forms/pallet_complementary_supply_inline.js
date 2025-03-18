@@ -19,9 +19,9 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   document.addEventListener('formset:added', function (event) {
-    if (event.detail.formsetName === 'productpackagingpalletcomplementarysupply_set') {
+    if (event.detail.formsetName === 'palletcomplementarysupply_set') {
       const newForm = event.target;
-      const kindField = $(newForm).find('select[name$="kind"]');
+      const kindField = $(newForm).find('select[name$="-kind"]');
       const supplyField = $(newForm).find('select[name$="-supply"]');
       const quantityField = $(newForm).find('input[name$="-quantity"]');
 
@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
       updateFieldOptions(supplyField, [])
 
       kindField.on('change', function () {
+        alert("aqui")
         const supplyKindId = kindField.val();
         if (supplyKindId) {
           fetchOptions(`/rest/v1/catalogs/supply/?kind=${supplyKindId}&is_enabled=1`)
@@ -46,11 +47,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   setTimeout(() => {
-    const existingForms = document.querySelectorAll('tr[id^="productpackagingpalletcomplementarysupply_set-"].form-row.has_original.dynamic-productpresentationcomplementarysupply_set');
+    const existingForms = document.querySelectorAll('tr[id^="palletcomplementarysupply_set-"].form-row.has_original.dynamic-productpresentationcomplementarysupply_set');
     existingForms.forEach((form, index) => {
-      const kindField = $(form).find(`select[name="productpackagingpalletcomplementarysupply_set-${index}-kind"]`);
-      const supplyField = $(form).find(`select[name="productpackagingpalletcomplementarysupply_set-${index}-supply"]`);
-      const quantityField = $(form).find(`input[name="productpackagingpalletcomplementarysupply_set-${index}-quantity"]`);
+      const kindField = $(form).find(`select[name="palletcomplementarysupply_set-${index}-kind"]`);
+      const supplyField = $(form).find(`select[name="palletcomplementarysupply_set-${index}-supply"]`);
+      const quantityField = $(form).find(`input[name="palletcomplementarysupply_set-${index}-quantity"]`);
 
       quantityField.attr('min', 1);
       const selectedSupply = supplyField.val();

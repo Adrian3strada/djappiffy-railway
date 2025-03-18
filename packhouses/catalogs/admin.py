@@ -1576,7 +1576,7 @@ class PalletComplementarySupplyInLine(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/product_packaging_pallet_complementary_supply_inline.js',)
+        js = ('js/admin/forms/pallet_complementary_supply_inline.js',)
 
 
 @admin.register(Pallet)
