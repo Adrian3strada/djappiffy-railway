@@ -801,7 +801,7 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.CASCADE)
-    product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'),
+    product_amount_per_packaging = models.FloatField(verbose_name=_('Product amount per packaging'),
                                                                null=True, blank=True,
                                                                validators=[MinValueValidator(0.01)])
     product_presentation = models.ForeignKey(ProductPresentation, verbose_name=_('Product presentation'),
@@ -826,7 +826,6 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-
 class ProductPackagingPresentation(models.Model):
     product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
     product_presentation = models.ForeignKey(ProductPresentation, verbose_name=_('presentation'), on_delete=models.CASCADE)
@@ -840,6 +839,88 @@ class ProductPackagingPresentation(models.Model):
             models.UniqueConstraint(fields=('product_packaging', 'product_presentation'),
                                     name='productpackagingpresentation_unique_productpackaging_presentation'),
         ]
+
+
+# Pallets
+
+
+class Pallet(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
+    alias = models.CharField(max_length=20, verbose_name=_('Alias'), null=False, blank=False)
+    pallet_supply = models.ForeignKey(Supply, verbose_name=_('Pallet supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet'})
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Ppallet')
+        verbose_name_plural = _('Pallets')
+        ordering = ('name', 'organization')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='pallet_configuration_unique_name_organization'),
+            models.UniqueConstraint(fields=['alias', 'organization'], name='pallet_configuration_unique_alias_organization')
+        ]
+
+
+class PalletComplementarySupply(models.Model):
+    pallet = models.ForeignKey(Pallet, verbose_name='Pallet Configuration', on_delete=models.CASCADE)
+    kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT, limit_choices_to={'category': 'packaging_pallet_complement'})
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet_complement'})
+    quantity = models.FloatField(verbose_name=_('Quantity'), validators=[MinValueValidator(0)])
+
+    def __str__(self):
+        return f"{self.supply}"
+
+    class Meta:
+        verbose_name = _('Pallet Complementary supply')
+        verbose_name_plural = _('Pallet Complementary supplies')
+        ordering = ('supply', 'kind', 'pallet')
+        constraints = [
+            models.UniqueConstraint(fields=['kind', 'supply', 'pallet'],name='productpackagingpalletcomplementarysupply_unique_kind_supply_pallet')
+        ]
+
+
+class PackagingPallet(models.Model):
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    pallet = models.ForeignKey(Pallet, verbose_name=_('Pallet'), on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    alias = models.CharField(max_length=20, verbose_name=_('Alias'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Product packaging pallet')
+        verbose_name_plural = _('Product packaging pallets')
+        ordering = ('name', 'product', 'market', 'pallet')
+        constraints = [
+            models.UniqueConstraint(fields=['market', 'product', 'pallet', 'organization'], name='productpackagingpallet_unique_market_product_pallet_organization'),
+            models.UniqueConstraint(fields=['name', 'alias', 'organization'], name='productpackagingpallet_unique_name_alias_organization')
+        ]
+
+
+class ProductPackagingPallet(models.Model):
+    packaging_pallet = models.ForeignKey(PackagingPallet, verbose_name=_('Packaging pallet'), on_delete=models.CASCADE)
+    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
+    product_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product class'), on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
+
+    def __str__(self):
+        return f"{self.pk} {self.product_packaging}"
+
+    class Meta:
+        verbose_name = _('Product packaging pallet')
+        verbose_name_plural = _('Product packaging pallets')
+        ordering = ( 'product_packaging', 'packaging_pallet')
+        constraints = [
+            models.UniqueConstraint(fields=['packaging_pallet' 'product_packaging', 'product_class'])
+        ]
+
 
 
 # Básculas
@@ -891,46 +972,6 @@ class ColdChamber(models.Model):
         verbose_name_plural = _('Cold chambers')
         unique_together = ('name', 'organization')
         ordering = ('name',)
-
-
-# Pallets
-
-class Pallet(models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
-    alias = models.CharField(max_length=20, verbose_name=_('Alias'), null=False, blank=False)
-    pallet_supply = models.ForeignKey(Supply, verbose_name=_('Pallet supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet'})
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Ppallet')
-        verbose_name_plural = _('Pallets')
-        ordering = ('name', 'organization')
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='pallet_configuration_unique_name_organization'),
-            models.UniqueConstraint(fields=['alias', 'organization'], name='pallet_configuration_unique_alias_organization')
-        ]
-
-
-class ProductPackagingPalletComplementarySupply(models.Model):
-    product_packaging_pallet = models.ForeignKey(Pallet, verbose_name='Pallet Configuration', on_delete=models.CASCADE)
-    kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT, limit_choices_to={'category': 'packaging_pallet_complement'})
-    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet_complement'})
-    quantity = models.FloatField(verbose_name=_('Quantity'), validators=[MinValueValidator(0)])
-
-    def __str__(self):
-        return f"{self.supply}"
-
-    class Meta:
-        verbose_name = _('Product packaging pallet, Complementary supply')
-        verbose_name_plural = _('Product packaging pallet, Complementary supplies')
-        ordering = ('supply', 'kind', 'product_packaging_pallet')
-        constraints = [
-            models.UniqueConstraint(fields=['kind', 'supply', 'product_packaging_pallet'],name='productpackagingpalletcomplementarysupply_unique_supply_product_packaging_pallet')
-        ]
 
 
 # configuración de productos
