@@ -125,6 +125,30 @@
             <td style="text-align: center;">${{ item.total_price|default:"0.00" }} {{ currency }}</td>
         </tr>
         {% endfor %}
+        {% if formatted_charge_values %}
+            <tr>
+              <th colspan="4" style="text-align: center;">{% translate "Charges" %}</th>
+            </tr>
+            {% for item in formatted_charge_values %}
+            <tr>
+                <td colspan="2"> {{ item.charge }} </td>
+                <td style="text-align: center;">${{ item.amount|default:"0.00" }} {{ currency }}</td>
+                <td style="text-align: center;">${{ item.amount|default:"0.00" }} {{ currency }}</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+        {% if formatted_deduction_values %}
+            <tr>
+              <th colspan="4" style="text-align: center;">{% translate "Deductions" %}</th>
+            </tr>
+            {% for item in formatted_deduction_values %}
+            <tr>
+                <td colspan="2"> {{ item.deduction }} </td>
+                <td style="text-align: center;">-${{ item.amount|default:"0.00" }} {{ currency }}</td>
+                <td style="text-align: center;">-${{ item.amount|default:"0.00" }} {{ currency }}</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
     </tbody>
     <tfoot>
         <tr>

@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils.translation import gettext as _
-from .models import (Requisition, RequisitionSupply, Country, Region, SubRegion, City, PurchaseOrder, PurchaseOrderSupply)
+from .models import (Requisition, RequisitionSupply, Country, Region, SubRegion, City, PurchaseOrder, PurchaseOrderSupply,
+                     PurchaseOrderCharge, PurchaseOrderDeduction)
 from packhouses.catalogs.models import HarvestingCrew
 from django.template.loader import render_to_string
 from django.http import HttpResponse
@@ -167,6 +168,8 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
 
     # Obtener los inlines relacionados
     purchaseordersupplyinline = PurchaseOrderSupply.objects.filter(purchase_order=purchase_order_supply)
+    purchaseorderchargeinline = PurchaseOrderCharge.objects.filter(purchase_order=purchase_order_supply)
+    purchaseorderdedutioninline = PurchaseOrderDeduction.objects.filter(purchase_order=purchase_order_supply)
 
     formatted_supply_values = []
     for obj in purchaseordersupplyinline:
@@ -193,6 +196,20 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
     total = round(subtotal + tax,2)
 
     currency = purchase_order_supply.currency.code
+
+    formatted_charge_values = []
+    for obj in purchaseorderchargeinline:
+        formatted_charge_values.append({
+            'charge': f"{obj.charge}",
+            'amount': obj.amount,
+        })
+
+    formatted_deduction_value = []
+    for obj in purchaseorderdedutioninline:
+        formatted_deduction_value.append({
+            'deduction': f"{obj.deduction}",
+            'amount': obj.amount,
+        })
 
     # CSS
     base_url = request.build_absolute_uri('/')
@@ -230,6 +247,8 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
         'provider_text': provider_text,
         'payment_date_text': payment_date_text,
         'order_date_text': order_date_text,
+        'formatted_charge_values': formatted_charge_values,
+        'formatted_deduction_value': formatted_deduction_value,
     })
 
     # Convertir el HTML a PDF
