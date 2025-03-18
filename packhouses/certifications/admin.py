@@ -10,7 +10,7 @@ from common.base.models import RequirementCertification, CertificationEntity#, R
 from django.db.models import Q
 from django.utils.html import format_html
 from django.urls import reverse
-from nonrelated_inlines.admin import NonrelatedTabularInline
+# from nonrelated_inlines.admin import NonrelatedTabularInline
 import nested_admin
 
 # class RequirementInline(nested_admin.NestedStackedInline):
@@ -52,16 +52,6 @@ class CertificationsAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
         if obj:
             return ['certification_entity']
         return []
-
-    # def requirement_certifications(self, obj):
-    #     # Obtener las certificaciones de requisitos relacionadas con la entidad de certificación
-    #     requirement_certifications = RequirementCertification.objects.filter(certification_entity=obj.certification_entity)
-    #     print(f"{requirement_certifications}")
-    #     # Devolver los nombres de los documentos (o cualquier campo relevante)
-    #     return ", ".join([rc.name for rc in requirement_certifications])
-
-    # requirement_certifications.short_description = 'Requirement Certifications'  # Título en la lista
-
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "certification_entity":
