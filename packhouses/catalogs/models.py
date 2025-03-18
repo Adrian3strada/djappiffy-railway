@@ -868,7 +868,7 @@ class PalletComplementarySupply(models.Model):
     pallet = models.ForeignKey(Pallet, verbose_name='Pallet Configuration', on_delete=models.CASCADE)
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT, limit_choices_to={'category': 'packaging_pallet_complement'})
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet_complement'})
-    quantity = models.FloatField(verbose_name=_('Quantity'), validators=[MinValueValidator(0)])
+    quantity = models.IntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
 
     def __str__(self):
         return f"{self.supply}"

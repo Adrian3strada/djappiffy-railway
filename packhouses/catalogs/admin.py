@@ -1603,8 +1603,7 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj,
-                                    exclude=[Market, Product, Supply, Organization]):
+        if obj and is_instance_used(obj, exclude=[Market, Product, Supply, Organization, PalletComplementarySupply]):
             readonly_fields.extend(['market', 'product', 'name', 'alias', 'supply'])
         return readonly_fields
 
