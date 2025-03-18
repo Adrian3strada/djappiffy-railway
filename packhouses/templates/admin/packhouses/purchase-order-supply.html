@@ -131,7 +131,7 @@
             </tr>
             {% for item in formatted_charge_values %}
             <tr>
-                <td colspan="2"> {{ item.charge }} </td>
+                <td colspan="2" style="text-transform: uppercase;"> {{ item.charge }} </td>
                 <td style="text-align: center;">${{ item.amount|default:"0.00" }} {{ currency }}</td>
                 <td style="text-align: center;">${{ item.amount|default:"0.00" }} {{ currency }}</td>
             </tr>
@@ -143,7 +143,7 @@
             </tr>
             {% for item in formatted_deduction_values %}
             <tr>
-                <td colspan="2"> {{ item.deduction }} </td>
+                <td colspan="2" style="text-transform: uppercase;"> {{ item.deduction }} </td>
                 <td style="text-align: center;">-${{ item.amount|default:"0.00" }} {{ currency }}</td>
                 <td style="text-align: center;">-${{ item.amount|default:"0.00" }} {{ currency }}</td>
             </tr>

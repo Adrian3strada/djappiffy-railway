@@ -169,7 +169,7 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
     # Obtener los inlines relacionados
     purchaseordersupplyinline = PurchaseOrderSupply.objects.filter(purchase_order=purchase_order_supply)
     purchaseorderchargeinline = PurchaseOrderCharge.objects.filter(purchase_order=purchase_order_supply)
-    purchaseorderdedutioninline = PurchaseOrderDeduction.objects.filter(purchase_order=purchase_order_supply)
+    purchaseorderdeductioninline = PurchaseOrderDeduction.objects.filter(purchase_order=purchase_order_supply)
 
     formatted_supply_values = []
     for obj in purchaseordersupplyinline:
@@ -204,9 +204,9 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
             'amount': obj.amount,
         })
 
-    formatted_deduction_value = []
-    for obj in purchaseorderdedutioninline:
-        formatted_deduction_value.append({
+    formatted_deduction_values = []
+    for obj in purchaseorderdeductioninline:
+        formatted_deduction_values.append({
             'deduction': f"{obj.deduction}",
             'amount': obj.amount,
         })
@@ -248,7 +248,7 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
         'payment_date_text': payment_date_text,
         'order_date_text': order_date_text,
         'formatted_charge_values': formatted_charge_values,
-        'formatted_deduction_value': formatted_deduction_value,
+        'formatted_deduction_values': formatted_deduction_values,
     })
 
     # Convertir el HTML a PDF
