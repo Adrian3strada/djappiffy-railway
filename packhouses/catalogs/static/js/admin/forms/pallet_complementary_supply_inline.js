@@ -29,9 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
       updateFieldOptions(supplyField, [])
 
       kindField.on('change', function () {
-        alert("aqui")
-        const supplyKindId = kindField.val();
-        if (supplyKindId) {
+        if (kindField.val()) {
           fetchOptions(`/rest/v1/catalogs/supply/?kind=${supplyKindId}&is_enabled=1`)
             .then(data => {
               updateFieldOptions(supplyField, data);
