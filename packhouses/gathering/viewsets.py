@@ -1,19 +1,17 @@
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from .serializers import ScheduleHarvestVehicleSerializer
 from packhouses.gathering.models import ScheduleHarvestVehicle
 
 
-class ScheduleHarvestVehicleViewSet(viewsets.ModelViewSet):
+class ScheduleHarvestVehicleViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ScheduleHarvestVehicleSerializer
-    filterset_fields = ['id', 'vehicle_id']
-    pagination_class = None
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ['harvest_cutting_id', 'vehicle_id']
 
     def get_queryset(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            raise NotAuthenticated()
-
-        return ScheduleHarvestVehicle.objects.filter(organization=self.request.organization)
-
-
+        return ScheduleHarvestVehicle.objects.filter(
+            harvest_cutting_id=self.request.query_params.get('harvest_cutting_id'),
+            vehicle_id=self.request.query_params.get('vehicle_id')
+        ).select_related('vehicle', 'harvest_cutting')

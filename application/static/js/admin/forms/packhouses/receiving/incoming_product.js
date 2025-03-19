@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const API_BASE_URL = '/rest/v1';
-
     document.querySelectorAll(".djn-add-item .add-handler").forEach(button => {
         button.style.display = "none"; 
     });
@@ -10,6 +8,11 @@ document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll("th.original").forEach(row => {
         row.style.display = "none";  
     });
+});
+
+/*
+document.addEventListener("DOMContentLoaded", function() {
+    const API_BASE_URL = '/rest/v1';
 
     const vehicleRows = document.querySelectorAll('tbody[id^="scheduleharvest_set-0-scheduleharvestvehicle_set-"]');
 
@@ -36,37 +39,52 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     });
 
-    const testEndpoint = (url, options = {}) => {
-        return fetch(url, {
-          method: 'GET',
-          headers: {
+    const harvestCuttingId = 
+const vehicleId = 2;        
+const stampNumberFromFrontend = "1122"; 
+const url = `${API_BASE_URL}/gathering/harvest-cutting-vehicle/?harvest_cutting_id=${harvestCuttingId}&vehicle_id=${vehicleId}`;
+
+const testEndpoint = (url) => {
+    return fetch(url, {
+        method: 'GET',
+        headers: {
             'Content-Type': 'application/json',
-            // 'Authorization': 'Bearer TU_TOKEN' // Agrega si necesitas autenticación
-          },
-          ...options
-        })
-        .then(response => {
-          if (!response.ok) throw new Error(`Error ${response.status}`);
-          return response.json();
-        })
-        .catch(error => {
-          console.error('Falló el endpoint:', url, error);
-          throw error;
-        });
-      };
-      
-      // Ejemplo de uso:
-      testEndpoint(`${API_BASE_URL}/gathering/harvest-cutting-vehicle=1`)
-        .then(data => {
-          console.log('Vehículos:', data);
-          // Actualizar UI aquí
-        })
-        .catch(() => {
-          console.log('Mostrar error al usuario');
-        });
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error(`Error ${response.status}`);
+        return response.json();
+    })
+    .catch(error => {
+        console.error('Falló el endpoint:', url, error);
+        throw error;
+    });
+};
 
 
+testEndpoint(url)
+    .then(data => {
+        console.log('Vehículo:', data);
+
+        if (data && data.results && data.results.length > 0) {
+            const vehicle = data.results[0]; 
+            if (vehicle.stamp_number === stampNumberFromFrontend) {
+                console.log('stamp_number coincide');
+                
+               
+            } else {
+                console.log('El stamp_number no coincide');
+                alert('El número de sello no coincide.');
+            }
+        } else {
+            console.log('No se encontró el vehículo');
+        }
+    })
+    .catch(() => {
+        alert('Hubo un error al verificar el vehículo. Intenta nuevamente.');
+    });
 
 });
 
 
+*/

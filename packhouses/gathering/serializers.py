@@ -5,4 +5,4 @@ from django.utils.translation import gettext_lazy as _
 class ScheduleHarvestVehicleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ScheduleHarvestVehicle
-        fields = '__all__'
+        fields = ['id', 'stamp_number', 'vehicle_id', 'harvest_cutting_id'] 

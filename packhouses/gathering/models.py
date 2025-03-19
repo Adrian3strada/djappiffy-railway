@@ -123,7 +123,7 @@ class ScheduleHarvest(models.Model):
         on_delete=models.PROTECT,
         verbose_name=_('Organization'),
     )
-    incoming_product = models.ForeignKey(IncomingProduct, on_delete=models.SET_NULL, null=True, blank=True)
+    incoming_product = models.OneToOneField(IncomingProduct, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.ooid}"
