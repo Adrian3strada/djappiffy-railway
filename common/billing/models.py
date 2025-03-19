@@ -54,10 +54,10 @@ class BillingSerie(models.Model):
         unique_together = ('serie', 'folio', 'kind', 'legal_entity')
 
 class ExchangeRate(models.Model):
-    currency_unit = models.DecimalField(max_digits=10, decimal_places=2, default=1)
-    currency = models.ForeignKey(Currency, related_name='exchange_rates_from', on_delete=models.PROTECT)
+    source_value = models.DecimalField(max_digits=10, decimal_places=2, default=1, editable=False)
+    source = models.ForeignKey(Currency, related_name='exchange_rates_from', on_delete=models.PROTECT)
     exchange_rate_value = models.DecimalField(max_digits=10, decimal_places=2)
-    target_currency = models.ForeignKey(Currency, related_name='exchange_rates_to', on_delete=models.PROTECT) 
+    target = models.ForeignKey(Currency, related_name='exchange_rates_to', on_delete=models.PROTECT) 
     registration_date = models.DateTimeField(auto_now_add=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -65,3 +65,21 @@ class ExchangeRate(models.Model):
     class Meta:
         verbose_name = _('Exchange Rate')
         verbose_name_plural = _('Exchange Rates')
+
+    def composite_key(self):
+        return f"{self.source.code}:{self.target.code}-{self.registration_date.strftime('%Y-%m-%d %H:%M')}"
+    
+    composite_key.short_description = 'Key'
+    composite_key.admin_order_field = 'registration_date'
+
+    def get_source_name(self):
+        return self.source.name
+
+    get_source_name.short_description = 'Source'
+    get_source_name.admin_order_field = 'currency__name'
+
+    def get_target_name(self):
+        return self.target.name
+
+    get_target_name.short_description = 'Target'
+    get_target_name.admin_order_field = 'currency__name'

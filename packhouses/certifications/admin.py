@@ -6,35 +6,32 @@ from common.profiles.models import OrganizationProfile
 from common.base.mixins import ByOrganizationAdminMixin
 from .models import (Certifications, CertificationsDocuments)
 from common.utils import is_instance_used
-from common.base.models import RequirementCertification, CertificationEntity#, RequirementProxy
+from common.base.models import RequirementCertification, CertificationEntity
 from django.db.models import Q
 from django.utils.html import format_html
 from django.urls import reverse
-# from nonrelated_inlines.admin import NonrelatedTabularInline
 import nested_admin
 
-# class RequirementInline(nested_admin.NestedStackedInline):
-#     model = RequirementProxy
-#     extra = 0
-#     readonly_fields = ('name',)
+# class RequirementCertificationInline(admin.TabularInline):
+    # model = RequirementCertification
+    # extra = 0  # No agrega filas vacías automáticamente
+    # readonly_fields = ('name', 'route', 'is_enabled')  # Solo lectura
+    # can_delete = False  # No se pueden eliminar desde aquí
 
-#     def get_queryset(self, request):
-#         """
-#         Filtra los Requirement para que solo se muestren los relacionados con la Entity de la Certification.
-#         """
-#         qs = super().get_queryset(request)
-#         certification_id = request.resolver_match.kwargs.get('object_id')
-#         if certification_id:
-#             certification = Certification.objects.filter(id=certification_id).first()
-#             if certification:
-#                 return qs.filter(entity=certification.entity)
-#         return qs.none()
+    # def has_add_permission(self, request, obj=None):
+    #     return False  # No permite agregar desde esta vista
 
-#     def has_add_permission(self, request, obj=None):
-#         return False  # No permitir agregar nuevos Requirements desde aquí
+    # def get_queryset(self, request):
+    #     """
+    #     Filtra los requerimientos solo para el CertificationEntity del objeto actual.
+    #     """
+    #     qs = super().get_queryset(request)
+    #     if request.resolver_match.kwargs.get('object_id'):  # Si estamos editando un objeto existente
+    #         certification = Certifications.objects.filter(id=request.resolver_match.kwargs['object_id']).first()
+    #         if certification:
+    #             return qs.filter(certification_entity=certification.certification_entity)
+    #     return qs.none()
 
-#     def has_change_permission(self, request, obj=None):
-#         return False  # No permitir editar Requirements desde aquí
 
 class CertificationsDocumentsInline(admin.TabularInline):
     model = CertificationsDocuments
@@ -42,11 +39,11 @@ class CertificationsDocumentsInline(admin.TabularInline):
 
 @admin.register(Certifications)
 class CertificationsAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
-    list_display = ('certification_entity',)# 'requirement_certifications')
+    list_display = ('certification_entity',)
     list_filter = ['certification_entity']
     exclude = ['organization']
-    inlines = [CertificationsDocumentsInline]
-    # inlines = [CertificationsDocumentsInline, RequirementInline]
+    # inlines = [CertificationsDocumentsInline]
+    # inlines = [RequirementCertificationInline]
 
     def get_readonly_fields(self, request, obj=None):
         if obj:

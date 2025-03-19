@@ -14,8 +14,8 @@ class LegalEntityAdmin(admin.ModelAdmin):
 
 @admin.register(ExchangeRate)
 class ExchangeRateAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
-    list_display = ('currency_unit', 'currency', 'exchange_rate_value', 'target_currency', 'registration_date', 'is_enabled')
-    list_filter = ['currency_unit', 'currency', 'exchange_rate_value', 'target_currency', 'registration_date', 'is_enabled']
+    list_display = ('composite_key', 'get_source_name', 'exchange_rate_value', 'get_target_name', 'registration_date', 'is_enabled')
+    list_filter = ['source', 'exchange_rate_value', 'target', 'registration_date', 'is_enabled']
     exclude = ['organization']
 
     class Media:
