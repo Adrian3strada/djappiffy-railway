@@ -51,8 +51,8 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       ByCityForOrganizationWeighingScaleFilter, ByCountryForOrganizationExportingCompaniesFilter,
                       ByStateForOrganizationExportingCompaniesFilter, ByCityForOrganizationExportingCompaniesFilter,
                       ByCountryForOrganizationCustomsBrokersFilter, ByProductForOrganizationProductPackagingPalletFilter,
-                      ByMarketForOrganizationProductPackagingPalletFilter,
-                      ByProductVarietyForOrganizationPalletConfigurationFilter,
+                      ByMarketForOrganizationPalletFilter,
+                      BySupplyForOrganizationPalletFilter,
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -1583,12 +1583,18 @@ class PalletComplementarySupplyInLine(admin.TabularInline):
 class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PalletResource]
-    list_display = ('name', 'alias', 'market', 'product', 'supply', 'is_enabled')
-    # list_filter = (ByMarketForOrganizationProductPackagingPalletFilter, ByProductForOrganizationProductPackagingPalletFilter, 'is_enabled')
-    list_filter = ('market', 'product', 'supply', 'is_enabled')
-    fields = ('market', 'product', 'supply', 'name', 'alias', 'is_enabled')
+    list_display = ('name', 'alias', 'markets_display', 'product', 'supply', 'is_enabled')
+    list_filter = (ByMarketForOrganizationPalletFilter, ByProductForOrganizationProductPackagingPalletFilter,
+                   BySupplyForOrganizationPalletFilter, 'is_enabled')
+    # list_filter = ('markets', 'product', 'supply', 'is_enabled')
+    fields = ('markets', 'product', 'supply', 'name', 'alias', 'is_enabled')
     search_fields = ('name', 'alias')
     inlines = [PalletComplementarySupplyInLine]
+
+    def markets_display(self, obj):
+        return ', '.join([market.name for market in obj.markets.all()])
+    markets_display.short_description = _('Markets')
+    markets_display.admin_order_field = 'name'
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
@@ -1621,8 +1627,17 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
 
+        if db_field.name == "product":
+            if organization:
+                kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
+            else:
+                kwargs["queryset"] = Product.objects.none()
+
         if db_field.name == "supply":
-            kwargs["queryset"] = Supply.objects.filter(**organization_queryfilter, kind__category='packaging_pallet')
+            if organization:
+                kwargs["queryset"] = Supply.objects.filter(**organization_queryfilter, kind__category='packaging_pallet')
+            else:
+                kwargs["queryset"] = Supply.objects.none()
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
