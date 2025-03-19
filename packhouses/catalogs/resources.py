@@ -1,6 +1,6 @@
 from import_export.fields import Field
 from .models import (Market, Product, ProductSize, Provider, Client, Vehicle, Gatherer, Maquiladora, Orchard, HarvestingCrew,
-                     Supply, Packaging, Service, WeighingScale, ColdChamber, PalletConfiguration,
+                     Supply, Packaging, Service, WeighingScale, ColdChamber, Pallet,
                      ExportingCompany, Transfer, LocalTransporter, BorderToDestinationTransporter, CustomsBroker,
                      Vessel, Airline, InsuranceCompany, HarvestContainer)
 from django.http import HttpResponse
@@ -243,15 +243,16 @@ class PackagingResource(DehydrationResource, ExportResource):
         if not containers:
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{i.inside.name} ({i.quantity})" for i in containers]) + "</ul>"
+            return "<ul>" + "".join([f"<li>{i.inside.name} ({i.product_amount_per_packaging})" for i in containers]) + "</ul>"
         else:
-            return ", ".join([f"{i.inside.name} ({i.quantity})" for i in containers])
+            return ", ".join([f"{i.inside.name} ({i.product_amount_per_packaging})" for i in containers])
 
     class Meta:
         model = Packaging
         exclude = default_excluded_fields
         export_order = ('id', 'name', 'packaging_supply_quantity', 'packaging_supply_kind', 'packaging_supply', 'product', 'markets', 'product_standard_packaging',
                         'max_product_amount_per_package', 'supply_kind', 'relation_packaging', 'is_enabled')
+
 
 class ServiceResource(DehydrationResource, ExportResource):
     class Meta:
@@ -270,7 +271,7 @@ class ColdChamberResource(DehydrationResource, ExportResource):
 
 class PalletConfigurationResource(DehydrationResource, ExportResource):
     class Meta:
-        model = PalletConfiguration
+        model = Pallet
         exclude = default_excluded_fields
 
 
