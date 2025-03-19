@@ -189,14 +189,6 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
             'total_price': round(obj.unit_price * quantity,2),
         })
 
-    subtotal = sum(item['total_price'] for item in formatted_supply_values)
-    percentage_tax = purchase_order_supply.tax
-    tax = round(subtotal * (purchase_order_supply.tax / 100), 2)
-
-    total = round(subtotal + tax,2)
-
-    currency = purchase_order_supply.currency.code
-
     formatted_charge_values = []
     for obj in purchaseorderchargeinline:
         formatted_charge_values.append({
@@ -210,6 +202,23 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
             'deduction': f"{obj.deduction}",
             'amount': obj.amount,
         })
+
+    # Calcular el subtotal base
+    subtotal = sum(item['total_price'] for item in formatted_supply_values)
+
+    # Calcular el impuesto sobre el subtotal modificado
+    percentage_tax = purchase_order_supply.tax
+    tax = round(subtotal * (percentage_tax / 100), 2)
+
+    # Calcular el total
+    subtotal_with_tax = round(subtotal + tax, 2)
+
+    # Sumar los cargos y restar las deducciones
+    total = subtotal_with_tax + sum(item["amount"] for item in formatted_charge_values) - sum(
+    item["amount"] for item in formatted_deduction_values)
+
+    # Obtener la moneda
+    currency = purchase_order_supply.currency.code
 
     # CSS
     base_url = request.build_absolute_uri('/')
@@ -240,6 +249,7 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
         'applicant_name': applicant_name,
         'applicant_email': applicant_email,
         'subtotal': subtotal,
+        'subtotal_with_tax': subtotal_with_tax,
         'percentage_tax': percentage_tax,
         'tax': tax,
         'total': total,

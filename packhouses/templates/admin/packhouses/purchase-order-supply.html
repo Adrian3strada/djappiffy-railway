@@ -125,6 +125,18 @@
             <td style="text-align: center;">${{ item.total_price|default:"0.00" }} {{ currency }}</td>
         </tr>
         {% endfor %}
+        <tr>
+            <td colspan="3" style="text-align: right;">{% translate "SUBTOTAL:" %}</td>
+            <td style="text-align: center;">${{ subtotal }} {{ currency }}</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="text-align: right;">{% translate "TAX" %} ({{ percentage_tax }} %):</td>
+            <td style="text-align: center;">${{ tax }} {{ currency }}</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="text-align: right;">{% translate "SUBTOTAL + TAX:" %}</td>
+            <td style="text-align: center;">${{ subtotal_with_tax }} {{ currency }}</td>
+        </tr>
         {% if formatted_charge_values %}
             <tr>
               <th colspan="4" style="text-align: center;">{% translate "Charges" %}</th>
@@ -149,21 +161,11 @@
             </tr>
             {% endfor %}
         {% endif %}
-    </tbody>
-    <tfoot>
-        <tr>
-            <td colspan="3" style="text-align: right;">{% translate "SUBTOTAL:" %}</td>
-            <td style="text-align: center;">${{ subtotal }} {{ currency }}</td>
-        </tr>
-        <tr>
-            <td colspan="3" style="text-align: right;">{% translate "TAX" %} ({{ percentage_tax }} %):</td>
-            <td style="text-align: center;">${{ tax }} {{ currency }}</td>
-        </tr>
         <tr>
             <td colspan="3" style="text-align: right; font-weight: bold;">{% translate "TOTAL:" %}</td>
             <td style="text-align: center; font-weight: bold;">${{ total }} {{ currency }}</td>
         </tr>
-    </tfoot>
+    </tbody>
 </table>
 </div>
 
