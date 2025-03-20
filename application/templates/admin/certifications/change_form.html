@@ -57,12 +57,35 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
+            // let table = document.querySelector(".tab-content");
+            // let table = document.getElementById("general-tab");
+            // table = table.querySelector(".card");
+            // console.log(table);
+            // const x = `
+            //     <table>
+            //         <tr>
+            //             <th>Company</th>
+            //             <th>Contact</th>
+            //             <th>Country</th>
+            //         </tr>
+            //         <tr>
+            //             <td>Alfreds Futterkiste</td>
+            //             <td>Maria Anders</td>
+            //             <td>Germany</td>
+            //         </tr>
+            //         <tr>
+            //             <td>Centro comercial Moctezuma</td>
+            //             <td>Francisco Chang</td>
+            //             <td>Mexico</td>
+            //         </tr>
+            //     </table>
+            // `;
+            // table.innerHTML += x;
+
             let pathArray = window.location.pathname.split('/');
             let certificationEntityId = pathArray[4];
 
             const apiUrl = `http://uno.dev.certiffy.net:8000/rest/v1/requirement-certification?certification_entity=${certificationEntityId}`;
-   
-            console.log(certificationEntityId);
             
             if(!isNaN(certificationEntityId)){
                 fetch(apiUrl)  // Cambia la URL a la de tu API

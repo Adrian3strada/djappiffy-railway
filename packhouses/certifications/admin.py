@@ -21,7 +21,7 @@ class CertificationsAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     list_display = ('certification_entity',)
     list_filter = ['certification_entity']
     exclude = ['organization']
-    change_form_template = "admin/certifications/change_form.html"
+    # change_form_template = "admin/certifications/change_form.html"
     inlines = [CertificationsDocumentsInline]
 
     def get_readonly_fields(self, request, obj=None):
@@ -40,4 +40,7 @@ class CertificationsAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
             kwargs["queryset"] = CertificationEntity.objects.filter(product_kind__id__in=product_kinds).filter(Q(country__isnull=True) | Q(country=organization_country)).exclude(id__in=existing_certifications)
         
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    class Media:
+        js = ('js/admin/forms/packhouses/certifications/prueba.js',)
     
