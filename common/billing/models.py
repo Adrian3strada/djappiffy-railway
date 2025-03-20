@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.timezone import localtime
 from wagtail.models import Orderable
 from organizations.models import Organization
 from cities_light.models import City, Country, Region
@@ -67,7 +68,8 @@ class ExchangeRate(models.Model):
         verbose_name_plural = _('Exchange Rates')
 
     def composite_key(self):
-        return f"{self.source.code}:{self.target.code}-{self.registration_date.strftime('%Y-%m-%d %H:%M')}"
+        local_dt = localtime(self.registration_date)
+        return f"{self.source.code}:{self.target.code} - {local_dt.strftime('%Y-%m-%d %H:%M')}"
     
     composite_key.short_description = 'Key'
     composite_key.admin_order_field = 'registration_date'

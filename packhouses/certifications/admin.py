@@ -12,27 +12,6 @@ from django.utils.html import format_html
 from django.urls import reverse
 import nested_admin
 
-# class RequirementCertificationInline(admin.TabularInline):
-    # model = RequirementCertification
-    # extra = 0  # No agrega filas vacías automáticamente
-    # readonly_fields = ('name', 'route', 'is_enabled')  # Solo lectura
-    # can_delete = False  # No se pueden eliminar desde aquí
-
-    # def has_add_permission(self, request, obj=None):
-    #     return False  # No permite agregar desde esta vista
-
-    # def get_queryset(self, request):
-    #     """
-    #     Filtra los requerimientos solo para el CertificationEntity del objeto actual.
-    #     """
-    #     qs = super().get_queryset(request)
-    #     if request.resolver_match.kwargs.get('object_id'):  # Si estamos editando un objeto existente
-    #         certification = Certifications.objects.filter(id=request.resolver_match.kwargs['object_id']).first()
-    #         if certification:
-    #             return qs.filter(certification_entity=certification.certification_entity)
-    #     return qs.none()
-
-
 class CertificationsDocumentsInline(admin.TabularInline):
     model = CertificationsDocuments
     extra = 1
@@ -42,8 +21,8 @@ class CertificationsAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     list_display = ('certification_entity',)
     list_filter = ['certification_entity']
     exclude = ['organization']
-    # inlines = [CertificationsDocumentsInline]
-    # inlines = [RequirementCertificationInline]
+    change_form_template = "admin/certifications/change_form.html"
+    inlines = [CertificationsDocumentsInline]
 
     def get_readonly_fields(self, request, obj=None):
         if obj:

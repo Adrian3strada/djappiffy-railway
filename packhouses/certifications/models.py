@@ -46,3 +46,7 @@ class CertificationsDocuments(CleanDocumentsMixin, models.Model):
 
     def __str__(self):
         return f"{self.route} -- {self.registration_date}  -- {self.expiration_date}  -- {self.certification}"
+
+    class Meta:
+        verbose_name = _('Certification Documents')
+        verbose_name_plural = _('Certifications Documents')
