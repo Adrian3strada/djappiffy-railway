@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll(".djn-add-item .add-handler").forEach(button => {
+    document.querySelectorAll("#scheduleharvest-0 .djn-add-item .add-handler").forEach(button => {
         button.style.display = "none"; 
     });
     document.querySelectorAll("td.original").forEach(row => {
@@ -8,83 +8,58 @@ document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll("th.original").forEach(row => {
         row.style.display = "none";  
     });
+
+    const palletsReceivedField = $('#id_pallets_received');
+    const packhouseWeightResultField = $('#id_packhouse_weight_result');
+    const boxesAssignedField = $('#id_boxes_assigned');
+    const fullBoxesField = $('#id_full_boxes');
+    const emptyBoxesField = $('#id_empty_boxes');
+    const missingBoxesField = $('#id_missing_boxes');
+    const averageBoxField = $('#id_average_per_box');
+    const currentKgField = $('#id_current_kg_available');
+
+    // deshabilitar edición en campos, pero permitir que los valores se envíen
+    function makeFieldReadonly(field) {
+        field.prop("readonly", true);
+        field.css({
+            "pointer-events": "none",
+            "background-color": "#e9ecef"
+        });
+    }
+
+    makeFieldReadonly(currentKgField);
+    makeFieldReadonly(palletsReceivedField);
+    makeFieldReadonly(packhouseWeightResultField);
+    makeFieldReadonly(boxesAssignedField);
+    makeFieldReadonly(missingBoxesField);
+    makeFieldReadonly(averageBoxField);
+
+    // Función para actualizar missingBoxes
+    function updateMissingBoxes() {
+        const boxesAssigned = parseFloat(boxesAssignedField.val());
+        const fullBoxes = parseFloat(fullBoxesField.val());
+        const emptyBoxes = parseFloat(emptyBoxesField.val());
+
+        const missingBoxes = boxesAssigned - fullBoxes - emptyBoxes;
+        missingBoxesField.val(missingBoxes);
+    }
+
+    // Función para actualizar averageBox
+    function updateAveragePerBoxes() {
+        const packhouseWeightResult = parseFloat(packhouseWeightResultField.val());
+        const fullBoxes = parseFloat(fullBoxesField.val());
+    
+        const averagePerBox = fullBoxes > 0 ? (packhouseWeightResult / fullBoxes).toFixed(2) : 0;
+        averageBoxField.val(averagePerBox);
+    }
+
+    fullBoxesField.on('input', function() {
+        updateMissingBoxes();
+        updateAveragePerBoxes(); 
+    });
+    emptyBoxesField.on('input', updateMissingBoxes);
+    packhouseWeightResultField.on('input', updateAveragePerBoxes);
+    packhouseWeightResultField.on('change', updateAveragePerBoxes);
+    
+    updateAveragePerBoxes();
 });
-
-/*
-document.addEventListener("DOMContentLoaded", function() {
-    const API_BASE_URL = '/rest/v1';
-
-    const vehicleRows = document.querySelectorAll('tbody[id^="scheduleharvest_set-0-scheduleharvestvehicle_set-"]');
-
-    document.querySelectorAll('div[id^="scheduleharvest_set-"]').forEach(harvestInline => {
-        const harvestId = harvestInline.querySelector('input[name$="-id"]').value;
-        console.log("Harvest ID:", harvestId);
-      });
-
-    vehicleRows.forEach(row => {
-    // Obtener datos del vehículo
-    const provider = row.querySelector('.field-provider a').innerText;
-    const vehicle = row.querySelector('.field-vehicle a').innerText;
-    const stampNumber = row.querySelector('input[name$="-stamp_vehicle_number"]').value;
-    const vehicleId = row.querySelector('input[name$="-id"]').value;
-
-    // Obtener el índice del registro (último número del ID)
-    const index = row.id.split('-').pop();
-
-    console.log(`Vehículo ${index}:`, {
-        provider,
-        vehicle,
-        stampNumber,
-        vehicleId
-    });
-    });
-
-    const harvestCuttingId = 
-const vehicleId = 2;        
-const stampNumberFromFrontend = "1122"; 
-const url = `${API_BASE_URL}/gathering/harvest-cutting-vehicle/?harvest_cutting_id=${harvestCuttingId}&vehicle_id=${vehicleId}`;
-
-const testEndpoint = (url) => {
-    return fetch(url, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-    .then(response => {
-        if (!response.ok) throw new Error(`Error ${response.status}`);
-        return response.json();
-    })
-    .catch(error => {
-        console.error('Falló el endpoint:', url, error);
-        throw error;
-    });
-};
-
-
-testEndpoint(url)
-    .then(data => {
-        console.log('Vehículo:', data);
-
-        if (data && data.results && data.results.length > 0) {
-            const vehicle = data.results[0]; 
-            if (vehicle.stamp_number === stampNumberFromFrontend) {
-                console.log('stamp_number coincide');
-                
-               
-            } else {
-                console.log('El stamp_number no coincide');
-                alert('El número de sello no coincide.');
-            }
-        } else {
-            console.log('No se encontró el vehículo');
-        }
-    })
-    .catch(() => {
-        alert('Hubo un error al verificar el vehículo. Intenta nuevamente.');
-    });
-
-});
-
-
-*/

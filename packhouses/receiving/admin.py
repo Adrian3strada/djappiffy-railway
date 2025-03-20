@@ -1,14 +1,14 @@
 from django.contrib import admin
-from .models import IncomingProduct
+from .models import IncomingProduct, PalletReceived
 from common.base.mixins import (ByOrganizationAdminMixin)
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle
 from django.utils.translation import gettext_lazy as _
 import nested_admin
 from .mixins import CustomNestedStackedInlineMixin
 from .forms import ScheduleHarvestVehicleForm
+from nested_admin import NestedStackedInline
 
-# Register your models here.
-
+# Inlines para el corte
 class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
     model = ScheduleHarvestHarvestingCrew
     fields = ('provider', 'harvesting_crew')
@@ -43,14 +43,23 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
             kwargs['disabled'] = True  
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
+# Inline para los pallets
+class PalletReceivedInline(NestedStackedInline):
+    model = PalletReceived
+    extra = 0
+    
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/pallets_received_inline.js',)
 
+# Reciba
 @admin.register(IncomingProduct)
 class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_orchard', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_product', 
                     'guide_number', 'status',)  
     fields = ('status', 'phytosanitary_certificate', 'guide_number', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pallets_received', 'packhouse_weight_result', 
-              'mrl', 'kg_sample', 'boxes_assigned', 'full_boxes', 'empty_boxes', 'missing_boxes', 'current_kg_available')
-    inlines = [ScheduleHarvestInline] 
+              'mrl', 'kg_sample', 'boxes_assigned', 'full_boxes', 'empty_boxes', 'missing_boxes', 'average_per_box', 'current_kg_available')
+    inlines = [PalletReceivedInline, ScheduleHarvestInline] 
+    # readonly_fields = ('pallets_received', 'boxes_assigned', 'missing_boxes', 'average_per_box', 'current_kg_available')
 
     def get_scheduleharvest_ooid(self, obj):
         schedule_harvest = obj.scheduleharvest 
