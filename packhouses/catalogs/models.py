@@ -885,7 +885,7 @@ class PalletComplementarySupply(models.Model):
         ]
 
 
-class PackagingPallet(models.Model):
+class ProductPackagingPallet(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     pallet = models.ForeignKey(Pallet, verbose_name=_('Pallet'), on_delete=models.CASCADE)
@@ -907,8 +907,8 @@ class PackagingPallet(models.Model):
         ]
 
 
-class ProductPackagingPallet(models.Model):
-    packaging_pallet = models.ForeignKey(PackagingPallet, verbose_name=_('Packaging pallet'), on_delete=models.CASCADE)
+class PackagingPallet(models.Model):
+    packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Packaging pallet'), on_delete=models.CASCADE)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
