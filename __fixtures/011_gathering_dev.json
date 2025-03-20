@@ -4,26 +4,26 @@
     "pk": 1,
     "fields": {
         "ooid": 1,
-        "harvest_date": "2025-03-08",
+        "harvest_date": "2025-03-19",
         "product_provider": 5,
         "category": "gathering",
-        "gatherer": 2,
+        "gatherer": 1,
         "maquiladora": null,
         "product": 1,
         "product_variety": 1,
         "product_phenologies": 1,
         "product_harvest_size_kind": 4,
-        "orchard": 2,
-        "market": 1,
-        "weight_expected": 8200.0,
+        "orchard": 1,
+        "market": 3,
+        "weight_expected": 8300.0,
         "weighing_scale": 1,
-        "meeting_point": "Báscula pública",
+        "meeting_point": "EMPAQUE",
         "status": "open",
         "comments": "",
-        "created_at": "2025-03-07T19:00:59.683Z",
+        "created_at": "2025-03-20T03:04:07.621Z",
         "organization": 1,
         "orchard_certification": [
-            2
+            1
         ]
     }
 },
@@ -32,30 +32,29 @@
     "pk": 2,
     "fields": {
         "ooid": 2,
-        "harvest_date": "2025-03-07",
-        "product_provider": null,
+        "harvest_date": "2025-03-19",
+        "product_provider": 5,
         "category": "gathering",
         "gatherer": 1,
         "maquiladora": null,
         "product": 1,
         "product_variety": 1,
         "product_phenologies": 2,
-        "product_harvest_size_kind": 4,
-        "orchard": 1,
+        "product_harvest_size_kind": 5,
+        "orchard": 2,
         "market": 3,
-        "weight_expected": 12800.0,
+        "weight_expected": 5000.0,
         "weighing_scale": 1,
-        "meeting_point": null,
+        "meeting_point": "TIENDA DE ABARROTES DON CHUY",
         "status": "open",
         "comments": "",
-        "created_at": "2025-03-07T19:02:14.662Z",
+        "created_at": "2025-03-20T03:05:27.314Z",
         "organization": 1,
         "orchard_certification": [
-            1
+            2
         ]
     }
 },
-
 {
     "model": "gathering.scheduleharvestharvestingcrew",
     "pk": 1,
@@ -74,7 +73,6 @@
         "harvesting_crew": 2
     }
 },
-
 {
     "model": "gathering.scheduleharvestvehicle",
     "pk": 1,
@@ -82,7 +80,7 @@
         "harvest_cutting": 1,
         "provider": 6,
         "vehicle": 1,
-        "stamp_number": "87352"
+        "stamp_number": "123456"
     }
 },
 {
@@ -91,8 +89,26 @@
     "fields": {
         "harvest_cutting": 2,
         "provider": 6,
-        "vehicle": 2,
-        "stamp_number": "872538"
+        "vehicle": 3,
+        "stamp_number": "987654"
+    }
+},
+{
+    "model": "gathering.scheduleharvestcontainervehicle",
+    "pk": 1,
+    "fields": {
+        "harvest_cutting": 1,
+        "harvest_cutting_container": 1,
+        "quantity": 450
+    }
+},
+{
+    "model": "gathering.scheduleharvestcontainervehicle",
+    "pk": 2,
+    "fields": {
+        "harvest_cutting": 2,
+        "harvest_cutting_container": 1,
+        "quantity": 250
     }
 }
 ]
