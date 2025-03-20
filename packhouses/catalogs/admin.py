@@ -2105,7 +2105,7 @@ class HarvestCuttingContainerAdmin(SheetReportExportAdminMixin, ByOrganizationAd
     list_display = ('name', 'capacity', 'is_enabled')
     list_filter = ('capacity', 'is_enabled')
     search_fields = ('name', 'capacity', 'is_enabled')
-    fields = ('name', 'capacity', 'unit_kind', 'is_enabled')
+    fields = ('name', 'capacity', 'unit_kind', 'kg_tare', 'is_enabled')
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):

@@ -46,10 +46,10 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
 
 @admin.register(IncomingProduct)
 class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
-    list_display = ('get_scheduleharvest_ooid', 'status', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_product', 'get_scheduleharvest_orchard',
-                    'guide_number',)  
-    fields = ('status', 'guide_number', 'public_weighing_scale', 'public_weight_result', 'packhouse_weight_result', 'weighing_record_number', 'phytosanitary_certificate', 
-              'mrl', 'pallets_received', 'kg_sample', 'boxes_assigned', 'full_boxes', 'empty_boxes', 'missing_boxes', 'current_kg')
+    list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_orchard', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_product', 
+                    'guide_number', 'status',)  
+    fields = ('status', 'phytosanitary_certificate', 'guide_number', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pallets_received', 'packhouse_weight_result', 
+              'mrl', 'kg_sample', 'boxes_assigned', 'full_boxes', 'empty_boxes', 'missing_boxes', 'current_kg_available')
     inlines = [ScheduleHarvestInline] 
 
     def get_scheduleharvest_ooid(self, obj):
@@ -67,10 +67,14 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     def get_scheduleharvest_orchard(self, obj):
         schedule_harvest = obj.scheduleharvest
         return schedule_harvest.orchard if schedule_harvest else None
-
+    
+    get_scheduleharvest_ooid.admin_order_field = 'scheduleharvest__ooid'
     get_scheduleharvest_ooid.short_description = _('Harvest Number')
+    get_scheduleharvest_harvest_date.admin_order_field = 'scheduleharvest__harvest_date'
     get_scheduleharvest_harvest_date.short_description = _('Harvest Date')
+    get_scheduleharvest_product.admin_order_field = 'scheduleharvest__product'
     get_scheduleharvest_product.short_description = _('Product')
+    get_scheduleharvest_orchard.admin_order_field = 'scheduleharvest__orchard'
     get_scheduleharvest_orchard.short_description = _('Orchard')
 
     class Media:

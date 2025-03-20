@@ -8,45 +8,46 @@ class ScheduleHarvestVehicleForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
+        self.initial_incoming_status = None
         if self.instance and self.instance.pk:
             try:
-                self.incoming_status = self.instance.harvest_cutting.incoming_product.status
+                self.initial_incoming_status = self.instance.harvest_cutting.incoming_product.status
             except Exception:
-                self.incoming_status = None
-
-            if self.incoming_status and self.incoming_status != 'pending':
+                pass  
+            
+        if self.initial_incoming_status != 'pending':
+            self.fields['stamp_vehicle_number'].required = False
+            if self.instance and self.instance.pk:
                 self.fields['stamp_vehicle_number'].initial = self.instance.stamp_number
 
     def clean(self):
         cleaned_data = super().clean()
         input_stamp = cleaned_data.get('stamp_vehicle_number')
 
-        incoming_status = getattr(self, 'incoming_status', None)
-        print(incoming_status)
-        if incoming_status == 'pending':
-            return cleaned_data  
+        try:
+            new_incoming_status = self.cleaned_data['harvest_cutting'].incoming_product.status
+        except Exception:
+            new_incoming_status = None
 
-        if not input_stamp:
-            raise forms.ValidationError(_("You must enter the stamp number."))
+        if self.initial_incoming_status == 'pending' and new_incoming_status != 'pending':
+            if not input_stamp:
+                raise forms.ValidationError(_("You must enter the stamp number."))
 
-        harvest_cutting = cleaned_data.get('harvest_cutting') or getattr(self.instance, 'harvest_cutting', None)
-        vehicle = cleaned_data.get('vehicle') or getattr(self.instance, 'vehicle', None)
+            harvest_cutting = cleaned_data.get('harvest_cutting')
+            vehicle = cleaned_data.get('vehicle')
 
-        if not harvest_cutting or not vehicle:
-            raise forms.ValidationError(_("The stamp cannot be validated: missing harvest or vehicle data."))
+            if not harvest_cutting or not vehicle:
+                raise forms.ValidationError(_("The stamp cannot be validated: missing data."))
 
-        vehicles_same_cut = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest_cutting)
-        
-        expected_vehicle = vehicles_same_cut.filter(vehicle=vehicle).first()
+            # Validar coincidencia del sello
+            expected_vehicle = ScheduleHarvestVehicle.objects.filter(
+                harvest_cutting=harvest_cutting,
+                vehicle=vehicle
+            ).first()
 
-        if not expected_vehicle:
-            raise forms.ValidationError(_("The stamp cannot be validated: missing cut or vehicle data."))
 
-        if expected_vehicle.stamp_number != input_stamp:
-            raise forms.ValidationError(
-                _("The entered stamp number ({entered}) does not match the expected one ({expected}).")
-                .format(entered=input_stamp, expected=expected_vehicle.stamp_number)
-            )
+            if not expected_vehicle or expected_vehicle.stamp_number != input_stamp:
+                raise forms.ValidationError(_("Invalid stamp number."))
 
         return cleaned_data
 
