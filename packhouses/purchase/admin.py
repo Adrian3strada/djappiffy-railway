@@ -1,6 +1,7 @@
 from django.contrib import admin
 from common.profiles.models import UserProfile  # (Si no se usa, se puede eliminar)
-from .models import (Requisition, RequisitionSupply, PurchaseOrder, PurchaseOrderSupply)
+from .models import (Requisition, RequisitionSupply, PurchaseOrder,
+                     PurchaseOrderSupply, PurchaseOrderCharge, PurchaseOrderDeduction)
 from packhouses.catalogs.models import Supply, Provider
 from django.utils.translation import gettext_lazy as _
 from common.base.decorators import (
@@ -194,6 +195,70 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
         js = ('js/admin/forms/packhouses/purchase/purchase_orders_supply.js',)
 
 
+class PurchaseOrderChargerInline(admin.StackedInline):
+    model = PurchaseOrderCharge
+    fields = ('charge', 'amount')
+    extra = 0
+
+    def _get_parent_obj(self, request):
+        """Obtiene el objeto Purchase Order padre a partir del parámetro object_id."""
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        if parent_object_id:
+            try:
+                return PurchaseOrder.objects.get(id=parent_object_id)
+            except PurchaseOrder.DoesNotExist:
+                return None
+        return None
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+            # Todos los campos se vuelven de solo lectura si el estado es cerrado, cancelado o listo
+            readonly_fields.extend([
+                field.name for field in self.model._meta.fields
+                if field.name not in readonly_fields
+            ])
+        return readonly_fields
+
+    def has_delete_permission(self, request, obj=None):
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+            return False
+        return super().has_delete_permission(request, obj)
+
+class PurchaseOrderDeductionInline(admin.StackedInline):
+    model = PurchaseOrderDeduction
+    fields = ('deduction', 'amount')
+    extra = 0
+
+    def _get_parent_obj(self, request):
+        """Obtiene el objeto Purchase Order padre a partir del parámetro object_id."""
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        if parent_object_id:
+            try:
+                return PurchaseOrder.objects.get(id=parent_object_id)
+            except PurchaseOrder.DoesNotExist:
+                return None
+        return None
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+            # Todos los campos se vuelven de solo lectura si el estado es cerrado, cancelado o listo
+            readonly_fields.extend([
+                field.name for field in self.model._meta.fields
+                if field.name not in readonly_fields
+            ])
+        return readonly_fields
+
+    def has_delete_permission(self, request, obj=None):
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+            return False
+        return super().has_delete_permission(request, obj)
+
 
 @admin.register(PurchaseOrder)
 class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
@@ -202,7 +267,7 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     fields = ('ooid', 'provider','payment_date','currency','tax', 'status', 'comments', 'save_and_send')
     list_filter = ('provider', 'currency', 'status')
     readonly_fields = ('ooid', 'status')
-    inlines = [PurchaseOrderRequisitionSupplyInline]
+    inlines = [PurchaseOrderRequisitionSupplyInline, PurchaseOrderChargerInline, PurchaseOrderDeductionInline]
 
 
     def generate_actions_buttons(self, obj):
