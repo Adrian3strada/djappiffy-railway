@@ -20,7 +20,7 @@ class Certification(models.Model):
         verbose_name_plural = _('Certifications')
         ordering = ('organization', 'certification_entity')
         constraints = [
-            models.UniqueConstraint(fields=['certification_entity'], name='certification_unique_certification_entity_organization'),
+            models.UniqueConstraint(fields=['organization','certification_entity'], name='unique_organization_certification_entity'),
         ]
 
 def certification_file_path(instance, filename):
