@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       kindField.on('change', function () {
         if (kindField.val()) {
-          fetchOptions(`/rest/v1/catalogs/supply/?kind=${supplyKindId}&is_enabled=1`)
+          fetchOptions(`/rest/v1/catalogs/supply/?kind=${kindField.val()}&is_enabled=1`)
             .then(data => {
               updateFieldOptions(supplyField, data);
             })
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   setTimeout(() => {
-    const existingForms = document.querySelectorAll('tr[id^="palletcomplementarysupply_set-"].form-row.has_original.dynamic-productpresentationcomplementarysupply_set');
+    const existingForms = document.querySelectorAll('tr[id^="palletcomplementarysupply_set-"].form-row.has_original.dynamic-palletcomplementarysupply_set');
     existingForms.forEach((form, index) => {
       const kindField = $(form).find(`select[name="palletcomplementarysupply_set-${index}-kind"]`);
       const supplyField = $(form).find(`select[name="palletcomplementarysupply_set-${index}-supply"]`);
@@ -68,9 +68,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       kindField.on('change', function () {
-        const supplyKindId = kindField.val();
-        if (supplyKindId) {
-          fetchOptions(`/rest/v1/catalogs/supply/?kind=${supplyKindId}&is_enabled=1`)
+        if (kindField.val()) {
+          fetchOptions(`/rest/v1/catalogs/supply/?kind=${kindField.val()}&is_enabled=1`)
             .then(data => {
               updateFieldOptions(supplyField, data);
             })
@@ -82,6 +81,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     });
-  }, 1000);
+  }, 600);
 
 });

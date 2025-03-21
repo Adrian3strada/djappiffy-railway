@@ -8,7 +8,7 @@ from .models import (
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, ProductStandardPackaging,
     Service, ProductPresentation, Packaging, ProductPackaging,
-    PackagingPallet, ProductPackagingPallet,
+    ProductPackagingPallet, PackagingPallet,
     WeighingScale, ColdChamber,
     Pallet, PalletComplementarySupply,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
@@ -1660,7 +1660,7 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
 
 class ProductPackagingPalletInLine(admin.TabularInline):
-    model = ProductPackagingPallet
+    model = PackagingPallet
     extra = 0
     verbose_name = _('Product packaging pallet')
     verbose_name_plural = _('Product packaging pallets')
@@ -1689,9 +1689,9 @@ class ProductPackagingPalletInLine(admin.TabularInline):
 
         if db_field.name == "packaging_pallet":
             if organization:
-                kwargs["queryset"] = PackagingPallet.objects.filter(organization=organization, is_enabled=True)
+                kwargs["queryset"] = ProductPackagingPallet.objects.filter(organization=organization, is_enabled=True)
             else:
-                kwargs["queryset"] = PackagingPallet.objects.none()
+                kwargs["queryset"] = ProductPackagingPallet.objects.none()
         if db_field.name == "product_packaging":
             if organization:
                 kwargs["queryset"] = ProductPackaging.objects.filter(organization=organization, is_enabled=True)
@@ -1706,7 +1706,7 @@ class ProductPackagingPalletInLine(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(PackagingPallet)
+@admin.register(ProductPackagingPallet)
 class PackagingPalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductPackagingPalletResource]
@@ -1743,7 +1743,7 @@ class PackagingPalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = PackagingPallet.objects.get(id=obj_id) if obj_id else None
+        obj = ProductPackagingPallet.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}

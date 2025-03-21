@@ -228,8 +228,60 @@ class PurchaseOrderSupply(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = _("Purchase Order Supply")
-        verbose_name_plural = _("Purchase Order Supplies")
+        verbose_name = _("Supply")
+        verbose_name_plural = _("Supplies")
         constraints = [
             models.UniqueConstraint(fields=['purchase_order', 'requisition_supply'], name='unique_purchase_order_supply')
+        ]
+
+class PurchaseOrderCharge(models.Model):
+    purchase_order = models.ForeignKey(
+        PurchaseOrder,
+        verbose_name=_("Purchase Order"),
+        on_delete=models.CASCADE
+    )
+    charge = models.CharField(
+        max_length=255,
+        verbose_name=_("Charge description"),
+    )
+    amount = models.DecimalField(
+        verbose_name=_("Amount"),
+        max_digits=12, decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+
+    def __str__(self):
+        return f"{self.charge} - ${self.amount}"
+
+    class Meta:
+        verbose_name = _("Charge")
+        verbose_name_plural = _("Charges")
+        constraints = [
+            models.UniqueConstraint(fields=['purchase_order', 'charge'], name='unique_purchase_order_charge')
+        ]
+
+class PurchaseOrderDeduction(models.Model):
+    purchase_order = models.ForeignKey(
+        PurchaseOrder,
+        verbose_name=_("Purchase Order"),
+        on_delete=models.CASCADE
+    )
+    deduction = models.CharField(
+        max_length=255,
+        verbose_name=_("Deduction description"),
+    )
+    amount = models.DecimalField(
+        verbose_name=_("Amount"),
+        max_digits=12, decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+
+    def __str__(self):
+        return f"{self.deduction} - ${self.amount}"
+
+    class Meta:
+        verbose_name = _("Deduction")
+        verbose_name_plural = _("Deductions")
+        constraints = [
+            models.UniqueConstraint(fields=['purchase_order', 'deduction'], name='unique_purchase_order_deduction')
         ]

@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils.translation import gettext as _
-from .models import (Requisition, RequisitionSupply, Country, Region, SubRegion, City, PurchaseOrder, PurchaseOrderSupply)
+from .models import (Requisition, RequisitionSupply, Country, Region, SubRegion, City, PurchaseOrder, PurchaseOrderSupply,
+                     PurchaseOrderCharge, PurchaseOrderDeduction)
 from packhouses.catalogs.models import HarvestingCrew
 from django.template.loader import render_to_string
 from django.http import HttpResponse
@@ -167,6 +168,8 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
 
     # Obtener los inlines relacionados
     purchaseordersupplyinline = PurchaseOrderSupply.objects.filter(purchase_order=purchase_order_supply)
+    purchaseorderchargeinline = PurchaseOrderCharge.objects.filter(purchase_order=purchase_order_supply)
+    purchaseorderdeductioninline = PurchaseOrderDeduction.objects.filter(purchase_order=purchase_order_supply)
 
     formatted_supply_values = []
     for obj in purchaseordersupplyinline:
@@ -186,12 +189,35 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
             'total_price': round(obj.unit_price * quantity,2),
         })
 
+    formatted_charge_values = []
+    for obj in purchaseorderchargeinline:
+        formatted_charge_values.append({
+            'charge': f"{obj.charge}",
+            'amount': obj.amount,
+        })
+
+    formatted_deduction_values = []
+    for obj in purchaseorderdeductioninline:
+        formatted_deduction_values.append({
+            'deduction': f"{obj.deduction}",
+            'amount': obj.amount,
+        })
+
+    # Calcular el subtotal base
     subtotal = sum(item['total_price'] for item in formatted_supply_values)
+
+    # Calcular el impuesto sobre el subtotal modificado
     percentage_tax = purchase_order_supply.tax
-    tax = round(subtotal * (purchase_order_supply.tax / 100), 2)
+    tax = round(subtotal * (percentage_tax / 100), 2)
 
-    total = round(subtotal + tax,2)
+    # Calcular el total
+    subtotal_with_tax = round(subtotal + tax, 2)
 
+    # Sumar los cargos y restar las deducciones
+    total = subtotal_with_tax + sum(item["amount"] for item in formatted_charge_values) - sum(
+    item["amount"] for item in formatted_deduction_values)
+
+    # Obtener la moneda
     currency = purchase_order_supply.currency.code
 
     # CSS
@@ -223,6 +249,7 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
         'applicant_name': applicant_name,
         'applicant_email': applicant_email,
         'subtotal': subtotal,
+        'subtotal_with_tax': subtotal_with_tax,
         'percentage_tax': percentage_tax,
         'tax': tax,
         'total': total,
@@ -230,6 +257,8 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
         'provider_text': provider_text,
         'payment_date_text': payment_date_text,
         'order_date_text': order_date_text,
+        'formatted_charge_values': formatted_charge_values,
+        'formatted_deduction_values': formatted_deduction_values,
     })
 
     # Convertir el HTML a PDF
