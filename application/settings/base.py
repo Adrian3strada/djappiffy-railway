@@ -384,7 +384,7 @@ JAZZMIN_SETTINGS = {
         "catalogs.ProductPresentation",
         "catalogs.ProductPackaging",
         "catalogs.Pallet",
-        "catalogs.ProductPackagingPallet",
+        "catalogs.ProductPallet",
         "catalogs.Provider",
         "catalogs.Client",
         "catalogs.Vehicle",

@@ -885,7 +885,7 @@ class PalletComplementarySupply(models.Model):
         ]
 
 
-class ProductPackagingPallet(models.Model):
+class ProductPallet(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     pallet = models.ForeignKey(Pallet, verbose_name=_('Pallet'), on_delete=models.CASCADE)
@@ -898,30 +898,29 @@ class ProductPackagingPallet(models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Product packaging pallet')
-        verbose_name_plural = _('Product packaging pallets')
+        verbose_name = _('Product pallet')
+        verbose_name_plural = _('Product pallets')
         ordering = ('name', 'product', 'market', 'pallet')
         constraints = [
-            models.UniqueConstraint(fields=['market', 'product', 'pallet', 'organization'], name='productpackagingpallet_unique_market_product_pallet_organization'),
-            models.UniqueConstraint(fields=['name', 'alias', 'organization'], name='productpackagingpallet_unique_name_alias_organization')
+            models.UniqueConstraint(fields=['market', 'product', 'pallet', 'organization'], name='productpallet_unique_market_product_pallet_organization'),
+            models.UniqueConstraint(fields=['name', 'alias', 'organization'], name='productpallet_unique_name_alias_organization')
         ]
 
 
 class PackagingPallet(models.Model):
-    packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Packaging pallet'), on_delete=models.CASCADE)
+    product_packaging_pallet = models.ForeignKey(ProductPallet, verbose_name=_('Product packaging pallet'), on_delete=models.CASCADE)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
-    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
 
     def __str__(self):
         return f"{self.pk} {self.product_packaging}"
 
     class Meta:
-        verbose_name = _('Product packaging pallet')
-        verbose_name_plural = _('Product packaging pallets')
-        ordering = ( 'product_packaging', 'packaging_pallet')
+        verbose_name = _('Packaging pallet')
+        verbose_name_plural = _('Packaging pallets')
+        ordering = ( 'product_packaging', 'product_packaging_pallet')
         constraints = [
-            models.UniqueConstraint(fields=['packaging_pallet', 'product_packaging', 'product_market_class'],
+            models.UniqueConstraint(fields=['product_packaging_pallet', 'product_packaging'],
                                     name='productpackagingpallet_unique_packaging_pallet_product_packaging_product_market_class')
         ]
 

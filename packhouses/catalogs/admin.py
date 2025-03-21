@@ -8,7 +8,7 @@ from .models import (
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, ProductStandardPackaging,
     Service, ProductPresentation, Packaging, ProductPackaging,
-    ProductPackagingPallet, PackagingPallet,
+    ProductPallet, PackagingPallet,
     WeighingScale, ColdChamber,
     Pallet, PalletComplementarySupply,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
@@ -1659,11 +1659,11 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         js = ('js/admin/forms/pallet.js',)
 
 
-class ProductPackagingPalletInLine(admin.TabularInline):
+class PackagingPalletInLine(admin.TabularInline):
     model = PackagingPallet
     extra = 0
-    verbose_name = _('Product packaging pallet')
-    verbose_name_plural = _('Product packaging pallets')
+    verbose_name = _('Packaging pallet')
+    verbose_name_plural = _('Packaging pallets')
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -1689,9 +1689,9 @@ class ProductPackagingPalletInLine(admin.TabularInline):
 
         if db_field.name == "packaging_pallet":
             if organization:
-                kwargs["queryset"] = ProductPackagingPallet.objects.filter(organization=organization, is_enabled=True)
+                kwargs["queryset"] = ProductPallet.objects.filter(organization=organization, is_enabled=True)
             else:
-                kwargs["queryset"] = ProductPackagingPallet.objects.none()
+                kwargs["queryset"] = ProductPallet.objects.none()
         if db_field.name == "product_packaging":
             if organization:
                 kwargs["queryset"] = ProductPackaging.objects.filter(organization=organization, is_enabled=True)
@@ -1706,14 +1706,15 @@ class ProductPackagingPalletInLine(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(ProductPackagingPallet)
-class PackagingPalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
+@admin.register(ProductPallet)
+class ProductPalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductPackagingPalletResource]
     list_display = ['name', 'alias', 'market', 'product', 'pallet', 'is_enabled']
     list_filter = ['market', 'product', 'pallet', 'is_enabled']
     search_fields = ['name', 'alias']
-    inlines = [ProductPackagingPalletInLine]
+    # fields = ['market', 'product', 'pallet', 'name', 'alias', 'is_enabled']
+    inlines = [PackagingPalletInLine]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -1736,14 +1737,13 @@ class PackagingPalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj,
-                                    exclude=[Market, Product, Pallet, Organization]):
+        if obj and is_instance_used(obj, exclude=[Market, Product, Pallet, PackagingPallet, Organization]):
             readonly_fields.extend(['market', 'product', 'pallet', 'name', 'alias'])
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductPackagingPallet.objects.get(id=obj_id) if obj_id else None
+        obj = ProductPallet.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
