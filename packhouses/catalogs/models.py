@@ -858,7 +858,7 @@ class Pallet(models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Ppallet')
+        verbose_name = _('Pallet')
         verbose_name_plural = _('Pallets')
         ordering = ('name', 'organization')
         constraints = [
