@@ -113,14 +113,18 @@
         <tr>
             <th>{% translate "Supply" %}</th>
             <th>{% translate "Quantity" %}</th>
+            <th>{% translate "Unit" %}</th>
+            <th>{% translate "Delivery deadline" %}</th>
             <th>{% translate "Comments" %}</th>
         </tr>
     </thead>
     <tbody>
         {% for item in requisitionsupplyinline %}
         <tr>
-            <td> {{ item.supply }} </td>
+            <td> {{ item.supply.kind }}: {{ item.supply }} </td>
             <td style="text-align: center;"> {{ item.quantity }} </td>
+            <td style="text-transform: uppercase; text-align: center;">{{ item.unit_category }}</td>
+            <td>{{ item.delivery_deadline }}</td>
             <td>{{ item.comments|default:"" }}</td>
         </tr>
         {% endfor %}

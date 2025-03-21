@@ -285,7 +285,7 @@ def set_purchase_order_supply_ready(request, purchase_order_supply_id):
     if purchase_order_supply.status not in ['open']:
         return JsonResponse({
             'success': False,
-            'message': 'You cannot send this purchase order.'
+            'message': 'You cannot send this purchases order.'
         }, status=403)
 
     purchase_order_supply.status = 'ready'
@@ -307,7 +307,7 @@ def set_purchase_order_supply_open(request, purchase_order_supply_id):
     if purchase_order_supply.status not in ['ready']:
         return JsonResponse({
             'success': False,
-            'message': 'You cannot send this purchase order.',
+            'message': 'You cannot send this purchases order.',
             'title': 'Error'
         }, status=403)
 
@@ -334,7 +334,7 @@ def set_purchase_order_supply_payment(request, purchase_order_supply_id):
     if purchase_order_supply.status not in ['closed']:
         return JsonResponse({
             'success': False,
-            'message': 'You cannot send this purchase order.',
+            'message': 'You cannot send this purchases order.',
             'title': 'Error'
         }, status=403)
 

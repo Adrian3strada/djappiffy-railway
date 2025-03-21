@@ -4,7 +4,7 @@ from common.base.mixins import (
     DisableInlineRelatedLinksMixin, ByUserAdminMixin
 )
 from .models import StorehouseEntry, StorehouseEntrySupply
-from packhouses.purchase.models import PurchaseOrderSupply
+from packhouses.purchases.models import PurchaseOrderSupply
 from .forms import StorehouseEntrySupplyInlineFormSet
 from django.utils.translation import gettext_lazy as _
 

@@ -3,7 +3,7 @@ from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .models import StorehouseEntrySupply
-from packhouses.purchase.models import PurchaseOrderSupply
+from packhouses.purchases.models import PurchaseOrderSupply
 
 
 class StorehouseEntrySupplyInlineFormSet(BaseInlineFormSet):
@@ -25,7 +25,7 @@ class StorehouseEntrySupplyInlineFormSet(BaseInlineFormSet):
             else:
                 # Si no tenemos instancia, lo obtenemos de la BD
                 try:
-                    from packhouses.purchase.models import PurchaseOrder
+                    from packhouses.purchases.models import PurchaseOrder
                     po = PurchaseOrder.objects.get(pk=purchase_order_id)
                     is_closed = (po.status == "closed")
                 except PurchaseOrder.DoesNotExist:

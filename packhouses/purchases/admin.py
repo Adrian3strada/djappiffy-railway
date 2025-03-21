@@ -21,9 +21,9 @@ from common.forms import SelectWidgetWithData
 from common.utils import is_instance_used
 
 
-class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.TabularInline):
+class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
     model = RequisitionSupply
-    fields = ('supply', 'quantity', 'comments')
+    fields = ('supply', 'quantity', 'unit_category','delivery_deadline', 'comments')
     extra = 0
 
     def _get_parent_obj(self, request):
@@ -123,12 +123,12 @@ class RequisitionAdmin(ByOrganizationAdminMixin, ByUserAdminMixin):
     generate_actions_buttons.allow_tags = True
 
     class Media:
-        js = ('js/admin/forms/packhouses/purchase/requisition.js',)
+        js = ('js/admin/forms/packhouses/purchases/requisition.js',)
 
 
 class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
     model = PurchaseOrderSupply
-    fields = ('requisition_supply', 'quantity', 'unit_price', 'total_price','comments')
+    fields = ('requisition_supply', 'quantity','unit_category','delivery_deadline', 'unit_price', 'total_price','comments')
     readonly_fields = ('total_price','comments',)
     extra = 0
 
@@ -186,13 +186,13 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
                 queryset = queryset.filter(requisition__organization=request.organization)
 
             kwargs["queryset"] = queryset
-            kwargs["widget"] = SelectWidgetWithData(model=RequisitionSupply, data_fields=["quantity", "comments"])
+            kwargs["widget"] = SelectWidgetWithData(model=RequisitionSupply, data_fields=["quantity", "comments","unit_category","delivery_deadline"])
 
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/purchase/purchase_orders_supply.js',)
+        js = ('js/admin/forms/packhouses/purchases/purchase_orders_supply.js',)
 
 
 class PurchaseOrderChargerInline(admin.StackedInline):
@@ -276,14 +276,14 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
 
         tooltip_ready = _('Send to Storehouse')
         ready_url = reverse('set_purchase_order_supply_ready', args=[obj.pk])
-        confirm_ready_text = _('Are you sure you want to send this purchase order supply to Storehouse?')
+        confirm_ready_text = _('Are you sure you want to send this purchases order supply to Storehouse?')
         confirm_button_text = _('Yes, send')
         cancel_button_text = _('No')
 
-        tooltip_open = _('Reopen this purchase order')
+        tooltip_open = _('Reopen this purchases order')
         open_url = reverse('set_purchase_order_supply_open', args=[obj.pk])
         confirm_open_text = _(
-            'Are you sure you want to reopen this purchase order? It will no longer be available in the storehouse for entry and you can continue editing it.')
+            'Are you sure you want to reopen this purchases order? It will no longer be available in the storehouse for entry and you can continue editing it.')
         confirm_button_text_open = _('Yes, reopen')
 
         set_purchase_order_supply_ready_button = ''
@@ -310,10 +310,10 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
                 tooltip_open, open_url, confirm_open_text, confirm_button_text_open, cancel_button_text
             )
 
-        tooltip_payment = _('Send this purchase order to payments')
+        tooltip_payment = _('Send this purchases order to payments')
         payment_url = reverse('set_purchase_order_supply_payment', args=[obj.pk])
         confirm_payment_text = _(
-            'Are you sure you want to send this purchase order to payments?')
+            'Are you sure you want to send this purchases order to payments?')
 
         set_purchase_order_supply_payment_button = ''
         if obj.status == "closed" and not obj.is_in_payments:
@@ -381,4 +381,4 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
     class Media:
-        js = ('js/admin/forms/packhouses/purchase/purchase_orders.js',)
+        js = ('js/admin/forms/packhouses/purchases/purchase_orders.js',)

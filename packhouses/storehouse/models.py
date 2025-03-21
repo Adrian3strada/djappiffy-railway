@@ -2,7 +2,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
-from packhouses.purchase.models import PurchaseOrder, PurchaseOrderSupply
+from packhouses.purchases.models import PurchaseOrder, PurchaseOrderSupply
 from packhouses.catalogs.models import Supply
 from django.contrib.auth import get_user_model
 import datetime

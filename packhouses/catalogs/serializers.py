@@ -6,7 +6,7 @@ from packhouses.catalogs.models import (
     HarvestingCrew, OrchardCertification, ProductRipeness
 )
 from django.utils.translation import gettext_lazy as _
-from packhouses.purchase.models import PurchaseOrderSupply
+from packhouses.purchases.models import PurchaseOrderSupply
 
 
 
@@ -164,7 +164,7 @@ class PurchaseOrderSupplySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PurchaseOrderSupply
-        fields = ("id", "requisition_supply", "quantity",
+        fields = ("id", "requisition_supply", "quantity", 'unit_category', 'delivery_deadline',
                   "comments", "is_in_inventory", "purchase_order_supply_options")
 
     def get_purchase_order_supply_options(self, obj):
