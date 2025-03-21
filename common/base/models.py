@@ -220,21 +220,21 @@ class Currency(models.Model):
         ]
 
 class CertificationEntity(models.Model):
-    entity = models.CharField(max_length=255)
-    certification = models.CharField(max_length=255)
-    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product Kind'), on_delete=models.PROTECT)
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product'), on_delete=models.PROTECT)
     country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True, on_delete=models.PROTECT)
+    entity = models.CharField(max_length=255, verbose_name=_('Certification Entity'))
+    name_certification = models.CharField(max_length=255, verbose_name=_('Certification'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
-        return f"{self.entity} -- {self.certification} -- {self.product_kind}"
+        return f"{self.entity} -- {self.name_certification} -- {self.product_kind}"
 
     class Meta:
         verbose_name = _('Certification Entity')
         verbose_name_plural = _('Certification Entities')
         constraints = [
             models.UniqueConstraint(
-                fields=['entity', 'certification'], 
+                fields=['entity', 'name_certification'], 
                 name='certificationEntity_unique_certification_entity'
             )
         ]

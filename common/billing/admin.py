@@ -21,3 +21,17 @@ class ExchangeRateAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     class Media:
         js = ('js/admin/forms/common/exchange_rate.js',)
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+
+        form.base_fields['source'].widget.can_add_related = False
+        form.base_fields['source'].widget.can_change_related = False
+        form.base_fields['source'].widget.can_delete_related = False
+        form.base_fields['source'].widget.can_view_related = False
+        form.base_fields['target'].widget.can_add_related = False
+        form.base_fields['target'].widget.can_change_related = False
+        form.base_fields['target'].widget.can_delete_related = False
+        form.base_fields['target'].widget.can_view_related = False
+
+        return form
+

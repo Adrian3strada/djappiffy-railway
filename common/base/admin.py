@@ -173,6 +173,16 @@ class RequirementCertificationInline(admin.TabularInline):
 
 @admin.register(CertificationEntity)
 class CertificationEntityAdmin(admin.ModelAdmin):
-    list_display = ('entity', 'certification', 'country', 'is_enabled')
-    list_filter = ['entity', 'certification', 'country', 'is_enabled']
+    list_display = ('entity', 'name_certification', 'product_kind', 'country', 'is_enabled')
+    list_filter = ['entity', 'name_certification', 'product_kind', 'country', 'is_enabled']
     inlines = [RequirementCertificationInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+
+        form.base_fields['product_kind'].widget.can_add_related = False
+        form.base_fields['product_kind'].widget.can_change_related = False
+        form.base_fields['product_kind'].widget.can_delete_related = False
+        form.base_fields['product_kind'].widget.can_view_related = False
+
+        return form

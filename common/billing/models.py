@@ -56,10 +56,10 @@ class BillingSerie(models.Model):
 
 class ExchangeRate(models.Model):
     source_value = models.DecimalField(max_digits=10, decimal_places=2, default=1, editable=False)
-    source = models.ForeignKey(Currency, related_name='exchange_rates_from', on_delete=models.PROTECT)
-    exchange_rate_value = models.DecimalField(max_digits=10, decimal_places=2)
-    target = models.ForeignKey(Currency, related_name='exchange_rates_to', on_delete=models.PROTECT) 
-    registration_date = models.DateTimeField(auto_now_add=True)
+    source = models.ForeignKey(Currency, verbose_name=_('Source'), related_name='exchange_rates_from', on_delete=models.PROTECT)
+    exchange_rate_value = models.DecimalField(max_digits=10, verbose_name=_('Exchange Rate Value'), decimal_places=2)
+    target = models.ForeignKey(Currency, verbose_name=_('Target'), related_name='exchange_rates_to', on_delete=models.PROTECT) 
+    registration_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Registration Date'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 

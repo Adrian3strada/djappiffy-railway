@@ -8,9 +8,9 @@ from common.base.models import CertificationEntity
 from django.core.validators import FileExtensionValidator
 from common.mixins import CleanDocumentsMixin
 
-class Certifications(models.Model):
+class Certification(models.Model):
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-    certification_entity = models.ForeignKey(CertificationEntity, on_delete=models.CASCADE)
+    certification_entity = models.ForeignKey(CertificationEntity, verbose_name=_('Certification Entity'), on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.certification_entity}"
@@ -33,7 +33,7 @@ def certification_file_path(instance, filename):
 
     return f'{organization_name}/certifications/{entity}_{certification}_{year}_{filename}{file_extension}'
 
-class CertificationsDocuments(CleanDocumentsMixin, models.Model):
+class CertificationDocument(CleanDocumentsMixin, models.Model):
     route = models.FileField(
         upload_to=certification_file_path,
         validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
@@ -42,11 +42,11 @@ class CertificationsDocuments(CleanDocumentsMixin, models.Model):
     registration_date = models.DateField()
     expiration_date = models.DateField()
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    certification = models.ForeignKey(Certifications, on_delete=models.CASCADE)
+    certification = models.ForeignKey(Certification, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.route} -- {self.registration_date}  -- {self.expiration_date}  -- {self.certification}"
 
     class Meta:
-        verbose_name = _('Certification Documents')
+        verbose_name = _('Certification Document')
         verbose_name_plural = _('Certifications Documents')
