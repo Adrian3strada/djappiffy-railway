@@ -61,5 +61,7 @@ document.addEventListener("DOMContentLoaded", function() {
     packhouseWeightResultField.on('input', updateAveragePerBoxes);
     packhouseWeightResultField.on('change', updateAveragePerBoxes);
     
+    updateMissingBoxes();
     updateAveragePerBoxes();
+    
 });

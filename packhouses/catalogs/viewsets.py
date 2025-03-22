@@ -8,12 +8,13 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
                           MaquiladoraSerializer, PackagingSerializer, ProductPresentationSerializer,
                           SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
-                          OrchardCertificationSerializer, ProductRipenessSerializer, PurchaseOrderSupplySerializer
+                          OrchardCertificationSerializer, ProductRipenessSerializer, PurchaseOrderSupplySerializer, 
+                          HarvestContainerSerializer,
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
                      Product, Packaging, ProductPresentation,
-                     Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness
+                     Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness, HarvestContainer
                      )
 from django_filters.rest_framework import DjangoFilterBackend
 from packhouses.purchase.models import PurchaseOrderSupply
@@ -346,3 +347,17 @@ class PurchaseOrderSupplyViewSet(viewsets.ModelViewSet):
         return PurchaseOrderSupply.objects.none()
 
 
+class HarvestContainerViewSet(viewsets.ModelViewSet):
+    serializer_class = HarvestContainerSerializer
+    filterset_fields = ['organization', 'is_enabled']
+    pagination_class = None
+    lookup_field = 'pk'
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = HarvestContainer.objects.filter(organization=self.request.organization)
+
+        return queryset

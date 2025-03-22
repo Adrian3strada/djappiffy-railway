@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
 import datetime
@@ -46,7 +46,8 @@ class IncomingProduct(models.Model):
         ]"""
 
 class PalletReceived(models.Model):
-    pallet_number = models.PositiveIntegerField(verbose_name=_("Pallet Number"), null=True, blank=True)
+    ooid = models.PositiveIntegerField(verbose_name=_("Pallet Number"),null=True, blank=True, unique=True)
+    # pallet_number = models.PositiveIntegerField(verbose_name=_("Pallet Number"), null=True, blank=True)
     gross_weight = models.FloatField(default=0.0, verbose_name=_("Gross Weight"),)
     total_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Total Boxes'))
     harvest_container = models.ForeignKey(HarvestContainer, on_delete=models.CASCADE)
@@ -54,6 +55,20 @@ class PalletReceived(models.Model):
     platform_tare = models.FloatField(default=0.0, verbose_name=_("Platform Tare"),)
     net_weight = models.FloatField(default=0.0, verbose_name=_("Net Weight"),)
     incoming_product = models.ForeignKey(IncomingProduct, verbose_name=_('Incoming Product'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.ooid}"
+    
+    def save(self, *args, **kwargs):
+        if not self.ooid:
+            # Usar transacción y bloqueo de fila para evitar condiciones de carrera
+            with transaction.atomic():
+                last_order = PalletReceived.objects.select_for_update().order_by('-ooid').first()
+                if last_order:
+                    self.ooid = last_order.ooid + 1
+                else:
+                    self.ooid = 1
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Pallet Received')

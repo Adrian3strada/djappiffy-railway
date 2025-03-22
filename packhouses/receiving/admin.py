@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import IncomingProduct, PalletReceived
 from common.base.mixins import (ByOrganizationAdminMixin)
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle
+from packhouses.catalogs.models import HarvestContainer
 from django.utils.translation import gettext_lazy as _
 import nested_admin
 from .mixins import CustomNestedStackedInlineMixin
@@ -44,9 +45,41 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 # Inline para los pallets
-class PalletReceivedInline(NestedStackedInline):
+class PalletReceivedInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = PalletReceived
+    fields = ('ooid', 'gross_weight', 'total_boxes', 'harvest_container', 'container_tare', 'platform_tare', 'net_weight')
     extra = 0
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        organization = None
+        if hasattr(request, 'organization'):
+            organization = request.organization
+
+        if db_field.name == "harvest_container":
+            kwargs["queryset"] = HarvestContainer.objects.filter(organization=organization, is_enabled=True)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_readonly_fields(self, request, obj=None):
+        # Obtener los campos readonly predefinidos
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+
+        # Campos siempre readonly cuando el objeto no existe
+        if not obj:
+            readonly_fields.append('ooid')
+
+        # Campos readonly para objetos existentes
+        if obj and obj.pk:
+            readonly_fields.append('ooid')
+
+        # Si el estado del corte está cerrado o cancelado, todos los campos son readonly
+        if obj and obj.status in ['closed', 'canceled']:
+            # Filtrar solo los campos definidos en el admin que realmente existen
+            readonly_fields.extend([
+                field for field in self.fields if hasattr(obj, field)
+            ])
+
+        return readonly_fields
     
     class Media:
         js = ('js/admin/forms/packhouses/receiving/pallets_received_inline.js',)
