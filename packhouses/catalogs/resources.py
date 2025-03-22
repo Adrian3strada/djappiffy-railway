@@ -1,6 +1,6 @@
 from import_export.fields import Field
 from .models import (Market, Product, ProductSize, Provider, Client, Vehicle, Gatherer, Maquiladora, Orchard, HarvestingCrew,
-                     Supply, Packaging, Service, WeighingScale, ColdChamber, Pallet, PackagingPallet,
+                     Supply, Packaging, Service, WeighingScale, ColdChamber, Pallet,
                      ExportingCompany, Transfer, LocalTransporter, BorderToDestinationTransporter, CustomsBroker,
                      Vessel, Airline, InsuranceCompany, HarvestContainer)
 from django.http import HttpResponse
@@ -272,12 +272,6 @@ class ColdChamberResource(DehydrationResource, ExportResource):
 class PalletResource(DehydrationResource, ExportResource):
     class Meta:
         model = Pallet
-        exclude = default_excluded_fields
-
-
-class ProductPackagingPalletResource(DehydrationResource, ExportResource):
-    class Meta:
-        model = PackagingPallet
         exclude = default_excluded_fields
 
 

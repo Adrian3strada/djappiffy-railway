@@ -8,7 +8,6 @@ from .models import (
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, ProductStandardPackaging,
     Service, ProductPresentation, Packaging, ProductPackaging,
-    ProductPallet, PackagingPallet,
     WeighingScale, ColdChamber,
     Pallet, PalletComplementarySupply,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
@@ -70,7 +69,7 @@ from .resources import (ProductResource, MarketResource, MarketProductSizeResour
                         VehicleResource, GathererResource,
                         MaquiladoraResource, OrchardResource, HarvestingCrewResource, SupplyResource, PackagingResource,
                         ServiceResource, WeighingScaleResource,
-                        ColdChamberResource, PalletResource, ProductPackagingPalletResource,
+                        ColdChamberResource, PalletResource,
                         ExportingCompanyResource, TransferResource, LocalTransporterResource,
                         BorderToDestinationTransporterResource, CustomsBrokerResource, VesselResource, AirlineResource,
                         InsuranceCompanyResource,
@@ -1657,116 +1656,6 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
     class Media:
         js = ('js/admin/forms/pallet.js',)
-
-
-class PackagingPalletInLine(admin.TabularInline):
-    model = PackagingPallet
-    extra = 0
-    verbose_name = _('Packaging pallet')
-    verbose_name_plural = _('Packaging pallets')
-
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        if 'packaging_pallet' in formset.form.base_fields:
-            formset.form.base_fields['packaging_pallet'].widget.can_add_related = False
-            formset.form.base_fields['packaging_pallet'].widget.can_change_related = False
-            formset.form.base_fields['packaging_pallet'].widget.can_delete_related = False
-            formset.form.base_fields['packaging_pallet'].widget.can_view_related = False
-        if 'product_packaging' in formset.form.base_fields:
-            formset.form.base_fields['product_packaging'].widget.can_add_related = False
-            formset.form.base_fields['product_packaging'].widget.can_change_related = False
-            formset.form.base_fields['product_packaging'].widget.can_delete_related = False
-            formset.form.base_fields['product_packaging'].widget.can_view_related = False
-        if 'product_market_class' in formset.form.base_fields:
-            formset.form.base_fields['product_market_class'].widget.can_add_related = False
-            formset.form.base_fields['product_market_class'].widget.can_change_related = False
-            formset.form.base_fields['product_market_class'].widget.can_delete_related = False
-            formset.form.base_fields['product_market_class'].widget.can_view_related = False
-        return formset
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        organization = request.organization if hasattr(request, 'organization') else None
-
-        if db_field.name == "packaging_pallet":
-            if organization:
-                kwargs["queryset"] = ProductPallet.objects.filter(organization=organization, is_enabled=True)
-            else:
-                kwargs["queryset"] = ProductPallet.objects.none()
-        if db_field.name == "product_packaging":
-            if organization:
-                kwargs["queryset"] = ProductPackaging.objects.filter(organization=organization, is_enabled=True)
-            else:
-                kwargs["queryset"] = ProductPackaging.objects.none()
-        if db_field.name == "product_market_class":
-            if organization:
-                kwargs["queryset"] = ProductMarketClass.objects.filter(product__organization=organization, is_enabled=True)
-            else:
-                kwargs["queryset"] = ProductMarketClass.objects.none()
-
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-
-@admin.register(ProductPallet)
-class ProductPalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
-    report_function = staticmethod(basic_report)
-    resource_classes = [ProductPackagingPalletResource]
-    list_display = ['name', 'alias', 'market', 'product', 'pallet', 'is_enabled']
-    list_filter = ['market', 'product', 'pallet', 'is_enabled']
-    search_fields = ['name', 'alias']
-    # fields = ['market', 'product', 'pallet', 'name', 'alias', 'is_enabled']
-    inlines = [PackagingPalletInLine]
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        if 'market' in form.base_fields:
-            form.base_fields['market'].widget.can_add_related = False
-            form.base_fields['market'].widget.can_change_related = False
-            form.base_fields['market'].widget.can_delete_related = False
-            form.base_fields['market'].widget.can_view_related = True
-        if 'product' in form.base_fields:
-            form.base_fields['product'].widget.can_add_related = False
-            form.base_fields['product'].widget.can_change_related = False
-            form.base_fields['product'].widget.can_delete_related = False
-            form.base_fields['product'].widget.can_view_related = True
-        if 'pallet' in form.base_fields:
-            form.base_fields['pallet'].widget.can_add_related = False
-            form.base_fields['pallet'].widget.can_change_related = False
-            form.base_fields['pallet'].widget.can_delete_related = False
-            form.base_fields['pallet'].widget.can_view_related = True
-        return form
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Market, Product, Pallet, PackagingPallet, Organization]):
-            readonly_fields.extend(['market', 'product', 'pallet', 'name', 'alias'])
-        return readonly_fields
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductPallet.objects.get(id=obj_id) if obj_id else None
-
-        organization = request.organization if hasattr(request, 'organization') else None
-        organization_queryfilter = {'organization': organization, 'is_enabled': True}
-
-        if db_field.name == "market":
-            if organization:
-                kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
-            else:
-                kwargs["queryset"] = Market.objects.none()
-
-        if db_field.name == "product":
-            if organization:
-                kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
-            else:
-                kwargs["queryset"] = Product.objects.none()
-
-        if db_field.name == "pallet":
-            if organization:
-                kwargs["queryset"] = Pallet.objects.filter(**organization_queryfilter)
-            else:
-                kwargs["queryset"] = Pallet.objects.none()
-
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(WeighingScale)

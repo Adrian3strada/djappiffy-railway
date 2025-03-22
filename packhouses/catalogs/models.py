@@ -885,47 +885,6 @@ class PalletComplementarySupply(models.Model):
         ]
 
 
-class ProductPallet(models.Model):
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    pallet = models.ForeignKey(Pallet, verbose_name=_('Pallet'), on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, verbose_name=_('Name'))
-    alias = models.CharField(max_length=20, verbose_name=_('Alias'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Product pallet')
-        verbose_name_plural = _('Product pallets')
-        ordering = ('name', 'product', 'market', 'pallet')
-        constraints = [
-            models.UniqueConstraint(fields=['market', 'product', 'pallet', 'organization'], name='productpallet_unique_market_product_pallet_organization'),
-            models.UniqueConstraint(fields=['name', 'alias', 'organization'], name='productpallet_unique_name_alias_organization')
-        ]
-
-
-class PackagingPallet(models.Model):
-    product_packaging_pallet = models.ForeignKey(ProductPallet, verbose_name=_('Product packaging pallet'), on_delete=models.CASCADE)
-    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
-    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
-
-    def __str__(self):
-        return f"{self.pk} {self.product_packaging}"
-
-    class Meta:
-        verbose_name = _('Packaging pallet')
-        verbose_name_plural = _('Packaging pallets')
-        ordering = ( 'product_packaging', 'product_packaging_pallet')
-        constraints = [
-            models.UniqueConstraint(fields=['product_packaging_pallet', 'product_packaging'],
-                                    name='productpackagingpallet_unique_packaging_pallet_product_packaging_product_market_class')
-        ]
-
-
-
 # Básculas
 
 class WeighingScale(CleanNameAndOrganizationMixin, models.Model):
