@@ -1445,6 +1445,9 @@ class ProductPackagingPalletInline(admin.TabularInline):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    class Media:
+        js = ('js/admin/forms/product_packaging_pallet_inline.js',)
+
 
 @admin.register(ProductPackaging)
 class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
