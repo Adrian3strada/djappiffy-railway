@@ -705,6 +705,52 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
                                     name='service_unique_name_service_provider_organization'),
         ]
 
+
+# Pallets
+
+
+class Pallet(models.Model):
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    # markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet'})
+    name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
+    alias = models.CharField(max_length=20, verbose_name=_('Alias'), null=False, blank=False)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Pallet')
+        verbose_name_plural = _('Pallets')
+        ordering = ('name', 'market', 'product', 'supply', 'organization')
+        constraints = [
+            models.UniqueConstraint(fields=['market', 'product', 'supply', 'organization'], name='pallet_configuration_unique_market_product_supply_organization'),
+            models.UniqueConstraint(fields=['name', 'organization'], name='pallet_configuration_unique_name_organization'),
+            models.UniqueConstraint(fields=['alias', 'organization'], name='pallet_configuration_unique_alias_organization')
+        ]
+
+
+class PalletComplementarySupply(models.Model):
+    pallet = models.ForeignKey(Pallet, verbose_name='Pallet Configuration', on_delete=models.CASCADE)
+    kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT, limit_choices_to={'category': 'packaging_pallet_complement'})
+    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet_complement'})
+    quantity = models.IntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
+
+    def __str__(self):
+        return f"{self.supply}"
+
+    class Meta:
+        verbose_name = _('Pallet Complementary supply')
+        verbose_name_plural = _('Pallet Complementary supplies')
+        ordering = ('supply', 'kind', 'pallet')
+        constraints = [
+            models.UniqueConstraint(fields=['kind', 'supply', 'pallet'],name='productpackagingpalletcomplementarysupply_unique_kind_supply_pallet')
+        ]
+
+
 # Tipos de empaques
 
 
@@ -817,7 +863,7 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     class Meta:
         verbose_name = _('Product packaging')
         verbose_name_plural = _('Product packaging')
-        ordering = ('name', 'product', 'packaging')
+        ordering = ('name',)
         constraints = [
             models.UniqueConstraint(fields=('market', 'product', 'product_size', 'packaging', 'organization'),
                                     name='productpackaging_unique_market_product_product_size_packaging_organization'),
@@ -841,49 +887,21 @@ class ProductPackagingPresentation(models.Model):
         ]
 
 
-# Pallets
-
-
-class Pallet(models.Model):
-    # market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet'})
-    name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
-    alias = models.CharField(max_length=20, verbose_name=_('Alias'), null=False, blank=False)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.name}"
+class ProductPackagingPallet(models.Model):
+    product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
+    pallet = models.ForeignKey(Pallet, on_delete=models.CASCADE)
+    max_packaging_quantity = models.PositiveIntegerField(verbose_name=_('Max packaging quantity'),
+                                                         help_text=_('Max amount of product packaging for this pallet.'),
+                                                         validators=[MinValueValidator(1)])
 
     class Meta:
-        verbose_name = _('Pallet')
-        verbose_name_plural = _('Pallets')
-        ordering = ('name', 'organization')
+        verbose_name = _('Product packaging pallet')
+        verbose_name_plural = _('Product packaging pallets')
+        ordering = ('product_packaging', 'pallet')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='pallet_configuration_unique_name_organization'),
-            models.UniqueConstraint(fields=['alias', 'organization'], name='pallet_configuration_unique_alias_organization')
+            models.UniqueConstraint(fields=('product_packaging', 'pallet'),
+                                    name='productpackagingpallet_unique_productpackaging_pallet'),
         ]
-
-
-class PalletComplementarySupply(models.Model):
-    pallet = models.ForeignKey(Pallet, verbose_name='Pallet Configuration', on_delete=models.CASCADE)
-    kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT, limit_choices_to={'category': 'packaging_pallet_complement'})
-    supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet_complement'})
-    quantity = models.IntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
-
-    def __str__(self):
-        return f"{self.supply}"
-
-    class Meta:
-        verbose_name = _('Pallet Complementary supply')
-        verbose_name_plural = _('Pallet Complementary supplies')
-        ordering = ('supply', 'kind', 'pallet')
-        constraints = [
-            models.UniqueConstraint(fields=['kind', 'supply', 'pallet'],name='productpackagingpalletcomplementarysupply_unique_kind_supply_pallet')
-        ]
-
 
 # Básculas
 

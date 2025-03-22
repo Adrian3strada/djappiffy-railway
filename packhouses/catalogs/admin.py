@@ -7,7 +7,7 @@ from .models import (
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, ProductStandardPackaging,
-    Service, ProductPresentation, Packaging, ProductPackaging,
+    Service, ProductPresentation, Packaging, ProductPackaging, ProductPackagingPallet,
     WeighingScale, ColdChamber,
     Pallet, PalletComplementarySupply,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
@@ -1417,6 +1417,35 @@ class ProductPackagingPresentationInline(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+class ProductPackagingPalletInline(admin.TabularInline):
+    model = ProductPackagingPallet
+    min_num = 0
+    extra = 0
+    verbose_name = _('Pallet')
+    verbose_name_plural = _('Pallets')
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if 'pallet' in formset.form.base_fields:
+            formset.form.base_fields['pallet'].widget.can_add_related = False
+            formset.form.base_fields['pallet'].widget.can_change_related = False
+            formset.form.base_fields['pallet'].widget.can_delete_related = False
+            formset.form.base_fields['pallet'].widget.can_view_related = True
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_obj_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = Packaging.objects.get(id=parent_obj_id) if parent_obj_id else None
+        organization = request.organization if hasattr(request, 'organization') else None
+
+        if db_field.name == "pallet":
+            kwargs["queryset"] = Pallet.objects.none()
+            if organization:
+                kwargs["queryset"] = Pallet.objects.filter(organization=organization, is_enabled=True)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
 @admin.register(ProductPackaging)
 class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
@@ -1427,6 +1456,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     list_display = ['name', 'alias', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging', 'is_enabled']
     fields = ['category', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging',
               'product_presentation', 'product_presentation_quantity_per_packaging', 'name', 'alias', 'is_enabled']
+    inlines = [ProductPackagingPalletInline]
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
@@ -1582,25 +1612,23 @@ class PalletComplementarySupplyInLine(admin.TabularInline):
 class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PalletResource]
-    list_display = ('name', 'alias', 'markets_display', 'product', 'supply', 'is_enabled')
+    list_display = ('name', 'alias', 'market', 'product', 'supply', 'is_enabled')
     list_filter = (ByMarketForOrganizationPalletFilter, ByProductForOrganizationProductPackagingPalletFilter,
                    BySupplyForOrganizationPalletFilter, 'is_enabled')
     # list_filter = ('markets', 'product', 'supply', 'is_enabled')
-    fields = ('markets', 'product', 'supply', 'name', 'alias', 'is_enabled')
+    fields = ('market', 'product', 'supply', 'name', 'alias', 'is_enabled')
     search_fields = ('name', 'alias')
     inlines = [PalletComplementarySupplyInLine]
-
-    def markets_display(self, obj):
-        return ', '.join([market.name for market in obj.markets.all()])
-    markets_display.short_description = _('Markets')
-    markets_display.admin_order_field = 'name'
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'markets' in form.base_fields:
-            form.base_fields['markets'].widget.can_add_related = False
+        if 'market' in form.base_fields:
+            form.base_fields['market'].widget.can_add_related = False
+            form.base_fields['market'].widget.can_change_related = False
+            form.base_fields['market'].widget.can_delete_related = False
+            form.base_fields['market'].widget.can_view_related = True
         if 'product' in form.base_fields:
             form.base_fields['product'].widget.can_add_related = False
             form.base_fields['product'].widget.can_change_related = False
@@ -1626,6 +1654,12 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
 
+        if db_field.name == "market":
+            if organization:
+                kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+            else:
+                kwargs["queryset"] = Market.objects.none()
+
         if db_field.name == "product":
             if organization:
                 kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
@@ -1637,22 +1671,8 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                 kwargs["queryset"] = Supply.objects.filter(**organization_queryfilter, kind__category='packaging_pallet')
             else:
                 kwargs["queryset"] = Supply.objects.none()
+
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
-        obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = Pallet.objects.get(id=obj_id) if obj_id else None
-
-        organization = request.organization if hasattr(request, 'organization') else None
-        organization_queryfilter = {'organization': organization, 'is_enabled': True}
-
-        if db_field.name == "markets":
-            if organization:
-                kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
-            else:
-                kwargs["queryset"] = Market.objects.none()
-
-        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     class Media:
         js = ('js/admin/forms/pallet.js',)
