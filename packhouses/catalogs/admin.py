@@ -1592,6 +1592,17 @@ class PalletComplementarySupplyInLine(admin.TabularInline):
             formset.form.base_fields['supply'].widget.can_view_related = True
         return formset
 
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and is_instance_used(obj, exclude=[Market, Product, Supply, Organization, PalletComplementarySupply]):
+            readonly_fields.extend(['pallet', 'kind', 'supply', 'quantity'])
+        return readonly_fields
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and is_instance_used(obj, exclude=[Market, Product, Supply, Organization, PalletComplementarySupply]):
+            return False
+        return super().has_delete_permission(request, obj)
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = request.organization if hasattr(request, 'organization') else None
 
@@ -1618,7 +1629,6 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     list_display = ('name', 'alias', 'market', 'product', 'supply', 'is_enabled')
     list_filter = (ByMarketForOrganizationPalletFilter, ByProductForOrganizationProductPackagingPalletFilter,
                    BySupplyForOrganizationPalletFilter, 'is_enabled')
-    # list_filter = ('markets', 'product', 'supply', 'is_enabled')
     fields = ('market', 'product', 'supply', 'name', 'alias', 'is_enabled')
     search_fields = ('name', 'alias')
     inlines = [PalletComplementarySupplyInLine]

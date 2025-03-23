@@ -711,7 +711,6 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 
 class Pallet(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    # markets = models.ManyToManyField(Market, verbose_name=_('Markets'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT, limit_choices_to={'kind__category': 'packaging_pallet'})
     name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
