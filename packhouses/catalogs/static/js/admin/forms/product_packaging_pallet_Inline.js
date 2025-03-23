@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function setPalletOptions() {
     if (marketField.val() && productField.val()) {
-      fetchOptions(`/rest/v1/catalogs/product-packaging/?market=${marketField.val()}&product=${productField.val()}&is_enabled=1`)
+      fetchOptions(`/rest/v1/catalogs/pallet/?market=${marketField.val()}&product=${productField.val()}&is_enabled=1`)
         .then(data => {
           palletOptions = data;
         })
@@ -56,11 +56,10 @@ document.addEventListener('DOMContentLoaded', function () {
     existingForms.forEach((form, index) => {
       const palletField = $(form).find(`select[name="productpackagingpallet_set-${index}-pallet"]`);
       const maxPackagingQuantityField = $(form).find(`input[name="productpackagingpallet_set-${index}-max_packaging_quantity"]`);
-
       maxPackagingQuantityField.attr('min', 1);
       const selectedPallet = palletField.val();
       updateFieldOptions(palletField, palletOptions, selectedPallet);
-
+      palletField.val(selectedPallet);
     });
   }, 600);
 

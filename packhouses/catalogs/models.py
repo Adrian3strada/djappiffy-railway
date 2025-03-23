@@ -899,8 +899,8 @@ class ProductPackagingPallet(models.Model):
         verbose_name_plural = _('Product packaging pallets')
         ordering = ('product_packaging', 'pallet')
         constraints = [
-            models.UniqueConstraint(fields=('product_packaging', 'pallet'),
-                                    name='productpackagingpallet_unique_productpackaging_pallet'),
+            models.UniqueConstraint(fields=('product_packaging', 'pallet', 'max_packaging_quantity'),
+                                    name='productpackagingpallet_unique_productpackaging_pallet_max_packaging_quantity'),
         ]
 
 # Básculas
