@@ -806,8 +806,6 @@ class Packaging(models.Model):
                                                    null=True, blank=True, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
-    packaging_supply_quantity = models.PositiveIntegerField(default=1, verbose_name=_('Packaging supply quantity'),
-                                                            help_text=_('Quantity of the packaging supply to discount from the inventory each time a product packaging is used'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 

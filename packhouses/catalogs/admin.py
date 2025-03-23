@@ -1288,11 +1288,10 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                    ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
                    'product_standard_packaging', 'is_enabled')
     list_display = ('name', 'packaging_supply_kind', 'packaging_supply', 'product', 'market',
-                    'product_packaging_standard_display', 'is_enabled',
-                    )
+                    'product_packaging_standard_display', 'is_enabled')
     fields = (
         'market', 'product', 'packaging_supply_kind', 'product_standard_packaging',
-        'name', 'packaging_supply', 'packaging_supply_quantity', 'is_enabled'
+        'name', 'packaging_supply', 'is_enabled'
     )
     inlines = (PackagingComplementarySupplyInline,)
 
