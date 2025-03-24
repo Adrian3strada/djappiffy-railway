@@ -1846,6 +1846,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 1000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -1860,6 +1861,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 1000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -1874,6 +1876,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 1000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -1888,6 +1891,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 100,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": false,
         "organization": 1
     }
@@ -1902,6 +1906,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 500,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -1916,6 +1921,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 3000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -1930,6 +1936,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 500,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -1944,6 +1951,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 5000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -1958,6 +1966,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 5000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -1972,6 +1981,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 5000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -1986,6 +1996,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 5000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2000,6 +2011,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 5000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2014,6 +2026,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 5000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2028,6 +2041,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 5000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2042,6 +2056,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 5000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2056,6 +2071,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 4000,
         "usage_discount_quantity": 4,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2070,6 +2086,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 4000,
         "usage_discount_quantity": 4,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2084,6 +2101,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 2500,
         "usage_discount_quantity": 18,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2098,6 +2116,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 2500,
         "usage_discount_quantity": 18,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2112,6 +2131,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 15000,
         "usage_discount_quantity": 16,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2126,6 +2146,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 15000,
         "usage_discount_quantity": 18,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2140,6 +2161,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 150,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2154,6 +2176,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 150,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2168,6 +2191,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 5000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2182,6 +2206,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 5000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2196,6 +2221,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 5000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2210,6 +2236,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 5000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2224,6 +2251,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 5000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2238,6 +2266,7 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 1000000000,
         "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
         "is_enabled": true,
         "organization": 1
     }
@@ -2252,6 +2281,37 @@
         "minimum_stock_quantity": 0,
         "maximum_stock_quantity": 12000000,
         "usage_discount_quantity": 3,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.supply",
+    "pk": 31,
+    "fields": {
+        "kind": 9,
+        "name": "CAJA DE CAMPO DE 25",
+        "capacity": null,
+        "minimum_stock_quantity": 100,
+        "maximum_stock_quantity": 20000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.5,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.supply",
+    "pk": 32,
+    "fields": {
+        "kind": 9,
+        "name": "CAJA DE CAMPO DE 20",
+        "capacity": null,
+        "minimum_stock_quantity": 100,
+        "maximum_stock_quantity": 20000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.3,
         "is_enabled": true,
         "organization": 1
     }
@@ -2467,17 +2527,6 @@
         "external_number": "873",
         "internal_number": null,
         "comments": null,
-        "is_enabled": true,
-        "organization": 1
-    }
-},
-{
-    "model": "catalogs.harvestcontainer",
-    "pk": 1,
-    "fields": {
-        "name": "CAJA DE CAMPO DE 25",
-        "capacity": 25.0,
-        "unit_kind": "Kg",
         "is_enabled": true,
         "organization": 1
     }

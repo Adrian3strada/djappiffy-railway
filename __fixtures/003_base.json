@@ -1,1945 +1,1961 @@
 [
 {
-  "model": "base.productkind",
-  "pk": 1,
-  "fields": {
-    "name": "Café",
-    "name_en": "Coffe",
-    "name_pt": "Café",
-    "name_fr": "Café",
-    "name_de": "Kaffee",
-    "name_es": "Café",
-    "for_packaging": false,
-    "for_orchard": false,
-    "for_eudr": true,
-    "image": "",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
-{
-  "model": "base.productkind",
-  "pk": 2,
-  "fields": {
-    "name": "Cacao",
-    "name_en": "Cocoa",
-    "name_pt": "Cacau",
-    "name_fr": "Cacao",
-    "name_de": "Kakao",
-    "name_es": "Cacao",
-    "for_packaging": false,
-    "for_orchard": false,
-    "for_eudr": true,
-    "image": "",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
-{
-  "model": "base.productkind",
-  "pk": 3,
-  "fields": {
-    "name": "Caucho",
-    "name_en": "Rubber",
-    "name_pt": "Borracha",
-    "name_fr": "Caoutchouc",
-    "name_de": "Gummi",
-    "name_es": "Caucho",
-    "for_packaging": false,
-    "for_orchard": false,
-    "for_eudr": true,
-    "image": "",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
-{
-  "model": "base.productkind",
-  "pk": 4,
-  "fields": {
-    "name": "Ganado",
-    "name_en": "Livestock",
-    "name_pt": "Pecuário",
-    "name_fr": "Bétail",
-    "name_de": "Vieh",
-    "name_es": "Ganado",
-    "for_packaging": false,
-    "for_orchard": false,
-    "for_eudr": true,
-    "image": "",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
-{
-  "model": "base.productkind",
-  "pk": 5,
-  "fields": {
-    "name": "Madera",
-    "name_en": "Wood",
-    "name_pt": "Madeira",
-    "name_fr": "Bois",
-    "name_de": "Holz",
-    "name_es": "Madera",
-    "for_packaging": false,
-    "for_orchard": false,
-    "for_eudr": true,
-    "image": "",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
-{
-  "model": "base.productkind",
-  "pk": 6,
-  "fields": {
-    "name": "Aceite de palma",
-    "name_en": "Palm oil",
-    "name_pt": "Óleo de palma",
-    "name_fr": "Huile de palme",
-    "name_de": "Palmöl",
-    "name_es": "Aceite de palma",
-    "for_packaging": false,
-    "for_orchard": false,
-    "for_eudr": true,
-    "image": "",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
-{
-  "model": "base.productkind",
-  "pk": 7,
-  "fields": {
-    "name": "Soja",
-    "name_en": "Soy",
-    "name_pt": "Soja",
-    "name_fr": "Soja",
-    "name_de": "Soja",
-    "name_es": "Soja",
-    "for_packaging": false,
-    "for_orchard": false,
-    "for_eudr": true,
-    "image": "",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
-{
-  "model": "base.productkind",
-  "pk": 8,
-  "fields": {
-    "name": "Aguacate",
-    "name_en": "Avocado",
-    "name_pt": "Abacate",
-    "name_fr": "Avocat",
-    "name_de": "Avocado",
-    "name_es": "Aguacate",
-    "for_packaging": true,
-    "for_orchard": false,
-    "for_eudr": false,
-    "image": "",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
-{
-  "model": "base.productkind",
-  "pk": 9,
-  "fields": {
-    "name": "Limón",
-    "name_en": "Lime",
-    "name_pt": "Limão",
-    "name_fr": "Citron",
-    "name_de": "Zitrone",
-    "name_es": "Limón",
-    "for_packaging": true,
-    "for_orchard": false,
-    "for_eudr": false,
-    "image": "",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
-{
-  "model": "base.productkind",
-  "pk": 10,
-  "fields": {
-    "name": "Mango",
-    "name_en": "Mango",
-    "name_pt": "Manga",
-    "name_fr": "Mangue",
-    "name_de": "Mango",
-    "name_es": "Mango",
-    "for_packaging": true,
-    "for_orchard": false,
-    "for_eudr": false,
-    "image": "",
-    "is_enabled": false,
-    "sort_order": 0
-  }
-},
-{
-  "model": "base.supplykind",
-  "pk": 1,
-  "fields": {
-    "category": "packaging_containment",
-    "name": "CAJA",
-    "name_en": "BOX",
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "CAJA",
-    "capacity_unit_category": "Kg",
-    "usage_discount_unit_category": "pieces",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.supplykind",
-  "pk": 2,
-  "fields": {
-    "category": "packaging_separator",
-    "name": "CHAROLA",
-    "name_en": "TRAY",
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "CHAROLA",
-    "capacity_unit_category": "pieces",
-    "usage_discount_unit_category": "pieces",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.supplykind",
-  "pk": 3,
-  "fields": {
-    "category": "packaging_pallet",
-    "name": "TARIMA",
-    "name_en": "PALLET",
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "TARIMA",
-    "capacity_unit_category": null,
-    "usage_discount_unit_category": "pieces",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.supplykind",
-  "pk": 4,
-  "fields": {
-    "category": "packaging_pallet_protection",
-    "name": "ESQUINERO",
-    "name_en": "CORNER PROTECTOR",
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "ESQUINERO",
-    "capacity_unit_category": null,
-    "usage_discount_unit_category": "pieces",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.supplykind",
-  "pk": 5,
-  "fields": {
-    "category": "packaging_complement",
-    "name": "TAPA",
-    "name_en": "LID",
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "TAPA",
-    "capacity_unit_category": null,
-    "usage_discount_unit_category": "pieces",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.supplykind",
-  "pk": 6,
-  "fields": {
-    "category": "packaging_presentation",
-    "name": "MALLA",
-    "name_en": "MESH",
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "MALLA",
-    "capacity_unit_category": "pieces",
-    "usage_discount_unit_category": "cm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.supplykind",
-  "pk": 7,
-  "fields": {
-    "category": "packaging_presentation_complement",
-    "name": "FILM",
-    "name_en": "FILM",
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "FILM",
-    "capacity_unit_category": null,
-    "usage_discount_unit_category": "cm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.supplykind",
-  "pk": 8,
-  "fields": {
-    "category": "packaging_pallet_wrapping",
-    "name": "FLEJE",
-    "name_en": "STRAPPING",
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "FLEJE",
-    "capacity_unit_category": null,
-    "usage_discount_unit_category": "m",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandard",
-  "pk": 1,
-  "fields": {
-    "name": "APEAMMEX",
-    "country": 158,
-    "product_kind": 8,
-    "is_enabled": true,
-    "sort_order": 1
-  }
-},
-{
-  "model": "base.productkindcountrystandard",
-  "pk": 2,
-  "fields": {
-    "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [ALEMANIA - UNIÓN EUROPEA]",
-    "country": 57,
-    "product_kind": 8,
-    "is_enabled": true,
-    "sort_order": 2
-  }
-},
-{
-  "model": "base.productkindcountrystandard",
-  "pk": 3,
-  "fields": {
-    "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [CANADÁ]",
-    "country": 38,
-    "product_kind": 8,
-    "is_enabled": true,
-    "sort_order": 3
-  }
-},
-{
-  "model": "base.productkindcountrystandard",
-  "pk": 4,
-  "fields": {
-    "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [JAPÓN]",
-    "country": 114,
-    "product_kind": 8,
-    "is_enabled": true,
-    "sort_order": 4
-  }
-},
-{
-  "model": "base.productkindcountrystandard",
-  "pk": 5,
-  "fields": {
-    "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [ESTADOS UNIDOS]",
-    "country": 234,
-    "product_kind": 8,
-    "is_enabled": true,
-    "sort_order": 5
-  }
-},
-{
-  "model": "base.productkindcountrystandard",
-  "pk": 6,
-  "fields": {
-    "name": "ESTÁNDARES DE X SOBRE [LIMÓN - MEXICANO] PARA [MÉXICO]",
-    "country": 158,
-    "product_kind": 9,
-    "is_enabled": true,
-    "sort_order": 6
-  }
-},
-{
-  "model": "base.productkindcountrystandard",
-  "pk": 7,
-  "fields": {
-    "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [ESTADOS UNIDOS]",
-    "country": 234,
-    "product_kind": 9,
-    "is_enabled": true,
-    "sort_order": 7
-  }
-},
-{
-  "model": "base.productkindcountrystandard",
-  "pk": 8,
-  "fields": {
-    "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [JAPÓN - ASIA]",
-    "country": 114,
-    "product_kind": 9,
-    "is_enabled": true,
-    "sort_order": 8
-  }
-},
-{
-  "model": "base.productkindcountrystandard",
-  "pk": 9,
-  "fields": {
-    "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [ALEMANIA - UNIÓN EUROPEA]",
-    "country": 57,
-    "product_kind": 9,
-    "is_enabled": true,
-    "sort_order": 9
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 1,
-  "fields": {
-    "name": "Comercial",
-    "standard": 1,
-    "description": "120 a 150 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 2,
-  "fields": {
-    "name": "Mediano",
-    "standard": 1,
-    "description": "170 a 205 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 3,
-  "fields": {
-    "name": "Primera",
-    "standard": 1,
-    "description": "205 a 265 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 4,
-  "fields": {
-    "name": "Extra",
-    "standard": 1,
-    "description": "150 a 170 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 5,
-  "fields": {
-    "name": "Super",
-    "standard": 1,
-    "description": "+ de 265 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 6,
-  "fields": {
-    "name": "26",
-    "standard": 2,
-    "description": "120 a 150 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 7,
-  "fields": {
-    "name": "24",
-    "standard": 2,
-    "description": "150 a 170 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 8,
-  "fields": {
-    "name": "22",
-    "standard": 2,
-    "description": "170 a 205 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 9,
-  "fields": {
-    "name": "18",
-    "standard": 2,
-    "description": "205 a 265 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 10,
-  "fields": {
-    "name": "16",
-    "standard": 2,
-    "description": "265 a 300 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 11,
-  "fields": {
-    "name": "14",
-    "standard": 2,
-    "description": "300 a 330 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 12,
-  "fields": {
-    "name": "12",
-    "standard": 2,
-    "description": "+ de 330 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 13,
-  "fields": {
-    "name": "26",
-    "standard": 3,
-    "description": "120 a 150 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 14,
-  "fields": {
-    "name": "24",
-    "standard": 3,
-    "description": "150 a 170 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 15,
-  "fields": {
-    "name": "22",
-    "standard": 3,
-    "description": "170 a 205 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 16,
-  "fields": {
-    "name": "18",
-    "standard": 3,
-    "description": "205 a 265 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 17,
-  "fields": {
-    "name": "16",
-    "standard": 3,
-    "description": "265 a 300 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 18,
-  "fields": {
-    "name": "14",
-    "standard": 3,
-    "description": "300 a 330 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 19,
-  "fields": {
-    "name": "12",
-    "standard": 3,
-    "description": "+ de 330 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 20,
-  "fields": {
-    "name": "30",
-    "standard": 4,
-    "description": "170 a 205 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 21,
-  "fields": {
-    "name": "24",
-    "standard": 4,
-    "description": "205 a 265 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 22,
-  "fields": {
-    "name": "84",
-    "standard": 5,
-    "description": "120 a 150 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 23,
-  "fields": {
-    "name": "70",
-    "standard": 5,
-    "description": "150 a 170 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 24,
-  "fields": {
-    "name": "60",
-    "standard": 5,
-    "description": "170 a 205 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 25,
-  "fields": {
-    "name": "48",
-    "standard": 5,
-    "description": "205 a 265 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 26,
-  "fields": {
-    "name": "40",
-    "standard": 5,
-    "description": "265 a 300 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 27,
-  "fields": {
-    "name": "36",
-    "standard": 5,
-    "description": "300 a 330 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 28,
-  "fields": {
-    "name": "32",
-    "standard": 5,
-    "description": "+ de 330 grs",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 29,
-  "fields": {
-    "name": "600",
-    "standard": 6,
-    "description": "32 a 35 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 30,
-  "fields": {
-    "name": "500",
-    "standard": 6,
-    "description": "35 a 37 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 31,
-  "fields": {
-    "name": "400",
-    "standard": 6,
-    "description": "37 a 39 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 32,
-  "fields": {
-    "name": "300",
-    "standard": 6,
-    "description": "+ de 39 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 33,
-  "fields": {
-    "name": "250",
-    "standard": 7,
-    "description": "50 a 51 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 34,
-  "fields": {
-    "name": "230",
-    "standard": 7,
-    "description": "52 a 53 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 35,
-  "fields": {
-    "name": "200",
-    "standard": 7,
-    "description": "54 a 55 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 36,
-  "fields": {
-    "name": "175",
-    "standard": 7,
-    "description": "56 a 59 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 37,
-  "fields": {
-    "name": "150",
-    "standard": 7,
-    "description": "59 a 61 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 38,
-  "fields": {
-    "name": "110",
-    "standard": 7,
-    "description": "61 a 63 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 39,
-  "fields": {
-    "name": "54",
-    "standard": 8,
-    "description": "52 a 53 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 40,
-  "fields": {
-    "name": "48",
-    "standard": 8,
-    "description": "54 a 55 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 41,
-  "fields": {
-    "name": "44",
-    "standard": 8,
-    "description": "56 a 59 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 42,
-  "fields": {
-    "name": "40",
-    "standard": 8,
-    "description": "59 a 61 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 43,
-  "fields": {
-    "name": "36",
-    "standard": 8,
-    "description": "61 a 63 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 44,
-  "fields": {
-    "name": "63",
-    "standard": 9,
-    "description": "50 a 51 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 45,
-  "fields": {
-    "name": "54",
-    "standard": 9,
-    "description": "52 a 55 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 46,
-  "fields": {
-    "name": "48",
-    "standard": 9,
-    "description": "56 a 59 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.countryproductstandardsize",
-  "pk": 47,
-  "fields": {
-    "name": "42",
-    "standard": 9,
-    "description": "59 a 61 mm",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productstandardpackaging",
-  "pk": 1,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTÓN 11.3 (AGMX)",
-    "code": "1",
-    "max_product_amount": 11.3,
-    "description": null,
-    "standard": 1,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productstandardpackaging",
-  "pk": 2,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTÓN 11.3 (AGUS)",
-    "code": "1",
-    "max_product_amount": 11.3,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productstandardpackaging",
-  "pk": 3,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTÓN 11.3 (AGJP)",
-    "code": "1",
-    "max_product_amount": 11.3,
-    "description": null,
-    "standard": 4,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productstandardpackaging",
-  "pk": 4,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTÓN 10 (AGMX)",
-    "code": "2",
-    "max_product_amount": 10.0,
-    "description": null,
-    "standard": 1,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 1,
-  "fields": {
-    "code": "601",
-    "name": "General de Ley Personas Morales",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 2,
-  "fields": {
-    "code": "603",
-    "name": "Personas Morales con Fines no Lucrativos",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 3,
-  "fields": {
-    "code": "605",
-    "name": "Sueldos y Salarios e Ingresos Asimilados a Salarios",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 4,
-  "fields": {
-    "code": "606",
-    "name": "Arrendamiento",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 5,
-  "fields": {
-    "code": "607",
-    "name": "Régimen de Enajenación o Adquisición de Bienes",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 6,
-  "fields": {
-    "code": "608",
-    "name": "Demás ingresos",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 7,
-  "fields": {
-    "code": "609",
-    "name": "Consolidación",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 8,
-  "fields": {
-    "code": "610",
-    "name": "Residentes en el Extranjero sin Establecimiento Permanente en México",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 9,
-  "fields": {
-    "code": "611",
-    "name": "Ingresos por Dividendos (socios y accionistas)",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 10,
-  "fields": {
-    "code": "612",
-    "name": "Personas Físicas con Actividades Empresariales y Profesionales",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 11,
-  "fields": {
-    "code": "614",
-    "name": "Ingresos por intereses",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 12,
-  "fields": {
-    "code": "615",
-    "name": "Régimen de los ingresos por obtención de premios",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 13,
-  "fields": {
-    "code": "616",
-    "name": "Sin obligaciones fiscales",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 14,
-  "fields": {
-    "code": "620",
-    "name": "Sociedades Cooperativas de Producción que optan por diferir sus ingresos",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 15,
-  "fields": {
-    "code": "621",
-    "name": "Incorporación Fiscal",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 16,
-  "fields": {
-    "code": "622",
-    "name": "Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 17,
-  "fields": {
-    "code": "623",
-    "name": "Opcional para Grupos de Sociedades",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 18,
-  "fields": {
-    "code": "624",
-    "name": "Coordinados",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 19,
-  "fields": {
-    "code": "625",
-    "name": "Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 20,
-  "fields": {
-    "code": "626",
-    "name": "Régimen Simplificado de Confianza",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 21,
-  "fields": {
-    "code": "628",
-    "name": "Hidrocarburos",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 22,
-  "fields": {
-    "code": "629",
-    "name": "De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 23,
-  "fields": {
-    "code": "630",
-    "name": "Enajenación de acciones en bolsa de valores",
-    "country": 158
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 24,
-  "fields": {
-    "code": "1",
-    "name": "Single",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 25,
-  "fields": {
-    "code": "1",
-    "name": "Married Filing Jointly",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 26,
-  "fields": {
-    "code": "1",
-    "name": "Married Filing Separately",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 27,
-  "fields": {
-    "code": "1",
-    "name": "Head of Household",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 28,
-  "fields": {
-    "code": "1",
-    "name": "Qualifying Widow(er)",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 29,
-  "fields": {
-    "code": "2",
-    "name": "Sole Proprietorship",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 30,
-  "fields": {
-    "code": "2",
-    "name": "Partnership",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 31,
-  "fields": {
-    "code": "2",
-    "name": "C-Corporation",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 32,
-  "fields": {
-    "code": "2",
-    "name": "S-Corporation",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 33,
-  "fields": {
-    "code": "2",
-    "name": "Limited Liability Company (LLC)",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 34,
-  "fields": {
-    "code": "2",
-    "name": "Non-Profit Organization",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 35,
-  "fields": {
-    "code": "3",
-    "name": "Farmers and Ranchers",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 36,
-  "fields": {
-    "code": "3",
-    "name": "Household Employers",
-    "country": 234
-  }
-},
-{
-  "model": "base.legalentitycategory",
-  "pk": 37,
-  "fields": {
-    "code": "3",
-    "name": "Resident and Non-Resident Aliens",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 1,
-  "fields": {
-    "sort_order": null,
-    "code": "S.A.",
-    "name": "Sociedad Anónima",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 2,
-  "fields": {
-    "sort_order": null,
-    "code": "S.A. de C.V.",
-    "name": "Sociedad Anónima de Capital Variable",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 3,
-  "fields": {
-    "sort_order": null,
-    "code": "S. de R.L.",
-    "name": "Sociedad de Responsabilidad Limitada",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 4,
-  "fields": {
-    "sort_order": null,
-    "code": "S. de R.L. de C.V.",
-    "name": "Sociedad de Responsabilidad Limitada de Capital Variable",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 5,
-  "fields": {
-    "sort_order": null,
-    "code": "S. en N.C.",
-    "name": "Sociedad en Nombre Colectivo",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 6,
-  "fields": {
-    "sort_order": null,
-    "code": "S. en C.S.",
-    "name": "Sociedad en Comandita Simple",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 7,
-  "fields": {
-    "sort_order": null,
-    "code": "S. en C.A.",
-    "name": "Sociedad en Comandita por Acciones",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 8,
-  "fields": {
-    "sort_order": null,
-    "code": "S.C.",
-    "name": "Sociedad Cooperativa",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 9,
-  "fields": {
-    "sort_order": null,
-    "code": "S.A.S.",
-    "name": "Sociedad por Acciones Simplificada",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 10,
-  "fields": {
-    "sort_order": null,
-    "code": "A.C.",
-    "name": "Asociación Civil",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 11,
-  "fields": {
-    "sort_order": null,
-    "code": "S.A.B.",
-    "name": "Sociedad Anónima Bursátil",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 12,
-  "fields": {
-    "sort_order": null,
-    "code": "S.A.P.I.",
-    "name": "Sociedad Anónima Promotora de Inversión",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 13,
-  "fields": {
-    "sort_order": null,
-    "code": "S.A.P.I. de C.V.",
-    "name": "Sociedad Anónima Promotora de Inversión de Capital Variable",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 14,
-  "fields": {
-    "sort_order": null,
-    "code": "Corp.",
-    "name": "Corporation",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 15,
-  "fields": {
-    "sort_order": null,
-    "code": "LLC",
-    "name": "Limited Liability Company",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 16,
-  "fields": {
-    "sort_order": null,
-    "code": "S Corp.",
-    "name": "S Corporation",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 17,
-  "fields": {
-    "sort_order": null,
-    "code": "C Corp.",
-    "name": "C Corporation",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 18,
-  "fields": {
-    "sort_order": null,
-    "code": "Part.",
-    "name": "Partnership",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 19,
-  "fields": {
-    "sort_order": null,
-    "code": "LLP",
-    "name": "Limited Liability Partnership",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 20,
-  "fields": {
-    "sort_order": null,
-    "code": "LLLP",
-    "name": "Limited Liability Limited Partnership",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 21,
-  "fields": {
-    "sort_order": null,
-    "code": "S. de R.L.U.",
-    "name": "Sociedad de Responsabilidad Limitada Unipersonal",
-    "country": 158
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 22,
-  "fields": {
-    "sort_order": null,
-    "code": "Sole Prop.",
-    "name": "Sole Proprietorship",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 23,
-  "fields": {
-    "sort_order": null,
-    "code": "NPO o Non-Profit",
-    "name": "Non-Profit Corporation",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 24,
-  "fields": {
-    "sort_order": null,
-    "code": "PC",
-    "name": "Professional Corporation",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 25,
-  "fields": {
-    "sort_order": null,
-    "code": "PLLC",
-    "name": "Professional Limited Liability Company",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 26,
-  "fields": {
-    "sort_order": null,
-    "code": "B Corp.",
-    "name": "Benefit Corporation",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 27,
-  "fields": {
-    "sort_order": null,
-    "code": "Closely Held Corp.",
-    "name": "Close Corporation",
-    "country": 234
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 28,
-  "fields": {
-    "sort_order": null,
-    "code": "Corp.",
-    "name": "Corporation",
-    "country": 38
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 29,
-  "fields": {
-    "sort_order": null,
-    "code": "LLC",
-    "name": "Limited Liability Company",
-    "country": 38
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 30,
-  "fields": {
-    "sort_order": null,
-    "code": "C.C.",
-    "name": "Canadian Corporation",
-    "country": 38
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 31,
-  "fields": {
-    "sort_order": null,
-    "code": "NPO",
-    "name": "Non-Profit Corporation",
-    "country": 38
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 32,
-  "fields": {
-    "sort_order": null,
-    "code": "Part.",
-    "name": "Partnership",
-    "country": 38
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 33,
-  "fields": {
-    "sort_order": null,
-    "code": "LLP",
-    "name": "Limited Liability Partnership",
-    "country": 38
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 34,
-  "fields": {
-    "sort_order": null,
-    "code": "JV",
-    "name": "Joint Venture",
-    "country": 38
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 35,
-  "fields": {
-    "sort_order": null,
-    "code": "Co-op",
-    "name": "Cooperative",
-    "country": 38
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 36,
-  "fields": {
-    "sort_order": null,
-    "code": "Sole Prop.",
-    "name": "Sole Proprietorship",
-    "country": 38
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 37,
-  "fields": {
-    "sort_order": null,
-    "code": "Trust",
-    "name": "Trust",
-    "country": 38
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 38,
-  "fields": {
-    "sort_order": null,
-    "code": "ULC",
-    "name": "Unlimited Liability Corporation",
-    "country": 38
-  }
-},
-{
-  "model": "base.capitalframework",
-  "pk": 39,
-  "fields": {
-    "sort_order": null,
-    "code": "FIC",
-    "name": "Federally Incorporated Corporation",
-    "country": 38
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 1,
-  "fields": {
-    "code": "EXW",
-    "name": "Ex Works",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Ex Works",
-    "is_enabled": true,
-    "sort_order": 1
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 2,
-  "fields": {
-    "code": "FCA",
-    "name": "Free Carrier",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Free Carrier",
-    "is_enabled": true,
-    "sort_order": 2
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 3,
-  "fields": {
-    "code": "FAS",
-    "name": "Free Alongside Ship",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Free Alongside Ship",
-    "is_enabled": true,
-    "sort_order": 3
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 4,
-  "fields": {
-    "code": "FOB",
-    "name": "Free On Board",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Free On Board",
-    "is_enabled": true,
-    "sort_order": 4
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 5,
-  "fields": {
-    "code": "CFR",
-    "name": "Cost And Freight",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Cost And Freight",
-    "is_enabled": true,
-    "sort_order": 5
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 6,
-  "fields": {
-    "code": "CIF",
-    "name": "Cost, Insurance And Freight",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Cost, Insurance And Freight",
-    "is_enabled": true,
-    "sort_order": 6
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 7,
-  "fields": {
-    "code": "CPT",
-    "name": "Carriage Paid To",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Carriage Paid To",
-    "is_enabled": true,
-    "sort_order": 7
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 8,
-  "fields": {
-    "code": "CIP",
-    "name": "Cost, Insurance And Freight",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Cost, Insurance And Freight",
-    "is_enabled": true,
-    "sort_order": 8
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 9,
-  "fields": {
-    "code": "DAP",
-    "name": "Delivery At Place",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Delivery At Place",
-    "is_enabled": true,
-    "sort_order": 9
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 10,
-  "fields": {
-    "code": "DPU",
-    "name": "Delivered At Place Unloaded",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Delivered At Place Unloaded",
-    "is_enabled": true,
-    "sort_order": 10
-  }
-},
-{
-  "model": "base.incoterm",
-  "pk": 11,
-  "fields": {
-    "code": "CIF",
-    "name": "Delivery Duty Paid",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Delivery Duty Paid",
-    "is_enabled": true,
-    "sort_order": 11
-  }
-},
-{
-  "model": "base.localdelivery",
-  "pk": 1,
-  "fields": {
-    "name": "Entrega en planta",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Entrega en planta",
-    "is_enabled": true,
-    "sort_order": 1
-  }
-},
-{
-  "model": "base.localdelivery",
-  "pk": 2,
-  "fields": {
-    "name": "Entrega en planta con servicio de transporte",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Entrega en planta con servicio de transporte",
-    "is_enabled": true,
-    "sort_order": 2
-  }
-},
-{
-  "model": "base.localdelivery",
-  "pk": 3,
-  "fields": {
-    "name": "Entrega en bodega",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Entrega en bodega",
-    "is_enabled": true,
-    "sort_order": 3
-  }
-},
-{
-  "model": "base.localdelivery",
-  "pk": 4,
-  "fields": {
-    "name": "Entrega en frontera",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Entrega en frontera",
-    "is_enabled": true,
-    "sort_order": 4
-  }
-},
-{
-  "model": "base.localdelivery",
-  "pk": 5,
-  "fields": {
-    "name": "Entrega a consignatario",
-    "name_en": null,
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "Entrega a consignatario",
-    "is_enabled": true,
-    "sort_order": 5
-  }
-},
-{
-  "model": "base.currency",
-  "pk": 1,
-  "fields": {
-    "code": "USD",
-    "name": "DÓLAR ESTADOUNIDENSE",
-    "name_en": "UNITED STATES DOLLAR",
-    "name_pt": "DÓLAR AMERICANO",
-    "name_fr": "DOLLAR AMÉRICAIN",
-    "name_de": "US-DOLLAR",
-    "name_es": "DÓLAR ESTADOUNIDENSE",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.currency",
-  "pk": 2,
-  "fields": {
-    "code": "MXN",
-    "name": "PESO MEXICANO",
-    "name_en": "MEXICAN PESO",
-    "name_pt": "PESO MEXICANO",
-    "name_fr": "PESO MEXICAIN",
-    "name_de": "MEXIKANISCHER PESO",
-    "name_es": "PESO MEXICANO",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.currency",
-  "pk": 3,
-  "fields": {
-    "code": "EUR",
-    "name": "EURO",
-    "name_en": "EURO",
-    "name_pt": "EURO",
-    "name_fr": "EURO",
-    "name_de": "EURO",
-    "name_es": "EURO",
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.currency",
-  "pk": 4,
-  "fields": {
-    "code": "COP",
-    "name": "PESO COLOMBIANO",
-    "name_en": "COLOMBIAN PESO",
-    "name_pt": "PESO COLOMBIANO",
-    "name_fr": "PESO COLOMBIEN",
-    "name_de": "KOLUMBIANISCHER PESO",
-    "name_es": "PESO COLOMBIANO",
-    "is_enabled": true
-  }
+    "model": "base.productkind",
+    "pk": 1,
+    "fields": {
+        "name": "Café",
+        "name_en": "Coffe",
+        "name_pt": "Café",
+        "name_fr": "Café",
+        "name_de": "Kaffee",
+        "name_es": "Café",
+        "for_packaging": false,
+        "for_orchard": false,
+        "for_eudr": true,
+        "image": "",
+        "is_enabled": true,
+        "sort_order": 0
+    }
+},
+{
+    "model": "base.productkind",
+    "pk": 2,
+    "fields": {
+        "name": "Cacao",
+        "name_en": "Cocoa",
+        "name_pt": "Cacau",
+        "name_fr": "Cacao",
+        "name_de": "Kakao",
+        "name_es": "Cacao",
+        "for_packaging": false,
+        "for_orchard": false,
+        "for_eudr": true,
+        "image": "",
+        "is_enabled": true,
+        "sort_order": 0
+    }
+},
+{
+    "model": "base.productkind",
+    "pk": 3,
+    "fields": {
+        "name": "Caucho",
+        "name_en": "Rubber",
+        "name_pt": "Borracha",
+        "name_fr": "Caoutchouc",
+        "name_de": "Gummi",
+        "name_es": "Caucho",
+        "for_packaging": false,
+        "for_orchard": false,
+        "for_eudr": true,
+        "image": "",
+        "is_enabled": true,
+        "sort_order": 0
+    }
+},
+{
+    "model": "base.productkind",
+    "pk": 4,
+    "fields": {
+        "name": "Ganado",
+        "name_en": "Livestock",
+        "name_pt": "Pecuário",
+        "name_fr": "Bétail",
+        "name_de": "Vieh",
+        "name_es": "Ganado",
+        "for_packaging": false,
+        "for_orchard": false,
+        "for_eudr": true,
+        "image": "",
+        "is_enabled": true,
+        "sort_order": 0
+    }
+},
+{
+    "model": "base.productkind",
+    "pk": 5,
+    "fields": {
+        "name": "Madera",
+        "name_en": "Wood",
+        "name_pt": "Madeira",
+        "name_fr": "Bois",
+        "name_de": "Holz",
+        "name_es": "Madera",
+        "for_packaging": false,
+        "for_orchard": false,
+        "for_eudr": true,
+        "image": "",
+        "is_enabled": true,
+        "sort_order": 0
+    }
+},
+{
+    "model": "base.productkind",
+    "pk": 6,
+    "fields": {
+        "name": "Aceite de palma",
+        "name_en": "Palm oil",
+        "name_pt": "Óleo de palma",
+        "name_fr": "Huile de palme",
+        "name_de": "Palmöl",
+        "name_es": "Aceite de palma",
+        "for_packaging": false,
+        "for_orchard": false,
+        "for_eudr": true,
+        "image": "",
+        "is_enabled": true,
+        "sort_order": 0
+    }
+},
+{
+    "model": "base.productkind",
+    "pk": 7,
+    "fields": {
+        "name": "Soja",
+        "name_en": "Soy",
+        "name_pt": "Soja",
+        "name_fr": "Soja",
+        "name_de": "Soja",
+        "name_es": "Soja",
+        "for_packaging": false,
+        "for_orchard": false,
+        "for_eudr": true,
+        "image": "",
+        "is_enabled": true,
+        "sort_order": 0
+    }
+},
+{
+    "model": "base.productkind",
+    "pk": 8,
+    "fields": {
+        "name": "Aguacate",
+        "name_en": "Avocado",
+        "name_pt": "Abacate",
+        "name_fr": "Avocat",
+        "name_de": "Avocado",
+        "name_es": "Aguacate",
+        "for_packaging": true,
+        "for_orchard": false,
+        "for_eudr": false,
+        "image": "",
+        "is_enabled": true,
+        "sort_order": 0
+    }
+},
+{
+    "model": "base.productkind",
+    "pk": 9,
+    "fields": {
+        "name": "Limón",
+        "name_en": "Lime",
+        "name_pt": "Limão",
+        "name_fr": "Citron",
+        "name_de": "Zitrone",
+        "name_es": "Limón",
+        "for_packaging": true,
+        "for_orchard": false,
+        "for_eudr": false,
+        "image": "",
+        "is_enabled": true,
+        "sort_order": 0
+    }
+},
+{
+    "model": "base.productkind",
+    "pk": 10,
+    "fields": {
+        "name": "Mango",
+        "name_en": "Mango",
+        "name_pt": "Manga",
+        "name_fr": "Mangue",
+        "name_de": "Mango",
+        "name_es": "Mango",
+        "for_packaging": true,
+        "for_orchard": false,
+        "for_eudr": false,
+        "image": "",
+        "is_enabled": false,
+        "sort_order": 0
+    }
+},
+{
+    "model": "base.supplykind",
+    "pk": 1,
+    "fields": {
+        "category": "packaging_containment",
+        "name": "CAJA",
+        "name_en": "BOX",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "CAJA",
+        "capacity_unit_category": "Kg",
+        "usage_discount_unit_category": "pieces",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplykind",
+    "pk": 2,
+    "fields": {
+        "category": "packaging_separator",
+        "name": "CHAROLA",
+        "name_en": "TRAY",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "CHAROLA",
+        "capacity_unit_category": "pieces",
+        "usage_discount_unit_category": "pieces",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplykind",
+    "pk": 3,
+    "fields": {
+        "category": "packaging_pallet",
+        "name": "TARIMA",
+        "name_en": "PALLET",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "TARIMA",
+        "capacity_unit_category": null,
+        "usage_discount_unit_category": "pieces",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplykind",
+    "pk": 4,
+    "fields": {
+        "category": "packaging_pallet_protection",
+        "name": "ESQUINERO",
+        "name_en": "CORNER PROTECTOR",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "ESQUINERO",
+        "capacity_unit_category": null,
+        "usage_discount_unit_category": "pieces",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplykind",
+    "pk": 5,
+    "fields": {
+        "category": "packaging_complement",
+        "name": "TAPA",
+        "name_en": "LID",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "TAPA",
+        "capacity_unit_category": null,
+        "usage_discount_unit_category": "pieces",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplykind",
+    "pk": 6,
+    "fields": {
+        "category": "packaging_presentation",
+        "name": "MALLA",
+        "name_en": "MESH",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "MALLA",
+        "capacity_unit_category": "pieces",
+        "usage_discount_unit_category": "cm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplykind",
+    "pk": 7,
+    "fields": {
+        "category": "packaging_presentation_complement",
+        "name": "FILM",
+        "name_en": "FILM",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "FILM",
+        "capacity_unit_category": null,
+        "usage_discount_unit_category": "cm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplykind",
+    "pk": 8,
+    "fields": {
+        "category": "packaging_pallet_wrapping",
+        "name": "FLEJE",
+        "name_en": "STRAPPING",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "FLEJE",
+        "capacity_unit_category": null,
+        "usage_discount_unit_category": "m",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplykind",
+    "pk": 9,
+    "fields": {
+        "category": "harvest_container",
+        "name": "CAJA DE CAMPO",
+        "name_en": "HARVEST BOX",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "CAJA DE CAMPO",
+        "capacity_unit_category": null,
+        "usage_discount_unit_category": "pieces",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandard",
+    "pk": 1,
+    "fields": {
+        "name": "APEAMMEX",
+        "country": 158,
+        "product_kind": 8,
+        "is_enabled": true,
+        "sort_order": 1
+    }
+},
+{
+    "model": "base.productkindcountrystandard",
+    "pk": 2,
+    "fields": {
+        "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [ALEMANIA - UNIÓN EUROPEA]",
+        "country": 57,
+        "product_kind": 8,
+        "is_enabled": true,
+        "sort_order": 2
+    }
+},
+{
+    "model": "base.productkindcountrystandard",
+    "pk": 3,
+    "fields": {
+        "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [CANADÁ]",
+        "country": 38,
+        "product_kind": 8,
+        "is_enabled": true,
+        "sort_order": 3
+    }
+},
+{
+    "model": "base.productkindcountrystandard",
+    "pk": 4,
+    "fields": {
+        "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [JAPÓN]",
+        "country": 114,
+        "product_kind": 8,
+        "is_enabled": true,
+        "sort_order": 4
+    }
+},
+{
+    "model": "base.productkindcountrystandard",
+    "pk": 5,
+    "fields": {
+        "name": "ESTÁNDARES DEL APEAM SOBRE [AGUACATE] PARA [ESTADOS UNIDOS]",
+        "country": 234,
+        "product_kind": 8,
+        "is_enabled": true,
+        "sort_order": 5
+    }
+},
+{
+    "model": "base.productkindcountrystandard",
+    "pk": 6,
+    "fields": {
+        "name": "ESTÁNDARES DE X SOBRE [LIMÓN - MEXICANO] PARA [MÉXICO]",
+        "country": 158,
+        "product_kind": 9,
+        "is_enabled": true,
+        "sort_order": 6
+    }
+},
+{
+    "model": "base.productkindcountrystandard",
+    "pk": 7,
+    "fields": {
+        "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [ESTADOS UNIDOS]",
+        "country": 234,
+        "product_kind": 9,
+        "is_enabled": true,
+        "sort_order": 7
+    }
+},
+{
+    "model": "base.productkindcountrystandard",
+    "pk": 8,
+    "fields": {
+        "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [JAPÓN - ASIA]",
+        "country": 114,
+        "product_kind": 9,
+        "is_enabled": true,
+        "sort_order": 8
+    }
+},
+{
+    "model": "base.productkindcountrystandard",
+    "pk": 9,
+    "fields": {
+        "name": "ESTÁNDARES DE X SOBRE [LIMÓN - PERSA] PARA [ALEMANIA - UNIÓN EUROPEA]",
+        "country": 57,
+        "product_kind": 9,
+        "is_enabled": true,
+        "sort_order": 9
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 1,
+    "fields": {
+        "name": "Comercial",
+        "standard": 1,
+        "description": "120 a 150 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 2,
+    "fields": {
+        "name": "Mediano",
+        "standard": 1,
+        "description": "170 a 205 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 3,
+    "fields": {
+        "name": "Primera",
+        "standard": 1,
+        "description": "205 a 265 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 4,
+    "fields": {
+        "name": "Extra",
+        "standard": 1,
+        "description": "150 a 170 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 5,
+    "fields": {
+        "name": "Super",
+        "standard": 1,
+        "description": "+ de 265 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 6,
+    "fields": {
+        "name": "26",
+        "standard": 2,
+        "description": "120 a 150 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 7,
+    "fields": {
+        "name": "24",
+        "standard": 2,
+        "description": "150 a 170 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 8,
+    "fields": {
+        "name": "22",
+        "standard": 2,
+        "description": "170 a 205 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 9,
+    "fields": {
+        "name": "18",
+        "standard": 2,
+        "description": "205 a 265 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 10,
+    "fields": {
+        "name": "16",
+        "standard": 2,
+        "description": "265 a 300 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 11,
+    "fields": {
+        "name": "14",
+        "standard": 2,
+        "description": "300 a 330 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 12,
+    "fields": {
+        "name": "12",
+        "standard": 2,
+        "description": "+ de 330 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 13,
+    "fields": {
+        "name": "26",
+        "standard": 3,
+        "description": "120 a 150 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 14,
+    "fields": {
+        "name": "24",
+        "standard": 3,
+        "description": "150 a 170 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 15,
+    "fields": {
+        "name": "22",
+        "standard": 3,
+        "description": "170 a 205 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 16,
+    "fields": {
+        "name": "18",
+        "standard": 3,
+        "description": "205 a 265 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 17,
+    "fields": {
+        "name": "16",
+        "standard": 3,
+        "description": "265 a 300 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 18,
+    "fields": {
+        "name": "14",
+        "standard": 3,
+        "description": "300 a 330 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 19,
+    "fields": {
+        "name": "12",
+        "standard": 3,
+        "description": "+ de 330 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 20,
+    "fields": {
+        "name": "30",
+        "standard": 4,
+        "description": "170 a 205 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 21,
+    "fields": {
+        "name": "24",
+        "standard": 4,
+        "description": "205 a 265 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 22,
+    "fields": {
+        "name": "84",
+        "standard": 5,
+        "description": "120 a 150 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 23,
+    "fields": {
+        "name": "70",
+        "standard": 5,
+        "description": "150 a 170 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 24,
+    "fields": {
+        "name": "60",
+        "standard": 5,
+        "description": "170 a 205 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 25,
+    "fields": {
+        "name": "48",
+        "standard": 5,
+        "description": "205 a 265 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 26,
+    "fields": {
+        "name": "40",
+        "standard": 5,
+        "description": "265 a 300 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 27,
+    "fields": {
+        "name": "36",
+        "standard": 5,
+        "description": "300 a 330 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 28,
+    "fields": {
+        "name": "32",
+        "standard": 5,
+        "description": "+ de 330 grs",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 29,
+    "fields": {
+        "name": "600",
+        "standard": 6,
+        "description": "32 a 35 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 30,
+    "fields": {
+        "name": "500",
+        "standard": 6,
+        "description": "35 a 37 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 31,
+    "fields": {
+        "name": "400",
+        "standard": 6,
+        "description": "37 a 39 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 32,
+    "fields": {
+        "name": "300",
+        "standard": 6,
+        "description": "+ de 39 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 33,
+    "fields": {
+        "name": "250",
+        "standard": 7,
+        "description": "50 a 51 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 34,
+    "fields": {
+        "name": "230",
+        "standard": 7,
+        "description": "52 a 53 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 35,
+    "fields": {
+        "name": "200",
+        "standard": 7,
+        "description": "54 a 55 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 36,
+    "fields": {
+        "name": "175",
+        "standard": 7,
+        "description": "56 a 59 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 37,
+    "fields": {
+        "name": "150",
+        "standard": 7,
+        "description": "59 a 61 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 38,
+    "fields": {
+        "name": "110",
+        "standard": 7,
+        "description": "61 a 63 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 39,
+    "fields": {
+        "name": "54",
+        "standard": 8,
+        "description": "52 a 53 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 40,
+    "fields": {
+        "name": "48",
+        "standard": 8,
+        "description": "54 a 55 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 41,
+    "fields": {
+        "name": "44",
+        "standard": 8,
+        "description": "56 a 59 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 42,
+    "fields": {
+        "name": "40",
+        "standard": 8,
+        "description": "59 a 61 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 43,
+    "fields": {
+        "name": "36",
+        "standard": 8,
+        "description": "61 a 63 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 44,
+    "fields": {
+        "name": "63",
+        "standard": 9,
+        "description": "50 a 51 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 45,
+    "fields": {
+        "name": "54",
+        "standard": 9,
+        "description": "52 a 55 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 46,
+    "fields": {
+        "name": "48",
+        "standard": 9,
+        "description": "56 a 59 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.countryproductstandardsize",
+    "pk": 47,
+    "fields": {
+        "name": "42",
+        "standard": 9,
+        "description": "59 a 61 mm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productstandardpackaging",
+    "pk": 1,
+    "fields": {
+        "supply_kind": 1,
+        "name": "CARTÓN 11.3 (AGMX)",
+        "code": "1",
+        "max_product_amount": 11.3,
+        "description": null,
+        "standard": 1,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productstandardpackaging",
+    "pk": 2,
+    "fields": {
+        "supply_kind": 1,
+        "name": "CARTÓN 11.3 (AGUS)",
+        "code": "1",
+        "max_product_amount": 11.3,
+        "description": null,
+        "standard": 5,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productstandardpackaging",
+    "pk": 3,
+    "fields": {
+        "supply_kind": 1,
+        "name": "CARTÓN 11.3 (AGJP)",
+        "code": "1",
+        "max_product_amount": 11.3,
+        "description": null,
+        "standard": 4,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productstandardpackaging",
+    "pk": 4,
+    "fields": {
+        "supply_kind": 1,
+        "name": "CARTÓN 10 (AGMX)",
+        "code": "2",
+        "max_product_amount": 10.0,
+        "description": null,
+        "standard": 1,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 1,
+    "fields": {
+        "code": "601",
+        "name": "General de Ley Personas Morales",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 2,
+    "fields": {
+        "code": "603",
+        "name": "Personas Morales con Fines no Lucrativos",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 3,
+    "fields": {
+        "code": "605",
+        "name": "Sueldos y Salarios e Ingresos Asimilados a Salarios",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 4,
+    "fields": {
+        "code": "606",
+        "name": "Arrendamiento",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 5,
+    "fields": {
+        "code": "607",
+        "name": "Régimen de Enajenación o Adquisición de Bienes",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 6,
+    "fields": {
+        "code": "608",
+        "name": "Demás ingresos",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 7,
+    "fields": {
+        "code": "609",
+        "name": "Consolidación",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 8,
+    "fields": {
+        "code": "610",
+        "name": "Residentes en el Extranjero sin Establecimiento Permanente en México",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 9,
+    "fields": {
+        "code": "611",
+        "name": "Ingresos por Dividendos (socios y accionistas)",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 10,
+    "fields": {
+        "code": "612",
+        "name": "Personas Físicas con Actividades Empresariales y Profesionales",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 11,
+    "fields": {
+        "code": "614",
+        "name": "Ingresos por intereses",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 12,
+    "fields": {
+        "code": "615",
+        "name": "Régimen de los ingresos por obtención de premios",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 13,
+    "fields": {
+        "code": "616",
+        "name": "Sin obligaciones fiscales",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 14,
+    "fields": {
+        "code": "620",
+        "name": "Sociedades Cooperativas de Producción que optan por diferir sus ingresos",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 15,
+    "fields": {
+        "code": "621",
+        "name": "Incorporación Fiscal",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 16,
+    "fields": {
+        "code": "622",
+        "name": "Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 17,
+    "fields": {
+        "code": "623",
+        "name": "Opcional para Grupos de Sociedades",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 18,
+    "fields": {
+        "code": "624",
+        "name": "Coordinados",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 19,
+    "fields": {
+        "code": "625",
+        "name": "Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 20,
+    "fields": {
+        "code": "626",
+        "name": "Régimen Simplificado de Confianza",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 21,
+    "fields": {
+        "code": "628",
+        "name": "Hidrocarburos",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 22,
+    "fields": {
+        "code": "629",
+        "name": "De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 23,
+    "fields": {
+        "code": "630",
+        "name": "Enajenación de acciones en bolsa de valores",
+        "country": 158
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 24,
+    "fields": {
+        "code": "1",
+        "name": "Single",
+        "country": 234
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 25,
+    "fields": {
+        "code": "1",
+        "name": "Married Filing Jointly",
+        "country": 234
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 26,
+    "fields": {
+        "code": "1",
+        "name": "Married Filing Separately",
+        "country": 234
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 27,
+    "fields": {
+        "code": "1",
+        "name": "Head of Household",
+        "country": 234
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 28,
+    "fields": {
+        "code": "1",
+        "name": "Qualifying Widow(er)",
+        "country": 234
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 29,
+    "fields": {
+        "code": "2",
+        "name": "Sole Proprietorship",
+        "country": 234
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 30,
+    "fields": {
+        "code": "2",
+        "name": "Partnership",
+        "country": 234
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 31,
+    "fields": {
+        "code": "2",
+        "name": "C-Corporation",
+        "country": 234
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 32,
+    "fields": {
+        "code": "2",
+        "name": "S-Corporation",
+        "country": 234
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 33,
+    "fields": {
+        "code": "2",
+        "name": "Limited Liability Company (LLC)",
+        "country": 234
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 34,
+    "fields": {
+        "code": "2",
+        "name": "Non-Profit Organization",
+        "country": 234
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 35,
+    "fields": {
+        "code": "3",
+        "name": "Farmers and Ranchers",
+        "country": 234
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 36,
+    "fields": {
+        "code": "3",
+        "name": "Household Employers",
+        "country": 234
+    }
+},
+{
+    "model": "base.legalentitycategory",
+    "pk": 37,
+    "fields": {
+        "code": "3",
+        "name": "Resident and Non-Resident Aliens",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 1,
+    "fields": {
+        "sort_order": null,
+        "code": "S.A.",
+        "name": "Sociedad Anónima",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 2,
+    "fields": {
+        "sort_order": null,
+        "code": "S.A. de C.V.",
+        "name": "Sociedad Anónima de Capital Variable",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 3,
+    "fields": {
+        "sort_order": null,
+        "code": "S. de R.L.",
+        "name": "Sociedad de Responsabilidad Limitada",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 4,
+    "fields": {
+        "sort_order": null,
+        "code": "S. de R.L. de C.V.",
+        "name": "Sociedad de Responsabilidad Limitada de Capital Variable",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 5,
+    "fields": {
+        "sort_order": null,
+        "code": "S. en N.C.",
+        "name": "Sociedad en Nombre Colectivo",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 6,
+    "fields": {
+        "sort_order": null,
+        "code": "S. en C.S.",
+        "name": "Sociedad en Comandita Simple",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 7,
+    "fields": {
+        "sort_order": null,
+        "code": "S. en C.A.",
+        "name": "Sociedad en Comandita por Acciones",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 8,
+    "fields": {
+        "sort_order": null,
+        "code": "S.C.",
+        "name": "Sociedad Cooperativa",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 9,
+    "fields": {
+        "sort_order": null,
+        "code": "S.A.S.",
+        "name": "Sociedad por Acciones Simplificada",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 10,
+    "fields": {
+        "sort_order": null,
+        "code": "A.C.",
+        "name": "Asociación Civil",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 11,
+    "fields": {
+        "sort_order": null,
+        "code": "S.A.B.",
+        "name": "Sociedad Anónima Bursátil",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 12,
+    "fields": {
+        "sort_order": null,
+        "code": "S.A.P.I.",
+        "name": "Sociedad Anónima Promotora de Inversión",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 13,
+    "fields": {
+        "sort_order": null,
+        "code": "S.A.P.I. de C.V.",
+        "name": "Sociedad Anónima Promotora de Inversión de Capital Variable",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 14,
+    "fields": {
+        "sort_order": null,
+        "code": "Corp.",
+        "name": "Corporation",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 15,
+    "fields": {
+        "sort_order": null,
+        "code": "LLC",
+        "name": "Limited Liability Company",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 16,
+    "fields": {
+        "sort_order": null,
+        "code": "S Corp.",
+        "name": "S Corporation",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 17,
+    "fields": {
+        "sort_order": null,
+        "code": "C Corp.",
+        "name": "C Corporation",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 18,
+    "fields": {
+        "sort_order": null,
+        "code": "Part.",
+        "name": "Partnership",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 19,
+    "fields": {
+        "sort_order": null,
+        "code": "LLP",
+        "name": "Limited Liability Partnership",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 20,
+    "fields": {
+        "sort_order": null,
+        "code": "LLLP",
+        "name": "Limited Liability Limited Partnership",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 21,
+    "fields": {
+        "sort_order": null,
+        "code": "S. de R.L.U.",
+        "name": "Sociedad de Responsabilidad Limitada Unipersonal",
+        "country": 158
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 22,
+    "fields": {
+        "sort_order": null,
+        "code": "Sole Prop.",
+        "name": "Sole Proprietorship",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 23,
+    "fields": {
+        "sort_order": null,
+        "code": "NPO o Non-Profit",
+        "name": "Non-Profit Corporation",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 24,
+    "fields": {
+        "sort_order": null,
+        "code": "PC",
+        "name": "Professional Corporation",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 25,
+    "fields": {
+        "sort_order": null,
+        "code": "PLLC",
+        "name": "Professional Limited Liability Company",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 26,
+    "fields": {
+        "sort_order": null,
+        "code": "B Corp.",
+        "name": "Benefit Corporation",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 27,
+    "fields": {
+        "sort_order": null,
+        "code": "Closely Held Corp.",
+        "name": "Close Corporation",
+        "country": 234
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 28,
+    "fields": {
+        "sort_order": null,
+        "code": "Corp.",
+        "name": "Corporation",
+        "country": 38
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 29,
+    "fields": {
+        "sort_order": null,
+        "code": "LLC",
+        "name": "Limited Liability Company",
+        "country": 38
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 30,
+    "fields": {
+        "sort_order": null,
+        "code": "C.C.",
+        "name": "Canadian Corporation",
+        "country": 38
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 31,
+    "fields": {
+        "sort_order": null,
+        "code": "NPO",
+        "name": "Non-Profit Corporation",
+        "country": 38
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 32,
+    "fields": {
+        "sort_order": null,
+        "code": "Part.",
+        "name": "Partnership",
+        "country": 38
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 33,
+    "fields": {
+        "sort_order": null,
+        "code": "LLP",
+        "name": "Limited Liability Partnership",
+        "country": 38
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 34,
+    "fields": {
+        "sort_order": null,
+        "code": "JV",
+        "name": "Joint Venture",
+        "country": 38
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 35,
+    "fields": {
+        "sort_order": null,
+        "code": "Co-op",
+        "name": "Cooperative",
+        "country": 38
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 36,
+    "fields": {
+        "sort_order": null,
+        "code": "Sole Prop.",
+        "name": "Sole Proprietorship",
+        "country": 38
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 37,
+    "fields": {
+        "sort_order": null,
+        "code": "Trust",
+        "name": "Trust",
+        "country": 38
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 38,
+    "fields": {
+        "sort_order": null,
+        "code": "ULC",
+        "name": "Unlimited Liability Corporation",
+        "country": 38
+    }
+},
+{
+    "model": "base.capitalframework",
+    "pk": 39,
+    "fields": {
+        "sort_order": null,
+        "code": "FIC",
+        "name": "Federally Incorporated Corporation",
+        "country": 38
+    }
+},
+{
+    "model": "base.incoterm",
+    "pk": 1,
+    "fields": {
+        "code": "EXW",
+        "name": "Ex Works",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Ex Works",
+        "is_enabled": true,
+        "sort_order": 1
+    }
+},
+{
+    "model": "base.incoterm",
+    "pk": 2,
+    "fields": {
+        "code": "FCA",
+        "name": "Free Carrier",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Free Carrier",
+        "is_enabled": true,
+        "sort_order": 2
+    }
+},
+{
+    "model": "base.incoterm",
+    "pk": 3,
+    "fields": {
+        "code": "FAS",
+        "name": "Free Alongside Ship",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Free Alongside Ship",
+        "is_enabled": true,
+        "sort_order": 3
+    }
+},
+{
+    "model": "base.incoterm",
+    "pk": 4,
+    "fields": {
+        "code": "FOB",
+        "name": "Free On Board",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Free On Board",
+        "is_enabled": true,
+        "sort_order": 4
+    }
+},
+{
+    "model": "base.incoterm",
+    "pk": 5,
+    "fields": {
+        "code": "CFR",
+        "name": "Cost And Freight",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Cost And Freight",
+        "is_enabled": true,
+        "sort_order": 5
+    }
+},
+{
+    "model": "base.incoterm",
+    "pk": 6,
+    "fields": {
+        "code": "CIF",
+        "name": "Cost, Insurance And Freight",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Cost, Insurance And Freight",
+        "is_enabled": true,
+        "sort_order": 6
+    }
+},
+{
+    "model": "base.incoterm",
+    "pk": 7,
+    "fields": {
+        "code": "CPT",
+        "name": "Carriage Paid To",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Carriage Paid To",
+        "is_enabled": true,
+        "sort_order": 7
+    }
+},
+{
+    "model": "base.incoterm",
+    "pk": 8,
+    "fields": {
+        "code": "CIP",
+        "name": "Cost, Insurance And Freight",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Cost, Insurance And Freight",
+        "is_enabled": true,
+        "sort_order": 8
+    }
+},
+{
+    "model": "base.incoterm",
+    "pk": 9,
+    "fields": {
+        "code": "DAP",
+        "name": "Delivery At Place",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Delivery At Place",
+        "is_enabled": true,
+        "sort_order": 9
+    }
+},
+{
+    "model": "base.incoterm",
+    "pk": 10,
+    "fields": {
+        "code": "DPU",
+        "name": "Delivered At Place Unloaded",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Delivered At Place Unloaded",
+        "is_enabled": true,
+        "sort_order": 10
+    }
+},
+{
+    "model": "base.incoterm",
+    "pk": 11,
+    "fields": {
+        "code": "CIF",
+        "name": "Delivery Duty Paid",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Delivery Duty Paid",
+        "is_enabled": true,
+        "sort_order": 11
+    }
+},
+{
+    "model": "base.localdelivery",
+    "pk": 1,
+    "fields": {
+        "name": "Entrega en planta",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Entrega en planta",
+        "is_enabled": true,
+        "sort_order": 1
+    }
+},
+{
+    "model": "base.localdelivery",
+    "pk": 2,
+    "fields": {
+        "name": "Entrega en planta con servicio de transporte",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Entrega en planta con servicio de transporte",
+        "is_enabled": true,
+        "sort_order": 2
+    }
+},
+{
+    "model": "base.localdelivery",
+    "pk": 3,
+    "fields": {
+        "name": "Entrega en bodega",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Entrega en bodega",
+        "is_enabled": true,
+        "sort_order": 3
+    }
+},
+{
+    "model": "base.localdelivery",
+    "pk": 4,
+    "fields": {
+        "name": "Entrega en frontera",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Entrega en frontera",
+        "is_enabled": true,
+        "sort_order": 4
+    }
+},
+{
+    "model": "base.localdelivery",
+    "pk": 5,
+    "fields": {
+        "name": "Entrega a consignatario",
+        "name_en": null,
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Entrega a consignatario",
+        "is_enabled": true,
+        "sort_order": 5
+    }
+},
+{
+    "model": "base.currency",
+    "pk": 1,
+    "fields": {
+        "code": "USD",
+        "name": "DÓLAR ESTADOUNIDENSE",
+        "name_en": "UNITED STATES DOLLAR",
+        "name_pt": "DÓLAR AMERICANO",
+        "name_fr": "DOLLAR AMÉRICAIN",
+        "name_de": "US-DOLLAR",
+        "name_es": "DÓLAR ESTADOUNIDENSE",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.currency",
+    "pk": 2,
+    "fields": {
+        "code": "MXN",
+        "name": "PESO MEXICANO",
+        "name_en": "MEXICAN PESO",
+        "name_pt": "PESO MEXICANO",
+        "name_fr": "PESO MEXICAIN",
+        "name_de": "MEXIKANISCHER PESO",
+        "name_es": "PESO MEXICANO",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.currency",
+    "pk": 3,
+    "fields": {
+        "code": "EUR",
+        "name": "EURO",
+        "name_en": "EURO",
+        "name_pt": "EURO",
+        "name_fr": "EURO",
+        "name_de": "EURO",
+        "name_es": "EURO",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.currency",
+    "pk": 4,
+    "fields": {
+        "code": "COP",
+        "name": "PESO COLOMBIANO",
+        "name_en": "COLOMBIAN PESO",
+        "name_pt": "PESO COLOMBIANO",
+        "name_fr": "PESO COLOMBIEN",
+        "name_de": "KOLUMBIANISCHER PESO",
+        "name_es": "PESO COLOMBIANO",
+        "is_enabled": true
+    }
 }
 ]
