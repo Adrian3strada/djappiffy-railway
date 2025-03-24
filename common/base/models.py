@@ -7,6 +7,10 @@ from django.db.models import Manager, QuerySet
 from django.db.models import Case, When, IntegerField, Value
 from django.db.models.functions import Cast
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import FileExtensionValidator
+from common.mixins import CleanDocumentsMixin
+from django.utils.text import slugify
+import os
 
 # Create your models here.
 
@@ -215,3 +219,56 @@ class Currency(models.Model):
             models.UniqueConstraint(fields=['id', 'name'], name='currency_unique_id_name')
         ]
 
+class CertificationEntity(models.Model):
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product'), on_delete=models.PROTECT)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True, on_delete=models.PROTECT)
+    entity = models.CharField(max_length=255, verbose_name=_('Certification Entity'))
+    name_certification = models.CharField(max_length=255, verbose_name=_('Certification'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.entity} -- {self.name_certification} -- {self.product_kind}"
+
+    class Meta:
+        verbose_name = _('Certification Entity')
+        verbose_name_plural = _('Certification Entities')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['entity', 'name_certification'], 
+                name='certificationEntity_unique_certification_entity'
+            )
+        ]
+
+def certification_file_path(instance, filename):
+
+    certification_id = instance.certification_entity.id
+    certification_entity = slugify(instance.certification_entity.entity.replace(" ", ""))
+    certification_product_kind = slugify(instance.certification_entity.product_kind).replace(" ", "")
+
+    file_extension = os.path.splitext(filename)[1]
+    file_name = slugify(instance.name.replace(" ", ""))
+
+    return f'certifications/requirements/{certification_id}_{certification_product_kind}_{certification_entity}_{file_name}{file_extension}'
+
+class CertificationFormat(CleanDocumentsMixin, models.Model):
+    name = models.CharField(max_length=255)
+    route = models.FileField(
+        upload_to=certification_file_path, 
+        validators=[FileExtensionValidator(allowed_extensions=['docx'])],
+        verbose_name=_('Document')
+        )
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    certification_entity = models.ForeignKey(CertificationEntity, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Certification Format')
+        verbose_name_plural = _('Certification Formats')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'certification_entity'], 
+                name='certificationFormat_unique_certification_entity_name'
+            )
+        ]
