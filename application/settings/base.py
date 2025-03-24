@@ -93,7 +93,7 @@ INSTALLED_APPS = [
     "packhouses.sales",
     "packhouses.gathering",
     "packhouses.hrm",
-    "packhouses.purchase",
+    "packhouses.purchases",
     "packhouses.storehouse",
     "packhouses.certifications",
 
@@ -373,7 +373,7 @@ JAZZMIN_SETTINGS = {
     "order_with_respect_to": [
         "sales",
         "gathering",
-        "purchase",
+        "purchases",
         "storehouse",
         "catalogs",
         "catalogs.Market",
@@ -439,7 +439,7 @@ JAZZMIN_SETTINGS = {
         "gathering": "fas fa-tractor",
         "catalogs": "fas fa-dollar-sign",
         "parcels": "fas fa-map-marked-alt",
-        "purchase": "fas fa-shopping-cart",
+        "purchases": "fas fa-shopping-cart",
         "hrm": "fas fa-clipboard",
         "storehouse": "fas fa-warehouse",
 
