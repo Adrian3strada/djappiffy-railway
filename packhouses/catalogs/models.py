@@ -1138,6 +1138,7 @@ class HarvestContainer(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     capacity = models.FloatField(verbose_name=_('Capacity'))
     unit_kind = models.CharField(max_length=30, verbose_name=_('Unit kind'), choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES)
+    kg_tare = models.FloatField(default=0, verbose_name=_("Kg tare"),)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 

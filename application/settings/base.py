@@ -96,6 +96,7 @@ INSTALLED_APPS = [
     "packhouses.purchases",
     "packhouses.storehouse",
     "packhouses.certifications",
+    "packhouses.receiving",
 
     "eudr.parcels",
 
@@ -373,6 +374,7 @@ JAZZMIN_SETTINGS = {
     "order_with_respect_to": [
         "sales",
         "gathering",
+        "receiving",
         "purchases",
         "storehouse",
         "catalogs",
@@ -442,6 +444,7 @@ JAZZMIN_SETTINGS = {
         "purchases": "fas fa-shopping-cart",
         "hrm": "fas fa-clipboard",
         "storehouse": "fas fa-warehouse",
+        "receiving": "fas fa-truck-ramp-box",
 
     },
     # Icons that are used when one is not manually specified

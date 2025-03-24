@@ -29,7 +29,7 @@ from django.db.models import Max, Min
 from django.db.models import Q, F
 import datetime
 from common.settings import STATUS_CHOICES
-
+from packhouses.receiving.models import IncomingProduct
 
 
 
@@ -123,6 +123,7 @@ class ScheduleHarvest(models.Model):
         on_delete=models.PROTECT,
         verbose_name=_('Organization'),
     )
+    incoming_product = models.OneToOneField(IncomingProduct, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.ooid}"
