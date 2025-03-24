@@ -20,6 +20,7 @@ from common.settings import STATUS_CHOICES
 from django.contrib.auth import get_user_model
 import datetime
 User = get_user_model()
+from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
 
 # Create your models here.
 class Requisition(models.Model):
@@ -90,6 +91,15 @@ class RequisitionSupply(models.Model):
         verbose_name=_("Quantity"),
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0.01)]
+    )
+    unit_category = models.CharField(
+        max_length=30,
+        verbose_name=_('Unit category'),
+        choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
+    )
+    delivery_deadline = models.DateField(
+        verbose_name=_('Delivery deadline'),
+        default=datetime.date.today
     )
     comments = models.CharField(
         max_length=255,
@@ -199,6 +209,15 @@ class PurchaseOrderSupply(models.Model):
         verbose_name=_("Quantity"),
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0.01)]
+    )
+    unit_category = models.CharField(
+        max_length=30,
+        verbose_name=_('Unit category'),
+        choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
+    )
+    delivery_deadline = models.DateField(
+        verbose_name=_('Delivery deadline'),
+        default=datetime.date.today
     )
     unit_price = models.DecimalField(
         verbose_name=_("Unit Price"),

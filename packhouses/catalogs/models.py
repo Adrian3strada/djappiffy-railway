@@ -584,27 +584,27 @@ class HarvestingPaymentSetting(models.Model):
     type_harvest = models.CharField(max_length=20, choices=get_type_choices(), default='local',
                                     verbose_name=_('Type of harvest'))
     more_than_kg = models.FloatField(verbose_name=_('Kg of full truck'),
-                                     help_text="From how many KG will the full truck payment be considered?",
+                                     help_text=_("From how many KG will the full truck payment be considered?"),
                                      validators=[MinValueValidator(0.01)])
 
     pay_per_box_complete = models.FloatField(verbose_name=_('Pay per box (full truck)'),
-                                             help_text="Payment per box in case of full truck",
+                                             help_text=_("Payment per box in case of full truck"),
                                              validators=[MinValueValidator(0.01)])
     pay_per_kg_complete = models.FloatField(verbose_name=_('Pay per kg (full truck)'),
-                                            help_text="Payment per kg in case of full truck",
+                                            help_text=_("Payment per kg in case of full truck"),
                                             validators=[MinValueValidator(0.01)])
     pay_per_day_complete = models.FloatField(verbose_name=_('Pay per day (full truck)'),
-                                             help_text="Payment per day in case of full truck",
+                                             help_text=_("Payment per day in case of full truck"),
                                              validators=[MinValueValidator(0.01)])
 
     pay_per_box_incomplete = models.FloatField(verbose_name=_('Pay per box (incomplete truck)'),
-                                               help_text="Payment per box in case of incomplete truck",
+                                               help_text=_("Payment per box in case of incomplete truck"),
                                                validators=[MinValueValidator(0.01)])
     pay_per_kg_incomplete = models.FloatField(verbose_name=_('Pay per kg (incomplete truck)'),
-                                              help_text="Payment per kg in case of incomplete truck",
+                                              help_text=_("Payment per kg in case of incomplete truck"),
                                               validators=[MinValueValidator(0.01)])
     pay_per_day_incomplete = models.FloatField(verbose_name=_('Pay per day (incomplete truck)'),
-                                               help_text="Payment per day in case of incomplete truck",
+                                               help_text=_("Payment per day in case of incomplete truck"),
                                                validators=[MinValueValidator(0.01)])
 
     type_payment_for_false_out = models.CharField(max_length=20, choices=get_payment_choices(), default='fixed_amount',

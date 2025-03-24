@@ -17,7 +17,7 @@ from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider
                      Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness, HarvestContainer
                      )
 from django_filters.rest_framework import DjangoFilterBackend
-from packhouses.purchase.models import PurchaseOrderSupply
+from packhouses.purchases.models import PurchaseOrderSupply
 
 
 class ProductHarvestSizeKindViewSet(viewsets.ModelViewSet):

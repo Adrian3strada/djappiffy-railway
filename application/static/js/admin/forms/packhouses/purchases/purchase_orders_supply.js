@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedOption = $(this).find('option:selected');
     const dataQuantity = selectedOption.data('quantity');
     const dataComments = selectedOption.data('comments');
+    const dataUnitCategory = selectedOption.data('unit_category');
+    const dataDeliveryDeadline = selectedOption.data('delivery_deadline');
 
     const inlineForm = $(this).closest('.inline-related');
     const commentsField = inlineForm.find('div.field-comments > div.readonly');
@@ -57,6 +59,28 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       commentsField.text('');
     }
+
+    if (dataUnitCategory !== undefined) {
+      const currentName = $(this).attr('name');
+      const unitCategoryFieldName = currentName.replace('requisition_supply', 'unit_category');
+      const unitCategoryField = $('select[name="' + unitCategoryFieldName + '"]');
+
+      if (unitCategoryField.length) {
+        unitCategoryField.val(dataUnitCategory).trigger('change');
+      }
+    }
+    if(dataDeliveryDeadline !== undefined) {
+      const currentName = $(this).attr('name');
+      const deliveryDeadlineFieldName = currentName.replace('requisition_supply', 'delivery_deadline');
+      const deliveryDeadlineField = $('input[name="' + deliveryDeadlineFieldName + '"]');
+
+      if (deliveryDeadlineField.length) {
+        deliveryDeadlineField.val(dataDeliveryDeadline);
+      }
+    }
+
+    $('input[name$="-quantity"]').trigger('keyup');
+
 
     updateSupplyOptions();
   });

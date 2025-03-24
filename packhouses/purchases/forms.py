@@ -9,7 +9,7 @@ class RequisitionForm(forms.ModelForm):
         fields = '__all__'
 
     question_button_text = _("How would you like to proceed?")
-    confirm_button_text = _("Save and send to purchase")
+    confirm_button_text = _("Save and send to purchases")
     deny_button_text = _("Only save")
     cancel_button_text = _("Cancel")
 
@@ -57,6 +57,6 @@ class PurchaseOrderForm(forms.ModelForm):
         cleaned_data = super().clean()
         purchase_order_supplies = self.data.getlist('purchaseordersupply_set-TOTAL_FORMS', [])
         if not purchase_order_supplies or int(purchase_order_supplies[0]) < 1:
-            raise ValidationError(_("You must add at least one supply to the purchase order."))
+            raise ValidationError(_("You must add at least one supply to the purchases order."))
 
         return cleaned_data
