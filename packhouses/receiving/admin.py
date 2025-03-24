@@ -120,4 +120,4 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     get_scheduleharvest_orchard.short_description = _('Orchard')
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/incoming_product.js',)
+        js = ('js/admin/forms/packhouses/receiving/incoming_product.js', )

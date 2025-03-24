@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from packhouses.gathering.models import ScheduleHarvestVehicle
 
 class ScheduleHarvestVehicleForm(forms.ModelForm):
-    stamp_vehicle_number = forms.CharField(label=_('Stamp'), required=True)
+    stamp_vehicle_number = forms.CharField(label=_('Stamp'), required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
