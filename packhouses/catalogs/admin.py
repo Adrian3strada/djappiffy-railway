@@ -15,7 +15,6 @@ from .models import (
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     PackagingComplementarySupply, ProductRipeness, ProductPackagingPresentation,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary,
-    HarvestContainer
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
@@ -73,8 +72,7 @@ from .resources import (ProductResource, MarketResource, MarketProductSizeResour
                         ColdChamberResource, PalletResource, ProductPackagingPalletResource,
                         ExportingCompanyResource, TransferResource, LocalTransporterResource,
                         BorderToDestinationTransporterResource, CustomsBrokerResource, VesselResource, AirlineResource,
-                        InsuranceCompanyResource,
-                        HarvestContainerResource, )
+                        InsuranceCompanyResource, )
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -914,7 +912,7 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     list_display = ('name', 'kind', 'capacity_display', 'usage_discount_quantity_display', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
     list_filter = ('kind', 'is_enabled')
     search_fields = ('name',)
-    fields = ('kind', 'name', 'capacity', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+    fields = ('kind', 'name', 'capacity', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'kg_tare', 'is_enabled')
 
     def capacity_display(self, obj):
         if obj.capacity and obj.capacity > 0:
@@ -2266,17 +2264,3 @@ class ProviderAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
 
 # /Providers
-
-@admin.register(HarvestContainer)
-class HarvestCuttingContainerAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
-    report_function = staticmethod(basic_report)
-    resource_classes = [HarvestContainerResource]
-    list_display = ('name', 'capacity', 'is_enabled')
-    list_filter = ('capacity', 'is_enabled')
-    search_fields = ('name', 'capacity', 'is_enabled')
-    fields = ('name', 'capacity', 'unit_kind', 'kg_tare', 'is_enabled')
-
-    @uppercase_form_charfield('name')
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        return form

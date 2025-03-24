@@ -2,7 +2,7 @@ from import_export.fields import Field
 from .models import (Market, Product, ProductSize, Provider, Client, Vehicle, Gatherer, Maquiladora, Orchard, HarvestingCrew,
                      Supply, Packaging, Service, WeighingScale, ColdChamber, Pallet, PackagingPallet,
                      ExportingCompany, Transfer, LocalTransporter, BorderToDestinationTransporter, CustomsBroker,
-                     Vessel, Airline, InsuranceCompany, HarvestContainer)
+                     Vessel, Airline, InsuranceCompany)
 from django.http import HttpResponse
 from common.base.utils import ExportResource, DehydrationResource, default_excluded_fields
 from import_export import resources, fields
@@ -322,13 +322,3 @@ class InsuranceCompanyResource(DehydrationResource, ExportResource):
         model = InsuranceCompany
         exclude = default_excluded_fields
 
-class HarvestContainerResource(DehydrationResource, ExportResource):
-    def dehydrate_unit_kind(self, obj):
-        choices_dict = dict(SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES)
-        category_value = obj.usage_discount_unit_category
-        category_display = choices_dict.get(category_value, "")
-
-        return f"{category_display}"
-    class Meta:
-        model = HarvestContainer
-        exclude = default_excluded_fields
