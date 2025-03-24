@@ -43,6 +43,7 @@ SUPPLY_CATEGORY_CHOICES = [
     ('packhouse_transport', _('Packhouse Transport')),
     ('packhouse_fuel', _('Packhouse Fuel')),
     ('packhouse_tools', _('Packhouse Tools')),
+    ('harvest_container', _('Harvest Container')),
     ('other', _('Other')),
 ]
 

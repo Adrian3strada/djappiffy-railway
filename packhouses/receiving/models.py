@@ -5,7 +5,6 @@ import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_incoming_product_categories_status
 from packhouses.catalogs.models import WeighingScale
-from packhouses.catalogs.models import HarvestContainer
 
 # Create your models here.
 
@@ -33,8 +32,8 @@ class IncomingProduct(models.Model):
 
         schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=self).first()
         if schedule_harvest:
-            return f"{schedule_harvest.ooid} - {schedule_harvest.orchard}"  
-    
+            return f"{schedule_harvest.ooid} - {schedule_harvest.orchard}"
+
     class Meta:
         verbose_name = _('Incoming Product')
         verbose_name_plural = _('Incoming Product')
@@ -50,7 +49,6 @@ class PalletReceived(models.Model):
     # pallet_number = models.PositiveIntegerField(verbose_name=_("Pallet Number"), null=True, blank=True)
     gross_weight = models.FloatField(default=0.0, verbose_name=_("Gross Weight"),)
     total_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Total Boxes'))
-    harvest_container = models.ForeignKey(HarvestContainer, on_delete=models.CASCADE)
     container_tare = models.FloatField(default=0.0, verbose_name=_("Container Tare"),)
     platform_tare = models.FloatField(default=0.0, verbose_name=_("Platform Tare"),)
     net_weight = models.FloatField(default=0.0, verbose_name=_("Net Weight"),)
@@ -58,7 +56,7 @@ class PalletReceived(models.Model):
 
     def __str__(self):
         return f"{self.ooid}"
-    
+
     def save(self, *args, **kwargs):
         if not self.ooid:
             # Usar transacción y bloqueo de fila para evitar condiciones de carrera
