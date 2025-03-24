@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from .serializers import (ProductKindSerializer, CitySerializer, SubRegionSerializer, RegionSerializer,
                           CapitalFrameworkSerializer, ProductStandardPackagingSerializer, SupplyKindSerializer,
-                          CountrySerializer, CountryProductStandardSizeSerializer, RequirementCertificationSerializer)
-from .models import ProductKind, CountryProductStandardSize, CapitalFramework, ProductStandardPackaging, SupplyKind, RequirementCertification
+                          CountrySerializer, CountryProductStandardSizeSerializer)
+from .models import ProductKind, CountryProductStandardSize, CapitalFramework, ProductStandardPackaging, SupplyKind
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
 from cities_light.contrib.restframework3 import SubRegionModelViewSet as BaseSubRegionModelViewSet
 from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
@@ -140,14 +140,6 @@ class CityViewSet(BaseCityModelViewSet):
             queryset = queryset.filter(subregion_id=subregion)
         return queryset
 
-class RequirementCertificationViewSet(viewsets.ModelViewSet):
-    serializer_class = RequirementCertificationSerializer
-
-    def get_queryset(self):
-        certification_entity_id = self.request.query_params.get('certification_entity', None)
-        if certification_entity_id:
-            return RequirementCertification.objects.filter(certification_entity_id=certification_entity_id)
-        return RequirementCertification.objects.all()
 
 
 

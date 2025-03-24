@@ -250,7 +250,7 @@ def certification_file_path(instance, filename):
 
     return f'certifications/requirements/{certification_id}_{certification_product_kind}_{certification_entity}_{file_name}{file_extension}'
 
-class RequirementCertification(CleanDocumentsMixin, models.Model):
+class CertificationFormat(CleanDocumentsMixin, models.Model):
     name = models.CharField(max_length=255)
     route = models.FileField(
         upload_to=certification_file_path, 
@@ -261,14 +261,14 @@ class RequirementCertification(CleanDocumentsMixin, models.Model):
     certification_entity = models.ForeignKey(CertificationEntity, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.name} -- {self.is_enabled} -- {self.certification_entity}"
+        return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Requirement Certification')
-        verbose_name_plural = _('Requirement Certification')
+        verbose_name = _('Certification Format')
+        verbose_name_plural = _('Certification Formats')
         constraints = [
             models.UniqueConstraint(
                 fields=['name', 'certification_entity'], 
-                name='requirementCertification_unique_certification_entity_name'
+                name='certificationFormat_unique_certification_entity_name'
             )
         ]

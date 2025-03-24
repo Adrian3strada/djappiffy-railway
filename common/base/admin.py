@@ -6,7 +6,7 @@ from organizations.models import Organization, OrganizationUser
 from .models import (ProductKind, ProductKindCountryStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
                      ProductStandardPackaging, SupplyKind,
                      Incoterm, LocalDelivery, Currency,
-                     CertificationEntity, RequirementCertification)
+                     CertificationEntity, CertificationFormat)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
 from wagtail.documents.models import Document
@@ -167,15 +167,15 @@ class SupplyKindAdmin(admin.ModelAdmin):
     class Media:
         js = ('js/admin/forms/supply_kind.js',)
 
-class RequirementCertificationInline(admin.TabularInline):
-    model = RequirementCertification
+class CertificationFormatInline(admin.TabularInline):
+    model = CertificationFormat
     extra = 0
 
 @admin.register(CertificationEntity)
 class CertificationEntityAdmin(admin.ModelAdmin):
     list_display = ('entity', 'name_certification', 'product_kind', 'country', 'is_enabled')
     list_filter = ['entity', 'name_certification', 'product_kind', 'country', 'is_enabled']
-    inlines = [RequirementCertificationInline]
+    inlines = [CertificationFormatInline]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)

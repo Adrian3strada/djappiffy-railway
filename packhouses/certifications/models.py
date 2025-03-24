@@ -4,7 +4,7 @@ from datetime import datetime
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from packhouses.catalogs.models import Organization
-from common.base.models import CertificationEntity
+from common.base.models import CertificationEntity, CertificationFormat
 from django.core.validators import FileExtensionValidator
 from common.mixins import CleanDocumentsMixin
 
@@ -43,6 +43,7 @@ class CertificationDocument(CleanDocumentsMixin, models.Model):
     expiration_date = models.DateField()
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     certification = models.ForeignKey(Certification, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.route} -- {self.registration_date}  -- {self.expiration_date}  -- {self.certification}"
@@ -50,3 +51,11 @@ class CertificationDocument(CleanDocumentsMixin, models.Model):
     class Meta:
         verbose_name = _('Certification Document')
         verbose_name_plural = _('Certifications Documents')
+
+class Format(models.Model):
+    certification_format = models.ForeignKey(CertificationFormat, on_delete=models.CASCADE)
+    certification = models.ForeignKey(Certification, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = _('Format')
+        verbose_name_plural = _('Formats')
