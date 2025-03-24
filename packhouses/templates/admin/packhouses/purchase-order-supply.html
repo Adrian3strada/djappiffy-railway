@@ -125,8 +125,6 @@
             <td style="text-align: center;">${{ item.total_price|default:"0.00" }} {{ currency }}</td>
         </tr>
         {% endfor %}
-    </tbody>
-    <tfoot>
         <tr>
             <td colspan="3" style="text-align: right;">{% translate "SUBTOTAL:" %}</td>
             <td style="text-align: center;">${{ subtotal }} {{ currency }}</td>
@@ -136,10 +134,38 @@
             <td style="text-align: center;">${{ tax }} {{ currency }}</td>
         </tr>
         <tr>
+            <td colspan="3" style="text-align: right;">{% translate "SUBTOTAL + TAX:" %}</td>
+            <td style="text-align: center;">${{ subtotal_with_tax }} {{ currency }}</td>
+        </tr>
+        {% if formatted_charge_values %}
+            <tr>
+              <th colspan="4" style="text-align: center;">{% translate "Charges" %}</th>
+            </tr>
+            {% for item in formatted_charge_values %}
+            <tr>
+                <td colspan="2" style="text-transform: uppercase;"> {{ item.charge }} </td>
+                <td style="text-align: center;">${{ item.amount|default:"0.00" }} {{ currency }}</td>
+                <td style="text-align: center;">${{ item.amount|default:"0.00" }} {{ currency }}</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+        {% if formatted_deduction_values %}
+            <tr>
+              <th colspan="4" style="text-align: center;">{% translate "Deductions" %}</th>
+            </tr>
+            {% for item in formatted_deduction_values %}
+            <tr>
+                <td colspan="2" style="text-transform: uppercase;"> {{ item.deduction }} </td>
+                <td style="text-align: center;">-${{ item.amount|default:"0.00" }} {{ currency }}</td>
+                <td style="text-align: center;">-${{ item.amount|default:"0.00" }} {{ currency }}</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+        <tr>
             <td colspan="3" style="text-align: right; font-weight: bold;">{% translate "TOTAL:" %}</td>
             <td style="text-align: center; font-weight: bold;">${{ total }} {{ currency }}</td>
         </tr>
-    </tfoot>
+    </tbody>
 </table>
 </div>
 

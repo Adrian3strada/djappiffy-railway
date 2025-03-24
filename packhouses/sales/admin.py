@@ -201,5 +201,3 @@ class OrderAdmin(ByOrganizationAdminMixin):
 
     class Media:
         js = ('js/admin/forms/packhouses/sales/order.js',)
-
-

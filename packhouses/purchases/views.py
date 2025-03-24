@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils.translation import gettext as _
-from .models import (Requisition, RequisitionSupply, Country, Region, SubRegion, City, PurchaseOrder, PurchaseOrderSupply)
+from .models import (Requisition, RequisitionSupply, Country, Region, SubRegion, City, PurchaseOrder, PurchaseOrderSupply,
+                     PurchaseOrderCharge, PurchaseOrderDeduction)
 from packhouses.catalogs.models import HarvestingCrew
 from django.template.loader import render_to_string
 from django.http import HttpResponse
@@ -14,6 +15,7 @@ from django.db.models import Sum
 from django.urls import reverse
 from django.http import HttpResponseForbidden
 from django.http import JsonResponse
+from packhouses.storehouse.models import StorehouseEntrySupply
 
 def requisition_pdf(request, requisition_id):
     # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
@@ -166,23 +168,56 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
 
     # Obtener los inlines relacionados
     purchaseordersupplyinline = PurchaseOrderSupply.objects.filter(purchase_order=purchase_order_supply)
+    purchaseorderchargeinline = PurchaseOrderCharge.objects.filter(purchase_order=purchase_order_supply)
+    purchaseorderdeductioninline = PurchaseOrderDeduction.objects.filter(purchase_order=purchase_order_supply)
 
-    formatted_supply_values = [
-        {
+    formatted_supply_values = []
+    for obj in purchaseordersupplyinline:
+        # Si el objeto está en inventario, buscar la cantidad recibida en StorehouseEntrySupply
+        if obj.is_in_inventory:
+            storehouse_entry_supply = StorehouseEntrySupply.objects.filter(
+                purchase_order_supply=obj
+            ).first()
+            quantity = storehouse_entry_supply.received_quantity if storehouse_entry_supply else obj.quantity
+        else:
+            quantity = obj.quantity
+
+        formatted_supply_values.append({
             'supply': f"{obj.requisition_supply.supply}",
-            'quantity': obj.quantity,
+            'quantity': quantity,
             'unit_price': obj.unit_price,
-            'total_price': obj.total_price,
+            'total_price': round(obj.unit_price * quantity,2),
+        })
 
-        }
-        for obj in purchaseordersupplyinline
-    ]
+    formatted_charge_values = []
+    for obj in purchaseorderchargeinline:
+        formatted_charge_values.append({
+            'charge': f"{obj.charge}",
+            'amount': obj.amount,
+        })
+
+    formatted_deduction_values = []
+    for obj in purchaseorderdeductioninline:
+        formatted_deduction_values.append({
+            'deduction': f"{obj.deduction}",
+            'amount': obj.amount,
+        })
+
+    # Calcular el subtotal base
     subtotal = sum(item['total_price'] for item in formatted_supply_values)
+
+    # Calcular el impuesto sobre el subtotal modificado
     percentage_tax = purchase_order_supply.tax
-    tax = round(subtotal * (purchase_order_supply.tax / 100), 2)
+    tax = round(subtotal * (percentage_tax / 100), 2)
 
-    total = subtotal + tax
+    # Calcular el total
+    subtotal_with_tax = round(subtotal + tax, 2)
 
+    # Sumar los cargos y restar las deducciones
+    total = subtotal_with_tax + sum(item["amount"] for item in formatted_charge_values) - sum(
+    item["amount"] for item in formatted_deduction_values)
+
+    # Obtener la moneda
     currency = purchase_order_supply.currency.code
 
     # CSS
@@ -214,6 +249,7 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
         'applicant_name': applicant_name,
         'applicant_email': applicant_email,
         'subtotal': subtotal,
+        'subtotal_with_tax': subtotal_with_tax,
         'percentage_tax': percentage_tax,
         'tax': tax,
         'total': total,
@@ -221,6 +257,8 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
         'provider_text': provider_text,
         'payment_date_text': payment_date_text,
         'order_date_text': order_date_text,
+        'formatted_charge_values': formatted_charge_values,
+        'formatted_deduction_values': formatted_deduction_values,
     })
 
     # Convertir el HTML a PDF
@@ -247,7 +285,7 @@ def set_purchase_order_supply_ready(request, purchase_order_supply_id):
     if purchase_order_supply.status not in ['open']:
         return JsonResponse({
             'success': False,
-            'message': 'You cannot send this purchase order.'
+            'message': 'You cannot send this purchases order.'
         }, status=403)
 
     purchase_order_supply.status = 'ready'
@@ -269,7 +307,7 @@ def set_purchase_order_supply_open(request, purchase_order_supply_id):
     if purchase_order_supply.status not in ['ready']:
         return JsonResponse({
             'success': False,
-            'message': 'You cannot send this purchase order.',
+            'message': 'You cannot send this purchases order.',
             'title': 'Error'
         }, status=403)
 
@@ -277,6 +315,33 @@ def set_purchase_order_supply_open(request, purchase_order_supply_id):
     purchase_order_supply.save()
     title_message = _('Success')
     success_message = _('Purchase order sent to Purchase successfully.')
+    button_text = _('Continue')
+
+    return JsonResponse({
+        'success': True,
+        'message': success_message,
+        'title': title_message,
+        'button': button_text
+    })
+
+def set_purchase_order_supply_payment(request, purchase_order_supply_id):
+    # Obtener el registro
+    purchase_order_supply = get_object_or_404(
+        PurchaseOrder,
+        pk=purchase_order_supply_id,
+        organization=request.organization
+    )
+    if purchase_order_supply.status not in ['closed']:
+        return JsonResponse({
+            'success': False,
+            'message': 'You cannot send this purchases order.',
+            'title': 'Error'
+        }, status=403)
+
+    purchase_order_supply.is_in_payments = True
+    purchase_order_supply.save()
+    title_message = _('Success')
+    success_message = _('Purchase order sent to Payments successfully.')
     button_text = _('Continue')
 
     return JsonResponse({

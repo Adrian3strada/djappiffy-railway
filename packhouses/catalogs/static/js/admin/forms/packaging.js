@@ -1,15 +1,14 @@
 document.addEventListener('DOMContentLoaded', function () {
   const productField = $('#id_product');
-  const marketsField = $('#id_markets');
+  const marketField = $('#id_market');
   const packagingSupplyKindField = $('#id_packaging_supply_kind');
   const productStandardPackagingField = $('#id_product_standard_packaging');
   const packagingSupplyField = $('#id_packaging_supply');
   const nameField = $('#id_name');
-  const maxProductAmountPerPackageField = $('#id_max_product_amount_per_package');
   const packagingSupplyQuantityField = $('#id_packaging_supply_quantity');
 
   let productProperties = null;
-  let marketsCountries = [];
+  let marketCountries = [];
   let productStandardPackagingProperties = null;
   let packagingSupplyKindProperties = null;
   let listenChanges = false;
@@ -17,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const API_BASE_URL = '/rest/v1';
 
   function updateFieldOptions(field, options, selectedValue = null) {
-    console.log("updateFieldOptions", field, options, selectedValue);
     field.empty().append(new Option('---------', '', !selectedValue, !selectedValue));
     options.forEach(option => {
       field.append(new Option(option.name, option.id, selectedValue === option.id, selectedValue === option.id));
@@ -38,10 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
       fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
         .then(data => {
           productProperties = data;
-          let maxProductAmountLabel = maxProductAmountLabel
-          const originalText = maxProductAmountLabel.contents().filter(function () {
-            return this.nodeType === 3;
-          }).text().trim();
+          console.log("productProperties", productProperties)
 
           if (data.price_measure_unit_category_display) {
             const newText = originalText.replace('amount', data.price_measure_unit_category_display);
@@ -55,40 +50,40 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function getMarketsCountries() {
+  function getMarketCountries() {
     return new Promise((resolve, reject) => {
-      if (marketsField.val()) {
+      if (marketField.val()) {
         let uniqueCountries = new Set();
-        let fetchPromises = marketsField.val().map(marketId => {
-          return fetchOptions(`/rest/v1/catalogs/market/${marketId}/`)
+        let fetchPromises = [];
+        fetchPromises.push(
+          fetchOptions(`/rest/v1/catalogs/market/${marketField.val()}/`)
             .then(data => {
               data.countries.forEach(country => {
                 uniqueCountries.add(country);
               });
-            });
-        });
+            })
+        )
 
         Promise.all(fetchPromises).then(() => {
-          marketsCountries = Array.from(uniqueCountries);
-          resolve(marketsCountries);
+          marketCountries = Array.from(uniqueCountries);
+          resolve(marketCountries);
         }).catch(error => {
           console.error('Fetch error:', error);
           reject(error);
         });
       } else {
-        marketsCountries = [];
-        resolve(marketsCountries);
+        marketCountries = [];
+        resolve(marketCountries);
       }
     });
   }
 
-  function getpackagingSupplyKindProperties() {
+  function getPackagingSupplyKindProperties() {
     return new Promise((resolve, reject) => {
       if (packagingSupplyKindField.val()) {
         fetchOptions(`/rest/v1/base/supply-kind/${packagingSupplyKindField.val()}/`)
           .then(data => {
             packagingSupplyKindProperties = data;
-            console.log("packagingSupplyKindProperties", packagingSupplyKindProperties);
             resolve(data);
           })
           .catch(error => {
@@ -104,11 +99,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateProductStandardPackaging() {
     const packagingSupplyKindId = packagingSupplyKindField.val();
-    if (packagingSupplyKindId && marketsCountries.length) {
-      const countries = marketsCountries.join(',');
-      fetchOptions(`${API_BASE_URL}/base/product-standard-packaging/?supply_kind=${packagingSupplyKindId}&standard__country__in=${countries}&is_enabled=1`)
+    if (packagingSupplyKindId && marketCountries.length) {
+      const countries = marketCountries.join(',');
+      let paramStandardProductKind = ''
+      if (productProperties) {
+        paramStandardProductKind = `&standard__product_kind=${productProperties.kind}`
+      }
+      fetchOptions(`${API_BASE_URL}/base/product-standard-packaging/?supply_kind=${packagingSupplyKindId}&standard__country__in=${countries}${paramStandardProductKind}&is_enabled=1`)
         .then(data => {
-          console.log("data", data);
           updateFieldOptions(productStandardPackagingField, data);
           updateName();
           if (data.length > 0) {
@@ -127,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updatePackagingSupply() {
     const packagingSupplyKindId = packagingSupplyKindField.val();
     if (packagingSupplyKindId && productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
-      fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&capacity__gte=${productStandardPackagingProperties.max_product_amount}&is_enabled=1`)
+      fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&capacity=${productStandardPackagingProperties.max_product_amount}&is_enabled=1`)
         .then(data => {
           const packagingSupplyFieldId = packagingSupplyField.val();
           updateFieldOptions(packagingSupplyField, data);
@@ -161,13 +159,6 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       nameField.val('')
     }
-    if (productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
-      maxProductAmountPerPackageField.val(productStandardPackagingProperties.max_product_amount);
-      maxProductAmountPerPackageField.attr('max', productStandardPackagingProperties.max_product_amount);
-    } else {
-      maxProductAmountPerPackageField.val('');
-      maxProductAmountPerPackageField.removeAttr('max');
-    }
   }
 
   function getproductStandardPackagingFieldProperties() {
@@ -190,17 +181,17 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   productField.on('change', () => {
-    getProductProperties()
+    getProductProperties();
   })
 
-  marketsField.on('change', () => {
-    getMarketsCountries().then(() => {
+  marketField.on('change', () => {
+    getMarketCountries().then(() => {
       updateProductStandardPackaging();
     });
   });
 
   packagingSupplyKindField.on('change', function () {
-    getpackagingSupplyKindProperties().then(() => {
+    getPackagingSupplyKindProperties().then(() => {
       if (packagingSupplyKindField.val() && packagingSupplyKindProperties && packagingSupplyKindProperties.usage_discount_unit_category !== 'pieces') {
         packagingSupplyQuantityField.closest('.form-group').fadeIn();
       } else {
@@ -208,10 +199,10 @@ document.addEventListener('DOMContentLoaded', function () {
         packagingSupplyQuantityField.closest('.form-group').fadeOut();
       }
       updatePackagingSupply();
-      if (marketsCountries.length) {
+      if (marketCountries.length) {
         updateProductStandardPackaging();
       } else {
-        getMarketsCountries().then(() => {
+        getMarketCountries().then(() => {
           updateProductStandardPackaging();
         });
       }
@@ -220,30 +211,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
   productStandardPackagingField.on('change', function () {
     if (listenChanges) {
-        getproductStandardPackagingFieldProperties().then(() => {
-          updatePackagingSupply();
-          updateName();
-        });
+      getproductStandardPackagingFieldProperties().then(() => {
+        updatePackagingSupply();
+        updateName();
+      });
     }
   });
 
-  maxProductAmountPerPackageField.on('change', function () {
-    if (maxProductAmountPerPackageField.val() && productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
-      const maxProductAmount = parseFloat(productStandardPackagingProperties.max_product_amount);
-      const maxProductAmountPerPackage = parseFloat(maxProductAmountPerPackageField.val());
-      if (maxProductAmountPerPackage > maxProductAmount) {
-        maxProductAmountPerPackageField.val(maxProductAmount);
+  /*
+    maxProductAmountPerPackageField.on('change', function () {
+      if (maxProductAmountPerPackageField.val() && productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
+        const maxProductAmount = parseFloat(productStandardPackagingProperties.max_product_amount);
+        const maxProductAmountPerPackage = parseFloat(maxProductAmountPerPackageField.val());
+        if (maxProductAmountPerPackage > maxProductAmount) {
+          maxProductAmountPerPackageField.val(maxProductAmount);
+        }
       }
-    }
-  });
+    });
+  */
 
   if (!productStandardPackagingField.val()) updateFieldOptions(productStandardPackagingField, []);
 
-  if (marketsField.val()) {
-    getMarketsCountries().then(() => {
-      if (packagingSupplyKindField.val() && marketsCountries.length) {
+  if (marketField.val()) {
+    getMarketCountries().then(() => {
+      if (packagingSupplyKindField.val() && marketCountries.length) {
         const productStandardPackagingId = productStandardPackagingField.val();
-        const countries = marketsCountries.join(',');
+        const countries = marketCountries.join(',');
         fetchOptions(`${API_BASE_URL}/base/product-standard-packaging/?supply_kind=${packagingSupplyKindField.val()}&standard__country__in=${countries}&is_enabled=1`)
           .then(data => {
             updateFieldOptions(productStandardPackagingField, data);
@@ -258,8 +251,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 .catch(error => {
                   console.error('Fetch error:', error);
                 });
-            } else {
-              // esconder campos
             }
           })
           .then(() => {
@@ -271,33 +262,18 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  if (productStandardPackagingField.val()) {
-    getproductStandardPackagingFieldProperties().then(() => {
-      console.log("productStandardPackagingProperties", productStandardPackagingProperties);
-      if (productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
-        maxProductAmountPerPackageField.val(maxProductAmountPerPackageField.val() || productStandardPackagingProperties.max_product_amount);
-        maxProductAmountPerPackageField.attr('max', productStandardPackagingProperties.max_product_amount);
-      } else {
-        maxProductAmountPerPackageField.val(maxProductAmountPerPackageField.val() || '');
-        maxProductAmountPerPackageField.removeAttr('max');
-      }
-    });
-  }
-
   if (packagingSupplyKindField.val()) {
-    getpackagingSupplyKindProperties().then(() => {
+    getPackagingSupplyKindProperties().then(() => {
       if (packagingSupplyKindField.val() && packagingSupplyKindProperties && packagingSupplyKindProperties.usage_discount_unit_category !== 'pieces') {
         packagingSupplyQuantityField.closest('.form-group').fadeIn();
       }
     });
   }
 
-  maxProductAmountPerPackageField.attr('step', '0.01');
-  maxProductAmountPerPackageField.attr('min', '0.01');
   packagingSupplyQuantityField.closest('.form-group').hide();
   productStandardPackagingField.closest('.form-group').hide();
 
   if (productStandardPackagingField.val()) productStandardPackagingField.closest('.form-group').show();
 
-  [productField, marketsField, packagingSupplyKindField, productStandardPackagingField, packagingSupplyField].forEach(field => field.select2());
+  [productField, marketField, packagingSupplyKindField, productStandardPackagingField, packagingSupplyField].forEach(field => field.select2());
 });

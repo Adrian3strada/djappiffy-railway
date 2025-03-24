@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $(document).on('change.select2', '#id_purchase_order', function() {
         const purchaseOrderId = purchaseOrderSelect.value;
         if (purchaseOrderId) {
-            fetch(`/rest/v1/storehouse/purchase-order-supplies/?purchase_order=${purchaseOrderId}`)
+            fetch(`/rest/v1/storehouse/purchases-order-supplies/?purchase_order=${purchaseOrderId}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Error en la solicitud: ' + response.statusText);
@@ -85,14 +85,68 @@ document.addEventListener('DOMContentLoaded', function() {
                             supply.purchase_order_supply_options.forEach(optionData => {
                                 const option = document.createElement('option');
                                 option.value = optionData.id;
-                                option.textContent = optionData.name;
-                                if (optionData.id === supply.id) {
+                                option.textContent = optionData.kind+": "+optionData.name;
+                                option.setAttribute('data-unit', optionData.unit);
+
+                                if (String(optionData.id) === String(supply.id)) {
                                     option.selected = true;
                                 }
+
                                 purchaseOrderSupplySelect.appendChild(option);
                             });
+
                             purchaseOrderSupplySelect.classList.add('disabled-field');
+
+                            const inventoriedQuantityInput = newInlineForm.querySelector('input[name$="-inventoried_quantity"]');
+                            if (inventoriedQuantityInput) {
+                                const selectedOption = purchaseOrderSupplySelect.options[purchaseOrderSupplySelect.selectedIndex];
+                                if (selectedOption) {
+                                    const unit = selectedOption.getAttribute('data-unit');
+
+                                    let existingSpan = inventoriedQuantityInput.parentNode.querySelector('.unit-span');
+                                    if (existingSpan) {
+                                        existingSpan.remove();
+                                    }
+                                    const unitSpan = document.createElement('span');
+                                    unitSpan.classList.add('unit-span');
+                                    unitSpan.textContent = ` ${unit}`;
+
+                                    inventoriedQuantityInput.insertAdjacentElement("afterend", unitSpan);
+                                }
+                            }
+
+                            const expectedQuantityInput = newInlineForm.querySelector('input[name$="-expected_quantity"]');
+                            if (expectedQuantityInput) {
+                                    const unit = supply.unit_category;
+
+                                    let existingSpan = expectedQuantityInput.parentNode.querySelector('.unit-span');
+                                    if (existingSpan) {
+                                        existingSpan.remove();
+                                    }
+                                    const unitSpan = document.createElement('span');
+                                    unitSpan.classList.add('unit-span');
+                                    unitSpan.textContent = ` ${unit}`;
+
+                                    expectedQuantityInput.insertAdjacentElement("afterend", unitSpan);
+                            }
+
+                            const receivedQuantityInput = newInlineForm.querySelector('input[name$="-received_quantity"]');
+                            if (expectedQuantityInput) {
+                                    const unit = supply.unit_category;
+
+                                    let existingSpan = receivedQuantityInput.parentNode.querySelector('.unit-span');
+                                    if (existingSpan) {
+                                        existingSpan.remove();
+                                    }
+                                    const unitSpan = document.createElement('span');
+                                    unitSpan.classList.add('unit-span');
+                                    unitSpan.textContent = ` ${unit}`;
+
+                                    receivedQuantityInput.insertAdjacentElement("afterend", unitSpan);
+                            }
+
                         }
+
 
                         const receivedQuantityInput = newInlineForm.querySelector('input[name$="-received_quantity"]');
                         if (receivedQuantityInput) {
@@ -103,12 +157,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (expectedQuantityInput) {
                             expectedQuantityInput.value = supply.quantity;
                             expectedQuantityInput.classList.add('disabled-field');
+                            expectedQuantityInput.append(supply.unit_category);
                         }
 
                         newInlineForm.classList.remove('empty-form', 'last-related');
                         inlineFormContainer.insertBefore(newInlineForm, emptyForm);
                         totalForms += 1;
+
                     });
+
+
 
                     totalFormsInput.value = totalForms;
                     //Botón para devolver a Purchase
@@ -127,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
                           button.href = "javascript:void(0);";
                           button.innerText = "Devolver a Purchase";
                           button.classList.add("btn", "btn-info", "storehouse-button");
-                          button.id = "return-to-purchase-btn";
+                          button.id = "return-to-purchases-btn";
 
                           // Agregar botón al contenedor
                           container.appendChild(button);
@@ -146,10 +204,39 @@ document.addEventListener('DOMContentLoaded', function() {
             if (tabLink) {
                 tabLink.click();
             }
+        }else{
+          const inlineFormContainer = document.querySelector('#storehouseentrysupply_set-group .card-body');
+          if (inlineFormContainer) {
+            const totalFormsInput = document.querySelector('#id_storehouseentrysupply_set-TOTAL_FORMS');
+            inlineFormContainer.querySelectorAll('.dynamic-inline-form').forEach(form => form.remove());
+            totalFormsInput.value = 0;
+            $(".storehouse-button-container").remove();
+          }
+
         }
     });
 
-    $(document).on('click', '#return-to-purchase-btn', function(e) {
+    $(document).on('change', 'select[name$="-purchase_order_supply"]', function() {
+        // Obtener la opción seleccionada
+        const selectedOption = this.options[this.selectedIndex];
+
+        // Obtener el atributo data-unit
+        const unit = selectedOption.getAttribute('data-unit') || '';
+
+        // Buscar el input correspondiente a inventoried_quantity en el mismo inline form
+        const inlineForm = this.closest('.dynamic-inline-form');
+        if (inlineForm) {
+            const inventoriedQuantityInput = inlineForm.querySelector('input[name$="-inventoried_quantity"]');
+
+            if (inventoriedQuantityInput) {
+                // Agregar el unit como placeholder o valor si es necesario
+                inventoriedQuantityInput.placeholder = unit;
+            }
+        }
+    });
+
+
+    $(document).on('click', '#return-to-purchases-btn', function(e) {
         e.preventDefault();
 
         const purchaseOrderId = purchaseOrderSelect.value;
@@ -158,14 +245,14 @@ document.addEventListener('DOMContentLoaded', function() {
             Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: "No purchase order selected.",
+                text: "No purchases order selected.",
                 confirmButtonColor: "#f44336",
                 confirmButtonText: "OK",
             });
             return;
         }
 
-        const url = `/dadmin/purchase/set_purchase_order_supply_open/${purchaseOrderId}/`;
+        const url = `/dadmin/purchases/set_purchase_order_supply_open/${purchaseOrderId}/`;
 
         Swal.fire({
             icon: "question",

@@ -9,8 +9,9 @@ from wagtail.documents import urls as wagtaildocs_urls
 from search import views as search_views
 from packhouses.gathering.views import (harvest_order_pdf, good_harvest_practices_format, cancel_schedule_harvest,
                                         set_scheduleharvest_ready)
-from packhouses.purchase.views import (requisition_pdf, set_requisition_ready, purchase_order_supply_pdf,
-                                       set_purchase_order_supply_ready, set_purchase_order_supply_open)
+from packhouses.purchases.views import (requisition_pdf, set_requisition_ready, purchase_order_supply_pdf,
+                                        set_purchase_order_supply_ready, set_purchase_order_supply_open,
+                                        set_purchase_order_supply_payment)
 
 
 urlpatterns = [
@@ -19,16 +20,19 @@ urlpatterns = [
     path('dadmin/gathering/scheduleharvest/good_harvest_practices_format/<int:harvest_id>/', good_harvest_practices_format,
          name='good_harvest_practices_format'),
     path('dadmin/gathering/scheduleharvest/cancel_schedule_harvest/<int:pk>/', cancel_schedule_harvest, name='cancel_schedule_harvest'),
-    path('dadmin/purchase/requisition_pdf/<int:requisition_id>/', requisition_pdf, name='requisition_pdf'),
-    path('dadmin/purchase/set_requisition_ready/<int:requisition_id>/', set_requisition_ready, name='set_requisition_ready'),
-    path('dadmin/purchase/purchase_order_supply_pdf/<int:purchase_order_supply_id>/', purchase_order_supply_pdf, name='purchase_order_supply_pdf'),
-    path('dadmin/purchase/set_purchase_order_supply_ready/<int:purchase_order_supply_id>/', set_purchase_order_supply_ready,
+    path('dadmin/purchases/requisition_pdf/<int:requisition_id>/', requisition_pdf, name='requisition_pdf'),
+    path('dadmin/purchases/set_requisition_ready/<int:requisition_id>/', set_requisition_ready, name='set_requisition_ready'),
+    path('dadmin/purchases/purchase_order_supply_pdf/<int:purchase_order_supply_id>/', purchase_order_supply_pdf, name='purchase_order_supply_pdf'),
+    path('dadmin/purchases/set_purchase_order_supply_ready/<int:purchase_order_supply_id>/', set_purchase_order_supply_ready,
          name='set_purchase_order_supply_ready'),
     path('dadmin/gathering/scheduleharvest/set_scheduleharvest_ready/<int:harvest_id>/', set_scheduleharvest_ready,
          name='set_scheduleharvest_ready'),
-    path('dadmin/purchase/set_purchase_order_supply_open/<int:purchase_order_supply_id>/',
+    path('dadmin/purchases/set_purchase_order_supply_open/<int:purchase_order_supply_id>/',
          set_purchase_order_supply_open,
          name='set_purchase_order_supply_open'),
+path('dadmin/purchases/set_purchase_order_supply_payment/<int:purchase_order_supply_id>/',
+         set_purchase_order_supply_payment,
+         name='set_purchase_order_supply_payment'),
     # Admin URLs
     path("dadmin/", admin.site.urls),
     path("wadmin/", include(wagtailadmin_urls)),

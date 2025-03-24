@@ -24,12 +24,12 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, ProductVariety,
                                         Market, ProductPhenologyKind, ProductHarvestSizeKind, WeighingScale,
-                                        HarvestingCrew, Vehicle, HarvestContainer, OrchardCertification)
+                                        HarvestingCrew, Vehicle, OrchardCertification, Supply)
 from django.db.models import Max, Min
 from django.db.models import Q, F
 import datetime
 from common.settings import STATUS_CHOICES
-
+from packhouses.receiving.models import IncomingProduct
 
 
 
@@ -123,6 +123,7 @@ class ScheduleHarvest(models.Model):
         on_delete=models.PROTECT,
         verbose_name=_('Organization'),
     )
+    incoming_product = models.OneToOneField(IncomingProduct, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.ooid}"
@@ -152,17 +153,17 @@ class ScheduleHarvestHarvestingCrew(models.Model):
     harvest_cutting = models.ForeignKey(
         ScheduleHarvest,
         verbose_name=_("Schedule Harvest"),
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     provider = models.ForeignKey(
         Provider,
         verbose_name=_('Harvesting Crew Provider'),
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     harvesting_crew = models.ForeignKey(
         HarvestingCrew,
         verbose_name=_("Harvesting Crew"),
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
 
     def __str__(self):
@@ -176,17 +177,17 @@ class ScheduleHarvestVehicle(models.Model):
     harvest_cutting = models.ForeignKey(
         ScheduleHarvest,
         verbose_name=_("Harvest Cutting"),
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     provider = models.ForeignKey(
         Provider,
         verbose_name=_('Harvesting Crew Provider'),
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     vehicle = models.ForeignKey(
         Vehicle,
         verbose_name=_("Vehicle"),
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     stamp_number = models.CharField(
         max_length=20,
@@ -204,7 +205,11 @@ class ScheduleHarvestVehicle(models.Model):
 
 class ScheduleHarvestContainerVehicle(models.Model):
     harvest_cutting = models.ForeignKey(ScheduleHarvestVehicle, on_delete=models.CASCADE)
-    harvest_cutting_container = models.ForeignKey(HarvestContainer, on_delete=models.CASCADE)
+    harvest_container = models.ForeignKey(
+        Supply,
+        on_delete=models.CASCADE,
+        limit_choices_to={'kind__category': 'harvest_container'}
+    )
     quantity = models.PositiveIntegerField()
 
     def __str__(self):

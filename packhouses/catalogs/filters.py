@@ -2,9 +2,9 @@ from django.contrib import admin
 from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind,
-                     Gatherer, PaymentKind, Supply, Packaging,
+                     Gatherer, PaymentKind, Supply, Packaging, ProductSize,
                      Provider, Client, CapitalFramework,
-                     Maquiladora, WeighingScale, ExportingCompany, CustomsBroker, PalletConfiguration
+                     Maquiladora, WeighingScale, ExportingCompany, CustomsBroker, Pallet
                      )
 from common.base.models import ProductKind, SupplyKind
 from django.utils.translation import gettext_lazy as _
@@ -27,6 +27,8 @@ class ProductKindForPackagingFilter(admin.SimpleListFilter):
         return queryset
 
 
+
+
 class ByProductForOrganizationFilter(admin.SimpleListFilter):
     title = _('Product')
     parameter_name = 'product'
@@ -38,6 +40,34 @@ class ByProductForOrganizationFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(product__id=self.value())
+        return queryset
+
+
+class ByProductSizeForProductOrganizationFilter(admin.SimpleListFilter):
+    title = _('Product Size')
+    parameter_name = 'product_size'
+
+    def lookups(self, request, model_admin):
+        product_sizes = ProductSize.objects.filter(product__organization=request.organization, is_enabled=True)
+        return [(product_size.id, f"{product_size.name} ({product_size.product.name}: {product_size.market.alias})") for product_size in product_sizes]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(product_size__id=self.value())
+        return queryset
+
+
+class ByPackagingForOrganizationFilter(admin.SimpleListFilter):
+    title = _('Packaging')
+    parameter_name = 'packaging'
+
+    def lookups(self, request, model_admin):
+        packagings = Packaging.objects.filter(organization=request.organization, is_enabled=True)
+        return [(packaging.id, packaging.name) for packaging in packagings]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(packaging__id=self.value())
         return queryset
 
 
@@ -69,13 +99,13 @@ class ByProductVarietyForOrganizationFilter(admin.SimpleListFilter):
         return queryset
 
 
-class ByMarketsForOrganizationFilter(admin.SimpleListFilter):
+class ByMarketForOrganizationFilter(admin.SimpleListFilter):
     title = _('Market')
     parameter_name = 'markets'
 
     def lookups(self, request, model_admin):
-        marketses = Market.objects.filter(organization=request.organization, is_enabled=True)
-        return [(market.id, market.name) for market in marketses]
+        markets = Market.objects.filter(organization=request.organization, is_enabled=True)
+        return [(market.id, market.name) for market in markets]
 
     def queryset(self, request, queryset):
         if self.value():
@@ -556,7 +586,7 @@ class ByCountryForOrganizationCustomsBrokersFilter(admin.SimpleListFilter):
         return queryset
 
 
-class BySupplyKindForProductPackagingFilter(admin.SimpleListFilter):
+class BySupplyKindForPackagingFilter(admin.SimpleListFilter):
     title = _('Supply Kind')
     parameter_name = 'supply_kind'
 
@@ -610,14 +640,14 @@ class ByProductForOrganizationPackagingFilter(admin.SimpleListFilter):
         return queryset
 
 
-class ByMarketForOrganizationProductPackagingFilter(admin.SimpleListFilter):
+class ByMarketForOrganizationPackagingFilter(admin.SimpleListFilter):
     title = _('Market')
     parameter_name = 'market'
 
     def lookups(self, request, model_admin):
         markets = Market.objects.all()
         if hasattr(request, 'organization'):
-            market_ids = list(set(Packaging.objects.filter(organization=request.organization).values_list('markets', flat=True).distinct()))
+            market_ids = list(set(Packaging.objects.filter(organization=request.organization).values_list('market', flat=True).distinct()))
             markets = markets.filter(id__in=market_ids).order_by('name')
         return [(market.id, market.name) for market in markets]
 
@@ -627,8 +657,7 @@ class ByMarketForOrganizationProductPackagingFilter(admin.SimpleListFilter):
         return queryset
 
 
-
-class ByProductForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
+class ByProductForOrganizationProductPackagingPalletFilter(admin.SimpleListFilter):
     title = _('Product')
     parameter_name = 'product'
 
@@ -636,7 +665,7 @@ class ByProductForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
         products = Product.objects.all()
         if hasattr(request, 'organization'):
             product_ids = list(
-                PalletConfiguration.objects.filter(organization=request.organization).values_list('product', flat=True).distinct())
+                Pallet.objects.filter(organization=request.organization).values_list('product', flat=True).distinct())
             products = products.filter(id__in=product_ids).order_by('name')
         return [(product.id, product.name) for product in products]
 
@@ -645,37 +674,39 @@ class ByProductForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
             return queryset.filter(product__id=self.value())
         return queryset
 
-class ByMarketForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
+
+
+class ByMarketForOrganizationPalletFilter(admin.SimpleListFilter):
     title = _('Market')
-    parameter_name = 'market'
+    parameter_name = 'markets'
 
     def lookups(self, request, model_admin):
         markets = Market.objects.all()
         if hasattr(request, 'organization'):
             market_ids = list(
-                PalletConfiguration.objects.filter(organization=request.organization).values_list('market', flat=True).distinct())
+                Pallet.objects.filter(organization=request.organization).values_list('markets', flat=True).distinct())
             markets = markets.filter(id__in=market_ids).order_by('name')
         return [(market.id, market.name) for market in markets]
 
     def queryset(self, request, queryset):
         if self.value():
-            return queryset.filter(market__id=self.value())
+            return queryset.filter(markets__id=self.value())
         return queryset
 
 
-class ByProductVarietyForOrganizationPalletConfigurationFilter(admin.SimpleListFilter):
-    title = _('Product Variety')
-    parameter_name = 'product_variety'
+class BySupplyForOrganizationPalletFilter(admin.SimpleListFilter):
+    title = _('Supply')
+    parameter_name = 'supply'
 
     def lookups(self, request, model_admin):
-        product_varieties = ProductVariety.objects.all()
+        supplies = Supply.objects.all()
         if hasattr(request, 'organization'):
-            product_varieties_ids = list(
-                PalletConfiguration.objects.filter(organization=request.organization).values_list('product_variety', flat=True).distinct())
-            product_varieties = product_varieties.filter(id__in=product_varieties_ids).order_by('name')
-        return [(product_variety.id, product_variety.name) for product_variety in product_varieties]
+            distinct_supplies = list(
+                Pallet.objects.filter(organization=request.organization).values_list('supply', flat=True).distinct())
+            supplies = supplies.filter(id__in=distinct_supplies).order_by('name')
+        return [(supply.id, supply.name) for supply in supplies]
 
     def queryset(self, request, queryset):
         if self.value():
-            return queryset.filter(market__id=self.value())
+            return queryset.filter(supply__id=self.value())
         return queryset

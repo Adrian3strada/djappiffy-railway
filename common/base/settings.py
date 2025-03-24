@@ -34,8 +34,7 @@ SUPPLY_CATEGORY_CHOICES = [
     ('packaging_presentation_complement', _('Packaging Presentation Complement')),
     ('packaging_protection', _('Packaging Protection')),
     ('packaging_pallet', _('Packaging Pallet')),
-    ('packaging_pallet_protection', _('Packaging Pallet Protection')),
-    ('packaging_pallet_wrapping', _('Packaging Pallet Wrapping')),
+    ('packaging_pallet_complement', _('Packaging Pallet Complement')),
     ('packaging_labeling', _('Packaging Labeling')),
     ('packaging_storage', _('Packaging Storage')),
     ('packhouse_stationery', _('Packhouse Stationery')),
@@ -44,6 +43,7 @@ SUPPLY_CATEGORY_CHOICES = [
     ('packhouse_transport', _('Packhouse Transport')),
     ('packhouse_fuel', _('Packhouse Fuel')),
     ('packhouse_tools', _('Packhouse Tools')),
+    ('harvest_container', _('Harvest Container')),
     ('other', _('Other')),
 ]
 

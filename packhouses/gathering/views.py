@@ -15,7 +15,7 @@ from django.db.models import Sum
 from django.urls import reverse
 from django.http import HttpResponseForbidden
 from django.http import JsonResponse
-
+from packhouses.receiving.models import IncomingProduct
 from django.contrib.auth.decorators import login_required
 
 def harvest_order_pdf(request, harvest_id):
@@ -217,6 +217,12 @@ def set_scheduleharvest_ready(request, harvest_id):
         }, status=403)
 
     scheduleharvest.status = 'ready'
+    scheduleharvestvehicleinline = ScheduleHarvestVehicle.objects.filter(harvest_cutting=scheduleharvest).prefetch_related(
+        Prefetch('scheduleharvestcontainervehicle_set',queryset=ScheduleHarvestContainerVehicle.objects.all(),)
+    )
+    total_box = ScheduleHarvestContainerVehicle.objects.filter(harvest_cutting__in=scheduleharvestvehicleinline).aggregate(total=Sum('quantity'))['total'] or 0
+    incoming_product = IncomingProduct.objects.create(organization=scheduleharvest.organization, boxes_assigned=total_box)
+    scheduleharvest.incoming_product = incoming_product
     scheduleharvest.save()
     success_message = _('Harvest sent to Fruit Receiving Area successfully.')
 

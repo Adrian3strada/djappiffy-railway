@@ -1,98 +1,59 @@
 [
 {
     "model": "gathering.scheduleharvest",
-    "pk": 1,
+    "pk": 3,
     "fields": {
-        "ooid": 1,
-        "harvest_date": "2025-03-08",
+        "ooid": 3,
+        "harvest_date": "2025-03-24",
         "product_provider": 5,
-        "category": "gathering",
-        "gatherer": 2,
-        "maquiladora": null,
-        "product": 1,
-        "product_variety": 1,
-        "product_phenologies": 1,
-        "product_harvest_size_kind": 4,
-        "orchard": 2,
-        "market": 1,
-        "weight_expected": 8200.0,
-        "weighing_scale": 1,
-        "meeting_point": "Báscula pública",
-        "status": "open",
-        "comments": "",
-        "created_at": "2025-03-07T19:00:59.683Z",
-        "organization": 1,
-        "orchard_certification": [
-            2
-        ]
-    }
-},
-{
-    "model": "gathering.scheduleharvest",
-    "pk": 2,
-    "fields": {
-        "ooid": 2,
-        "harvest_date": "2025-03-07",
-        "product_provider": null,
         "category": "gathering",
         "gatherer": 1,
         "maquiladora": null,
         "product": 1,
         "product_variety": 1,
-        "product_phenologies": 2,
-        "product_harvest_size_kind": 4,
+        "product_phenologies": 1,
+        "product_harvest_size_kind": 1,
         "orchard": 1,
-        "market": 3,
-        "weight_expected": 12800.0,
+        "market": 1,
+        "weight_expected": 5000.0,
         "weighing_scale": 1,
         "meeting_point": null,
         "status": "open",
         "comments": "",
-        "created_at": "2025-03-07T19:02:14.662Z",
+        "created_at": "2025-03-24T17:30:45.174Z",
         "organization": 1,
+        "incoming_product": null,
         "orchard_certification": [
             1
         ]
     }
 },
-
 {
     "model": "gathering.scheduleharvestharvestingcrew",
-    "pk": 1,
+    "pk": 3,
     "fields": {
-        "harvest_cutting": 1,
+        "harvest_cutting": 3,
         "provider": 6,
         "harvesting_crew": 1
     }
 },
 {
-    "model": "gathering.scheduleharvestharvestingcrew",
-    "pk": 2,
-    "fields": {
-        "harvest_cutting": 2,
-        "provider": 6,
-        "harvesting_crew": 2
-    }
-},
-
-{
     "model": "gathering.scheduleharvestvehicle",
-    "pk": 1,
+    "pk": 3,
     "fields": {
-        "harvest_cutting": 1,
+        "harvest_cutting": 3,
         "provider": 6,
         "vehicle": 1,
-        "stamp_number": "87352"
+        "stamp_number": "123456"
     }
 },
 {
-    "model": "gathering.scheduleharvestvehicle",
-    "pk": 2,
+    "model": "gathering.scheduleharvestcontainervehicle",
+    "pk": 3,
     "fields": {
-        "harvest_cutting": 2,
-        "provider": 6,
-        "vehicle": 2,
-        "stamp_number": "872538"
+        "harvest_cutting": 3,
+        "harvest_container": 31,
+        "quantity": 250
     }
 }
 ]

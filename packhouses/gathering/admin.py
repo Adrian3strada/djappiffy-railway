@@ -10,20 +10,20 @@ from cities_light.models import Country, Region, SubRegion, City
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from packhouses.catalogs.filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizationMarketsFilter,
-                      ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
-                      ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
-                      ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
-                      ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
-                      ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
-                      ByCityForOrganizationClientsFilter,
-                      ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
-                      ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
-                      ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
-                      ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
-                      ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter
-                      )
+                                         ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
+                                         ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
+                                         ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
+                                         ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
+                                         ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
+                                         ByCityForOrganizationClientsFilter,
+                                         ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
+                                         ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
+                                         ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
+                                         ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
+                                         ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter
+                                         )
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, Market, WeighingScale,
-                                        ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind, HarvestContainer,
+                                        ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind,
                                         OrchardCertification)
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -91,7 +91,7 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
         formset = super().get_formset(request, obj, **kwargs)
         form = formset.form
         for field in form.base_fields.values():
-            field.widget.can_add_related = True
+            field.widget.can_add_related = False
             field.widget.can_change_related = False
             field.widget.can_delete_related = False
             field.widget.can_view_related = False

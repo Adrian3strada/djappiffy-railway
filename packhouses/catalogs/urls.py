@@ -5,8 +5,9 @@ from .models import ProductHarvestSizeKind
 from .viewsets import (
     MarketViewSet, ProductMarketClassViewSet, VehicleViewSet, HarvestingCrewProviderViewSet,
     CrewChiefViewSet, ProductVarietyViewSet, ProductHarvestSizeKindViewSet, ProductPhenologyKindViewSet,
-    ProductMassVolumeKindViewSet, ClientViewSet, ProviderViewSet, ProductViewSet, MaquiladoraViewSet, SupplyViewSet, ProductSizeViewSet,
-    OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, ProductPackagingViewSet, ProductRipenessViewSet,
+    ProductMassVolumeKindViewSet, ClientViewSet, ProviderViewSet, ProductViewSet, MaquiladoraViewSet, SupplyViewSet,
+    ProductSizeViewSet, ProductPresentationViewSet,
+    OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, PackagingViewSet, ProductRipenessViewSet,
     PurchaseOrderSupplyViewSet
 )
 
@@ -22,7 +23,8 @@ drf_router.register(r'rest/v1/catalogs/product-phenology', ProductPhenologyKindV
 drf_router.register(r'rest/v1/catalogs/product-mass-volume-kind', ProductMassVolumeKindViewSet, basename='product_mass_volume_kind')
 drf_router.register(r'rest/v1/catalogs/product-variety', ProductVarietyViewSet, basename='product_variety')
 drf_router.register(r'rest/v1/catalogs/product-size', ProductSizeViewSet, basename='product_size')
-drf_router.register(r'rest/v1/catalogs/product-packaging', ProductPackagingViewSet, basename='packaging')
+drf_router.register(r'rest/v1/catalogs/product-presentation', ProductPresentationViewSet, basename='product_presentation')
+drf_router.register(r'rest/v1/catalogs/packaging', PackagingViewSet, basename='packaging')
 drf_router.register(r'rest/v1/catalogs/provider', ProviderViewSet, basename='provider')
 drf_router.register(r'rest/v1/catalogs/supply', SupplyViewSet, basename='supply')
 drf_router.register(r'rest/v1/catalogs/vehicle', VehicleViewSet, basename='vehicle')
@@ -34,6 +36,6 @@ drf_router.register(r'rest/v1/catalogs/harvesting-crew', HarvestingCrewViewSet, 
 drf_router.register(r'rest/v1/catalogs/maquiladora', MaquiladoraViewSet, basename='maquiladora')
 drf_router.register(r'rest/v1/catalogs/orchard-certification', OrchardCertificationViewSet, basename='orchard_certification')
 drf_router.register(r'rest/v1/catalogs/product-ripeness', ProductRipenessViewSet, basename='product_ripeness')
-drf_router.register(r'rest/v1/storehouse/purchase-order-supplies', PurchaseOrderSupplyViewSet, basename='purchase-order-supplies')
+drf_router.register(r'rest/v1/storehouse/purchases-order-supplies', PurchaseOrderSupplyViewSet, basename='purchases-order-supplies')
 
 urlpatterns += drf_router.urls

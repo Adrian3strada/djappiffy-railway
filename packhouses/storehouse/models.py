@@ -2,7 +2,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
-from packhouses.purchase.models import PurchaseOrder, PurchaseOrderSupply
+from packhouses.purchases.models import PurchaseOrder, PurchaseOrderSupply
 from packhouses.catalogs.models import Supply
 from django.contrib.auth import get_user_model
 import datetime
@@ -57,12 +57,23 @@ class StorehouseEntrySupply(models.Model):
     expected_quantity = models.DecimalField(
         verbose_name=_("Expected Quantity"),
         max_digits=10, decimal_places=2,
-
     )
     received_quantity = models.DecimalField(
         verbose_name=_("Received Quantity"),
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0)]
+    )
+    inventoried_quantity = models.DecimalField(
+        verbose_name=_("Quantity in Inventory"),
+        max_digits=10, decimal_places=2,
+        validators=[MinValueValidator(0)]
+    )
+    converted_inventoried_quantity = models.DecimalField(
+        verbose_name=_("Equivalent in inventory for discount"),
+        max_digits=10, decimal_places=2,
+        editable=False,
+        null=True,
+        blank=True
     )
     comments = models.CharField(
         max_length=255,
@@ -71,12 +82,27 @@ class StorehouseEntrySupply(models.Model):
     )
 
     def save(self, *args, **kwargs):
+        # Si expected_quantity no se estableció, se asigna la cantidad del PurchaseOrderSupply
         if not self.expected_quantity:
             self.expected_quantity = self.purchase_order_supply.quantity
+
+        # Obtener la unidad base definida en SupplyKind (usage_discount_unit_category)
+        usage_unit = self.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category
+
+        factor = 1
+        if usage_unit == "cm":
+            factor = 100   # De metros a centímetros (1 m = 100 cm)
+        elif usage_unit == "gr":
+            factor = 1000  # De kilogramos a gramos (1 kg = 1000 gr)
+        elif usage_unit == "ml":
+            factor = 1000  # De litros a mililitros (1 l = 1000 ml)
+
+        self.converted_inventoried_quantity = self.inventoried_quantity * factor
+
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.purchase_order_supply.requisition_supply.supply}"
+        return f"{self.purchase_order_supply.requisition_supply.supply.kind.name}: {self.purchase_order_supply.requisition_supply.supply}"
 
     class Meta:
         verbose_name = _("Storehouse Entry Supply")

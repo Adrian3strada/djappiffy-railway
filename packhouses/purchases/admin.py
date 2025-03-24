@@ -1,6 +1,7 @@
 from django.contrib import admin
 from common.profiles.models import UserProfile  # (Si no se usa, se puede eliminar)
-from .models import (Requisition, RequisitionSupply, PurchaseOrder, PurchaseOrderSupply)
+from .models import (Requisition, RequisitionSupply, PurchaseOrder,
+                     PurchaseOrderSupply, PurchaseOrderCharge, PurchaseOrderDeduction)
 from packhouses.catalogs.models import Supply, Provider
 from django.utils.translation import gettext_lazy as _
 from common.base.decorators import (
@@ -20,9 +21,9 @@ from common.forms import SelectWidgetWithData
 from common.utils import is_instance_used
 
 
-class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.TabularInline):
+class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
     model = RequisitionSupply
-    fields = ('supply', 'quantity', 'comments')
+    fields = ('supply', 'quantity', 'unit_category','delivery_deadline', 'comments')
     extra = 0
 
     def _get_parent_obj(self, request):
@@ -36,11 +37,11 @@ class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.TabularInlin
         return None
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-
         if db_field.name == "supply":
             if hasattr(request, 'organization'):
                 kwargs["queryset"] = Supply.objects.filter(organization=request.organization)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: f"{obj.kind.name}: {obj.name}"
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -122,12 +123,12 @@ class RequisitionAdmin(ByOrganizationAdminMixin, ByUserAdminMixin):
     generate_actions_buttons.allow_tags = True
 
     class Media:
-        js = ('js/admin/forms/packhouses/purchase/requisition.js',)
+        js = ('js/admin/forms/packhouses/purchases/requisition.js',)
 
 
 class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
     model = PurchaseOrderSupply
-    fields = ('requisition_supply', 'quantity', 'unit_price', 'total_price','comments')
+    fields = ('requisition_supply', 'quantity','unit_category','delivery_deadline', 'unit_price', 'total_price','comments')
     readonly_fields = ('total_price','comments',)
     extra = 0
 
@@ -185,14 +186,78 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
                 queryset = queryset.filter(requisition__organization=request.organization)
 
             kwargs["queryset"] = queryset
-            kwargs["widget"] = SelectWidgetWithData(model=RequisitionSupply, data_fields=["quantity", "comments"])
+            kwargs["widget"] = SelectWidgetWithData(model=RequisitionSupply, data_fields=["quantity", "comments","unit_category","delivery_deadline"])
 
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/purchase/purchase_orders_supply.js',)
+        js = ('js/admin/forms/packhouses/purchases/purchase_orders_supply.js',)
 
+
+class PurchaseOrderChargerInline(admin.StackedInline):
+    model = PurchaseOrderCharge
+    fields = ('charge', 'amount')
+    extra = 0
+
+    def _get_parent_obj(self, request):
+        """Obtiene el objeto Purchase Order padre a partir del parámetro object_id."""
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        if parent_object_id:
+            try:
+                return PurchaseOrder.objects.get(id=parent_object_id)
+            except PurchaseOrder.DoesNotExist:
+                return None
+        return None
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+            # Todos los campos se vuelven de solo lectura si el estado es cerrado, cancelado o listo
+            readonly_fields.extend([
+                field.name for field in self.model._meta.fields
+                if field.name not in readonly_fields
+            ])
+        return readonly_fields
+
+    def has_delete_permission(self, request, obj=None):
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+            return False
+        return super().has_delete_permission(request, obj)
+
+class PurchaseOrderDeductionInline(admin.StackedInline):
+    model = PurchaseOrderDeduction
+    fields = ('deduction', 'amount')
+    extra = 0
+
+    def _get_parent_obj(self, request):
+        """Obtiene el objeto Purchase Order padre a partir del parámetro object_id."""
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        if parent_object_id:
+            try:
+                return PurchaseOrder.objects.get(id=parent_object_id)
+            except PurchaseOrder.DoesNotExist:
+                return None
+        return None
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+            # Todos los campos se vuelven de solo lectura si el estado es cerrado, cancelado o listo
+            readonly_fields.extend([
+                field.name for field in self.model._meta.fields
+                if field.name not in readonly_fields
+            ])
+        return readonly_fields
+
+    def has_delete_permission(self, request, obj=None):
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+            return False
+        return super().has_delete_permission(request, obj)
 
 
 @admin.register(PurchaseOrder)
@@ -202,7 +267,7 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     fields = ('ooid', 'provider','payment_date','currency','tax', 'status', 'comments', 'save_and_send')
     list_filter = ('provider', 'currency', 'status')
     readonly_fields = ('ooid', 'status')
-    inlines = [PurchaseOrderRequisitionSupplyInline]
+    inlines = [PurchaseOrderRequisitionSupplyInline, PurchaseOrderChargerInline, PurchaseOrderDeductionInline]
 
 
     def generate_actions_buttons(self, obj):
@@ -211,14 +276,14 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
 
         tooltip_ready = _('Send to Storehouse')
         ready_url = reverse('set_purchase_order_supply_ready', args=[obj.pk])
-        confirm_ready_text = _('Are you sure you want to send this purchase order supply to Storehouse?')
+        confirm_ready_text = _('Are you sure you want to send this purchases order supply to Storehouse?')
         confirm_button_text = _('Yes, send')
         cancel_button_text = _('No')
 
-        tooltip_open = _('Reopen this purchase order')
+        tooltip_open = _('Reopen this purchases order')
         open_url = reverse('set_purchase_order_supply_open', args=[obj.pk])
         confirm_open_text = _(
-            'Are you sure you want to reopen this purchase order? It will no longer be available in the warehouse for entry and you can continue editing it.')
+            'Are you sure you want to reopen this purchases order? It will no longer be available in the storehouse for entry and you can continue editing it.')
         confirm_button_text_open = _('Yes, reopen')
 
         set_purchase_order_supply_ready_button = ''
@@ -245,15 +310,33 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
                 tooltip_open, open_url, confirm_open_text, confirm_button_text_open, cancel_button_text
             )
 
+        tooltip_payment = _('Send this purchases order to payments')
+        payment_url = reverse('set_purchase_order_supply_payment', args=[obj.pk])
+        confirm_payment_text = _(
+            'Are you sure you want to send this purchases order to payments?')
+
+        set_purchase_order_supply_payment_button = ''
+        if obj.status == "closed" and not obj.is_in_payments:
+            set_purchase_order_supply_payment_button = format_html(
+                '''
+                <a class="button btn-payment-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
+                    data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#000;">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                </a>
+                ''',
+                tooltip_payment, payment_url, confirm_payment_text, confirm_button_text, cancel_button_text
+            )
+
         return format_html(
             '''
+            {}
             {}
             {}
             <a class="button" href="{}" target="_blank" data-toggle="tooltip" title="{}">
                 <i class="fa-solid fa-print"></i>
             </a>
             ''',
-            set_purchase_order_supply_ready_button, set_purchase_order_supply_open_button, purchase_order_supply_pdf, tooltip_purchase_order_supply_pdf
+            set_purchase_order_supply_payment_button, set_purchase_order_supply_ready_button, set_purchase_order_supply_open_button, purchase_order_supply_pdf, tooltip_purchase_order_supply_pdf
         )
 
     generate_actions_buttons.short_description = _('Actions')
@@ -298,4 +381,4 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
     class Media:
-        js = ('js/admin/forms/packhouses/purchase/purchase_orders.js',)
+        js = ('js/admin/forms/packhouses/purchases/purchase_orders.js',)

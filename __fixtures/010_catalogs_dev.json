@@ -1,952 +1,997 @@
 [
 {
-  "model": "catalogs.market",
-  "pk": 1,
-  "fields": {
-    "name": "MEXICO",
-    "alias": "MEX",
-    "is_mixable": true,
-    "label_language": "es",
-    "address_label": null,
-    "is_enabled": true,
-    "organization": 1,
-    "countries": [
-      158
-    ]
-  }
-},
-{
-  "model": "catalogs.market",
-  "pk": 2,
-  "fields": {
-    "name": "MEXICO 2",
-    "alias": "MX2",
-    "is_mixable": true,
-    "label_language": "es",
-    "address_label": null,
-    "is_enabled": true,
-    "organization": 2,
-    "countries": [
-      158
-    ]
-  }
-},
-{
-  "model": "catalogs.market",
-  "pk": 3,
-  "fields": {
-    "name": "ESTADOS UNIDOS",
-    "alias": "USA",
-    "is_mixable": false,
-    "label_language": "en",
-    "address_label": null,
-    "is_enabled": true,
-    "organization": 1,
-    "countries": [
-      234
-    ]
-  }
-},
-{
-  "model": "catalogs.market",
-  "pk": 4,
-  "fields": {
-    "name": "CANADA",
-    "alias": "CAN",
-    "is_mixable": true,
-    "label_language": "en",
-    "address_label": null,
-    "is_enabled": true,
-    "organization": 1,
-    "countries": [
-      38
-    ]
-  }
-},
-{
-  "model": "catalogs.market",
-  "pk": 5,
-  "fields": {
-    "name": "COLOMBIA",
-    "alias": "COL",
-    "is_mixable": true,
-    "label_language": "es",
-    "address_label": null,
-    "is_enabled": true,
-    "organization": 1,
-    "countries": [
-      49
-    ]
-  }
-},
-{
-  "model": "catalogs.market",
-  "pk": 6,
-  "fields": {
-    "name": "EL SALVADOR",
-    "alias": "SLV",
-    "is_mixable": true,
-    "label_language": "es",
-    "address_label": null,
-    "is_enabled": true,
-    "organization": 1,
-    "countries": [
-      211
-    ]
-  }
-},
-{
-  "model": "catalogs.product",
-  "pk": 1,
-  "fields": {
-    "kind": 8,
-    "name": "AGUACATE",
-    "description": null,
-    "price_measure_unit_category": "Kg",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.product",
-  "pk": 2,
-  "fields": {
-    "kind": 8,
-    "name": "AGUACATE DOS",
-    "description": null,
-    "price_measure_unit_category": "Kg",
-    "is_enabled": true,
-    "organization": 2
-  }
-},
-{
-  "model": "catalogs.product",
-  "pk": 3,
-  "fields": {
-    "kind": 8,
-    "name": "PALTA",
-    "description": null,
-    "price_measure_unit_category": "Kg",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.product",
-  "pk": 4,
-  "fields": {
-    "kind": 9,
-    "name": "LIMÓN AMARILLO",
-    "description": null,
-    "price_measure_unit_category": "Kg",
-    "is_enabled": false,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.product",
-  "pk": 5,
-  "fields": {
-    "kind": 8,
-    "name": "VERDE",
-    "description": null,
-    "price_measure_unit_category": "L",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.product",
-  "pk": 6,
-  "fields": {
-    "kind": 8,
-    "name": "UNO",
-    "description": null,
-    "price_measure_unit_category": "g",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.productphenologykind",
-  "pk": 1,
-  "fields": {
-    "name": "NORMAL",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productphenologykind",
-  "pk": 2,
-  "fields": {
-    "name": "LOCA",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productphenologykind",
-  "pk": 3,
-  "fields": {
-    "name": "AVENTAJADA",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 2
-  }
-},
-{
-  "model": "catalogs.productphenologykind",
-  "pk": 4,
-  "fields": {
-    "name": "MARCEÑA",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 3
-  }
-},
-{
-  "model": "catalogs.productphenologykind",
-  "pk": 5,
-  "fields": {
-    "name": "NORMAL",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productphenologykind",
-  "pk": 6,
-  "fields": {
-    "name": "DESECHO",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productphenologykind",
-  "pk": 7,
-  "fields": {
-    "name": "ROÑA",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 2
-  }
-},
-{
-  "model": "catalogs.productphenologykind",
-  "pk": 8,
-  "fields": {
-    "name": "MATERIA ORGÁNICA",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 3
-  }
-},
-{
-  "model": "catalogs.productmarketmeasureunitmanagementcost",
-  "pk": 1,
-  "fields": {
-    "product": 1,
-    "market": 1,
-    "measure_unit_management_cost": "11",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productmarketmeasureunitmanagementcost",
-  "pk": 2,
-  "fields": {
-    "product": 1,
-    "market": 4,
-    "measure_unit_management_cost": "12",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productmarketmeasureunitmanagementcost",
-  "pk": 3,
-  "fields": {
-    "product": 1,
-    "market": 3,
-    "measure_unit_management_cost": "12",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productmarketmeasureunitmanagementcost",
-  "pk": 4,
-  "fields": {
-    "product": 4,
-    "market": 4,
-    "measure_unit_management_cost": "40",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productmarketclass",
-  "pk": 1,
-  "fields": {
-    "product": 1,
-    "market": 3,
-    "name": "1",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productmarketclass",
-  "pk": 2,
-  "fields": {
-    "product": 1,
-    "market": 3,
-    "name": "2",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productmarketclass",
-  "pk": 3,
-  "fields": {
-    "product": 1,
-    "market": 3,
-    "name": "C",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productmarketclass",
-  "pk": 4,
-  "fields": {
-    "product": 1,
-    "market": 1,
-    "name": "C",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productmarketclass",
-  "pk": 5,
-  "fields": {
-    "product": 1,
-    "market": 1,
-    "name": "A",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productmarketclass",
-  "pk": 6,
-  "fields": {
-    "product": 1,
-    "market": 1,
-    "name": "B",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productvariety",
-  "pk": 1,
-  "fields": {
-    "name": "HASS",
-    "alias": "HAS",
-    "description": null,
-    "is_enabled": true,
-    "product": 1
-  }
-},
-{
-  "model": "catalogs.productvariety",
-  "pk": 2,
-  "fields": {
-    "name": "MENDEZ",
-    "alias": "MEN",
-    "description": null,
-    "is_enabled": true,
-    "product": 1
-  }
-},
-{
-  "model": "catalogs.productvariety",
-  "pk": 3,
-  "fields": {
-    "name": "CRIOLLO",
-    "alias": "CR1",
-    "description": null,
-    "is_enabled": false,
-    "product": 1
-  }
-},
-{
-  "model": "catalogs.productvariety",
-  "pk": 4,
-  "fields": {
-    "name": "HASS DOS",
-    "alias": "H2",
-    "description": null,
-    "is_enabled": true,
-    "product": 2
-  }
-},
-{
-  "model": "catalogs.productvariety",
-  "pk": 5,
-  "fields": {
-    "name": "MENDEZ DOS",
-    "alias": "M2",
-    "description": null,
-    "is_enabled": true,
-    "product": 2
-  }
-},
-{
-  "model": "catalogs.productvariety",
-  "pk": 6,
-  "fields": {
-    "name": "AZUL",
-    "alias": "A1",
-    "description": null,
-    "is_enabled": true,
-    "product": 3
-  }
-},
-{
-  "model": "catalogs.productvariety",
-  "pk": 7,
-  "fields": {
-    "name": "VERDE",
-    "alias": "V1",
-    "description": null,
-    "is_enabled": true,
-    "product": 3
-  }
-},
-{
-  "model": "catalogs.productvariety",
-  "pk": 8,
-  "fields": {
-    "name": "A1",
-    "alias": "A1",
-    "description": null,
-    "is_enabled": true,
-    "product": 4
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 1,
-  "fields": {
-    "product": 1,
-    "name": "210 g +",
-    "is_enabled": true,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 2,
-  "fields": {
-    "product": 1,
-    "name": "120 g +",
-    "is_enabled": true,
-    "sort_order": 4
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 4,
-  "fields": {
-    "product": 1,
-    "name": "150 g +",
-    "is_enabled": true,
-    "sort_order": 3
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 5,
-  "fields": {
-    "product": 1,
-    "name": "180 g +",
-    "is_enabled": true,
-    "sort_order": 2
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 6,
-  "fields": {
-    "product": 1,
-    "name": "120 g -",
-    "is_enabled": true,
-    "sort_order": 6
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 7,
-  "fields": {
-    "product": 3,
-    "name": "200 g +",
-    "is_enabled": true,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 8,
-  "fields": {
-    "product": 3,
-    "name": "210 g +",
-    "is_enabled": true,
-    "sort_order": 2
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 9,
-  "fields": {
-    "product": 3,
-    "name": "180 g +",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 10,
-  "fields": {
-    "product": 3,
-    "name": "250 g +",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 11,
-  "fields": {
-    "product": 3,
-    "name": "120 g +",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 12,
-  "fields": {
-    "product": 3,
-    "name": "85 g +",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 13,
-  "fields": {
-    "product": 1,
-    "name": "Pela palo",
-    "is_enabled": true,
-    "sort_order": 7
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 14,
-  "fields": {
-    "product": 1,
-    "name": "Pepena",
-    "is_enabled": true,
-    "sort_order": 8
-  }
-},
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 15,
-  "fields": {
-    "product": 1,
-    "name": "Revuelta / Parejo",
-    "is_enabled": true,
-    "sort_order": 9
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 1,
-  "fields": {
-    "name": "ESTANDAR",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 2,
-  "fields": {
-    "name": "ENMALLADO",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 3,
-  "fields": {
-    "name": "ORGÁNICO",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 2
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 4,
-  "fields": {
-    "name": "ESTANDAR",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 5,
-  "fields": {
-    "name": "ENMALLADO",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 6,
-  "fields": {
-    "name": "ORGÁNICO",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 2
-  }
-},
-{
-  "model": "catalogs.productripeness",
-  "pk": 1,
-  "fields": {
-    "product": 1,
-    "name": "NEGRO",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productripeness",
-  "pk": 3,
-  "fields": {
-    "product": 1,
-    "name": "MUY NEGRO",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productripeness",
-  "pk": 4,
-  "fields": {
-    "product": 1,
-    "name": "PARA HOY",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productsize",
-  "pk": 1,
-  "fields": {
-    "product": 1,
-    "market": 1,
-    "standard_size": 1,
-    "name": "COMERCIAL",
-    "alias": "COM",
-    "description": null,
-    "is_enabled": true,
-    "sort_order": 1,
-    "varieties": [
-      1,
-      2
-    ]
-  }
-},
-{
-  "model": "catalogs.productsize",
-  "pk": 2,
-  "fields": {
-    "product": 1,
-    "market": 1,
-    "standard_size": 4,
-    "name": "EXTRA",
-    "alias": "EXT",
-    "description": null,
-    "is_enabled": true,
-    "sort_order": 2,
-    "varieties": [
-      1,
-      2
-    ]
-  }
-},
-{
-  "model": "catalogs.productsize",
-  "pk": 3,
-  "fields": {
-    "product": 1,
-    "market": 1,
-    "standard_size": 2,
-    "name": "MEDIANO",
-    "alias": "MED",
-    "description": null,
-    "is_enabled": true,
-    "sort_order": 3,
-    "varieties": [
-      1,
-      2
-    ]
-  }
-},
-{
-  "model": "catalogs.productsize",
-  "pk": 4,
-  "fields": {
-    "product": 1,
-    "market": 1,
-    "standard_size": 3,
-    "name": "PRIMERA",
-    "alias": "PRI",
-    "description": null,
-    "is_enabled": true,
-    "sort_order": 4,
-    "varieties": [
-      1,
-      2
-    ]
-  }
-},
-{
-  "model": "catalogs.productsize",
-  "pk": 5,
-  "fields": {
-    "product": 1,
-    "market": 1,
-    "standard_size": 5,
-    "name": "SUPER",
-    "alias": "SUP",
-    "description": null,
-    "is_enabled": true,
-    "sort_order": 5,
-    "varieties": [
-      1,
-      2
-    ]
-  }
-},
-{
-  "model": "catalogs.productsize",
-  "pk": 6,
-  "fields": {
-    "product": 1,
-    "market": 3,
-    "standard_size": 28,
-    "name": "32",
-    "alias": "32",
-    "description": null,
-    "is_enabled": true,
-    "sort_order": 6,
-    "varieties": [
-      1,
-      2
-    ]
-  }
-},
-{
-  "model": "catalogs.productsize",
-  "pk": 7,
-  "fields": {
-    "product": 1,
-    "market": 3,
-    "standard_size": 27,
-    "name": "36",
-    "alias": "36",
-    "description": null,
-    "is_enabled": true,
-    "sort_order": 7,
-    "varieties": [
-      1,
-      2
-    ]
-  }
-},
-{
-  "model": "catalogs.productsize",
-  "pk": 8,
-  "fields": {
-    "product": 1,
-    "market": 3,
-    "standard_size": 26,
-    "name": "40",
-    "alias": "40",
-    "description": null,
-    "is_enabled": true,
-    "sort_order": 8,
-    "varieties": [
-      1,
-      2
-    ]
-  }
-},
-{
-  "model": "catalogs.productsize",
-  "pk": 9,
-  "fields": {
-    "product": 1,
-    "market": 3,
-    "standard_size": 25,
-    "name": "48",
-    "alias": "48",
-    "description": null,
-    "is_enabled": true,
-    "sort_order": 9,
-    "varieties": [
-      1,
-      2
-    ]
-  }
-},
-{
-  "model": "catalogs.productsize",
-  "pk": 10,
-  "fields": {
-    "product": 1,
-    "market": 3,
-    "standard_size": 24,
-    "name": "60",
-    "alias": "60",
-    "description": null,
-    "is_enabled": true,
-    "sort_order": 10,
-    "varieties": [
-      1,
-      2
-    ]
-  }
-},
-{
-  "model": "catalogs.productsize",
-  "pk": 11,
-  "fields": {
-    "product": 1,
-    "market": 3,
-    "standard_size": 23,
-    "name": "70",
-    "alias": "70",
-    "description": null,
-    "is_enabled": true,
-    "sort_order": 11,
-    "varieties": [
-      1,
-      2
-    ]
-  }
-},
-{
-  "model": "catalogs.productsize",
-  "pk": 12,
-  "fields": {
-    "product": 1,
-    "market": 3,
-    "standard_size": 22,
-    "name": "84",
-    "alias": "84",
-    "description": null,
-    "is_enabled": true,
-    "sort_order": 12,
-    "varieties": [
-      1,
-      2
-    ]
-  }
-},
-  {
-    "model": "catalogs.crewchief",
+    "model": "catalogs.market",
     "pk": 1,
     "fields": {
-        "name": "ANDRÉS BRUSTAMENTE",
-        "provider": 6,
-        "is_enabled": true
+        "name": "MEXICO",
+        "alias": "MEX",
+        "is_mixable": true,
+        "label_language": "es",
+        "address_label": null,
+        "is_enabled": true,
+        "organization": 1,
+        "countries": [
+            158
+        ]
     }
 },
 {
-    "model": "catalogs.crewchief",
+    "model": "catalogs.market",
     "pk": 2,
     "fields": {
-        "name": "FELIPE MELGAREJO",
-        "provider": 6,
+        "name": "MEXICO 2",
+        "alias": "MX2",
+        "is_mixable": true,
+        "label_language": "es",
+        "address_label": null,
+        "is_enabled": true,
+        "organization": 2,
+        "countries": [
+            158
+        ]
+    }
+},
+{
+    "model": "catalogs.market",
+    "pk": 3,
+    "fields": {
+        "name": "ESTADOS UNIDOS",
+        "alias": "USA",
+        "is_mixable": false,
+        "label_language": "en",
+        "address_label": null,
+        "is_enabled": true,
+        "organization": 1,
+        "countries": [
+            234
+        ]
+    }
+},
+{
+    "model": "catalogs.market",
+    "pk": 4,
+    "fields": {
+        "name": "CANADA",
+        "alias": "CAN",
+        "is_mixable": true,
+        "label_language": "en",
+        "address_label": null,
+        "is_enabled": true,
+        "organization": 1,
+        "countries": [
+            38
+        ]
+    }
+},
+{
+    "model": "catalogs.market",
+    "pk": 5,
+    "fields": {
+        "name": "COLOMBIA",
+        "alias": "COL",
+        "is_mixable": true,
+        "label_language": "es",
+        "address_label": null,
+        "is_enabled": true,
+        "organization": 1,
+        "countries": [
+            49
+        ]
+    }
+},
+{
+    "model": "catalogs.market",
+    "pk": 6,
+    "fields": {
+        "name": "EL SALVADOR",
+        "alias": "SLV",
+        "is_mixable": true,
+        "label_language": "es",
+        "address_label": null,
+        "is_enabled": true,
+        "organization": 1,
+        "countries": [
+            211
+        ]
+    }
+},
+{
+    "model": "catalogs.product",
+    "pk": 1,
+    "fields": {
+        "kind": 8,
+        "name": "AGUACATE",
+        "description": null,
+        "price_measure_unit_category": "Kg",
+        "is_enabled": true,
+        "organization": 1,
+        "markets": []
+    }
+},
+{
+    "model": "catalogs.product",
+    "pk": 2,
+    "fields": {
+        "kind": 8,
+        "name": "AGUACATE DOS",
+        "description": null,
+        "price_measure_unit_category": "Kg",
+        "is_enabled": true,
+        "organization": 2,
+        "markets": []
+    }
+},
+{
+    "model": "catalogs.product",
+    "pk": 3,
+    "fields": {
+        "kind": 8,
+        "name": "PALTA",
+        "description": null,
+        "price_measure_unit_category": "Kg",
+        "is_enabled": true,
+        "organization": 1,
+        "markets": []
+    }
+},
+{
+    "model": "catalogs.product",
+    "pk": 4,
+    "fields": {
+        "kind": 9,
+        "name": "LIMÓN AMARILLO",
+        "description": null,
+        "price_measure_unit_category": "Kg",
+        "is_enabled": false,
+        "organization": 1,
+        "markets": []
+    }
+},
+{
+    "model": "catalogs.product",
+    "pk": 5,
+    "fields": {
+        "kind": 8,
+        "name": "VERDE",
+        "description": null,
+        "price_measure_unit_category": "L",
+        "is_enabled": true,
+        "organization": 1,
+        "markets": []
+    }
+},
+{
+    "model": "catalogs.product",
+    "pk": 6,
+    "fields": {
+        "kind": 8,
+        "name": "UNO",
+        "description": null,
+        "price_measure_unit_category": "g",
+        "is_enabled": true,
+        "organization": 1,
+        "markets": []
+    }
+},
+{
+    "model": "catalogs.productphenologykind",
+    "pk": 1,
+    "fields": {
+        "name": "NORMAL",
+        "is_enabled": true,
+        "product": 1,
+        "sort_order": 0
+    }
+},
+{
+    "model": "catalogs.productphenologykind",
+    "pk": 2,
+    "fields": {
+        "name": "LOCA",
+        "is_enabled": true,
+        "product": 1,
+        "sort_order": 1
+    }
+},
+{
+    "model": "catalogs.productphenologykind",
+    "pk": 3,
+    "fields": {
+        "name": "AVENTAJADA",
+        "is_enabled": true,
+        "product": 1,
+        "sort_order": 2
+    }
+},
+{
+    "model": "catalogs.productphenologykind",
+    "pk": 4,
+    "fields": {
+        "name": "MARCEÑA",
+        "is_enabled": true,
+        "product": 1,
+        "sort_order": 3
+    }
+},
+{
+    "model": "catalogs.productphenologykind",
+    "pk": 5,
+    "fields": {
+        "name": "NORMAL",
+        "is_enabled": true,
+        "product": 2,
+        "sort_order": 0
+    }
+},
+{
+    "model": "catalogs.productphenologykind",
+    "pk": 6,
+    "fields": {
+        "name": "DESECHO",
+        "is_enabled": true,
+        "product": 2,
+        "sort_order": 1
+    }
+},
+{
+    "model": "catalogs.productphenologykind",
+    "pk": 7,
+    "fields": {
+        "name": "ROÑA",
+        "is_enabled": true,
+        "product": 2,
+        "sort_order": 2
+    }
+},
+{
+    "model": "catalogs.productphenologykind",
+    "pk": 8,
+    "fields": {
+        "name": "MATERIA ORGÁNICA",
+        "is_enabled": true,
+        "product": 2,
+        "sort_order": 3
+    }
+},
+{
+    "model": "catalogs.productmarketmeasureunitmanagementcost",
+    "pk": 1,
+    "fields": {
+        "product": 1,
+        "market": 1,
+        "measure_unit_management_cost": "11",
         "is_enabled": true
     }
 },
 {
-  "model": "catalogs.provider",
-  "pk": 1,
-  "fields": {
-    "name": "JUANITO",
-    "category": "service_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2291,
-    "city": 25002,
-    "district": 88026,
-    "postal_code": "3",
-    "neighborhood": "3",
-    "address": "3",
-    "external_number": "3",
-    "internal_number": null,
-    "tax_id": "3",
-    "email": "aaaa@gmail.com",
-    "phone_number": "1",
-    "comments": null,
-    "is_enabled": false,
-    "organization": 1,
-    "vehicle_provider": []
-  }
+    "model": "catalogs.productmarketmeasureunitmanagementcost",
+    "pk": 2,
+    "fields": {
+        "product": 1,
+        "market": 4,
+        "measure_unit_management_cost": "12",
+        "is_enabled": true
+    }
 },
 {
-  "model": "catalogs.provider",
-  "pk": 2,
-  "fields": {
-    "name": "JUANITO",
-    "category": "product_producer",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2291,
-    "city": 25001,
-    "district": 88180,
-    "postal_code": "111",
-    "neighborhood": "1",
-    "address": "1",
-    "external_number": "1",
-    "internal_number": "1",
-    "tax_id": "1",
-    "email": "aaaa@gmail.com",
-    "phone_number": "1",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
+    "model": "catalogs.productmarketmeasureunitmanagementcost",
+    "pk": 3,
+    "fields": {
+        "product": 1,
+        "market": 3,
+        "measure_unit_management_cost": "12",
+        "is_enabled": true
+    }
 },
-  {
+{
+    "model": "catalogs.productmarketmeasureunitmanagementcost",
+    "pk": 4,
+    "fields": {
+        "product": 4,
+        "market": 4,
+        "measure_unit_management_cost": "40",
+        "is_enabled": true
+    }
+},
+{
+    "model": "catalogs.productmarketclass",
+    "pk": 1,
+    "fields": {
+        "product": 1,
+        "market": 3,
+        "name": "1",
+        "is_enabled": true
+    }
+},
+{
+    "model": "catalogs.productmarketclass",
+    "pk": 2,
+    "fields": {
+        "product": 1,
+        "market": 3,
+        "name": "2",
+        "is_enabled": true
+    }
+},
+{
+    "model": "catalogs.productmarketclass",
+    "pk": 3,
+    "fields": {
+        "product": 1,
+        "market": 3,
+        "name": "C",
+        "is_enabled": true
+    }
+},
+{
+    "model": "catalogs.productmarketclass",
+    "pk": 4,
+    "fields": {
+        "product": 1,
+        "market": 1,
+        "name": "C",
+        "is_enabled": true
+    }
+},
+{
+    "model": "catalogs.productmarketclass",
+    "pk": 5,
+    "fields": {
+        "product": 1,
+        "market": 1,
+        "name": "A",
+        "is_enabled": true
+    }
+},
+{
+    "model": "catalogs.productmarketclass",
+    "pk": 6,
+    "fields": {
+        "product": 1,
+        "market": 1,
+        "name": "B",
+        "is_enabled": true
+    }
+},
+{
+    "model": "catalogs.productvariety",
+    "pk": 1,
+    "fields": {
+        "name": "HASS",
+        "alias": "HAS",
+        "description": null,
+        "is_enabled": true,
+        "product": 1
+    }
+},
+{
+    "model": "catalogs.productvariety",
+    "pk": 2,
+    "fields": {
+        "name": "MENDEZ",
+        "alias": "MEN",
+        "description": null,
+        "is_enabled": true,
+        "product": 1
+    }
+},
+{
+    "model": "catalogs.productvariety",
+    "pk": 3,
+    "fields": {
+        "name": "CRIOLLO",
+        "alias": "CR1",
+        "description": null,
+        "is_enabled": false,
+        "product": 1
+    }
+},
+{
+    "model": "catalogs.productvariety",
+    "pk": 4,
+    "fields": {
+        "name": "HASS DOS",
+        "alias": "H2",
+        "description": null,
+        "is_enabled": true,
+        "product": 2
+    }
+},
+{
+    "model": "catalogs.productvariety",
+    "pk": 5,
+    "fields": {
+        "name": "MENDEZ DOS",
+        "alias": "M2",
+        "description": null,
+        "is_enabled": true,
+        "product": 2
+    }
+},
+{
+    "model": "catalogs.productvariety",
+    "pk": 6,
+    "fields": {
+        "name": "AZUL",
+        "alias": "A1",
+        "description": null,
+        "is_enabled": true,
+        "product": 3
+    }
+},
+{
+    "model": "catalogs.productvariety",
+    "pk": 7,
+    "fields": {
+        "name": "VERDE",
+        "alias": "V1",
+        "description": null,
+        "is_enabled": true,
+        "product": 3
+    }
+},
+{
+    "model": "catalogs.productvariety",
+    "pk": 8,
+    "fields": {
+        "name": "A1",
+        "alias": "A1",
+        "description": null,
+        "is_enabled": true,
+        "product": 4
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 1,
+    "fields": {
+        "product": 1,
+        "name": "210 g +",
+        "is_enabled": true,
+        "sort_order": 1
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 2,
+    "fields": {
+        "product": 1,
+        "name": "120 g +",
+        "is_enabled": true,
+        "sort_order": 4
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 4,
+    "fields": {
+        "product": 1,
+        "name": "150 g +",
+        "is_enabled": true,
+        "sort_order": 3
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 5,
+    "fields": {
+        "product": 1,
+        "name": "180 g +",
+        "is_enabled": true,
+        "sort_order": 2
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 6,
+    "fields": {
+        "product": 1,
+        "name": "120 g -",
+        "is_enabled": true,
+        "sort_order": 6
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 7,
+    "fields": {
+        "product": 3,
+        "name": "200 g +",
+        "is_enabled": true,
+        "sort_order": 1
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 8,
+    "fields": {
+        "product": 3,
+        "name": "210 g +",
+        "is_enabled": true,
+        "sort_order": 2
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 9,
+    "fields": {
+        "product": 3,
+        "name": "180 g +",
+        "is_enabled": true,
+        "sort_order": 0
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 10,
+    "fields": {
+        "product": 3,
+        "name": "250 g +",
+        "is_enabled": true,
+        "sort_order": 0
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 11,
+    "fields": {
+        "product": 3,
+        "name": "120 g +",
+        "is_enabled": true,
+        "sort_order": 0
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 12,
+    "fields": {
+        "product": 3,
+        "name": "85 g +",
+        "is_enabled": true,
+        "sort_order": 0
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 13,
+    "fields": {
+        "product": 1,
+        "name": "Pela palo",
+        "is_enabled": true,
+        "sort_order": 7
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 14,
+    "fields": {
+        "product": 1,
+        "name": "Pepena",
+        "is_enabled": true,
+        "sort_order": 8
+    }
+},
+{
+    "model": "catalogs.productharvestsizekind",
+    "pk": 15,
+    "fields": {
+        "product": 1,
+        "name": "Revuelta / Parejo",
+        "is_enabled": true,
+        "sort_order": 9
+    }
+},
+{
+    "model": "catalogs.productmassvolumekind",
+    "pk": 1,
+    "fields": {
+        "name": "ESTANDAR",
+        "is_enabled": true,
+        "product": 1,
+        "sort_order": 0
+    }
+},
+{
+    "model": "catalogs.productmassvolumekind",
+    "pk": 2,
+    "fields": {
+        "name": "ENMALLADO",
+        "is_enabled": true,
+        "product": 1,
+        "sort_order": 1
+    }
+},
+{
+    "model": "catalogs.productmassvolumekind",
+    "pk": 3,
+    "fields": {
+        "name": "ORGÁNICO",
+        "is_enabled": true,
+        "product": 1,
+        "sort_order": 2
+    }
+},
+{
+    "model": "catalogs.productmassvolumekind",
+    "pk": 4,
+    "fields": {
+        "name": "ESTANDAR",
+        "is_enabled": true,
+        "product": 2,
+        "sort_order": 0
+    }
+},
+{
+    "model": "catalogs.productmassvolumekind",
+    "pk": 5,
+    "fields": {
+        "name": "ENMALLADO",
+        "is_enabled": true,
+        "product": 2,
+        "sort_order": 1
+    }
+},
+{
+    "model": "catalogs.productmassvolumekind",
+    "pk": 6,
+    "fields": {
+        "name": "ORGÁNICO",
+        "is_enabled": true,
+        "product": 2,
+        "sort_order": 2
+    }
+},
+{
+    "model": "catalogs.productripeness",
+    "pk": 1,
+    "fields": {
+        "product": 1,
+        "name": "NEGRO",
+        "is_enabled": true
+    }
+},
+{
+    "model": "catalogs.productripeness",
+    "pk": 3,
+    "fields": {
+        "product": 1,
+        "name": "MUY NEGRO",
+        "is_enabled": true
+    }
+},
+{
+    "model": "catalogs.productripeness",
+    "pk": 4,
+    "fields": {
+        "product": 1,
+        "name": "PARA HOY",
+        "is_enabled": true
+    }
+},
+{
+    "model": "catalogs.productsize",
+    "pk": 1,
+    "fields": {
+        "product": 1,
+        "market": 1,
+        "standard_size": 1,
+        "name": "COMERCIAL",
+        "alias": "COM",
+        "description": null,
+        "is_enabled": true,
+        "sort_order": 1,
+        "varieties": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.productsize",
+    "pk": 2,
+    "fields": {
+        "product": 1,
+        "market": 1,
+        "standard_size": 4,
+        "name": "EXTRA",
+        "alias": "EXT",
+        "description": null,
+        "is_enabled": true,
+        "sort_order": 2,
+        "varieties": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.productsize",
+    "pk": 3,
+    "fields": {
+        "product": 1,
+        "market": 1,
+        "standard_size": 2,
+        "name": "MEDIANO",
+        "alias": "MED",
+        "description": null,
+        "is_enabled": true,
+        "sort_order": 3,
+        "varieties": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.productsize",
+    "pk": 4,
+    "fields": {
+        "product": 1,
+        "market": 1,
+        "standard_size": 3,
+        "name": "PRIMERA",
+        "alias": "PRI",
+        "description": null,
+        "is_enabled": true,
+        "sort_order": 4,
+        "varieties": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.productsize",
+    "pk": 5,
+    "fields": {
+        "product": 1,
+        "market": 1,
+        "standard_size": 5,
+        "name": "SUPER",
+        "alias": "SUP",
+        "description": null,
+        "is_enabled": true,
+        "sort_order": 5,
+        "varieties": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.productsize",
+    "pk": 6,
+    "fields": {
+        "product": 1,
+        "market": 3,
+        "standard_size": 28,
+        "name": "32",
+        "alias": "32",
+        "description": null,
+        "is_enabled": true,
+        "sort_order": 6,
+        "varieties": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.productsize",
+    "pk": 7,
+    "fields": {
+        "product": 1,
+        "market": 3,
+        "standard_size": 27,
+        "name": "36",
+        "alias": "36",
+        "description": null,
+        "is_enabled": true,
+        "sort_order": 7,
+        "varieties": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.productsize",
+    "pk": 8,
+    "fields": {
+        "product": 1,
+        "market": 3,
+        "standard_size": 26,
+        "name": "40",
+        "alias": "40",
+        "description": null,
+        "is_enabled": true,
+        "sort_order": 8,
+        "varieties": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.productsize",
+    "pk": 9,
+    "fields": {
+        "product": 1,
+        "market": 3,
+        "standard_size": 25,
+        "name": "48",
+        "alias": "48",
+        "description": null,
+        "is_enabled": true,
+        "sort_order": 9,
+        "varieties": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.productsize",
+    "pk": 10,
+    "fields": {
+        "product": 1,
+        "market": 3,
+        "standard_size": 24,
+        "name": "60",
+        "alias": "60",
+        "description": null,
+        "is_enabled": true,
+        "sort_order": 10,
+        "varieties": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.productsize",
+    "pk": 11,
+    "fields": {
+        "product": 1,
+        "market": 3,
+        "standard_size": 23,
+        "name": "70",
+        "alias": "70",
+        "description": null,
+        "is_enabled": true,
+        "sort_order": 11,
+        "varieties": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.productsize",
+    "pk": 12,
+    "fields": {
+        "product": 1,
+        "market": 3,
+        "standard_size": 22,
+        "name": "84",
+        "alias": "84",
+        "description": null,
+        "is_enabled": true,
+        "sort_order": 12,
+        "varieties": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "catalogs.vehicle",
+    "pk": 1,
+    "fields": {
+        "name": "FORD AZUL",
+        "category": "harvesting_crew",
+        "kind": 1,
+        "brand": 5,
+        "model": "2020",
+        "license_plate": "7HD4-DD4",
+        "serial_number": "JN7CBS3XKK2SH48224D",
+        "color": "AZUL",
+        "ownership": 1,
+        "fuel": 1,
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.vehicle",
+    "pk": 2,
+    "fields": {
+        "name": "NISSAN BLANCA",
+        "category": "packhouse",
+        "kind": 1,
+        "brand": 2,
+        "model": "2022",
+        "license_plate": "88D3-4HD3D",
+        "serial_number": "JJD763GXVHC5537DN",
+        "color": "BLANCA",
+        "ownership": 1,
+        "fuel": 1,
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.vehicle",
+    "pk": 3,
+    "fields": {
+        "name": "FORD ROJA",
+        "category": "packhouse",
+        "kind": 1,
+        "brand": 5,
+        "model": "2020",
+        "license_plate": "DH7-HHD7",
+        "serial_number": "NHD76DNN3786DHFONN7",
+        "color": "ROJA",
+        "ownership": 1,
+        "fuel": 2,
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.provider",
+    "pk": 1,
+    "fields": {
+        "name": "JUANITO",
+        "category": "service_provider",
+        "provider_provider": null,
+        "country": 158,
+        "state": 2291,
+        "city": 25002,
+        "district": 88026,
+        "postal_code": "3",
+        "neighborhood": "3",
+        "address": "3",
+        "external_number": "3",
+        "internal_number": null,
+        "tax_id": "3",
+        "email": "aaaa@gmail.com",
+        "phone_number": "1",
+        "comments": null,
+        "is_enabled": false,
+        "organization": 1,
+        "vehicle_provider": []
+    }
+},
+{
+    "model": "catalogs.provider",
+    "pk": 2,
+    "fields": {
+        "name": "JUANITO",
+        "category": "product_producer",
+        "provider_provider": null,
+        "country": 158,
+        "state": 2291,
+        "city": 25001,
+        "district": 88180,
+        "postal_code": "111",
+        "neighborhood": "1",
+        "address": "1",
+        "external_number": "1",
+        "internal_number": "1",
+        "tax_id": "1",
+        "email": "aaaa@gmail.com",
+        "phone_number": "1",
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1,
+        "vehicle_provider": []
+    }
+},
+{
     "model": "catalogs.provider",
     "pk": 3,
     "fields": {
@@ -1045,8 +1090,688 @@
         "organization": 1,
         "vehicle_provider": [
             1,
-            2
+            3
         ]
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 1,
+    "fields": {
+        "name": "MARKET AND SALES OF AMERICA",
+        "category": "packhouse",
+        "market": 4,
+        "country": 38,
+        "state": 474,
+        "city": 9022,
+        "district": 11644,
+        "postal_code": "00661",
+        "neighborhood": "GINZA",
+        "address": "SOUTH",
+        "external_number": "4598",
+        "internal_number": "Bodega 10",
+        "shipping_address": 1,
+        "capital_framework": 28,
+        "tax_id": "FRI16031262338",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 15.0,
+        "fda": null,
+        "swift": null,
+        "aba": null,
+        "clabe": null,
+        "bank": 1,
+        "contact_name": "1",
+        "contact_email": "a@gmail.com",
+        "contact_phone_number": "1",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 2,
+    "fields": {
+        "name": "AVOCADOS  COMPANY",
+        "category": "packhouse",
+        "market": 4,
+        "country": 38,
+        "state": 467,
+        "city": 9035,
+        "district": 11521,
+        "postal_code": "01SFF51",
+        "neighborhood": "SECTOR 3",
+        "address": "LONG ISLAND",
+        "external_number": "45874",
+        "internal_number": null,
+        "shipping_address": null,
+        "capital_framework": 28,
+        "tax_id": "ARFE0811160LF",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 8.0,
+        "fda": null,
+        "swift": null,
+        "aba": null,
+        "clabe": "45621145200012241",
+        "bank": 2,
+        "contact_name": "LIAM LORAM",
+        "contact_email": "a@gmail.com",
+        "contact_phone_number": "1",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 3,
+    "fields": {
+        "name": "TIENDAS MEXICANAS DE FRUTA",
+        "category": "packhouse",
+        "market": 1,
+        "country": 158,
+        "state": 2271,
+        "city": 27097,
+        "district": 85191,
+        "postal_code": "54760",
+        "neighborhood": "SAN JUAN",
+        "address": "CARRETERA CUATITLAN ZUMPAGO LOTE 25",
+        "external_number": "MANZANA 82",
+        "internal_number": null,
+        "shipping_address": null,
+        "capital_framework": 2,
+        "tax_id": "TIMF50701RM1",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 8.0,
+        "fda": null,
+        "swift": "159853215654",
+        "aba": "7531598521492",
+        "clabe": "45621145200012241",
+        "bank": 1,
+        "contact_name": "GABRIELA MORELOS CARRASCO",
+        "contact_email": "comprasperecederos@gpochedraui.com",
+        "contact_phone_number": "591 917 9414",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 4,
+    "fields": {
+        "name": "VENTA AL PUBLICO EN GENERAL",
+        "category": "packhouse",
+        "market": 1,
+        "country": 158,
+        "state": 2282,
+        "city": 25742,
+        "district": 87096,
+        "postal_code": "0",
+        "neighborhood": "-",
+        "address": "-",
+        "external_number": "0",
+        "internal_number": null,
+        "shipping_address": null,
+        "capital_framework": null,
+        "tax_id": "XAXX010101000",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 0.0,
+        "fda": null,
+        "swift": null,
+        "aba": null,
+        "clabe": null,
+        "bank": null,
+        "contact_name": "-",
+        "contact_email": "a@gmail.com",
+        "contact_phone_number": "0",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 5,
+    "fields": {
+        "name": "SALES OF THE FOOD´S",
+        "category": "packhouse",
+        "market": 3,
+        "country": 234,
+        "state": 3650,
+        "city": 44706,
+        "district": 138589,
+        "postal_code": "60002",
+        "neighborhood": "ANAHEIM",
+        "address": "PARKWAY",
+        "external_number": "6001",
+        "internal_number": null,
+        "shipping_address": null,
+        "capital_framework": 15,
+        "tax_id": "MER012685",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 0.0,
+        "fda": null,
+        "swift": null,
+        "aba": null,
+        "clabe": null,
+        "bank": 1,
+        "contact_name": "JUAN LONDONGO",
+        "contact_email": "a@gmail.com",
+        "contact_phone_number": "1",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 6,
+    "fields": {
+        "name": "JULIO GARCIA LOPEZ",
+        "category": "packhouse",
+        "market": 1,
+        "country": 158,
+        "state": 2282,
+        "city": 25791,
+        "district": 86343,
+        "postal_code": "61150",
+        "neighborhood": "CENTRO",
+        "address": "LA LOMA",
+        "external_number": "450",
+        "internal_number": null,
+        "shipping_address": null,
+        "capital_framework": null,
+        "tax_id": "XAXX010101000",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 15.0,
+        "fda": null,
+        "swift": null,
+        "aba": null,
+        "clabe": null,
+        "bank": 1,
+        "contact_name": "ALAN JOSUE ALCANTAR",
+        "contact_email": "aguacates@gmail.com",
+        "contact_phone_number": "4431252068",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 7,
+    "fields": {
+        "name": "LOS DEL MONTE",
+        "category": "packhouse",
+        "market": 1,
+        "country": 158,
+        "state": 2269,
+        "city": 25891,
+        "district": 87098,
+        "postal_code": "1102589",
+        "neighborhood": "LOMAS SECTOR 4",
+        "address": "LOMA",
+        "external_number": "1458",
+        "internal_number": null,
+        "shipping_address": null,
+        "capital_framework": 2,
+        "tax_id": "XEXEXE010101",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 15.0,
+        "fda": null,
+        "swift": null,
+        "aba": null,
+        "clabe": null,
+        "bank": 1,
+        "contact_name": "IGNACION MERCADO",
+        "contact_email": "a@gmail.com",
+        "contact_phone_number": "42536254178",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 8,
+    "fields": {
+        "name": "GRUPO COMERCIAL DE FRUTAS",
+        "category": "packhouse",
+        "market": 6,
+        "country": 211,
+        "state": 3248,
+        "city": 39070,
+        "district": null,
+        "postal_code": "1102589",
+        "neighborhood": "LOMAS SECTOR 4",
+        "address": "LOMA",
+        "external_number": "1458",
+        "internal_number": null,
+        "shipping_address": null,
+        "capital_framework": null,
+        "tax_id": "XEXEXE010101",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 0.0,
+        "fda": null,
+        "swift": null,
+        "aba": null,
+        "clabe": null,
+        "bank": null,
+        "contact_name": "JAVIER MOLLINEDA",
+        "contact_email": "a@gmail.com",
+        "contact_phone_number": "1",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 9,
+    "fields": {
+        "name": "AMERICA GLOBAL FOOD´S",
+        "category": "packhouse",
+        "market": 3,
+        "country": 234,
+        "state": 3621,
+        "city": 42349,
+        "district": 126145,
+        "postal_code": "66098",
+        "neighborhood": "MIDTOWN",
+        "address": "CAMERON AVE",
+        "external_number": "1",
+        "internal_number": null,
+        "shipping_address": null,
+        "capital_framework": null,
+        "tax_id": "XEXX010101000",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 15.0,
+        "fda": null,
+        "swift": null,
+        "aba": null,
+        "clabe": "1235412547854125",
+        "bank": 3,
+        "contact_name": "LARISSA GREEN",
+        "contact_email": "SALESANDFOODS@GMAIL.COM",
+        "contact_phone_number": "1",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 10,
+    "fields": {
+        "name": "TRATADO DE RESIDUOS ORGANICOS",
+        "category": "packhouse",
+        "market": 1,
+        "country": 158,
+        "state": 2282,
+        "city": 25741,
+        "district": 88514,
+        "postal_code": "54760",
+        "neighborhood": "CENTRO",
+        "address": "CALLE 1",
+        "external_number": "1",
+        "internal_number": null,
+        "shipping_address": null,
+        "capital_framework": 2,
+        "tax_id": "XAXX010101000",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 0.0,
+        "fda": null,
+        "swift": null,
+        "aba": null,
+        "clabe": null,
+        "bank": null,
+        "contact_name": "1",
+        "contact_email": "a@gmail.com",
+        "contact_phone_number": "1",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 11,
+    "fields": {
+        "name": "TARASCOS AVOCADOS",
+        "category": "packhouse",
+        "market": 1,
+        "country": 158,
+        "state": 2269,
+        "city": 25891,
+        "district": 87098,
+        "postal_code": "58230",
+        "neighborhood": "LUSTRES AI",
+        "address": "RIO GRANDE",
+        "external_number": "2450",
+        "internal_number": null,
+        "shipping_address": null,
+        "capital_framework": 4,
+        "tax_id": "TAV260312",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 0.0,
+        "fda": null,
+        "swift": null,
+        "aba": null,
+        "clabe": null,
+        "bank": 1,
+        "contact_name": "MERLEN ACUÑA",
+        "contact_email": "a@gmail.com",
+        "contact_phone_number": "1",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 12,
+    "fields": {
+        "name": "FRANCISCO RENTERIA CORRALES",
+        "category": "packhouse",
+        "market": 3,
+        "country": 234,
+        "state": 3650,
+        "city": 44706,
+        "district": 139390,
+        "postal_code": "002541",
+        "neighborhood": "LYON",
+        "address": "LION´S GATE",
+        "external_number": "2405",
+        "internal_number": null,
+        "shipping_address": null,
+        "capital_framework": null,
+        "tax_id": "CORF6801256E9",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 0.0,
+        "fda": null,
+        "swift": null,
+        "aba": null,
+        "clabe": null,
+        "bank": null,
+        "contact_name": "1",
+        "contact_email": "a@gmail.com",
+        "contact_phone_number": "1",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 13,
+    "fields": {
+        "name": "ARTURO PEREZ",
+        "category": "maquiladora",
+        "market": 1,
+        "country": 158,
+        "state": 2272,
+        "city": 25469,
+        "district": 83902,
+        "postal_code": "34634",
+        "neighborhood": "LOMITAS",
+        "address": "LOMA BONITA",
+        "external_number": "2345",
+        "internal_number": null,
+        "shipping_address": null,
+        "capital_framework": null,
+        "tax_id": "SADG1234234",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 0.0,
+        "fda": null,
+        "swift": null,
+        "aba": null,
+        "clabe": null,
+        "bank": null,
+        "contact_name": "RAPHAEL MEDINA",
+        "contact_email": "a@gmail.com",
+        "contact_phone_number": "1",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.client",
+    "pk": 14,
+    "fields": {
+        "name": "FRUIT THE BEST",
+        "category": "maquiladora",
+        "market": 3,
+        "country": 234,
+        "state": 3650,
+        "city": 44712,
+        "district": 139146,
+        "postal_code": "15440",
+        "neighborhood": "NORTH ISLAND",
+        "address": "FIRTS ST",
+        "external_number": "15440",
+        "internal_number": null,
+        "shipping_address": null,
+        "capital_framework": null,
+        "tax_id": "FRAS120189",
+        "payment_kind": 1,
+        "max_money_credit_limit": 0.0,
+        "max_days_credit_limit": 0.0,
+        "fda": null,
+        "swift": null,
+        "aba": null,
+        "clabe": null,
+        "bank": 1,
+        "contact_name": "A",
+        "contact_email": "a@gmail.com",
+        "contact_phone_number": "1",
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.clientshippingaddress",
+    "pk": 1,
+    "fields": {
+        "address_name": "CORONA SALES COMPANY NC",
+        "country": 38,
+        "state": 474,
+        "city": 9022,
+        "district": 11644,
+        "postal_code": "00661",
+        "neighborhood": "LONG ISLAND",
+        "address": "AV. ST. LONG ISLAND",
+        "external_number": "1450",
+        "internal_number": null,
+        "references": null,
+        "contact_name": null,
+        "contact_phone_number": null,
+        "comments": null,
+        "is_enabled": true,
+        "client": 1
+    }
+},
+{
+    "model": "catalogs.gatherer",
+    "pk": 1,
+    "fields": {
+        "name": "JUAN ANTONIO HERNANDEZ",
+        "zone": "NORTE Y ESTE",
+        "tax_registry_code": "JAUE839JJS9",
+        "population_registry_code": null,
+        "social_number_code": null,
+        "state": 2282,
+        "city": 25771,
+        "district": 86492,
+        "postal_code": "76536",
+        "neighborhood": "EL TESTARAZO",
+        "address": "DOMICILIO CONOCIDO",
+        "external_number": "S/N",
+        "internal_number": null,
+        "email": "jah@email.com",
+        "phone_number": null,
+        "vehicle": 3,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.maquiladora",
+    "pk": 1,
+    "fields": {
+        "name": "LINCHLO",
+        "zone": "URUAPAN",
+        "tax_id": "XAXX010101000",
+        "state": 2282,
+        "city": 25791,
+        "district": 86343,
+        "neighborhood": "x",
+        "postal_code": "1",
+        "address": "X",
+        "external_number": "x",
+        "internal_number": null,
+        "email": "a@gmail.co",
+        "phone_number": "1",
+        "is_enabled": true,
+        "organization": 1,
+        "clients": [
+            13
+        ]
+    }
+},
+{
+    "model": "catalogs.maquiladora",
+    "pk": 2,
+    "fields": {
+        "name": "FRANCISCO RENTERIA CORRALES",
+        "zone": "MICHOACAN",
+        "tax_id": "XAXX010101000",
+        "state": 2282,
+        "city": 25742,
+        "district": 87096,
+        "neighborhood": "1",
+        "postal_code": "1",
+        "address": "1",
+        "external_number": "1",
+        "internal_number": null,
+        "email": "aaaa@gmail.com",
+        "phone_number": "1",
+        "is_enabled": true,
+        "organization": 1,
+        "clients": [
+            14
+        ]
+    }
+},
+{
+    "model": "catalogs.maquiladora",
+    "pk": 3,
+    "fields": {
+        "name": "CENTRO QUERETANO DE PRODUCCIÓN DE AVEZRUZ",
+        "zone": "TACAMBARO",
+        "tax_id": "CQP090929QM6",
+        "state": 2282,
+        "city": 25771,
+        "district": 86492,
+        "neighborhood": "SANTA ROSA JAUREGUI",
+        "postal_code": "1",
+        "address": "ESTANCIA DE LA ROCHERA",
+        "external_number": "1",
+        "internal_number": null,
+        "email": "aaaa@gmail.com",
+        "phone_number": "1",
+        "is_enabled": true,
+        "organization": 1,
+        "clients": [
+            13
+        ]
+    }
+},
+{
+    "model": "catalogs.orchard",
+    "pk": 1,
+    "fields": {
+        "name": "LA APLANADORA",
+        "code": "HUE2382023844",
+        "category": "conventional",
+        "producer": 2,
+        "safety_authority_registration_date": "2022-03-19",
+        "state": 2282,
+        "city": 25771,
+        "district": 90548,
+        "ha": 43.0,
+        "sanitary_certificate": "8763782984628",
+        "is_enabled": true,
+        "organization": 1,
+        "product": [
+            1
+        ]
+    }
+},
+{
+    "model": "catalogs.orchard",
+    "pk": 2,
+    "fields": {
+        "name": "RANCHO VIEJO",
+        "code": "HUE87353725574",
+        "category": "organic",
+        "producer": 2,
+        "safety_authority_registration_date": "2023-03-19",
+        "state": 2282,
+        "city": 25771,
+        "district": 88489,
+        "ha": 32.0,
+        "sanitary_certificate": "87635DGGD5324",
+        "is_enabled": true,
+        "organization": 1,
+        "product": [
+            1
+        ]
+    }
+},
+{
+    "model": "catalogs.orchardcertification",
+    "pk": 1,
+    "fields": {
+        "certification_kind": 1,
+        "certification_number": "763GD663HD6",
+        "expiration_date": "2026-03-19",
+        "verifier": 1,
+        "extra_code": "6637H",
+        "is_enabled": true,
+        "orchard": 1
+    }
+},
+{
+    "model": "catalogs.orchardcertification",
+    "pk": 2,
+    "fields": {
+        "certification_kind": 2,
+        "certification_number": "ORG65367823",
+        "expiration_date": "2027-03-19",
+        "verifier": 4,
+        "extra_code": "665D7H",
+        "is_enabled": true,
+        "orchard": 2
+    }
+},
+{
+    "model": "catalogs.crewchief",
+    "pk": 1,
+    "fields": {
+        "name": "ANDRÉS BRUSTAMENTE",
+        "provider": 6,
+        "is_enabled": true
+    }
+},
+{
+    "model": "catalogs.crewchief",
+    "pk": 2,
+    "fields": {
+        "name": "FELIPE MELGAREJO",
+        "provider": 6,
+        "is_enabled": true
     }
 },
 {
@@ -1077,7 +1802,7 @@
         "organization": 1
     }
 },
-  {
+{
     "model": "catalogs.harvestingpaymentsetting",
     "pk": 1,
     "fields": {
@@ -1112,1051 +1837,687 @@
     }
 },
 {
-  "model": "catalogs.client",
-  "pk": 1,
-  "fields": {
-    "name": "MARKET AND SALES OF AMERICA",
-    "category": "packhouse",
-    "market": 4,
-    "country": 38,
-    "state": 474,
-    "city": 9022,
-    "district": 11644,
-    "postal_code": "00661",
-    "neighborhood": "GINZA",
-    "address": "SOUTH",
-    "external_number": "4598",
-    "internal_number": "Bodega 10",
-    "shipping_address": 1,
-    "capital_framework": 28,
-    "tax_id": "FRI16031262338",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 15.0,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": 1,
-    "contact_name": "1",
-    "contact_email": "a@gmail.com",
-    "contact_phone_number": "1",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 1,
+    "fields": {
+        "kind": 1,
+        "name": "CARTÓN 4 KG",
+        "capacity": 4.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 1000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.client",
-  "pk": 2,
-  "fields": {
-    "name": "AVOCADOS  COMPANY",
-    "category": "packhouse",
-    "market": 4,
-    "country": 38,
-    "state": 467,
-    "city": 9035,
-    "district": 11521,
-    "postal_code": "01SFF51",
-    "neighborhood": "SECTOR 3",
-    "address": "LONG ISLAND",
-    "external_number": "45874",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": 28,
-    "tax_id": "ARFE0811160LF",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 8.0,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": "45621145200012241",
-    "bank": 2,
-    "contact_name": "LIAM LORAM",
-    "contact_email": "a@gmail.com",
-    "contact_phone_number": "1",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 2,
+    "fields": {
+        "kind": 1,
+        "name": "CARTÓN 6 KG",
+        "capacity": 6.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 1000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.client",
-  "pk": 3,
-  "fields": {
-    "name": "TIENDAS MEXICANAS DE FRUTA",
-    "category": "packhouse",
-    "market": 1,
-    "country": 158,
-    "state": 2271,
-    "city": 27097,
-    "district": 85191,
-    "postal_code": "54760",
-    "neighborhood": "SAN JUAN",
-    "address": "CARRETERA CUATITLAN ZUMPAGO LOTE 25",
-    "external_number": "MANZANA 82",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": 2,
-    "tax_id": "TIMF50701RM1",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 8.0,
-    "fda": null,
-    "swift": "159853215654",
-    "aba": "7531598521492",
-    "clabe": "45621145200012241",
-    "bank": 1,
-    "contact_name": "GABRIELA MORELOS CARRASCO",
-    "contact_email": "comprasperecederos@gpochedraui.com",
-    "contact_phone_number": "591 917 9414",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 3,
+    "fields": {
+        "kind": 1,
+        "name": "CARTÓN 11.3 KG",
+        "capacity": 11.3,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 1000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.client",
-  "pk": 4,
-  "fields": {
-    "name": "VENTA AL PUBLICO EN GENERAL",
-    "category": "packhouse",
-    "market": 1,
-    "country": 158,
-    "state": 2282,
-    "city": 25742,
-    "district": 87096,
-    "postal_code": "0",
-    "neighborhood": "-",
-    "address": "-",
-    "external_number": "0",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": null,
-    "tax_id": "XAXX010101000",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 0.0,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": null,
-    "contact_name": "-",
-    "contact_email": "a@gmail.com",
-    "contact_phone_number": "0",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 4,
+    "fields": {
+        "kind": 1,
+        "name": "MADERA 11.3 KG",
+        "capacity": 11.3,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 100,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": false,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.client",
-  "pk": 5,
-  "fields": {
-    "name": "SALES OF THE FOOD´S",
-    "category": "packhouse",
-    "market": 3,
-    "country": 234,
-    "state": 3650,
-    "city": 44706,
-    "district": 138589,
-    "postal_code": "60002",
-    "neighborhood": "ANAHEIM",
-    "address": "PARKWAY",
-    "external_number": "6001",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": 15,
-    "tax_id": "MER012685",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 0.0,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": 1,
-    "contact_name": "JUAN LONDONGO",
-    "contact_email": "a@gmail.com",
-    "contact_phone_number": "1",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 5,
+    "fields": {
+        "kind": 1,
+        "name": "PLÁSTICO 11.3 KG",
+        "capacity": 11.3,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 500,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.client",
-  "pk": 6,
-  "fields": {
-    "name": "JULIO GARCIA LOPEZ",
-    "category": "packhouse",
-    "market": 1,
-    "country": 158,
-    "state": 2282,
-    "city": 25791,
-    "district": 86343,
-    "postal_code": "61150",
-    "neighborhood": "CENTRO",
-    "address": "LA LOMA",
-    "external_number": "450",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": null,
-    "tax_id": "XAXX010101000",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 15.0,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": 1,
-    "contact_name": "ALAN JOSUE ALCANTAR",
-    "contact_email": "aguacates@gmail.com",
-    "contact_phone_number": "4431252068",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 6,
+    "fields": {
+        "kind": 5,
+        "name": "CARTÓN",
+        "capacity": null,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 3000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.client",
-  "pk": 7,
-  "fields": {
-    "name": "LOS DEL MONTE",
-    "category": "packhouse",
-    "market": 1,
-    "country": 158,
-    "state": 2269,
-    "city": 25891,
-    "district": 87098,
-    "postal_code": "1102589",
-    "neighborhood": "LOMAS SECTOR 4",
-    "address": "LOMA",
-    "external_number": "1458",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": 2,
-    "tax_id": "XEXEXE010101",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 15.0,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": 1,
-    "contact_name": "IGNACION MERCADO",
-    "contact_email": "a@gmail.com",
-    "contact_phone_number": "42536254178",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 7,
+    "fields": {
+        "kind": 5,
+        "name": "PLÁSTICO",
+        "capacity": null,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 500,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.client",
-  "pk": 8,
-  "fields": {
-    "name": "GRUPO COMERCIAL DE FRUTAS",
-    "category": "packhouse",
-    "market": 6,
-    "country": 211,
-    "state": 3248,
-    "city": 39070,
-    "district": null,
-    "postal_code": "1102589",
-    "neighborhood": "LOMAS SECTOR 4",
-    "address": "LOMA",
-    "external_number": "1458",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": null,
-    "tax_id": "XEXEXE010101",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 0.0,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": null,
-    "contact_name": "JAVIER MOLLINEDA",
-    "contact_email": "a@gmail.com",
-    "contact_phone_number": "1",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 8,
+    "fields": {
+        "kind": 2,
+        "name": "ESTÁNDAR 16",
+        "capacity": 1.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 5000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.client",
-  "pk": 9,
-  "fields": {
-    "name": "AMERICA GLOBAL FOOD´S",
-    "category": "packhouse",
-    "market": 3,
-    "country": 234,
-    "state": 3621,
-    "city": 42349,
-    "district": 126145,
-    "postal_code": "66098",
-    "neighborhood": "MIDTOWN",
-    "address": "CAMERON AVE",
-    "external_number": "1",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": null,
-    "tax_id": "XEXX010101000",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 15.0,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": "1235412547854125",
-    "bank": 3,
-    "contact_name": "LARISSA GREEN",
-    "contact_email": "SALESANDFOODS@GMAIL.COM",
-    "contact_phone_number": "1",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 9,
+    "fields": {
+        "kind": 2,
+        "name": "ESTÁNDAR 18",
+        "capacity": 1.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 5000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.client",
-  "pk": 10,
-  "fields": {
-    "name": "TRATADO DE RESIDUOS ORGANICOS",
-    "category": "packhouse",
-    "market": 1,
-    "country": 158,
-    "state": 2282,
-    "city": 25741,
-    "district": 88514,
-    "postal_code": "54760",
-    "neighborhood": "CENTRO",
-    "address": "CALLE 1",
-    "external_number": "1",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": 2,
-    "tax_id": "XAXX010101000",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 0.0,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": null,
-    "contact_name": "1",
-    "contact_email": "a@gmail.com",
-    "contact_phone_number": "1",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 10,
+    "fields": {
+        "kind": 2,
+        "name": "ESTÁNDAR 20",
+        "capacity": 1.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 5000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.client",
-  "pk": 11,
-  "fields": {
-    "name": "TARASCOS AVOCADOS",
-    "category": "packhouse",
-    "market": 1,
-    "country": 158,
-    "state": 2269,
-    "city": 25891,
-    "district": 87098,
-    "postal_code": "58230",
-    "neighborhood": "LUSTRES AI",
-    "address": "RIO GRANDE",
-    "external_number": "2450",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": 4,
-    "tax_id": "TAV260312",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 0.0,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": 1,
-    "contact_name": "MERLEN ACUÑA",
-    "contact_email": "a@gmail.com",
-    "contact_phone_number": "1",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 11,
+    "fields": {
+        "kind": 2,
+        "name": "EURO 23",
+        "capacity": 1.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 5000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.client",
-  "pk": 12,
-  "fields": {
-    "name": "FRANCISCO RENTERIA CORRALES",
-    "category": "packhouse",
-    "market": 3,
-    "country": 234,
-    "state": 3650,
-    "city": 44706,
-    "district": 139390,
-    "postal_code": "002541",
-    "neighborhood": "LYON",
-    "address": "LION´S GATE",
-    "external_number": "2405",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": null,
-    "tax_id": "CORF6801256E9",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 0.0,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": null,
-    "contact_name": "1",
-    "contact_email": "a@gmail.com",
-    "contact_phone_number": "1",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 12,
+    "fields": {
+        "kind": 2,
+        "name": "EURO 27",
+        "capacity": 1.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 5000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.client",
-  "pk": 13,
-  "fields": {
-    "name": "ARTURO PEREZ",
-    "category": "maquiladora",
-    "market": 1,
-    "country": 158,
-    "state": 2272,
-    "city": 25469,
-    "district": 83902,
-    "postal_code": "34634",
-    "neighborhood": "LOMITAS",
-    "address": "LOMA BONITA",
-    "external_number": "2345",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": null,
-    "tax_id": "SADG1234234",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 0.0,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": null,
-    "contact_name": "RAPHAEL MEDINA",
-    "contact_email": "a@gmail.com",
-    "contact_phone_number": "1",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 13,
+    "fields": {
+        "kind": 2,
+        "name": "EURO 30",
+        "capacity": 1.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 5000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.client",
-  "pk": 14,
-  "fields": {
-    "name": "FRUIT THE BEST",
-    "category": "maquiladora",
-    "market": 3,
-    "country": 234,
-    "state": 3650,
-    "city": 44712,
-    "district": 139146,
-    "postal_code": "15440",
-    "neighborhood": "NORTH ISLAND",
-    "address": "FIRTS ST",
-    "external_number": "15440",
-    "internal_number": null,
-    "shipping_address": null,
-    "capital_framework": null,
-    "tax_id": "FRAS120189",
-    "payment_kind": 1,
-    "max_money_credit_limit": 0.0,
-    "max_days_credit_limit": 0.0,
-    "fda": null,
-    "swift": null,
-    "aba": null,
-    "clabe": null,
-    "bank": 1,
-    "contact_name": "A",
-    "contact_email": "a@gmail.com",
-    "contact_phone_number": "1",
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 14,
+    "fields": {
+        "kind": 2,
+        "name": "EURO 36A",
+        "capacity": 1.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 5000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.clientshippingaddress",
-  "pk": 1,
-  "fields": {
-    "address_name": "CORONA SALES COMPANY NC",
-    "country": 38,
-    "state": 474,
-    "city": 9022,
-    "district": 11644,
-    "postal_code": "00661",
-    "neighborhood": "LONG ISLAND",
-    "address": "AV. ST. LONG ISLAND",
-    "external_number": "1450",
-    "internal_number": null,
-    "references": null,
-    "contact_name": null,
-    "contact_phone_number": null,
-    "comments": null,
-    "is_enabled": true,
-    "client": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 15,
+    "fields": {
+        "kind": 2,
+        "name": "EURO 36B",
+        "capacity": 0.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 5000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.maquiladora",
-  "pk": 1,
-  "fields": {
-    "name": "LINCHLO",
-    "zone": "URUAPAN",
-    "tax_id": "XAXX010101000",
-    "state": 2282,
-    "city": 25791,
-    "district": 86343,
-    "neighborhood": "x",
-    "postal_code": "1",
-    "address": "X",
-    "external_number": "x",
-    "internal_number": null,
-    "email": "a@gmail.co",
-    "phone_number": "1",
-    "is_enabled": true,
-    "organization": 1,
-    "clients": [
-      13
-    ]
-  }
+    "model": "catalogs.supply",
+    "pk": 16,
+    "fields": {
+        "kind": 4,
+        "name": "PLÁSTICO (TRANSPARENTE)",
+        "capacity": null,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 4000,
+        "usage_discount_quantity": 4,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.maquiladora",
-  "pk": 2,
-  "fields": {
-    "name": "FRANCISCO RENTERIA CORRALES",
-    "zone": "MICHOACAN",
-    "tax_id": "XAXX010101000",
-    "state": 2282,
-    "city": 25742,
-    "district": 87096,
-    "neighborhood": "1",
-    "postal_code": "1",
-    "address": "1",
-    "external_number": "1",
-    "internal_number": null,
-    "email": "aaaa@gmail.com",
-    "phone_number": "1",
-    "is_enabled": true,
-    "organization": 1,
-    "clients": [
-      14
-    ]
-  }
+    "model": "catalogs.supply",
+    "pk": 17,
+    "fields": {
+        "kind": 4,
+        "name": "PLÁSTICO (NEGRO)",
+        "capacity": null,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 4000,
+        "usage_discount_quantity": 4,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.maquiladora",
-  "pk": 3,
-  "fields": {
-    "name": "CENTRO QUERETANO DE PRODUCCIÓN DE AVEZRUZ",
-    "zone": "TACAMBARO",
-    "tax_id": "CQP090929QM6",
-    "state": 2282,
-    "city": 25771,
-    "district": 86492,
-    "neighborhood": "SANTA ROSA JAUREGUI",
-    "postal_code": "1",
-    "address": "ESTANCIA DE LA ROCHERA",
-    "external_number": "1",
-    "internal_number": null,
-    "email": "aaaa@gmail.com",
-    "phone_number": "1",
-    "is_enabled": true,
-    "organization": 1,
-    "clients": [
-      13
-    ]
-  }
+    "model": "catalogs.supply",
+    "pk": 18,
+    "fields": {
+        "kind": 8,
+        "name": "TRANSPARENTE",
+        "capacity": null,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 2500,
+        "usage_discount_quantity": 18,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 1,
-  "fields": {
-    "kind": 1,
-    "name": "CARTÓN 4 KG",
-    "capacity": 4.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 1000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 19,
+    "fields": {
+        "kind": 8,
+        "name": "NEGRO",
+        "capacity": null,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 2500,
+        "usage_discount_quantity": 18,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 2,
-  "fields": {
-    "kind": 1,
-    "name": "CARTÓN 6 KG",
-    "capacity": 6.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 1000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 20,
+    "fields": {
+        "kind": 6,
+        "name": "8 (BLANCA)",
+        "capacity": 8.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 15000,
+        "usage_discount_quantity": 16,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 3,
-  "fields": {
-    "kind": 1,
-    "name": "CARTÓN 11.3 KG",
-    "capacity": 11.3,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 1000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 21,
+    "fields": {
+        "kind": 6,
+        "name": "12 (MORADA)",
+        "capacity": 6.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 15000,
+        "usage_discount_quantity": 18,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 4,
-  "fields": {
-    "kind": 1,
-    "name": "MADERA 11.3 KG",
-    "capacity": 11.3,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 100,
-    "usage_discount_quantity": 1,
-    "is_enabled": false,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 22,
+    "fields": {
+        "kind": 3,
+        "name": "MADERA 14",
+        "capacity": null,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 150,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 5,
-  "fields": {
-    "kind": 1,
-    "name": "PLÁSTICO 11.3 KG",
-    "capacity": 11.3,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 500,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 23,
+    "fields": {
+        "kind": 3,
+        "name": "PLÁSTICO 11",
+        "capacity": null,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 150,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 6,
-  "fields": {
-    "kind": 5,
-    "name": "CARTÓN",
-    "capacity": null,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 3000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 24,
+    "fields": {
+        "kind": 2,
+        "name": "ESTÁNDAR 24",
+        "capacity": 1.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 5000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 7,
-  "fields": {
-    "kind": 5,
-    "name": "PLÁSTICO",
-    "capacity": null,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 500,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 25,
+    "fields": {
+        "kind": 2,
+        "name": "ESTÁNDAR 30",
+        "capacity": 1.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 5000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 8,
-  "fields": {
-    "kind": 2,
-    "name": "ESTÁNDAR 16",
-    "capacity": 1.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 26,
+    "fields": {
+        "kind": 2,
+        "name": "ESTÁNDAR 35",
+        "capacity": 1.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 5000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 9,
-  "fields": {
-    "kind": 2,
-    "name": "ESTÁNDAR 18",
-    "capacity": 1.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 27,
+    "fields": {
+        "kind": 2,
+        "name": "CHAROLA EURO 45",
+        "capacity": 0.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 5000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 10,
-  "fields": {
-    "kind": 2,
-    "name": "ESTÁNDAR 20",
-    "capacity": 1.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 28,
+    "fields": {
+        "kind": 2,
+        "name": "CHAROLA EURO 49",
+        "capacity": 1.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 5000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 11,
-  "fields": {
-    "kind": 2,
-    "name": "EURO 23",
-    "capacity": 1.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 29,
+    "fields": {
+        "kind": 1,
+        "name": "CARTÓN 10",
+        "capacity": 10.0,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 1000000000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 12,
-  "fields": {
-    "kind": 2,
-    "name": "EURO 27",
-    "capacity": 1.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 30,
+    "fields": {
+        "kind": 7,
+        "name": "GENERICO",
+        "capacity": null,
+        "minimum_stock_quantity": 0,
+        "maximum_stock_quantity": 12000000,
+        "usage_discount_quantity": 3,
+        "kg_tare": 0.0,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 13,
-  "fields": {
-    "kind": 2,
-    "name": "EURO 30",
-    "capacity": 1.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 31,
+    "fields": {
+        "kind": 9,
+        "name": "CAJA DE CAMPO DE 25",
+        "capacity": null,
+        "minimum_stock_quantity": 100,
+        "maximum_stock_quantity": 20000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.5,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 14,
-  "fields": {
-    "kind": 2,
-    "name": "EURO 36A",
-    "capacity": 1.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.supply",
+    "pk": 32,
+    "fields": {
+        "kind": 9,
+        "name": "CAJA DE CAMPO DE 20",
+        "capacity": null,
+        "minimum_stock_quantity": 100,
+        "maximum_stock_quantity": 20000,
+        "usage_discount_quantity": 1,
+        "kg_tare": 0.3,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 15,
-  "fields": {
-    "kind": 2,
-    "name": "EURO 36B",
-    "capacity": 0.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.productpresentation",
+    "pk": 1,
+    "fields": {
+        "product": 1,
+        "presentation_supply_kind": 6,
+        "presentation_supply": 21,
+        "name": "MALLA MORADA 12 PZ",
+        "is_enabled": true,
+        "organization": 1,
+        "markets": [
+            3,
+            1
+        ]
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 16,
-  "fields": {
-    "kind": 4,
-    "name": "PLÁSTICO (TRANSPARENTE)",
-    "capacity": null,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 4000,
-    "usage_discount_quantity": 4,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.productpresentation",
+    "pk": 2,
+    "fields": {
+        "product": 1,
+        "presentation_supply_kind": 6,
+        "presentation_supply": 20,
+        "name": "MALLA BLANCA 8 PZ",
+        "is_enabled": true,
+        "organization": 1,
+        "markets": [
+            3,
+            1
+        ]
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 17,
-  "fields": {
-    "kind": 4,
-    "name": "PLÁSTICO (NEGRO)",
-    "capacity": null,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 4000,
-    "usage_discount_quantity": 4,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.productpresentation",
+    "pk": 3,
+    "fields": {
+        "product": 2,
+        "presentation_supply_kind": 6,
+        "presentation_supply": 21,
+        "name": "MALLA 12 (MORADA)",
+        "is_enabled": true,
+        "organization": 2,
+        "markets": [
+            2
+        ]
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 18,
-  "fields": {
-    "kind": 8,
-    "name": "TRANSPARENTE",
-    "capacity": null,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 2500,
-    "usage_discount_quantity": 18,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.productpresentationcomplementarysupply",
+    "pk": 1,
+    "fields": {
+        "product_presentation": 2,
+        "kind": 7,
+        "supply": 30
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 19,
-  "fields": {
-    "kind": 8,
-    "name": "NEGRO",
-    "capacity": null,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 2500,
-    "usage_discount_quantity": 18,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.packaging",
+    "pk": 1,
+    "fields": {
+        "market": 1,
+        "product": 1,
+        "packaging_supply_kind": 1,
+        "product_standard_packaging": 1,
+        "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
+        "packaging_supply": 1,
+        "packaging_supply_quantity": 1,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 20,
-  "fields": {
-    "kind": 6,
-    "name": "8 (BLANCA)",
-    "capacity": 8.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 15000,
-    "usage_discount_quantity": 16,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.packaging",
+    "pk": 2,
+    "fields": {
+        "market": 1,
+        "product": 1,
+        "packaging_supply_kind": 1,
+        "product_standard_packaging": 1,
+        "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
+        "packaging_supply": 3,
+        "packaging_supply_quantity": 1,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 21,
-  "fields": {
-    "kind": 6,
-    "name": "12 (MORADA)",
-    "capacity": 6.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 15000,
-    "usage_discount_quantity": 18,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.packaging",
+    "pk": 4,
+    "fields": {
+        "market": 3,
+        "product": 1,
+        "packaging_supply_kind": 1,
+        "product_standard_packaging": 1,
+        "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
+        "packaging_supply": 1,
+        "packaging_supply_quantity": 1,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 22,
-  "fields": {
-    "kind": 3,
-    "name": "MADERA 14",
-    "capacity": null,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 150,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.packaging",
+    "pk": 5,
+    "fields": {
+        "market": 1,
+        "product": 1,
+        "packaging_supply_kind": 1,
+        "product_standard_packaging": 1,
+        "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
+        "packaging_supply": 1,
+        "packaging_supply_quantity": 1,
+        "is_enabled": true,
+        "organization": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 23,
-  "fields": {
-    "kind": 3,
-    "name": "PLÁSTICO 11",
-    "capacity": null,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 150,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.packagingcomplementarysupply",
+    "pk": 1,
+    "fields": {
+        "packaging": 1,
+        "kind": 5,
+        "supply": 6,
+        "quantity": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 24,
-  "fields": {
-    "kind": 2,
-    "name": "ESTÁNDAR 24",
-    "capacity": 1.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.packagingcomplementarysupply",
+    "pk": 3,
+    "fields": {
+        "packaging": 2,
+        "kind": 2,
+        "supply": 24,
+        "quantity": 2
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 25,
-  "fields": {
-    "kind": 2,
-    "name": "ESTÁNDAR 30",
-    "capacity": 1.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.packagingcomplementarysupply",
+    "pk": 4,
+    "fields": {
+        "packaging": 1,
+        "kind": 2,
+        "supply": 26,
+        "quantity": 2
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 26,
-  "fields": {
-    "kind": 2,
-    "name": "ESTÁNDAR 35",
-    "capacity": 1.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.packagingcomplementarysupply",
+    "pk": 5,
+    "fields": {
+        "packaging": 2,
+        "kind": 5,
+        "supply": 6,
+        "quantity": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 27,
-  "fields": {
-    "kind": 2,
-    "name": "CHAROLA EURO 45",
-    "capacity": 0.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.packagingcomplementarysupply",
+    "pk": 6,
+    "fields": {
+        "packaging": 4,
+        "kind": 2,
+        "supply": 26,
+        "quantity": 2
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 28,
-  "fields": {
-    "kind": 2,
-    "name": "CHAROLA EURO 49",
-    "capacity": 1.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.packagingcomplementarysupply",
+    "pk": 7,
+    "fields": {
+        "packaging": 4,
+        "kind": 5,
+        "supply": 6,
+        "quantity": 1
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 29,
-  "fields": {
-    "kind": 1,
-    "name": "CARTÓN 10",
-    "capacity": 10.0,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 1000000000,
-    "usage_discount_quantity": 1,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.packagingcomplementarysupply",
+    "pk": 8,
+    "fields": {
+        "packaging": 5,
+        "kind": 2,
+        "supply": 24,
+        "quantity": 2
+    }
 },
 {
-  "model": "catalogs.supply",
-  "pk": 30,
-  "fields": {
-    "kind": 7,
-    "name": "GENERICO",
-    "capacity": null,
-    "minimum_stock_quantity": 0,
-    "maximum_stock_quantity": 12000000,
-    "usage_discount_quantity": 3,
-    "is_enabled": true,
-    "organization": 1
-  }
+    "model": "catalogs.packagingcomplementarysupply",
+    "pk": 9,
+    "fields": {
+        "packaging": 5,
+        "kind": 5,
+        "supply": 6,
+        "quantity": 1
+    }
 },
 {
-  "model": "catalogs.productpresentation",
-  "pk": 1,
-  "fields": {
-    "product": 1,
-    "presentation_supply_kind": 6,
-    "presentation_supply": 21,
-    "name": "MALLA MORADA 12 PZ",
-    "is_enabled": true,
-    "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
-  }
-},
-{
-  "model": "catalogs.productpresentation",
-  "pk": 2,
-  "fields": {
-    "product": 1,
-    "presentation_supply_kind": 6,
-    "presentation_supply": 20,
-    "name": "MALLA BLANCA 8 PZ",
-    "is_enabled": true,
-    "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
-  }
-},
-{
-  "model": "catalogs.productpresentation",
-  "pk": 3,
-  "fields": {
-    "product": 2,
-    "presentation_supply_kind": 6,
-    "presentation_supply": 21,
-    "name": "MALLA 12 (MORADA)",
-    "is_enabled": true,
-    "organization": 2,
-    "markets": [
-      2
-    ]
-  }
-},
-{
-  "model": "catalogs.productpresentationcomplementarysupply",
-  "pk": 1,
-  "fields": {
-    "product_presentation": 2,
-    "kind": 7,
-    "supply": 30
-  }
-},
+    "model": "catalogs.weighingscale",
+    "pk": 1,
+    "fields": {
+        "name": "EL CENTRO",
+        "number": "123",
 
   {
     "model": "catalogs.vehicle",
@@ -2207,137 +2568,13 @@
         "social_number_code": null,
         "state": 2282,
         "city": 25771,
-        "district": 86459,
-        "postal_code": "87482",
+        "district": null,
         "neighborhood": "EL TESTARAZO",
-        "address": "DOMICILIO CONOCIDO",
-        "external_number": "827",
-        "internal_number": null,
-        "email": "email@email.com",
-        "phone_number": null,
-        "vehicle": 2,
-        "is_enabled": true,
-        "organization": 1
-    }
-},
-{
-    "model": "catalogs.gatherer",
-    "pk": 2,
-    "fields": {
-        "name": "DONALD TRUMP",
-        "zone": "NORTE",
-        "tax_registry_code": "FU883DH",
-        "population_registry_code": null,
-        "social_number_code": null,
-        "state": 2274,
-        "city": 25098,
-        "district": 83611,
-        "postal_code": "58029",
-        "neighborhood": "IZTAPALAPA",
-        "address": "CERRO DE LA ESTRELLA",
-        "external_number": "273",
-        "internal_number": null,
-        "email": "POTUS@USA.COM",
-        "phone_number": null,
-        "vehicle": 2,
-        "is_enabled": true,
-        "organization": 1
-    }
-},
-  {
-    "model": "catalogs.orchard",
-    "pk": 1,
-    "fields": {
-        "name": "RANCHO VIEJO",
-        "code": "HUE36284082",
-        "category": "conventional",
-        "producer": 2,
-        "safety_authority_registration_date": "2022-03-07",
-        "state": 2282,
-        "city": 25771,
-        "district": 86492,
-        "ha": 22.0,
-        "sanitary_certificate": "9837294772",
-        "is_enabled": true,
-        "organization": 1,
-        "product": [
-            1
-        ]
-    }
-},
-{
-    "model": "catalogs.orchard",
-    "pk": 2,
-    "fields": {
-        "name": "LA APLANADORA",
-        "code": "HUE76182902",
-        "category": "organic",
-        "producer": 2,
-        "safety_authority_registration_date": "2023-03-07",
-        "state": 2282,
-        "city": 25698,
-        "district": 88099,
-        "ha": 24.0,
-        "sanitary_certificate": "1093515739",
-        "is_enabled": true,
-        "organization": 1,
-        "product": [
-            1
-        ]
-    }
-},
-  {
-    "model": "catalogs.orchardcertification",
-    "pk": 1,
-    "fields": {
-        "certification_kind": 1,
-        "certification_number": "1740092745",
-        "expiration_date": "2026-03-07",
-        "verifier": 1,
-        "extra_code": "88392",
-        "is_enabled": true,
-        "orchard": 1
-    }
-},
-{
-    "model": "catalogs.orchardcertification",
-    "pk": 2,
-    "fields": {
-        "certification_kind": 2,
-        "certification_number": "8837DND883",
-        "expiration_date": "2027-03-07",
-        "verifier": 4,
-        "extra_code": "ORG882",
-        "is_enabled": true,
-        "orchard": 2
-    }
-},
-  {
-    "model": "catalogs.weighingscale",
-    "pk": 1,
-    "fields": {
-        "name": "LA TIENDITA",
-        "number": "013",
-        "state": 2282,
-        "city": 25771,
-        "district": 86459,
-        "neighborhood": "TECARIO",
-        "postal_code": "87362",
-        "address": "CENTRO",
-        "external_number": "288",
+        "postal_code": "76357",
+        "address": "CENTRO DE TACÁMBARO",
+        "external_number": "873",
         "internal_number": null,
         "comments": null,
-        "is_enabled": true,
-        "organization": 1
-    }
-},
-  {
-    "model": "catalogs.harvestcontainer",
-    "pk": 1,
-    "fields": {
-        "name": "CAJA DE CAMPO",
-        "capacity": 25.0,
-        "unit_kind": "Kg",
         "is_enabled": true,
         "organization": 1
     }

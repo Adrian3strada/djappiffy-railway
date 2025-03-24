@@ -20,6 +20,7 @@ from common.settings import STATUS_CHOICES
 from django.contrib.auth import get_user_model
 import datetime
 User = get_user_model()
+from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
 
 # Create your models here.
 class Requisition(models.Model):
@@ -91,6 +92,15 @@ class RequisitionSupply(models.Model):
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0.01)]
     )
+    unit_category = models.CharField(
+        max_length=30,
+        verbose_name=_('Unit category'),
+        choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
+    )
+    delivery_deadline = models.DateField(
+        verbose_name=_('Delivery deadline'),
+        default=datetime.date.today
+    )
     comments = models.CharField(
         max_length=255,
         verbose_name=_("Comments"),
@@ -102,7 +112,7 @@ class RequisitionSupply(models.Model):
     )
 
     def __str__(self):
-        return f"(Req. {self.requisition.ooid}) - {self.supply} - {self.quantity}"
+        return f"(Req. {self.requisition.ooid}) - {self.supply.kind}: {self.supply}"
 
     class Meta:
         verbose_name = _("Requisition Supply")
@@ -147,6 +157,10 @@ class PurchaseOrder(models.Model):
         max_length=255,
         choices=STATUS_CHOICES,
         default='open',
+    )
+    is_in_payments = models.BooleanField(
+        default=False,
+        verbose_name = _("Is in payments")
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(
@@ -196,6 +210,15 @@ class PurchaseOrderSupply(models.Model):
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0.01)]
     )
+    unit_category = models.CharField(
+        max_length=30,
+        verbose_name=_('Unit category'),
+        choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
+    )
+    delivery_deadline = models.DateField(
+        verbose_name=_('Delivery deadline'),
+        default=datetime.date.today
+    )
     unit_price = models.DecimalField(
         verbose_name=_("Unit Price"),
         max_digits=10, decimal_places=2,
@@ -224,8 +247,60 @@ class PurchaseOrderSupply(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = _("Purchase Order Supply")
-        verbose_name_plural = _("Purchase Order Supplies")
+        verbose_name = _("Supply")
+        verbose_name_plural = _("Supplies")
         constraints = [
             models.UniqueConstraint(fields=['purchase_order', 'requisition_supply'], name='unique_purchase_order_supply')
+        ]
+
+class PurchaseOrderCharge(models.Model):
+    purchase_order = models.ForeignKey(
+        PurchaseOrder,
+        verbose_name=_("Purchase Order"),
+        on_delete=models.CASCADE
+    )
+    charge = models.CharField(
+        max_length=255,
+        verbose_name=_("Charge description"),
+    )
+    amount = models.DecimalField(
+        verbose_name=_("Amount"),
+        max_digits=12, decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+
+    def __str__(self):
+        return f"{self.charge} - ${self.amount}"
+
+    class Meta:
+        verbose_name = _("Charge")
+        verbose_name_plural = _("Charges")
+        constraints = [
+            models.UniqueConstraint(fields=['purchase_order', 'charge'], name='unique_purchase_order_charge')
+        ]
+
+class PurchaseOrderDeduction(models.Model):
+    purchase_order = models.ForeignKey(
+        PurchaseOrder,
+        verbose_name=_("Purchase Order"),
+        on_delete=models.CASCADE
+    )
+    deduction = models.CharField(
+        max_length=255,
+        verbose_name=_("Deduction description"),
+    )
+    amount = models.DecimalField(
+        verbose_name=_("Amount"),
+        max_digits=12, decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+
+    def __str__(self):
+        return f"{self.deduction} - ${self.amount}"
+
+    class Meta:
+        verbose_name = _("Deduction")
+        verbose_name_plural = _("Deductions")
+        constraints = [
+            models.UniqueConstraint(fields=['purchase_order', 'deduction'], name='unique_purchase_order_deduction')
         ]
