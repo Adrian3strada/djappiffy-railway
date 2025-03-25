@@ -100,7 +100,7 @@ class ProductResource(DehydrationResource, ExportResource):
                         'product_phenology', 'product_harvest_size', 'product_mass_volume', 'product_ripeness', 'is_enabled')
 
 
-class MarketProductSizeResource(DehydrationResource, ExportResource):
+class ProductSizeResource(DehydrationResource, ExportResource):
     class Meta:
         model = ProductSize
         exclude = tuple(default_excluded_fields + ("sort_order",))

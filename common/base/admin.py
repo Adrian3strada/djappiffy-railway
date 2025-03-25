@@ -30,11 +30,6 @@ class CountryProductStandardSizeInline(admin.TabularInline):
     verbose_name = 'Size'
     verbose_name_plural = 'Sizes'
 
-# TODO: Remover este cuando todo packaging esté completo
-@admin.register(ProductStandardPackaging)
-class CountryProductStandardPackagingAdmin(admin.ModelAdmin):
-    pass
-
 
 class CountryProductStandardPackagingInline(admin.TabularInline):
     model = ProductStandardPackaging
@@ -59,7 +54,7 @@ class CountryProductStandardPackagingInline(admin.TabularInline):
 
 
 @admin.register(ProductKindCountryStandard)
-class CountryProductStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
+class ProductKindCountryStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'product_kind', 'country', 'is_enabled', 'sort_order')
     list_filter = [ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter, 'is_enabled']
     search_fields = ['name']

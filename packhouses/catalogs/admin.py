@@ -65,7 +65,7 @@ from common.forms import SelectWidgetWithData
 from django.db.models import Q, F, Max, Min
 from common.base.utils import ReportExportAdminMixin, SheetExportAdminMixin, SheetReportExportAdminMixin
 from .views import basic_report
-from .resources import (ProductResource, MarketResource, MarketProductSizeResource, ProviderResource, ClientResource,
+from .resources import (ProductResource, MarketResource, ProductSizeResource, ProviderResource, ClientResource,
                         VehicleResource, GathererResource,
                         MaquiladoraResource, OrchardResource, HarvestingCrewResource, SupplyResource, PackagingResource,
                         ServiceResource, WeighingScaleResource,
@@ -148,11 +148,22 @@ class ProductMarketMeasureUnitManagementCostInline(admin.TabularInline):
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = Product.objects.get(id=parent_object_id) if parent_object_id else None
+
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
 
         if db_field.name == "market":
-            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+            queryset = Market.objects.none()
+            if organization:
+                queryset = Market.objects.filter(**organization_queryfilter)
+                print("queryset", queryset)
+            if parent_obj:
+                product_markets = list(parent_obj.markets.all().values_list('id', flat=True))
+                print("product_markets", product_markets)
+                queryset = queryset.filter(id__in=product_markets)
+            kwargs["queryset"] = queryset
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -170,11 +181,22 @@ class ProductMarketClassInline(admin.TabularInline):
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = Product.objects.get(id=parent_object_id) if parent_object_id else None
+
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
 
         if db_field.name == "market":
-            kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
+            queryset = Market.objects.none()
+            if organization:
+                queryset = Market.objects.filter(**organization_queryfilter)
+                print("queryset", queryset)
+            if parent_obj:
+                product_markets = list(parent_obj.markets.all().values_list('id', flat=True))
+                print("product_markets", product_markets)
+                queryset = queryset.filter(id__in=product_markets)
+            kwargs["queryset"] = queryset
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -277,8 +299,11 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[ProductKind, Organization]):
-            readonly_fields.extend(['kind', 'name', 'price_measure_unit_category', 'organization'])
+        if obj and is_instance_used(obj, exclude=[ProductKind, Market, Organization,
+                                                  ProductMarketMeasureUnitManagementCost, ProductMarketClass,
+                                                  ProductVariety, ProductPhenologyKind, ProductHarvestSizeKind,
+                                                  ProductMassVolumeKind, ProductRipeness]):
+            readonly_fields.extend(['kind', 'name', 'price_measure_unit_category', 'markets', 'organization'])
         return readonly_fields
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -304,9 +329,9 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
 
 @admin.register(ProductSize)
-class MarketProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
+class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
-    resource_classes = [MarketProductSizeResource]
+    resource_classes = [ProductSizeResource]
     list_display = (
         'name', 'alias', 'product', 'get_varieties', 'market', 'is_enabled', 'sort_order')
     list_filter = (

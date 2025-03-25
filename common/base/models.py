@@ -11,6 +11,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 
 from .settings import (SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES, SUPPLY_CATEGORY_CHOICES,
+                       COUNTRY_PRODUCT_STANDARD_SIZE_CATEGORY_CHOICES,
                        PRODUCT_MEASURE_UNIT_CATEGORY_CHOICES)
 
 class ProductKind(models.Model):
@@ -79,37 +80,29 @@ class ProductKindCountryStandard(models.Model):
         ]
 
 
-class CountryProductStandardSizeManager(Manager):
-    def get_queryset(self):
-        return super().get_queryset().annotate(
-            name_as_int=Case(
-                When(name__regex=r'^\d+$', then=Cast('name', output_field=IntegerField())),
-                default=Value(None),
-                output_field=IntegerField(),
-            )
-        ).order_by('name_as_int', 'name')
-
 # Ejemplo:
 #   - Comercial, Extra, Mediano, Primera, Super, ... (de APEAM para AGUACATES en MÉXICO)
 #   - 32, 36, 40, 48, 60, 70, ... (de APEAM para AGUACATES en ESTADOS UNIDOS)
 #   - 300, 400, 500, 600, ... (de APEAM para LIMÓN-MEXICANO en MÉXICO)
 #   - 110, 150, 175, 200, 230, 250, ... (de "ALGUNA ASOCIACIÓN" para LIMÓN-PERSA en ESTADOS UNIDOS)
 class CountryProductStandardSize(models.Model):
-    name = models.CharField(max_length=255)
     standard = models.ForeignKey(ProductKindCountryStandard, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, null=True, blank=True)
+    category = models.CharField(max_length=30, verbose_name=_('Category'), choices=COUNTRY_PRODUCT_STANDARD_SIZE_CATEGORY_CHOICES)
+    sort_order = models.PositiveIntegerField(default=0)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
 
     def __str__(self):
         return self.name
 
-    objects = CountryProductStandardSizeManager()
-
     class Meta:
-        verbose_name = _('Product standard, Size')
-        verbose_name_plural = _('Product standard, Sizes')
+        verbose_name = _('Country product standard, Size')
+        verbose_name_plural = _('Country product standard, Sizes')
+        ordering = ['sort_order']
         constraints = [
-            models.UniqueConstraint(fields=['name', 'standard'], name='countryproductstandardsize_unique_name_standard')
+            models.UniqueConstraint(fields=['name', 'standard'], name='countryproductstandardsize_unique_standard_name')
         ]
 
 
