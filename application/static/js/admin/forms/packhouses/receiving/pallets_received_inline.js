@@ -1,10 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     const packhouseWeightResultField = $('#id_packhouse_weight_result');
+    const palletReceivedField = $('#id_pallets_received');
 
     // ================ CONSTANTES ================
-    const PALLET_FORM_SELECTOR = 'div[id^="palletreceived_set-"][id$="-0"]:not([id*="group"])';
+    const PALLET_FORM_SELECTOR = 'div[id^="palletreceived_set-"]:not([id*="group"], [id*="empty"])';
     const CONTAINER_FORM_SELECTOR = 'tbody[id*="-palletcontainer_set-"]:not([id*="empty"])';
     let debounceTimeout;
+
+    // Función debounce genérica
+    const debounce = (func, wait) => {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    };
 
     const fetchContainerTare = async (containerId) => {
         if (!containerId) {
@@ -17,59 +27,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 dataType: 'json',
                 timeout: 5000
             });   
-            const tare = response.container_tare || response.kg_tare || 0;
-            return tare;
+            return response.kg_tare || 0;
         } catch (error) {
             return 0;
         }
     };
 
+    // ================ ACTUALIZAR CONTEO DE PALLETS ================
+    const updatePalletCount = () => {
+        const palletCount = $(PALLET_FORM_SELECTOR).length;
+        palletReceivedField.val(palletCount).trigger('change');
+    };
+
     // ================ CÁLCULO DE TARA ================
     const calculatePalletTare = async ($palletForm) => {
-        const palletId = $palletForm.attr('id');
-        
         let totalTare = 0;
+        let totalBoxes = 0;
         const containers = $palletForm.find(CONTAINER_FORM_SELECTOR);
 
         for (const container of containers) {
             const $container = $(container);
-            const containerId = $container.attr('id');
             
-            // Verificar si está marcado para eliminar
             if ($container.find('input[name$="-DELETE"]').prop('checked')) {
                 continue;
             }
 
-            // Obtener valores
             const harvestContainerId = $container.find('select[name$="-harvest_container"]').val();
             const quantity = parseFloat($container.find('input[name$="-quantity"]').val()) || 0;
+            if (harvestContainerId) {
+                totalBoxes += quantity;
+            }
 
-            // Calcular contribución
             if (harvestContainerId && quantity > 0) {
                 const tare = await fetchContainerTare(harvestContainerId);
-                const contribution = quantity * tare;
-                totalTare += contribution;
+                totalTare += quantity * tare;
             }
         }
-
-        // Actualizar padre
-        $palletForm.find('input[name$="-container_tare"]').val(totalTare.toFixed(2));
-        console.groupEnd();
+        const truncatedTare = Math.floor(totalTare * 1000) / 1000;
+        $palletForm.find('input[name$="-container_tare"]').val(truncatedTare);
+        $palletForm.find('input[name$="-total_boxes"]').val(totalBoxes); 
         updateNetWeight($palletForm);
     };
 
     // ================ ACTUALIZAR PESO NETO ================
     const updateNetWeight = ($palletForm) => {
-        const palletId = $palletForm.attr('id');
-
         const gross = parseFloat($palletForm.find('input[name$="-gross_weight"]').val()) || 0;
         const platform = parseFloat($palletForm.find('input[name$="-platform_tare"]').val()) || 0;
         const container = parseFloat($palletForm.find('input[name$="-container_tare"]').val()) || 0;
-        const net = (gross - platform - container).toFixed(2);
         
+        const net = Math.floor((gross - platform - container) * 1000) / 1000;
         $palletForm.find('input[name$="-net_weight"]').val(net);
-        
-        console.groupEnd();
         debouncedUpdatePackhouse();
     };
 
@@ -79,71 +86,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
         $(PALLET_FORM_SELECTOR).each(function() {
             const $pallet = $(this);
-            const palletId = $pallet.attr('id');
-
-            if ($pallet.find('input[name$="-DELETE"]').prop('checked')) {
-                console.log(`🚮 [${palletId}] Pallet eliminado - omitiendo`);
-                return;
-            }
-
+            if ($pallet.find('input[name$="-DELETE"]').prop('checked')) return;
+            
             const netWeight = parseFloat($pallet.find('input[name$="-net_weight"]').val()) || 0;
             total += netWeight;
         });
 
-       
-        packhouseWeightResultField.val(total.toFixed(2)).trigger('change');
-        console.groupEnd();
+        const truncatedTotal = Math.floor(total * 1000) / 1000;
+        packhouseWeightResultField.val(truncatedTotal).trigger('change');
     };
 
-    const debouncedUpdatePackhouse = () => {
-        clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(updatePackhouseWeight, 300);
-    };
+    const debouncedUpdatePackhouse = debounce(updatePackhouseWeight, 300);
 
     // ================ INICIALIZAR PALLETS ================
     const initializePallet = (palletForm) => {
         const $pallet = $(palletForm);
-        const palletId = $pallet.attr('id');
+        
+        // Debounce específico para este pallet
+        const debouncedCalculateTare = debounce(() => calculatePalletTare($pallet), 300);
 
-        // Eventos para campos del padre
+        // Eventos en tiempo real para campos principales
         $pallet.on('input', 'input[name$="-gross_weight"], input[name$="-platform_tare"]', () => {
             updateNetWeight($pallet);
         });
 
-        // Eventos para contenedores anidados
-        $pallet.on('change', 'select[name$="-harvest_container"], input[name$="-quantity"]', (e) => {
-            const $container = $(e.target).closest(CONTAINER_FORM_SELECTOR);
-            calculatePalletTare($pallet);
-        });
+        // Eventos en tiempo real para contenedores
+        $pallet.on('input', 'input[name$="-quantity"]', debouncedCalculateTare);
+        $pallet.on('change', 'select[name$="-harvest_container"]', debouncedCalculateTare);
 
-        // Cálculo inicial
+        // Inicialización
         calculatePalletTare($pallet);
-        console.groupEnd();
+        updatePalletCount();
     };
 
     // ================ INICIALIZACIÓN PRINCIPAL ================
     $(PALLET_FORM_SELECTOR).each((i, form) => initializePallet(form));
-    console.groupEnd();
 
     // ================ MANEJO DE FORMSETS ================
     document.addEventListener('formset:added', (event) => {
         const formsetName = event.detail.formsetName;
-        const $form = $(event.target);
-
+        
         if (formsetName === 'palletreceived_set') {
             initializePallet(event.target);
         }
-        
-        if (formsetName === 'palletcontainer_set') {
-            const $pallet = $form.closest(PALLET_FORM_SELECTOR);
-            calculatePalletTare($pallet);
+        else if (formsetName === 'palletcontainer_set') {
+            const $pallet = $(event.target).closest(PALLET_FORM_SELECTOR);
+            debounce(() => calculatePalletTare($pallet), 300)();
         }
-
-        console.groupEnd();
+        
+        updatePalletCount();
     });
 
     document.addEventListener('formset:removed', () => {
         debouncedUpdatePackhouse();
+        updatePalletCount();
     });
-
 });

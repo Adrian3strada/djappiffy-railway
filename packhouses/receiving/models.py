@@ -48,6 +48,7 @@ class PalletReceived(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_("Pallet Number"),null=True, blank=True, unique=True)
     # pallet_number = models.PositiveIntegerField(verbose_name=_("Pallet Number"), null=True, blank=True)
     gross_weight = models.FloatField(default=0.0, verbose_name=_("Gross Weight"),)
+    total_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Total Boxes'))
     container_tare = models.FloatField(default=0.0, verbose_name=_("Container Tare"),)
     platform_tare = models.FloatField(default=0.0, verbose_name=_("Platform Tare"),)
     net_weight = models.FloatField(default=0.0, verbose_name=_("Net Weight"),)

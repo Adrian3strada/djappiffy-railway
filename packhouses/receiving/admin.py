@@ -63,7 +63,7 @@ class PalletContainerInline(nested_admin.NestedTabularInline):
 class PalletReceivedInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = PalletReceived
     inlines = [PalletContainerInline]
-    fields = ('ooid', 'gross_weight', 'container_tare', 'platform_tare', 'net_weight')
+    fields = ('ooid', 'gross_weight', 'total_boxes', 'container_tare', 'platform_tare', 'net_weight')
     extra = 0
 
     def get_readonly_fields(self, request, obj=None):

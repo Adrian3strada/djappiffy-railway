@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const missingBoxesField = $('#id_missing_boxes');
     const averageBoxField = $('#id_average_per_box');
     const currentKgField = $('#id_current_kg_available');
+    const containerTare= $('input[name$="-container_tare"]');
+    const totalBoxes= $('input[name$="-total_boxes"]');
 
     // deshabilitar edición en campos, pero permitir que los valores se envíen
     function makeFieldReadonly(field) {
@@ -33,6 +35,8 @@ document.addEventListener("DOMContentLoaded", function() {
     makeFieldReadonly(boxesAssignedField);
     makeFieldReadonly(missingBoxesField);
     makeFieldReadonly(averageBoxField);
+    makeFieldReadonly(containerTare);
+    makeFieldReadonly(totalBoxes);
 
     // Función para actualizar missingBoxes
     function updateMissingBoxes() {
@@ -49,19 +53,32 @@ document.addEventListener("DOMContentLoaded", function() {
         const packhouseWeightResult = parseFloat(packhouseWeightResultField.val());
         const fullBoxes = parseFloat(fullBoxesField.val());
     
-        const averagePerBox = fullBoxes > 0 ? (packhouseWeightResult / fullBoxes).toFixed(2) : 0;
+        const averagePerBox = fullBoxes > 0 
+            ? Math.floor((packhouseWeightResult / fullBoxes) * 1000) / 1000 
+            : 0;
+            
         averageBoxField.val(averagePerBox);
     }
+
+    // Función para actualizar kilos disponibles
+    function updateCurrentKg() {
+        const packhouseWeightResult = parseFloat(packhouseWeightResultField.val());
+        currentKgField.val(packhouseWeightResult);
+    }
+
 
     fullBoxesField.on('input', function() {
         updateMissingBoxes();
         updateAveragePerBoxes(); 
     });
     emptyBoxesField.on('input', updateMissingBoxes);
-    packhouseWeightResultField.on('input', updateAveragePerBoxes);
-    packhouseWeightResultField.on('change', updateAveragePerBoxes);
+    packhouseWeightResultField.on('input change', function() {
+        updateAveragePerBoxes();
+        updateCurrentKg();
+    });
     
     updateMissingBoxes();
     updateAveragePerBoxes();
+    updateCurrentKg()
     
 });
