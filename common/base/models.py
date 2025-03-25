@@ -107,12 +107,12 @@ class ProductKindCountryStandardSize(models.Model):
 
 
 class ProductKindCountryStandardPackaging(models.Model):
+    standard = models.ForeignKey(ProductKindCountryStandard, on_delete=models.CASCADE)
     supply_kind = models.ForeignKey(SupplyKind, on_delete=models.PROTECT)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, verbose_name=_('Code'))
     max_product_amount = models.FloatField(verbose_name=_('Max product amount'), validators=[MinValueValidator(0.01)])
     description = models.CharField(max_length=255, null=True, blank=True)
-    standard = models.ForeignKey(ProductKindCountryStandard, on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
