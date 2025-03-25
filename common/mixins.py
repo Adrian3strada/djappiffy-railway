@@ -2,7 +2,7 @@ from django.db import models
 from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
-
+import os
 
 
 # Create your mixins here.
@@ -560,6 +560,26 @@ class CleanNameAndServiceProviderAndOrganizationMixin(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
+class CleanDocumentsMixin(models.Model):
+    def save(self, *args, **kwargs):
+        try:
+            old_instance = self.__class__.objects.get(pk=self.pk)
+            if old_instance.route and old_instance.route != self.route:
+                if os.path.isfile(old_instance.route.path):
+                    os.remove(old_instance.route.path)
+        except self.__class__.DoesNotExist:
+            pass 
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.route and os.path.isfile(self.route.path):
+            os.remove(self.route.path)
+        super().delete(*args, **kwargs)
 
     class Meta:
         abstract = True

@@ -2518,6 +2518,54 @@
     "fields": {
         "name": "EL CENTRO",
         "number": "123",
+
+  {
+    "model": "catalogs.vehicle",
+    "pk": 1,
+    "fields": {
+        "name": "FORD ROJA",
+        "category": "harvesting_crew",
+        "kind": 1,
+        "brand": 5,
+        "model": "2018",
+        "license_plate": "6DH3-36DH",
+        "serial_number": "7638DHBD63HJF9866D36H",
+        "color": "ROJO",
+        "ownership": 1,
+        "fuel": 1,
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.vehicle",
+    "pk": 2,
+    "fields": {
+        "name": "NISSAN AZUL",
+        "category": "packhouse",
+        "kind": 1,
+        "brand": 2,
+        "model": "2020",
+        "license_plate": "J83-388DH",
+        "serial_number": "386DHC77292NF76CGHN27",
+        "color": "AZUL",
+        "ownership": 1,
+        "fuel": 2,
+        "comments": null,
+        "is_enabled": true,
+        "organization": 1
+    }
+},
+{
+    "model": "catalogs.gatherer",
+    "pk": 1,
+    "fields": {
+        "name": "GOKU GONZALEZ",
+        "zone": "CENTRO",
+        "tax_registry_code": "D773HD8",
+        "population_registry_code": null,
+        "social_number_code": null,
         "state": 2282,
         "city": 25771,
         "district": null,
