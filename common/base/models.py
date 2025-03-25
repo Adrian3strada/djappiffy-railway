@@ -88,11 +88,11 @@ class ProductKindCountryStandard(models.Model):
 class CountryProductStandardSize(models.Model):
     standard = models.ForeignKey(ProductKindCountryStandard, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
+    code = models.CharField(max_length=10, verbose_name=_('Code'))
     description = models.CharField(max_length=255, null=True, blank=True)
     category = models.CharField(max_length=30, verbose_name=_('Category'), choices=COUNTRY_PRODUCT_STANDARD_SIZE_CATEGORY_CHOICES)
     sort_order = models.PositiveIntegerField(default=0)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-
 
     def __str__(self):
         return self.name
@@ -102,7 +102,7 @@ class CountryProductStandardSize(models.Model):
         verbose_name_plural = _('Country product standard, Sizes')
         ordering = ['sort_order']
         constraints = [
-            models.UniqueConstraint(fields=['name', 'standard'], name='countryproductstandardsize_unique_standard_name')
+            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='countryproductstandardsize_unique_standard_name_code')
         ]
 
 
