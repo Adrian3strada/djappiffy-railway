@@ -21,22 +21,24 @@ document.addEventListener("DOMContentLoaded", function() {
     const totalBoxes= $('input[name$="-total_boxes"]');
 
     // deshabilitar edición en campos, pero permitir que los valores se envíen
-    function makeFieldReadonly(field) {
+    function disableField(field) {
         field.prop("readonly", true);
         field.css({
             "pointer-events": "none",
-            "background-color": "#e9ecef"
+            "background-color": "#e9ecef",
+            "border": "none",
+            "color": "#555"
         });
     }
 
-    makeFieldReadonly(currentKgField);
-    makeFieldReadonly(palletsReceivedField);
-    makeFieldReadonly(packhouseWeightResultField);
-    makeFieldReadonly(boxesAssignedField);
-    makeFieldReadonly(missingBoxesField);
-    makeFieldReadonly(averageBoxField);
-    makeFieldReadonly(containerTare);
-    makeFieldReadonly(totalBoxes);
+    disableField(currentKgField);
+    disableField(palletsReceivedField);
+    disableField(packhouseWeightResultField);
+    disableField(boxesAssignedField);
+    disableField(missingBoxesField);
+    disableField(averageBoxField);
+    disableField(containerTare);
+    disableField(totalBoxes);
 
     // Función para actualizar missingBoxes
     function updateMissingBoxes() {
@@ -81,4 +83,12 @@ document.addEventListener("DOMContentLoaded", function() {
     updateAveragePerBoxes();
     updateCurrentKg()
     
+    document.querySelectorAll('input[name="_save"], input[name="_continue"]').forEach(button => {
+        button.addEventListener('click', function(e) {
+            updateMissingBoxes();
+            updateAveragePerBoxes();
+            updateCurrentKg();
+            updatePalletCount();  
+        });
+    });
 });

@@ -45,7 +45,7 @@ class IncomingProduct(models.Model):
         ]"""
 
 class PalletReceived(models.Model):
-    ooid = models.PositiveIntegerField(verbose_name=_("Pallet Number"),null=True, blank=True, unique=True)
+    ooid = models.PositiveIntegerField(verbose_name=_("Pallet Number"),null=True, blank=True)
     # pallet_number = models.PositiveIntegerField(verbose_name=_("Pallet Number"), null=True, blank=True)
     gross_weight = models.FloatField(default=0.0, verbose_name=_("Gross Weight"),)
     total_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Total Boxes'))
@@ -57,22 +57,14 @@ class PalletReceived(models.Model):
     def __str__(self):
         return f"{self.ooid}"
 
-    def save(self, *args, **kwargs):
-        if not self.ooid:
-            # Usar transacción y bloqueo de fila para evitar condiciones de carrera
-            with transaction.atomic():
-                last_order = PalletReceived.objects.select_for_update().order_by('-ooid').first()
-                if last_order:
-                    self.ooid = last_order.ooid + 1
-                else:
-                    self.ooid = 1
-        super().save(*args, **kwargs)
-
     class Meta:
         verbose_name = _('Pallet Received')
         verbose_name_plural = _('Pallets Received')
+        constraints = [
+            models.UniqueConstraint(fields=['incoming_product', 'ooid'], name='palletreceived_unique_incomingproduct')
+        ]
 
 class PalletContainer(models.Model):
     harvest_container = models.ForeignKey(Supply,on_delete=models.CASCADE, limit_choices_to={'kind__category': 'harvest_container'})
     quantity = models.PositiveIntegerField(default=0, verbose_name=_('Quantity'))
-    pallet_received = models.ForeignKey(PalletReceived, verbose_name=_('Incoming Product'), on_delete=models.PROTECT)
+    pallet_received = models.ForeignKey(PalletReceived, verbose_name=_('Incoming Product'), on_delete=models.CASCADE, null=True, blank=True)

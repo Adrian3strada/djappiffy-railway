@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const palletReceivedField = $('#id_pallets_received');
 
     // ================ CONSTANTES ================
-    const PALLET_FORM_SELECTOR = 'div[id^="palletreceived_set-"]:not([id*="group"], [id*="empty"])';
+    const PALLET_FORM_SELECTOR = 'div[id^="palletreceived_set-"]:not([id*="group"], [id*="empty"]), :has(input[name$="-DELETE"]:checked)';
     const CONTAINER_FORM_SELECTOR = 'tbody[id*="-palletcontainer_set-"]:not([id*="empty"])';
     let debounceTimeout;
 
@@ -137,8 +137,41 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePalletCount();
     });
 
+    // ================ MANEJO PARA ELIMINAR FORMSETS EXISTENTES O NUEVOS ================
     document.addEventListener('formset:removed', () => {
         debouncedUpdatePackhouse();
         updatePalletCount();
     });
+
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach(mutation => {
+            if (
+                mutation.type === 'attributes' && 
+                mutation.attributeName === 'checked' && 
+                mutation.target.name.endsWith('-DELETE')
+            ) {
+                debouncedUpdatePackhouse();
+                updatePalletCount();
+            }
+        });
+    });
+
+    // Observar todos los checkboxes "DELETE"
+    document.querySelectorAll('input[name$="-DELETE"]').forEach(checkbox => {
+        observer.observe(checkbox, { attributes: true });
+    });
+    
+    $(document).on('click', '.deletelink', function() {
+        console.log("🗑️ Botón de eliminar clickeado");
+        setTimeout(() => {
+            const checkbox = $(this).closest('.dynamic-palletreceived_set').find('input[name$="-DELETE"]');
+            debouncedUpdatePackhouse();
+            updatePalletCount();
+        }, 300); // Tiempo suficiente para que Django actualice el DOM
+    });
+
+    
+
 });
+//<input type="checkbox" name="palletreceived_set-0-DELETE" id="id_palletreceived_set-0-DELETE"></input>
+//<input type="checkbox" name="palletreceived_set-1-DELETE" id="id_palletreceived_set-1-DELETE" checked="checked"></input>

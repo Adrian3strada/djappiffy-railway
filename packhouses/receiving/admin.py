@@ -46,6 +46,17 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
 
 # Inline para los pallets
 
+from django.db import transaction
+
+def update_pallet_numbers(incoming_product):
+    # Obtiene los pallets ordenados (por ejemplo, según el id de creación)
+    pallets = incoming_product.palletreceived_set.all().order_by('id')
+    with transaction.atomic():
+        for index, pallet in enumerate(pallets, start=1):
+            if pallet.ooid != index:
+                pallet.ooid = index
+                pallet.save(update_fields=['ooid'])
+
 class PalletContainerInline(nested_admin.NestedTabularInline):
     model = PalletContainer
     extra = 0
@@ -78,12 +89,6 @@ class PalletReceivedInline(CustomNestedStackedInlineMixin, admin.StackedInline):
         if obj and obj.pk:
             readonly_fields.append('ooid')
 
-        # Si el estado del corte está cerrado o cancelado, todos los campos son readonly
-        if obj and obj.status in ['closed', 'canceled']:
-            # Filtrar solo los campos definidos en el admin que realmente existen
-            readonly_fields.extend([
-                field for field in self.fields if hasattr(obj, field)
-            ])
 
         return readonly_fields
 
@@ -98,7 +103,6 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     fields = ('status', 'phytosanitary_certificate', 'guide_number', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pallets_received', 'packhouse_weight_result',
               'mrl', 'kg_sample', 'boxes_assigned', 'full_boxes', 'empty_boxes', 'missing_boxes', 'average_per_box', 'current_kg_available')
     inlines = [PalletReceivedInline, ScheduleHarvestInline]
-    # readonly_fields = ('pallets_received', 'boxes_assigned', 'missing_boxes', 'average_per_box', 'current_kg_available')
 
     def get_scheduleharvest_ooid(self, obj):
         schedule_harvest = obj.scheduleharvest
@@ -124,6 +128,10 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     get_scheduleharvest_product.short_description = _('Product')
     get_scheduleharvest_orchard.admin_order_field = 'scheduleharvest__orchard'
     get_scheduleharvest_orchard.short_description = _('Orchard')
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        update_pallet_numbers(form.instance)
 
     class Media:
         js = ('js/admin/forms/packhouses/receiving/incoming_product.js', )
