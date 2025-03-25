@@ -15,7 +15,7 @@ from django.conf import settings
 from .utils import (vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices,
                     get_vehicle_category_choices, get_provider_categories_choices)
 from django.core.exceptions import ValidationError
-from common.base.models import (ProductKind, CountryProductStandardSize, ProductStandardPackaging, CapitalFramework,
+from common.base.models import (ProductKind, ProductKindCountryStandardSize, ProductKindCountryStandardPackaging, CapitalFramework,
                                 ProductKindCountryStandard, LegalEntityCategory, SupplyKind)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
@@ -195,7 +195,7 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Varieties'), blank=False)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    standard_size = models.ForeignKey(CountryProductStandardSize, verbose_name=_('Standard size'), on_delete=models.PROTECT, null=True, blank=False)
+    standard_size = models.ForeignKey(ProductKindCountryStandardSize, verbose_name=_('Standard size'), on_delete=models.PROTECT, null=True, blank=False)
     name = models.CharField(max_length=160, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
@@ -801,7 +801,7 @@ class Packaging(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
-    product_standard_packaging = models.ForeignKey(ProductStandardPackaging,
+    product_standard_packaging = models.ForeignKey(ProductKindCountryStandardPackaging,
                                                    verbose_name=_('Product standard packaging'),
                                                    null=True, blank=True, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))

@@ -85,7 +85,7 @@ class ProductKindCountryStandard(models.Model):
 #   - 32, 36, 40, 48, 60, 70, ... (de APEAM para AGUACATES en ESTADOS UNIDOS)
 #   - 300, 400, 500, 600, ... (de APEAM para LIMÓN-MEXICANO en MÉXICO)
 #   - 110, 150, 175, 200, 230, 250, ... (de "ALGUNA ASOCIACIÓN" para LIMÓN-PERSA en ESTADOS UNIDOS)
-class CountryProductStandardSize(models.Model):
+class ProductKindCountryStandardSize(models.Model):
     standard = models.ForeignKey(ProductKindCountryStandard, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, verbose_name=_('Code'))
@@ -98,15 +98,15 @@ class CountryProductStandardSize(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('Country product standard, Size')
-        verbose_name_plural = _('Country product standard, Sizes')
+        verbose_name = _('Product kind country standard, Size')
+        verbose_name_plural = _('Product kind country standard, Sizes')
         ordering = ['sort_order']
         constraints = [
-            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='countryproductstandardsize_unique_standard_name_code')
+            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='productkindcountrystandardsize_unique_standard_name_code')
         ]
 
 
-class ProductStandardPackaging(models.Model):
+class ProductKindCountryStandardPackaging(models.Model):
     supply_kind = models.ForeignKey(SupplyKind, on_delete=models.PROTECT)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, verbose_name=_('Code'))
@@ -119,10 +119,10 @@ class ProductStandardPackaging(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('Product packaging standard')
-        verbose_name_plural = _('Product packaging standard')
+        verbose_name = _('Product kind country standard, Packaging')
+        verbose_name_plural = _('Product kind country standard, Packaging')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='productpackagingstandard_unique_name_code_standard')
+            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='productkindcountrystandardpackaging_unique_name_code_standard')
         ]
 
 

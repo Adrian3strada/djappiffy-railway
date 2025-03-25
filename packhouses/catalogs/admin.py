@@ -6,7 +6,7 @@ from .models import (
     ProductPhenologyKind, ProductMassVolumeKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
-    HarvestingPaymentSetting, Supply, ProductStandardPackaging,
+    HarvestingPaymentSetting, Supply, ProductKindCountryStandardPackaging,
     Service, ProductPresentation, Packaging, ProductPackaging, ProductPackagingPallet,
     WeighingScale, ColdChamber,
     Pallet, PalletComplementarySupply,
@@ -55,7 +55,7 @@ from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizati
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
-from common.base.models import (ProductKind, CountryProductStandardSize, CapitalFramework, SupplyKind,
+from common.base.models import (ProductKind, ProductKindCountryStandardSize, CapitalFramework, SupplyKind,
                                 ProductKindCountryStandard)
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
@@ -380,9 +380,9 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
             if product_id and market_id:
                 market = Market.objects.get(id=market_id)
                 product = Product.objects.get(id=product_id)
-                queryset = CountryProductStandardSize.objects.filter(standard__product_kind=product.kind,
-                                                                     standard__country_id__in=market.countries.all(),
-                                                                     is_enabled=True)
+                queryset = ProductKindCountryStandardSize.objects.filter(standard__product_kind=product.kind,
+                                                                         standard__country_id__in=market.countries.all(),
+                                                                         is_enabled=True)
                 kwargs["queryset"] = queryset
                 formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
                 formfield.required = queryset.exists()
@@ -395,7 +395,7 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
                         f"({item.standard.name})" if standards.count() > 1 else "")
                 return formfield
             else:
-                queryset = CountryProductStandardSize.objects.none()
+                queryset = ProductKindCountryStandardSize.objects.none()
                 kwargs["queryset"] = queryset
                 formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
                 formfield.required = queryset.exists()
@@ -1396,11 +1396,11 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             formfield.required = True
             if organization and product_kind and market_id:
                 market_countries = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
-                queryset = ProductStandardPackaging.objects.filter(standard__product_kind=product_kind, standard__country__in=market_countries)
+                queryset = ProductKindCountryStandardPackaging.objects.filter(standard__product_kind=product_kind, standard__country__in=market_countries)
                 kwargs["queryset"] = queryset
                 formfield.required = queryset.exists()
             else:
-                kwargs["queryset"] = ProductStandardPackaging.objects.none()
+                kwargs["queryset"] = ProductKindCountryStandardPackaging.objects.none()
                 formfield.required = False
             return formfield
 

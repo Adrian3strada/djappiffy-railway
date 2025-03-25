@@ -3,8 +3,8 @@ from unicodedata import category
 from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
-from .models import (ProductKind, ProductKindCountryStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
-                     ProductStandardPackaging, SupplyKind,
+from .models import (ProductKind, ProductKindCountryStandard, ProductKindCountryStandardSize, LegalEntityCategory, CapitalFramework,
+                     ProductKindCountryStandardPackaging, SupplyKind,
                      Incoterm, LocalDelivery, Currency)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
@@ -25,14 +25,14 @@ class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
 
 
 class CountryProductStandardSizeInline(admin.TabularInline):
-    model = CountryProductStandardSize
+    model = ProductKindCountryStandardSize
     extra = 0
     verbose_name = 'Size'
     verbose_name_plural = 'Sizes'
 
 
 class CountryProductStandardPackagingInline(admin.TabularInline):
-    model = ProductStandardPackaging
+    model = ProductKindCountryStandardPackaging
     extra = 0
     verbose_name = 'Standard packaging'
     verbose_name_plural = 'Standard packaging'
