@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import IncomingProduct, PalletReceived
+from .models import IncomingProduct, PalletReceived, PalletContainer
 from common.base.mixins import (ByOrganizationAdminMixin)
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle
 from django.utils.translation import gettext_lazy as _
@@ -7,6 +7,7 @@ import nested_admin
 from .mixins import CustomNestedStackedInlineMixin
 from .forms import ScheduleHarvestVehicleForm
 from nested_admin import NestedStackedInline
+from packhouses.catalogs.models import Supply
 
 # Inlines para el corte
 class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
@@ -44,9 +45,9 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 # Inline para los pallets
-class PalletReceivedInline(CustomNestedStackedInlineMixin, admin.StackedInline):
-    model = PalletReceived
-    fields = ('ooid', 'gross_weight', 'total_boxes', 'harvest_container', 'container_tare', 'platform_tare', 'net_weight')
+
+class PalletContainerInline(nested_admin.NestedTabularInline):
+    model = PalletContainer
     extra = 0
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -55,9 +56,15 @@ class PalletReceivedInline(CustomNestedStackedInlineMixin, admin.StackedInline):
             organization = request.organization
 
         if db_field.name == "harvest_container":
-            kwargs["queryset"] = HarvestContainer.objects.filter(organization=organization, is_enabled=True)
+            kwargs["queryset"] = Supply.objects.filter(organization=organization, is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+class PalletReceivedInline(CustomNestedStackedInlineMixin, admin.StackedInline):
+    model = PalletReceived
+    inlines = [PalletContainerInline]
+    fields = ('ooid', 'gross_weight', 'container_tare', 'platform_tare', 'net_weight')
+    extra = 0
 
     def get_readonly_fields(self, request, obj=None):
         # Obtener los campos readonly predefinidos

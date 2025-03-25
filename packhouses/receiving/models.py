@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_incoming_product_categories_status
-from packhouses.catalogs.models import WeighingScale
+from packhouses.catalogs.models import WeighingScale, Supply
 
 # Create your models here.
 
@@ -48,7 +48,6 @@ class PalletReceived(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_("Pallet Number"),null=True, blank=True, unique=True)
     # pallet_number = models.PositiveIntegerField(verbose_name=_("Pallet Number"), null=True, blank=True)
     gross_weight = models.FloatField(default=0.0, verbose_name=_("Gross Weight"),)
-    total_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Total Boxes'))
     container_tare = models.FloatField(default=0.0, verbose_name=_("Container Tare"),)
     platform_tare = models.FloatField(default=0.0, verbose_name=_("Platform Tare"),)
     net_weight = models.FloatField(default=0.0, verbose_name=_("Net Weight"),)
@@ -71,3 +70,8 @@ class PalletReceived(models.Model):
     class Meta:
         verbose_name = _('Pallet Received')
         verbose_name_plural = _('Pallets Received')
+
+class PalletContainer(models.Model):
+    harvest_container = models.ForeignKey(Supply,on_delete=models.CASCADE, limit_choices_to={'kind__category': 'harvest_container'})
+    quantity = models.PositiveIntegerField(default=0, verbose_name=_('Quantity'))
+    pallet_received = models.ForeignKey(PalletReceived, verbose_name=_('Incoming Product'), on_delete=models.PROTECT)
