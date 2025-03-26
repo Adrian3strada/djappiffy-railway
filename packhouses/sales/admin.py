@@ -9,7 +9,7 @@ from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
-from .filters import ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter
+from .filters import ByMaquiladoraForOrganizationOrderFilter, ByClientForOrganizationOrderFilter
 from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
                                         ProductPhenologyKind, ProductMarketClass, Packaging)
@@ -85,7 +85,7 @@ class OrderItemInline(admin.StackedInline):
 class OrderAdmin(ByOrganizationAdminMixin):
     list_display = ('ooid', 'maquiladora', 'client',
                     'shipment_date', 'delivery_kind', 'product', 'product_variety', 'status')
-    list_filter = ('client_category', ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter,
+    list_filter = ('client_category', ByMaquiladoraForOrganizationOrderFilter, ByClientForOrganizationOrderFilter,
                    'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms',
                    'product', 'product_variety', 'status')
     fields = (

@@ -7,13 +7,15 @@ from common.base.models import ProductKind
 from django.utils.translation import gettext_lazy as _
 
 
-class ByMaquiladoraForOrganizationFilter(admin.SimpleListFilter):
+class ByMaquiladoraForOrganizationOrderFilter(admin.SimpleListFilter):
     title = _('Maquiladora')
     parameter_name = 'maquiladora'
 
     def lookups(self, request, model_admin):
-        organization = getattr(request, 'organization', None)
-        maquiladoras = Maquiladora.objects.filter(organization=organization, is_enabled=True)
+        maquiladoras = Maquiladora.objects.none()
+        if hasattr(request, 'organization'):
+            maquiladora_ids = list(Order.objects.filter(organization=request.organization).values_list('maquiladora', flat=True).distinct())
+            maquiladoras = Maquiladora.objects.filter(id__in=maquiladora_ids).order_by('name')
         return [(maquiladora.id, maquiladora.name) for maquiladora in maquiladoras]
 
     def queryset(self, request, queryset):
@@ -22,13 +24,15 @@ class ByMaquiladoraForOrganizationFilter(admin.SimpleListFilter):
         return queryset
 
 
-class ByClientForOrganizationFilter(admin.SimpleListFilter):
-    title = _('Cliente')
+class ByClientForOrganizationOrderFilter(admin.SimpleListFilter):
+    title = _('Client')
     parameter_name = 'client'
 
     def lookups(self, request, model_admin):
-        organization = getattr(request, 'organization', None)
-        clients = Client.objects.filter(organization=organization, is_enabled=True)
+        clients = Client.objects.none()
+        if hasattr(request, 'organization'):
+            client_ids = list(Order.objects.filter(organization=request.organization).values_list('client', flat=True).distinct())
+            clients = Client.objects.filter(id__in=client_ids).order_by('name')
         return [(client.id, client.name) for client in clients]
 
     def queryset(self, request, queryset):
