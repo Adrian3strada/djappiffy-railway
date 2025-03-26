@@ -5,9 +5,11 @@ from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvesti
 from django.utils.translation import gettext_lazy as _
 import nested_admin
 from .mixins import CustomNestedStackedInlineMixin
-from .forms import ScheduleHarvestVehicleForm
+from .forms import ScheduleHarvestVehicleForm, IncomingProductForm
 from nested_admin import NestedStackedInline
 from packhouses.catalogs.models import Supply
+from .filters import ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter
+from .utils import update_pallet_numbers
 
 # Inlines para el corte
 class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
@@ -45,18 +47,6 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 # Inline para los pallets
-
-from django.db import transaction
-
-def update_pallet_numbers(incoming_product):
-    # Obtiene los pallets ordenados (por ejemplo, según el id de creación)
-    pallets = incoming_product.palletreceived_set.all().order_by('id')
-    with transaction.atomic():
-        for index, pallet in enumerate(pallets, start=1):
-            if pallet.ooid != index:
-                pallet.ooid = index
-                pallet.save(update_fields=['ooid'])
-
 class PalletContainerInline(nested_admin.NestedTabularInline):
     model = PalletContainer
     extra = 0
@@ -98,11 +88,27 @@ class PalletReceivedInline(CustomNestedStackedInlineMixin, admin.StackedInline):
 # Reciba
 @admin.register(IncomingProduct)
 class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
-    list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_orchard', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_product',
-                    'guide_number', 'status',)
+    list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_orchard', 'get_scheduleharvest_product_provider',
+                    'get_scheduleharvest_product', 'status','generate_actions_buttons')
     fields = ('status', 'phytosanitary_certificate', 'guide_number', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pallets_received', 'packhouse_weight_result',
               'mrl', 'kg_sample', 'boxes_assigned', 'full_boxes', 'empty_boxes', 'missing_boxes', 'average_per_box', 'current_kg_available')
+    list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,)
+    search_fields = ('scheduleharvest__ooid',)
     inlines = [PalletReceivedInline, ScheduleHarvestInline]
+    form = IncomingProductForm
+
+    # Filtrar en el Admin solo los cortes que su status sea "pending"
+    # def get_queryset(self, request):
+    #    return super().get_queryset(request).filter(status="pending")
+
+    def has_add_permission(self, request):
+        return False 
+
+    def generate_actions_buttons(self, obj):
+        pass
+    
+    generate_actions_buttons.short_description = _('Actions')
+    generate_actions_buttons.allow_tags = True
 
     def get_scheduleharvest_ooid(self, obj):
         schedule_harvest = obj.scheduleharvest
@@ -119,6 +125,10 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     def get_scheduleharvest_orchard(self, obj):
         schedule_harvest = obj.scheduleharvest
         return schedule_harvest.orchard if schedule_harvest else None
+    
+    def get_scheduleharvest_product_provider(self, obj):
+        schedule_harvest = obj.scheduleharvest
+        return schedule_harvest.product_provider if schedule_harvest else None
 
     get_scheduleharvest_ooid.admin_order_field = 'scheduleharvest__ooid'
     get_scheduleharvest_ooid.short_description = _('Harvest Number')
@@ -128,6 +138,8 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     get_scheduleharvest_product.short_description = _('Product')
     get_scheduleharvest_orchard.admin_order_field = 'scheduleharvest__orchard'
     get_scheduleharvest_orchard.short_description = _('Orchard')
+    get_scheduleharvest_product_provider.admin_order_field = 'scheduleharvest__product_provider'
+    get_scheduleharvest_product_provider.short_description = _('Provider')
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)

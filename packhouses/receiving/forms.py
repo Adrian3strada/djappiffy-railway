@@ -1,6 +1,8 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from packhouses.gathering.models import ScheduleHarvestVehicle
+from .models import IncomingProduct
+from django.core.exceptions import ValidationError
 
 class ScheduleHarvestVehicleForm(forms.ModelForm):
     stamp_vehicle_number = forms.CharField(label=_('Stamp'), required=False)
@@ -53,4 +55,11 @@ class ScheduleHarvestVehicleForm(forms.ModelForm):
 
     class Meta:
         model = ScheduleHarvestVehicle
+        fields = "__all__"
+
+
+class IncomingProductForm(forms.ModelForm):
+   
+    class Meta:
+        model = IncomingProduct
         fields = "__all__"
