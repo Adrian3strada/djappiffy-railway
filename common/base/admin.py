@@ -3,8 +3,8 @@ from unicodedata import category
 from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
-from .models import (ProductKind, ProductKindCountryStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
-                     ProductStandardPackaging, SupplyKind,
+from .models import (ProductKind, ProductKindCountryStandard, ProductKindCountryStandardSize, LegalEntityCategory, CapitalFramework,
+                     ProductKindCountryStandardPackaging, SupplyKind,
                      Incoterm, LocalDelivery, Currency,
                      CertificationEntity, CertificationFormat)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
@@ -26,19 +26,14 @@ class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
 
 
 class CountryProductStandardSizeInline(admin.TabularInline):
-    model = CountryProductStandardSize
+    model = ProductKindCountryStandardSize
     extra = 0
     verbose_name = 'Size'
     verbose_name_plural = 'Sizes'
 
-# TODO: Remover este cuando todo packaging esté completo
-@admin.register(ProductStandardPackaging)
-class CountryProductStandardPackagingAdmin(admin.ModelAdmin):
-    pass
-
 
 class CountryProductStandardPackagingInline(admin.TabularInline):
-    model = ProductStandardPackaging
+    model = ProductKindCountryStandardPackaging
     extra = 0
     verbose_name = 'Standard packaging'
     verbose_name_plural = 'Standard packaging'
@@ -60,7 +55,7 @@ class CountryProductStandardPackagingInline(admin.TabularInline):
 
 
 @admin.register(ProductKindCountryStandard)
-class CountryProductStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
+class ProductKindCountryStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'product_kind', 'country', 'is_enabled', 'sort_order')
     list_filter = [ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter, 'is_enabled']
     search_fields = ['name']

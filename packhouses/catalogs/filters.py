@@ -681,16 +681,15 @@ class ByMarketForOrganizationPalletFilter(admin.SimpleListFilter):
     parameter_name = 'markets'
 
     def lookups(self, request, model_admin):
-        markets = Market.objects.all()
+        markets = Market.objects.none()
         if hasattr(request, 'organization'):
-            market_ids = list(
-                Pallet.objects.filter(organization=request.organization).values_list('markets', flat=True).distinct())
-            markets = markets.filter(id__in=market_ids).order_by('name')
+            market_ids = list(Pallet.objects.filter(organization=request.organization).values_list('market', flat=True).distinct())
+            markets = Market.objects.filter(id__in=market_ids).order_by('name')
         return [(market.id, market.name) for market in markets]
 
     def queryset(self, request, queryset):
         if self.value():
-            return queryset.filter(markets__id=self.value())
+            return queryset.filter(market__id=self.value())
         return queryset
 
 

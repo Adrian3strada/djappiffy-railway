@@ -7,13 +7,14 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
                           ProductPhenologyKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
                           MaquiladoraSerializer, PackagingSerializer, ProductPresentationSerializer,
                           SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
+                          ProductPackagingSerializer, PalletSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
                           OrchardCertificationSerializer, ProductRipenessSerializer, PurchaseOrderSupplySerializer,
 
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
-                     Product, Packaging, ProductPresentation,
+                     Product, Packaging, ProductPresentation, ProductPackaging, Pallet,
                      Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness,
                      )
 from django_filters.rest_framework import DjangoFilterBackend
@@ -110,7 +111,7 @@ class ProductMarketClassViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
-    filterset_fields = ['organization', 'is_enabled']
+    filterset_fields = ['is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -119,6 +120,20 @@ class ProductViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return Product.objects.filter(organization=self.request.organization)
+
+
+class PalletViewSet(viewsets.ModelViewSet):
+    serializer_class = PalletSerializer
+    filterset_fields = ['market', 'product', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return Pallet.objects.filter(organization=self.request.organization)
+
 
 class MaquiladoraViewSet(viewsets.ModelViewSet):
     serializer_class = MaquiladoraSerializer
@@ -159,6 +174,21 @@ class PackagingViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         queryset = Packaging.objects.filter(organization=self.request.organization)
+
+        return queryset
+
+
+class ProductPackagingViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductPackagingSerializer
+    filterset_fields = ['product', 'market', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = ProductPackaging.objects.filter(organization=self.request.organization)
 
         return queryset
 

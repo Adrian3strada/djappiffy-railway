@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from .serializers import (ProductKindSerializer, CitySerializer, SubRegionSerializer, RegionSerializer,
                           CapitalFrameworkSerializer, ProductStandardPackagingSerializer, SupplyKindSerializer,
                           CountrySerializer, CountryProductStandardSizeSerializer)
-from .models import ProductKind, CountryProductStandardSize, CapitalFramework, ProductStandardPackaging, SupplyKind
+from .models import ProductKind, ProductKindCountryStandardSize, CapitalFramework, ProductKindCountryStandardPackaging, SupplyKind
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
 from cities_light.contrib.restframework3 import SubRegionModelViewSet as BaseSubRegionModelViewSet
 from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
@@ -44,7 +44,7 @@ class CountryProductStandardSizeViewSet(viewsets.ModelViewSet):
     multiple_standards = False
 
     def get_queryset(self):
-        queryset = CountryProductStandardSize.objects.all()
+        queryset = ProductKindCountryStandardSize.objects.all()
         product_kind = self.request.GET.get('product_kind')
         country = self.request.GET.get('country')
         countries = self.request.GET.get('countries')
@@ -67,7 +67,7 @@ class ProductStandardPackagingViewSet(viewsets.ModelViewSet):
     pagination_class = None
 
     def get_queryset(self):
-        queryset = ProductStandardPackaging.objects.all()
+        queryset = ProductKindCountryStandardPackaging.objects.all()
         supply_kind__category = self.request.GET.get('supply_kind__category')
         standard__country__in = self.request.GET.get('standard__country__in')
         max_product_amount__lte = self.request.GET.get('max_product_amount__lte')

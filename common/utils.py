@@ -14,6 +14,6 @@ def is_instance_used(instance, exclude=None):
                     related_classes.add(model)
 
     related_classes.difference_update(exclude)
-    print("is_instance_used() related_classes", related_classes)
+    print("is_instance_used() related_classes: ", related_classes)
 
     return len(related_classes) > 0
