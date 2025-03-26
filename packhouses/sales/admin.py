@@ -9,7 +9,8 @@ from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
-from .filters import ByMaquiladoraForOrganizationOrderFilter, ByClientForOrganizationOrderFilter
+from .filters import (ByMaquiladoraForOrganizationOrderFilter, ByClientForOrganizationOrderFilter,
+                      ByLocalDeliveryForOrganizationOrderFilter)
 from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
                                         ProductPhenologyKind, ProductMarketClass, Packaging)
@@ -83,10 +84,11 @@ class OrderItemInline(admin.StackedInline):
 
 @admin.register(Order)
 class OrderAdmin(ByOrganizationAdminMixin):
-    list_display = ('ooid', 'maquiladora', 'client',
-                    'shipment_date', 'delivery_kind', 'product', 'product_variety', 'status')
+    list_display = ('ooid', 'maquiladora', 'client', 'shipment_date', 'delivery_date', 'delivery_kind',
+                    'product', 'product_variety', 'status')
     list_filter = ('client_category', ByMaquiladoraForOrganizationOrderFilter, ByClientForOrganizationOrderFilter,
-                   'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms',
+                   'registration_date', 'shipment_date', 'delivery_date', ByLocalDeliveryForOrganizationOrderFilter,
+                   'incoterms',
                    'product', 'product_variety', 'status')
     fields = (
         'ooid', 'client_category', 'maquiladora', 'client', 'local_delivery', 'incoterms',

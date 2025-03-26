@@ -3,7 +3,7 @@ from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import Order
 from ..catalogs.models import Client, Maquiladora
-from common.base.models import ProductKind
+from common.base.models import ProductKind, LocalDelivery
 from django.utils.translation import gettext_lazy as _
 
 
@@ -38,4 +38,21 @@ class ByClientForOrganizationOrderFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(client=self.value())
+        return queryset
+
+
+class ByLocalDeliveryForOrganizationOrderFilter(admin.SimpleListFilter):
+    title = _('Local delivery')
+    parameter_name = 'local_delivery'
+
+    def lookups(self, request, model_admin):
+        local_deliveries = LocalDelivery.objects.none()
+        if hasattr(request, 'organization'):
+            local_delivery_related = list(Order.objects.filter(organization=request.organization).values_list('local_delivery', flat=True).distinct())
+            local_deliveries = LocalDelivery.objects.filter(id__in=local_delivery_related).order_by('name')
+        return [(local_delivery.id, local_delivery.name) for local_delivery in local_deliveries]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(local_delivery=self.value())
         return queryset
