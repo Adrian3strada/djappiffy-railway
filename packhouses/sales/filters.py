@@ -2,8 +2,9 @@ from django.contrib import admin
 from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import Order
-from ..catalogs.models import Client, Maquiladora
-from common.base.models import ProductKind, LocalDelivery
+from .utils import incoterms_choices
+from ..catalogs.models import Client, Maquiladora, Product, ProductVariety
+from common.base.models import ProductKind, LocalDelivery, Incoterm
 from django.utils.translation import gettext_lazy as _
 
 
@@ -55,4 +56,55 @@ class ByLocalDeliveryForOrganizationOrderFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(local_delivery=self.value())
+        return queryset
+
+
+class ByIncotermsForOrganizationOrderFilter(admin.SimpleListFilter):
+    title = _('Incoterms')
+    parameter_name = 'incoterms'
+
+    def lookups(self, request, model_admin):
+        incoterms = LocalDelivery.objects.none()
+        if hasattr(request, 'organization'):
+            incoterms_related = list(Order.objects.filter(organization=request.organization).values_list('incoterms', flat=True).distinct())
+            incoterms = Incoterm.objects.filter(id__in=incoterms_related).order_by('name')
+        return [(incoterm.id, incoterm.name) for incoterm in incoterms]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(incoterms=self.value())
+        return queryset
+
+
+class ByProductForOrganizationOrderFilter(admin.SimpleListFilter):
+    title = _('Product')
+    parameter_name = 'product'
+
+    def lookups(self, request, model_admin):
+        products = LocalDelivery.objects.none()
+        if hasattr(request, 'organization'):
+            product_related = list(Order.objects.filter(organization=request.organization).values_list('product', flat=True).distinct())
+            products = Product.objects.filter(id__in=product_related).order_by('name')
+        return [(product.id, product.name) for product in products]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(product=self.value())
+        return queryset
+
+
+class ByProductVarietyForOrganizationOrderFilter(admin.SimpleListFilter):
+    title = _('Product variety')
+    parameter_name = 'product_variety'
+
+    def lookups(self, request, model_admin):
+        product_varieties = LocalDelivery.objects.none()
+        if hasattr(request, 'organization'):
+            product_variety_related = list(Order.objects.filter(organization=request.organization).values_list('product_variety', flat=True).distinct())
+            product_varieties = ProductVariety.objects.filter(id__in=product_variety_related).order_by('name')
+        return [(product_variety.id, product_variety.name) for product_variety in product_varieties]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(product_variety=self.value())
         return queryset
