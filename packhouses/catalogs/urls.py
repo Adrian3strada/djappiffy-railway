@@ -6,7 +6,7 @@ from .viewsets import (
     MarketViewSet, ProductMarketClassViewSet, VehicleViewSet, HarvestingCrewProviderViewSet,
     CrewChiefViewSet, ProductVarietyViewSet, ProductHarvestSizeKindViewSet, ProductPhenologyKindViewSet,
     ProductMassVolumeKindViewSet, ClientViewSet, ProviderViewSet, ProductViewSet, MaquiladoraViewSet, SupplyViewSet,
-    ProductSizeViewSet, ProductPresentationViewSet,
+    ProductSizeViewSet, ProductPresentationViewSet, ProductPackagingViewSet, PalletViewSet,
     OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, PackagingViewSet, ProductRipenessViewSet,
     PurchaseOrderSupplyViewSet
 )
@@ -17,6 +17,7 @@ urlpatterns = []
 
 drf_router.register(r'rest/v1/catalogs/market', MarketViewSet, basename='market')
 drf_router.register(r'rest/v1/catalogs/product', ProductViewSet, basename='product')
+drf_router.register(r'rest/v1/catalogs/pallet', PalletViewSet, basename='pallet')
 drf_router.register(r'rest/v1/catalogs/product-market-class', ProductMarketClassViewSet, basename='market_class')
 drf_router.register(r'rest/v1/catalogs/product-harvest-size-kind', ProductHarvestSizeKindViewSet, basename='product_harvest_size_kind')
 drf_router.register(r'rest/v1/catalogs/product-phenology', ProductPhenologyKindViewSet, basename='product_season_kind')
@@ -24,6 +25,7 @@ drf_router.register(r'rest/v1/catalogs/product-mass-volume-kind', ProductMassVol
 drf_router.register(r'rest/v1/catalogs/product-variety', ProductVarietyViewSet, basename='product_variety')
 drf_router.register(r'rest/v1/catalogs/product-size', ProductSizeViewSet, basename='product_size')
 drf_router.register(r'rest/v1/catalogs/product-presentation', ProductPresentationViewSet, basename='product_presentation')
+drf_router.register(r'rest/v1/catalogs/product-packaging', ProductPackagingViewSet, basename='product_packaging')
 drf_router.register(r'rest/v1/catalogs/packaging', PackagingViewSet, basename='packaging')
 drf_router.register(r'rest/v1/catalogs/provider', ProviderViewSet, basename='provider')
 drf_router.register(r'rest/v1/catalogs/supply', SupplyViewSet, basename='supply')

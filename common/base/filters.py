@@ -1,7 +1,7 @@
 from django.contrib import admin
 from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
-from .models import ProductKindCountryStandard, CountryProductStandardSize, CapitalFramework
+from .models import ProductKindCountryStandard, ProductKindCountryStandardSize, CapitalFramework
 from common.base.models import ProductKind
 from django.utils.translation import gettext_lazy as _
 

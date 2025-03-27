@@ -9,7 +9,9 @@ from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
-from .filters import ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter
+from .filters import (ByMaquiladoraForOrganizationOrderFilter, ByClientForOrganizationOrderFilter,
+                      ByLocalDeliveryForOrganizationOrderFilter, ByIncotermsForOrganizationOrderFilter,
+                      ByProductForOrganizationOrderFilter, ByProductVarietyForOrganizationOrderFilter)
 from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
                                         ProductPhenologyKind, ProductMarketClass, Packaging)
@@ -71,7 +73,7 @@ class OrderItemInline(admin.StackedInline):
         if db_field.name == "product_packaging":
             kwargs["queryset"] = Packaging.objects.none()
             if parent_obj and parent_obj.product:
-                kwargs["queryset"] = Packaging.objects.filter(product=parent_obj.product, markets=parent_obj.client.market, is_enabled=True)
+                kwargs["queryset"] = Packaging.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
 
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -83,15 +85,16 @@ class OrderItemInline(admin.StackedInline):
 
 @admin.register(Order)
 class OrderAdmin(ByOrganizationAdminMixin):
-    list_display = ('ooid', 'client_category', 'maquiladora', 'client',
-                    'shipment_date', 'delivery_date', 'delivery_kind', 'product', 'product_variety', 'status')
-    list_filter = ('client_category', ByMaquiladoraForOrganizationFilter, ByClientForOrganizationFilter,
-                   'registration_date', 'shipment_date', 'delivery_date', 'local_delivery', 'incoterms',
-                   'product', 'product_variety', 'status')
+    list_display = ('ooid', 'client', 'maquiladora', 'shipment_date', 'delivery_date', 'delivery_kind',
+                    'product', 'product_variety', 'status')
+    list_filter = ('client_category', ByMaquiladoraForOrganizationOrderFilter, ByClientForOrganizationOrderFilter,
+                   'registration_date', 'shipment_date', 'delivery_date', ByLocalDeliveryForOrganizationOrderFilter,
+                   ByIncotermsForOrganizationOrderFilter, ByProductForOrganizationOrderFilter,
+                   ByProductVarietyForOrganizationOrderFilter, 'status')
     fields = (
         'ooid', 'client_category', 'maquiladora', 'client', 'local_delivery', 'incoterms',
         'registration_date', 'shipment_date', 'delivery_date',
-        'product', 'product_variety', 'order_items_by', 'pricing_by',
+        'product', 'product_variety', 'order_items_kind', 'pricing_by',
         'observations', 'status'
     )
     ordering = ('-ooid',)

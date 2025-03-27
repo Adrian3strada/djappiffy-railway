@@ -13,6 +13,13 @@ SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES = [
     ('other', _('Other')),
 ]
 
+COUNTRY_PRODUCT_STANDARD_SIZE_CATEGORY_CHOICES = [
+    ('size', _('Size')),
+    ('mix', _('Mix')),
+    ('waste', _('Waste')),
+    ('biomass', _('Biomass')),
+]
+
 PRODUCT_MEASURE_UNIT_CATEGORY_CHOICES = [
     ('pieces', _('Pieces')),
     ('g', _('grams')),

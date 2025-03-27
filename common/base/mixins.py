@@ -12,6 +12,12 @@ class ByOrganizationAdminMixin(admin.ModelAdmin):
             return qs.filter(organization=request.organization)
         return qs
 
+    def get_fields(self, request, obj=None):
+        fields = list(super().get_fields(request, obj))
+        if 'organization' in fields:
+            fields.remove('organization')
+        return fields
+
     def save_model(self, request, obj, form, change):
         if not obj.pk:
             if hasattr(request, 'organization'):

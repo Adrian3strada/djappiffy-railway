@@ -6,13 +6,29 @@ document.addEventListener("DOMContentLoaded", function () {
   const incotermsField = $("#id_incoterms")
   const productField = $("#id_product")
   const productVarietyField = $("#id_product_variety")
-  const orderItemsByField = $("#id_order_items_by")
+  const orderItemsKindField = $("#id_order_items_kind")
   const pricingByField = $("#id_pricing_by")
 
   let productProperties = null;
   let organization = null;
 
   const API_BASE_URL = "/rest/v1";
+
+  let order_items_kind_options = [
+    {"product_measure_unit": "Product measure unit"},
+    {"product_packaging": "Product packaging"},
+    {"product_pallet": "Product pallet"},
+  ]
+
+  let product_measure_unit_price_options = [
+    {"product_measure_unit": "Product measure unit"}
+  ]
+
+  let product_price_options = [
+    {"product_measure_unit": "Product measure unit"},
+    {"product_packaging": "Product packaging"},
+    {"product_presentation": "Product presentation"}
+  ]
 
   function updateFieldOptions(field, options) {
     field.empty();
@@ -83,17 +99,22 @@ document.addEventListener("DOMContentLoaded", function () {
         (data) => {
           productProperties = data;
           if (data.price_measure_unit_category_display) {
-            orderItemsByField.find('option[value="product_measure_unit"]').text(data.price_measure_unit_category_display);
+            orderItemsKindField.find('option[value="product_measure_unit"]').text(data.price_measure_unit_category_display);
             pricingByField.find('option[value="product_measure_unit"]').text(data.price_measure_unit_category_display);
-            orderItemsByField.trigger('change').select2();
+
+
+
+            orderItemsKindField.val(null);
+            pricingByField.val(null);
+            orderItemsKindField.trigger('change').select2();
             pricingByField.trigger('change').select2();
           }
         });
     } else {
       productProperties = null;
-      orderItemsByField.find('option[value="product_measure_unit"]').text('Product measure unit');
+      orderItemsKindField.find('option[value="product_measure_unit"]').text('Product measure unit');
       pricingByField.find('option[value="product_measure_unit"]').text('Product measure unit');
-      orderItemsByField.trigger('change').select2();
+      orderItemsKindField.trigger('change').select2();
       pricingByField.trigger('change').select2();
     }
   }
