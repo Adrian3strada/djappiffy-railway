@@ -87,8 +87,42 @@ document.addEventListener("DOMContentLoaded", function() {
         button.addEventListener('click', function(e) {
             updateMissingBoxes();
             updateAveragePerBoxes();
-            updateCurrentKg();
-            updatePalletCount();  
+            updateCurrentKg(); 
         });
     });
+
+    const form = document.querySelector('form');
+    if (form) {
+        document.querySelectorAll('input[name="_save"], input[name="_continue"]').forEach(button => {
+            button.addEventListener('click', function(e) {
+                updateMissingBoxes();
+                updateAveragePerBoxes();
+                updateCurrentKg();
+                
+                const publicWeight = parseFloat($('#id_public_weight_result').val().replace(',', '.')) || 0;
+                const packhouseWeight = parseFloat($('#id_packhouse_weight_result').val().replace(',', '.')) || 0;
+                const threshold = publicWeight * 0.015; 
+                const diff = publicWeight - packhouseWeight; 
+                const status = $('#id_status').val();
+
+                if (publicWeight > packhouseWeight && diff >= threshold && status !== "pending") {
+                    e.preventDefault();
+                    const diffPerc = (diff / publicWeight) * 100; 
+                    Swal.fire({
+                        title: 'Significant Difference!',
+                        text: `The difference is ${diffPerc.toFixed(2)}%, are you sure you want to proceed?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            e.target.closest('form').submit();
+                        }
+                    });                    
+                }
+            });
+        });
+    }
+
 });

@@ -52,6 +52,7 @@ path('dadmin/purchases/set_purchase_order_supply_payment/<int:purchase_order_sup
     path("", include("packhouses.catalogs.urls")),
     path("", include("packhouses.packhouse_settings.urls")),
     path("", include("eudr.parcels.urls")),
+    path("", include("packhouses.gathering.urls")),
 
     # Internationalization
     path("i18n/", include("django.conf.urls.i18n")),

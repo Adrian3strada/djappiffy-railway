@@ -5,8 +5,8 @@ from packhouses.catalogs.models import Orchard, Provider, Product
 from packhouses.gathering.models import ScheduleHarvest
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Count
-
-from django.db.models import Subquery
+from django.utils.translation import gettext_lazy as _
+from packhouses.catalogs.utils import get_harvest_cutting_categories_choices
 
 class ByOrchardForOrganizationIncomingProductFilter(admin.SimpleListFilter):
     title = _('Orchard')
@@ -28,7 +28,7 @@ class ByOrchardForOrganizationIncomingProductFilter(admin.SimpleListFilter):
     
 
 class ByProviderForOrganizationIncomingProductFilter(admin.SimpleListFilter):
-    title = _('Provider')
+    title = _('Product Provider')
     parameter_name = 'scheduleharvest_product_provider'
 
     def has_output(self):
@@ -66,3 +66,23 @@ class ByProductForOrganizationIncomingProductFilter(admin.SimpleListFilter):
             return queryset.filter(scheduleharvest__product__id=self.value())
         return queryset
 
+class ByCategoryForOrganizationIncomingProductFilter(admin.SimpleListFilter):
+    title = _('Category')
+    parameter_name = 'scheduleharvest_category'
+
+    def has_output(self):
+        return True
+
+    def lookups(self, request, model_admin):
+        categories = ScheduleHarvest.objects.filter(
+            incoming_product__organization=request.organization,incoming_product__isnull=False
+        ).values_list('category', flat=True).distinct()
+        choices = list(get_harvest_cutting_categories_choices())
+        category_dict = dict(choices)
+        
+        return [(cat, category_dict.get(cat, cat)) for cat in categories]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(scheduleharvest__category=self.value())
+        return queryset
