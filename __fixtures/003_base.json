@@ -423,7 +423,7 @@
     }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 1,
   "fields": {
     "standard": 1,
@@ -436,7 +436,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 2,
   "fields": {
     "standard": 1,
@@ -449,7 +449,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 3,
   "fields": {
     "standard": 1,
@@ -462,7 +462,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 4,
   "fields": {
     "standard": 1,
@@ -475,7 +475,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 5,
   "fields": {
     "standard": 1,
@@ -488,7 +488,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 6,
   "fields": {
     "standard": 2,
@@ -501,7 +501,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 7,
   "fields": {
     "standard": 2,
@@ -514,7 +514,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 8,
   "fields": {
     "standard": 2,
@@ -527,7 +527,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 9,
   "fields": {
     "standard": 2,
@@ -540,7 +540,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 10,
   "fields": {
     "standard": 2,
@@ -553,7 +553,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 11,
   "fields": {
     "standard": 2,
@@ -566,7 +566,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 12,
   "fields": {
     "standard": 2,
@@ -579,7 +579,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 13,
   "fields": {
     "standard": 3,
@@ -592,7 +592,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 14,
   "fields": {
     "standard": 3,
@@ -605,7 +605,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 15,
   "fields": {
     "standard": 3,
@@ -618,7 +618,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 16,
   "fields": {
     "standard": 3,
@@ -631,7 +631,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 17,
   "fields": {
     "standard": 3,
@@ -644,7 +644,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 18,
   "fields": {
     "standard": 3,
@@ -657,7 +657,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 19,
   "fields": {
     "standard": 3,
@@ -670,7 +670,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 20,
   "fields": {
     "standard": 4,
@@ -683,7 +683,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 21,
   "fields": {
     "standard": 4,
@@ -696,7 +696,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 29,
   "fields": {
     "standard": 6,
@@ -709,7 +709,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 30,
   "fields": {
     "standard": 6,
@@ -722,7 +722,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 31,
   "fields": {
     "standard": 6,
@@ -735,7 +735,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 32,
   "fields": {
     "standard": 6,
@@ -748,7 +748,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 33,
   "fields": {
     "standard": 7,
@@ -761,7 +761,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 34,
   "fields": {
     "standard": 7,
@@ -774,7 +774,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 35,
   "fields": {
     "standard": 7,
@@ -787,7 +787,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 36,
   "fields": {
     "standard": 7,
@@ -800,7 +800,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 37,
   "fields": {
     "standard": 7,
@@ -813,7 +813,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 38,
   "fields": {
     "standard": 7,
@@ -826,7 +826,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 39,
   "fields": {
     "standard": 8,
@@ -839,7 +839,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 40,
   "fields": {
     "standard": 8,
@@ -852,7 +852,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 41,
   "fields": {
     "standard": 8,
@@ -865,7 +865,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 42,
   "fields": {
     "standard": 8,
@@ -878,7 +878,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 43,
   "fields": {
     "standard": 8,
@@ -891,7 +891,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 44,
   "fields": {
     "standard": 9,
@@ -904,7 +904,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 45,
   "fields": {
     "standard": 9,
@@ -917,7 +917,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 46,
   "fields": {
     "standard": 9,
@@ -930,7 +930,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 47,
   "fields": {
     "standard": 9,
@@ -943,7 +943,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 48,
   "fields": {
     "standard": 1,
@@ -956,7 +956,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 49,
   "fields": {
     "standard": 1,
@@ -969,7 +969,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 50,
   "fields": {
     "standard": 1,
@@ -982,7 +982,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 51,
   "fields": {
     "standard": 5,
@@ -995,7 +995,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 52,
   "fields": {
     "standard": 5,
@@ -1008,7 +1008,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 53,
   "fields": {
     "standard": 5,
@@ -1021,7 +1021,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 54,
   "fields": {
     "standard": 5,
@@ -1034,7 +1034,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 55,
   "fields": {
     "standard": 5,
@@ -1047,7 +1047,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 56,
   "fields": {
     "standard": 5,
@@ -1060,7 +1060,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 57,
   "fields": {
     "standard": 5,
@@ -1073,7 +1073,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 58,
   "fields": {
     "standard": 5,
@@ -1086,7 +1086,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 59,
   "fields": {
     "standard": 5,
@@ -1099,7 +1099,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 60,
   "fields": {
     "standard": 5,
@@ -1112,7 +1112,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 61,
   "fields": {
     "standard": 5,
@@ -1125,7 +1125,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 62,
   "fields": {
     "standard": 5,
@@ -1138,7 +1138,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 63,
   "fields": {
     "standard": 5,
@@ -1151,7 +1151,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 64,
   "fields": {
     "standard": 5,
@@ -1164,7 +1164,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 65,
   "fields": {
     "standard": 5,
@@ -1177,7 +1177,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 66,
   "fields": {
     "standard": 5,
@@ -1190,7 +1190,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 67,
   "fields": {
     "standard": 5,
@@ -1203,7 +1203,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 68,
   "fields": {
     "standard": 5,
@@ -1216,7 +1216,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 69,
   "fields": {
     "standard": 5,
@@ -1229,7 +1229,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 70,
   "fields": {
     "standard": 5,
@@ -1242,7 +1242,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 71,
   "fields": {
     "standard": 5,
@@ -1255,7 +1255,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 72,
   "fields": {
     "standard": 5,
@@ -1268,7 +1268,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 73,
   "fields": {
     "standard": 5,
@@ -1281,7 +1281,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 74,
   "fields": {
     "standard": 5,
@@ -1294,7 +1294,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 75,
   "fields": {
     "standard": 5,
@@ -1307,7 +1307,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 76,
   "fields": {
     "standard": 5,
@@ -1320,7 +1320,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 77,
   "fields": {
     "standard": 5,
@@ -1333,7 +1333,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 78,
   "fields": {
     "standard": 5,
@@ -1346,7 +1346,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 79,
   "fields": {
     "standard": 5,
@@ -1359,7 +1359,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 80,
   "fields": {
     "standard": 5,
@@ -1372,7 +1372,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 81,
   "fields": {
     "standard": 5,
@@ -1385,7 +1385,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 82,
   "fields": {
     "standard": 5,
@@ -1398,7 +1398,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 83,
   "fields": {
     "standard": 5,
@@ -1411,7 +1411,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 84,
   "fields": {
     "standard": 5,
@@ -1424,7 +1424,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 85,
   "fields": {
     "standard": 5,
@@ -1437,7 +1437,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 86,
   "fields": {
     "standard": 5,
@@ -1450,7 +1450,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 87,
   "fields": {
     "standard": 5,
@@ -1463,7 +1463,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 88,
   "fields": {
     "standard": 5,
@@ -1476,7 +1476,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 89,
   "fields": {
     "standard": 5,
@@ -1489,7 +1489,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 90,
   "fields": {
     "standard": 5,
@@ -1502,7 +1502,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 91,
   "fields": {
     "standard": 5,
@@ -1515,7 +1515,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 92,
   "fields": {
     "standard": 5,
@@ -1528,7 +1528,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 93,
   "fields": {
     "standard": 5,
@@ -1541,7 +1541,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 94,
   "fields": {
     "standard": 5,
@@ -1554,7 +1554,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 95,
   "fields": {
     "standard": 5,
@@ -1567,7 +1567,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 96,
   "fields": {
     "standard": 5,
@@ -1580,7 +1580,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 97,
   "fields": {
     "standard": 5,
@@ -1593,7 +1593,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 98,
   "fields": {
     "standard": 5,
@@ -1606,7 +1606,7 @@
   }
 },
 {
-  "model": "base.countryproductstandardsize",
+  "model": "base.productkindcountrystandardsize",
   "pk": 99,
   "fields": {
     "standard": 5,
@@ -1619,7 +1619,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 1,
   "fields": {
     "supply_kind": 1,
@@ -1632,7 +1632,7 @@
   }
 },
 {
-    "model": "base.productstandardpackaging",
+    "model": "base.productkindcountrystandardpackaging",
     "pk": 3,
     "fields": {
         "supply_kind": 1,
@@ -1645,7 +1645,7 @@
     }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 4,
   "fields": {
     "supply_kind": 1,
@@ -1658,7 +1658,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 5,
   "fields": {
     "supply_kind": 1,
@@ -1671,7 +1671,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 6,
   "fields": {
     "supply_kind": 1,
@@ -1684,7 +1684,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 7,
   "fields": {
     "supply_kind": 1,
@@ -1697,7 +1697,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 8,
   "fields": {
     "supply_kind": 1,
@@ -1710,7 +1710,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 9,
   "fields": {
     "supply_kind": 1,
@@ -1723,7 +1723,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 10,
   "fields": {
     "supply_kind": 1,
@@ -1736,7 +1736,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 11,
   "fields": {
     "supply_kind": 1,
@@ -1749,7 +1749,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 12,
   "fields": {
     "supply_kind": 1,
@@ -1762,7 +1762,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 13,
   "fields": {
     "supply_kind": 1,
@@ -1775,7 +1775,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 14,
   "fields": {
     "supply_kind": 1,
@@ -1788,7 +1788,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 15,
   "fields": {
     "supply_kind": 1,
@@ -1801,7 +1801,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 16,
   "fields": {
     "supply_kind": 1,
@@ -1814,7 +1814,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 17,
   "fields": {
     "supply_kind": 1,
@@ -1827,7 +1827,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 18,
   "fields": {
     "supply_kind": 1,
@@ -1840,7 +1840,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 19,
   "fields": {
     "supply_kind": 1,
@@ -1853,7 +1853,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 20,
   "fields": {
     "supply_kind": 1,
@@ -1866,7 +1866,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 21,
   "fields": {
     "supply_kind": 1,
@@ -1879,7 +1879,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 22,
   "fields": {
     "supply_kind": 1,
@@ -1892,7 +1892,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 23,
   "fields": {
     "supply_kind": 1,
@@ -1905,7 +1905,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 24,
   "fields": {
     "supply_kind": 1,
@@ -1918,7 +1918,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 25,
   "fields": {
     "supply_kind": 1,
@@ -1931,7 +1931,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 26,
   "fields": {
     "supply_kind": 1,
@@ -1944,7 +1944,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 27,
   "fields": {
     "supply_kind": 1,
@@ -1957,7 +1957,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 28,
   "fields": {
     "supply_kind": 1,
@@ -1970,7 +1970,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 29,
   "fields": {
     "supply_kind": 1,
@@ -1983,7 +1983,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 30,
   "fields": {
     "supply_kind": 1,
@@ -1996,7 +1996,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 31,
   "fields": {
     "supply_kind": 1,
@@ -2009,7 +2009,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 32,
   "fields": {
     "supply_kind": 1,
@@ -2022,7 +2022,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 33,
   "fields": {
     "supply_kind": 1,
@@ -2035,7 +2035,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 34,
   "fields": {
     "supply_kind": 1,
@@ -2048,7 +2048,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 35,
   "fields": {
     "supply_kind": 1,
@@ -2061,7 +2061,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 36,
   "fields": {
     "supply_kind": 1,
@@ -2074,7 +2074,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 37,
   "fields": {
     "supply_kind": 1,
@@ -2087,7 +2087,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 38,
   "fields": {
     "supply_kind": 1,
@@ -2100,7 +2100,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 39,
   "fields": {
     "supply_kind": 1,
@@ -2113,7 +2113,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 40,
   "fields": {
     "supply_kind": 1,
@@ -2126,7 +2126,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 41,
   "fields": {
     "supply_kind": 1,
@@ -2139,7 +2139,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 42,
   "fields": {
     "supply_kind": 1,
@@ -2152,7 +2152,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 43,
   "fields": {
     "supply_kind": 1,
@@ -2165,7 +2165,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 44,
   "fields": {
     "supply_kind": 1,
@@ -2178,7 +2178,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 45,
   "fields": {
     "supply_kind": 1,
@@ -2191,7 +2191,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 46,
   "fields": {
     "supply_kind": 1,
@@ -2204,7 +2204,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 47,
   "fields": {
     "supply_kind": 1,
@@ -2217,7 +2217,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 48,
   "fields": {
     "supply_kind": 1,
@@ -2230,7 +2230,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 49,
   "fields": {
     "supply_kind": 1,
@@ -2243,7 +2243,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 50,
   "fields": {
     "supply_kind": 1,
@@ -2256,7 +2256,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 51,
   "fields": {
     "supply_kind": 1,
@@ -2269,7 +2269,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 52,
   "fields": {
     "supply_kind": 1,
@@ -2282,7 +2282,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 53,
   "fields": {
     "supply_kind": 1,
@@ -2295,7 +2295,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 54,
   "fields": {
     "supply_kind": 1,
@@ -2308,7 +2308,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 55,
   "fields": {
     "supply_kind": 1,
@@ -2321,7 +2321,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 56,
   "fields": {
     "supply_kind": 1,
@@ -2334,7 +2334,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 57,
   "fields": {
     "supply_kind": 1,
@@ -2347,7 +2347,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 58,
   "fields": {
     "supply_kind": 1,
@@ -2360,7 +2360,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 59,
   "fields": {
     "supply_kind": 1,
@@ -2373,7 +2373,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 60,
   "fields": {
     "supply_kind": 1,
@@ -2386,7 +2386,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 61,
   "fields": {
     "supply_kind": 1,
@@ -2399,7 +2399,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 62,
   "fields": {
     "supply_kind": 1,
@@ -2412,7 +2412,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 63,
   "fields": {
     "supply_kind": 1,
@@ -2425,7 +2425,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 64,
   "fields": {
     "supply_kind": 1,
@@ -2438,7 +2438,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 65,
   "fields": {
     "supply_kind": 1,
@@ -2451,7 +2451,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 66,
   "fields": {
     "supply_kind": 1,
@@ -2464,7 +2464,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 67,
   "fields": {
     "supply_kind": 1,
@@ -2477,7 +2477,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 68,
   "fields": {
     "supply_kind": 1,
@@ -2490,7 +2490,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 69,
   "fields": {
     "supply_kind": 1,
@@ -2503,7 +2503,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 70,
   "fields": {
     "supply_kind": 1,
@@ -2516,7 +2516,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 71,
   "fields": {
     "supply_kind": 1,
@@ -2529,7 +2529,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 72,
   "fields": {
     "supply_kind": 1,
@@ -2542,7 +2542,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 73,
   "fields": {
     "supply_kind": 1,
@@ -2555,7 +2555,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 74,
   "fields": {
     "supply_kind": 1,
@@ -2568,7 +2568,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 75,
   "fields": {
     "supply_kind": 1,
@@ -2581,7 +2581,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 76,
   "fields": {
     "supply_kind": 1,
@@ -2594,7 +2594,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 77,
   "fields": {
     "supply_kind": 1,
@@ -2607,7 +2607,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 78,
   "fields": {
     "supply_kind": 1,
@@ -2620,7 +2620,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 79,
   "fields": {
     "supply_kind": 1,
@@ -2633,7 +2633,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 80,
   "fields": {
     "supply_kind": 1,
@@ -2646,7 +2646,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 81,
   "fields": {
     "supply_kind": 1,
@@ -2659,7 +2659,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 82,
   "fields": {
     "supply_kind": 1,
@@ -2672,7 +2672,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 83,
   "fields": {
     "supply_kind": 1,
@@ -2685,7 +2685,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 84,
   "fields": {
     "supply_kind": 1,
@@ -2698,7 +2698,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 85,
   "fields": {
     "supply_kind": 1,
@@ -2711,7 +2711,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 86,
   "fields": {
     "supply_kind": 1,
@@ -2724,7 +2724,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 87,
   "fields": {
     "supply_kind": 1,
@@ -2737,7 +2737,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 88,
   "fields": {
     "supply_kind": 1,
@@ -2750,7 +2750,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 89,
   "fields": {
     "supply_kind": 1,
@@ -2763,7 +2763,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 90,
   "fields": {
     "supply_kind": 1,
@@ -2776,7 +2776,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 91,
   "fields": {
     "supply_kind": 1,
@@ -2789,7 +2789,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 92,
   "fields": {
     "supply_kind": 1,
@@ -2802,7 +2802,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 93,
   "fields": {
     "supply_kind": 1,
@@ -2815,7 +2815,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 94,
   "fields": {
     "supply_kind": 1,
@@ -2828,7 +2828,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 95,
   "fields": {
     "supply_kind": 1,
@@ -2841,7 +2841,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 96,
   "fields": {
     "supply_kind": 1,
@@ -2854,7 +2854,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 97,
   "fields": {
     "supply_kind": 1,
@@ -2867,7 +2867,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 98,
   "fields": {
     "supply_kind": 1,
@@ -2880,7 +2880,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 99,
   "fields": {
     "supply_kind": 1,
@@ -2893,7 +2893,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 100,
   "fields": {
     "supply_kind": 1,
@@ -2906,7 +2906,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 101,
   "fields": {
     "supply_kind": 1,
@@ -2919,7 +2919,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 102,
   "fields": {
     "supply_kind": 1,
@@ -2932,7 +2932,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 103,
   "fields": {
     "supply_kind": 1,
@@ -2945,7 +2945,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 104,
   "fields": {
     "supply_kind": 1,
@@ -2958,7 +2958,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 105,
   "fields": {
     "supply_kind": 1,
@@ -2971,7 +2971,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 106,
   "fields": {
     "supply_kind": 1,
@@ -2984,7 +2984,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 107,
   "fields": {
     "supply_kind": 1,
@@ -2997,7 +2997,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 108,
   "fields": {
     "supply_kind": 1,
@@ -3010,7 +3010,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 109,
   "fields": {
     "supply_kind": 1,
@@ -3023,7 +3023,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 110,
   "fields": {
     "supply_kind": 1,
@@ -3036,7 +3036,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 111,
   "fields": {
     "supply_kind": 1,
@@ -3049,7 +3049,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 112,
   "fields": {
     "supply_kind": 1,
@@ -3062,7 +3062,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 113,
   "fields": {
     "supply_kind": 1,
@@ -3075,7 +3075,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 114,
   "fields": {
     "supply_kind": 1,
@@ -3088,7 +3088,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 115,
   "fields": {
     "supply_kind": 1,
@@ -3101,7 +3101,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 116,
   "fields": {
     "supply_kind": 1,
@@ -3114,7 +3114,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 117,
   "fields": {
     "supply_kind": 1,
@@ -3127,7 +3127,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 118,
   "fields": {
     "supply_kind": 1,
@@ -3140,7 +3140,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 119,
   "fields": {
     "supply_kind": 1,
@@ -3153,7 +3153,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 120,
   "fields": {
     "supply_kind": 1,
@@ -3166,7 +3166,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 121,
   "fields": {
     "supply_kind": 1,
@@ -3179,7 +3179,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 122,
   "fields": {
     "supply_kind": 1,
@@ -3192,7 +3192,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 123,
   "fields": {
     "supply_kind": 1,
@@ -3205,7 +3205,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 124,
   "fields": {
     "supply_kind": 1,
@@ -3218,7 +3218,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 125,
   "fields": {
     "supply_kind": 1,
@@ -3231,7 +3231,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 126,
   "fields": {
     "supply_kind": 1,
@@ -3244,7 +3244,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 127,
   "fields": {
     "supply_kind": 1,
@@ -3257,7 +3257,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 128,
   "fields": {
     "supply_kind": 1,
@@ -3270,7 +3270,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 129,
   "fields": {
     "supply_kind": 1,
@@ -3283,7 +3283,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 130,
   "fields": {
     "supply_kind": 1,
@@ -3296,7 +3296,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 131,
   "fields": {
     "supply_kind": 1,
@@ -3309,7 +3309,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 132,
   "fields": {
     "supply_kind": 1,
@@ -3322,7 +3322,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 133,
   "fields": {
     "supply_kind": 1,
@@ -3335,7 +3335,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 134,
   "fields": {
     "supply_kind": 1,
@@ -3348,7 +3348,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 135,
   "fields": {
     "supply_kind": 1,
@@ -3361,7 +3361,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 136,
   "fields": {
     "supply_kind": 1,
@@ -3374,7 +3374,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 137,
   "fields": {
     "supply_kind": 1,
@@ -3387,7 +3387,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 138,
   "fields": {
     "supply_kind": 1,
@@ -3400,7 +3400,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 139,
   "fields": {
     "supply_kind": 1,
@@ -3413,7 +3413,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 140,
   "fields": {
     "supply_kind": 1,
@@ -3426,7 +3426,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 141,
   "fields": {
     "supply_kind": 1,
@@ -3439,7 +3439,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 142,
   "fields": {
     "supply_kind": 1,
@@ -3452,7 +3452,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 143,
   "fields": {
     "supply_kind": 1,
@@ -3465,7 +3465,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 144,
   "fields": {
     "supply_kind": 1,
@@ -3478,7 +3478,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 145,
   "fields": {
     "supply_kind": 1,
@@ -3491,7 +3491,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 146,
   "fields": {
     "supply_kind": 1,
@@ -3504,7 +3504,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 147,
   "fields": {
     "supply_kind": 1,
@@ -3517,7 +3517,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 148,
   "fields": {
     "supply_kind": 1,
@@ -3530,7 +3530,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 149,
   "fields": {
     "supply_kind": 1,
@@ -3543,7 +3543,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 150,
   "fields": {
     "supply_kind": 1,
@@ -3556,7 +3556,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 151,
   "fields": {
     "supply_kind": 1,
@@ -3569,7 +3569,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 152,
   "fields": {
     "supply_kind": 1,
@@ -3582,7 +3582,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 153,
   "fields": {
     "supply_kind": 1,
@@ -3595,7 +3595,7 @@
   }
 },
 {
-  "model": "base.productstandardpackaging",
+  "model": "base.productkindcountrystandardpackaging",
   "pk": 154,
   "fields": {
     "supply_kind": 1,
