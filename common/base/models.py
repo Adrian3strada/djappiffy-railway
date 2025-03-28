@@ -279,52 +279,39 @@ class Infestation(models.Model):
     def __str__(self):
         return f"{self.name}"
 
-class Sick(models.Model):
+class Disease(models.Model):
     name = models.CharField(max_length=255, unique=True)
     inside = models.BooleanField(verbose_name=_('Inside'))
     outside = models.BooleanField(verbose_name=_('Outside'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     class Meta:
-        verbose_name = _('Sick')
-        verbose_name_plural = _('Sicks')
+        verbose_name = _('Disease')
+        verbose_name_plural = _('Diseases')
 
     def __str__(self):
         return f"{self.name}"
 
-# class PhysicalDamage(models.Model):
-#     name = models.CharField(max_length=255, unique=True)
-#     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-
-#     class Meta:
-#         verbose_name = _('Physical Damage')
-#         verbose_name_plural = _('Physical Damages')
-
-#     def __str__(self):
-#         return f"{self.name}"
-
-# class Residue(models.Model):
-#     name = models.CharField(max_length=255, unique=True)
-#     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-
-#     class Meta:
-#         verbose_name = _('Residue')
-#         verbose_name_plural = _('Residues')
-
-#     def __str__(self):
-#         return f"{self.name}"
-
-class ProductKindCondition(models.Model):
+class InfestationProductKind(models.Model):
     product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product'), on_delete=models.PROTECT)
-    infestations = models.ManyToManyField(Infestation, verbose_name=_('Infestations'))
-    sicks = models.ManyToManyField(Sick, verbose_name=_('Sicks'))
-    # physical_damages = models.ManyToManyField(PhysicalDamage, verbose_name=_('Physical Damages'))
-    # residues = models.ManyToManyField(Residue, verbose_name=_('Residues'))
+    infestation = models.ForeignKey(Infestation, verbose_name=_('Infestation'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     class Meta:
-        verbose_name = _('Product Kind Condition')
-        verbose_name_plural = _('Product Kind Conditions')
+        verbose_name = _('Infestation Product Kind')
+        verbose_name_plural = _('Infestations Product Kind')
 
     def __str__(self):
-        return f"{self.product_kind}"
+        return f"{self.product_kind} - {self.infestation}"
+
+class DiseaseProductKind(models.Model):
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product'), on_delete=models.PROTECT)
+    disease = models.ForeignKey(Disease, verbose_name=_('Disease'), on_delete=models.PROTECT)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    class Meta:
+        verbose_name = _('Disease Product Kind')
+        verbose_name_plural = _('Diseases Product Kind')
+
+    def __str__(self):
+        return f"{self.product_kind} - {self.disease}"

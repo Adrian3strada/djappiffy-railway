@@ -6,7 +6,7 @@ from organizations.models import Organization, OrganizationUser
 from .models import (ProductKind, ProductKindCountryStandard, ProductKindCountryStandardSize, LegalEntityCategory, CapitalFramework,
                      ProductKindCountryStandardPackaging, SupplyKind,
                      Incoterm, LocalDelivery, Currency,
-                     CertificationEntity, CertificationFormat, Infestation, Sick, ProductKindCondition)
+                     CertificationEntity, CertificationFormat, Infestation, Disease, InfestationProductKind, DiseaseProductKind)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
 from wagtail.documents.models import Document
@@ -18,11 +18,23 @@ from django.utils.translation import gettext_lazy as _
 
 #
 
+class InfestationProductKindInline(admin.TabularInline):
+    model = InfestationProductKind
+    extra = 1
+    verbose_name = _('Infestation')
+    verbose_name_plural = _('Infestations')
+
+class DiseaseProductKindInline(admin.TabularInline):
+    model = DiseaseProductKind
+    extra = 1
+    verbose_name = _('Disease')
+    verbose_name_plural = _('Diseases')
 
 @admin.register(ProductKind)
 class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'for_packaging', 'for_orchard', 'for_eudr', 'is_enabled', 'sort_order')
     list_filter = ['for_packaging', 'for_orchard', 'for_eudr', 'is_enabled']
+    inlines = [InfestationProductKindInline, DiseaseProductKindInline]
 
 
 class CountryProductStandardSizeInline(admin.TabularInline):
@@ -187,22 +199,7 @@ class InfestationAdmin(admin.ModelAdmin):
     list_display = ('name', 'inside', 'outside', 'is_enabled')
     list_filter = ['name', 'inside', 'outside', 'is_enabled']
 
-@admin.register(Sick)
-class SickAdmin(admin.ModelAdmin):
+@admin.register(Disease)
+class DiseaseAdmin(admin.ModelAdmin):
     list_display = ('name', 'inside', 'outside', 'is_enabled')
     list_filter = ['name', 'inside', 'outside', 'is_enabled']
-
-@admin.register(ProductKindCondition)
-class ProductKindConditionAdmin(admin.ModelAdmin):
-    list_display = ('product_kind',)
-    list_filter = ['product_kind']
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-
-        form.base_fields['product_kind'].widget.can_add_related = False
-        form.base_fields['product_kind'].widget.can_change_related = False
-        form.base_fields['product_kind'].widget.can_delete_related = False
-        form.base_fields['product_kind'].widget.can_view_related = False
-
-        return form

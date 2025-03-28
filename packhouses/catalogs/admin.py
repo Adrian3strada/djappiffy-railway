@@ -15,13 +15,13 @@ from .models import (
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     PackagingComplementarySupply, ProductRipeness, ProductPackagingPresentation,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, 
-    ProductInfestion, ProductSick, ProductPhysicalDamage, ProductResidue,
+    ProductInfestion, ProductDisease, ProductPhysicalDamage, ProductResidue,
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
                                                   VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier
                                                   )
-from common.base.models import Infestation, Sick
+from common.base.models import Infestation, Disease
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
@@ -274,41 +274,74 @@ class ProductRipenessInline(admin.TabularInline):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
 
-class ProductInfestionInlineForm(forms.ModelForm):
-    class Meta:
-        model = ProductInfestion
-        fields = '__all__'
-
-    infestation = forms.ModelChoiceField(
-        queryset=Infestation.objects.all(),
-        required=True,
-        widget=forms.Select
-    )
-
 class ProductInfestionInline(admin.TabularInline):
     model = ProductInfestion
     extra = 0
     verbose_name = _('Infestion')
     verbose_name_plural = _('Infestions')
-    form = ProductInfestionInlineForm
 
-class ProductSickInlineForm(forms.ModelForm):
-    class Meta:
-        model = ProductSick
-        fields = '__all__'
+    can_delete = False
+    show_change_link = False
+    raw_id_fields = ['infestation']
 
-    sick = forms.ModelChoiceField(
-        queryset=Sick.objects.all(),
-        required=True,
-        widget=forms.Select
-    )
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
 
-class ProductSickInline(admin.TabularInline):
-    model = ProductSick
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "infestation":
+            product_id = request.resolver_match.kwargs.get("object_id")
+            print(product_id)
+
+            if product_id:
+                try:
+                    product = Product.objects.get(pk=product_id)
+                    
+                    kwargs['queryset'] = Infestation.objects.filter(
+                        infestationproductkind__product_kind=product.kind
+                    ).distinct()
+                except Product.DoesNotExist:
+                    kwargs['queryset'] = Infestation.objects.none()
+            else:
+                kwargs['queryset'] = Infestation.objects.none()
+
+            kwargs['widget'] = forms.Select(choices=kwargs['queryset'].values_list('id', 'name'))
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+class ProductDiseaseInline(admin.TabularInline):
+    model = ProductDisease
     extra = 0
-    verbose_name = _('Sick')
-    verbose_name_plural = _('Sicks')
-    form = ProductSickInlineForm
+    verbose_name = _('Disease')
+    verbose_name_plural = _('Diseases')
+
+    can_delete = False
+    show_change_link = False 
+    raw_id_fields = ['disease']
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "disease":
+            product_id = request.resolver_match.kwargs.get("object_id")
+            print(product_id)
+
+            if product_id:
+                try:
+                    product = Product.objects.get(pk=product_id)
+                    
+                    kwargs["queryset"] = Disease.objects.filter(
+                        diseaseproductkind__product_kind=product.kind
+                    ).distinct()
+                except Product.DoesNotExist:
+                    kwargs["queryset"] = Disease.objects.none()
+            else:
+                kwargs["queryset"] = Disease.objects.none()
+
+            kwargs['widget'] = forms.Select(choices=kwargs['queryset'].values_list('id', 'name'))
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class ProductPhysicalDamageInline(admin.TabularInline):
     model = ProductPhysicalDamage
@@ -330,11 +363,16 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     list_filter = (ProductKindForPackagingFilter, 'price_measure_unit_category', ByMarketForOrganizationFilter, 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
     fields = ('kind', 'name', 'description', 'price_measure_unit_category', 'markets', 'is_enabled')
-    inlines = [ProductMarketMeasureUnitManagementCostInline, ProductMarketClassInline,
+    inlines = [
+               ProductMarketMeasureUnitManagementCostInline, ProductMarketClassInline,
                ProductVarietyInline,
                ProductPhenologyKindInline, ProductHarvestSizeKindInline,
-               ProductMassVolumeKindInline, ProductRipenessInline, ProductInfestionInline,
-               ProductSickInline, ProductPhysicalDamageInline, ProductResidueInline]
+               ProductMassVolumeKindInline, ProductRipenessInline,
+               ProductInfestionInline,
+               ProductDiseaseInline, 
+               ProductPhysicalDamageInline, 
+               ProductResidueInline
+               ]
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
