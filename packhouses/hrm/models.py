@@ -10,6 +10,7 @@ from packhouses.packhouse_settings.models import Bank
 from .utils import (EMPLOYEE_GENDER_CHOICES, EMPLOYEE_BLOOD_TYPE_CHOICES, EMPLOYEE_ACADEMIC_CHOICES, EMPLOYEE_PAYMENT_CHOICES, 
                     EMERGENCY_CONTACT_RELATIONSHIP_CHOICES, MARITAL_STATUS_CHOICES, PAYMENT_CHOICES, EMPLOYEE_PAYMENT_METHOD_CHOICES, )
 from django.core.exceptions import ValidationError
+from .settings import JOB_CATEGORIES
 
 # Create your models here.
 
@@ -32,6 +33,7 @@ class JobPosition(CleanNameAndOrganizationMixin, models.Model):
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    category = models.CharField(max_length=20, verbose_name=_('Category'), choices=JOB_CATEGORIES, blank=True, null=True, default="general_operator")
 
     def __str__(self):
         return f"{self.name}"
