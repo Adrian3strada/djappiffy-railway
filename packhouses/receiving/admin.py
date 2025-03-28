@@ -13,6 +13,8 @@ from .utils import update_pallet_numbers
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 import nested_admin
+from django.urls import reverse
+from django.utils.html import format_html
 
 # Inlines para datos del corte
 class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
@@ -48,8 +50,6 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
         if db_field.name == 'orchard_certification':
             kwargs['disabled'] = True
         return super().formfield_for_manytomany(db_field, request, **kwargs)
-    #class Media:
-     #   js = ('js/admin/forms/packhouses/receiving/stamp_vehicle_inline.js', )
 
 # Inlines para los pallets
 class PalletContainerInline(nested_admin.NestedTabularInline):
@@ -127,7 +127,18 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
         return False 
 
     def generate_actions_buttons(self, obj):
-        pass
+        pdf_url = reverse('weighing_report', args=[obj.pk])
+        tooltip_weighing_report = _('Generate Weight Report')
+
+        return format_html(
+            '''
+            <a class="button d-flex justify-content-center align-items-center" 
+            href="{}" target="_blank" data-toggle="tooltip" title="{}" style="display: flex; justify-content: center; align-items: center;">
+                <i class="fa-solid fa-print"></i>
+            </a>
+            ''',
+            pdf_url, tooltip_weighing_report
+        )
     
     generate_actions_buttons.short_description = _('Actions')
     generate_actions_buttons.allow_tags = True

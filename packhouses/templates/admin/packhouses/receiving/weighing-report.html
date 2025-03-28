@@ -1,4 +1,4 @@
-<!--Tabla básica para reportes generales/básicos-->
+<!-- Reporte de Pesadas en Reciba -->
 {% extends "admin/packhouses/header-footer.html" %}
 {% load i18n %}
 
@@ -15,13 +15,50 @@
   body {
     font-family: 'Futura', sans-serif;
   }
+/* Tabla de folios */
+.folio-table {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+    border-collapse: collapse;
+}
+
+.folio-table tr {
+    height: 25px;
+}
+
+.folio-table td {
+    line-height: 25px;
+    padding: 0;
+    overflow: hidden;
+}
 
 /* Estilos para sección de información */
-.info_container, .div-table {
+.div-table {
     width: 100%;
     text-align: left; 
     font-size: 10px; 
     margin-bottom: 0px;
+}
+
+.info-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; 
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.info-row {
+    display: flex;
+    gap: 5px;
+    
+}
+
+.info-item {
+    flex: 1; 
+    border-bottom: 1px solid #000000; 
+    text-align: left;
 }
 
 .total_table {
@@ -31,18 +68,13 @@
 }
 
 .total_table td {
+    font-size: 8pt;
     min-height: 10px;
     line-height: 10px;
     border: none;
     padding: 4px 6px; 
 }
 
-
-.info_row {
-    display: flex; 
-    justify-content: space-between; 
-    border-bottom: 1px solid #123782;     
-}
 
 /* Estilos para tabla general */
 .table_form {
@@ -95,13 +127,37 @@ tr {
 
 </style>
 
+<table class="folio-table">
+    <tr>
+        <td style="width: 10%; border-left: 10px solid #123782; background-color: #ffc600;"><strong>{% translate "Harvest" %}</strong></td>
+        <td style="width: 20%; color:red; background-color: #fff4cc;"> {% translate "N°" %} {{ harvest.ooid }}</td>
+        <td style="width: 70%;"></td>
+    </tr>
+</table>
 
-<div class="info_container">
-    {% for info in more_info %}
-    <div class="info_row">
-        <span>{{ info }}</span>
+<div>
+    <div class="info-container">
+        <div class="info-row">
+            <div class="info-item">{% translate "Harvest Date: " %}{{harvest.harvest_date}}</div>
+            <div class="info-item">{% translate "Status" %}: {{harvest.status}}</div>
+        </div>
+    
+        <div class="info-row">
+            <div class="info-item">{% translate "Category:" %} {{harvest.status}}</div>
+            <div class="info-item">{% translate "Market:" %} {{harvest.product_harvest_size_kind}}</div>
+        </div>
+
+        <div class="info-row">
+            <div class="info-item">{% translate "Product Provider: " %}{{harvest.harvest_date}}</div>
+            <div class="info-item">{% translate "Product:" %} {{harvest.product}}</div>
+        </div>
+
+        <div class="info-row">
+            <div class="info-item">{% translate "Product Variety:" %} {{harvest.product_phenologies}}</div>
+            <div class="info-item">{% translate "Orchard:" %} {{harvest.orchard}}</div>
+        </div>
+
     </div>
-    {% endfor %}
 </div>
 
 <div class="div-table">
@@ -117,7 +173,7 @@ tr {
             {% for row in data %}
             <tr>
                 {% for item in row %}
-                <td {% if item in "✅❌" %} style="text-align: center; padding-top: 3px;" {% endif %}>{{ item|safe }}</td>
+                <td>{{ item|safe }}</td>
                 {% endfor %}
             </tr>
             {% endfor %}
