@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 from common.billing.models import LegalEntityCategory
 from .models import (
     Market, Product, ProductMarketClass, ProductVariety, ProductSize,
@@ -13,12 +14,14 @@ from .models import (
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     PackagingComplementarySupply, ProductRipeness, ProductPackagingPresentation,
-    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary,
+    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, 
+    ProductInfestion, ProductSick, ProductPhysicalDamage, ProductResidue,
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
                                                   VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier
                                                   )
+from common.base.models import Infestation, Sick
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
@@ -271,6 +274,53 @@ class ProductRipenessInline(admin.TabularInline):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
 
+class ProductInfestionInlineForm(forms.ModelForm):
+    class Meta:
+        model = ProductInfestion
+        fields = '__all__'
+
+    infestation = forms.ModelChoiceField(
+        queryset=Infestation.objects.all(),
+        required=True,
+        widget=forms.Select
+    )
+
+class ProductInfestionInline(admin.TabularInline):
+    model = ProductInfestion
+    extra = 0
+    verbose_name = _('Infestion')
+    verbose_name_plural = _('Infestions')
+    form = ProductInfestionInlineForm
+
+class ProductSickInlineForm(forms.ModelForm):
+    class Meta:
+        model = ProductSick
+        fields = '__all__'
+
+    sick = forms.ModelChoiceField(
+        queryset=Sick.objects.all(),
+        required=True,
+        widget=forms.Select
+    )
+
+class ProductSickInline(admin.TabularInline):
+    model = ProductSick
+    extra = 0
+    verbose_name = _('Sick')
+    verbose_name_plural = _('Sicks')
+    form = ProductSickInlineForm
+
+class ProductPhysicalDamageInline(admin.TabularInline):
+    model = ProductPhysicalDamage
+    extra = 1
+    verbose_name = _('Physical Damage')
+    verbose_name_plural = _('Physical Damages')
+
+class ProductResidueInline(admin.TabularInline):
+    model = ProductResidue
+    extra = 1
+    verbose_name = _('Residue')
+    verbose_name_plural = _('Residues')
 
 @admin.register(Product)
 class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
@@ -283,7 +333,8 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     inlines = [ProductMarketMeasureUnitManagementCostInline, ProductMarketClassInline,
                ProductVarietyInline,
                ProductPhenologyKindInline, ProductHarvestSizeKindInline,
-               ProductMassVolumeKindInline, ProductRipenessInline]
+               ProductMassVolumeKindInline, ProductRipenessInline, ProductInfestionInline,
+               ProductSickInline, ProductPhysicalDamageInline, ProductResidueInline]
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):

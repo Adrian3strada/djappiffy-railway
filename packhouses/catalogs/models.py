@@ -16,7 +16,7 @@ from .utils import (vehicle_year_choices, vehicle_validate_year, get_type_choice
                     get_vehicle_category_choices, get_provider_categories_choices)
 from django.core.exceptions import ValidationError
 from common.base.models import (ProductKind, ProductKindCountryStandardSize, ProductKindCountryStandardPackaging, CapitalFramework,
-                                ProductKindCountryStandard, LegalEntityCategory, SupplyKind)
+                                ProductKindCountryStandard, LegalEntityCategory, SupplyKind,  Infestation, Sick, ProductKindCondition)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   AuthorityPackagingKind,
@@ -210,6 +210,36 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
             models.UniqueConstraint(fields=['name', 'product', 'market'], name='productsize_unique_name_product_market'),
             models.UniqueConstraint(fields=['alias', 'product', 'market'], name='productsize_unique_alias_product_market'),
         ]
+
+
+class ProductInfestion(CleanNameAndAliasProductMixin, models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    infestation = models.ForeignKey(Infestation, verbose_name=_('Infestation'), on_delete=models.PROTECT)
+    name = models.CharField(max_length=255, unique=True)
+    be_accepted = models.BooleanField(default=True, verbose_name=_('Be accepted'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+
+class ProductSick(CleanNameAndAliasProductMixin, models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    sick = models.ForeignKey(Sick, verbose_name=_('Sick'), on_delete=models.PROTECT)
+    name = models.CharField(max_length=255, unique=True)
+    be_accepted = models.BooleanField(default=True, verbose_name=_('Be accepted'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+
+class ProductPhysicalDamage(CleanNameAndAliasProductMixin, models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    name = models.CharField(max_length=255, unique=True)
+    be_accepted = models.BooleanField(default=True, verbose_name=_('Be accepted'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+
+class ProductResidue(CleanNameAndAliasProductMixin, models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    name = models.CharField(max_length=255, unique=True)
+    be_accepted = models.BooleanField(default=True, verbose_name=_('Be accepted'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
 # /Products
 

@@ -265,3 +265,66 @@ class CertificationFormat(CleanDocumentsMixin, models.Model):
                 name='certificationFormat_unique_certification_entity_name'
             )
         ]
+
+class Infestation(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    inside = models.BooleanField(verbose_name=_('Inside'))
+    outside = models.BooleanField(verbose_name=_('Outside'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    class Meta:
+        verbose_name = _('Infestation')
+        verbose_name_plural = _('Infestations')
+
+    def __str__(self):
+        return f"{self.name}"
+
+class Sick(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    inside = models.BooleanField(verbose_name=_('Inside'))
+    outside = models.BooleanField(verbose_name=_('Outside'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    class Meta:
+        verbose_name = _('Sick')
+        verbose_name_plural = _('Sicks')
+
+    def __str__(self):
+        return f"{self.name}"
+
+# class PhysicalDamage(models.Model):
+#     name = models.CharField(max_length=255, unique=True)
+#     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+#     class Meta:
+#         verbose_name = _('Physical Damage')
+#         verbose_name_plural = _('Physical Damages')
+
+#     def __str__(self):
+#         return f"{self.name}"
+
+# class Residue(models.Model):
+#     name = models.CharField(max_length=255, unique=True)
+#     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+#     class Meta:
+#         verbose_name = _('Residue')
+#         verbose_name_plural = _('Residues')
+
+#     def __str__(self):
+#         return f"{self.name}"
+
+class ProductKindCondition(models.Model):
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product'), on_delete=models.PROTECT)
+    infestations = models.ManyToManyField(Infestation, verbose_name=_('Infestations'))
+    sicks = models.ManyToManyField(Sick, verbose_name=_('Sicks'))
+    # physical_damages = models.ManyToManyField(PhysicalDamage, verbose_name=_('Physical Damages'))
+    # residues = models.ManyToManyField(Residue, verbose_name=_('Residues'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    class Meta:
+        verbose_name = _('Product Kind Condition')
+        verbose_name_plural = _('Product Kind Conditions')
+
+    def __str__(self):
+        return f"{self.product_kind}"
