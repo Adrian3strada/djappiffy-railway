@@ -48,8 +48,8 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
         if db_field.name == 'orchard_certification':
             kwargs['disabled'] = True
         return super().formfield_for_manytomany(db_field, request, **kwargs)
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/stamp_vehicle_inline.js', )
+    #class Media:
+     #   js = ('js/admin/forms/packhouses/receiving/stamp_vehicle_inline.js', )
 
 # Inlines para los pallets
 class PalletContainerInline(nested_admin.NestedTabularInline):

@@ -12,7 +12,7 @@ from packhouses.gathering.views import (harvest_order_pdf, good_harvest_practice
 from packhouses.purchases.views import (requisition_pdf, set_requisition_ready, purchase_order_supply_pdf,
                                         set_purchase_order_supply_ready, set_purchase_order_supply_open,
                                         set_purchase_order_supply_payment)
-
+from packhouses.receiving.views import edit_schedule_harvest_vehicle
 
 urlpatterns = [
     # Admin URLs personalizadas
@@ -33,6 +33,7 @@ urlpatterns = [
 path('dadmin/purchases/set_purchase_order_supply_payment/<int:purchase_order_supply_id>/',
          set_purchase_order_supply_payment,
          name='set_purchase_order_supply_payment'),
+    path('dadmin/receiving/incomingproduct/edit_vehicle/<int:pk>/', edit_schedule_harvest_vehicle, name='edit_schedule_harvest_vehicle'),
     # Admin URLs
     path("dadmin/", admin.site.urls),
     path("wadmin/", include(wagtailadmin_urls)),
