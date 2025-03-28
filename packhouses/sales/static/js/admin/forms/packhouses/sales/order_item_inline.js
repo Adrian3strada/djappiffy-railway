@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(() => {
           if (clientProperties && productProperties) {
-            alert("updateProductOptions() en getClientProperties()")
+            // alert("updateProductOptions() en getClientProperties()")
             updateProductOptions();
           }
         });
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(() => {
           if (clientProperties && productProperties) {
-            alert("updateProductOptions() en getProductProperties()")
+            // alert("updateProductOptions() en getProductProperties()")
             updateProductOptions();
           }
         });
@@ -78,8 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateProductOptions() {
     console.log("updateProductOptions")
-    console.log("productField.val()", productField.val())
-    console.log("clientProperties", clientProperties)
+
     alert("updateProductOptions()")
     if (clientProperties && productProperties) {
       fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
@@ -110,18 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
       productSizeOptions = [];
       productPhenologyOptions = [];
       productPackagingOptions = [];
-    }
-  }
-
-  function updateMarketClassOptions() {
-    if (clientProperties) {
-      fetchOptions(`/rest/v1/catalogs/product-market-class/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
-        .then(data => {
-          console.log("updateMarketClassOptions data", data)
-          productMarketClassOptions = data
-        });
-    } else {
-      productMarketClassOptions = [];
     }
   }
 

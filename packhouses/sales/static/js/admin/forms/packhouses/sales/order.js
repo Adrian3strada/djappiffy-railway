@@ -180,7 +180,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   orderItemsKindField.on('change', () => {
-    console.log(orderItemsKindField.val());
     if (orderItemsKindField.val() && orderItemsKindField.val() === 'product_measure_unit') {
       pricingByField.val(null);
       pricingByField.trigger('change').select2();
