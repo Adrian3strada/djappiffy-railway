@@ -14,6 +14,7 @@ from io import BytesIO
 from django.core import serializers
 from django.http import JsonResponse
 import json
+from .resources import get_model_fields_verbose_names, transform_data
 
 def edit_schedule_harvest_vehicle(request, vehicle_id):
     vehicle = get_object_or_404(ScheduleHarvestVehicle, id=vehicle_id)
@@ -80,8 +81,15 @@ def weighing_report(request, pk):
        headers = list(json_data[0]['fields'].keys())
     else: 
         headers = [] 
-     
+    
+    # Excluir los campos no deseados
+    excluded_fields = ['id', 'incoming_product']
+    headers = get_model_fields_verbose_names(PalletReceived, excluded_fields=excluded_fields)
+
+        
     data = [[item['fields'].get(header) for header in headers] for item in json_data]
+    # Transformar los datos del queryset
+    data = transform_data(pallet_received_records, excluded_fields=excluded_fields)
 
     # Calcular los totales
     total_gross_weight = sum(item.gross_weight for item in pallet_received_records)

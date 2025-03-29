@@ -32,6 +32,10 @@
     padding: 0;
     overflow: hidden;
 }
+.first-header {
+    width: 5%;
+    align-items: center;
+}
 
 /* Estilos para sección de información */
 .div-table {
@@ -106,6 +110,9 @@
     vertical-align: top;
     padding-left: 4px;
 }
+.table_form tbody td:first-child {
+    text-align: center;
+}
 
 tr {
     page-break-inside: avoid; 
@@ -143,17 +150,23 @@ tr {
         </div>
     
         <div class="info-row">
-            <div class="info-item">{% translate "Category:" %} {{harvest.status}}</div>
-            <div class="info-item">{% translate "Market:" %} {{harvest.product_harvest_size_kind}}</div>
+            {% if harvest.category == 'gathering' %}
+                <div class="info-item">{% translate "Gatherer: " %}{{ harvest.gatherer }}</div>
+            {% elif harvest.category == 'maquila' %}
+                <div class="info-item">{% translate "Maquiladora: " %} {{ harvest.maquiladora }}</div>
+            {% else %}
+                <div class="info-item">""</div>
+            {% endif %}
+            <div class="info-item">{% translate "Market:" %} {{harvest.market}}</div>
         </div>
 
         <div class="info-row">
-            <div class="info-item">{% translate "Product Provider: " %}{{harvest.harvest_date}}</div>
+            <div class="info-item">{% translate "Product Provider: " %}{{harvest.product_provider}}</div>
             <div class="info-item">{% translate "Product:" %} {{harvest.product}}</div>
         </div>
 
         <div class="info-row">
-            <div class="info-item">{% translate "Product Variety:" %} {{harvest.product_phenologies}}</div>
+            <div class="info-item">{% translate "Product Variety:" %} {{harvest.product_variety}}</div>
             <div class="info-item">{% translate "Orchard:" %} {{harvest.orchard}}</div>
         </div>
 
@@ -164,8 +177,9 @@ tr {
     <table class="table_form">
         <thead>
             <tr>
-                {% for header in headers %}
-                <th> {{ header }}</th>
+                <th class="first-header">{{ headers.0 }}</th> <!-- Clase para el primer header -->
+                {% for header in headers|slice:"1:" %}
+                    <th>{{ header }}</th>
                 {% endfor %}
             </tr>
         </thead>
