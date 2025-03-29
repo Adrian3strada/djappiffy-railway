@@ -64,12 +64,24 @@ document.addEventListener("DOMContentLoaded", function () {
     }).fail((error) => console.error("Fetch error:", error));
   }
 
-  function toggleOrderItemInline() {
+  const deleteOrderItemInline = () => {
+    const inlineItems = document.querySelectorAll('.inline-related');
+    inlineItems.forEach(item => {
+      const deleteCheckbox = item.querySelector('input[type="checkbox"][name$="-DELETE"]');
+      if (deleteCheckbox) {
+        deleteCheckbox.checked = true;
+      }
+      item.remove(); // Elimina el elemento del DOM
+    });
+  };
+
+  const toggleShowOrderItemInline = () => {
     if (clientField.val() && productField.val() && orderItemsKindField.val() && pricingByField.val()) {
       orderItemsTab.removeClass('hidden')
     } else {
       orderItemsTab.addClass('hidden')
     }
+    deleteOrderItemInline();
   }
 
   function updateClientOptions() {
@@ -161,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
   productField.on("change", () => {
     updateProductVarietyOptions();
     getProductProperties(true);
-    toggleOrderItemInline();
+    toggleShowOrderItemInline();
   });
 
   clientCategoryField.on("change", () => {
@@ -210,7 +222,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }, 300);
         })
     }
-    toggleOrderItemInline();
+    toggleShowOrderItemInline();
   });
 
   orderItemsKindField.on('change', () => {
@@ -223,11 +235,11 @@ document.addEventListener("DOMContentLoaded", function () {
       pricingByField.trigger('change').select2();
       updateFieldOptions(pricingByField, product_price_options);
     }
-    toggleOrderItemInline();
+    toggleShowOrderItemInline();
   })
 
   pricingByField.on('change', () => {
-    toggleOrderItemInline();
+    toggleShowOrderItemInline();
   })
 
   fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
@@ -255,6 +267,9 @@ document.addEventListener("DOMContentLoaded", function () {
   if (clientField.val()) {
     fetchOptions(`${API_BASE_URL}/catalogs/client/${clientField.val()}/`)
       .then((data) => {
+        const orderItemsKind = orderItemsKindField.val()
+        const pricingBy = pricingByField.val()
+        console.log()
         if (data.country === organization.country) {
           localDeliveryField.closest('.form-group').show();
           updateOrderItemsKindOptions(true)
@@ -262,9 +277,15 @@ document.addEventListener("DOMContentLoaded", function () {
           incotermsField.closest('.form-group').show();
           updateOrderItemsKindOptions(false)
         }
+        if (orderItemsKind) {
+          orderItemsKindField.val(orderItemsKind)
+          orderItemsKindField.trigger('change').select2();
+        }
+        if (pricingBy) {
+          pricingByField.val(pricingBy)
+          pricingByField.trigger('change').select2();
+        }
       });
   }
-
-  toggleOrderItemInline();
 
 });
