@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
       fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
         .then(data => {
           clientProperties = data;
-          console.log("clientProperties", clientProperties)
         })
         .then(() => {
           if (clientProperties && productProperties) {
@@ -57,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
       fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
         .then(data => {
           productProperties = data;
-          console.log("productProperties", productProperties)
           const priceLabel = $('label[for$="-unit_price"]');
           if (data.price_measure_unit_category_display) {
             priceLabel.text(`Price (${data.price_measure_unit_category_display})`);
@@ -77,9 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateProductOptions() {
-    console.log("updateProductOptions")
-
-    // alert("updateProductOptions()")
     if (clientProperties && productProperties) {
       fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
         .then(data => {

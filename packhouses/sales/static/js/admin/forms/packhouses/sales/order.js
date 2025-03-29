@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const orderItemsKindField = $("#id_order_items_kind")
   const pricingByField = $("#id_pricing_by")
 
+  const orderItemsTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-tab']").closest('li');
+
   let productProperties = null;
   let organization = null;
   let priceMeasureUnit = null;
@@ -60,6 +62,14 @@ document.addEventListener("DOMContentLoaded", function () {
       method: "GET",
       dataType: "json",
     }).fail((error) => console.error("Fetch error:", error));
+  }
+
+  function toggleOrderItemInline() {
+    if (clientField.val() && productField.val() && orderItemsKindField.val() && pricingByField.val()) {
+      orderItemsTab.removeClass('hidden')
+    } else {
+      orderItemsTab.addClass('hidden')
+    }
   }
 
   function updateClientOptions() {
@@ -149,8 +159,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   productField.on("change", () => {
-    updateProductVarietyOptions()
+    updateProductVarietyOptions();
     getProductProperties(true);
+    toggleOrderItemInline();
   });
 
   clientCategoryField.on("change", () => {
@@ -186,8 +197,8 @@ document.addEventListener("DOMContentLoaded", function () {
       incotermsField.val(null).trigger('change');
     }, 100);
     if (client) {
-      fetchOptions(`${API_BASE_URL}/catalogs/client/${client}/`).then(
-        (data) => {
+      fetchOptions(`${API_BASE_URL}/catalogs/client/${client}/`)
+        .then((data) => {
           setTimeout(() => {
             if (data.country === organization.country) {
               localDeliveryField.closest('.form-group').fadeIn();
@@ -197,8 +208,9 @@ document.addEventListener("DOMContentLoaded", function () {
               updateOrderItemsKindOptions(false)
             }
           }, 300);
-        });
+        })
     }
+    toggleOrderItemInline();
   });
 
   orderItemsKindField.on('change', () => {
@@ -211,6 +223,11 @@ document.addEventListener("DOMContentLoaded", function () {
       pricingByField.trigger('change').select2();
       updateFieldOptions(pricingByField, product_price_options);
     }
+    toggleOrderItemInline();
+  })
+
+  pricingByField.on('change', () => {
+    toggleOrderItemInline();
   })
 
   fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
@@ -236,8 +253,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (clientField.val()) {
-    fetchOptions(`${API_BASE_URL}/catalogs/client/${clientField.val()}/`).then(
-      (data) => {
+    fetchOptions(`${API_BASE_URL}/catalogs/client/${clientField.val()}/`)
+      .then((data) => {
         if (data.country === organization.country) {
           localDeliveryField.closest('.form-group').show();
           updateOrderItemsKindOptions(true)
@@ -247,5 +264,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
   }
+
+  toggleOrderItemInline();
 
 });
