@@ -41,6 +41,7 @@ from .filters import (ByCountryForOrganizationMarketsFilter, ByProductForOrganiz
                       ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
                       ByMarketForOrganizationProductPackagingFilter, ByProductForOrganizationProductPackagingFilter,
                       ByProductSizeForOrganizationProductPackagingFilter, ByPackagingForOrganizationProductPackagingFilter,
+                      ByProductPresentationForOrganizationProductPackagingFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
                       ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter,
@@ -1478,8 +1479,8 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                    ByProductForOrganizationProductPackagingFilter,
                    ByProductSizeForOrganizationProductPackagingFilter,
                    ByPackagingForOrganizationProductPackagingFilter,
-
-                   'product_presentation', 'is_enabled']
+                   ByProductPresentationForOrganizationProductPackagingFilter,
+                   'is_enabled']
     list_display = ['name', 'alias', 'category', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging',
                     'product_presentation', 'product_presentation_quantity_per_packaging', 'is_enabled']
     search_fields = ('name', 'alias')

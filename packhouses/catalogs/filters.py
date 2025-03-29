@@ -3,7 +3,7 @@ from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind,
                      Gatherer, PaymentKind, Supply, Packaging, ProductSize,
-                     Provider, Client, CapitalFramework, ProductPackaging,
+                     Provider, Client, CapitalFramework, ProductPackaging, ProductPresentation,
                      Maquiladora, WeighingScale, ExportingCompany, CustomsBroker, Pallet,
                      ProductKindCountryStandardPackaging
                      )
@@ -146,6 +146,22 @@ class ByPackagingForOrganizationProductPackagingFilter(ByPackagingForOrganizatio
             packagings = Packaging.objects.filter(id__in=packaging_relatedlist).order_by('name')
 
         return [(packaging.id, f"{packaging.name}" + f" - ({packaging.country_standard_packaging.standard.name}: {packaging.country_standard_packaging})") for packaging in packagings]
+
+
+class ByProductPresentationForOrganizationProductPackagingFilter(ByPackagingForOrganizationFilter):
+    def lookups(self, request, model_admin):
+        packagings = Packaging.objects.filter(organization=request.organization, is_enabled=True)
+        return [(packaging.id, packaging.name) for packaging in packagings]
+
+    def lookups(self, request, model_admin):
+        product_presentations = ProductPresentation.objects.none()
+        if hasattr(request, 'organization'):
+            packaging_relatedlist = list(
+                ProductPackaging.objects.filter(organization=request.organization).values_list('product_presentation',
+                                                                                               flat=True).distinct())
+            product_presentations = ProductPresentation.objects.filter(id__in=packaging_relatedlist).order_by('name')
+
+        return [(product_presentation.id, f"{product_presentation.name}") for product_presentation in product_presentations]
 
 
 

@@ -863,10 +863,10 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
         verbose_name_plural = _('Product packaging')
         ordering = ('name',)
         constraints = [
-            models.UniqueConstraint(fields=('market', 'product', 'product_size', 'packaging', 'organization'),
-                                    name='productpackaging_unique_market_product_product_size_packaging_organization'),
-            models.UniqueConstraint(fields=('name', 'alias', 'organization'),
-                                    name='productpackaging_unique_market_name_alias_organization'),
+            models.UniqueConstraint(fields=('market', 'product', 'product_size', 'packaging', 'product_presentation', 'organization'),
+                                    name='productpackaging_unique_market_product_productsize_packaging_productpresentation_organization'),
+            models.UniqueConstraint(fields=('name', 'organization'), name='productpackaging_unique_name_organization'),
+            models.UniqueConstraint(fields=('alias', 'organization'), name='productpackaging_unique_alias_organization'),
         ]
 
 
