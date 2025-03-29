@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let productProperties = null;
   let organization = null;
+  let priceMeasureUnit = null;
 
   const API_BASE_URL = "/rest/v1";
 
@@ -25,6 +26,24 @@ document.addEventListener("DOMContentLoaded", function () {
     {id: "product_packaging", name: "Product packaging"},
     {id: "product_presentation", name: "Product presentation"}
   ]
+
+  function updateOrderItemsKindOptions(nationalClient = false) {
+    order_items_kind_options = [
+      {id: "product_measure_unit", name: "Product measure unit"},
+      {id: "product_packaging", name: "Product packaging"},
+      {id: "product_pallet", name: "Product pallet"},
+    ]
+    if (priceMeasureUnit) {
+      order_items_kind_options[0].name = priceMeasureUnit
+    }
+    if (!nationalClient) {
+      order_items_kind_options = [
+        {id: "product_packaging", name: "Product packaging"},
+        {id: "product_pallet", name: "Product pallet"},
+      ]
+    }
+    updateFieldOptions(orderItemsKindField, order_items_kind_options)
+  }
 
   function updateFieldOptions(field, options, selected = null) {
     field.empty();
@@ -95,8 +114,9 @@ document.addEventListener("DOMContentLoaded", function () {
         (data) => {
           productProperties = data;
           if (data.price_measure_unit_category_display) {
-            order_items_kind_options[0].name = data.price_measure_unit_category_display
-            product_price_options[0].name = data.price_measure_unit_category_display
+            priceMeasureUnit = data.price_measure_unit_category_display
+            if (order_items_kind_options[0].id === 'product_measure_unit') order_items_kind_options[0].name = priceMeasureUnit
+            product_price_options[0].name = priceMeasureUnit
             if (cleanup) {
               orderItemsKindField.val(null);
               pricingByField.val(null);
@@ -119,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     } else {
       productProperties = null;
-      order_items_kind_options[0].name = "Product measure unit"
+      if (order_items_kind_options[0].id === 'product_measure_unit') order_items_kind_options[0].name = "Product measure unit"
       product_price_options[0].name = "Product measure unit"
       orderItemsKindField.val(null);
       orderItemsKindField.trigger('change').select2();
@@ -171,8 +191,10 @@ document.addEventListener("DOMContentLoaded", function () {
           setTimeout(() => {
             if (data.country === organization.country) {
               localDeliveryField.closest('.form-group').fadeIn();
+              updateOrderItemsKindOptions(true)
             } else {
               incotermsField.closest('.form-group').fadeIn();
+              updateOrderItemsKindOptions(false)
             }
           }, 300);
         });
@@ -218,8 +240,10 @@ document.addEventListener("DOMContentLoaded", function () {
       (data) => {
         if (data.country === organization.country) {
           localDeliveryField.closest('.form-group').show();
+          updateOrderItemsKindOptions(true)
         } else {
           incotermsField.closest('.form-group').show();
+          updateOrderItemsKindOptions(false)
         }
       });
   }

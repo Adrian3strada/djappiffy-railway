@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateProductOptions() {
     console.log("updateProductOptions")
 
-    alert("updateProductOptions()")
+    // alert("updateProductOptions()")
     if (clientProperties && productProperties) {
       fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
         .then(data => {
