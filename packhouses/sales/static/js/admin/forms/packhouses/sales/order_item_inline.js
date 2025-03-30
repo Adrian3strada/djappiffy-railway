@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const productField = $("#id_product");
   const clientField = $("#id_client");
-  const orderItemsByField = $("#id_order_items_by")
+  const orderItemsKindField = $("#id_order_items_kind")
   const pricingByField = $("#id_pricing_by")
 
   let productSizeOptions = [];

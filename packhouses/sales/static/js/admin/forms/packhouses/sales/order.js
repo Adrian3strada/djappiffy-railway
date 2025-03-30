@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       orderItemsTab.addClass('hidden')
     }
-    deleteOrderItemInline();
+    // aqui deleteOrderItemInline();
   }
 
   function updateClientOptions() {
