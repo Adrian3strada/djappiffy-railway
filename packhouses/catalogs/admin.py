@@ -31,7 +31,8 @@ import nested_admin
 from django.utils.translation import gettext_lazy as _
 from .filters import (ByCountryForOrganizationMarketsFilter, ByProductForOrganizationFilter,
                       ByProductSizeForProductOrganizationFilter, ByPackagingForOrganizationFilter,
-                      ByProductVarietyForOrganizationFilter,
+                      ByProductVarietyForOrganizationFilter, ByProductForOrganizationProductSizeFilter,
+                      ByProductVarietiesForOrganizationProductSizeFilter, ByMarketForOrganizationProductSizeFilter,
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
                       ByClientCapitalFrameworkForOrganizationFilter, BySupplyKindForPackagingFilter,
                       BySupplyForOrganizationPackagingFilter, ByProductForOrganizationPackagingFilter,
@@ -331,10 +332,11 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductSizeResource]
     list_display = (
-        'name', 'alias', 'product', 'get_varieties', 'market', 'is_enabled', 'sort_order')
+        'name', 'alias', 'product', 'get_varieties', 'market', 'category', 'is_enabled', 'sort_order')
     list_filter = (
-        ByProductForOrganizationFilter, ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
-        'is_enabled'
+        ByProductForOrganizationProductSizeFilter, ByProductVarietiesForOrganizationProductSizeFilter,
+        ByMarketForOrganizationProductSizeFilter,
+        'category', 'is_enabled'
     )
     search_fields = ('name', 'alias')
     ordering = ['sort_order']
