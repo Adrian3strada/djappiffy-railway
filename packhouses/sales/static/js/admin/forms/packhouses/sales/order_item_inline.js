@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let clientProperties = null;
   let productProperties = null;
 
-
   function updateFieldOptions(field, options) {
     if (field) {
       field.empty();
@@ -22,7 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
         field.append(new Option('---------', '', true, true));
       }
       options.forEach(option => {
-        field.append(new Option(option.name, option.id, false, false));
+        const newOption = new Option(option.name, option.id, false, false);
+        if ('alias' in option && option.alias) {
+          newOption.setAttribute('data-alias', option.alias);
+        }
+        if ('category' in option && option.category) {
+          newOption.setAttribute('data-category', option.category);
+        }
+        field.append(newOption);
       });
       field.trigger('change').select2();
     }
