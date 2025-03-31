@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let productMarketClassOptions = [];
   let productPackagingOptions = [];
 
+  let priceLabel = 'Price'
+
   let clientProperties = null;
   let productProperties = null;
 
@@ -51,9 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
       fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
         .then(data => {
           productProperties = data;
-          const priceLabel = $('label[for$="-unit_price"]');
+          console.log("productProperties", productProperties)
           if (data.price_measure_unit_category_display) {
-            priceLabel.text(`Price (${data.price_measure_unit_category_display})`);
+            priceLabel = `Price (${data.price_measure_unit_category_display})`
           } else {
             priceLabel.text(`Price`);
           }

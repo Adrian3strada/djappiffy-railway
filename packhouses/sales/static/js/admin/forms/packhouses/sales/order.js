@@ -123,7 +123,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (clientProperties) {
       fetchOptions(`${API_BASE_URL}/catalogs/product/?markets=${clientProperties.market}&is_enabled=1`).then(
         (data) => {
-          console.log("updateProductOptions", data)
           updateFieldOptions(productField, data);
         }
       )
@@ -286,15 +285,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const orderItemsKind = orderItemsKindField.val()
     const pricingBy = pricingByField.val()
 
-    console.log("product", product)
-    console.log("productVariety", productVariety)
-    console.log("orderItemsKind", orderItemsKind)
-    console.log("pricingBy", pricingBy)
-
     fetchOptions(`${API_BASE_URL}/catalogs/client/${clientField.val()}/`)
       .then((client) => {
         clientProperties = client;
-        console.log("clientProperties", clientProperties)
         if (client.country === organization.country) {
           localDeliveryField.closest('.form-group').show();
           updateOrderItemsKindOptions(true)
