@@ -178,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const productPhenologyField = $(newForm).find('select[name$="-product_phenology"]');
       const marketClassField = $(newForm).find('select[name$="-product_market_class"]');
       const productPackagingField = $(newForm).find('select[name$="-product_packaging"]');
+      const amountPerPackagingField = $(newForm).find('input[name$="-amount_per_packaging"]');
 
       updateFieldOptions(productSizeField, productSizeOptions);
       updateFieldOptions(productPhenologyField, productPhenologyOptions);
