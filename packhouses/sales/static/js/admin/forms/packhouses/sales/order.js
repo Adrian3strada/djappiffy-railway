@@ -187,7 +187,6 @@ document.addEventListener("DOMContentLoaded", function () {
   productField.on("change", () => {
     updateProductVarietyOptions();
     getProductProperties(true);
-    toggleShowOrderItemInline();
   });
 
   clientCategoryField.on("change", () => {
@@ -241,7 +240,6 @@ document.addEventListener("DOMContentLoaded", function () {
       clientProperties = null;
       updateFieldOptions(productField, []);
     }
-    toggleShowOrderItemInline();
   });
 
   orderItemsKindField.on('change', () => {
@@ -254,7 +252,6 @@ document.addEventListener("DOMContentLoaded", function () {
       pricingByField.trigger('change').select2();
       updateFieldOptions(pricingByField, product_price_options);
     }
-    toggleShowOrderItemInline();
   })
 
   pricingByField.on('change', () => {
