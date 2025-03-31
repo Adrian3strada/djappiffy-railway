@@ -69,9 +69,39 @@ document.addEventListener('DOMContentLoaded', () => {
     if (clientProperties && productProperties && orderItemsKindField && pricingByField) {
       console.log("orderItemsKindField", orderItemsKindField)
       console.log("pricingByField", pricingByField)
-      let categories = 'none'
+      let productSizeCategories = 'none'
 
-      fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
+      if (orderItemsKindField.val() === 'product_measure_unit') {
+        if (pricingByField.val() === 'product_measure_unit') {
+          productSizeCategories = 'size,mix,waste,biomass'
+        }
+      }
+
+      if (orderItemsKindField.val() === 'product_packaging') {
+        if (pricingByField.val() === 'product_measure_unit') {
+          productSizeCategories = 'size,mix'
+        }
+        if (pricingByField.val() === 'product_packaging') {
+          productSizeCategories = 'size,mix'
+        }
+        if (pricingByField.val() === 'product_presentation') {
+          productSizeCategories = 'size'
+        }
+      }
+
+      if (orderItemsKindField.val() === 'product_pallet') {
+        if (pricingByField.val() === 'product_measure_unit') {
+          productSizeCategories = 'size,mix'
+        }
+        if (pricingByField.val() === 'product_packaging') {
+          productSizeCategories = 'size,mix'
+        }
+        if (pricingByField.val() === 'product_presentation') {
+          productSizeCategories = 'size'
+        }
+      }
+
+      fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
         .then(data => {
           productSizeOptions = data;
         }).then(() => {
@@ -103,11 +133,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   clientField.on('change', () => {
-    getClientProperties();
+    if (clientField.val()) {
+      getClientProperties();
+    }
   });
 
   productField.on('change', () => {
-    getProductProperties();
+    if (productField.val()) {
+      getProductProperties();
+    }
+  });
+
+  pricingByField.on('change', () => {
+    if (pricingByField.val()) {
+      updateProductOptions();
+    }
   });
 
   if (clientField.val()) {
@@ -116,6 +156,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (productField.val()) {
     getProductProperties();
+  }
+
+  if (pricingByField.val()) {
+    updateProductOptions();
   }
 
   document.addEventListener('formset:added', (event) => {
