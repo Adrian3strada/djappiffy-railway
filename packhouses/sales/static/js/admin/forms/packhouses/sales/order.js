@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const orderItemsTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-tab']").closest('li');
 
+  let clientProperties = null;
   let productProperties = null;
   let organization = null;
   let priceMeasureUnit = null;
@@ -118,6 +119,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function updateProductOptions() {
+    if (clientProperties) {
+      fetchOptions(`${API_BASE_URL}/catalogs/product/?markets=${clientProperties.market}&is_enabled=1`).then(
+        (data) => {
+          console.log("updateProductOptions", data)
+          updateFieldOptions(productField, data);
+        }
+      )
+    } else {
+      updateFieldOptions(productField, []);
+    }
+  }
+
   function updateProductVarietyOptions() {
     const product = productField.val();
     if (product) {
@@ -211,6 +225,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (client) {
       fetchOptions(`${API_BASE_URL}/catalogs/client/${client}/`)
         .then((data) => {
+          clientProperties = data;
+          updateProductOptions();
           setTimeout(() => {
             if (data.country === organization.country) {
               localDeliveryField.closest('.form-group').fadeIn();
@@ -221,6 +237,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           }, 300);
         })
+    } else {
+      clientProperties = null;
+      updateFieldOptions(productField, []);
     }
     toggleShowOrderItemInline();
   });
@@ -265,27 +284,49 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (clientField.val()) {
+    const product = productField.val()
+    const productVariety = productVarietyField.val()
+    const orderItemsKind = orderItemsKindField.val()
+    const pricingBy = pricingByField.val()
+
+    console.log("product", product)
+    console.log("productVariety", productVariety)
+    console.log("orderItemsKind", orderItemsKind)
+    console.log("pricingBy", pricingBy)
+
     fetchOptions(`${API_BASE_URL}/catalogs/client/${clientField.val()}/`)
-      .then((data) => {
-        const orderItemsKind = orderItemsKindField.val()
-        const pricingBy = pricingByField.val()
-        console.log()
-        if (data.country === organization.country) {
+      .then((client) => {
+        clientProperties = client;
+        console.log("clientProperties", clientProperties)
+        if (client.country === organization.country) {
           localDeliveryField.closest('.form-group').show();
           updateOrderItemsKindOptions(true)
         } else {
           incotermsField.closest('.form-group').show();
           updateOrderItemsKindOptions(false)
         }
-        if (orderItemsKind) {
-          orderItemsKindField.val(orderItemsKind)
-          orderItemsKindField.trigger('change').select2();
-        }
-        if (pricingBy) {
-          pricingByField.val(pricingBy)
-          pricingByField.trigger('change').select2();
-        }
-      });
+        updateProductOptions();
+        setTimeout(() => {
+          if (product) {
+            productField.val(product);
+            productField.trigger('change').select2();
+          }
+        }, 400);
+        setTimeout(() => {
+          if (productVariety) {
+            productVarietyField.val(productVariety)
+            productVarietyField.trigger('change').select2();
+          }
+          if (orderItemsKind) {
+            orderItemsKindField.val(orderItemsKind)
+            orderItemsKindField.trigger('change').select2();
+          }
+          if (pricingBy) {
+            pricingByField.val(pricingBy)
+            pricingByField.trigger('change').select2();
+          }
+        }, 500);
+      })
   }
 
 });

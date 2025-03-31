@@ -113,7 +113,7 @@ class ProductMarketClassViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
-    filterset_fields = ['is_enabled']
+    filterset_fields = ['kind', 'price_measure_unit_category', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -121,7 +121,15 @@ class ProductViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return Product.objects.filter(organization=self.request.organization)
+        queryset = Product.objects.filter(organization=self.request.organization)
+
+        markets = self.request.GET.get('markets')
+
+        if markets:
+            category_list = markets.split(',')
+            queryset = queryset.filter(markets__in=category_list)
+
+        return queryset
 
 
 class PalletViewSet(viewsets.ModelViewSet):

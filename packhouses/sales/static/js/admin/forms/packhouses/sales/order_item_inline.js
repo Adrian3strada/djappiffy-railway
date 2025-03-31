@@ -39,13 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
       fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
         .then(data => {
           clientProperties = data;
+          console.log("clientProperties", clientProperties)
         })
-        .then(() => {
-          if (clientProperties && productProperties) {
-            // alert("updateProductOptions() en getClientProperties()")
-            updateProductOptions();
-          }
-        });
     } else {
       clientProperties = null;
     }
@@ -63,19 +58,17 @@ document.addEventListener('DOMContentLoaded', () => {
             priceLabel.text(`Price`);
           }
         })
-        .then(() => {
-          if (clientProperties && productProperties) {
-            // alert("updateProductOptions() en getProductProperties()")
-            updateProductOptions();
-          }
-        });
     } else {
       productProperties = null;
     }
   }
 
   function updateProductOptions() {
-    if (clientProperties && productProperties) {
+    if (clientProperties && productProperties && orderItemsKindField && pricingByField) {
+      console.log("orderItemsKindField", orderItemsKindField)
+      console.log("pricingByField", pricingByField)
+      let categories = 'none'
+
       fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
         .then(data => {
           productSizeOptions = data;
