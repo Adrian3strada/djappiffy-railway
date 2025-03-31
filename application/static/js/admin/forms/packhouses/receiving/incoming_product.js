@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll("#scheduleharvest-0 .djn-add-item .add-handler").forEach(button => {
+    /* document.querySelectorAll("#scheduleharvest-0 .djn-add-item .add-handler").forEach(button => {
         button.style.display = "none"; 
     });
+    */
     document.querySelectorAll("td.original").forEach(row => {
         row.style.display = "none"; 
     });
@@ -19,6 +20,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const currentKgField = $('#id_current_kg_available');
     const containerTare= $('input[name$="-container_tare"]');
     const totalBoxes= $('input[name$="-total_boxes"]');
+    const categoryField = $('select[name$="-category"]');
+    const productField = $('select[name$="-product"]');
+    const productVarietyField = $('select[name$="-product_variety"]');
+
 
     // deshabilitar edición en campos, pero permitir que los valores se envíen
     function disableField(field) {
@@ -39,6 +44,9 @@ document.addEventListener("DOMContentLoaded", function() {
     disableField(averageBoxField);
     disableField(containerTare);
     disableField(totalBoxes);
+    categoryField.prop('disabled', true); 
+    productField.prop('disabled', true); 
+    productVarietyField.prop('disabled', true); 
 
     // Función para actualizar missingBoxes
     function updateMissingBoxes() {

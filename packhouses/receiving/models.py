@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_incoming_product_categories_status
-from packhouses.catalogs.models import WeighingScale, Supply
+from packhouses.catalogs.models import WeighingScale, Supply, HarvestingCrew, Provider
 
 # Create your models here.
 
@@ -47,6 +47,8 @@ class IncomingProduct(models.Model):
 class PalletReceived(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_("Pallet Number"),null=True, blank=True)
     # pallet_number = models.PositiveIntegerField(verbose_name=_("Pallet Number"), null=True, blank=True)
+    provider = models.ForeignKey(Provider, verbose_name=_('Harvesting Crew Provider'),on_delete=models.CASCADE,)
+    harvesting_crew = models.ForeignKey(HarvestingCrew, verbose_name=_("Harvesting Crew"), on_delete=models.CASCADE,)
     gross_weight = models.FloatField(default=0.0, verbose_name=_("Gross Weight"),)
     total_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Total Boxes'))
     container_tare = models.FloatField(default=0.0, verbose_name=_("Container Tare"),)
