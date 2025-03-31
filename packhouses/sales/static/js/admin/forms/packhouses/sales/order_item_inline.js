@@ -110,30 +110,33 @@ document.addEventListener('DOMContentLoaded', () => {
       fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
         .then(data => {
           productSizeOptions = data;
-        }).then(() => {
-        console.log("productSizeOptions", productSizeOptions)
-      });
+        })
+
       fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productProperties.id}&is_enabled=1`)
         .then(data => {
           productPhenologyOptions = data;
         }).then(() => {
         console.log("productPhenologyOptions", productPhenologyOptions)
       });
+
       fetchOptions(`/rest/v1/catalogs/product-market-class/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
         .then(data => {
           productMarketClassOptions = data
         }).then(() => {
         console.log("productMarketClassOptions 1", productMarketClassOptions)
       });
+
       fetchOptions(`/rest/v1/catalogs/product-packaging/?product=${productProperties.id}&is_enabled=1`)
         .then(data => {
           productPackagingOptions = data;
         }).then(() => {
         console.log("productPackagingOptions", productPackagingOptions)
       });
+
     } else {
       productSizeOptions = [];
       productPhenologyOptions = [];
+      productMarketClassOptions = [];
       productPackagingOptions = [];
     }
   }
