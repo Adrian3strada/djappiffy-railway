@@ -36,6 +36,9 @@ class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_filter = ['for_packaging', 'for_orchard', 'for_eudr', 'is_enabled']
     inlines = [InfestationProductKindInline, DiseaseProductKindInline]
 
+    class Media:
+        js = ('js/admin/forms/common/infestation.js', 'js/admin/forms/common/disease.js')
+
 
 class CountryProductStandardSizeInline(admin.TabularInline):
     model = ProductKindCountryStandardSize

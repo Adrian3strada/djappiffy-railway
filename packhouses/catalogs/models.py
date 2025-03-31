@@ -218,12 +218,24 @@ class ProductInfestion(models.Model):
     be_accepted = models.BooleanField(default=True, verbose_name=_('Be accepted'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['product', 'infestation', 'name'], 
+                                    name='unique_product_infestation_name')
+        ]
+
 class ProductDisease(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     disease = models.ForeignKey(Disease, verbose_name=_('Sick'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=False)
     be_accepted = models.BooleanField(default=True, verbose_name=_('Be accepted'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['product', 'disease', 'name'], 
+                                    name='unique_product_disease_name')
+        ]
 
 class ProductPhysicalDamage(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)

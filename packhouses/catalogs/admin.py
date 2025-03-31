@@ -413,6 +413,9 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/product-infestion.js','js/admin/forms/packhouses/catalogs/product-disease.js')
 
 
 @admin.register(ProductSize)
