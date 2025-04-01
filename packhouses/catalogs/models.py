@@ -16,7 +16,7 @@ from .utils import (vehicle_year_choices, vehicle_validate_year, get_type_choice
                     get_vehicle_category_choices, get_provider_categories_choices)
 from django.core.exceptions import ValidationError
 from common.base.models import (ProductKind, ProductKindCountryStandardSize, ProductKindCountryStandardPackaging, CapitalFramework,
-                                ProductKindCountryStandard, LegalEntityCategory, SupplyKind,  Infestation, Disease)
+                                ProductKindCountryStandard, LegalEntityCategory, SupplyKind, Pest, Disease)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   AuthorityPackagingKind,
@@ -211,17 +211,17 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
             models.UniqueConstraint(fields=['alias', 'product', 'market'], name='productsize_unique_alias_product_market'),
         ]
 
-class ProductInfestion(models.Model):
+class ProductPest(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    infestation = models.ForeignKey(Infestation, verbose_name=_('Infestation'), on_delete=models.PROTECT)
+    pest = models.ForeignKey(Pest, verbose_name=_('Pest'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=False)
     be_accepted = models.BooleanField(default=True, verbose_name=_('Be accepted'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['product', 'infestation', 'name'], 
-                                    name='unique_product_infestation_name')
+            models.UniqueConstraint(fields=['product', 'pest', 'name'], 
+                                    name='unique_product_pest_name')
         ]
 
 class ProductDisease(models.Model):

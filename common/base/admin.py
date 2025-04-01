@@ -6,7 +6,7 @@ from organizations.models import Organization, OrganizationUser
 from .models import (ProductKind, ProductKindCountryStandard, ProductKindCountryStandardSize, LegalEntityCategory, CapitalFramework,
                      ProductKindCountryStandardPackaging, SupplyKind,
                      Incoterm, LocalDelivery, Currency,
-                     CertificationEntity, CertificationFormat, Infestation, Disease, InfestationProductKind, DiseaseProductKind)
+                     CertificationEntity, CertificationFormat, Pest, Disease, InfestationProductKind, DiseaseProductKind, FoodSafetyProcedure)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
 from wagtail.documents.models import Document
@@ -18,11 +18,11 @@ from django.utils.translation import gettext_lazy as _
 
 #
 
-class InfestationProductKindInline(admin.TabularInline):
+class PestProductKindInline(admin.TabularInline):
     model = InfestationProductKind
     extra = 1
-    verbose_name = _('Infestation')
-    verbose_name_plural = _('Infestations')
+    verbose_name = _('Pest')
+    verbose_name_plural = _('Pests')
 
 class DiseaseProductKindInline(admin.TabularInline):
     model = DiseaseProductKind
@@ -37,7 +37,7 @@ class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
     inlines = [InfestationProductKindInline, DiseaseProductKindInline]
 
     class Media:
-        js = ('js/admin/forms/common/infestation.js', 'js/admin/forms/common/disease.js')
+        js = ('js/admin/forms/common/pest.js', 'js/admin/forms/common/disease.js')
 
 
 class CountryProductStandardSizeInline(admin.TabularInline):
@@ -197,8 +197,8 @@ class CertificationEntityAdmin(admin.ModelAdmin):
 
         return form
 
-@admin.register(Infestation)
-class InfestationAdmin(admin.ModelAdmin):
+@admin.register(Pest)
+class PestnAdmin(admin.ModelAdmin):
     list_display = ('name', 'inside', 'outside', 'is_enabled')
     list_filter = ['name', 'inside', 'outside', 'is_enabled']
 
@@ -206,3 +206,8 @@ class InfestationAdmin(admin.ModelAdmin):
 class DiseaseAdmin(admin.ModelAdmin):
     list_display = ('name', 'inside', 'outside', 'is_enabled')
     list_filter = ['name', 'inside', 'outside', 'is_enabled']
+
+@admin.register(FoodSafetyProcedure) ## Preguntar si se quedara?
+class FoodSafetyProcedureAdmin(admin.ModelAdmin):
+    list_display = ('name', 'model')
+    list_filter = ['name', 'model']

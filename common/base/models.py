@@ -266,15 +266,15 @@ class CertificationFormat(CleanDocumentsMixin, models.Model):
             )
         ]
 
-class Infestation(models.Model):
+class Pest(models.Model):
     name = models.CharField(max_length=255, unique=True)
     inside = models.BooleanField(verbose_name=_('Inside'))
     outside = models.BooleanField(verbose_name=_('Outside'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     class Meta:
-        verbose_name = _('Infestation')
-        verbose_name_plural = _('Infestations')
+        verbose_name = _('Pest')
+        verbose_name_plural = _('Pests')
 
     def __str__(self):
         return f"{self.name}"
@@ -292,17 +292,17 @@ class Disease(models.Model):
     def __str__(self):
         return f"{self.name}"
 
-class InfestationProductKind(models.Model):
+class PestProductKind(models.Model):
     product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product'), on_delete=models.PROTECT)
-    infestation = models.ForeignKey(Infestation, verbose_name=_('Infestation'), on_delete=models.PROTECT)
+    pest = models.ForeignKey(Pest, verbose_name=_('Pest'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     class Meta:
-        verbose_name = _('Infestation Product Kind')
-        verbose_name_plural = _('Infestations Product Kind')
+        verbose_name = _('Pest Product Kind')
+        verbose_name_plural = _('Pests Product Kind')
 
     def __str__(self):
-        return f"{self.product_kind} - {self.infestation}"
+        return f"{self.product_kind} - {self.pest}"
 
 class DiseaseProductKind(models.Model):
     product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product'), on_delete=models.PROTECT)
@@ -315,3 +315,7 @@ class DiseaseProductKind(models.Model):
 
     def __str__(self):
         return f"{self.product_kind} - {self.disease}"
+
+class FoodSafetyProcedure(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    model = models.CharField(max_length=255, unique=True)

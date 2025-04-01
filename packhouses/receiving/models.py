@@ -5,6 +5,7 @@ import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_incoming_product_categories_status
 from packhouses.catalogs.models import WeighingScale
+from packhouses.packhouse_settings.models import FoodSafetyProcess
 
 # Create your models here.
 
@@ -71,3 +72,70 @@ class PalletReceived(models.Model):
     class Meta:
         verbose_name = _('Pallet Received')
         verbose_name_plural = _('Pallets Received')
+
+class FoodSafety(models.Model):
+    # corte = models.ForeignKey(corte, verbose_name=_('corte'), on_delete=models.PROTECT)
+    # lote = models.ForeignKey(lote, verbose_name=_('lote'), on_delete=models.PROTECT)
+    process = models.ForeignKey(FoodSafetyProcess, verbose_name=_('Food Safety Process'), on_delete=models.PROTECT)
+
+class DryMatter(models.Model):
+    sample_number = models.IntegerField()
+    product_weight = models.DecimalField(max_digits=10, decimal_places=2)
+    paper_weight = models.DecimalField(max_digits=10, decimal_places=2)
+    moisture_weight = models.DecimalField(max_digits=10, decimal_places=2)
+    dry_weight = models.DecimalField(max_digits=10, decimal_places=2)
+    dry_matter_percentage = models.DecimalField(max_digits=10, decimal_places=2)
+    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
+
+class InternalInspection(models.Model):
+    sample_number = models.IntegerField()
+    internal_temperature = models.DecimalField(max_digits=10, decimal_places=2)
+    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
+
+class Percentage(models.Model):
+    dry_matter_percentage = models.DecimalField(max_digits=10, decimal_places=2)
+    internal_temperature_percentage = models.DecimalField(max_digits=10, decimal_places=2)
+    plant_health_issues  = models.BooleanField(default=False, verbose_name=_('Plant Health Issues'))
+    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
+
+class Vehicle(models.Model):
+    # vehicle = models.ForeignKey(vehicle, verbose_name=_('vehicle'), on_delete=models.PROTECT)
+    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
+
+class VehicleInspection(models.Model):
+    sealed  = models.BooleanField(default=False, verbose_name=_('The transport is sealed'))
+    only_the_product  = models.BooleanField(default=False, verbose_name=_('The transport carries only the product'))
+    free_foreign_matter  = models.BooleanField(default=False, verbose_name=_('The transport is free of foreign matter'))
+    free_unusual_odors  = models.BooleanField(default=False, verbose_name=_('The transport is free of unusual odors'))
+    certificate  = models.BooleanField(default=False, verbose_name=_('Has a CERTIFICATE'))
+    free_fecal_matter  = models.BooleanField(default=False, verbose_name=_('The transport is free of fecal matter'))
+    vehicle = models.ForeignKey(Vehicle, verbose_name=_('Vehicle'), on_delete=models.PROTECT)
+
+class VehicleCondition(models.Model):
+    clean  = models.BooleanField(default=False, verbose_name=_('Clean'))
+    good_condition  = models.BooleanField(default=False, verbose_name=_('Good condition'))
+    broken  = models.BooleanField(default=False, verbose_name=_('Broken'))
+    damaged  = models.BooleanField(default=False, verbose_name=_('Damaged'))
+    seal_number  = models.BooleanField(default=False, verbose_name=_('Seal Number'))
+    vehicle = models.ForeignKey(Vehicle, verbose_name=_('Vehicle'), on_delete=models.PROTECT)
+
+class SampleCollection(models.Model):
+    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
+
+class SensorySpecification(models.Model):
+    whole = models.BooleanField(default=False, verbose_name=_('Whole'))
+    foreign_material = models.BooleanField(default=False, verbose_name=_('Foreign Material'))
+    insects = models.BooleanField(default=False, verbose_name=_('Insects'))
+    temperature_damage = models.BooleanField(default=False, verbose_name=_('Temperature Damage'))
+    unusual_odor = models.BooleanField(default=False, verbose_name=_('Unusual Odor'))
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.PROTECT)
+
+class SampleWeight(models.Model):
+    sample_number = models.IntegerField()
+    weight = models.DecimalField(max_digits=10, decimal_places=2)
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.PROTECT)
+
+class CropThreat(models.Model):
+    sample_number = models.IntegerField()
+    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
+

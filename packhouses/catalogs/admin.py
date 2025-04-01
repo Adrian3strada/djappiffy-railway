@@ -15,13 +15,13 @@ from .models import (
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     PackagingComplementarySupply, ProductRipeness, ProductPackagingPresentation,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, 
-    ProductInfestion, ProductDisease, ProductPhysicalDamage, ProductResidue,
+    ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue,
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
                                                   VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier
                                                   )
-from common.base.models import Infestation, Disease
+from common.base.models import Pest, Disease
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
@@ -274,22 +274,22 @@ class ProductRipenessInline(admin.TabularInline):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
 
-class ProductInfestionInline(admin.TabularInline):
+class ProductPestInline(admin.TabularInline):
     model = ProductInfestion
     extra = 0
-    verbose_name = _('Infestion')
-    verbose_name_plural = _('Infestions')
+    verbose_name = _('Pest')
+    verbose_name_plural = _('Pest')
 
     can_delete = False
     show_change_link = False
-    raw_id_fields = ['infestation']
+    raw_id_fields = ['pest']
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "infestation":
+        if db_field.name == "pest":
             product_id = request.resolver_match.kwargs.get("object_id")
             print(product_id)
 
@@ -297,13 +297,13 @@ class ProductInfestionInline(admin.TabularInline):
                 try:
                     product = Product.objects.get(pk=product_id)
                     
-                    kwargs['queryset'] = Infestation.objects.filter(
-                        infestationproductkind__product_kind=product.kind
+                    kwargs['queryset'] = Pest.objects.filter(
+                        pestproductkind__product_kind=product.kind
                     ).distinct()
                 except Product.DoesNotExist:
-                    kwargs['queryset'] = Infestation.objects.none()
+                    kwargs['queryset'] = Pest.objects.none()
             else:
-                kwargs['queryset'] = Infestation.objects.none()
+                kwargs['queryset'] = Pest.objects.none()
 
             kwargs['widget'] = forms.Select(choices=kwargs['queryset'].values_list('id', 'name'))
 
@@ -415,7 +415,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
     
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/product-infestion.js','js/admin/forms/packhouses/catalogs/product-disease.js')
+        js = ('js/admin/forms/packhouses/catalogs/product-pest.js','js/admin/forms/packhouses/catalogs/product-disease.js')
 
 
 @admin.register(ProductSize)
@@ -2302,3 +2302,4 @@ class ProviderAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
 
 # /Providers
+
