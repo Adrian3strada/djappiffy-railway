@@ -799,7 +799,6 @@ class ProductPresentationComplementarySupply(models.Model):
 
 
 class Packaging(models.Model):
-    # markets = models.ManyToManyField(Market, verbose_name=_('Markets'), related_name='markets_packagings')
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)

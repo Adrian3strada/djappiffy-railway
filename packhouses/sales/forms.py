@@ -7,15 +7,6 @@ class OrderItemFormSet(BaseInlineFormSet):
         super().__init__(*args, **kwargs)
 
         for form in self.forms:
-            form.fields['product_size'].widget.can_add_related = False
-            form.fields['product_size'].widget.can_change_related = False
-            form.fields['product_size'].widget.can_delete_related = False
-            form.fields['product_size'].widget.can_view_related = False
-            form.fields['product_packaging'].widget.can_add_related = False
-            form.fields['product_packaging'].widget.can_change_related = False
-            form.fields['product_packaging'].widget.can_delete_related = False
-            form.fields['product_packaging'].widget.can_view_related = False
-
             print("form prefix", form.prefix)
             print("form dir", dir(form))
             print("form data", form.data)

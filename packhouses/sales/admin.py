@@ -14,6 +14,7 @@ from .filters import (ByMaquiladoraForOrganizationOrderFilter, ByClientForOrgani
                       ByProductForOrganizationOrderFilter, ByProductVarietyForOrganizationOrderFilter)
 from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
+                                        ProductPackaging,
                                         ProductPhenologyKind, ProductMarketClass, Packaging)
 from .models import Order, OrderItem
 from .forms import OrderItemFormSet
@@ -60,9 +61,9 @@ class OrderItemInline(admin.StackedInline):
                 kwargs["queryset"] = ProductMarketClass.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
 
         if db_field.name == "product_packaging":
-            kwargs["queryset"] = Packaging.objects.none()
+            kwargs["queryset"] = ProductPackaging.objects.none()
             if parent_obj and parent_obj.product:
-                kwargs["queryset"] = Packaging.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
+                kwargs["queryset"] = ProductPackaging.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

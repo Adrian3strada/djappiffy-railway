@@ -211,7 +211,47 @@ document.addEventListener('DOMContentLoaded', () => {
         const category = selectedOption.data('category');
         console.log("data-category:", category);
 
-
+        if (productSizeField.val() && category) {
+          if (['size'].includes(category)) {
+            productPhenologyField.closest('.form-group').fadeIn();
+            marketClassField.closest('.form-group').fadeIn();
+            marketRipenessField.closest('.form-group').fadeIn();
+            productPackagingField.closest('.form-group').fadeIn();
+            amountPerPackagingField.closest('.form-group').fadeIn();
+          }
+          if (['mix'].includes(category)) {
+            productPhenologyField.closest('.form-group').fadeOut();
+            marketClassField.closest('.form-group').fadeOut();
+            marketRipenessField.closest('.form-group').fadeIn();
+            productPackagingField.closest('.form-group').fadeIn();
+            amountPerPackagingField.closest('.form-group').fadeIn();
+            productPhenologyField.val(null).trigger('change');
+            marketClassField.val(null).trigger('change');
+          }
+          if (['waste', 'biomass'].includes(category)) {
+            productPhenologyField.closest('.form-group').fadeOut();
+            marketClassField.closest('.form-group').fadeOut();
+            marketRipenessField.closest('.form-group').fadeOut();
+            productPackagingField.closest('.form-group').fadeOut();
+            amountPerPackagingField.closest('.form-group').fadeOut();
+            productPhenologyField.val(null).trigger('change');
+            marketClassField.val(null).trigger('change');
+            marketRipenessField.val(null).trigger('change');
+            productPackagingField.val(null).trigger('change');
+            amountPerPackagingField.val(null).trigger('change');
+          }
+        } else {
+          productPhenologyField.val(null).trigger('change');
+          marketClassField.val(null).trigger('change');
+          marketRipenessField.val(null).trigger('change');
+          productPackagingField.val(null).trigger('change');
+          amountPerPackagingField.val(null).trigger('change');
+          productPhenologyField.closest('.form-group').fadeOut();
+          marketClassField.closest('.form-group').fadeOut();
+          marketRipenessField.closest('.form-group').fadeOut();
+          productPackagingField.closest('.form-group').fadeOut();
+          amountPerPackagingField.closest('.form-group').fadeOut();
+        }
       });
 
       updateFieldOptions(productSizeField, productSizeOptions);
