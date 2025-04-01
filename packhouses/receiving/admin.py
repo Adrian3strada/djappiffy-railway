@@ -124,11 +124,8 @@ class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.Stacked
 class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = ScheduleHarvest
     extra = 0
-    inlines = [ScheduleHarvestHarvestingCrewInline]
-    fields = ('ooid', 'status', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
-              'product_phenologies', 'product_harvest_size_kind', 'orchard', 'orchard_certification', 'market',
-              'weight_expected', 'weighing_scale', 'comments')
-    readonly_fields = ('ooid', 'category', 'product', 'product_variety')
+    inlines = [ScheduleHarvestHarvestingCrewInline, ScheduleHarvestVehicleInline ]
+    readonly_fields = ('ooid', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
     can_delete = False
     can_add = False
     show_title = False
@@ -138,6 +135,23 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
         class CustomFormSet(FormSet, CustomScheduleHarvestFormSet):
             pass
         return CustomFormSet
+
+    def get_fields(self, request, obj=None):
+        fields = [
+            'ooid', 'status', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
+            'product_phenologies', 'product_harvest_size_kind', 'orchard', 'orchard_certification', 'market',
+            'weight_expected', 'weighing_scale', 'comments'
+        ]
+        if obj:  
+            schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=obj).first()
+            if schedule_harvest:
+                pos = fields.index('category') + 1
+                if schedule_harvest.category == "gathering":
+                    fields.insert(pos, 'gatherer')
+                elif schedule_harvest.category == "maquila":
+                    fields.insert(pos, 'maquiladora') 
+        return fields
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
@@ -191,6 +205,8 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
             )
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/vehicle_inline.js', )
     
 
 # Inlines para los pallets
@@ -280,7 +296,7 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                    ByCategoryForOrganizationIncomingProductFilter)
     search_fields = ('scheduleharvest__ooid',)
-    inlines = [PalletReceivedInline, ScheduleHarvestInline, ScheduleHarvestVehicleInline]
+    inlines = [PalletReceivedInline, ScheduleHarvestInline]
 
     # Filtrar en el Admin solo los cortes que su status sea "pending"
     # def get_queryset(self, request):
@@ -293,8 +309,8 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
         form = super().get_form(request, obj, **kwargs)
         return form
     
-    #def has_add_permission(self, request):
-    #    return False 
+    def has_add_permission(self, request):
+        return False 
 
     def generate_actions_buttons(self, obj):
         pdf_url = reverse('weighing_report', args=[obj.pk])

@@ -193,7 +193,6 @@ class ScheduleHarvestVehicle(models.Model):
         max_length=20,
         verbose_name=_("Stamp Number"),
     )
-    incoming_product = models.ForeignKey(IncomingProduct, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.vehicle.license_plate} / {self.vehicle.name}"

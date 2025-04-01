@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const currentKgField = $('#id_current_kg_available');
     const containerTare= $('input[name$="-container_tare"]');
     const totalBoxes= $('input[name$="-total_boxes"]');
-    const emptyBoxesContainerField = $('input[name$="-empty_boxes"]');
     const missingBoxesContainerField = $('input[name$="-missing_boxes"]');
 
     // deshabilitar edición en campos, pero permitir que los valores se envíen
@@ -44,7 +43,6 @@ document.addEventListener("DOMContentLoaded", function() {
     disableField(totalBoxes);
     disableField(fullBoxesField);
     disableField(emptyBoxesField);
-    disableField(emptyBoxesContainerField);
     disableField(missingBoxesContainerField);
     
     // Función para actualizar missingBoxes
