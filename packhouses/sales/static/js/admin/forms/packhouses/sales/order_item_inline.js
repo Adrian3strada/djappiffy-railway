@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let productSizeOptions = [];
   let productPhenologyOptions = [];
   let productMarketClassOptions = [];
+  let productRipenessOptions = [];
   let productPackagingOptions = [];
 
   let priceLabel = 'Price'
@@ -72,75 +73,87 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateProductOptions() {
-    setTimeout(() => {
-      if (clientProperties && productProperties && orderItemsKindField && pricingByField) {
-        console.log("orderItemsKindField", orderItemsKindField)
-        console.log("pricingByField", pricingByField)
-        let productSizeCategories = 'none'
+    if (clientProperties && productProperties && orderItemsKindField && pricingByField) {
+      console.log("orderItemsKindField", orderItemsKindField)
+      console.log("pricingByField", pricingByField)
+      let productSizeCategories = 'none'
 
-        if (orderItemsKindField.val() === 'product_measure_unit') {
-          if (pricingByField.val() === 'product_measure_unit') {
-            productSizeCategories = 'size,mix,waste,biomass'
-          }
+      if (orderItemsKindField.val() === 'product_measure_unit') {
+        if (pricingByField.val() === 'product_measure_unit') {
+          productSizeCategories = 'size,mix,waste,biomass'
         }
+      }
 
-        if (orderItemsKindField.val() === 'product_packaging') {
-          if (pricingByField.val() === 'product_measure_unit') {
-            productSizeCategories = 'size,mix'
-          }
-          if (pricingByField.val() === 'product_packaging') {
-            productSizeCategories = 'size,mix'
-          }
-          if (pricingByField.val() === 'product_presentation') {
-            productSizeCategories = 'size'
-          }
+      if (orderItemsKindField.val() === 'product_packaging') {
+        if (pricingByField.val() === 'product_measure_unit') {
+          productSizeCategories = 'size,mix'
         }
-
-        if (orderItemsKindField.val() === 'product_pallet') {
-          if (pricingByField.val() === 'product_measure_unit') {
-            productSizeCategories = 'size,mix'
-          }
-          if (pricingByField.val() === 'product_packaging') {
-            productSizeCategories = 'size,mix'
-          }
-          if (pricingByField.val() === 'product_presentation') {
-            productSizeCategories = 'size'
-          }
+        if (pricingByField.val() === 'product_packaging') {
+          productSizeCategories = 'size,mix'
         }
+        if (pricingByField.val() === 'product_presentation') {
+          productSizeCategories = 'size'
+        }
+      }
 
-        fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
-          .then(data => {
-            productSizeOptions = data;
-          })
+      if (orderItemsKindField.val() === 'product_pallet') {
+        if (pricingByField.val() === 'product_measure_unit') {
+          productSizeCategories = 'size,mix'
+        }
+        if (pricingByField.val() === 'product_packaging') {
+          productSizeCategories = 'size,mix'
+        }
+        if (pricingByField.val() === 'product_presentation') {
+          productSizeCategories = 'size'
+        }
+      }
 
-        fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productProperties.id}&is_enabled=1`)
-          .then(data => {
-            productPhenologyOptions = data;
-          }).then(() => {
+      fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
+        .then(data => {
+          productSizeOptions = data;
+        })
+        .then(() => {
+          console.log("productSizeOptions", productSizeOptions)
+        });
+
+      fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productProperties.id}&is_enabled=1`)
+        .then(data => {
+          productPhenologyOptions = data;
+        })
+        .then(() => {
           console.log("productPhenologyOptions", productPhenologyOptions)
         });
 
-        fetchOptions(`/rest/v1/catalogs/product-market-class/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
-          .then(data => {
-            productMarketClassOptions = data
-          }).then(() => {
+      fetchOptions(`/rest/v1/catalogs/product-market-class/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
+        .then(data => {
+          productMarketClassOptions = data
+        })
+        .then(() => {
           console.log("productMarketClassOptions 1", productMarketClassOptions)
         });
 
-        fetchOptions(`/rest/v1/catalogs/product-packaging/?product=${productProperties.id}&is_enabled=1`)
-          .then(data => {
-            productPackagingOptions = data;
-          }).then(() => {
+      fetchOptions(`/rest/v1/catalogs/product-ripeness/?product=${productProperties.id}&is_enabled=1`)
+        .then(data => {
+          productRipenessOptions = data
+        })
+        .then(() => {
+          console.log("productRipenessOptions", productRipenessOptions)
+        });
+
+      fetchOptions(`/rest/v1/catalogs/product-packaging/?product=${productProperties.id}&is_enabled=1`)
+        .then(data => {
+          productPackagingOptions = data;
+        })
+        .then(() => {
           console.log("productPackagingOptions", productPackagingOptions)
         });
 
-      } else {
-        productSizeOptions = [];
-        productPhenologyOptions = [];
-        productMarketClassOptions = [];
-        productPackagingOptions = [];
-      }
-    }, 800);
+    } else {
+      productSizeOptions = [];
+      productPhenologyOptions = [];
+      productMarketClassOptions = [];
+      productPackagingOptions = [];
+    }
   }
 
   clientField.on('change', () => {
@@ -183,12 +196,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const productSizeField = $(newForm).find('select[name$="-product_size"]');
       const productPhenologyField = $(newForm).find('select[name$="-product_phenology"]');
       const marketClassField = $(newForm).find('select[name$="-product_market_class"]');
+      const marketRipenessField = $(newForm).find('select[name$="-product_ripeness"]');
       const productPackagingField = $(newForm).find('select[name$="-product_packaging"]');
       const amountPerPackagingField = $(newForm).find('input[name$="-amount_per_packaging"]');
 
       updateFieldOptions(productSizeField, productSizeOptions);
       updateFieldOptions(productPhenologyField, productPhenologyOptions);
       updateFieldOptions(marketClassField, productMarketClassOptions);
+      updateFieldOptions(marketRipenessField, productRipenessOptions);
       updateFieldOptions(productPackagingField, productPackagingOptions);
     }
   });

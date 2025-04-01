@@ -60,7 +60,6 @@ class OrderItemFormSet(BaseInlineFormSet):
                     if product_size.category in ['mix', 'waste', 'biomass']:
                         form.fields['product_phenology'].required = False
                         form.fields['product_market_class'].required = False
-                        form.fields['product_ripeness'].required = False
                         form.data[f"{form.prefix}-product_phenology"] = None
                         form.data[f"{form.prefix}-product_market_class"] = None
                         form.data[f"{form.prefix}-product_ripeness"] = None
@@ -71,5 +70,4 @@ class OrderItemFormSet(BaseInlineFormSet):
                         form.fields['product_phenology'].required = True
                         form.fields['product_market_class'].required = True
                         form.fields['product_market_class'].required = True
-                        form.fields['product_ripeness'].required = True
                         form.fields['product_packaging'].required = True
