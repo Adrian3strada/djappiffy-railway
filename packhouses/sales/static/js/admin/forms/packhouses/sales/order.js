@@ -15,26 +15,22 @@ document.addEventListener("DOMContentLoaded", function () {
   const API_BASE_URL = "/rest/v1";
 
   let order_items_kind_options = [
-    {"product_measure_unit": "Product measure unit"},
-    {"product_packaging": "Product packaging"},
-    {"product_pallet": "Product pallet"},
-  ]
-
-  let product_measure_unit_price_options = [
-    {"product_measure_unit": "Product measure unit"}
+    {id: "product_measure_unit", name: "Product measure unit"},
+    {id: "product_packaging", name: "Product packaging"},
+    {id: "product_pallet", name: "Product pallet"},
   ]
 
   let product_price_options = [
-    {"product_measure_unit": "Product measure unit"},
-    {"product_packaging": "Product packaging"},
-    {"product_presentation": "Product presentation"}
+    {id: "product_measure_unit", name: "Product measure unit"},
+    {id: "product_packaging", name: "Product packaging"},
+    {id: "product_presentation", name: "Product presentation"}
   ]
 
-  function updateFieldOptions(field, options) {
+  function updateFieldOptions(field, options, selected = null) {
     field.empty();
-    field.append(new Option("---------", "", true, true));
+    field.append(new Option("---------", "", true, !selected));
     options.forEach((option) => {
-      field.append(new Option(option.name, option.id, false, false));
+      field.append(new Option(option.name, option.id, false, selected));
     });
     field.trigger("change").select2();
   }
@@ -93,35 +89,48 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function getProductProperties() {
+  function getProductProperties(cleanup = false) {
     if (productField.val()) {
       fetchOptions(`${API_BASE_URL}/catalogs/product/${productField.val()}/`).then(
         (data) => {
           productProperties = data;
           if (data.price_measure_unit_category_display) {
-            orderItemsKindField.find('option[value="product_measure_unit"]').text(data.price_measure_unit_category_display);
-            pricingByField.find('option[value="product_measure_unit"]').text(data.price_measure_unit_category_display);
-
-
-
-            orderItemsKindField.val(null);
-            pricingByField.val(null);
-            orderItemsKindField.trigger('change').select2();
-            pricingByField.trigger('change').select2();
+            order_items_kind_options[0].name = data.price_measure_unit_category_display
+            product_price_options[0].name = data.price_measure_unit_category_display
+            if (cleanup) {
+              orderItemsKindField.val(null);
+              pricingByField.val(null);
+              orderItemsKindField.trigger('change').select2();
+              pricingByField.trigger('change').select2();
+            }
+            const orderItemsKindValue = orderItemsKindField.val();
+            const pricingByValue = pricingByField.val();
+            updateFieldOptions(orderItemsKindField, order_items_kind_options);
+            updateFieldOptions(pricingByField, product_price_options);
+            if (orderItemsKindValue) {
+              orderItemsKindField.val(orderItemsKindValue);
+              orderItemsKindField.trigger('change').select2();
+            }
+            if (pricingByValue) {
+              pricingByField.val(pricingByValue);
+              pricingByField.trigger('change').select2();
+            }
           }
         });
     } else {
       productProperties = null;
-      orderItemsKindField.find('option[value="product_measure_unit"]').text('Product measure unit');
-      pricingByField.find('option[value="product_measure_unit"]').text('Product measure unit');
+      order_items_kind_options[0].name = "Product measure unit"
+      product_price_options[0].name = "Product measure unit"
+      orderItemsKindField.val(null);
       orderItemsKindField.trigger('change').select2();
+      pricingByField.val(null);
       pricingByField.trigger('change').select2();
     }
   }
 
   productField.on("change", () => {
     updateProductVarietyOptions()
-    getProductProperties();
+    getProductProperties(true);
   });
 
   clientCategoryField.on("change", () => {
@@ -150,7 +159,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   clientField.on('change', () => {
     const client = clientField.val();
-
     localDeliveryField.closest('.form-group').fadeOut();
     incotermsField.closest('.form-group').fadeOut();
     setTimeout(() => {
@@ -170,6 +178,19 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
   });
+
+  orderItemsKindField.on('change', () => {
+    console.log(orderItemsKindField.val());
+    if (orderItemsKindField.val() && orderItemsKindField.val() === 'product_measure_unit') {
+      pricingByField.val(null);
+      pricingByField.trigger('change').select2();
+      updateFieldOptions(pricingByField, [product_price_options[0]]);
+    } else {
+      pricingByField.val(null);
+      pricingByField.trigger('change').select2();
+      updateFieldOptions(pricingByField, product_price_options);
+    }
+  })
 
   fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
     (data) => {
