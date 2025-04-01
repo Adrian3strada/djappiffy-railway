@@ -71,8 +71,8 @@ class OrderItem(models.Model):
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=False)
     product_packaging = models.ForeignKey(Packaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT, null=True, blank=False)
-    amount_per_packaging = models.PositiveIntegerField(default=1, verbose_name=_('Amount per packaging'))
-    quantity = models.DecimalField(verbose_name=_('Quantity'), max_digits=12, decimal_places=2, validators=[MinValueValidator(0.01)])
+    amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Amount per packaging'), validators=[MinValueValidator(1)], null=True, blank=False)
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
     price = models.DecimalField(verbose_name=_('Price'), max_digits=12, decimal_places=2, validators=[MinValueValidator(0.01)])
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
 

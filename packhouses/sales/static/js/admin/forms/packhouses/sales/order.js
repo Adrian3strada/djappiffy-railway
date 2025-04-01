@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const orderItemsTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-tab']").closest('li');
+  orderItemsTab.addClass('hidden')
+
   const clientCategoryField = $("#id_client_category");
   const maquiladoraField = $("#id_maquiladora");
   const clientField = $("#id_client");
@@ -8,8 +11,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const productVarietyField = $("#id_product_variety")
   const orderItemsKindField = $("#id_order_items_kind")
   const pricingByField = $("#id_pricing_by")
-
-  const orderItemsTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-tab']").closest('li');
 
   let clientProperties = null;
   let productProperties = null;
@@ -301,7 +302,7 @@ document.addEventListener("DOMContentLoaded", function () {
             productField.val(product);
             productField.trigger('change').select2();
           }
-        }, 400);
+        }, 300);
         setTimeout(() => {
           if (productVariety) {
             productVarietyField.val(productVariety)
@@ -315,7 +316,7 @@ document.addEventListener("DOMContentLoaded", function () {
             pricingByField.val(pricingBy)
             pricingByField.trigger('change').select2();
           }
-        }, 500);
+        }, 400);
       })
   }
 

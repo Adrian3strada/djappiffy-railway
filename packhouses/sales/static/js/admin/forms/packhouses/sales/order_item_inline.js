@@ -155,11 +155,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  pricingByField.on('change', () => {
-    if (pricingByField.val()) {
-      updateProductOptions();
-    }
-  });
+  setTimeout(() => {
+    pricingByField.on('change', () => {
+      if (pricingByField.val()) {
+        updateProductOptions();
+      }
+    });
+  }, 1000);
 
   if (clientField.val()) {
     getClientProperties();
@@ -169,9 +171,11 @@ document.addEventListener('DOMContentLoaded', () => {
     getProductProperties();
   }
 
-  if (pricingByField.val()) {
-    updateProductOptions();
-  }
+  setTimeout(() => {
+    if (pricingByField.val()) {
+      updateProductOptions();
+    }
+  }, 1000);
 
   document.addEventListener('formset:added', (event) => {
     if (event.detail.formsetName === 'orderitem_set') {
