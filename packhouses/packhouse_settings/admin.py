@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (Status, Bank, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
                      PaymentKind, VehicleBrand, AuthorityPackagingKind,
                      OrchardCertificationVerifier,
-                     OrchardCertificationKind, FoodSafetyProcess)
+                     OrchardCertificationKind)
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget
 from organizations.models import Organization
 from common.utils import is_instance_used
@@ -193,8 +193,3 @@ class OrchardCertificationKindAdmin(ByOrganizationAdminMixin):
             kwargs['queryset'] = OrchardCertificationVerifier.objects.filter(organization=request.organization, is_enabled=True)
 
         return super().formfield_for_manytomany(db_field, request, **kwargs)
-
-@admin.register(FoodSafetyProcess)
-class FoodSafetyProcedureAdmin(admin.ModelAdmin):
-    list_display = ('procedure', 'kind', 'is_enabled')
-    list_filter = ['procedure', 'kind', 'is_enabled']

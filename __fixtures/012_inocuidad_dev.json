@@ -1,0 +1,516 @@
+[
+    {
+        "model": "base.disease",
+        "pk": 1,
+        "fields": {
+            "name": "Antracnosis",
+            "inside": 1,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 2,
+        "fields": {
+            "name": "Phytophthora",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 3,
+        "fields": {
+            "name": "Roya",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 4,
+        "fields": {
+            "name": "Cercosporiosis",
+            "inside": 1,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 5,
+        "fields": {
+            "name": "Mildu Polvoso",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 6,
+        "fields": {
+            "name": "Rosellinia",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 7,
+        "fields": {
+            "name": "Alternaria",
+            "inside": 1,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 8,
+        "fields": {
+            "name": "Gomosis",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 9,
+        "fields": {
+            "name": "Moho Azul",
+            "inside": 1,
+            "outside": 0,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 10,
+        "fields": {
+            "name": "Fumagina",
+            "inside": 1,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 11,
+        "fields": {
+            "name": "Fusariosis",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 12,
+        "fields": {
+            "name": "Prudición de la raiz",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 1,
+        "fields": {
+            "name" : "Trips",
+            "inside" : 1,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 2,
+        "fields": {
+            "name" : "Mosca de la fruta",
+            "inside" : 1,
+            "outside" : 0,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 3,
+        "fields": {
+            "name" : "Acaro cristalino",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 4,
+        "fields": {
+            "name" : "Acaro rojo",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 5,
+        "fields": {
+            "name" : "Barrenador del hueso",
+            "inside" : 1,
+            "outside" : 0,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 6,
+        "fields": {
+            "name" : "Barrenador de las ramas",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 7,
+        "fields": {
+            "name" : "Gorgojo de la raiz",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 8,
+        "fields": {
+            "name" : "Pulgon",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 9,
+        "fields": {
+            "name" : "Minador de citricos",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 10,
+        "fields": {
+            "name" : "Mosca blanca",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 11,
+        "fields": {
+            "name" : "Cochinilla algodonosa",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 12,
+        "fields": {
+            "name" : "Gorgojo de la flor",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 13,
+        "fields": {
+            "name" : "Cochinilla",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 14,
+        "fields": {
+            "name" : "Acaros",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 15,
+        "fields": {
+            "name" : "Gorgojos",
+            "inside" : 1,
+            "outside" : 0,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 16,
+        "fields": {
+            "name" : "Termitas",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 1,
+            "is_enabled" : 1,
+            "product_kind_id" : 8
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 3,
+            "is_enabled" : 1,
+            "product_kind_id" : 8
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 5,
+            "is_enabled" : 1,
+            "product_kind_id" : 8
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 2,
+            "is_enabled" : 1,
+            "product_kind_id" : 8
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 4,
+            "is_enabled" : 1,
+            "product_kind_id" : 8
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 6,
+            "is_enabled" : 1,
+            "product_kind_id" : 8
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 1,
+            "is_enabled" : 1,
+            "product_kind_id" : 9
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 7,
+            "is_enabled" : 1,
+            "product_kind_id" : 9
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 7,
+            "is_enabled" : 1,
+            "product_kind_id" : 9
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 8,
+            "is_enabled" : 1,
+            "product_kind_id" : 9
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 9,
+            "is_enabled" : 1,
+            "product_kind_id" : 9
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 10,
+            "is_enabled" : 1,
+            "product_kind_id" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 1,
+            "is_enabled" : 1,
+            "product_kind_id" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 2,
+            "is_enabled" : 1,
+            "product_kind_id" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 3,
+            "is_enabled" : 1,
+            "product_kind_id" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 4,
+            "is_enabled" : 1,
+            "product_kind_id" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 5,
+            "is_enabled" : 1,
+            "product_kind_id" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 6,
+            "is_enabled" : 1,
+            "product_kind_id" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 7,
+            "is_enabled" : 1,
+            "product_kind_id" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 1,
+            "is_enabled" : 1,
+            "product_kind_id" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 2,
+            "is_enabled" : 1,
+            "product_kind_id" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 8,
+            "is_enabled" : 1,
+            "product_kind_id" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 9,
+            "is_enabled" : 1,
+            "product_kind_id" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 10,
+            "is_enabled" : 1,
+            "product_kind_id" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 11,
+            "is_enabled" : 1,
+            "product_kind_id" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "disease_id" : 12,
+            "is_enabled" : 1,
+            "product_kind_id" : 9
+        }
+    }
+]

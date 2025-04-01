@@ -4,7 +4,6 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from common.mixins import (CleanNameAndOrganizationMixin, CleanNameAndMarketMixin, CleanUniqueNameForOrganizationMixin,
                            CleanNameAndCodeAndOrganizationMixin)
-from common.base.models import FoodSafetyProcedure, ProductKind
 
 # Create your models here.
 
@@ -154,11 +153,4 @@ class OrchardCertificationKind(CleanNameAndOrganizationMixin, models.Model):
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='orchardcertificationkind_unique_name_organization'),
         ]
-
-class FoodSafetyProcess(models.Model):
-    procedure = models.ForeignKey(FoodSafetyProcedure, verbose_name=_('Food Safety Procedure'), on_delete=models.PROTECT)
-    kind = models.ForeignKey(ProductKind, verbose_name=_('Product kind'), on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
 

@@ -15,7 +15,7 @@ from .models import (
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     PackagingComplementarySupply, ProductRipeness, ProductPackagingPresentation,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, 
-    ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue,
+    ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue, ProductFoodSafetyProcess
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
@@ -275,7 +275,7 @@ class ProductRipenessInline(admin.TabularInline):
         return formset
 
 class ProductPestInline(admin.TabularInline):
-    model = ProductInfestion
+    model = ProductPest
     extra = 0
     verbose_name = _('Pest')
     verbose_name_plural = _('Pest')
@@ -355,6 +355,12 @@ class ProductResidueInline(admin.TabularInline):
     verbose_name = _('Residue')
     verbose_name_plural = _('Residues')
 
+class ProductFoodSafetyProcessInline(admin.TabularInline):
+    model = ProductFoodSafetyProcess
+    extra = 1
+    verbose_name = _('Food Safety Process')
+    verbose_name_plural = _('Food Safety Process')
+
 @admin.register(Product)
 class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
@@ -368,10 +374,11 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                ProductVarietyInline,
                ProductPhenologyKindInline, ProductHarvestSizeKindInline,
                ProductMassVolumeKindInline, ProductRipenessInline,
-               ProductInfestionInline,
+               ProductPestInline,
                ProductDiseaseInline, 
                ProductPhysicalDamageInline, 
-               ProductResidueInline
+               ProductResidueInline,
+               ProductFoodSafetyProcessInline
                ]
 
     @uppercase_form_charfield('name')
@@ -415,7 +422,9 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
     
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/product-pest.js','js/admin/forms/packhouses/catalogs/product-disease.js')
+        js = ('js/admin/forms/packhouses/catalogs/product-pest.js', 'js/admin/forms/packhouses/catalogs/product-disease.js')
+    # class Media:
+    #     js = ('js/admin/forms/packhouses/catalogs/product-disease.js',)
 
 
 @admin.register(ProductSize)

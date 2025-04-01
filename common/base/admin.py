@@ -6,7 +6,7 @@ from organizations.models import Organization, OrganizationUser
 from .models import (ProductKind, ProductKindCountryStandard, ProductKindCountryStandardSize, LegalEntityCategory, CapitalFramework,
                      ProductKindCountryStandardPackaging, SupplyKind,
                      Incoterm, LocalDelivery, Currency,
-                     CertificationEntity, CertificationFormat, Pest, Disease, InfestationProductKind, DiseaseProductKind, FoodSafetyProcedure)
+                     CertificationEntity, CertificationFormat, Pest, Disease, PestProductKind, DiseaseProductKind, FoodSafetyProcedure)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
 from wagtail.documents.models import Document
@@ -19,7 +19,7 @@ from django.utils.translation import gettext_lazy as _
 #
 
 class PestProductKindInline(admin.TabularInline):
-    model = InfestationProductKind
+    model = PestProductKind
     extra = 1
     verbose_name = _('Pest')
     verbose_name_plural = _('Pests')
@@ -34,7 +34,7 @@ class DiseaseProductKindInline(admin.TabularInline):
 class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'for_packaging', 'for_orchard', 'for_eudr', 'is_enabled', 'sort_order')
     list_filter = ['for_packaging', 'for_orchard', 'for_eudr', 'is_enabled']
-    inlines = [InfestationProductKindInline, DiseaseProductKindInline]
+    inlines = [PestProductKindInline, DiseaseProductKindInline]
 
     class Media:
         js = ('js/admin/forms/common/pest.js', 'js/admin/forms/common/disease.js')

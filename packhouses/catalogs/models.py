@@ -25,6 +25,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
 from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES, PRODUCT_PACKAGING_CATEGORY_CHOICES,
                        PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES)
 from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
+from common.base.models import FoodSafetyProcedure
 
 # Create your models here.
 
@@ -266,6 +267,11 @@ class ProductResidue(models.Model):
             models.UniqueConstraint(fields=['name', 'product'],
                                     name='productresidue_unique_name_product'),
         ]
+
+class ProductFoodSafetyProcess(models.Model):
+    procedure = models.ForeignKey(FoodSafetyProcedure, verbose_name=_('Food Safety Procedure'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product kind'), on_delete=models.PROTECT)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
 # /Products
 

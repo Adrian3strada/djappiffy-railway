@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import IncomingProduct, PalletReceived
+from .models import IncomingProduct, PalletReceived, FoodSafety
 from common.base.mixins import (ByOrganizationAdminMixin)
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle
 from django.utils.translation import gettext_lazy as _
@@ -120,3 +120,7 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
 
     class Media:
         js = ('js/admin/forms/packhouses/receiving/incoming_product.js',)
+
+
+@admin.register(IncomingProduct)
+class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):

@@ -4,8 +4,8 @@ from django.utils.translation import gettext_lazy as _
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_incoming_product_categories_status
-from packhouses.catalogs.models import WeighingScale
-from packhouses.packhouse_settings.models import FoodSafetyProcess
+from packhouses.catalogs.models import WeighingScale, ProductFoodSafetyProcess
+from packhouses.catalogs.models import Product
 
 # Create your models here.
 
@@ -73,10 +73,16 @@ class PalletReceived(models.Model):
         verbose_name = _('Pallet Received')
         verbose_name_plural = _('Pallets Received')
 
+class Corte(models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+
+class Lote(models.Model):
+    corte = models.ForeignKey(Corte, verbose_name=_('Corte'), on_delete=models.PROTECT)
+
 class FoodSafety(models.Model):
     # corte = models.ForeignKey(corte, verbose_name=_('corte'), on_delete=models.PROTECT)
-    # lote = models.ForeignKey(lote, verbose_name=_('lote'), on_delete=models.PROTECT)
-    process = models.ForeignKey(FoodSafetyProcess, verbose_name=_('Food Safety Process'), on_delete=models.PROTECT)
+    lote = models.ForeignKey(Lote, verbose_name=_('lote'), on_delete=models.PROTECT)
+    process = models.ForeignKey(ProductFoodSafetyProcess, verbose_name=_('Food Safety Process'), on_delete=models.PROTECT)
 
 class DryMatter(models.Model):
     sample_number = models.IntegerField()

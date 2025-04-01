@@ -1,19 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
     function updateSelectOptions() {
-        let infestationSelects = document.querySelectorAll(
+        let diseaseSelects = document.querySelectorAll(
             '.inline-group [name^="productdisease_set-"][name$="-disease"]'
         );
         let selectedValues = new Set();
 
         // Recopilar valores seleccionados
-        infestationSelects.forEach(select => {
+        diseaseSelects.forEach(select => {
             if (select.value) {
                 selectedValues.add(select.value);
             }
         });
 
         // Actualizar las opciones de los selects
-        infestationSelects.forEach(select => {
+        diseaseSelects.forEach(select => {
             let currentValue = select.value;
             let options = Array.from(select.options);
 

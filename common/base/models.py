@@ -318,4 +318,12 @@ class DiseaseProductKind(models.Model):
 
 class FoodSafetyProcedure(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(null=True, blank=True)
     model = models.CharField(max_length=255, unique=True)
+
+    class Meta:
+        verbose_name = _('Food Safety Procedure')
+        verbose_name_plural = _('Food Safety Procedures')
+
+    def __str__(self):
+        return f"{self.name}"
