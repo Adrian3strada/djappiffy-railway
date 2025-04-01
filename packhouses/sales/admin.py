@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django import forms
+from django.forms import BaseInlineFormSet
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization, OrganizationUser
@@ -23,23 +25,85 @@ from common.forms import SelectWidgetWithData
 
 # Register your models here.
 
+class OrderItemFormSet(BaseInlineFormSet):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for form in self.forms:
+
+            form.fields['product_size'].widget.can_add_related = False
+            form.fields['product_size'].widget.can_change_related = False
+            form.fields['product_size'].widget.can_delete_related = False
+            form.fields['product_size'].widget.can_view_related = False
+            form.fields['product_packaging'].widget.can_add_related = False
+            form.fields['product_packaging'].widget.can_change_related = False
+            form.fields['product_packaging'].widget.can_delete_related = False
+            form.fields['product_packaging'].widget.can_view_related = False
+
+            print("form prefix", form.prefix)
+            print("form dir", dir(form))
+            print("form data", form.data)
+
+            if form.data and f"{form.prefix}-product_size" in form.data:
+                try:
+                    product_size_id = int(form.data.get(f"{form.prefix}-product_size"))
+                except (ValueError, TypeError):
+                    product_size_id = None
+            else:
+                product_size_id = None
+
+            print("self instance", form.instance)
+            print("product_size_id", product_size_id)
+            if product_size_id:
+                product_size = ProductSize.objects.filter(id=product_size_id).first()
+                print("product_size", product_size)
+                print("product_size category", product_size.category)
+                if product_size:
+                    if product_size.category in ['mix', 'waste', 'biomass']:
+                        form.fields['product_phenology'].required = False
+                        print("product_size.category", product_size.category)
+                    else:
+                        form.fields['product_phenology'].required = True
+
+
+            if form.data and f"{form.prefix}-product_size" in form.data:
+                try:
+                    product_size_id = int(form.data.get(f"{form.prefix}-product_size"))
+                except (ValueError, TypeError):
+                    product_size_id = None
+            else:
+                product_size_id = None
+
+            print("self instance", form.instance)
+            print("product_size_id", product_size_id)
+            if product_size_id:
+                product_size = ProductSize.objects.filter(id=product_size_id).first()
+                print("product_size", product_size)
+                print("product_size category", product_size.category)
+                if product_size:
+                    if product_size.category in ['mix', 'waste', 'biomass']:
+                        form.fields['product_phenology'].required = False
+                        form.fields['product_market_class'].required = False
+                        form.fields['product_ripeness'].required = False
+                        form.fields['product_packaging'].required = False
+                        form.data[f"{form.prefix}-product_phenology"] = None
+                        form.data[f"{form.prefix}-product_market_class"] = None
+                        form.data[f"{form.prefix}-product_ripeness"] = None
+                        form.data[f"{form.prefix}-product_packaging"] = None
+                    else:
+                        form.fields['product_phenology'].required = True
+                        form.fields['product_market_class'].required = True
+                        form.fields['product_market_class'].required = True
+                        form.fields['product_ripeness'].required = True
+                        form.fields['product_packaging'].required = True
+
+
+
 class OrderItemInline(admin.StackedInline):
     model = OrderItem
     extra = 0
-
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-
-        if not obj or obj.status not in ['closed', 'canceled']:
-            formset.form.base_fields['product_size'].widget.can_add_related = False
-            formset.form.base_fields['product_size'].widget.can_change_related = False
-            formset.form.base_fields['product_size'].widget.can_delete_related = False
-            formset.form.base_fields['product_size'].widget.can_view_related = False
-            formset.form.base_fields['product_packaging'].widget.can_add_related = False
-            formset.form.base_fields['product_packaging'].widget.can_change_related = False
-            formset.form.base_fields['product_packaging'].widget.can_delete_related = False
-            formset.form.base_fields['product_packaging'].widget.can_view_related = False
-        return formset
+    formset = OrderItemFormSet
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = getattr(request, 'organization', None)
@@ -79,7 +143,8 @@ class OrderItemInline(admin.StackedInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/sales/order_item_inline.js',)
+        # js = ('js/admin/forms/packhouses/sales/order_item_inline.js',)
+        pass
 
 
 
