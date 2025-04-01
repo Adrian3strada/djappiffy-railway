@@ -31,6 +31,19 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
             field.widget.can_delete_related = False
             field.widget.can_view_related = False
         return formset
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        organization = None
+        if hasattr(request, 'organization'):
+            organization = request.organization
+
+        if db_field.name == "harvest_container":
+            kwargs["queryset"] = Supply.objects.filter(
+                organization=organization,
+                is_enabled=True
+            )
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     
 class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
     model = ScheduleHarvestHarvestingCrew
@@ -69,14 +82,13 @@ class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-class ScheduleHarvestVehicleInline(nested_admin.NestedTabularInline):
+class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = ScheduleHarvestVehicle
     # form = ScheduleHarvestVehicleForm
     # fields = ('provider', 'vehicle', 'stamp_vehicle_number')
     fields = ('provider', 'vehicle', )
     extra = 0
-    show_title = True
-    # inlines = [HarvestCuttingContainerVehicleInline]
+    inlines = [HarvestCuttingContainerVehicleInline]
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -112,11 +124,11 @@ class ScheduleHarvestVehicleInline(nested_admin.NestedTabularInline):
 class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = ScheduleHarvest
     extra = 0
-    inlines = [ScheduleHarvestHarvestingCrewInline, ScheduleHarvestVehicleInline]
+    inlines = [ScheduleHarvestHarvestingCrewInline]
     fields = ('ooid', 'status', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
               'product_phenologies', 'product_harvest_size_kind', 'orchard', 'orchard_certification', 'market',
               'weight_expected', 'weighing_scale', 'comments')
-    # readonly_fields = [field.name for field in ScheduleHarvest._meta.fields]
+    readonly_fields = ('ooid', 'category', 'product', 'product_variety')
     can_delete = False
     can_add = False
     show_title = False
@@ -264,11 +276,11 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard', 'get_scheduleharvest_product_provider',
                     'get_scheduleharvest_product', 'status','generate_actions_buttons')
     fields = ('status', 'phytosanitary_certificate', 'guide_number', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pallets_received', 'packhouse_weight_result',
-              'mrl', 'kg_sample', 'boxes_assigned', 'full_boxes', 'empty_boxes', 'missing_boxes', 'average_per_box', 'current_kg_available')
+              'mrl', 'kg_sample', 'boxes_assigned', 'full_boxes', 'empty_boxes', 'missing_boxes', 'average_per_box', 'current_kg_available', 'comments')
     list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                    ByCategoryForOrganizationIncomingProductFilter)
     search_fields = ('scheduleharvest__ooid',)
-    inlines = [PalletReceivedInline, ScheduleHarvestInline]
+    inlines = [PalletReceivedInline, ScheduleHarvestInline, ScheduleHarvestVehicleInline]
 
     # Filtrar en el Admin solo los cortes que su status sea "pending"
     # def get_queryset(self, request):
@@ -281,8 +293,8 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
         form = super().get_form(request, obj, **kwargs)
         return form
     
-    def has_add_permission(self, request):
-        return False 
+    #def has_add_permission(self, request):
+    #    return False 
 
     def generate_actions_buttons(self, obj):
         pdf_url = reverse('weighing_report', args=[obj.pk])

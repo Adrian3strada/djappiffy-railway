@@ -193,6 +193,7 @@ class ScheduleHarvestVehicle(models.Model):
         max_length=20,
         verbose_name=_("Stamp Number"),
     )
+    incoming_product = models.ForeignKey(IncomingProduct, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.vehicle.license_plate} / {self.vehicle.name}"
@@ -211,7 +212,9 @@ class ScheduleHarvestContainerVehicle(models.Model):
         limit_choices_to={'kind__category': 'harvest_container'}
     )
     quantity = models.PositiveIntegerField()
-
+    full_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Full Boxes'))
+    empty_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Empty Boxes'))
+    missing_boxes = models.IntegerField(default=0, verbose_name=_('Missing Boxes'))
     def __str__(self):
         return ""
 

@@ -220,8 +220,11 @@ def set_scheduleharvest_ready(request, harvest_id):
     incoming_product = IncomingProduct.objects.create(organization=scheduleharvest.organization)
     scheduleharvest.incoming_product = incoming_product
     scheduleharvest.save()
-    success_message = _('Harvest sent to Fruit Receiving Area successfully.')
 
+    scheduleharvest.scheduleharvestvehicle_set.all().update(incoming_product=incoming_product)
+    scheduleharvest.save()
+
+    success_message = _('Harvest sent to Fruit Receiving Area successfully.')
     return JsonResponse({
         'success': True,
         'message': success_message

@@ -20,13 +20,14 @@ class IncomingProduct(models.Model):
     phytosanitary_certificate = models.CharField(max_length=50, verbose_name=_('Phytosanitary Certificate'), null=True, blank=True)
     kg_sample = models.FloatField(default=0, verbose_name=_("Kg for Sample"), validators=[MinValueValidator(0.00)])
     current_kg_available = models.FloatField(default=0, verbose_name=_("Current Kg Available"),)
-    boxes_assigned = models.PositiveIntegerField(default=0, verbose_name=_('Boxes Assigned'))
-    empty_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Empty Boxes'))
-    full_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Full Boxes'))
-    missing_boxes = models.IntegerField(default=0, verbose_name=_('Missing Boxes'))
+    boxes_assigned = models.PositiveIntegerField(default=0, verbose_name=_('Boxes Assigned'), help_text=_('Boxes assigned per harvest'))
+    empty_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Empty Boxes'), help_text=_('Empty boxes per harvest'))
+    full_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Full Boxes'), help_text=_('Full boxes per harvest'))
+    missing_boxes = models.IntegerField(default=0, verbose_name=_('Missing Boxes'), help_text=_('Missing boxes per harvest'))
     average_per_box = models.FloatField(default=0, verbose_name=_("Average per Box"),)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
-
+    comments = models.TextField(verbose_name=_('Comments'), blank=True, null=True)
+    
     def __str__(self):
         from packhouses.gathering.models import ScheduleHarvest
 

@@ -24,7 +24,7 @@ from packhouses.catalogs.filters import (StatesForOrganizationCountryFilter, ByC
                                          )
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, Market, WeighingScale,
                                         ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind,
-                                        OrchardCertification)
+                                        OrchardCertification, Supply)
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
 from common.base.models import ProductKind
@@ -85,6 +85,7 @@ class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_
 
 class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
     model = ScheduleHarvestContainerVehicle
+    fields = ('harvest_container', 'quantity')
     extra = 0
 
     def get_formset(self, request, obj=None, **kwargs):
@@ -102,8 +103,8 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
         if hasattr(request, 'organization'):
             organization = request.organization
 
-        if db_field.name == "harvest_cutting_container":
-            kwargs["queryset"] = HarvestContainer.objects.filter(
+        if db_field.name == "harvest_container":
+            kwargs["queryset"] = Supply.objects.filter(
                 organization=organization,
                 is_enabled=True
             )
@@ -114,6 +115,7 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
 class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = ScheduleHarvestVehicle
     extra = 0
+    fields = ('harvest_cutting', 'provider', 'vehicle', 'stamp_number')
     inlines = [HarvestCuttingContainerVehicleInline]
 
     def get_formset(self, request, obj=None, **kwargs):
