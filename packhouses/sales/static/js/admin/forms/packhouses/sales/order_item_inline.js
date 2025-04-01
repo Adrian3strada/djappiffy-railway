@@ -200,6 +200,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const productPackagingField = $(newForm).find('select[name$="-product_packaging"]');
       const amountPerPackagingField = $(newForm).find('input[name$="-amount_per_packaging"]');
 
+      productPhenologyField.closest('.form-group').hide();
+      marketClassField.closest('.form-group').hide();
+      marketRipenessField.closest('.form-group').hide();
+      productPackagingField.closest('.form-group').hide();
+      amountPerPackagingField.closest('.form-group').hide();
+
+      productSizeField.on('change', () => {
+        const selectedOption = productSizeField.find('option:selected');
+        const category = selectedOption.data('category');
+        console.log("data-category:", category);
+
+
+      });
+
       updateFieldOptions(productSizeField, productSizeOptions);
       updateFieldOptions(productPhenologyField, productPhenologyOptions);
       updateFieldOptions(marketClassField, productMarketClassOptions);

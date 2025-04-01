@@ -64,7 +64,6 @@ class OrderItemInline(admin.StackedInline):
             if parent_obj and parent_obj.product:
                 kwargs["queryset"] = Packaging.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
 
-
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
