@@ -10,6 +10,8 @@ class OrderItemFormSet(BaseInlineFormSet):
             print("form prefix", form.prefix)
             print("form dir", dir(form))
             print("form data", form.data)
+            print("form data order_items_kind", form.data['order_items_kind'])
+            print("form data pricing_by", form.data['pricing_by'])
 
             if form.data and f"{form.prefix}-product_size" in form.data:
                 try:
@@ -35,8 +37,12 @@ class OrderItemFormSet(BaseInlineFormSet):
                         if product_size.category in ['waste', 'biomass']:
                             form.fields['product_packaging'].required = False
                             form.fields['product_amount_per_packaging'].required = False
+                            form.fields['product_packaging_pallet'].required = False
+                            form.fields['product_packaging_quantity_per_pallet'].required = False
                             form.data[f"{form.prefix}-product_packaging"] = None
                             form.data[f"{form.prefix}-product_amount_per_packaging"] = None
+                            form.data[f"{form.prefix}-product_packaging_pallet"] = None
+                            form.data[f"{form.prefix}-product_packaging_quantity_per_pallet"] = None
                     else:
                         form.fields['product_phenology'].required = True
                         form.fields['product_market_class'].required = True

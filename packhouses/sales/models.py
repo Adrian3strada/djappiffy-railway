@@ -87,7 +87,7 @@ class OrderItem(models.Model):
             return f"#{self.order.ooid} - {self.pk}"
         return f"{self.pk}"
 
-    def clean(self):
+    def clean1(self):
         if self.product_size.category in ['waste', 'biomass']:
             self.price = self.unit_price * self.items_quantity
 
