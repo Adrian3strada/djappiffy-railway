@@ -30,6 +30,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // ================ OBTENCIÓN DE CUADRILLAS ================
+    function fetchOptions(url) {
+        return $.ajax({
+          url: url, // La URL para obtener las opciones
+          method: 'GET',
+          dataType: 'json'
+        }).fail(error => console.error('Error al obtener opciones:', error));
+      }
+    
+    function updateFieldOptions(field, options, selectedValue) {
+        field.empty(); // Limpiar las opciones existentes
+        if (!field.prop('multiple')) {
+            field.append(new Option('---------', '', true, false)); // Añadir opción por defecto
+        }
+        options.forEach(option => {
+            field.append(new Option(option.name, option.id, false, option.id === selectedValue)); // Añadir cada opción
+        });
+        field.val(selectedValue); // Establecer el valor seleccionado
+    }
+
+    function handleProviderChange(providerField, harvestingCrewField, selectedHarvestingCrew = null) {
+        const providerId = providerField.val(); 
+        
+        if (providerId) {
+            fetchOptions(`/rest/v1/catalogs/harvesting-crew/?provider=${providerId}`)
+            .then(harvestingCrews => {
+                updateFieldOptions(harvestingCrewField, harvestingCrews, selectedHarvestingCrew); // Actualizar opciones
+            })
+            .catch(error => console.error('Error:', error));
+        } else {
+            // Si no se ha seleccionado un proveedor, limpiar las opciones del campo harvesting_crew
+            updateFieldOptions(harvestingCrewField, [], null);
+        }
+    }
+
     // ================ ACTUALIZACIÓN DE CONTEO DE PALLETS ================
     const updatePalletCount = () => {
         // Solo contar pallets que no estén marcados para eliminación (usando el checkbox de pallet)
@@ -130,6 +165,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const initializePallet = (palletForm) => {
         const $pallet = $(palletForm);
         
+        const providerField = $(palletForm).find('select[name$="-provider"]'); 
+        const harvestingCrewField = $(palletForm).find('select[name$="-harvesting_crew"]');
+        const selectedHarvestingCrew = harvestingCrewField.val();
+
+        
+        if (providerField.val()) {
+            handleProviderChange(providerField, harvestingCrewField, selectedHarvestingCrew);
+        } else {
+            updateFieldOptions(harvestingCrewField, [], null);
+        }
+
+        // Manejar el cambio de proveedor en formularios existentes
+        providerField.on('change', function() {
+            handleProviderChange(providerField, harvestingCrewField, harvestingCrewField.val());
+        });
+
+
         // --- Observer para detectar cambios en el checkbox DELETE del pallet ---
         const $palletDeleteCheckbox = $pallet
             .find('input[name$="-DELETE"]')
@@ -181,6 +233,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // ================ MANEJO DE FORMSETS ================
     document.addEventListener('formset:added', (event) => {
         const formsetName = event.detail.formsetName;
+
+        const providerField = $(formsetName).find('select[name$="-provider"]'); 
+        const harvestingCrewField = $(formsetName).find('select[name$="-harvesting_crew"]');
+        // Manejar el cambio de proveedor en el formulario agregado
+        providerField.on('change', function() {
+            handleProviderChange(providerField, harvestingCrewField);
+        });
+
+        // Actualizar las opciones del campo harvesting_crew cuando se agrega un nuevo formulario
+        handleProviderChange(providerField, harvestingCrewField);
         if (formsetName === 'palletreceived_set') {
             initializePallet(event.target);
         } else if (formsetName === 'palletcontainer_set') {

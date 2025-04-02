@@ -221,8 +221,6 @@ def set_scheduleharvest_ready(request, harvest_id):
     scheduleharvest.incoming_product = incoming_product
     scheduleharvest.save()
 
-    scheduleharvest.scheduleharvestvehicle_set.all().update(incoming_product=incoming_product)
-    scheduleharvest.save()
 
     success_message = _('Harvest sent to Fruit Receiving Area successfully.')
     return JsonResponse({

@@ -1,7 +1,8 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from packhouses.gathering.models import ScheduleHarvestVehicle
-from .models import IncomingProduct
+from .models import IncomingProduct, PalletReceived
+from django.core.exceptions import ValidationError
 
 class ScheduleHarvestVehicleForm(forms.ModelForm):
     stamp_vehicle_number = forms.CharField(
@@ -53,3 +54,33 @@ class ScheduleHarvestVehicleForm(forms.ModelForm):
                 print(f"Sello ingresado {stamp_number} coincide con el sello guardado.")
         
         return stamp_number
+
+class IncomingProductForm(forms.ModelForm):
+    class Meta:
+        model = IncomingProduct
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # obtener el status a guardar para validaciones
+        incoming_product_status = cleaned_data.get('status', self.instance.status)
+
+        # VALIDACIÓN DE PARA PALLETS RECEIVED
+        total_pallets = int(self.data.get('palletreceived_set-TOTAL_FORMS', 0))
+
+        if total_pallets < 1 and incoming_product_status != "pending":
+            raise forms.ValidationError("You must add at least one Pallet to the Incoming Product.")
+
+        for i in range(total_pallets):
+            pallet_prefix = f'palletreceived_set-{i}-' 
+            provider = self.data.get(pallet_prefix + 'provider')
+            harvesting_crew = self.data.get(pallet_prefix + 'harvesting_crew')
+
+            if not provider or not provider.strip():
+                raise ValidationError(_(f'Pallet Received {i + 1} is missing a provider.'))
+
+            if not harvesting_crew or not harvesting_crew.strip():
+                raise ValidationError(_(f'Pallet Received {i + 1} is missing a harvesting crew.'))
+
+        return cleaned_data

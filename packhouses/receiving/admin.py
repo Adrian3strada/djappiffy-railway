@@ -7,7 +7,7 @@ from .models import IncomingProduct, PalletReceived, PalletContainer
 from common.base.mixins import (ByOrganizationAdminMixin)
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin
-from .forms import ScheduleHarvestVehicleForm
+from .forms import ScheduleHarvestVehicleForm, IncomingProductForm
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                       ByCategoryForOrganizationIncomingProductFilter)
 from .utils import update_pallet_numbers,  CustomScheduleHarvestFormSet
@@ -62,7 +62,6 @@ class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
         return formset
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-
         organization = None
         if hasattr(request, 'organization'):
             organization = request.organization
@@ -289,15 +288,15 @@ class PalletReceivedInline(CustomNestedStackedInlineMixin, admin.StackedInline):
 # Reciba
 @admin.register(IncomingProduct)
 class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
-    list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard', 'get_scheduleharvest_product_provider',
-                    'get_scheduleharvest_product', 'status','generate_actions_buttons')
-    fields = ('status', 'phytosanitary_certificate', 'guide_number', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pallets_received', 'packhouse_weight_result',
-              'mrl', 'kg_sample', 'boxes_assigned', 'full_boxes', 'empty_boxes', 'missing_boxes', 'average_per_box', 'current_kg_available', 'comments')
+    list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard', 
+                    'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'status','generate_actions_buttons')
+    fields = ('status', 'phytosanitary_certificate', 'guide_number', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pallets_received', 
+              'packhouse_weight_result', 'mrl', 'kg_sample', 'boxes_assigned', 'full_boxes', 'empty_boxes', 'missing_boxes', 'average_per_box', 'current_kg_available', 'comments')
     list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                    ByCategoryForOrganizationIncomingProductFilter)
     search_fields = ('scheduleharvest__ooid',)
     inlines = [PalletReceivedInline, ScheduleHarvestInline]
-
+    form = IncomingProductForm
     # Filtrar en el Admin solo los cortes que su status sea "pending"
     # def get_queryset(self, request):
     #    return super().get_queryset(request).filter(status="pending")
