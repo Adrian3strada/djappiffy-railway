@@ -37,7 +37,7 @@ class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
     inlines = [PestProductKindInline, DiseaseProductKindInline]
 
     class Media:
-        js = ('js/admin/forms/common/pest.js', 'js/admin/forms/common/disease.js')
+        js = ('js/admin/forms/select.js',)
 
 
 class CountryProductStandardSizeInline(admin.TabularInline):
@@ -207,7 +207,7 @@ class DiseaseAdmin(admin.ModelAdmin):
     list_display = ('name', 'inside', 'outside', 'is_enabled')
     list_filter = ['name', 'inside', 'outside', 'is_enabled']
 
-@admin.register(FoodSafetyProcedure) ## Preguntar si se quedara?
+@admin.register(FoodSafetyProcedure)
 class FoodSafetyProcedureAdmin(admin.ModelAdmin):
-    list_display = ('name', 'model')
-    list_filter = ['name', 'model']
+    list_display = ('name', 'description')
+    list_filter = ['name', 'description']

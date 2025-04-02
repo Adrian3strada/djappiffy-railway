@@ -276,12 +276,12 @@ class ProductRipenessInline(admin.TabularInline):
 
 class ProductPestInline(admin.TabularInline):
     model = ProductPest
-    extra = 0
+    extra = 1
     verbose_name = _('Pest')
     verbose_name_plural = _('Pest')
 
-    can_delete = False
-    show_change_link = False
+    can_delete = True
+    show_change_link = True
     raw_id_fields = ['pest']
 
     def get_formset(self, request, obj=None, **kwargs):
@@ -291,7 +291,6 @@ class ProductPestInline(admin.TabularInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "pest":
             product_id = request.resolver_match.kwargs.get("object_id")
-            print(product_id)
 
             if product_id:
                 try:
@@ -315,9 +314,9 @@ class ProductDiseaseInline(admin.TabularInline):
     verbose_name = _('Disease')
     verbose_name_plural = _('Diseases')
 
-    can_delete = False
+    can_delete = True
     show_change_link = False 
-    raw_id_fields = ['disease']
+    # raw_id_fields = ['disease']
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -422,9 +421,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
     
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/product-pest.js', 'js/admin/forms/packhouses/catalogs/product-disease.js')
-    # class Media:
-    #     js = ('js/admin/forms/packhouses/catalogs/product-disease.js',)
+        js = ('js/admin/forms/select.js',)
 
 
 @admin.register(ProductSize)

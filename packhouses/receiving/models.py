@@ -99,31 +99,32 @@ class InternalInspection(models.Model):
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
 
 class Percentage(models.Model):
-    dry_matter_percentage = models.DecimalField(max_digits=10, decimal_places=2)
-    internal_temperature_percentage = models.DecimalField(max_digits=10, decimal_places=2)
-    plant_health_issues  = models.BooleanField(default=False, verbose_name=_('Plant Health Issues'))
-    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2)
+    # dry_matter_percentage = models.DecimalField(max_digits=10, decimal_places=2)
+    # internal_temperature_percentage = models.DecimalField(max_digits=10, decimal_places=2)
+    # plant_health_issues  = models.BooleanField(default=False, verbose_name=_('Plant Health Issues'))
+    # food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
 
-class Vehicle(models.Model):
+class TransportReview(models.Model):
     # vehicle = models.ForeignKey(vehicle, verbose_name=_('vehicle'), on_delete=models.PROTECT)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
 
-class VehicleInspection(models.Model):
+class TransportInspection(models.Model):
     sealed  = models.BooleanField(default=False, verbose_name=_('The transport is sealed'))
     only_the_product  = models.BooleanField(default=False, verbose_name=_('The transport carries only the product'))
     free_foreign_matter  = models.BooleanField(default=False, verbose_name=_('The transport is free of foreign matter'))
     free_unusual_odors  = models.BooleanField(default=False, verbose_name=_('The transport is free of unusual odors'))
     certificate  = models.BooleanField(default=False, verbose_name=_('Has a CERTIFICATE'))
     free_fecal_matter  = models.BooleanField(default=False, verbose_name=_('The transport is free of fecal matter'))
-    vehicle = models.ForeignKey(Vehicle, verbose_name=_('Vehicle'), on_delete=models.PROTECT)
+    transport_review = models.ForeignKey(TransportReview, verbose_name=_('Transport Review'), on_delete=models.PROTECT)
 
-class VehicleCondition(models.Model):
+class TransportCondition(models.Model):
     clean  = models.BooleanField(default=False, verbose_name=_('Clean'))
     good_condition  = models.BooleanField(default=False, verbose_name=_('Good condition'))
     broken  = models.BooleanField(default=False, verbose_name=_('Broken'))
     damaged  = models.BooleanField(default=False, verbose_name=_('Damaged'))
     seal_number  = models.BooleanField(default=False, verbose_name=_('Seal Number'))
-    vehicle = models.ForeignKey(Vehicle, verbose_name=_('Vehicle'), on_delete=models.PROTECT)
+    transport_review = models.ForeignKey(TransportReview, verbose_name=_('Transport Review'), on_delete=models.PROTECT)
 
 class SampleCollection(models.Model):
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
@@ -143,5 +144,4 @@ class SampleWeight(models.Model):
 
 class CropThreat(models.Model):
     sample_number = models.IntegerField()
-    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
 

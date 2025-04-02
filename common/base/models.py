@@ -10,7 +10,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import FileExtensionValidator
 from common.mixins import CleanDocumentsMixin
 from django.utils.text import slugify
+from .utils import get_filtered_models
+from django.utils.functional import lazy
 import os
+
 
 # Create your models here.
 
@@ -316,14 +319,21 @@ class DiseaseProductKind(models.Model):
     def __str__(self):
         return f"{self.product_kind} - {self.disease}"
 
+def get_model_choices():
+    used_models = FoodSafetyProcedure.objects.values_list('model', flat=True)
+    available_models = [model for model in get_filtered_models() if model not in used_models]
+    return [(model, model) for model in available_models]
+
+MODEL_CHOICES = lazy(get_model_choices, list)
+
 class FoodSafetyProcedure(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True, blank=True)
-    model = models.CharField(max_length=255, unique=True)
+    model = models.CharField(max_length=255, unique=True, choices=MODEL_CHOICES)
 
     class Meta:
         verbose_name = _('Food Safety Procedure')
         verbose_name_plural = _('Food Safety Procedures')
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name} -- {self.description}"

@@ -216,7 +216,6 @@ class ProductPest(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     pest = models.ForeignKey(Pest, verbose_name=_('Pest'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=False)
-    be_accepted = models.BooleanField(default=True, verbose_name=_('Be accepted'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     class Meta:
@@ -227,9 +226,8 @@ class ProductPest(models.Model):
 
 class ProductDisease(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    disease = models.ForeignKey(Disease, verbose_name=_('Sick'), on_delete=models.PROTECT)
+    disease = models.ForeignKey(Disease, verbose_name=_('Disease'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=False)
-    be_accepted = models.BooleanField(default=True, verbose_name=_('Be accepted'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     class Meta:
@@ -241,7 +239,6 @@ class ProductDisease(models.Model):
 class ProductPhysicalDamage(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=False)
-    be_accepted = models.BooleanField(default=True, verbose_name=_('Be accepted'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     class Meta:
@@ -256,7 +253,6 @@ class ProductPhysicalDamage(models.Model):
 class ProductResidue(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=False)
-    be_accepted = models.BooleanField(default=True, verbose_name=_('Be accepted'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     class Meta:
