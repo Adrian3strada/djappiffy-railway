@@ -120,7 +120,3 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
 
     class Media:
         js = ('js/admin/forms/packhouses/receiving/incoming_product.js',)
-
-
-@admin.register(IncomingProduct)
-class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
