@@ -76,9 +76,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const productId = productField.val();
     const marketId = marketField.val();
     if (productId && marketId) {
-      console.log("marketCountries", marketCountries)
-      console.log("productId", productId)
-      console.log("marketId", marketId)
       fetchOptions(`${API_BASE_URL}/base/country-product-standard-size/?countries=${marketCountries}&product_kind=${productProductKind}&is_enabled=1`)
         .then(data => {
           const marketNames = {};

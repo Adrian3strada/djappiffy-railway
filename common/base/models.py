@@ -15,7 +15,6 @@ import os
 # Create your models here.
 
 from .settings import (SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES, SUPPLY_CATEGORY_CHOICES,
-                       COUNTRY_PRODUCT_STANDARD_SIZE_CATEGORY_CHOICES,
                        PRODUCT_MEASURE_UNIT_CATEGORY_CHOICES)
 
 class ProductKind(models.Model):
@@ -94,7 +93,6 @@ class ProductKindCountryStandardSize(models.Model):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, verbose_name=_('Code'))
     description = models.CharField(max_length=255, null=True, blank=True)
-    category = models.CharField(max_length=30, verbose_name=_('Category'), choices=COUNTRY_PRODUCT_STANDARD_SIZE_CATEGORY_CHOICES)
     sort_order = models.PositiveIntegerField(default=0)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -227,7 +225,7 @@ class CertificationEntity(models.Model):
         verbose_name_plural = _('Certification Entities')
         constraints = [
             models.UniqueConstraint(
-                fields=['entity', 'name_certification'], 
+                fields=['entity', 'name_certification'],
                 name='certificationEntity_unique_certification_entity'
             )
         ]
@@ -246,7 +244,7 @@ def certification_file_path(instance, filename):
 class CertificationFormat(CleanDocumentsMixin, models.Model):
     name = models.CharField(max_length=255)
     route = models.FileField(
-        upload_to=certification_file_path, 
+        upload_to=certification_file_path,
         validators=[FileExtensionValidator(allowed_extensions=['docx'])],
         verbose_name=_('Document')
         )
@@ -261,7 +259,7 @@ class CertificationFormat(CleanDocumentsMixin, models.Model):
         verbose_name_plural = _('Certification Formats')
         constraints = [
             models.UniqueConstraint(
-                fields=['name', 'certification_entity'], 
+                fields=['name', 'certification_entity'],
                 name='certificationFormat_unique_certification_entity_name'
             )
         ]

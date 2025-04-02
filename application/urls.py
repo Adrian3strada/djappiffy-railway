@@ -12,25 +12,31 @@ from packhouses.gathering.views import (harvest_order_pdf, good_harvest_practice
 from packhouses.purchases.views import (requisition_pdf, set_requisition_ready, purchase_order_supply_pdf,
                                         set_purchase_order_supply_ready, set_purchase_order_supply_open,
                                         set_purchase_order_supply_payment)
-
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 urlpatterns = [
     # Admin URLs personalizadas
-    path('dadmin/gathering/scheduleharvest/harvest_order_pdf/<int:harvest_id>/', harvest_order_pdf, name='harvest_order_pdf'),
-    path('dadmin/gathering/scheduleharvest/good_harvest_practices_format/<int:harvest_id>/', good_harvest_practices_format,
+    path('dadmin/gathering/scheduleharvest/harvest_order_pdf/<int:harvest_id>/', harvest_order_pdf,
+         name='harvest_order_pdf'),
+    path('dadmin/gathering/scheduleharvest/good_harvest_practices_format/<int:harvest_id>/',
+         good_harvest_practices_format,
          name='good_harvest_practices_format'),
-    path('dadmin/gathering/scheduleharvest/cancel_schedule_harvest/<int:pk>/', cancel_schedule_harvest, name='cancel_schedule_harvest'),
+    path('dadmin/gathering/scheduleharvest/cancel_schedule_harvest/<int:pk>/', cancel_schedule_harvest,
+         name='cancel_schedule_harvest'),
     path('dadmin/purchases/requisition_pdf/<int:requisition_id>/', requisition_pdf, name='requisition_pdf'),
-    path('dadmin/purchases/set_requisition_ready/<int:requisition_id>/', set_requisition_ready, name='set_requisition_ready'),
-    path('dadmin/purchases/purchase_order_supply_pdf/<int:purchase_order_supply_id>/', purchase_order_supply_pdf, name='purchase_order_supply_pdf'),
-    path('dadmin/purchases/set_purchase_order_supply_ready/<int:purchase_order_supply_id>/', set_purchase_order_supply_ready,
+    path('dadmin/purchases/set_requisition_ready/<int:requisition_id>/', set_requisition_ready,
+         name='set_requisition_ready'),
+    path('dadmin/purchases/purchase_order_supply_pdf/<int:purchase_order_supply_id>/', purchase_order_supply_pdf,
+         name='purchase_order_supply_pdf'),
+    path('dadmin/purchases/set_purchase_order_supply_ready/<int:purchase_order_supply_id>/',
+         set_purchase_order_supply_ready,
          name='set_purchase_order_supply_ready'),
     path('dadmin/gathering/scheduleharvest/set_scheduleharvest_ready/<int:harvest_id>/', set_scheduleharvest_ready,
          name='set_scheduleharvest_ready'),
     path('dadmin/purchases/set_purchase_order_supply_open/<int:purchase_order_supply_id>/',
          set_purchase_order_supply_open,
          name='set_purchase_order_supply_open'),
-path('dadmin/purchases/set_purchase_order_supply_payment/<int:purchase_order_supply_id>/',
+    path('dadmin/purchases/set_purchase_order_supply_payment/<int:purchase_order_supply_id>/',
          set_purchase_order_supply_payment,
          name='set_purchase_order_supply_payment'),
     # Admin URLs
@@ -69,9 +75,16 @@ if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+    urlpatterns += [
+        # YOUR PATTERNS
+        path('oas/schema/', SpectacularAPIView.as_view(), name='schema'),
+        # Optional UI:
+        path('oas/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+        path('oas/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    ]
+
 # Add Wagtail page serving mechanism
 urlpatterns += [
     # Catch-all pattern for Wagtail pages, placed last
     path("", include(wagtail_urls)),
 ]
-
