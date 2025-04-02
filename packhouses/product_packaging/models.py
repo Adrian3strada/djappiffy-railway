@@ -7,19 +7,17 @@ from .settings import STATUS_CHOICES
 # Create your models here.
 
 class PackerLabel(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) 
-    id_employee = models.ForeignKey(Employee, verbose_name=_('Employee'), on_delete=models.PROTECT)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    scanned_date = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')  
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True) 
+    employee = models.ForeignKey(Employee, verbose_name=_('Employee'), on_delete=models.PROTECT)
+    scanned_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = _('Packer label')
         verbose_name_plural = _('Packer labels')
 
     def __str__(self):
-        return f"{self.id_employee.id}-{self.id} | Created: {self.creation_date.strftime('%Y-%m-%d %H:%M:%S')} | Status: {self.status}"
-
+        scanned_status = "Scanned" if self.scanned_at else "Not Scanned"
+        return f"{self.employee.id}-{self.uuid} | {scanned_status}"
 
 
 class PackerEmployeeManager(models.Manager):
@@ -45,7 +43,3 @@ class PackerEmployee(Employee):
         return obj.full_name  
     
     full_name_column.short_description = _("Full name") 
-    
-    @property
-    def ticket_r(self):
-        return f"Ticket #{self.pk}"
