@@ -2,7 +2,6 @@ from django.db import models
 from ..hrm.models import Employee
 from django.utils.translation import gettext_lazy as _
 import uuid
-from .settings import STATUS_CHOICES
 
 # Create your models here.
 

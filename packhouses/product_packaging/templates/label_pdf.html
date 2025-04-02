@@ -1,60 +1,52 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <title>Labels</title>
+    <title>Labels PDF</title>
     <style>
-        @media print {
-            .label {
-                page-break-inside: avoid;
-                page-break-after: auto;
-            }
+        @page {
+            size: 5cm 8cm; /* Tamaño exacto de la etiqueta */
+            margin: 0;
         }
-
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
         }
         .label-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-        }
-        .label {
-            border: 1px dotted #000;
-            padding-left: 20%;
-            width: 150px;
-            text-align: center;
+            width: 100%;
+            height: 100%;
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             justify-content: center;
-            align-items: space-around;
-            gap: 10px;
+            align-items: center;
+            text-align: center;
+            page-break-before: always; 
         }
-
-        h2, h3, p {
-            page-break-after: avoid;
+        .qr-image {
+            width: 85px;
+            height: 85px;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+        .label-info {
+            font-size: 10px;
+            width: 90%; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word; 
+            text-align: center; 
         }
     </style>
 </head>
 <body>
-
-    <h3>Date: {{current_datetime}}</h3>
-    <h2>Labels for: {{ employee.full_name }} id:{{employee.id}}</h2>
-
-    <div class="label-container">
-        {% for i in quantity_range %}
-            <div class="label">
-                <div><strong>Label {{ i|add:1 }}</strong></div>
-                <div><p>{{ employee.full_name }}</p></div>
-                <div><p>Position: {{ employee.position }}</p></div>
+    {% for label in labels %}
+        <div class="label-container">
+            <img src="data:image/png;base64,{{ label.qr_image_base64 }}" alt="QR Code" class="qr-image">
+            <div class="label-info">
+                <p>{{ label.label_id }}</p>
             </div>
-        {% endfor %}
-    </div>
-    <script src="{% static 'js/admin.js' %}"></script>
+        </div>
+    {% endfor %}
 </body>
 </html>
