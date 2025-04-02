@@ -198,33 +198,39 @@ document.addEventListener('DOMContentLoaded', () => {
       const marketClassField = $(newForm).find('select[name$="-product_market_class"]');
       const marketRipenessField = $(newForm).find('select[name$="-product_ripeness"]');
       const productPackagingField = $(newForm).find('select[name$="-product_packaging"]');
-      const amountPerPackagingField = $(newForm).find('input[name$="-amount_per_packaging"]');
+      const productAmountPerPackagingField = $(newForm).find('input[name$="-product_amount_per_packaging"]');
+      const productPackagingPalletField = $(newForm).find('select[name$="-product_packaging_pallet"]');
+      const productPackagingQuantityPerPalletField = $(newForm).find('input[name$="-product_packaging_quantity_per_pallet"]');
 
       productPhenologyField.closest('.form-group').hide();
       marketClassField.closest('.form-group').hide();
       marketRipenessField.closest('.form-group').hide();
       productPackagingField.closest('.form-group').hide();
-      amountPerPackagingField.closest('.form-group').hide();
+      productAmountPerPackagingField.closest('.form-group').hide();
+      productPackagingPalletField.closest('.form-group').hide();
+      productPackagingQuantityPerPalletField.closest('.form-group').hide();
 
       productSizeField.on('change', () => {
         const selectedOption = productSizeField.find('option:selected');
         const category = selectedOption.data('category');
         console.log("data-category:", category);
 
-        if (productSizeField.val() && category) {
+        if (productSizeField.val() && category === 999) {
           if (['size'].includes(category)) {
             productPhenologyField.closest('.form-group').fadeIn();
             marketClassField.closest('.form-group').fadeIn();
             marketRipenessField.closest('.form-group').fadeIn();
             productPackagingField.closest('.form-group').fadeIn();
-            amountPerPackagingField.closest('.form-group').fadeIn();
+            productAmountPerPackagingField.closest('.form-group').fadeIn();
+            productPackagingPalletField.closest('.form-group').fadeIn();
+            productPackagingQuantityPerPalletField.closest('.form-group').fadeIn();
           }
           if (['mix'].includes(category)) {
             productPhenologyField.closest('.form-group').fadeOut();
             marketClassField.closest('.form-group').fadeOut();
             marketRipenessField.closest('.form-group').fadeIn();
             productPackagingField.closest('.form-group').fadeIn();
-            amountPerPackagingField.closest('.form-group').fadeIn();
+            productAmountPerPackagingField.closest('.form-group').fadeIn();
             productPhenologyField.val(null).trigger('change');
             marketClassField.val(null).trigger('change');
           }
@@ -233,24 +239,24 @@ document.addEventListener('DOMContentLoaded', () => {
             marketClassField.closest('.form-group').fadeOut();
             marketRipenessField.closest('.form-group').fadeOut();
             productPackagingField.closest('.form-group').fadeOut();
-            amountPerPackagingField.closest('.form-group').fadeOut();
+            productAmountPerPackagingField.closest('.form-group').fadeOut();
             productPhenologyField.val(null).trigger('change');
             marketClassField.val(null).trigger('change');
             marketRipenessField.val(null).trigger('change');
             productPackagingField.val(null).trigger('change');
-            amountPerPackagingField.val(null).trigger('change');
+            productAmountPerPackagingField.val(null).trigger('change');
           }
         } else {
           productPhenologyField.val(null).trigger('change');
           marketClassField.val(null).trigger('change');
           marketRipenessField.val(null).trigger('change');
           productPackagingField.val(null).trigger('change');
-          amountPerPackagingField.val(null).trigger('change');
+          productAmountPerPackagingField.val(null).trigger('change');
           productPhenologyField.closest('.form-group').fadeOut();
           marketClassField.closest('.form-group').fadeOut();
           marketRipenessField.closest('.form-group').fadeOut();
           productPackagingField.closest('.form-group').fadeOut();
-          amountPerPackagingField.closest('.form-group').fadeOut();
+          productAmountPerPackagingField.closest('.form-group').fadeOut();
         }
       });
 

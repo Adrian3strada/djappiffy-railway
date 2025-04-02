@@ -16,7 +16,7 @@ from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from packhouses.catalogs.models import (Market, ProductMarketClass, Client, Maquiladora, Product, ProductVariety,
                                         ProductPhenologyKind,
-                                        Packaging, ProductPackaging,
+                                        Packaging, ProductPackaging, ProductPackagingPallet,
                                         ProductSize, ProductRipeness)
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from django.db.models import Max, Min, Q, F
@@ -71,8 +71,13 @@ class OrderItem(models.Model):
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT, null=True, blank=False)
-    amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Amount per packaging'), validators=[MinValueValidator(1)], null=True, blank=False)
-    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
+    product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'), validators=[MinValueValidator(1)], null=True, blank=False)
+    product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'),
+                                                 on_delete=models.PROTECT, null=True, blank=False)
+    product_packaging_quantity_per_pallet = models.PositiveIntegerField(
+        verbose_name=_('Product packaging quantity per pallet'),
+        validators=[MinValueValidator(1)], null=True, blank=False)
+    items_quantity = models.PositiveIntegerField(verbose_name=_('Items quantity'), validators=[MinValueValidator(1)])
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
     price = models.DecimalField(verbose_name=_('Price'), max_digits=13, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
@@ -84,17 +89,18 @@ class OrderItem(models.Model):
 
     def clean(self):
         if self.product_size.category in ['waste', 'biomass']:
-            self.price = self.unit_price * self.quantity
+            self.price = self.unit_price * self.items_quantity
 
         if self.product_size.category in ['mix']:
-            self.price = self.unit_price * self.amount_per_packaging * self.quantity
+            self.price = self.unit_price * self.product_amount_per_packaging * self.items_quantity
 
         if self.product_size.category in ['size']:
             print("self.product_packaging.category", self.product_packaging.category)
             if self.product_packaging.category == 'packaging':
-                self.price = self.unit_price * self.amount_per_packaging * self.quantity
+                self.price = self.unit_price * self.product_amount_per_packaging * self.items_quantity
             if self.product_packaging.category == 'presentation':
                 self.price = self.unit_price * self.product_packaging.product_presentation_quantity_per_packaging * self.quantity
+
         super().clean()
 
     class Meta:

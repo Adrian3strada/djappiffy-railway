@@ -34,9 +34,9 @@ class OrderItemFormSet(BaseInlineFormSet):
                         form.data[f"{form.prefix}-product_ripeness"] = None
                         if product_size.category in ['waste', 'biomass']:
                             form.fields['product_packaging'].required = False
-                            form.fields['amount_per_packaging'].required = False
+                            form.fields['product_amount_per_packaging'].required = False
                             form.data[f"{form.prefix}-product_packaging"] = None
-                            form.data[f"{form.prefix}-amount_per_packaging"] = None
+                            form.data[f"{form.prefix}-product_amount_per_packaging"] = None
                     else:
                         form.fields['product_phenology'].required = True
                         form.fields['product_market_class'].required = True

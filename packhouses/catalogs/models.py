@@ -892,6 +892,9 @@ class ProductPackagingPallet(models.Model):
                                                          help_text=_('Max amount of product packaging for this pallet.'),
                                                          validators=[MinValueValidator(1)])
 
+    def __str__(self):
+        return f"{self.product_packaging} - {self.pallet} ({self.max_packaging_quantity})"
+
     class Meta:
         verbose_name = _('Product packaging pallet')
         verbose_name_plural = _('Product packaging pallets')

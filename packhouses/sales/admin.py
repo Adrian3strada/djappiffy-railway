@@ -31,6 +31,18 @@ class OrderItemInline(admin.StackedInline):
     extra = 0
     formset = OrderItemFormSet
 
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.form.base_fields['product_size'].widget.can_add_related = False
+        formset.form.base_fields['product_size'].widget.can_change_related = False
+        formset.form.base_fields['product_size'].widget.can_delete_related = False
+        formset.form.base_fields['product_size'].widget.can_view_related = False
+        formset.form.base_fields['product_packaging'].widget.can_add_related = False
+        formset.form.base_fields['product_packaging'].widget.can_change_related = False
+        formset.form.base_fields['product_packaging'].widget.can_delete_related = False
+        formset.form.base_fields['product_packaging'].widget.can_view_related = False
+        return formset
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = getattr(request, 'organization', None)
         parent_object_id = request.resolver_match.kwargs.get("object_id")
