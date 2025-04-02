@@ -40,7 +40,7 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
     order_items_kind = models.CharField(max_length=30, verbose_name=_('Order items kind'), choices=ORDER_ITEMS_KIND_CHOICES)
-
+    pricing_by = models.CharField(max_length=30, verbose_name=_('Pricing by'), choices=ORDER_ITEMS_PRICING_CHOICES)
     observations = CKEditor5Field(blank=True, null=True, verbose_name=_('Observations'))
     status = models.CharField(max_length=8, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
@@ -73,7 +73,6 @@ class OrderItem(models.Model):
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT, null=True, blank=False)
     amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Amount per packaging'), validators=[MinValueValidator(1)], null=True, blank=False)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
-    pricing_by = models.CharField(max_length=30, verbose_name=_('Pricing by'), choices=ORDER_ITEMS_PRICING_CHOICES)
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
     price = models.DecimalField(verbose_name=_('Price'), max_digits=13, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
