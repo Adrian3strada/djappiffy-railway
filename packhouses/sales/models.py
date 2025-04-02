@@ -16,8 +16,8 @@ from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from packhouses.catalogs.models import (Market, ProductMarketClass, Client, Maquiladora, Product, ProductVariety,
                                         ProductPhenologyKind,
-                                        Packaging,
-                                        ProductSize)
+                                        Packaging, ProductPackaging, ProductPackagingPallet,
+                                        ProductSize, ProductRipeness)
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from django.db.models import Max, Min, Q, F
 from .utils import incoterms_choices
@@ -39,8 +39,8 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
     delivery_date = models.DateField(verbose_name=_('Delivery date'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_('Product variety'), on_delete=models.PROTECT)
-    order_items_kind = models.CharField(max_length=20, verbose_name=_('Order items kind'), choices=ORDER_ITEMS_KIND_CHOICES)
-    pricing_by = models.CharField(max_length=20, verbose_name=_('Pricing by'), choices=ORDER_ITEMS_PRICING_CHOICES)
+    order_items_kind = models.CharField(max_length=30, verbose_name=_('Order items kind'), choices=ORDER_ITEMS_KIND_CHOICES)
+    pricing_by = models.CharField(max_length=30, verbose_name=_('Pricing by'), choices=ORDER_ITEMS_PRICING_CHOICES)
     observations = CKEditor5Field(blank=True, null=True, verbose_name=_('Observations'))
     status = models.CharField(max_length=8, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
@@ -66,21 +66,42 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
 
 
 class OrderItem(models.Model):
-    """
-    Nota: Como la orden tiene un cliente, y el cliente tiene mercado, podemos inferir el mercado a partir
-    del cliente.
-    - Necesitamos el product size, entonces tb necesitamos el product; que puede estar filtrado por mercado.
-    - El mercado lo tengo del cliente
-    """
-
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
-    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT)
-    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
-    product_packaging = models.ForeignKey(Packaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT, null=True, blank=False)
-    quantity_per_packaging = models.PositiveIntegerField(verbose_name=_('Quantity per packaging'), default=1)
-    quantity = models.DecimalField(verbose_name=_('Quantity'), max_digits=12, decimal_places=2, validators=[MinValueValidator(0.01)])
-    unit_price = models.DecimalField(verbose_name=_('Price'), max_digits=12, decimal_places=2, validators=[MinValueValidator(0.01)])
+    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
+    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
+    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
+    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT, null=True, blank=False)
+    product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'), validators=[MinValueValidator(1)], null=True, blank=False)
+    product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'),
+                                                 on_delete=models.PROTECT, null=True, blank=False)
+    product_packaging_quantity_per_pallet = models.PositiveIntegerField(
+        verbose_name=_('Product packaging quantity per pallet'),
+        validators=[MinValueValidator(1)], null=True, blank=False)
+    items_quantity = models.PositiveIntegerField(verbose_name=_('Items quantity'), validators=[MinValueValidator(1)])
+    unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
+    price = models.DecimalField(verbose_name=_('Price'), max_digits=13, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        if self.order and self.order.ooid:
+            return f"#{self.order.ooid} - {self.pk}"
+        return f"{self.pk}"
+
+    def clean1(self):
+        if self.product_size.category in ['waste', 'biomass']:
+            self.price = self.unit_price * self.items_quantity
+
+        if self.product_size.category in ['mix']:
+            self.price = self.unit_price * self.product_amount_per_packaging * self.items_quantity
+
+        if self.product_size.category in ['size']:
+            print("self.product_packaging.category", self.product_packaging.category)
+            if self.product_packaging.category == 'packaging':
+                self.price = self.unit_price * self.product_amount_per_packaging * self.items_quantity
+            if self.product_packaging.category == 'presentation':
+                self.price = self.unit_price * self.product_packaging.product_presentation_quantity_per_packaging * self.quantity
+
+        super().clean()
 
     class Meta:
         verbose_name = _('Order item')

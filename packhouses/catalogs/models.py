@@ -23,7 +23,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   OrchardCertificationVerifier,
                                                   OrchardCertificationKind)
 from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES, PRODUCT_PACKAGING_CATEGORY_CHOICES,
-                       PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES)
+                       PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES, PRODUCT_SIZE_CATEGORY_CHOICES)
 from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
 
 # Create your models here.
@@ -195,6 +195,7 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Varieties'), blank=False)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    category = models.CharField(max_length=30, verbose_name=_('Category'), choices=PRODUCT_SIZE_CATEGORY_CHOICES)
     standard_size = models.ForeignKey(ProductKindCountryStandardSize, verbose_name=_('Standard size'), on_delete=models.PROTECT, null=True, blank=False)
     name = models.CharField(max_length=160, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
@@ -798,12 +799,11 @@ class ProductPresentationComplementarySupply(models.Model):
 
 
 class Packaging(models.Model):
-    # markets = models.ManyToManyField(Market, verbose_name=_('Markets'), related_name='markets_packagings')
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
-    product_standard_packaging = models.ForeignKey(ProductKindCountryStandardPackaging,
-                                                   verbose_name=_('Product standard packaging'),
+    country_standard_packaging = models.ForeignKey(ProductKindCountryStandardPackaging,
+                                                   verbose_name=_('Country standard packaging'),
                                                    null=True, blank=True, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
@@ -863,10 +863,10 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
         verbose_name_plural = _('Product packaging')
         ordering = ('name',)
         constraints = [
-            models.UniqueConstraint(fields=('market', 'product', 'product_size', 'packaging', 'organization'),
-                                    name='productpackaging_unique_market_product_product_size_packaging_organization'),
-            models.UniqueConstraint(fields=('name', 'alias', 'organization'),
-                                    name='productpackaging_unique_market_name_alias_organization'),
+            models.UniqueConstraint(fields=('market', 'product', 'product_size', 'packaging', 'product_presentation', 'organization'),
+                                    name='productpackaging_unique_market_product_productsize_packaging_productpresentation_organization'),
+            models.UniqueConstraint(fields=('name', 'organization'), name='productpackaging_unique_name_organization'),
+            models.UniqueConstraint(fields=('alias', 'organization'), name='productpackaging_unique_alias_organization'),
         ]
 
 
@@ -891,6 +891,9 @@ class ProductPackagingPallet(models.Model):
     max_packaging_quantity = models.PositiveIntegerField(verbose_name=_('Max packaging quantity'),
                                                          help_text=_('Max amount of product packaging for this pallet.'),
                                                          validators=[MinValueValidator(1)])
+
+    def __str__(self):
+        return f"{self.product_packaging} - {self.pallet} ({self.max_packaging_quantity})"
 
     class Meta:
         verbose_name = _('Product packaging pallet')
