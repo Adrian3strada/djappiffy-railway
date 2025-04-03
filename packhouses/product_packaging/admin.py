@@ -22,24 +22,6 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
     def has_change_permission(self, request, obj=None):
         return False
     
-    # def labels_number_and_generate_button(self, obj):
-    #     return format_html(
-    #         '<form action="{}" method="get" id="form_{}" style="display:inline-block;">'
-    #             '<input type="number" id="ticket_number_{}" name="quantity" value="10" min="1" max="1000" '
-    #             'style="width: 80px;" onkeydown="if(event.keyCode !== 38 && event.keyCode !== 40) return false;">'
-    #             '<button type="button" class="btn btn-primary" onclick="submitForm({})" '
-    #             'style="padding: 1px 10px; text-decoration: none; margin-left:5px;">{}'
-    #             '</button>'
-    #             '<input type="submit" style="display:none;">'
-    #         '</form>',
-    #         reverse("admin:generate_label", args=[obj.id]),
-    #         obj.id,
-    #         obj.id,
-    #         obj.id,
-    #         _("Generate labels")
-    #     )
-    # labels_number_and_generate_button.short_description = _("Actions")
-    # labels_number_and_generate_button.allow_tags = True
 
     def new_labels(self, obj):
         return format_html(
@@ -62,13 +44,13 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
             '<div style="display: flex; align-items: center; gap: 10px;">'
             '    <input type="text" id="pending_quantity_{}" value="{}" readonly '
             '           style="width: 80px; text-align: center; background-color: #f8f9fa; border: 1px solid #ced4da;">'
-            '    <button type="button" class="btn btn-primary" onclick="submitPendingLabels({})">{}</button>'
+            '    <button type="button" class="btn btn-primary" style="font-size: 14px;" onclick="submitPendingLabels({})">{}</button>'
             '    <button type="button" class="btn btn-danger" onclick="discardLabels({})">{}</button>'
             '</div>',
             obj.id,
             pending_count,
             obj.id, 
-            _("Reprint"),
+            _("Download remaining"),
             obj.id, 
             _("Discard")
         )

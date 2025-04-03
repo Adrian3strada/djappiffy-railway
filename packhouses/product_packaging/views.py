@@ -107,14 +107,16 @@ def discard_labels(request, employee_id):
     quantity = request.GET.get("quantity")
     quantity = int(quantity) if quantity and quantity.isdigit() else None
 
-    # Filtrar etiquetas que no han sido escaneadas
     labels_query = PackerLabel.objects.filter(employee=employee, scanned_at__isnull=True)
 
-    # Si se especifica cantidad, limitar la consulta
+    pending_labels = PackerLabel.objects.filter(employee=employee, scanned_at__isnull=True).count()
+
+    if pending_labels == 0:
+        return JsonResponse({"status": "error", "message": "No pending labels found"}, status=404)
+
     if quantity:
         labels_query = labels_query[:quantity]
 
-    # Contar y eliminar las etiquetas
     deleted_count, _ = labels_query.delete()
 
     return JsonResponse({

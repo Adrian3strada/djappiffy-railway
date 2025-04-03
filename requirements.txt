@@ -54,6 +54,7 @@ django-modeladmin-reorder
 django-weasyprint
 django-import-export
 setuptools
+qrcode
 
 geopandas
 numpy

@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,43 +8,59 @@
     <title>Etiquetas de {{ employee.full_name }}</title>
     <style>
         @page {
-            size: 5cm 8cm; /* Tamaño exacto de la etiqueta */
+            size: 5cm 8cm; 
             margin: 0;
         }
+
         body {
             font-family: Arial, sans-serif;
         }
+
         .label-container {
-            width: 100%;
-            height: 100%;
+            width: 5cm;
+            height: 8cm;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            justify-content: space-around;
+            align-items: space-around;
             text-align: center;
             page-break-before: always; 
+            padding-top: 10px;
         }
-        .qr-image {
-            width: 85px;
-            height: 85px;
-            margin-bottom: 10px;
-            margin-top: 10px;
+
+        .label-info, .qr-container {
+            transform: rotate(90deg); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+
         .label-info {
             font-size: 10px;
-            width: 90%; 
-            word-wrap: break-word; 
-            overflow-wrap: break-word; 
-            text-align: center; 
+            text-align: center;
+            word-wrap: break-word;
+            white-space: normal;
+            width: 60%;
+        }
+
+        .qr-container {
+            margin-top: 0px;
+        }
+
+        .qr-image {
+            width: 90px;
+            height: 90px;
         }
     </style>
 </head>
 <body>
     {% for label in labels %}
         <div class="label-container">
-            <img src="data:image/png;base64,{{ label.qr_image_base64 }}" alt="QR Code" class="qr-image">
             <div class="label-info">
                 <p>{{ label.label_id }}</p>
+            </div>
+            <div class="qr-container">
+                <img src="data:image/png;base64,{{ label.qr_image_base64 }}" alt="QR Code" class="qr-image">
             </div>
         </div>
     {% endfor %}

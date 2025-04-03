@@ -6,7 +6,12 @@ function submitNewLabels(id) {
     if (input) {
         const quantity = parseInt(input.value, 10); 
         if (quantity < 1 || quantity > 1000 ) {  
-            alert("Asegúrate de seleccionar de 1 a 1000 etiquetas.");
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Asegúrate de seleccionar entre 1 a 1000 etiquetas.",
+                confirmButtonColor: "#2c3e50"
+            });
             return;
         }
         const action = `/dadmin/product_packaging/packeremployee/generate_label/${id}/?quantity=${quantity}`;
@@ -47,7 +52,11 @@ function submitPendingLabels(id) {
     if (input) {
         const quantity = parseInt(input.value, 10); 
         if (quantity < 1) {  
-            alert("No hay etiquetas pendientes para este empacador.");
+            Swal.fire({
+                icon: "error",
+                text: "No hay etiquetas pendientes para este empacador.",
+                confirmButtonColor: "#2c3e50"
+            });
             return;
         }
         const action = `/dadmin/product_packaging/packeremployee/generate_pending_labels/${id}/`;
@@ -85,25 +94,55 @@ function submitPendingLabels(id) {
 
 
 function discardLabels(employeeId) {
-    if (confirm("Are you sure you want to discard all pending labels?")) {
-        fetch(`/dadmin/product_packaging/packeremployee/discard_labels/${employeeId}/`, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": getCSRFToken(),
-                "Content-Type": "application/json"
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "success") {
-                alert(`Deleted ${data.deleted} labels.`);
-                location.reload();
-            } else {
-                alert(`Error: ${data.message}`);
-            }
-        })
-        .catch(error => console.error("Error:", error));
-    }
+    Swal.fire({
+        title: "¿Estás seguro?",
+        text: "¿Quieres descartar todas las etiquetas pendientes?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#2c3e50",
+        confirmButtonText: "Si, descartar todas"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/dadmin/product_packaging/packeremployee/discard_labels/${employeeId}/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCSRFToken(),
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                if (data.status === "success") {
+                    Swal.fire({
+                        icon: "success",
+                        title: "¡Etiquetas descartadas!",
+                        text: `${data.deleted} etiquetas pendientes descartadas. `,
+                        confirmButtonColor: "#2c3e50"
+                    }).then(() => {
+                        location.reload();
+                    });
+                } 
+                else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: data.message,
+                        confirmButtonColor: "#2c3e50"
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Request Failed",
+                    text: "An error occurred while processing the request."
+                });
+            });
+        }
+    });
 }
 
 function getCSRFToken() {
