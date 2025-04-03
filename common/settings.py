@@ -6,3 +6,12 @@ STATUS_CHOICES = [
     ('closed', _('Closed')),
     ('canceled', _('Canceled')),
 ]
+
+DATA_TYPE_CHOICES = [
+    ('text', _('Text')),
+    ('int', _('Integer')),
+    ('number', _('Decimal')),
+    ('date', _('Date')),
+    ('checkbox', _('Checkbox')),
+]
+

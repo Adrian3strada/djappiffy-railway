@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from .models import Requisition, PurchaseOrder
+from .models import Requisition, PurchaseOrder, PurchaseOrderPayment
 
 class RequisitionForm(forms.ModelForm):
     class Meta:
@@ -60,3 +60,15 @@ class PurchaseOrderForm(forms.ModelForm):
             raise ValidationError(_("You must add at least one supply to the purchases order."))
 
         return cleaned_data
+
+class PurchaseOrderPaymentForm(forms.ModelForm):
+    class Meta:
+        model = PurchaseOrderPayment
+        fields = ('payment_date', 'payment_kind', 'amount', 'bank', 'comments', 'additional_inputs')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Si la instancia ya existe (tiene pk), deshabilita los campos para que sean readonly
+        if self.instance and self.instance.pk:
+            for field in self.fields:
+                self.fields[field].disabled = True

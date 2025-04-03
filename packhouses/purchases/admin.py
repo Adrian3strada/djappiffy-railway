@@ -1,7 +1,8 @@
 from django.contrib import admin
 from common.profiles.models import UserProfile  # (Si no se usa, se puede eliminar)
 from .models import (Requisition, RequisitionSupply, PurchaseOrder,
-                     PurchaseOrderSupply, PurchaseOrderCharge, PurchaseOrderDeduction)
+                     PurchaseOrderSupply, PurchaseOrderCharge, PurchaseOrderDeduction,
+                     PurchaseOrderPayment)
 from packhouses.catalogs.models import Supply, Provider
 from django.utils.translation import gettext_lazy as _
 from common.base.decorators import (
@@ -13,12 +14,13 @@ from common.base.mixins import (
     DisableInlineRelatedLinksMixin, ByUserAdminMixin,
 )
 from django.core.exceptions import ObjectDoesNotExist
-from .forms import RequisitionForm, PurchaseOrderForm
+from .forms import RequisitionForm, PurchaseOrderForm, PurchaseOrderPaymentForm
 from django.utils.html import format_html, format_html_join
 from django.urls import reverse
 import nested_admin
 from common.forms import SelectWidgetWithData
 from common.utils import is_instance_used
+
 
 
 class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
@@ -260,6 +262,15 @@ class PurchaseOrderDeductionInline(admin.StackedInline):
         return super().has_delete_permission(request, obj)
 
 
+class PurchaseOrderPaymentInline(admin.StackedInline):
+    model = PurchaseOrderPayment
+    form = PurchaseOrderPaymentForm
+    fields = ('payment_date','payment_kind', 'amount', 'bank', 'comments', 'additional_inputs')
+    extra = 0
+
+    class Media:
+        js = ('js/admin/forms/packhouses/purchases/purchase_orders_payments.js',)
+
 @admin.register(PurchaseOrder)
 class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     form = PurchaseOrderForm
@@ -269,6 +280,13 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     readonly_fields = ('ooid', 'status')
     inlines = [PurchaseOrderRequisitionSupplyInline, PurchaseOrderChargerInline, PurchaseOrderDeductionInline]
 
+    def get_inline_instances(self, request, obj=None):
+        inline_instances = super().get_inline_instances(request, obj)
+        # Mostrar PurchaseOrderPaymentInline solo si el status es "closed"
+        if obj and obj.status == "closed":
+            inline_instances.append(PurchaseOrderPaymentInline(self.model, self.admin_site))
+
+        return inline_instances
 
     def generate_actions_buttons(self, obj):
         purchase_order_supply_pdf = reverse('purchase_order_supply_pdf', args=[obj.pk])
@@ -310,21 +328,21 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
                 tooltip_open, open_url, confirm_open_text, confirm_button_text_open, cancel_button_text
             )
 
-        tooltip_payment = _('Send this purchases order to payments')
-        payment_url = reverse('set_purchase_order_supply_payment', args=[obj.pk])
-        confirm_payment_text = _(
-            'Are you sure you want to send this purchases order to payments?')
-
+        tooltip_payment = _('Payment application')
         set_purchase_order_supply_payment_button = ''
         if obj.status == "closed" and not obj.is_in_payments:
+            edit_url = reverse(
+                "admin:{}_{}_change".format(obj._meta.app_label, obj._meta.model_name),
+                args=[obj.pk]
+            )
+            edit_url_with_anchor = f"{edit_url}#payments-tab"
             set_purchase_order_supply_payment_button = format_html(
                 '''
-                <a class="button btn-payment-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
-                    data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#000;">
+                <a class="button" href="{}" data-toggle="tooltip" title="{}" style="color:#000;">
                     <i class="fa-solid fa-dollar-sign"></i>
                 </a>
                 ''',
-                tooltip_payment, payment_url, confirm_payment_text, confirm_button_text, cancel_button_text
+                edit_url_with_anchor, tooltip_payment
             )
 
         return format_html(
