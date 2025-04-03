@@ -193,7 +193,10 @@ class ScheduleHarvestVehicle(models.Model):
         max_length=20,
         verbose_name=_("Stamp Number"),
     )
-
+    has_arrived = models.BooleanField(
+        default=False,
+        verbose_name=_('Vehicle Arrived')
+    )
     def __str__(self):
         return f"{self.vehicle.license_plate} / {self.vehicle.name}"
 

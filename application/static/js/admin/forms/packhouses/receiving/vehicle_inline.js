@@ -1,5 +1,15 @@
 document.addEventListener("DOMContentLoaded", function() {
+    const VEHICLE_FORM_SELECTOR = 'div[id^="scheduleharvest-0-scheduleharvestvehicle_set-"]:not([id*="group"], [id*="empty"])';
     const CONTAINER_FORM_SELECTOR = "tbody.djn-inline-form[data-inline-model='gathering-scheduleharvestcontainervehicle']:not([id*='empty'])";
+    document.querySelectorAll("#scheduleharvest-0-scheduleharvestvehicle_set-group a.djn-add-handler.djn-model-gathering-scheduleharvestvehicle")
+    .forEach(button => {
+        button.style.display = "none";
+    });
+
+    document.querySelectorAll("#scheduleharvest-0-scheduleharvestvehicle_set-group span.djn-delete-handler.djn-model-gathering-scheduleharvestvehicle")
+    .forEach(element => {
+        element.style.display = "none";
+    });
 
     
     function updateMissingBoxes(containerForm) {
@@ -16,7 +26,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Actualiza el campo missing_boxes del formulario actual.
         $container.find("input[name$='-missing_boxes']").first().val(missingBoxes);
-        console.log(`Container ${$container.attr("id")}: quantity=${quantity}, full_boxes=${fullBoxes}, empty_boxes=${emptyBoxes}, missing_boxes=${missingBoxes}`);
     }
 
     function initializeContainer(containerForm) {
@@ -35,9 +44,27 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    function initializeVehicle(vehicleForm) {
+        const $vehicle = $(vehicleForm);
+        // Buscar dentro de $vehicle el input checkbox cuyo nombre termine en "-has_arrived"
+        const $vehicleArrived = $vehicle.find('input[type="checkbox"][name$="-has_arrived"]');
+        
+        // Si el checkbox está marcado, salimos sin imprimir nada
+        if ($vehicleArrived.prop('checked')) {
+          console.log("El vehículo con id", $vehicle.attr('id'), "ya tiene has_arrived marcado. Se omite.");
+          return;
+        }
+        console.log("formulario", $vehicle);
+      }
+      
+
     // Inicializa todos los formularios de container existentes.
     $(CONTAINER_FORM_SELECTOR).each(function(index, containerForm) {
         initializeContainer(containerForm);
+    });
+
+    $(VEHICLE_FORM_SELECTOR).each(function(index, vehicleForm) {
+        initializeVehicle(vehicleForm);
     });
 
     // Escucha el evento formset:added para inicializar nuevos formularios de container.
@@ -45,7 +72,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const formsetName = event.detail.formsetName;
         if (formsetName.includes("scheduleharvestcontainervehicle_set")) {
             initializeContainer(event.target);
-            console.log("Nuevo container inline añadido:", formsetName);
         }
     });
 

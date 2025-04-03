@@ -100,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const observer = new MutationObserver(mutations => {
                     mutations.forEach(mutation => {
                         if (mutation.attributeName === 'checked') {
-                            console.log(`Cambio en container ${$container.attr('id')}: DELETE=${$deleteCheckbox.prop('checked')}`);
                             calculatePalletTare($palletForm);
                         }
                     });
@@ -192,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const observer = new MutationObserver(mutations => {
                 mutations.forEach(mutation => {
                     if (mutation.attributeName === 'checked') {
-                        console.log(`Pallet ${$pallet.attr('id')} - DELETE: ${$palletDeleteCheckbox.prop('checked')}`);
                         debouncedUpdatePackhouse();
                         updatePalletCount();
                     }

@@ -83,9 +83,7 @@ class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
 
 class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = ScheduleHarvestVehicle
-    # form = ScheduleHarvestVehicleForm
-    # fields = ('provider', 'vehicle', 'stamp_vehicle_number')
-    fields = ('provider', 'vehicle', )
+    fields = ('provider', 'vehicle', 'has_arrived')
     extra = 0
     inlines = [HarvestCuttingContainerVehicleInline]
 
