@@ -16,8 +16,8 @@ from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
                                         ProductPackaging,
                                         ProductPhenologyKind, ProductMarketClass, Packaging)
-from .models import Order, OrderItem
-from .forms import OrderItemFormSet
+from .models import Order, OrderItemBak, OrderItemWeight, OrderItemPackaging, OrderItemPallet
+from .forms import OrderItemBakFormSet
 from django.utils.safestring import mark_safe
 from django.db.models import Max, Min, Q, F
 from common.forms import SelectWidgetWithData
@@ -26,10 +26,10 @@ from common.forms import SelectWidgetWithData
 # Register your models here.
 
 
-class OrderItemInline(admin.StackedInline):
-    model = OrderItem
+class OrderItemBakInline(admin.StackedInline):
+    model = OrderItemBak
     extra = 0
-    formset = OrderItemFormSet
+    # formset = OrderItemBakFormSet
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -83,6 +83,17 @@ class OrderItemInline(admin.StackedInline):
         js = ('js/admin/forms/packhouses/sales/order_item_inline.js',)
 
 
+class OrderItemWeightInline(admin.StackedInline):
+    model = OrderItemWeight
+    extra = 0
+
+class OrderItemPackagingInline(admin.StackedInline):
+    model = OrderItemPackaging
+    extra = 0
+
+class OrderItemPalletInline(admin.StackedInline):
+    model = OrderItemPallet
+    extra = 0
 
 
 @admin.register(Order)
@@ -100,7 +111,7 @@ class OrderAdmin(ByOrganizationAdminMixin):
         'observations', 'status'
     )
     ordering = ('-ooid',)
-    inlines = [OrderItemInline]
+    inlines = [OrderItemWeightInline, OrderItemPackagingInline, OrderItemPalletInline]
 
     def delivery_kind(self, obj):
         if obj.local_delivery:
