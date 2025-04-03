@@ -50,7 +50,7 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
 
     @property
     def items_count(self):
-        if self.order_items_kind == 'product_measure_unit':
+        if self.order_items_kind == 'product_weight':
             return self.orderitemweight_set.all().count()
         elif self.order_items_kind == 'product_packaging':
             return self.orderitempackaging_set.all().count()
@@ -61,7 +61,7 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
 
     @property
     def items_total_price(self):
-        if self.order_items_kind == 'product_measure_unit':
+        if self.order_items_kind == 'product_weight':
             return self.orderitemweight_set.aggregate(total_price=Sum('price'))['total_price']
         elif self.order_items_kind == 'product_packaging':
             return self.orderitempackaging_set.aggregate(total_price=Sum('price'))['total_price']
@@ -72,7 +72,7 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
 
     @receiver(post_save, sender='sales.Order')
     def clean_order_items(sender, instance, **kwargs):
-        if instance.order_items_kind == 'product_measure_unit':
+        if instance.order_items_kind == 'product_weight':
             instance.orderitempackaging_set.all().delete()
             instance.orderitempallet_set.all().delete()
         elif instance.order_items_kind == 'product_packaging':

@@ -19,31 +19,27 @@ document.addEventListener("DOMContentLoaded", function () {
   let clientProperties = null;
   let productProperties = null;
   let organization = null;
-  let priceMeasureUnit = null;
 
   const API_BASE_URL = "/rest/v1";
 
   let order_items_kind_options = [
-    {id: "product_measure_unit", name: "Product measure unit"},
+    {id: "product_weight", name: "Product weight"},
     {id: "product_packaging", name: "Product packaging"},
     {id: "product_pallet", name: "Product pallet"},
   ]
 
   let product_price_options = [
-    {id: "product_measure_unit", name: "Product measure unit"},
+    {id: "product_weight", name: "Product weight"},
     {id: "product_packaging", name: "Product packaging"},
     {id: "product_presentation", name: "Product presentation"}
   ]
 
   function updateOrderItemsKindOptions(nationalClient = false) {
     order_items_kind_options = [
-      {id: "product_measure_unit", name: "Product measure unit"},
+      {id: "product_weight", name: "Product weight"},
       {id: "product_packaging", name: "Product packaging"},
       {id: "product_pallet", name: "Product pallet"},
     ]
-    if (priceMeasureUnit) {
-      order_items_kind_options[0].name = priceMeasureUnit
-    }
     if (!nationalClient) {
       order_items_kind_options = [
         {id: "product_packaging", name: "Product packaging"},
@@ -86,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
     orderItemsPackagingTab.addClass('hidden')
     orderItemsPalletTab.addClass('hidden')
     if (clientField.val() && productField.val() && orderItemsKindField.val()) {
-      if (orderItemsKindField.val() === 'product_measure_unit') {
+      if (orderItemsKindField.val() === 'product_weight') {
         orderItemsWightTab.removeClass('hidden')
       }
       if (orderItemsKindField.val() === 'product_packaging') {
@@ -163,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
         (data) => {
           productProperties = data;
           if (data.price_measure_unit_category_display) {
-            if (order_items_kind_options[0].id === 'product_measure_unit') order_items_kind_options[0].name = data.price_measure_unit_category_display
+            if (order_items_kind_options[0].id === 'product_weight') order_items_kind_options[0].name = data.price_measure_unit_category_display
             if (cleanup) {
               orderItemsKindField.val(null);
               orderItemsKindField.trigger('change').select2();
@@ -178,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     } else {
       productProperties = null;
-      if (order_items_kind_options[0].id === 'product_measure_unit') order_items_kind_options[0].name = "Product measure unit"
+      if (order_items_kind_options[0].id === 'product_weight') order_items_kind_options[0].name = "Product weight"
       orderItemsKindField.val(null);
       orderItemsKindField.trigger('change').select2();
     }
