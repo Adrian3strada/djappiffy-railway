@@ -1,6 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const orderItemsTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-tab']").closest('li');
-  orderItemsTab.addClass('hidden')
+  const orderItemsWightTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-by-weight-tab']").closest('li');
+  const orderItemsPackagingTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-by-packaging-tab']").closest('li');
+  const orderItemsPalletTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-by-pallet-tab']").closest('li');
+
+  orderItemsWightTab.addClass('hidden')
+  orderItemsPackagingTab.addClass('hidden')
+  orderItemsPalletTab.addClass('hidden')
 
   const clientCategoryField = $("#id_client_category");
   const maquiladoraField = $("#id_maquiladora");
@@ -10,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const productField = $("#id_product")
   const productVarietyField = $("#id_product_variety")
   const orderItemsKindField = $("#id_order_items_kind")
-  const pricingByField = $("#id_pricing_by")
 
   let clientProperties = null;
   let productProperties = null;
@@ -78,10 +82,20 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const toggleShowOrderItemInline = () => {
-    if (clientField.val() && productField.val() && orderItemsKindField.val() && pricingByField.val()) {
-      orderItemsTab.removeClass('hidden')
-    } else {
-      orderItemsTab.addClass('hidden')
+    orderItemsWightTab.addClass('hidden')
+    orderItemsPackagingTab.addClass('hidden')
+    orderItemsPalletTab.addClass('hidden')
+    if (clientField.val() && productField.val() && orderItemsKindField.val()) {
+      if (orderItemsKindField.val() === 'product_measure_unit') {
+        orderItemsWightTab.removeClass('hidden')
+      }
+      if (orderItemsKindField.val() === 'product_packaging') {
+        orderItemsPackagingTab.removeClass('hidden')
+      }
+      if (orderItemsKindField.val() === 'product_pallet') {
+        orderItemsPalletTab.removeClass('hidden')
+      }
+
     }
     // aqui deleteOrderItemInline();
   }
@@ -150,43 +164,41 @@ document.addEventListener("DOMContentLoaded", function () {
         (data) => {
           productProperties = data;
           if (data.price_measure_unit_category_display) {
-            priceMeasureUnit = data.price_measure_unit_category_display
-            if (order_items_kind_options[0].id === 'product_measure_unit') order_items_kind_options[0].name = priceMeasureUnit
-            product_price_options[0].name = priceMeasureUnit
+            if (order_items_kind_options[0].id === 'product_measure_unit') order_items_kind_options[0].name = data.price_measure_unit_category_display
             if (cleanup) {
               orderItemsKindField.val(null);
-              pricingByField.val(null);
               orderItemsKindField.trigger('change').select2();
-              pricingByField.trigger('change').select2();
             }
             const orderItemsKindValue = orderItemsKindField.val();
-            const pricingByValue = pricingByField.val();
             updateFieldOptions(orderItemsKindField, order_items_kind_options);
-            updateFieldOptions(pricingByField, product_price_options);
             if (orderItemsKindValue) {
               orderItemsKindField.val(orderItemsKindValue);
               orderItemsKindField.trigger('change').select2();
-            }
-            if (pricingByValue) {
-              pricingByField.val(pricingByValue);
-              pricingByField.trigger('change').select2();
             }
           }
         });
     } else {
       productProperties = null;
       if (order_items_kind_options[0].id === 'product_measure_unit') order_items_kind_options[0].name = "Product measure unit"
-      product_price_options[0].name = "Product measure unit"
       orderItemsKindField.val(null);
       orderItemsKindField.trigger('change').select2();
-      pricingByField.val(null);
-      pricingByField.trigger('change').select2();
     }
   }
 
   productField.on("change", () => {
     updateProductVarietyOptions();
     getProductProperties(true);
+    if (productField.val()) {
+      productVarietyField.closest('.form-group').fadeIn();
+      orderItemsKindField.closest('.form-group').fadeIn();
+    } else {
+      productVarietyField.closest('.form-group').fadeOut();
+      orderItemsKindField.closest('.form-group').fadeOut();
+      setTimeout(() => {
+        productVarietyField.val(null).trigger('change');
+        orderItemsKindField.val(null).trigger('change');
+      }, 100);
+    }
   });
 
   clientCategoryField.on("change", () => {
@@ -243,19 +255,9 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   orderItemsKindField.on('change', () => {
-    if (orderItemsKindField.val() && orderItemsKindField.val() === 'product_measure_unit') {
-      pricingByField.val(null);
-      pricingByField.trigger('change').select2();
-      updateFieldOptions(pricingByField, [product_price_options[0]]);
-    } else {
-      pricingByField.val(null);
-      pricingByField.trigger('change').select2();
-      updateFieldOptions(pricingByField, product_price_options);
+    if (orderItemsKindField.val()) {
+      toggleShowOrderItemInline();
     }
-  })
-
-  pricingByField.on('change', () => {
-    toggleShowOrderItemInline();
   })
 
   fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
@@ -272,7 +274,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (localDeliveryField.val()) localDeliveryField.closest('.form-group').show();
   if (incotermsField.val()) incotermsField.closest('.form-group').show();
-  if (productField.val()) getProductProperties();
+
+  if (productField.val()) {
+    getProductProperties();
+    productVarietyField.closest('.form-group').show();
+    orderItemsKindField.closest('.form-group').show();
+  } else {
+    productVarietyField.closest('.form-group').hide();
+    orderItemsKindField.closest('.form-group').hide();
+  }
 
   if (clientCategoryField.val()) {
     if (clientCategoryField.val() === 'maquiladora') {
@@ -284,7 +294,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const product = productField.val()
     const productVariety = productVarietyField.val()
     const orderItemsKind = orderItemsKindField.val()
-    const pricingBy = pricingByField.val()
 
     fetchOptions(`${API_BASE_URL}/catalogs/client/${clientField.val()}/`)
       .then((client) => {
@@ -311,10 +320,6 @@ document.addEventListener("DOMContentLoaded", function () {
           if (orderItemsKind) {
             orderItemsKindField.val(orderItemsKind)
             orderItemsKindField.trigger('change').select2();
-          }
-          if (pricingBy) {
-            pricingByField.val(pricingBy)
-            pricingByField.trigger('change').select2();
           }
         }, 400);
       })

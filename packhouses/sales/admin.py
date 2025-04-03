@@ -107,7 +107,7 @@ class OrderAdmin(ByOrganizationAdminMixin):
     fields = (
         'ooid', 'client_category', 'maquiladora', 'client', 'local_delivery', 'incoterms',
         'registration_date', 'shipment_date', 'delivery_date',
-        'product', 'product_variety', 'order_items_kind', 'pricing_by',
+        'product', 'product_variety', 'order_items_kind',
         'observations', 'status'
     )
     ordering = ('-ooid',)
