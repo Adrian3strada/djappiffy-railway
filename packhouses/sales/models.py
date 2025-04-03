@@ -106,15 +106,18 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
 
 
 class OrderItemWeight(models.Model):
-    pricing_by = models.CharField(max_length=30, verbose_name=_('Pricing by'), choices=ORDER_ITEMS_PRICING_CHOICES)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
-    items_quantity = models.PositiveIntegerField(verbose_name=_('Items quantity'), validators=[MinValueValidator(1)])
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
-    price = models.DecimalField(verbose_name=_('Price'), max_digits=13, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
+    amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=13, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
+
+    def clean(self):
+        self.amount_price = self.unit_price * self.quantity
+        super().clean()
 
     class Meta:
         verbose_name = _('Order item by weight')
@@ -132,9 +135,9 @@ class OrderItemPackaging(models.Model):
     product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'),
                                                                validators=[MinValueValidator(1)], null=True,
                                                                blank=False)
-    items_quantity = models.PositiveIntegerField(verbose_name=_('Items quantity'), validators=[MinValueValidator(1)])
+    quantity = models.PositiveIntegerField(verbose_name=_('Items quantity'), validators=[MinValueValidator(1)])
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
-    price = models.DecimalField(verbose_name=_('Price'), max_digits=13, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
+    amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=13, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
 
     class Meta:
@@ -158,9 +161,9 @@ class OrderItemPallet(models.Model):
     product_packaging_quantity_per_pallet = models.PositiveIntegerField(
         verbose_name=_('Product packaging quantity per pallet'),
         validators=[MinValueValidator(1)], null=True, blank=False)
-    items_quantity = models.PositiveIntegerField(verbose_name=_('Items quantity'), validators=[MinValueValidator(1)])
+    quantity = models.PositiveIntegerField(verbose_name=_('Items quantity'), validators=[MinValueValidator(1)])
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
-    price = models.DecimalField(verbose_name=_('Price'), max_digits=13, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
+    amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=13, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
 
     class Meta:

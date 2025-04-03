@@ -95,7 +95,6 @@ document.addEventListener("DOMContentLoaded", function () {
       if (orderItemsKindField.val() === 'product_pallet') {
         orderItemsPalletTab.removeClass('hidden')
       }
-
     }
     // aqui deleteOrderItemInline();
   }
@@ -248,9 +247,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           }, 300);
         })
+      productField.closest('.form-group').fadeIn();
     } else {
       clientProperties = null;
       updateFieldOptions(productField, []);
+      productField.closest('.form-group').fadeOut();
     }
   });
 

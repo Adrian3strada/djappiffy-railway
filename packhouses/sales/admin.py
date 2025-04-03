@@ -17,7 +17,7 @@ from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Mar
                                         ProductPackaging,
                                         ProductPhenologyKind, ProductMarketClass, Packaging)
 from .models import Order, OrderItemBak, OrderItemWeight, OrderItemPackaging, OrderItemPallet
-from .forms import OrderItemBakFormSet
+from .forms import OrderItemBakFormSet, OrderItemWeightFormSet
 from django.utils.safestring import mark_safe
 from django.db.models import Max, Min, Q, F
 from common.forms import SelectWidgetWithData
@@ -86,6 +86,60 @@ class OrderItemBakInline(admin.StackedInline):
 class OrderItemWeightInline(admin.StackedInline):
     model = OrderItemWeight
     extra = 0
+    formset = OrderItemWeightFormSet
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.form.base_fields['product_size'].widget.can_add_related = False
+        formset.form.base_fields['product_size'].widget.can_change_related = False
+        formset.form.base_fields['product_size'].widget.can_delete_related = False
+        formset.form.base_fields['product_size'].widget.can_view_related = False
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = Order.objects.get(id=parent_object_id) if parent_object_id else None
+
+        if db_field.name == "product_size":
+            kwargs["queryset"] = ProductSize.objects.none()
+            if parent_obj and parent_obj.product:
+                kwargs["queryset"] = ProductSize.objects.filter(product=parent_obj.product,
+                                                                market=parent_obj.client.market, is_enabled=True)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda \
+                item: f"{item.name} ({item.description})" if item.description else f"{item.name}"
+            return formfield
+
+        if db_field.name == "product_phenology":
+            kwargs["queryset"] = ProductPhenologyKind.objects.none()
+            if parent_obj and parent_obj.product:
+                kwargs["queryset"] = ProductPhenologyKind.objects.filter(product=parent_obj.product, is_enabled=True)
+
+        if db_field.name == "product_market_class":
+            kwargs["queryset"] = ProductMarketClass.objects.none()
+            if parent_obj and parent_obj.product and parent_obj.client.market:
+                kwargs["queryset"] = ProductMarketClass.objects.filter(product=parent_obj.product,
+                                                                       market=parent_obj.client.market, is_enabled=True)
+
+        if db_field.name == "product_market_class":
+            kwargs["queryset"] = ProductMarketClass.objects.none()
+            if parent_obj and parent_obj.product and parent_obj.client.market:
+                kwargs["queryset"] = ProductMarketClass.objects.filter(product=parent_obj.product,
+                                                                       market=parent_obj.client.market, is_enabled=True)
+
+        if db_field.name == "product_packaging":
+            kwargs["queryset"] = ProductPackaging.objects.none()
+            if parent_obj and parent_obj.product:
+                kwargs["queryset"] = ProductPackaging.objects.filter(product=parent_obj.product,
+                                                                     market=parent_obj.client.market, is_enabled=True)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/sales/order_item_weight_inline.js',)
+        pass
+
+
 
 class OrderItemPackagingInline(admin.StackedInline):
     model = OrderItemPackaging
