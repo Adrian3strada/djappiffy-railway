@@ -1,15 +1,12 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import  get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from weasyprint import HTML
 from django.template.loader import render_to_string
 from .models import PackerEmployee, PackerLabel
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
-from ..hrm.models import Employee
 import qrcode
 from io import BytesIO
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 import uuid
 import base64
 
@@ -56,7 +53,7 @@ def generate_label_pdf(request, employee_id):
     pdf = HTML(string=html_string).write_pdf()
 
     response = HttpResponse(pdf, content_type="application/pdf")
-    response["Content-Disposition"] = f'attachment; filename="labels_{employee.full_name}.pdf"'
+    response["Content-Disposition"] = f'attachment; filename="labels_{employee.full_name}_{current_datetime}.pdf"'
     return response
 
 def generate_pending_label_pdf(request, employee_id):
@@ -65,10 +62,9 @@ def generate_pending_label_pdf(request, employee_id):
     pending_labels = PackerLabel.objects.filter(employee=employee, scanned_at__isnull=True)
 
     if not pending_labels.exists():
-        return HttpResponse("No pending labels found", status=404)
+        return JsonResponse({"status": "error", "message": "No pending labels found"}, status=404)
 
     current_datetime = now().strftime("%Y-%m-%d %H:%M:%S")
-
     labels = []
 
     for label in pending_labels:
@@ -97,14 +93,33 @@ def generate_pending_label_pdf(request, employee_id):
 
     response = HttpResponse(pdf, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="labels_{employee.full_name}_pending.pdf"'
+    
     return response
 
 
-@csrf_exempt  # Si usas AJAX sin CSRF token, puedes quitarlo si lo manejas correctamente
+@csrf_exempt
 def discard_labels(request, employee_id):
-    if request.method == "POST":
-        employee = get_object_or_404(Employee, id=employee_id)
-        deleted_count, _ = PackerLabel.objects.filter(employee=employee, scanned_at__isnull=True).delete()
-        return JsonResponse({"status": "success", "deleted": deleted_count})
+    employee = get_object_or_404(PackerEmployee, id=employee_id)
 
-    return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
+    if request.method != "POST":
+        return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
+
+    quantity = request.GET.get("quantity")
+    quantity = int(quantity) if quantity and quantity.isdigit() else None
+
+    # Filtrar etiquetas que no han sido escaneadas
+    labels_query = PackerLabel.objects.filter(employee=employee, scanned_at__isnull=True)
+
+    # Si se especifica cantidad, limitar la consulta
+    if quantity:
+        labels_query = labels_query[:quantity]
+
+    # Contar y eliminar las etiquetas
+    deleted_count, _ = labels_query.delete()
+
+    return JsonResponse({
+        "status": "success",
+        "deleted": deleted_count,
+        "employee": employee.full_name,
+        "timestamp": now().strftime("%Y-%m-%d %H:%M:%S")
+    })
