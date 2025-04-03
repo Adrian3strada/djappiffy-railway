@@ -1,7 +1,7 @@
 from django.contrib import admin
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle
 from packhouses.catalogs.models import (Supply, HarvestingCrew, Vehicle, Provider, Product, ProductVariety, Gatherer, Maquiladora, 
-                                        Market, Orchard, OrchardCertification, WeighingScale)
+                                        Market, Orchard, OrchardCertification, WeighingScale, ProductPhenologyKind, ProductHarvestSizeKind)
 from packhouses.catalogs.utils import get_harvest_cutting_categories_choices
 from .models import IncomingProduct, PalletReceived, PalletContainer
 from common.base.mixins import (ByOrganizationAdminMixin)
@@ -150,36 +150,40 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
         return fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        organization = request.organization if hasattr(request, 'organization') else None
-        organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        product_organization_queryfilter = {'product__organization': organization, 'is_enabled': True}
+        organization = request.organization if hasattr(request, "organization") else None
+        organization_queryfilter = {"organization": organization, "is_enabled": True}
+        product_organization_queryfilter = {"product__organization": organization, "is_enabled": True}
 
         if db_field.name == "product":
             kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
 
         if db_field.name == "product_varieties":
             kwargs["queryset"] = ProductVariety.objects.filter(**product_organization_queryfilter)
+        
+        if db_field.name in ("product_phenologies", "product_harvest_size_kind", "orchard"):
+            qs_none = db_field.related_model.objects.none()
+            obj_id = request.resolver_match.kwargs.get("object_id")
+            incoming_product = IncomingProduct.objects.filter(id=obj_id).first() if obj_id else None
+            schedule_harvest = (ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
+                                if incoming_product else None)
+            mapping = {
+                "product_phenologies": (ProductPhenologyKind, "product_phenologies"),
+                "product_harvest_size_kind": (ProductHarvestSizeKind, "product_harvest_size_kind"),
+                "orchard": (Orchard, None),
+            }
+            model, field = mapping[db_field.name]
+            if db_field.name == "orchard":
+                org = incoming_product.organization if incoming_product else None
+                prod = schedule_harvest.product if schedule_harvest and hasattr(schedule_harvest, "product") else None
+                kwargs["queryset"] = model.objects.filter(organization=org, product=prod, is_enabled=True) if org and prod else qs_none
+            else:
+                prod_obj = getattr(schedule_harvest, field, None) if schedule_harvest else None
+                prod = prod_obj.product if prod_obj else None
+                kwargs["queryset"] = model.objects.filter(product=prod, is_enabled=True) if prod else qs_none
 
         field_filters = {
-            "product_provider": {
-                "model": Provider,
-                "filters": {"category": "product_provider", "is_enabled": True},
-            },
-            "gatherer": {
-                "model": Gatherer,
-                "filters": {"is_enabled": True},
-            },
-            "maquiladora": {
-                "model": Maquiladora,
-                "filters": {"is_enabled": True},
-            },
-
             "market": {
                 "model": Market,
-                "filters": {"is_enabled": True},
-            },
-            "orchard": {
-                "model": Orchard,
                 "filters": {"is_enabled": True},
             },
             "orchard_certification": {
@@ -196,15 +200,13 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
             model = field_filters[db_field.name]["model"]
             filters = field_filters[db_field.name]["filters"]
 
-            kwargs["queryset"] = model.objects.filter(
-                organization=request.organization,
-                **filters
-            )
+            kwargs["queryset"] = model.objects.filter(organization=request.organization, **filters)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/vehicle_inline.js', )
-    
+        js = ('js/admin/forms/packhouses/receiving/vehicle_inline.js', 
+              'js/admin/forms/packhouses/receiving/schedule_harvest_inline.js')
 
 # Inlines para los pallets
 class PalletContainerInline(nested_admin.NestedTabularInline):
