@@ -7,7 +7,7 @@ from .models import IncomingProduct, PalletReceived, PalletContainer
 from common.base.mixins import (ByOrganizationAdminMixin)
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin
-from .forms import ScheduleHarvestVehicleForm, IncomingProductForm
+from .forms import IncomingProductForm, ScheduleHarvestVehicleForm  
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                       ByCategoryForOrganizationIncomingProductFilter)
 from .utils import update_pallet_numbers,  CustomScheduleHarvestFormSet
@@ -83,14 +83,15 @@ class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
 
 class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = ScheduleHarvestVehicle
-    fields = ('provider', 'vehicle', 'has_arrived')
+    form = ScheduleHarvestVehicleForm  # Usar el Form personalizado
+    fields = ('provider', 'vehicle', 'has_arrived', 'stamp_vehicle_number')  # Agregar el nuevo campo
     extra = 0
     inlines = [HarvestCuttingContainerVehicleInline]
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        form = formset.form
-        for field in form.base_fields.values():
+        # Configurar widgets de campos relacionados
+        for field in formset.form.base_fields.values():
             field.widget.can_add_related = False
             field.widget.can_change_related = False
             field.widget.can_delete_related = False
