@@ -115,6 +115,9 @@ class OrderItemWeight(models.Model):
     amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=13, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.pk}"
+
     def clean(self):
         self.amount_price = self.unit_price * self.quantity
         super().clean()
@@ -139,6 +142,9 @@ class OrderItemPackaging(models.Model):
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
     amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=13, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.pk}"
 
     class Meta:
         verbose_name = _('Order item by packaging')
@@ -165,6 +171,9 @@ class OrderItemPallet(models.Model):
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
     amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=13, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.pk}"
 
     class Meta:
         verbose_name = _('Order item by pallet')

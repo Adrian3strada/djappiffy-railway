@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         field.append(new Option('---------', '', true, !selectedValue));
       }
       options.forEach(option => {
-        const newOption = new Option(option.name, option.id, false, option.id === selectedValue);
+        const newOption = new Option(option.name, option.id, false, option.id === parseInt(selectedValue));
         if ('alias' in option && option.alias) {
           newOption.setAttribute('data-alias', option.alias);
         }
@@ -71,32 +71,25 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateProductOptions() {
     return new Promise((resolve, reject) => {
       if (clientProperties && productProperties && orderItemsKindField) {
-        console.log("updateProductOptions")
-        console.log("orderItemsKindField", orderItemsKindField)
         let productSizeCategories = 'size,mix,waste,biomass'
-
         const productSizePromise = fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
           .then(data => {
             productSizeOptions = data;
-            console.log("productSizeOptions", productSizeOptions)
           })
 
         const productPhenologyPromise = fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productProperties.id}&is_enabled=1`)
           .then(data => {
             productPhenologyOptions = data;
-            console.log("productPhenologyOptions", productPhenologyOptions)
           })
 
         const productMarketClassPromise = fetchOptions(`/rest/v1/catalogs/product-market-class/?market=${clientProperties.market}&product=${productProperties.id}&is_enabled=1`)
           .then(data => {
             productMarketClassOptions = data
-            console.log("productMarketClassOptions", productMarketClassOptions)
           })
 
         const productRipenessPromise = fetchOptions(`/rest/v1/catalogs/product-ripeness/?product=${productProperties.id}&is_enabled=1`)
           .then(data => {
             productRipenessOptions = data
-            console.log("productRipenessOptions", productRipenessOptions)
           })
 
         Promise.all([productSizePromise, productPhenologyPromise, productMarketClassPromise, productRipenessPromise])
@@ -149,7 +142,9 @@ document.addEventListener('DOMContentLoaded', () => {
       productMarketClassField.closest('.form-group').hide();
       productMarketRipenessField.closest('.form-group').hide();
 
+
       updateFieldOptions(productSizeField, []);
+
       updateProductOptions().then(() => {
         updateFieldOptions(productSizeField, productSizeOptions);
         updateFieldOptions(productPhenologyField, productPhenologyOptions);
@@ -161,7 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
       productSizeField.on('change', () => {
         const productSizeSelectedOption = productSizeField.find('option:selected');
         const productSizeSelectedOptionCategory = productSizeSelectedOption.data('category');
-        console.log("data-category:", productSizeSelectedOptionCategory);
 
         if (productSizeField.val() && productSizeSelectedOptionCategory) {
           if (['size'].includes(productSizeSelectedOptionCategory)) {
@@ -195,7 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       quantityField.on('change', () => {
-        console.log("quantityField", quantityField.val());
         if (quantityField.val() && unitPriceField.val()) {
           amountPriceField.val(quantityField.val() * unitPriceField.val());
         } else {
@@ -204,7 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
       })
 
       unitPriceField.on('change', () => {
-        console.log("unitPriceField", unitPriceField.val());
         if (quantityField.val() && unitPriceField.val()) {
           amountPriceField.val(quantityField.val() * unitPriceField.val());
         } else {
@@ -235,14 +227,82 @@ document.addEventListener('DOMContentLoaded', () => {
     productMarketClassField.closest('.form-group').hide();
     productMarketRipenessField.closest('.form-group').hide();
 
-    console.log("productSizeField", productSizeField.val());
+    // const productSize = productSizeField.val();
 
-    const productSize = productSizeField.val();
-    updateProductOptions().then(() => {
-      console.log("productSize", productSize);
-      console.log("productSizeOptions", productSizeOptions);
-      productSizeField.closest('.form-group').fadeIn();
+
+    fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
+      .then(data => {
+        productProperties = data;
+      })
+      .then(() => {
+        fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
+          .then(data => {
+            clientProperties = data;
+          })
+      })
+      .then(() => {
+        updateProductOptions()
+          .then(() => {
+            updateFieldOptions(productSizeField, productSizeOptions, productSizeField.val());
+            updateFieldOptions(productPhenologyField, productPhenologyOptions, productPhenologyField.val());
+            updateFieldOptions(productMarketClassField, productMarketClassOptions, productMarketClassField.val());
+            updateFieldOptions(productMarketRipenessField, productRipenessOptions, productMarketRipenessField.val());
+          })
+          .then(() => {
+            productSizeField.closest('.form-group').fadeIn();
+          })
+      })
+
+    productSizeField.on('change', () => {
+      const productSizeSelectedOption = productSizeField.find('option:selected');
+      const productSizeSelectedOptionCategory = productSizeSelectedOption.data('category');
+
+      if (productSizeField.val() && productSizeSelectedOptionCategory) {
+        if (['size'].includes(productSizeSelectedOptionCategory)) {
+          productPhenologyField.closest('.form-group').fadeIn();
+          productMarketClassField.closest('.form-group').fadeIn();
+          productMarketRipenessField.closest('.form-group').fadeIn();
+        }
+        if (['mix'].includes(productSizeSelectedOptionCategory)) {
+          productPhenologyField.closest('.form-group').fadeOut();
+          productMarketClassField.closest('.form-group').fadeOut();
+          productMarketRipenessField.closest('.form-group').fadeIn();
+          productPhenologyField.val(null).trigger('change');
+          productMarketClassField.val(null).trigger('change');
+        }
+        if (['waste', 'biomass'].includes(productSizeSelectedOptionCategory)) {
+          productPhenologyField.closest('.form-group').fadeOut();
+          productMarketClassField.closest('.form-group').fadeOut();
+          productMarketRipenessField.closest('.form-group').fadeOut();
+          productPhenologyField.val(null).trigger('change');
+          productMarketClassField.val(null).trigger('change');
+          productMarketRipenessField.val(null).trigger('change');
+        }
+      } else {
+        productPhenologyField.val(null).trigger('change');
+        productMarketClassField.val(null).trigger('change');
+        productMarketRipenessField.val(null).trigger('change');
+        productPhenologyField.closest('.form-group').fadeOut();
+        productMarketClassField.closest('.form-group').fadeOut();
+        productMarketRipenessField.closest('.form-group').fadeOut();
+      }
     });
+
+    quantityField.on('change', () => {
+      if (quantityField.val() && unitPriceField.val()) {
+        amountPriceField.val(quantityField.val() * unitPriceField.val());
+      } else {
+        amountPriceField.val(0);
+      }
+    })
+
+    unitPriceField.on('change', () => {
+      if (quantityField.val() && unitPriceField.val()) {
+        amountPriceField.val(quantityField.val() * unitPriceField.val());
+      } else {
+        amountPriceField.val(0);
+      }
+    })
 
   });
 });
