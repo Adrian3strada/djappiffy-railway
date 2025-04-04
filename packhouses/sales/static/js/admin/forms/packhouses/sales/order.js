@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const orderItemsTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-tab']").closest('li');
+  orderItemsTab.addClass('hidden')
+
   const clientCategoryField = $("#id_client_category");
   const maquiladoraField = $("#id_maquiladora");
   const clientField = $("#id_client");
@@ -9,8 +12,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const orderItemsKindField = $("#id_order_items_kind")
   const pricingByField = $("#id_pricing_by")
 
+  let clientProperties = null;
   let productProperties = null;
   let organization = null;
+  let priceMeasureUnit = null;
 
   const API_BASE_URL = "/rest/v1";
 
@@ -25,6 +30,24 @@ document.addEventListener("DOMContentLoaded", function () {
     {id: "product_packaging", name: "Product packaging"},
     {id: "product_presentation", name: "Product presentation"}
   ]
+
+  function updateOrderItemsKindOptions(nationalClient = false) {
+    order_items_kind_options = [
+      {id: "product_measure_unit", name: "Product measure unit"},
+      {id: "product_packaging", name: "Product packaging"},
+      {id: "product_pallet", name: "Product pallet"},
+    ]
+    if (priceMeasureUnit) {
+      order_items_kind_options[0].name = priceMeasureUnit
+    }
+    if (!nationalClient) {
+      order_items_kind_options = [
+        {id: "product_packaging", name: "Product packaging"},
+        {id: "product_pallet", name: "Product pallet"},
+      ]
+    }
+    updateFieldOptions(orderItemsKindField, order_items_kind_options)
+  }
 
   function updateFieldOptions(field, options, selected = null) {
     field.empty();
@@ -41,6 +64,26 @@ document.addEventListener("DOMContentLoaded", function () {
       method: "GET",
       dataType: "json",
     }).fail((error) => console.error("Fetch error:", error));
+  }
+
+  const deleteOrderItemInline = () => {
+    const inlineItems = document.querySelectorAll('.inline-related');
+    inlineItems.forEach(item => {
+      const deleteCheckbox = item.querySelector('input[type="checkbox"][name$="-DELETE"]');
+      if (deleteCheckbox) {
+        deleteCheckbox.checked = true;
+      }
+      item.remove(); // Elimina el elemento del DOM
+    });
+  };
+
+  const toggleShowOrderItemInline = () => {
+    if (clientField.val() && productField.val() && orderItemsKindField.val() && pricingByField.val()) {
+      orderItemsTab.removeClass('hidden')
+    } else {
+      orderItemsTab.addClass('hidden')
+    }
+    // aqui deleteOrderItemInline();
   }
 
   function updateClientOptions() {
@@ -77,6 +120,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function updateProductOptions() {
+    if (clientProperties) {
+      fetchOptions(`${API_BASE_URL}/catalogs/product/?markets=${clientProperties.market}&is_enabled=1`).then(
+        (data) => {
+          updateFieldOptions(productField, data);
+        }
+      )
+    } else {
+      updateFieldOptions(productField, []);
+    }
+  }
+
   function updateProductVarietyOptions() {
     const product = productField.val();
     if (product) {
@@ -95,8 +150,9 @@ document.addEventListener("DOMContentLoaded", function () {
         (data) => {
           productProperties = data;
           if (data.price_measure_unit_category_display) {
-            order_items_kind_options[0].name = data.price_measure_unit_category_display
-            product_price_options[0].name = data.price_measure_unit_category_display
+            priceMeasureUnit = data.price_measure_unit_category_display
+            if (order_items_kind_options[0].id === 'product_measure_unit') order_items_kind_options[0].name = priceMeasureUnit
+            product_price_options[0].name = priceMeasureUnit
             if (cleanup) {
               orderItemsKindField.val(null);
               pricingByField.val(null);
@@ -119,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     } else {
       productProperties = null;
-      order_items_kind_options[0].name = "Product measure unit"
+      if (order_items_kind_options[0].id === 'product_measure_unit') order_items_kind_options[0].name = "Product measure unit"
       product_price_options[0].name = "Product measure unit"
       orderItemsKindField.val(null);
       orderItemsKindField.trigger('change').select2();
@@ -129,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   productField.on("change", () => {
-    updateProductVarietyOptions()
+    updateProductVarietyOptions();
     getProductProperties(true);
   });
 
@@ -166,21 +222,27 @@ document.addEventListener("DOMContentLoaded", function () {
       incotermsField.val(null).trigger('change');
     }, 100);
     if (client) {
-      fetchOptions(`${API_BASE_URL}/catalogs/client/${client}/`).then(
-        (data) => {
+      fetchOptions(`${API_BASE_URL}/catalogs/client/${client}/`)
+        .then((data) => {
+          clientProperties = data;
+          updateProductOptions();
           setTimeout(() => {
             if (data.country === organization.country) {
               localDeliveryField.closest('.form-group').fadeIn();
+              updateOrderItemsKindOptions(true)
             } else {
               incotermsField.closest('.form-group').fadeIn();
+              updateOrderItemsKindOptions(false)
             }
           }, 300);
-        });
+        })
+    } else {
+      clientProperties = null;
+      updateFieldOptions(productField, []);
     }
   });
 
   orderItemsKindField.on('change', () => {
-    console.log(orderItemsKindField.val());
     if (orderItemsKindField.val() && orderItemsKindField.val() === 'product_measure_unit') {
       pricingByField.val(null);
       pricingByField.trigger('change').select2();
@@ -190,6 +252,10 @@ document.addEventListener("DOMContentLoaded", function () {
       pricingByField.trigger('change').select2();
       updateFieldOptions(pricingByField, product_price_options);
     }
+  })
+
+  pricingByField.on('change', () => {
+    toggleShowOrderItemInline();
   })
 
   fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
@@ -215,14 +281,43 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (clientField.val()) {
-    fetchOptions(`${API_BASE_URL}/catalogs/client/${clientField.val()}/`).then(
-      (data) => {
-        if (data.country === organization.country) {
+    const product = productField.val()
+    const productVariety = productVarietyField.val()
+    const orderItemsKind = orderItemsKindField.val()
+    const pricingBy = pricingByField.val()
+
+    fetchOptions(`${API_BASE_URL}/catalogs/client/${clientField.val()}/`)
+      .then((client) => {
+        clientProperties = client;
+        if (client.country === organization.country) {
           localDeliveryField.closest('.form-group').show();
+          updateOrderItemsKindOptions(true)
         } else {
           incotermsField.closest('.form-group').show();
+          updateOrderItemsKindOptions(false)
         }
-      });
+        updateProductOptions();
+        setTimeout(() => {
+          if (product) {
+            productField.val(product);
+            productField.trigger('change').select2();
+          }
+        }, 300);
+        setTimeout(() => {
+          if (productVariety) {
+            productVarietyField.val(productVariety)
+            productVarietyField.trigger('change').select2();
+          }
+          if (orderItemsKind) {
+            orderItemsKindField.val(orderItemsKind)
+            orderItemsKindField.trigger('change').select2();
+          }
+          if (pricingBy) {
+            pricingByField.val(pricingBy)
+            pricingByField.trigger('change').select2();
+          }
+        }, 400);
+      })
   }
 
 });

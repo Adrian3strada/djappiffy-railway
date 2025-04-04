@@ -14,8 +14,10 @@ from .filters import (ByMaquiladoraForOrganizationOrderFilter, ByClientForOrgani
                       ByProductForOrganizationOrderFilter, ByProductVarietyForOrganizationOrderFilter)
 from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
+                                        ProductPackaging,
                                         ProductPhenologyKind, ProductMarketClass, Packaging)
-from .models import Order, OrderItem
+from .models import Order, OrderItemBak, OrderItemWeight, OrderItemPackaging, OrderItemPallet
+from .forms import OrderItemBakFormSet
 from django.utils.safestring import mark_safe
 from django.db.models import Max, Min, Q, F
 from common.forms import SelectWidgetWithData
@@ -23,22 +25,22 @@ from common.forms import SelectWidgetWithData
 
 # Register your models here.
 
-class OrderItemInline(admin.StackedInline):
-    model = OrderItem
+
+class OrderItemBakInline(admin.StackedInline):
+    model = OrderItemBak
     extra = 0
+    # formset = OrderItemBakFormSet
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-
-        if not obj or obj.status not in ['closed', 'canceled']:
-            formset.form.base_fields['product_size'].widget.can_add_related = False
-            formset.form.base_fields['product_size'].widget.can_change_related = False
-            formset.form.base_fields['product_size'].widget.can_delete_related = False
-            formset.form.base_fields['product_size'].widget.can_view_related = False
-            formset.form.base_fields['product_packaging'].widget.can_add_related = False
-            formset.form.base_fields['product_packaging'].widget.can_change_related = False
-            formset.form.base_fields['product_packaging'].widget.can_delete_related = False
-            formset.form.base_fields['product_packaging'].widget.can_view_related = False
+        formset.form.base_fields['product_size'].widget.can_add_related = False
+        formset.form.base_fields['product_size'].widget.can_change_related = False
+        formset.form.base_fields['product_size'].widget.can_delete_related = False
+        formset.form.base_fields['product_size'].widget.can_view_related = False
+        formset.form.base_fields['product_packaging'].widget.can_add_related = False
+        formset.form.base_fields['product_packaging'].widget.can_change_related = False
+        formset.form.base_fields['product_packaging'].widget.can_delete_related = False
+        formset.form.base_fields['product_packaging'].widget.can_view_related = False
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -71,16 +73,27 @@ class OrderItemInline(admin.StackedInline):
                 kwargs["queryset"] = ProductMarketClass.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
 
         if db_field.name == "product_packaging":
-            kwargs["queryset"] = Packaging.objects.none()
+            kwargs["queryset"] = ProductPackaging.objects.none()
             if parent_obj and parent_obj.product:
-                kwargs["queryset"] = Packaging.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
-
+                kwargs["queryset"] = ProductPackaging.objects.filter(product=parent_obj.product, market=parent_obj.client.market, is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
         js = ('js/admin/forms/packhouses/sales/order_item_inline.js',)
 
+
+class OrderItemWeightInline(admin.StackedInline):
+    model = OrderItemWeight
+    extra = 0
+
+class OrderItemPackagingInline(admin.StackedInline):
+    model = OrderItemPackaging
+    extra = 0
+
+class OrderItemPalletInline(admin.StackedInline):
+    model = OrderItemPallet
+    extra = 0
 
 
 @admin.register(Order)
@@ -98,7 +111,7 @@ class OrderAdmin(ByOrganizationAdminMixin):
         'observations', 'status'
     )
     ordering = ('-ooid',)
-    inlines = [OrderItemInline]
+    inlines = [OrderItemWeightInline, OrderItemPackagingInline, OrderItemPalletInline]
 
     def delivery_kind(self, obj):
         if obj.local_delivery:

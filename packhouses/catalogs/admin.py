@@ -32,19 +32,20 @@ from organizations.models import Organization
 from cities_light.models import Country, Region, SubRegion, City
 import nested_admin
 from django.utils.translation import gettext_lazy as _
-from .filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizationMarketsFilter,
-                      ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
+from .filters import (ByCountryForOrganizationMarketsFilter, ByProductForOrganizationFilter,
                       ByProductSizeForProductOrganizationFilter, ByPackagingForOrganizationFilter,
-                      ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
+                      ByProductVarietyForOrganizationFilter, ByProductForOrganizationProductSizeFilter,
+                      ByProductVarietiesForOrganizationProductSizeFilter, ByMarketForOrganizationProductSizeFilter,
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
                       ByClientCapitalFrameworkForOrganizationFilter, BySupplyKindForPackagingFilter,
                       BySupplyForOrganizationPackagingFilter, ByProductForOrganizationPackagingFilter,
-                      ByMarketForOrganizationPackagingFilter,
-                      ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
+                      ByMarketForOrganizationPackagingFilter, ByProductKindCountryStandardPackagingForOrganizationPackagingFilter,
                       ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                       ByCityForOrganizationClientsFilter, ByPaymentKindForOrganizationFilter,
                       ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
-                      ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
+                      ByMarketForOrganizationProductPackagingFilter, ByProductForOrganizationProductPackagingFilter,
+                      ByProductSizeForOrganizationProductPackagingFilter, ByPackagingForOrganizationProductPackagingFilter,
+                      ByProductPresentationForOrganizationProductPackagingFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
                       ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter,
@@ -429,10 +430,11 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductSizeResource]
     list_display = (
-        'name', 'alias', 'product', 'get_varieties', 'market', 'is_enabled', 'sort_order')
+        'name', 'alias', 'product', 'get_varieties', 'market', 'category', 'is_enabled', 'sort_order')
     list_filter = (
-        ByProductForOrganizationFilter, ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
-        'is_enabled'
+        ByProductForOrganizationProductSizeFilter, ByProductVarietiesForOrganizationProductSizeFilter,
+        ByMarketForOrganizationProductSizeFilter,
+        'category', 'is_enabled'
     )
     search_fields = ('name', 'alias')
     ordering = ['sort_order']
@@ -1407,21 +1409,21 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     # resource_classes = [PackagingResource]
     list_filter = (BySupplyKindForPackagingFilter, BySupplyForOrganizationPackagingFilter,
                    ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
-                   'product_standard_packaging', 'is_enabled')
+                   ByProductKindCountryStandardPackagingForOrganizationPackagingFilter, 'is_enabled')
     list_display = ('name', 'packaging_supply_kind', 'packaging_supply', 'product', 'market',
-                    'product_packaging_standard_display', 'is_enabled')
+                    'country_standard_packaging_display', 'is_enabled')
     fields = (
-        'market', 'product', 'packaging_supply_kind', 'product_standard_packaging',
+        'market', 'product', 'packaging_supply_kind', 'country_standard_packaging',
         'name', 'packaging_supply', 'is_enabled'
     )
     inlines = (PackagingComplementarySupplyInline,)
 
-    def product_packaging_standard_display(self, obj):
-        if obj.product_standard_packaging:
-            return f"{obj.product_standard_packaging.name} ({obj.product_standard_packaging.standard.name}: {obj.product_standard_packaging.standard.country})"
+    def country_standard_packaging_display(self, obj):
+        if obj.country_standard_packaging:
+            return f"{obj.country_standard_packaging.name} ({obj.country_standard_packaging.standard.name}: {obj.country_standard_packaging.standard.country})"
         return f"-"
-    product_packaging_standard_display.short_description = _('Product packaging standard')
-    product_packaging_standard_display.admin_order_field = 'name'
+    country_standard_packaging_display.short_description = _('Country standard packaging')
+    country_standard_packaging_display.admin_order_field = 'name'
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
@@ -1441,11 +1443,11 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             form.base_fields['packaging_supply_kind'].widget.can_change_related = False
             form.base_fields['packaging_supply_kind'].widget.can_delete_related = False
             form.base_fields['packaging_supply_kind'].widget.can_view_related = False
-        if 'product_standard_packaging' in form.base_fields:
-            form.base_fields['product_standard_packaging'].widget.can_add_related = False
-            form.base_fields['product_standard_packaging'].widget.can_change_related = False
-            form.base_fields['product_standard_packaging'].widget.can_delete_related = False
-            form.base_fields['product_standard_packaging'].widget.can_view_related = False
+        if 'country_standard_packaging' in form.base_fields:
+            form.base_fields['country_standard_packaging'].widget.can_add_related = False
+            form.base_fields['country_standard_packaging'].widget.can_change_related = False
+            form.base_fields['country_standard_packaging'].widget.can_delete_related = False
+            form.base_fields['country_standard_packaging'].widget.can_view_related = False
         if 'packaging_supply' in form.base_fields:
             form.base_fields['packaging_supply'].widget.can_add_related = False
             form.base_fields['packaging_supply'].widget.can_change_related = False
@@ -1487,7 +1489,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             else:
                 kwargs["queryset"] = Supply.objects.none()
 
-        if db_field.name == "product_standard_packaging":
+        if db_field.name == "country_standard_packaging":
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.required = True
             if organization and product_kind and market_id:
@@ -1573,10 +1575,15 @@ class ProductPackagingPalletInline(admin.TabularInline):
 class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     # resource_classes = [PackagingResource]
-    list_filter = [ByMarketForOrganizationFilter, ByProductForOrganizationFilter,
-                   ByProductSizeForProductOrganizationFilter, ByPackagingForOrganizationFilter, 'is_enabled']
+    list_filter = ['category', ByMarketForOrganizationProductPackagingFilter,
+                   ByProductForOrganizationProductPackagingFilter,
+                   ByProductSizeForOrganizationProductPackagingFilter,
+                   ByPackagingForOrganizationProductPackagingFilter,
+                   ByProductPresentationForOrganizationProductPackagingFilter,
+                   'is_enabled']
+    list_display = ['name', 'alias', 'category', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging',
+                    'product_presentation', 'product_presentation_quantity_per_packaging', 'is_enabled']
     search_fields = ('name', 'alias')
-    list_display = ['name', 'alias', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging', 'is_enabled']
     fields = ['category', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging',
               'product_presentation', 'product_presentation_quantity_per_packaging', 'name', 'alias', 'is_enabled']
     inlines = [ProductPackagingPalletInline]

@@ -159,7 +159,7 @@ class DehydrationResource():
         return obj.product_ripeness.name if obj.product_ripeness else ""
 
     def dehydrate_product_standard_packaging(self, obj):
-        return obj.product_standard_packaging.name if obj.product_standard_packaging else ""
+        return obj.country_standard_packaging.name if obj.country_standard_packaging else ""
 
     def dehydrate_organization(self, obj):
         return obj.organization.name if obj.organization else ""
