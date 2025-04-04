@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const productField = $("#id_product");
   const clientField = $("#id_client");
   const orderItemsKindField = $("#id_order_items_kind")
@@ -42,12 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }).fail(error => console.error('Fetch error:', error));
   }
 
-  function getClientProperties() {
+  async function getClientProperties() {
     if (clientField.val()) {
-      fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
-        .then(data => {
-          clientProperties = data;
-        })
+      clientProperties = await fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
     } else {
       clientProperties = null;
     }
@@ -127,7 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-
+  if (clientField.val()) {
+    if (!organization) {
+      await getOrganizationProfile();
+    }
+    await getClientProperties();
+    console.log("organization", organization);
+    console.log("clientProperties", clientProperties);
+  }
 
   if (productField.val()) {
     getProductProperties();
