@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let productPhenologyOptions = [];
   let productMarketClassOptions = [];
   let productRipenessOptions = [];
+  let productSizeOptions = [];
 
   let unitPriceLabel = 'Unit Price'
 
@@ -70,6 +71,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     return new Promise((resolve, reject) => {
       if (clientProperties && productProperties && orderItemsKindField) {
 
+        const productSizePromise = fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
+          .then(data => {
+            productSizeOptions = data;
+          });
+
         const productPhenologyPromise = fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productProperties.id}&is_enabled=1`)
           .then(data => {
             productPhenologyOptions = data;
@@ -113,8 +119,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         await getOrganizationProfile();
       }
       await getClientProperties();
-      console.log("organization", organization);
-      console.log("clientProperties", clientProperties);
+      if (clientProperties && organization) {
+        if (clientProperties.country === organization.country) {
+          productSizeCategories = 'size,mix'
+        } else {
+          productSizeCategories = 'size'
+        }
+      }
     }
   });
 
@@ -162,37 +173,30 @@ document.addEventListener('DOMContentLoaded', async () => {
       updateFieldOptions(productSizeField, []);
 
       updateProductOptions().then(() => {
+        updateFieldOptions(productSizeField, productSizeOptions);
         updateFieldOptions(productPhenologyField, productPhenologyOptions);
         updateFieldOptions(productMarketClassField, productMarketClassOptions);
         updateFieldOptions(productMarketRipenessField, productRipenessOptions);
-        productSizeField.closest('.form-group').fadeIn();
       });
 
       pricingByField.on('change', () => {
-        // obtener los productsizes dependiendo del tipo de precio
-        // si es presentación solo size,
-        // en otro caso, size y mix si es nacional y si no es nacional solo size
-
-        let productSizeCategories = 'size,mix'
-        if (clientProperties.country !== organization.country) productSizeCategories = 'size'
-
-        const productSizePromise = fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
-          .then(data => {
-            updateFieldOptions(productSizeField, data)
-          })
-
         // lo de abajo debe darse al tener seleccionado un productsize
         if (pricingByField.val() === 'product_presentation') {
-          fetchOptions(`/rest/v1/catalogs/product-packaging/?category=presentation&product=${productField.val()}&is_enabled=1`)
-            .then(data => {
-              updateFieldOptions(productPackagingField, data);
-            })
+          productSizeCategories = 'size'
         } else {
-          fetchOptions(`/rest/v1/catalogs/product-packaging/?category=packaging&product=${productField.val()}&is_enabled=1`)
-            .then(data => {
-              updateFieldOptions(productPackagingField, data);
-            })
+          if (clientProperties.country === organization.country) {
+            productSizeCategories = 'size,mix'
+          } else {
+            productSizeCategories = 'size'
+          }
         }
+
+        fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
+          .then(data => {
+            updateFieldOptions(productSizeField, data);
+            productSizeField.closest('.form-group').fadeIn();
+          });
+
       })
 
       productSizeField.on('change', () => {
