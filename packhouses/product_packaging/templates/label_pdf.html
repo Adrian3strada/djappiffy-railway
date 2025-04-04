@@ -7,34 +7,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Etiquetas de {{ employee.full_name }}</title>
     <style>
+        /* define size for each label  */
         @page {
-            size: 5cm 8cm; 
+            size: 8cm 5cm; 
             margin: 0;
         }
-
         body {
             font-family: Arial, sans-serif;
         }
-
         .label-container {
-            width: 5cm;
-            height: 8cm;
+            width: 8cm;
+            height: 5cm;
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
+            justify-content: center;
             align-items: space-around;
             text-align: center;
             page-break-before: always; 
             padding-top: 10px;
+            transform: rotate(-90deg);
         }
-
         .label-info, .qr-container {
             transform: rotate(90deg); 
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
         .label-info {
             font-size: 10px;
             text-align: center;
@@ -42,14 +40,12 @@
             white-space: normal;
             width: 60%;
         }
-
         .qr-container {
             margin-top: 0px;
         }
-
         .qr-image {
-            width: 90px;
-            height: 90px;
+            width: 95px;
+            height: 95px;
         }
     </style>
 </head>
