@@ -30,7 +30,7 @@ def generate_label_pdf(request, employee_id):
         )
         
         qr_data = f"{employee.id}-{label_uuid}"
-        qr_image = qrcode.make(label.uuid)
+        qr_image = qrcode.make(qr_data)
 
         qr_io = BytesIO()
         qr_image.save(qr_io, format="PNG")
@@ -69,7 +69,7 @@ def generate_pending_label_pdf(request, employee_id):
 
     for label in pending_labels:
         qr_data = f"{employee.id}-{label.uuid}"
-        qr_image = qrcode.make(label.uuid)
+        qr_image = qrcode.make(qr_data)
 
         qr_io = BytesIO()
         qr_image.save(qr_io, format="PNG")
