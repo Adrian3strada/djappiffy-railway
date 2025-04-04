@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const clientField = $("#id_client");
   const orderItemsKindField = $("#id_order_items_kind")
 
-  let productSizeOptions = [];
   let productPhenologyOptions = [];
   let productMarketClassOptions = [];
   let productRipenessOptions = [];
@@ -12,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let clientProperties = null;
   let productProperties = null;
+  let productSizeCategories = 'size,mix';
+  let organization = null;
 
   function updateFieldOptions(field, options, selectedValue = null) {
     if (field) {
@@ -71,11 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateProductOptions() {
     return new Promise((resolve, reject) => {
       if (clientProperties && productProperties && orderItemsKindField) {
-        let productSizeCategories = 'size,mix,waste,biomass'
-        const productSizePromise = fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
-          .then(data => {
-            productSizeOptions = data;
-          })
 
         const productPhenologyPromise = fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productProperties.id}&is_enabled=1`)
           .then(data => {
@@ -96,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
           .then(() => resolve())
           .catch(error => reject(error));
       } else {
-        productSizeOptions = [];
         productPhenologyOptions = [];
         productMarketClassOptions = [];
         resolve();
@@ -104,9 +99,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  clientField.on('change', () => {
+  function getOrganizationProfile() {
+    return fetchOptions(`/rest/v1/profiles/packhouse-exporter-profile/?same=1`).then(
+      (data) => {
+        if (data.count === 1) {
+          organization = data.results.pop()
+        }
+      });
+  }
+
+  getOrganizationProfile()
+
+  clientField.on('change', async () => {
     if (clientField.val()) {
-      getClientProperties();
+      if (!organization) {
+        await getOrganizationProfile();
+      }
+      await getClientProperties();
+      console.log("organization", organization);
+      console.log("clientProperties", clientProperties);
     }
   });
 
@@ -116,21 +127,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  if (clientField.val()) {
-    getClientProperties();
-  }
+
 
   if (productField.val()) {
     getProductProperties();
   }
 
   document.addEventListener('formset:added', (event) => {
-    if (event.detail.formsetName === 'orderitemweight_set') {
+    if (event.detail.formsetName === 'orderitempackaging_set') {
       const newForm = event.target;
+      const pricingByField = $(newForm).find('select[name$="-pricing_by"]');
       const productSizeField = $(newForm).find('select[name$="-product_size"]');
       const productPhenologyField = $(newForm).find('select[name$="-product_phenology"]');
       const productMarketClassField = $(newForm).find('select[name$="-product_market_class"]');
       const productMarketRipenessField = $(newForm).find('select[name$="-product_ripeness"]');
+      const productPackagingField = $(newForm).find('select[name$="-product_packaging"]');
+
       const quantityField = $(newForm).find('input[name$="-quantity"]');
       const unitPriceField = $(newForm).find('input[name$="-unit_price"]');
       const amountPriceField = $(newForm).find('input[name$="-amount_price"]');
@@ -146,18 +158,45 @@ document.addEventListener('DOMContentLoaded', () => {
       updateFieldOptions(productSizeField, []);
 
       updateProductOptions().then(() => {
-        updateFieldOptions(productSizeField, productSizeOptions);
         updateFieldOptions(productPhenologyField, productPhenologyOptions);
         updateFieldOptions(productMarketClassField, productMarketClassOptions);
         updateFieldOptions(productMarketRipenessField, productRipenessOptions);
         productSizeField.closest('.form-group').fadeIn();
       });
 
+      pricingByField.on('change', () => {
+        // obtener los productsizes dependiendo del tipo de precio
+        // si es presentación solo size,
+        // en otro caso, size y mix si es nacional y si no es nacional solo size
+
+        let productSizeCategories = 'size,mix'
+        if (clientProperties.country !== organization.country) productSizeCategories = 'size'
+
+        const productSizePromise = fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
+          .then(data => {
+            updateFieldOptions(productSizeField, data)
+          })
+
+        // lo de abajo debe darse al tener seleccionado un productsize
+        if (pricingByField.val() === 'product_presentation') {
+          fetchOptions(`/rest/v1/catalogs/product-packaging/?category=presentation&product=${productField.val()}&is_enabled=1`)
+            .then(data => {
+              updateFieldOptions(productPackagingField, data);
+            })
+        } else {
+          fetchOptions(`/rest/v1/catalogs/product-packaging/?category=packaging&product=${productField.val()}&is_enabled=1`)
+            .then(data => {
+              updateFieldOptions(productPackagingField, data);
+            })
+        }
+      })
+
       productSizeField.on('change', () => {
         const productSizeSelectedOption = productSizeField.find('option:selected');
         const productSizeSelectedOptionCategory = productSizeSelectedOption.data('category');
 
         if (productSizeField.val() && productSizeSelectedOptionCategory) {
+
           if (['size'].includes(productSizeSelectedOptionCategory)) {
             productPhenologyField.closest('.form-group').fadeIn();
             productMarketClassField.closest('.form-group').fadeIn();
@@ -169,14 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
             productMarketRipenessField.closest('.form-group').fadeIn();
             productPhenologyField.val(null).trigger('change');
             productMarketClassField.val(null).trigger('change');
-          }
-          if (['waste', 'biomass'].includes(productSizeSelectedOptionCategory)) {
-            productPhenologyField.closest('.form-group').fadeOut();
-            productMarketClassField.closest('.form-group').fadeOut();
-            productMarketRipenessField.closest('.form-group').fadeOut();
-            productPhenologyField.val(null).trigger('change');
-            productMarketClassField.val(null).trigger('change');
-            productMarketRipenessField.val(null).trigger('change');
           }
         } else {
           productPhenologyField.val(null).trigger('change');
@@ -207,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  const existingForms = $('div[id^="orderitemweight_set-"]').filter((index, form) => {
+  const existingForms = $('div[id^="orderitempackaging_set-"]').filter((index, form) => {
     return /\d+$/.test(form.id);
   });
 

@@ -147,6 +147,9 @@ class OrderItemWeightInline(OrderItemInlineMixin):
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = Order.objects.get(id=parent_object_id) if parent_object_id else None
+
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
@@ -178,7 +181,7 @@ class OrderItemPackagingInline(OrderItemInlineMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        # js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)
+        js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)
         pass
 
 

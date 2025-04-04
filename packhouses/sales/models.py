@@ -119,7 +119,7 @@ class OrderItemWeight(models.Model):
         return f"{self.pk}"
 
     def clean(self):
-        self.amount_price = self.unit_price * self.quantity
+        self.amount_price = self.unit_price * self.quantity if self.unit_price and self.quantity else 0
         super().clean()
 
     class Meta:
@@ -134,7 +134,9 @@ class OrderItemPackaging(models.Model):
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
-    product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'), validators=[MinValueValidator(1)])
+    product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'), null=True, blank=False)
+    product_presentation_quantity_per_packaging = models.PositiveIntegerField(
+        verbose_name=_('Product presentation quantity per packaging'), null=True, blank=False)
     quantity = models.PositiveIntegerField(verbose_name=_('Items quantity'), validators=[MinValueValidator(1)])
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
     amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2)
@@ -157,8 +159,9 @@ class OrderItemPallet(models.Model):
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'),
                                           on_delete=models.PROTECT, null=True, blank=False)
     product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'),
-                                                               validators=[MinValueValidator(1)], null=True,
-                                                               blank=False)
+                                                               null=True, blank=False)
+    product_presentation_quantity_per_packaging = models.PositiveIntegerField(
+        verbose_name=_('Product presentation quantity per packaging'), null=True, blank=False)
     product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'),
                                                  on_delete=models.PROTECT, null=True, blank=False)
     product_packaging_quantity_per_pallet = models.PositiveIntegerField(
