@@ -320,9 +320,7 @@ class DiseaseProductKind(models.Model):
         return f"{self.product_kind} - {self.disease}"
 
 def get_model_choices():
-    used_models = FoodSafetyProcedure.objects.values_list('model', flat=True)
-    available_models = [model for model in get_filtered_models() if model not in used_models]
-    return [(model, model) for model in available_models]
+    return [(model, model) for model in get_filtered_models()]
 
 MODEL_CHOICES = lazy(get_model_choices, list)
 
@@ -336,4 +334,4 @@ class FoodSafetyProcedure(models.Model):
         verbose_name_plural = _('Food Safety Procedures')
 
     def __str__(self):
-        return f"{self.name} -- {self.description}"
+        return f"{self.name}"

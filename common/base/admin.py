@@ -15,6 +15,7 @@ from taggit.models import Tag
 from adminsortable2.admin import SortableAdminMixin
 from .decorators import uppercase_form_charfield
 from django.utils.translation import gettext_lazy as _
+from .utils import get_filtered_models
 
 #
 
@@ -211,3 +212,20 @@ class DiseaseAdmin(admin.ModelAdmin):
 class FoodSafetyProcedureAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
     list_filter = ['name', 'description']
+
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        if db_field.name == "model":
+            used_models = FoodSafetyProcedure.objects.values_list('model', flat=True)
+            available_choices = [(m, m) for m in get_filtered_models() if m not in used_models]
+
+            if not request.resolver_match.kwargs.get('object_id'):
+                available_choices.insert(0, ('', '---------'))
+
+            obj_id = request.resolver_match.kwargs.get('object_id')
+            if obj_id:
+                obj = FoodSafetyProcedure.objects.filter(pk=obj_id).first()
+                if obj and obj.model:
+                    available_choices.append((obj.model, obj.model))
+
+            kwargs['choices'] = available_choices
+        return super().formfield_for_choice_field(db_field, request, **kwargs)

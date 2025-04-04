@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import IncomingProduct, PalletReceived, FoodSafety
+from .models import (IncomingProduct, PalletReceived, 
+                    FoodSafety, Corte, Lote, FoodSafety, DryMatter, InternalInspection, TransportReview, SampleCollection
+                    )
 from common.base.mixins import (ByOrganizationAdminMixin)
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle
 from django.utils.translation import gettext_lazy as _
@@ -7,6 +9,7 @@ import nested_admin
 from .mixins import CustomNestedStackedInlineMixin
 from .forms import ScheduleHarvestVehicleForm
 from nested_admin import NestedStackedInline
+from packhouses.catalogs.models import ProductFoodSafetyProcess
 
 # Inlines para el corte
 class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
@@ -120,3 +123,58 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
 
     class Media:
         js = ('js/admin/forms/packhouses/receiving/incoming_product.js',)
+
+@admin.register(Corte)
+class CorteAdmin(admin.ModelAdmin):
+    list_display = ('sample_number', 'vehicle', 'product')
+    list_filter = ['sample_number', 'vehicle', 'product']
+
+@admin.register(Lote)
+class LoteAdmin(admin.ModelAdmin):
+    list_display = ('sample_number', 'corte',)
+    list_filter = ['sample_number', 'corte']
+
+class DryMatterInline(admin.TabularInline):
+    model = DryMatter
+    extra = 1
+
+class InternalInspectionInline(admin.TabularInline):
+    model = InternalInspection
+    extra = 1
+
+class TransportReviewInline(admin.TabularInline):
+    model = TransportReview
+    extra = 1
+
+class SampleCollectionInline(admin.TabularInline):
+    model = SampleCollection
+    extra = 1
+
+# Mapeo de nombres de inlines con sus clases
+INLINE_CLASSES = {
+    "DryMatter": DryMatterInline,
+    "InternalInspection": InternalInspectionInline,
+    "TransportReview": TransportReviewInline,
+    "SampleCollection": SampleCollectionInline,
+}
+
+@admin.register(FoodSafety)
+class FoodSafetyAdmin(admin.ModelAdmin):
+    list_display = ('lote',)
+    list_filter = ['lote']
+    inlines = [DryMatterInline, InternalInspectionInline, TransportReviewInline, SampleCollectionInline]
+
+    def get_inlines(self, request, obj=None):
+        inlines_list = []
+
+        if not obj:
+            return inlines_list
+
+        try:
+            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=obj.lote.corte.product).values_list('procedure__model', flat=True)
+            inlines_list = [INLINE_CLASSES[inline] for inline in food_safety_config if inline in INLINE_CLASSES]
+
+        except ProductFoodSafetyProcess.DoesNotExist:
+            return inlines_list
+
+        return inlines_list

@@ -278,5 +278,41 @@
             "outside" : 1,
             "is_enabled" : 1
         }
+    },
+    {
+        "model": "base.foodsafetyprocedure",
+        "pk": 1,
+        "fields": {
+            "name" : "Materia Seca",
+            "description" : "N Materia seca",
+            "model" : "DryMatter"
+        }
+    },
+    {
+        "model": "base.foodsafetyprocedure",
+        "pk": 2,
+        "fields": {
+            "name" : "Inspección interna",
+            "description" : "N Inspecciones Internas",
+            "model" : "InternalInspection"
+        }
+    },
+    {
+        "model": "base.foodsafetyprocedure",
+        "pk": 3,
+        "fields": {
+            "name" : "Transporte",
+            "description" : "Transporte",
+            "model" : "TransportReview"
+        }
+    },
+    {
+        "model": "base.foodsafetyprocedure",
+        "pk": 4,
+        "fields": {
+            "name" : "Muestras",
+            "description" : "N Muestras",
+            "model" : "SampleCollection"
+        }
     }
 ]

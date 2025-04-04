@@ -4,8 +4,7 @@ from django.utils.translation import gettext_lazy as _
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_incoming_product_categories_status
-from packhouses.catalogs.models import WeighingScale, ProductFoodSafetyProcess
-from packhouses.catalogs.models import Product
+from packhouses.catalogs.models import WeighingScale, ProductFoodSafetyProcess, Product, Vehicle
 
 # Create your models here.
 
@@ -74,15 +73,24 @@ class PalletReceived(models.Model):
         verbose_name_plural = _('Pallets Received')
 
 class Corte(models.Model):
+    sample_number = models.IntegerField()
+    vehicle = models.ForeignKey(Vehicle, verbose_name=_('Vehicle'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
 
+    def __str__(self):
+        return f"{self.sample_number} - {self.product}"
+
 class Lote(models.Model):
+    sample_number = models.IntegerField()
     corte = models.ForeignKey(Corte, verbose_name=_('Corte'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.sample_number} - {self.corte}"
 
 class FoodSafety(models.Model):
     # corte = models.ForeignKey(corte, verbose_name=_('corte'), on_delete=models.PROTECT)
-    lote = models.ForeignKey(Lote, verbose_name=_('lote'), on_delete=models.PROTECT)
-    process = models.ForeignKey(ProductFoodSafetyProcess, verbose_name=_('Food Safety Process'), on_delete=models.PROTECT)
+    lote = models.OneToOneField(Lote, verbose_name=_('lote'), on_delete=models.PROTECT)
+    # process = models.ForeignKey(ProductFoodSafetyProcess, verbose_name=_('Food Safety Process'), on_delete=models.CASCADE)
 
 class DryMatter(models.Model):
     sample_number = models.IntegerField()
