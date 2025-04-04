@@ -1,7 +1,7 @@
 from django.forms import BaseInlineFormSet
 from .models import ProductSize
 
-class OrderItemFormSet(BaseInlineFormSet):
+class OrderItemBakFormSet(BaseInlineFormSet):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
