@@ -1483,11 +1483,13 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                    ByPackagingForOrganizationProductPackagingFilter,
                    ByProductPresentationForOrganizationProductPackagingFilter,
                    'is_enabled']
-    list_display = ['name', 'alias', 'category', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging',
-                    'product_presentation', 'product_presentation_quantity_per_packaging', 'is_enabled']
+    list_display = ['name', 'alias', 'category', 'market', 'product', 'product_size', 'packaging',
+                    'product_weight_per_packaging',
+                    'product_presentation', 'product_presentation_per_packaging', 'is_enabled']
     search_fields = ('name', 'alias')
-    fields = ['category', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging',
-              'product_presentation', 'product_presentation_quantity_per_packaging', 'name', 'alias', 'is_enabled']
+    fields = ['category', 'market', 'product', 'product_size', 'packaging', 'product_weight_per_packaging',
+              'product_presentation', 'product_presentation_per_packaging', 'product_pieces_per_presentation',
+              'name', 'alias', 'is_enabled']
     inlines = [ProductPackagingPalletInline]
 
     @uppercase_form_charfield('name')

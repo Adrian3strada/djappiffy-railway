@@ -216,7 +216,7 @@ class OrderItemBak(models.Model):
             if self.product_packaging.category == 'packaging':
                 self.price = self.unit_price * self.product_amount_per_packaging * self.items_quantity
             if self.product_packaging.category == 'presentation':
-                self.price = self.unit_price * self.product_packaging.product_presentation_quantity_per_packaging * self.quantity
+                self.price = self.unit_price * self.product_packaging.product_presentation_per_packaging * self.quantity
 
         super().clean()
 
