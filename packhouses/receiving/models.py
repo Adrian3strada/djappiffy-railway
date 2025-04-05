@@ -142,10 +142,8 @@ class InternalInspection(models.Model):
         verbose_name_plural = _('Internal Inspections')
 
 class Percentage(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     percentage = models.DecimalField(max_digits=10, decimal_places=2)
-    # dry_matter_percentage = models.DecimalField(max_digits=10, decimal_places=2)
-    # internal_temperature_percentage = models.DecimalField(max_digits=10, decimal_places=2)
-    # plant_health_issues  = models.BooleanField(default=False, verbose_name=_('Plant Health Issues'))
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
 
     class Meta:
