@@ -237,7 +237,7 @@ class PalletContainerInline(nested_admin.NestedTabularInline):
 class PalletReceivedInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = PalletReceived
     inlines = [PalletContainerInline]
-    fields = ('ooid', 'provider', 'harvesting_crew', 'gross_weight', 'total_boxes', 'container_tare', 'platform_tare', 'net_weight')
+    fields = ('ooid', 'provider', 'harvesting_crew', 'gross_weight', 'total_containers', 'container_tare', 'platform_tare', 'net_weight')
     extra = 0
 
     def get_formset(self, request, obj=None, **kwargs):

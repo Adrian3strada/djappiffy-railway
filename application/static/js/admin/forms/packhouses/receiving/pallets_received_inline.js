@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const truncatedTare = Math.trunc(totalTare * 1000) / 1000;
         $palletForm.find('input[name$="-container_tare"]').val(truncatedTare);
-        $palletForm.find('input[name$="-total_boxes"]').val(totalBoxes);
+        $palletForm.find('input[name$="-total_containers"]').val(totalBoxes);
         updateNetWeight($palletForm);
     };
 

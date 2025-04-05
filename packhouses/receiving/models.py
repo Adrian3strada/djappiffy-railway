@@ -51,7 +51,7 @@ class PalletReceived(models.Model):
     provider = models.ForeignKey(Provider, verbose_name=_('Harvesting Crew Provider'),on_delete=models.CASCADE,)
     harvesting_crew = models.ForeignKey(HarvestingCrew, verbose_name=_("Harvesting Crew"), on_delete=models.CASCADE,)
     gross_weight = models.FloatField(default=0.0, verbose_name=_("Gross Weight"),)
-    total_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Total Boxes'))
+    total_containers = models.PositiveIntegerField(default=0, verbose_name=_('Total Containers'))
     container_tare = models.FloatField(default=0.0, verbose_name=_("Container Tare"),)
     platform_tare = models.FloatField(default=0.0, verbose_name=_("Platform Tare"),)
     net_weight = models.FloatField(default=0.0, verbose_name=_("Net Weight"),)

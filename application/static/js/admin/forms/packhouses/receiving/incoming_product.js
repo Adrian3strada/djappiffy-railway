@@ -19,8 +19,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const averageBoxField = $('#id_average_per_box');
     const currentKgField = $('#id_current_kg_available');
     const containerTare= $('input[name$="-container_tare"]');
-    const totalBoxes= $('input[name$="-total_boxes"]');
-    const missingBoxesContainerField = $('input[name$="-missing_boxes"]');
+    const totalBoxes= $('input[name$="-total_containers"]');
+    const missingBoxesContainerField = $('input[name$="-missing_containers"]');
 
     // deshabilitar edición en campos, pero permitir que los valores se envíen
     function disableField(field) {

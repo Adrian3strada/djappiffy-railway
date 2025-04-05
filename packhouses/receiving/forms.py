@@ -3,39 +3,46 @@ from django.utils.translation import gettext_lazy as _
 from packhouses.gathering.models import ScheduleHarvestVehicle
 from .models import IncomingProduct, PalletReceived
 from django.core.exceptions import ValidationError
-
+from django.contrib import messages
 
 class ScheduleHarvestVehicleForm(forms.ModelForm):
-    stamp_vehicle_number = forms.CharField(
-        label=_('Stamp'),
-        required=False,
-    )
+    stamp_vehicle_number = forms.CharField(label=_('Stamp'), required=False,)
 
     class Meta:
         model = ScheduleHarvestVehicle
         fields = '__all__'
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        has_arrived_init = self.instance.has_arrived
+        if has_arrived_init == True:
+            self.fields['stamp_vehicle_number'].initial = self.instance.stamp_number if self.instance else ''
+        else: 
+            self.fields['stamp_vehicle_number'].initial = " "
 
     def clean(self):
         cleaned_data = super().clean()
+        stamp_vehicle_number = cleaned_data.get('stamp_vehicle_number')
         
-        # Obtener estado inicial desde la instancia relacionada
-        initial_status = None
-        if self.instance.pk:
-            schedule_harvest = self.instance.harvest_cutting
-            if schedule_harvest and schedule_harvest.incoming_product:
-                initial_status = schedule_harvest.incoming_product.status
-                print("INICIO", initial_status)
-        
-        # Obtener estado final desde el POST
-        final_status = self.data.get('status')
-        print("FINAL", final_status)
-        
-        # Ejemplo de validación: Requerir stamp si el estado cambia
-        if initial_status != final_status:
-            stamp = cleaned_data.get('stamp_vehicle_number')
-            if not stamp:
-                self.add_error('stamp_vehicle_number', 'Este campo es obligatorio cuando cambia el estado.')
-        
+        # Valores iniciales/finales de 'has_arrived'
+        instance = self.instance
+        has_arrived_initial = instance.has_arrived if instance and instance.pk else False
+        has_arrived_final = cleaned_data.get('has_arrived', has_arrived_initial)
+
+        # Validación cuando cambia de False → True
+        if not has_arrived_initial and has_arrived_final:
+            self.fields['stamp_vehicle_number'].required = True  # Campo obligatorio
+            
+            # Comparar sellos
+            if instance and instance.stamp_number != stamp_vehicle_number:
+                # Añadir clase CSS de error al campo (para que se vea en rojo)
+                self.fields['stamp_vehicle_number'].widget.attrs.update({'style': 'border: 1px solid #dc3545;', })
+                
+                # Mensaje de error (se mostrará en rojo automáticamente)
+                raise forms.ValidationError({
+                    'stamp_vehicle_number': _('The provided Stamp does not match the original.')
+                })
+
         return cleaned_data
 
 
