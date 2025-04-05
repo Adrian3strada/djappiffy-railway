@@ -23,7 +23,7 @@ class PestProductKindInline(admin.TabularInline):
     model = PestProductKind
     extra = 1
     verbose_name = _('Pest')
-    verbose_name_plural = _('Pests')
+    verbose_name_plural = _('Pests')    
 
 class DiseaseProductKindInline(admin.TabularInline):
     model = DiseaseProductKind

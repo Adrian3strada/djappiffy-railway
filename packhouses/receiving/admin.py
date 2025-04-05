@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import (IncomingProduct, PalletReceived, 
-                    FoodSafety, Corte, Lote, FoodSafety, DryMatter, InternalInspection, TransportReview, SampleCollection
+                    FoodSafety, FoodSafety, DryMatter, InternalInspection, 
+                    TransportReview, SampleCollection, Percentage,
+                    Cuadrilla, Corte, Lote, 
                     )
 from common.base.mixins import (ByOrganizationAdminMixin)
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle
@@ -124,23 +126,29 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     class Media:
         js = ('js/admin/forms/packhouses/receiving/incoming_product.js',)
 
+@admin.register(Cuadrilla)
+class CuadrillaAdmin(admin.ModelAdmin):
+    list_display = ('pax',)
+    list_filter = ['pax']
+
 @admin.register(Corte)
 class CorteAdmin(admin.ModelAdmin):
-    list_display = ('sample_number', 'vehicle', 'product')
-    list_filter = ['sample_number', 'vehicle', 'product']
+    list_display = ('sample_number', 'product')
 
 @admin.register(Lote)
 class LoteAdmin(admin.ModelAdmin):
     list_display = ('sample_number', 'corte',)
-    list_filter = ['sample_number', 'corte']
 
 class DryMatterInline(admin.TabularInline):
     model = DryMatter
     extra = 1
+    # list_display = ('number', 'product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage',)
+    readonly_fields = ('number',)
 
 class InternalInspectionInline(admin.TabularInline):
     model = InternalInspection
     extra = 1
+    readonly_fields = ('number',)
 
 class TransportReviewInline(admin.TabularInline):
     model = TransportReview
@@ -150,18 +158,24 @@ class SampleCollectionInline(admin.TabularInline):
     model = SampleCollection
     extra = 1
 
+class PercentageInline(admin.TabularInline):
+    model = Percentage
+    extra = 1
+
 # Mapeo de nombres de inlines con sus clases
 INLINE_CLASSES = {
     "DryMatter": DryMatterInline,
     "InternalInspection": InternalInspectionInline,
     "TransportReview": TransportReviewInline,
     "SampleCollection": SampleCollectionInline,
+    "Percentage": PercentageInline,
 }
 
 @admin.register(FoodSafety)
 class FoodSafetyAdmin(admin.ModelAdmin):
     list_display = ('lote',)
     list_filter = ['lote']
+    exclude = ['corte']
     inlines = [DryMatterInline, InternalInspectionInline, TransportReviewInline, SampleCollectionInline]
 
     def get_inlines(self, request, obj=None):

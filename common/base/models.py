@@ -224,6 +224,7 @@ class CertificationEntity(models.Model):
         return f"{self.entity} -- {self.name_certification} -- {self.product_kind}"
 
     class Meta:
+        ordering = ['name_certification']
         verbose_name = _('Certification Entity')
         verbose_name_plural = _('Certification Entities')
         constraints = [
@@ -245,7 +246,7 @@ def certification_file_path(instance, filename):
     return f'certifications/requirements/{certification_id}_{certification_product_kind}_{certification_entity}_{file_name}{file_extension}'
 
 class CertificationFormat(CleanDocumentsMixin, models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
     route = models.FileField(
         upload_to=certification_file_path,
         validators=[FileExtensionValidator(allowed_extensions=['docx'])],
@@ -268,12 +269,13 @@ class CertificationFormat(CleanDocumentsMixin, models.Model):
         ]
 
 class Pest(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True, verbose_name=_('Name'))
     inside = models.BooleanField(verbose_name=_('Inside'))
     outside = models.BooleanField(verbose_name=_('Outside'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     class Meta:
+        ordering = ['name']
         verbose_name = _('Pest')
         verbose_name_plural = _('Pests')
 
@@ -281,12 +283,13 @@ class Pest(models.Model):
         return f"{self.name}"
 
 class Disease(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True, verbose_name=_('Name'))
     inside = models.BooleanField(verbose_name=_('Inside'))
     outside = models.BooleanField(verbose_name=_('Outside'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     class Meta:
+        ordering = ['name']
         verbose_name = _('Disease')
         verbose_name_plural = _('Diseases')
 
@@ -299,6 +302,7 @@ class PestProductKind(models.Model):
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     class Meta:
+        ordering = ['pest']
         verbose_name = _('Pest Product Kind')
         verbose_name_plural = _('Pests Product Kind')
 
@@ -311,6 +315,7 @@ class DiseaseProductKind(models.Model):
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     class Meta:
+        ordering = ['disease']
         verbose_name = _('Disease Product Kind')
         verbose_name_plural = _('Diseases Product Kind')
 
@@ -323,11 +328,13 @@ def get_model_choices():
 MODEL_CHOICES = lazy(get_model_choices, list)
 
 class FoodSafetyProcedure(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField(null=True, blank=True)
-    model = models.CharField(max_length=255, unique=True, choices=MODEL_CHOICES)
+    name = models.CharField(max_length=255, unique=True, verbose_name=_('Name'))
+    description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
+    model = models.CharField(max_length=255, unique=True, verbose_name=_('Model'), choices=MODEL_CHOICES)
+    overall_percentage = models.BooleanField(default=True, verbose_name=_('Overall Percentage'))
 
     class Meta:
+        ordering = ['name']
         verbose_name = _('Food Safety Procedure')
         verbose_name_plural = _('Food Safety Procedures')
 

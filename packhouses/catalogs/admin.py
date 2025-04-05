@@ -317,7 +317,6 @@ class ProductDiseaseInline(admin.TabularInline):
 
     can_delete = True
     show_change_link = False 
-    # raw_id_fields = ['disease']
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -326,7 +325,6 @@ class ProductDiseaseInline(admin.TabularInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "disease":
             product_id = request.resolver_match.kwargs.get("object_id")
-            print(product_id)
 
             if product_id:
                 try:
