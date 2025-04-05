@@ -168,9 +168,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       productPhenologyField.closest('.form-group').hide();
       productMarketClassField.closest('.form-group').hide();
       productMarketRipenessField.closest('.form-group').hide();
-
+      productPackagingField.closest('.form-group').hide();
 
       updateFieldOptions(productSizeField, []);
+      updateFieldOptions(productPackagingField, []);
 
       updateProductOptions().then(() => {
         updateFieldOptions(productSizeField, productSizeOptions);
@@ -180,52 +181,145 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       pricingByField.on('change', () => {
-        // lo de abajo debe darse al tener seleccionado un productsize
-        if (pricingByField.val() === 'product_presentation') {
-          productSizeCategories = 'size'
-        } else {
-          if (clientProperties.country === organization.country) {
-            productSizeCategories = 'size,mix'
-          } else {
+        if (pricingByField.val()) {
+          if (pricingByField.val() === 'product_presentation') {
             productSizeCategories = 'size'
+          } else {
+            if (clientProperties.country === organization.country) {
+              productSizeCategories = 'size,mix'
+            } else {
+              productSizeCategories = 'size'
+            }
           }
+          fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
+            .then(data => {
+              updateFieldOptions(productSizeField, data);
+              productSizeField.closest('.form-group').fadeIn();
+            });
+        } else {
+          updateFieldOptions(productSizeField, []);
+          productSizeField.closest('.form-group').fadeOut();
         }
-
-        fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
-          .then(data => {
-            updateFieldOptions(productSizeField, data);
-            productSizeField.closest('.form-group').fadeIn();
-          });
-
       })
 
       productSizeField.on('change', () => {
-        const productSizeSelectedOption = productSizeField.find('option:selected');
-        const productSizeSelectedOptionCategory = productSizeSelectedOption.data('category');
+        if (productSizeField.val()) {
+          const productSizeSelectedOption = productSizeField.find('option:selected');
+          const productSizeSelectedOptionCategory = productSizeSelectedOption.data('category');
 
-        if (productSizeField.val() && productSizeSelectedOptionCategory) {
+          if (productSizeField.val() && productSizeSelectedOptionCategory) {
 
-          if (['size'].includes(productSizeSelectedOptionCategory)) {
-            productPhenologyField.closest('.form-group').fadeIn();
-            productMarketClassField.closest('.form-group').fadeIn();
-            productMarketRipenessField.closest('.form-group').fadeIn();
-          }
-          if (['mix'].includes(productSizeSelectedOptionCategory)) {
-            productPhenologyField.closest('.form-group').fadeOut();
-            productMarketClassField.closest('.form-group').fadeOut();
-            productMarketRipenessField.closest('.form-group').fadeIn();
+            if (['size'].includes(productSizeSelectedOptionCategory)) {
+              productPhenologyField.closest('.form-group').fadeIn();
+              productMarketClassField.closest('.form-group').fadeIn();
+              productMarketRipenessField.closest('.form-group').fadeIn();
+            }
+            if (['mix'].includes(productSizeSelectedOptionCategory)) {
+              productPhenologyField.closest('.form-group').fadeOut();
+              productMarketClassField.closest('.form-group').fadeOut();
+              productMarketRipenessField.closest('.form-group').fadeIn();
+              productPhenologyField.val(null).trigger('change');
+              productMarketClassField.val(null).trigger('change');
+            }
+          } else {
             productPhenologyField.val(null).trigger('change');
             productMarketClassField.val(null).trigger('change');
+            productMarketRipenessField.val(null).trigger('change');
+            productPhenologyField.closest('.form-group').fadeOut();
+            productMarketClassField.closest('.form-group').fadeOut();
+            productMarketRipenessField.closest('.form-group').fadeOut();
+          }
+
+          if (productSizeField.val() && productSizeSelectedOptionCategory) {
+
+            if (['size'].includes(productSizeSelectedOptionCategory)) {
+              productPhenologyField.closest('.form-group').fadeIn();
+              productMarketClassField.closest('.form-group').fadeIn();
+              productMarketRipenessField.closest('.form-group').fadeIn();
+            }
+            if (['mix'].includes(productSizeSelectedOptionCategory)) {
+              productPhenologyField.closest('.form-group').fadeOut();
+              productMarketClassField.closest('.form-group').fadeOut();
+              productMarketRipenessField.closest('.form-group').fadeIn();
+              productPhenologyField.val(null).trigger('change');
+              productMarketClassField.val(null).trigger('change');
+            }
+          } else {
+            productPhenologyField.val(null).trigger('change');
+            productMarketClassField.val(null).trigger('change');
+            productMarketRipenessField.val(null).trigger('change');
+            productPhenologyField.closest('.form-group').fadeOut();
+            productMarketClassField.closest('.form-group').fadeOut();
+            productMarketRipenessField.closest('.form-group').fadeOut();
+          }
+
+          console.log("pricingByField", pricingByField.val());
+
+          let queryParams = {
+            category: "packaging",
+            market: clientProperties.market,
+            product: productProperties.id,
+            product_size: productSizeField.val(),
+            is_enabled: 1
+          }
+
+          if (productPhenologyField.val()) {
+            queryParams.phenology = productPhenologyField.val();
+          }
+
+          if (pricingByField.val() === 'product_presentation') {
+            queryParams.category = "presentation";
+          } else {
+            queryParams.category = "packaging";
+          }
+
+          const url = `/rest/v1/catalogs/product-packaging/?${$.param(queryParams)}`;
+          console.log("url", url);
+
+          fetchOptions(url)
+            .then(data => {
+              if (data.length === 0) {
+                Swal.fire({
+                  icon: "info",
+                  text: "No packaging found for the selected product size and pricing category, it must exists at least one for this combination at 'Product Packaging' catalog.",
+                  showCancelButton: true,
+                  confirmButtonText: "Entendido",
+                  cancelButtonText: "Cerrar",
+                  confirmButtonColor: "#4daf50",
+                  cancelButtonColor: "#d33",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                })
+                updateFieldOptions(productPackagingField, []);
+                productPackagingField.closest('.form-group').fadeOut();
+              }
+              updateFieldOptions(productPackagingField, data);
+              productPackagingField.closest('.form-group').fadeIn();
+            });
+
+
+        } else {
+          updateFieldOptions(productPackagingField, []);
+          productPackagingField.closest('.form-group').fadeOut();
+        }
+
+      });
+
+      productPackagingField.on('change', () => {
+        if (productPackagingField.val()) {
+          const selectedOption = productPackagingField.find('option:selected');
+          const selectedOptionCategory = selectedOption.data('category');
+
+          if (selectedOptionCategory === 'presentation') {
+            productSizeField.closest('.form-group').fadeOut();
+            productSizeField.val(null).trigger('change');
+          } else {
+            productSizeField.closest('.form-group').fadeIn();
           }
         } else {
-          productPhenologyField.val(null).trigger('change');
-          productMarketClassField.val(null).trigger('change');
-          productMarketRipenessField.val(null).trigger('change');
-          productPhenologyField.closest('.form-group').fadeOut();
-          productMarketClassField.closest('.form-group').fadeOut();
-          productMarketRipenessField.closest('.form-group').fadeOut();
+          productSizeField.closest('.form-group').fadeOut();
         }
-      });
+      })
 
       quantityField.on('change', () => {
         if (quantityField.val() && unitPriceField.val()) {
@@ -301,15 +395,13 @@ document.addEventListener('DOMContentLoaded', async () => {
           productPhenologyField.closest('.form-group').fadeIn();
           productMarketClassField.closest('.form-group').fadeIn();
           productMarketRipenessField.closest('.form-group').fadeIn();
-        }
-        if (['mix'].includes(productSizeSelectedOptionCategory)) {
+        } else if (['mix'].includes(productSizeSelectedOptionCategory)) {
           productPhenologyField.closest('.form-group').fadeOut();
           productMarketClassField.closest('.form-group').fadeOut();
           productMarketRipenessField.closest('.form-group').fadeIn();
           productPhenologyField.val(null).trigger('change');
           productMarketClassField.val(null).trigger('change');
-        }
-        if (['waste', 'biomass'].includes(productSizeSelectedOptionCategory)) {
+        } else {
           productPhenologyField.closest('.form-group').fadeOut();
           productMarketClassField.closest('.form-group').fadeOut();
           productMarketRipenessField.closest('.form-group').fadeOut();
@@ -325,6 +417,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         productMarketClassField.closest('.form-group').fadeOut();
         productMarketRipenessField.closest('.form-group').fadeOut();
       }
+
+
     });
 
     quantityField.on('change', () => {
