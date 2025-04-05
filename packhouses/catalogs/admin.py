@@ -1488,7 +1488,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                     'product_presentation', 'product_presentation_per_packaging', 'is_enabled']
     search_fields = ('name', 'alias')
     fields = ['category', 'market', 'product', 'product_size', 'packaging', 'product_weight_per_packaging',
-              'product_presentation', 'product_presentation_per_packaging', 'product_pieces_per_presentation',
+              'product_presentation', 'product_pieces_per_presentation', 'product_presentation_per_packaging',
               'name', 'alias', 'is_enabled']
     inlines = [ProductPackagingPalletInline]
 

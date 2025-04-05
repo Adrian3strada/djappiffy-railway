@@ -235,20 +235,25 @@ document.addEventListener('DOMContentLoaded', function () {
   productWeightPerPackagingField.attr('min', '0.01');
   productPresentationPerPackagingField.attr('step', 1);
   productPresentationPerPackagingField.attr('min', 1);
+  productPiecesPerPresentationField.attr('step', 1);
+  productPiecesPerPresentationField.attr('min', 1);
 
   if (categoryField.val()) {
     if (categoryField.val() === 'packaging') {
       productPresentationField.closest('.form-group').fadeOut();
       productPresentationPerPackagingField.closest('.form-group').fadeOut();
+      productPiecesPerPresentationField.closest('.form-group').fadeOut();
       productWeightPerPackagingField.closest('.form-group').fadeIn();
     } else if (categoryField.val() === 'presentation') {
       productWeightPerPackagingField.closest('.form-group').fadeOut();
       productPresentationField.closest('.form-group').fadeIn();
       productPresentationPerPackagingField.closest('.form-group').fadeIn();
+      productPiecesPerPresentationField.closest('.form-group').fadeIn();
     } else {
       productWeightPerPackagingField.closest('.form-group').fadeOut();
       productPresentationField.closest('.form-group').fadeOut();
       productPresentationPerPackagingField.closest('.form-group').fadeOut();
+      productPiecesPerPresentationField.closest('.form-group').fadeOut();
     }
     updatePackagingProductAmount();
   } else {
