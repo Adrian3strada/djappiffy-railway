@@ -878,7 +878,7 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.CASCADE)
-    product_weight_per_packaging = models.FloatField(verbose_name=_('Product amount per packaging'),
+    product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'),
                                                      null=True, blank=True,
                                                      validators=[MinValueValidator(0.01)])
     product_presentation = models.ForeignKey(ProductPresentation, verbose_name=_('Product presentation'),

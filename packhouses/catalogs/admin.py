@@ -1583,14 +1583,21 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
 
         category = request.POST.get('category') if request.POST else obj.category if obj else None
 
-        if db_field.name == "product_amount_per_packaging":
+        if db_field.name == "product_weight_per_packaging":
             formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
             formfield.required = True
             if category == 'presentation' and request.POST:
                 formfield.required = False
             return formfield
 
-        if db_field.name == "product_presentation_quantity_per_packaging":
+        if db_field.name == "product_presentation_per_packaging":
+            formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+            formfield.required = True
+            if category == 'packaging' and request.POST:
+                formfield.required = False
+            return formfield
+
+        if db_field.name == "product_pieces_per_presentation":
             formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
             formfield.required = True
             if category == 'packaging' and request.POST:
