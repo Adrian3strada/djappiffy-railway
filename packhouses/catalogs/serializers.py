@@ -38,6 +38,7 @@ class PackagingSerializer(serializers.ModelSerializer):
 
 
 class ProductPackagingSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ProductPackaging
         fields = '__all__'

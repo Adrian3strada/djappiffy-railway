@@ -134,10 +134,12 @@ class OrderItemPackaging(models.Model):
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
-    product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'), null=True, blank=False)
-    product_presentation_quantity_per_packaging = models.PositiveIntegerField(
+    product_weight_per_packaging = models.PositiveIntegerField(verbose_name=_('Product weight per packaging'), null=True, blank=False)
+    product_presentation_per_packaging = models.PositiveIntegerField(
         verbose_name=_('Product presentation quantity per packaging'), null=True, blank=False)
-    quantity = models.PositiveIntegerField(verbose_name=_('Items quantity'), validators=[MinValueValidator(1)])
+    product_pieces_per_presentation = models.PositiveIntegerField(
+        verbose_name=_('Product presentation quantity per packaging'), null=True, blank=False)
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
     amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
@@ -167,7 +169,7 @@ class OrderItemPallet(models.Model):
     product_packaging_quantity_per_pallet = models.PositiveIntegerField(
         verbose_name=_('Product packaging quantity per pallet'),
         validators=[MinValueValidator(1)], null=True, blank=False)
-    quantity = models.PositiveIntegerField(verbose_name=_('Items quantity'), validators=[MinValueValidator(1)])
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
     amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)

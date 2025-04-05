@@ -157,10 +157,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productMarketClassField = $(newForm).find('select[name$="-product_market_class"]');
       const productMarketRipenessField = $(newForm).find('select[name$="-product_ripeness"]');
       const productPackagingField = $(newForm).find('select[name$="-product_packaging"]');
+      const productAmountPerPackagingField = $(newForm).find('input[name$="-product_amount_per_packaging"]');
+      const productPresentationQuantityPerPackagingField = $(newForm).find('input[name$="-product_presentation_quantity_per_packaging"]');
 
       const quantityField = $(newForm).find('input[name$="-quantity"]');
       const unitPriceField = $(newForm).find('input[name$="-unit_price"]');
       const amountPriceField = $(newForm).find('input[name$="-amount_price"]');
+
 
       amountPriceField.prop('disabled', true).attr('readonly', true).addClass('readonly-field');
 
@@ -253,8 +256,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             productMarketRipenessField.closest('.form-group').fadeOut();
           }
 
-          console.log("pricingByField", pricingByField.val());
-
           let queryParams = {
             category: "packaging",
             market: clientProperties.market,
@@ -274,7 +275,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
 
           const url = `/rest/v1/catalogs/product-packaging/?${$.param(queryParams)}`;
-          console.log("url", url);
 
           fetchOptions(url)
             .then(data => {
@@ -307,17 +307,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       productPackagingField.on('change', () => {
         if (productPackagingField.val()) {
-          const selectedOption = productPackagingField.find('option:selected');
-          const selectedOptionCategory = selectedOption.data('category');
-
-          if (selectedOptionCategory === 'presentation') {
-            productSizeField.closest('.form-group').fadeOut();
-            productSizeField.val(null).trigger('change');
-          } else {
-            productSizeField.closest('.form-group').fadeIn();
-          }
+          fetchOptions(`/rest/v1/catalogs/product-packaging/${productPackagingField.val()}/`)
+            .then(data => {
+              productAmountPerPackagingField.val(data.product_amount_per_packaging);
+              if (data.product_presentation) {
+                productPresentationQuantityPerPackagingField.val(data.product_presentation_quantity_per_packaging);
+              } else {
+                productPresentationQuantityPerPackagingField.val(null);
+              }
+            })
         } else {
-          productSizeField.closest('.form-group').fadeOut();
+          productAmountPerPackagingField.val(null);
+          productPresentationQuantityPerPackagingField.val(null);
         }
       })
 

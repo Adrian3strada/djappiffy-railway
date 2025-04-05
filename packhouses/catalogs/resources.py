@@ -243,9 +243,9 @@ class PackagingResource(DehydrationResource, ExportResource):
         if not containers:
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{i.inside.name} ({i.product_amount_per_packaging})" for i in containers]) + "</ul>"
+            return "<ul>" + "".join([f"<li>{i.inside.name} ({i.product_weight_per_packaging})" for i in containers]) + "</ul>"
         else:
-            return ", ".join([f"{i.inside.name} ({i.product_amount_per_packaging})" for i in containers])
+            return ", ".join([f"{i.inside.name} ({i.product_weight_per_packaging})" for i in containers])
 
     class Meta:
         model = Packaging
