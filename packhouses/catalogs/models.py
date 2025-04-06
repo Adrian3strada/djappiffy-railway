@@ -883,8 +883,8 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
                                                      validators=[MinValueValidator(0.01)])
     product_presentation = models.ForeignKey(ProductPresentation, verbose_name=_('Product presentation'),
                                              null=True, blank=True, on_delete=models.CASCADE)
-    product_presentation_per_packaging = models.PositiveIntegerField(
-        verbose_name=_('Product presentation per packaging'),
+    product_presentations_per_packaging = models.PositiveIntegerField(
+        verbose_name=_('Product presentations per packaging'),
         null=True, blank=True, validators=[MinValueValidator(1)])
     product_pieces_per_presentation = models.PositiveIntegerField(verbose_name=_('Product pieces per presentation'),
                                                                   null=True, blank=True,

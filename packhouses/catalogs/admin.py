@@ -1485,10 +1485,10 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                    'is_enabled']
     list_display = ['name', 'alias', 'category', 'market', 'product', 'product_size', 'packaging',
                     'product_weight_per_packaging',
-                    'product_presentation', 'product_presentation_per_packaging', 'is_enabled']
+                    'product_presentation', 'product_presentations_per_packaging', 'is_enabled']
     search_fields = ('name', 'alias')
     fields = ['category', 'market', 'product', 'product_size', 'packaging', 'product_weight_per_packaging',
-              'product_presentation', 'product_pieces_per_presentation', 'product_presentation_per_packaging',
+              'product_presentation', 'product_pieces_per_presentation', 'product_presentations_per_packaging',
               'name', 'alias', 'is_enabled']
     inlines = [ProductPackagingPalletInline]
 
@@ -1590,7 +1590,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                 formfield.required = False
             return formfield
 
-        if db_field.name == "product_presentation_per_packaging":
+        if db_field.name == "product_presentations_per_packaging":
             formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
             formfield.required = True
             if category == 'packaging' and request.POST:

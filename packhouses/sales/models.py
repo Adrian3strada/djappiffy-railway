@@ -135,10 +135,10 @@ class OrderItemPackaging(models.Model):
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
     product_weight_per_packaging = models.PositiveIntegerField(verbose_name=_('Product weight per packaging'), null=True, blank=False)
-    product_presentation_per_packaging = models.PositiveIntegerField(
-        verbose_name=_('Product presentation quantity per packaging'), null=True, blank=False)
+    product_presentations_per_packaging = models.PositiveIntegerField(
+        verbose_name=_('Product presentations quantity per packaging'), null=True, blank=False)
     product_pieces_per_presentation = models.PositiveIntegerField(
-        verbose_name=_('Product presentation quantity per packaging'), null=True, blank=False)
+        verbose_name=_('Product pieces quantity per packaging'), null=True, blank=False)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
     amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2)
@@ -216,7 +216,7 @@ class OrderItemBak(models.Model):
             if self.product_packaging.category == 'packaging':
                 self.price = self.unit_price * self.product_amount_per_packaging * self.items_quantity
             if self.product_packaging.category == 'presentation':
-                self.price = self.unit_price * self.product_packaging.product_presentation_per_packaging * self.quantity
+                self.price = self.unit_price * self.product_packaging.product_presentations_per_packaging * self.quantity
 
         super().clean()
 
