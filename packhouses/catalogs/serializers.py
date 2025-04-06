@@ -32,6 +32,15 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class PackagingSerializer(serializers.ModelSerializer):
+    packaging_supply_detail = serializers.SerializerMethodField(read_only=True)
+
+    def get_packaging_supply_detail(self, obj):
+        # supply = obj.packaging_set.first()
+        print("obj", obj.packaging_supply)
+        print("obj", dir(obj))
+        return SupplySerializer(obj.packaging_supply, read_only=True).data
+        # return []
+
     class Meta:
         model = Packaging
         fields = '__all__'
