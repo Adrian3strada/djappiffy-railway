@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function updatePackagingProductAmount() {
+  function updateProductPackagingProductWeight() {
     if (packagingField.val()) {
       fetchOptions(`/rest/v1/catalogs/packaging/${packagingField.val()}/`)
         .then(packaging_data => {
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   packagingField.on('change', () => {
-    updatePackagingProductAmount();
+    updateProductPackagingProductWeight();
     updateName();
   })
 
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function () {
       productPresentationsPerPackagingField.closest('.form-group').fadeOut();
       productPiecesPerPresentationField.closest('.form-group').fadeOut();
     }
-    updatePackagingProductAmount();
+    updateProductPackagingProductWeight();
   } else {
     productWeightPerPackagingField.closest('.form-group').fadeOut();
     productPresentationField.closest('.form-group').fadeOut();
