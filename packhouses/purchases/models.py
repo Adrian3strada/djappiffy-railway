@@ -351,6 +351,4 @@ class PurchaseOrderPayment(models.Model):
     class Meta:
         verbose_name = _("Payment")
         verbose_name_plural = _("Payments")
-        constraints = [
-            models.UniqueConstraint(fields=['purchase_order', 'payment_date'], name='unique_purchase_order_payment')
-        ]
+

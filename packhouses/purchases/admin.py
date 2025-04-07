@@ -267,6 +267,7 @@ class PurchaseOrderPaymentInline(admin.StackedInline):
     form = PurchaseOrderPaymentForm
     fields = ('payment_date','payment_kind', 'amount', 'bank', 'comments', 'additional_inputs')
     extra = 0
+    can_delete = False
 
     class Media:
         js = ('js/admin/forms/packhouses/purchases/purchase_orders_payments.js',)
