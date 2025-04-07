@@ -1570,7 +1570,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
             kwargs["queryset"] = queryset
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.required = True
-            if category == 'packaging' and request.POST:
+            if category == 'single' and request.POST:
                 formfield.required = False
             return formfield
 
@@ -1585,14 +1585,14 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         if db_field.name == "product_presentations_per_packaging":
             formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
             formfield.required = True
-            if category == 'packaging' and request.POST:
+            if category == 'single' and request.POST:
                 formfield.required = False
             return formfield
 
         if db_field.name == "product_pieces_per_presentation":
             formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
             formfield.required = True
-            if category == 'packaging' and request.POST:
+            if category == 'single' and request.POST:
                 formfield.required = False
             return formfield
 

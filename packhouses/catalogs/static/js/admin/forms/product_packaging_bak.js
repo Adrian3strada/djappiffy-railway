@@ -1,27 +1,28 @@
-document.addEventListener('DOMContentLoaded', async function () {
+document.addEventListener('DOMContentLoaded', function () {
   const categoryField = $('#id_category');
   const marketField = $('#id_market');
   const productField = $('#id_product');
   const productSizeField = $('#id_product_size');
   const packagingField = $('#id_packaging');
-  const productWeightPerPackagingField = $('#id_product_weight_per_packaging');
   const productPresentationField = $('#id_product_presentation');
-  const productPiecesPerPresentationField = $('#id_product_pieces_per_presentation');
-  const productPresentationsPerPackagingField = $('#id_product_presentations_per_packaging');
   const nameField = $('#id_name');
   const aliasField = $('#id_alias');
 
+  const productWeightPerPackagingField = $('#id_product_weight_per_packaging');
+  const productPresentationsPerPackagingField = $('#id_product_presentations_per_packaging');
+  const productPiecesPerPresentationField = $('#id_product_pieces_per_presentation');
+
   let productProperties = null;
   let packagingProperties = null;
-  let packagingSupplyProperties = null;
   let presentationProperties = null;
+  let packagingSupplyProperties = null;
   let presentationSupplyProperties = null;
 
 
   function updateFieldOptions(field, options, selectedValue = null) {
     field.empty().append(new Option('---------', '', !selectedValue, !selectedValue));
     options.forEach(option => {
-      field.append(new Option(option.name, option.id, false, selectedValue === option.id));
+      field.append(new Option(option.name, option.id, selectedValue === option.id, selectedValue === option.id));
     });
     field.trigger('change').select2();
   }
@@ -37,50 +38,22 @@ document.addEventListener('DOMContentLoaded', async function () {
   function getProductProperties() {
     if (productField.val()) {
       fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
-        .then(product_data => {
-          productProperties = product_data;
+        .then(data => {
+          productProperties = data;
+          let maxProductAmountLabel = maxProductAmountLabel
+          const originalText = maxProductAmountLabel.contents().filter(function () {
+            return this.nodeType === 3;
+          }).text().trim();
+
+          if (data.price_measure_unit_category_display) {
+            const newText = originalText.replace('amount', data.price_measure_unit_category_display);
+            maxProductAmountLabel.contents().filter(function () {
+              return this.nodeType === 3;
+            }).first().replaceWith(newText + ' ');
+          }
         })
     } else {
       productProperties = null;
-    }
-  }
-
-  function getPackagingProperties() {
-    if (packagingField.val()) {
-      fetchOptions(`/rest/v1/catalogs/packaging/${packagingField.val()}/`)
-        .then(packaging_data => {
-          packagingProperties = packaging_data;
-        })
-    } else {
-      packagingProperties = null;
-    }
-  }
-
-  async function getPackagingSupplyProperties() {
-    await getPackagingProperties();
-    if (packagingProperties) {
-      fetchOptions(`/rest/v1/catalogs/supply/${packagingProperties.packaging_supply}/`)
-        .then(supply_data => {
-          packagingSupplyProperties = supply_data;
-        })
-    } else {
-      packagingSupplyProperties = null;
-    }
-  }
-
-  function getProductPresentationProperties() {
-    if (productPresentationField.val()) {
-      fetchOptions(`/rest/v1/catalogs/product-presentation/${productPresentationField.val()}/`)
-        .then(productpresentation_data => {
-          presentationProperties = productpresentation_data;
-          fetchOptions(`/rest/v1/catalogs/supply/${productpresentation_data.presentation_supply}/`)
-            .then(supply_data => {
-              presentationSupplyProperties = supply_data;
-            });
-        })
-    } else {
-      presentationProperties = null;
-      presentationSupplyProperties = null;
     }
   }
 
@@ -137,15 +110,28 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   }
 
-  async function updateProductPackagingProductWeight() {
+  function updateProductPackagingProductWeight() {
     if (packagingField.val()) {
-      if (!packagingProperties) await getPackagingProperties();
-      if (!packagingSupplyProperties) await getPackagingSupplyProperties();
-      productWeightPerPackagingField.val(packagingSupplyProperties.capacity);
-      productWeightPerPackagingField.attr('max', packagingSupplyProperties.capacity);
+      fetchOptions(`/rest/v1/catalogs/packaging/${packagingField.val()}/`)
+        .then(packaging_data => {
+          packagingProperties = packaging_data;
+          fetchOptions(`/rest/v1/catalogs/supply/${packaging_data.packaging_supply}/`)
+            .then(supply_data => {
+              packagingSupplyProperties = supply_data;
+              productWeightPerPackagingField.val(supply_data.capacity);
+              productWeightPerPackagingField.attr('max', supply_data.capacity);
+              productWeightPerPackagingField.attr('min', 0.01);
+            })
+            .then(() => {
+              updateName();
+            })
+        })
     } else {
+      packagingProperties = null;
+      packagingSupplyProperties = null;
       productWeightPerPackagingField.val(null);
       productWeightPerPackagingField.removeAttr('max');
+      productWeightPerPackagingField.removeAttr('min');
     }
   }
 
@@ -236,9 +222,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   })
 
   productPresentationField.on('change', () => {
-    // updateName();
-
-    // TODO: actualizar pieza por presentación
+    updateName();
   })
 
   productSizeField.on('change', () => {
@@ -304,15 +288,15 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   if (marketField.val()) {
-    fetchOptions(`/rest/v1/catalogs/product/?markets=${marketField.val()}`)
-      .then(data => {
-        console.log("updateProduct", data);
-        if (productField.val()) {
-          getProductProperties();
-        }
-        updateFieldOptions(productField, data, productProperties ? productProperties.id : null);
-      })
-  }
+      fetchOptions(`/rest/v1/catalogs/product/?markets=${marketField.val()}`)
+        .then(data => {
+          console.log("updateProduct", data);
+          if (productField.val()) {
+            getProductProperties();
+          }
+          updateFieldOptions(productField, data, productProperties ? productProperties.id : null);
+        })
+    }
 
   if (packagingField.val()) {
     fetchOptions(`/rest/v1/catalogs/packaging/${packagingField.val()}/`)

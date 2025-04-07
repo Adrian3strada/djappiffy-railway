@@ -886,8 +886,7 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
         verbose_name=_('Product presentations per packaging'),
         null=True, blank=True, validators=[MinValueValidator(1)])
     product_pieces_per_presentation = models.PositiveIntegerField(verbose_name=_('Product pieces per presentation'),
-                                                                  null=True, blank=True,
-                                                                  validators=[MinValueValidator(1)])
+                                                                  null=True, blank=True, validators=[MinValueValidator(1)])
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     alias = models.CharField(max_length=30, verbose_name=_('Alias'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))

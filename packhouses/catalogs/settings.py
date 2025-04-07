@@ -8,7 +8,7 @@ PRODUCT_SIZE_CATEGORY_CHOICES = [
 ]
 
 PRODUCT_PACKAGING_CATEGORY_CHOICES = [
-    ('packaging', _('Single packaging')),
+    ('single', _('Single packaging')),
     ('presentation', _('With presentation')),
 ]
 
