@@ -10,17 +10,18 @@ document.addEventListener("DOMContentLoaded", function() {
         row.style.display = "none";  
     });
 
-    const palletsReceivedField = $('#id_pallets_received');
+    const palletsReceivedField = $('#id_pre_lot_quantity');
     const packhouseWeightResultField = $('#id_packhouse_weight_result');
-    const boxesAssignedField = $('#id_boxes_assigned');
-    const fullBoxesField = $('#id_full_boxes');
-    const emptyBoxesField = $('#id_empty_boxes');
-    const missingBoxesField = $('#id_missing_boxes');
-    const averageBoxField = $('#id_average_per_box');
+    const containersAssignedField = $('#id_containers_assigned');
+    const fullContainersField = $('#id_full_containers_per_harvest');
+    const emptyContainersField = $('#id_empty_containers');
+    const missingContainersField = $('#id_missing_containers');
+    const averageContainersField = $('#id_average_per_container');
     const currentKgField = $('#id_current_kg_available');
     const containerTare= $('input[name$="-container_tare"]');
-    const totalBoxes= $('input[name$="-total_containers"]');
-    const missingBoxesContainerField = $('input[name$="-missing_containers"]');
+    const totalContainers= $('input[name$="-total_containers"]');
+    const missingVehicleContainerField = $('input[name$="-missing_containers"]');
+    const fullContainersPreLotField = $('#id_pre_lot_full_containers');
 
     // deshabilitar edición en campos, pero permitir que los valores se envíen
     function disableField(field) {
@@ -36,35 +37,36 @@ document.addEventListener("DOMContentLoaded", function() {
     disableField(currentKgField);
     disableField(palletsReceivedField);
     disableField(packhouseWeightResultField);
-    disableField(boxesAssignedField);
-    disableField(missingBoxesField);
-    disableField(averageBoxField);
+    disableField(containersAssignedField);
+    disableField(missingContainersField);
+    disableField(averageContainersField);
     disableField(containerTare);
-    disableField(totalBoxes);
-    disableField(fullBoxesField);
-    disableField(emptyBoxesField);
-    disableField(missingBoxesContainerField);
+    disableField(totalContainers);
+    disableField(fullContainersField);
+    disableField(emptyContainersField);
+    disableField(missingVehicleContainerField);
+    disableField(fullContainersPreLotField);
     
     // Función para actualizar missingBoxes
-    function updateMissingBoxes() {
-        const boxesAssigned = parseFloat(boxesAssignedField.val());
-        const fullBoxes = parseFloat(fullBoxesField.val());
-        const emptyBoxes = parseFloat(emptyBoxesField.val());
+    function updateMissingContainers() {
+        const boxesAssigned = parseFloat(containersAssignedField.val());
+        const fullBoxes = parseFloat(fullContainersField.val());
+        const emptyBoxes = parseFloat(emptyContainersField.val());
 
         const missingBoxes = boxesAssigned - fullBoxes - emptyBoxes;
-        missingBoxesField.val(missingBoxes);
+        missingContainersField.val(missingBoxes);
     }
 
     // Función para actualizar averageBox
-    function updateAveragePerBoxes() {
+    function updateAveragePerContainers() {
         const packhouseWeightResult = parseFloat(packhouseWeightResultField.val());
-        const fullBoxes = parseFloat(fullBoxesField.val());
+        const fullBoxes = parseFloat(fullContainersField.val());
     
         const averagePerBox = fullBoxes > 0 
             ? Math.floor((packhouseWeightResult / fullBoxes) * 1000) / 1000 
             : 0;
             
-        averageBoxField.val(averagePerBox);
+        averageContainersField.val(averagePerBox);
     }
 
     // Función para actualizar kilos disponibles
@@ -73,25 +75,24 @@ document.addEventListener("DOMContentLoaded", function() {
         currentKgField.val(packhouseWeightResult);
     }
 
-
-    fullBoxesField.on('input', function() {
-        updateMissingBoxes();
-        updateAveragePerBoxes(); 
+    fullContainersField.on('input', function() {
+        updateMissingContainers();
+        updateAveragePerContainers(); 
     });
-    emptyBoxesField.on('input', updateMissingBoxes);
+    emptyContainersField.on('input', updateMissingContainers);
     packhouseWeightResultField.on('input change', function() {
-        updateAveragePerBoxes();
+        updateAveragePerContainers();
         updateCurrentKg();
     });
     
-    updateMissingBoxes();
-    updateAveragePerBoxes();
+    updateMissingContainers();
+    updateAveragePerContainers();
     updateCurrentKg()
     
     document.querySelectorAll('input[name="_save"], input[name="_continue"]').forEach(button => {
         button.addEventListener('click', function(e) {
-            updateMissingBoxes();
-            updateAveragePerBoxes();
+            updateMissingContainers();
+            updateAveragePerContainers();
             updateCurrentKg(); 
         });
     });
@@ -100,8 +101,8 @@ document.addEventListener("DOMContentLoaded", function() {
     if (form) {
         document.querySelectorAll('input[name="_save"], input[name="_continue"]').forEach(button => {
             button.addEventListener('click', function(e) {
-                updateMissingBoxes();
-                updateAveragePerBoxes();
+                updateMissingContainers();
+                updateAveragePerContainers();
                 updateCurrentKg();
                 
                 const publicWeight = parseFloat($('#id_public_weight_result').val().replace(',', '.')) || 0;

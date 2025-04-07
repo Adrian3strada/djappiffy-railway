@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const packhouseWeightResultField = $('#id_packhouse_weight_result');
-    const palletReceivedField = $('#id_pallets_received');
+    const preLotField = $('#id_pre_lot_quantity');
+    const preLotFullContainerField = $('#id_pre_lot_full_containers')
 
     // ================ CONSTANTES ================
-    const PALLET_FORM_SELECTOR = 'div[id^="palletreceived_set-"]:not([id*="group"], [id*="empty"])';
-    const CONTAINER_FORM_SELECTOR = 'tbody[id*="-palletcontainer_set-"]:not([id*="empty"])';
+    const PRE_LOT_FORM_SELECTOR = 'div[id^="prelot_set-"]:not([id*="group"], [id*="empty"])';
+    const CONTAINER_FORM_SELECTOR = 'tbody[id*="-prelotcontainer_set-"]:not([id*="empty"])';
 
     const debounce = (func, wait) => {
         let timeout;
@@ -65,32 +66,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ================ ACTUALIZACIÓN DE CONTEO DE PALLETS ================
-    const updatePalletCount = () => {
-        // Solo contar pallets que no estén marcados para eliminación (usando el checkbox de pallet)
-        const validPallets = $(PALLET_FORM_SELECTOR).filter((i, el) => {
+    // ================ ACTUALIZACIÓN DE CONTEO DE PRE-LOTES ================
+    const updatePreLotCount = () => {
+        // Solo contar pre-lotes que no estén marcados para eliminación (usando el checkbox de pre-lote)
+        const validPreLots = $(PRE_LOT_FORM_SELECTOR).filter((i, el) => {
             const $el = $(el);
-            const $palletDelete = $el.find('input[name$="-DELETE"]').filter(function() {
+            const $preLotDelete = $el.find('input[name$="-DELETE"]').filter(function() {
                 return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
             });
-            return !$palletDelete.prop('checked');
+            return !$preLotDelete.prop('checked');
         }).length;
-        palletReceivedField.val(validPallets).trigger('change');
+        preLotField.val(validPreLots).trigger('change');
     };
 
-    // ================ CÁLCULO DE TARA DEL PALLET ================
-    const calculatePalletTare = async ($palletForm) => {
-        // Filtra el checkbox de eliminación del pallet (excluyendo los que pertenecen a un container)
-        const $palletDeleteCheckbox = $palletForm
+    // ================ CÁLCULO DE TARA DEL PRE-LOTE ================
+    const calculatePreLotTare = async ($preLotForm) => {
+        // Filtra el checkbox de eliminación del pre-lote (excluyendo los que pertenecen a un container)
+        const $preLotDeleteCheckbox = $preLotForm
             .find('input[name$="-DELETE"]')
             .filter(function() {
                 return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
             });
-        if ($palletDeleteCheckbox.prop('checked')) return;
+        if ($preLotDeleteCheckbox.prop('checked')) return;
 
         let totalTare = 0;
-        let totalBoxes = 0;
-        const containers = $palletForm.find(CONTAINER_FORM_SELECTOR);
+        let totalContainers = 0;
+        const containers = $preLotForm.find(CONTAINER_FORM_SELECTOR);
+        debouncedUpdateTotalContainers();
 
         for (const container of containers) {
             const $container = $(container);
@@ -100,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const observer = new MutationObserver(mutations => {
                     mutations.forEach(mutation => {
                         if (mutation.attributeName === 'checked') {
-                            calculatePalletTare($palletForm);
+                            calculatePreLotTare($preLotForm);
                         }
                     });
                 });
@@ -115,43 +117,44 @@ document.addEventListener('DOMContentLoaded', () => {
             if (harvestContainerId) {
                 const tare = await fetchContainerTare(harvestContainerId);
                 totalTare += quantity * tare;
-                totalBoxes += quantity;
+                totalContainers += quantity;
+                
             }
         }
         const truncatedTare = Math.trunc(totalTare * 1000) / 1000;
-        $palletForm.find('input[name$="-container_tare"]').val(truncatedTare);
-        $palletForm.find('input[name$="-total_containers"]').val(totalBoxes);
-        updateNetWeight($palletForm);
+        $preLotForm.find('input[name$="-container_tare"]').val(truncatedTare);
+        $preLotForm.find('input[name$="-total_containers"]').val(totalContainers);
+        updateNetWeight($preLotForm);
     };
 
-    // ================ ACTUALIZACIÓN DE PESO NETO DEL PALLET ================
-    const updateNetWeight = ($palletForm) => {
-        const $palletDeleteCheckbox = $palletForm
+    // ================ ACTUALIZACIÓN DE PESO NETO DEL PRE-LOTE ================
+    const updateNetWeight = ($preLotForm) => {
+        const $preLotDeleteCheckbox = $preLotForm
             .find('input[name$="-DELETE"]')
             .filter(function() {
                 return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
             });
-        if ($palletDeleteCheckbox.prop('checked')) return;
+        if ($preLotDeleteCheckbox.prop('checked')) return;
 
-        const gross = parseFloat($palletForm.find('input[name$="-gross_weight"]').val()) || 0;
-        const platform = parseFloat($palletForm.find('input[name$="-platform_tare"]').val()) || 0;
-        const container = parseFloat($palletForm.find('input[name$="-container_tare"]').val()) || 0;
+        const gross = parseFloat($preLotForm.find('input[name$="-gross_weight"]').val()) || 0;
+        const platform = parseFloat($preLotForm.find('input[name$="-platform_tare"]').val()) || 0;
+        const container = parseFloat($preLotForm.find('input[name$="-container_tare"]').val()) || 0;
         
         const net = Math.trunc((gross - platform - container) * 1000) / 1000;
-        $palletForm.find('input[name$="-net_weight"]').val(net);
+        $preLotForm.find('input[name$="-net_weight"]').val(net);
         debouncedUpdatePackhouse();
     };
-
+    
     // ================ ACTUALIZACIÓN TOTAL DEL PACKHOUSE ================
     const updatePackhouseWeight = () => {
         let total = 0;
-        $(PALLET_FORM_SELECTOR).each(function() {
-            const $pallet = $(this);
-            const $palletDelete = $pallet.find('input[name$="-DELETE"]').filter(function() {
+        $(PRE_LOT_FORM_SELECTOR).each(function() {
+            const $preLot = $(this);
+            const $preLotDelete = $preLot.find('input[name$="-DELETE"]').filter(function() {
                 return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
             });
-            if ($palletDelete.prop('checked')) return;
-            const netWeight = parseFloat($pallet.find('input[name$="-net_weight"]').val()) || 0;
+            if ($preLotDelete.prop('checked')) return;
+            const netWeight = parseFloat($preLot.find('input[name$="-net_weight"]').val()) || 0;
             total += netWeight;
         });
         const truncatedTotal = Math.trunc(total * 1000) / 1000;
@@ -160,12 +163,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const debouncedUpdatePackhouse = debounce(updatePackhouseWeight, 300);
 
-    // ================ INICIALIZACIÓN DE UN PALLET ================
-    const initializePallet = (palletForm) => {
-        const $pallet = $(palletForm);
+
+    // ================ ACTUALIZAR CONTENEDORES COMPLETOS ================
+    const updateTotalFullContainers = () => {
+        let total = 0;
         
-        const providerField = $(palletForm).find('select[name$="-provider"]'); 
-        const harvestingCrewField = $(palletForm).find('select[name$="-harvesting_crew"]');
+        $(PRE_LOT_FORM_SELECTOR).each(function() {
+            const $preLot = $(this);
+            const $preLotDelete = $preLot.find('input[name$="-DELETE"]').filter(function() {
+                return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
+            });
+            
+            // Si el pre-lote está marcado para eliminar, saltar
+            if ($preLotDelete.prop('checked')) return;
+
+            // Sumar contenedores de TODOS los containers no eliminados en este pre-lote
+            $preLot.find(CONTAINER_FORM_SELECTOR).each(function() {
+                const $container = $(this);
+                const $deleteCheckbox = $container.find('input[name$="-DELETE"]');
+                
+                if (!$deleteCheckbox.prop('checked')) {
+                    const quantity = parseFloat($container.find('input[name$="-quantity"]').val()) || 0;
+                    total += quantity;
+                }
+            });
+        });
+        
+        preLotFullContainerField.val(total);
+    };
+
+    const debouncedUpdateTotalContainers = debounce(updateTotalFullContainers, 300);
+
+
+    // ================ INICIALIZACIÓN DE UN PRE-LOTE ================
+    const initializePreLot = (preLoteForm) => {
+        const $preLot = $(preLoteForm);
+        
+        const providerField = $(preLoteForm).find('select[name$="-provider"]'); 
+        const harvestingCrewField = $(preLoteForm).find('select[name$="-harvesting_crew"]');
         const selectedHarvestingCrew = harvestingCrewField.val();
 
         
@@ -181,52 +216,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
 
-        // --- Observer para detectar cambios en el checkbox DELETE del pallet ---
-        const $palletDeleteCheckbox = $pallet
+        // --- Observer para detectar cambios en el checkbox DELETE del pre-lote ---
+        const $preLotDeleteCheckbox = $preLot
             .find('input[name$="-DELETE"]')
             .filter(function() {
                 return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
             });
-        if ($palletDeleteCheckbox.length) {
+        if ($preLotDeleteCheckbox.length) {
             const observer = new MutationObserver(mutations => {
                 mutations.forEach(mutation => {
                     if (mutation.attributeName === 'checked') {
                         debouncedUpdatePackhouse();
-                        updatePalletCount();
+                        updatePreLotCount();
                     }
                 });
             });
-            observer.observe($palletDeleteCheckbox[0], { attributes: true });
+            observer.observe($preLotDeleteCheckbox[0], { attributes: true });
         }
         
-        if (!$pallet.data('childListObserverAttached')) {
+        if (!$preLot.data('childListObserverAttached')) {
             const childObserver = new MutationObserver(mutations => {
                 mutations.forEach(mutation => {
                     if (mutation.removedNodes && mutation.removedNodes.length) {
                         mutation.removedNodes.forEach(node => {
                             if ($(node).is(CONTAINER_FORM_SELECTOR)) {
-                                console.log(`Container removido del pallet ${$pallet.attr('id')}`);
-                                calculatePalletTare($pallet);
+                                calculatePreLotTare($preLot);
                             }
                         });
                     }
                 });
             });
-            childObserver.observe($pallet[0], { childList: true, subtree: true });
-            $pallet.data('childListObserverAttached', true);
+            childObserver.observe($preLot[0], { childList: true, subtree: true });
+            $preLot.data('childListObserverAttached', true);
         }
         
-        const debouncedCalculateTare = debounce(() => calculatePalletTare($pallet), 300);
-        $pallet.off('input').on('input', 'input[name$="-gross_weight"], input[name$="-platform_tare"], input[name$="-quantity"]', debouncedCalculateTare);
-        $pallet.off('change').on('change', 'select[name$="-harvest_container"]', debouncedCalculateTare);
+        const debouncedCalculateTare = debounce(() => calculatePreLotTare($preLot), 300);
+        $preLot.off('input').on('input', 'input[name$="-gross_weight"], input[name$="-platform_tare"], input[name$="-quantity"]', debouncedCalculateTare);
+        $preLot.off('change').on('change', 'select[name$="-harvest_container"]', debouncedCalculateTare);
 
-        // Cálculo inicial al cargar el pallet
-        calculatePalletTare($pallet);
-        updatePalletCount();
+        // Cálculo inicial al cargar el pre-lote
+        calculatePreLotTare($preLot);
+        updatePreLotCount();
     };
 
-    // Inicializa todos los pallets existentes
-    $(PALLET_FORM_SELECTOR).each((i, form) => initializePallet(form));
+    // Inicializa todos los pre-lote existentes
+    $(PRE_LOT_FORM_SELECTOR).each((i, form) => initializePreLot(form));
 
     // ================ MANEJO DE FORMSETS ================
     document.addEventListener('formset:added', (event) => {
@@ -241,39 +275,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Actualizar las opciones del campo harvesting_crew cuando se agrega un nuevo formulario
         handleProviderChange(providerField, harvestingCrewField);
-        if (formsetName === 'palletreceived_set') {
-            initializePallet(event.target);
-        } else if (formsetName === 'palletcontainer_set') {
-            const $pallet = $(event.target).closest(PALLET_FORM_SELECTOR);
-            debounce(() => calculatePalletTare($pallet), 300)();
+        if (formsetName === 'prelot_set') {
+            initializePreLot(event.target);
+        } else if (formsetName === 'prelotcontainer_set') {
+            const $preLot = $(event.target).closest(PRE_LOT_FORM_SELECTOR);
+            debounce(() => calculatePreLotTare($preLot), 300)();
         }
-        updatePalletCount();
+        updatePreLotCount();
+        debouncedUpdateTotalContainers();
     });
 
     document.addEventListener('formset:removed', () => {
         debouncedUpdatePackhouse();
-        updatePalletCount();
+        updatePreLotCount();
+        debouncedUpdateTotalContainers();
     });
 
-    // ================ MANEJO DE BOTÓN ELIMINAR EN PALLETS  ================
+    // ================ MANEJO DE BOTÓN ELIMINAR EN PRE-LOTE  ================
     $(document).on('click', '.deletelink', function() {
-        const $pallet = $(this).closest(PALLET_FORM_SELECTOR);
+        const $preLot = $(this).closest(PRE_LOT_FORM_SELECTOR);
         setTimeout(() => {
-            calculatePalletTare($pallet);
-            updatePalletCount();
+            calculatePreLotTare($preLot);
+            updatePreLotCount();
         }, 100);
     });
 
     // ================ MANEJO DE BOTÓN ELIMINAR EN CONTAINERS ================
     $(document).on('click', CONTAINER_FORM_SELECTOR + ' .deletelink', function() {
-        const $pallet = $(this).closest(PALLET_FORM_SELECTOR);
+        const $preLot = $(this).closest(PRE_LOT_FORM_SELECTOR);
         setTimeout(() => {
-            calculatePalletTare($pallet);
+            calculatePreLotTare($preLot);
         }, 100);
     });
 
     $(document).on('change', CONTAINER_FORM_SELECTOR + ' input[name$="-DELETE"]', function() {
-        const $pallet = $(this).closest(PALLET_FORM_SELECTOR);
-        calculatePalletTare($pallet);
+        const $preLot = $(this).closest(PRE_LOT_FORM_SELECTOR);
+        calculatePreLotTare($preLot);
     });
 });

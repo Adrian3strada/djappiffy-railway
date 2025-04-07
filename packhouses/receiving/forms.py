@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from packhouses.gathering.models import ScheduleHarvestVehicle
-from .models import IncomingProduct, PalletReceived
+from .models import IncomingProduct, PreLot
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 

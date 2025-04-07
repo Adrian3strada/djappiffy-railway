@@ -4,6 +4,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const VEHICLE_FORM_SELECTOR = SCHEDULEHARVEST_FORM_SELECTOR + ' div[id^="scheduleharvest-0-scheduleharvestvehicle_set-"]:not([id*="group"], [id*="empty"])';
     const CONTAINER_FORM_SELECTOR = "tbody.djn-inline-form[data-inline-model='gathering-scheduleharvestcontainervehicle']:not([id*='empty'])";
 
+    const containersAssignedField = $('#id_containers_assigned');
+    const fullContainersField = $('#id_full_containers_per_harvest');
+    const emptyContainersField = $('#id_empty_containers');
+    const missingContainersField = $('#id_missing_containers');
+
     // Ocultar botones de agregar/eliminar vehículo en el inline de ScheduleHarvest
     document.querySelectorAll(SCHEDULEHARVEST_FORM_SELECTOR + " #scheduleharvest-0-scheduleharvestvehicle_set-group a.djn-add-handler.djn-model-gathering-scheduleharvestvehicle")
         .forEach(button => { button.style.display = "none"; });
@@ -83,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Función para actualizar totales globales (en todos los vehículos)
     function updateGlobalTotals() {
-        let globalQuantity = 0, globalFullBoxes = 0, globalEmptyBoxes = 0, globalMissingBoxes = 0;
+        let globalQuantity = 0, globalFullContainers = 0, globalEmptyContainers = 0, globalMissingContainers = 0;
         $(VEHICLE_FORM_SELECTOR).each(function(i, vehicleForm) {
             const $vehicle = $(vehicleForm);
             if ($vehicle.find("input[type='checkbox'][name$='-has_arrived']").prop("checked")) {
@@ -91,13 +96,17 @@ document.addEventListener("DOMContentLoaded", function() {
                     const $container = $(containerForm);
                     if ($container.find("input[name$='-DELETE']").prop("checked")) return;
                     globalQuantity += parseFloat($container.find("input[name$='-quantity']").val()) || 0;
-                    globalFullBoxes += parseFloat($container.find("input[name$='-full_containers']").val()) || 0;
-                    globalEmptyBoxes += parseFloat($container.find("input[name$='-empty_containers']").val()) || 0;
-                    globalMissingBoxes += parseFloat($container.find("input[name$='-missing_containers']").val()) || 0;
+                    globalFullContainers += parseFloat($container.find("input[name$='-full_containers']").val()) || 0;
+                    globalEmptyContainers += parseFloat($container.find("input[name$='-empty_containers']").val()) || 0;
+                    globalMissingContainers += parseFloat($container.find("input[name$='-missing_containers']").val()) || 0;
                 });
             }
+            containersAssignedField.val(globalQuantity);
+            fullContainersField.val(globalFullContainers);
+            emptyContainersField.val(globalEmptyContainers);
+            missingContainersField.val(globalMissingContainers);
         });
-        console.log("Totales Globales → quantity:", globalQuantity, ", full_boxes:", globalFullBoxes, ", empty_boxes:", globalEmptyBoxes, ", missing_boxes:", globalMissingBoxes);
+        console.log("Totales Globales → quantity:", globalQuantity, ", full_containers:", globalFullContainers, ", empty_containers:", globalEmptyContainers, ", missing_containers:", globalMissingContainers);
     }
 
 

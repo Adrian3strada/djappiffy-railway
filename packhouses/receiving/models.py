@@ -15,16 +15,17 @@ class IncomingProduct(models.Model):
     packhouse_weight_result = models.FloatField(default=0, verbose_name=_("Packhouse Weight Result"),)
     weighing_record_number = models.CharField(max_length=30, verbose_name=_('Weighing Record Number'),)
     guide_number = models.CharField(max_length=20, verbose_name=_('Guide Number'),)
-    pallets_received = models.PositiveIntegerField(default=0, verbose_name=_('Pallets Received'))
+    pre_lot_quantity = models.PositiveIntegerField(default=0, verbose_name=_('Pre-Lot Quantity'))
     mrl = models.FloatField(default=0, verbose_name=_('Maximum Residue Limit'), null=True, blank=True)
     phytosanitary_certificate = models.CharField(max_length=50, verbose_name=_('Phytosanitary Certificate'), null=True, blank=True)
     kg_sample = models.FloatField(default=0, verbose_name=_("Kg for Sample"), validators=[MinValueValidator(0.00)])
     current_kg_available = models.FloatField(default=0, verbose_name=_("Current Kg Available"),)
-    boxes_assigned = models.PositiveIntegerField(default=0, verbose_name=_('Boxes Assigned'), help_text=_('Boxes assigned per harvest'))
-    empty_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Empty Boxes'), help_text=_('Empty boxes per harvest'))
-    full_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Full Boxes'), help_text=_('Full boxes per harvest'))
-    missing_boxes = models.IntegerField(default=0, verbose_name=_('Missing Boxes'), help_text=_('Missing boxes per harvest'))
-    average_per_box = models.FloatField(default=0, verbose_name=_("Average per Box"),)
+    containers_assigned = models.PositiveIntegerField(default=0, verbose_name=_('Containers Assigned'), help_text=_('Containers assigned per harvest'))
+    empty_containers = models.PositiveIntegerField(default=0, verbose_name=_('Empty Containers'), help_text=_('Empty containers per harvest'))
+    pre_lot_full_containers = models.PositiveIntegerField(default=0, verbose_name=_('Pre-Lots Full Containers'),)
+    full_containers_per_harvest = models.PositiveIntegerField(default=0, verbose_name=_('Full Containers per Harvest'),)
+    missing_containers = models.IntegerField(default=0, verbose_name=_('Missing Containers'), help_text=_('Missing containers per harvest'))
+    average_per_container = models.FloatField(default=0, verbose_name=_("Average per Container"), help_text=_('Based on Pre-Lots containers'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
     comments = models.TextField(verbose_name=_('Comments'), blank=True, null=True)
     
@@ -45,9 +46,8 @@ class IncomingProduct(models.Model):
             )
         ]"""
 
-class PalletReceived(models.Model):
-    ooid = models.PositiveIntegerField(verbose_name=_("Pallet Number"),null=True, blank=True)
-    # pallet_number = models.PositiveIntegerField(verbose_name=_("Pallet Number"), null=True, blank=True)
+class PreLot(models.Model):
+    ooid = models.PositiveIntegerField(verbose_name=_("ID"),null=True, blank=True)
     provider = models.ForeignKey(Provider, verbose_name=_('Harvesting Crew Provider'),on_delete=models.CASCADE,)
     harvesting_crew = models.ForeignKey(HarvestingCrew, verbose_name=_("Harvesting Crew"), on_delete=models.CASCADE,)
     gross_weight = models.FloatField(default=0.0, verbose_name=_("Gross Weight"),)
@@ -61,13 +61,13 @@ class PalletReceived(models.Model):
         return f"{self.ooid}"
 
     class Meta:
-        verbose_name = _('Pallet Received')
-        verbose_name_plural = _('Pallets Received')
+        verbose_name = _('Pre-Lot')
+        verbose_name_plural = _('Pre-Lots')
         constraints = [
-            models.UniqueConstraint(fields=['incoming_product', 'ooid'], name='palletreceived_unique_incomingproduct')
+            models.UniqueConstraint(fields=['incoming_product', 'ooid'], name='prelot_unique_incomingproduct')
         ]
 
-class PalletContainer(models.Model):
+class PreLotContainer(models.Model):
     harvest_container = models.ForeignKey(Supply,on_delete=models.CASCADE, limit_choices_to={'kind__category': 'harvest_container'})
     quantity = models.PositiveIntegerField(default=0, verbose_name=_('Quantity'))
-    pallet_received = models.ForeignKey(PalletReceived, verbose_name=_('Incoming Product'), on_delete=models.CASCADE, null=True, blank=True)
+    pre_lot = models.ForeignKey(PreLot, verbose_name=_('Incoming Product'), on_delete=models.CASCADE, null=True, blank=True)

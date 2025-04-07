@@ -2,7 +2,7 @@ from import_export.fields import Field
 from django.http import HttpResponse
 from common.base.utils import ExportResource, DehydrationResource, default_excluded_fields
 from django.utils.translation import gettext_lazy as _
-from .models import IncomingProduct, PalletReceived
+from .models import IncomingProduct, PreLot
 
 from django.core.exceptions import FieldDoesNotExist
 

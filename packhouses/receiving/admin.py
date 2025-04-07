@@ -3,7 +3,7 @@ from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvesti
 from packhouses.catalogs.models import (Supply, HarvestingCrew, Vehicle, Provider, Product, ProductVariety, Gatherer, Maquiladora, 
                                         Market, Orchard, OrchardCertification, WeighingScale, ProductPhenologyKind, ProductHarvestSizeKind)
 from packhouses.catalogs.utils import get_harvest_cutting_categories_choices
-from .models import IncomingProduct, PalletReceived, PalletContainer
+from .models import IncomingProduct, PreLot, PreLotContainer
 from common.base.mixins import (ByOrganizationAdminMixin)
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin
@@ -210,8 +210,8 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
               'js/admin/forms/packhouses/receiving/schedule_harvest_inline.js')
 
 # Inlines para los pallets
-class PalletContainerInline(nested_admin.NestedTabularInline):
-    model = PalletContainer
+class PreLotContainerInline(nested_admin.NestedTabularInline):
+    model = PreLotContainer
     extra = 0
 
     def get_formset(self, request, obj=None, **kwargs):
@@ -234,9 +234,9 @@ class PalletContainerInline(nested_admin.NestedTabularInline):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-class PalletReceivedInline(CustomNestedStackedInlineMixin, admin.StackedInline):
-    model = PalletReceived
-    inlines = [PalletContainerInline]
+class PreLotInline(CustomNestedStackedInlineMixin, admin.StackedInline):
+    model = PreLot
+    inlines = [PreLotContainerInline]
     fields = ('ooid', 'provider', 'harvesting_crew', 'gross_weight', 'total_containers', 'container_tare', 'platform_tare', 'net_weight')
     extra = 0
 
@@ -284,23 +284,24 @@ class PalletReceivedInline(CustomNestedStackedInlineMixin, admin.StackedInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/pallets_received_inline.js',)
+        js = ('js/admin/forms/packhouses/receiving/pre_lot_inline.js',)
 
 # Reciba
 @admin.register(IncomingProduct)
 class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard', 
                     'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'status','generate_actions_buttons')
-    fields = ('status', 'phytosanitary_certificate', 'guide_number', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pallets_received', 
-              'packhouse_weight_result', 'mrl', 'kg_sample', 'boxes_assigned', 'full_boxes', 'empty_boxes', 'missing_boxes', 'average_per_box', 'current_kg_available', 'comments')
+    fields = ('status', 'phytosanitary_certificate', 'guide_number', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pre_lot_quantity', 
+              'packhouse_weight_result', 'mrl', 'kg_sample', 'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'pre_lot_full_containers', 
+              'average_per_container', 'current_kg_available', 'comments')
     list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                    ByCategoryForOrganizationIncomingProductFilter)
     search_fields = ('scheduleharvest__ooid',)
-    inlines = [PalletReceivedInline, ScheduleHarvestInline]
+    inlines = [PreLotInline, ScheduleHarvestInline]
     form = IncomingProductForm
     # Filtrar en el Admin solo los cortes que su status sea "pending"
     # def get_queryset(self, request):
-    #    return super().get_queryset(request).filter(status="pending")
+    #    return super().get_queryset(request).exclude(status="accepted")
 
     @uppercase_form_charfield('guide_number')
     @uppercase_form_charfield('weighing_record_number')

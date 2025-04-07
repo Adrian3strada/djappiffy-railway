@@ -4,7 +4,7 @@ from packhouses.gathering.models import ScheduleHarvestVehicle, ScheduleHarvest
 
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
-from .models import IncomingProduct, PalletReceived
+from .models import IncomingProduct, PreLot
 from cities_light.models import City, Country, Region, SubRegion
 from django.utils.text import capfirst
 from datetime import datetime
@@ -57,7 +57,7 @@ def weighing_report(request, pk):
     harvest = ScheduleHarvest.objects.filter(incoming_product=incomingProduct).first()
     print(harvest)
     # Obtener pallets de IncomingProduct y transformar datos
-    pallet_received_records = incomingProduct.palletreceived_set.all()
+    pallet_received_records = incomingProduct.prelot_set.all()
     pallet_received_json = serializers.serialize('json', pallet_received_records)
     
     json_data = json.loads(pallet_received_json)
@@ -68,7 +68,7 @@ def weighing_report(request, pk):
     
     # Excluir los campos no deseados
     excluded_fields = ['id', 'incoming_product']
-    headers = get_model_fields_verbose_names(PalletReceived, excluded_fields=excluded_fields)
+    headers = get_model_fields_verbose_names(PreLot, excluded_fields=excluded_fields)
 
         
     data = [[item['fields'].get(header) for header in headers] for item in json_data]
