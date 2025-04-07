@@ -12,7 +12,6 @@ def my_handler(sender, instance, **kwargs):
         have_percentage = ProductFoodSafetyProcess.objects.filter(product=instance.product, procedure=percentage).exists()
 
         if not have_percentage:
-            print("Debe crearlo")
             ProductFoodSafetyProcess.objects.create(
                     product=instance.product,
                     procedure=percentage,

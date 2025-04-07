@@ -2,7 +2,9 @@ from django.contrib import admin
 from .models import (IncomingProduct, PalletReceived, 
                     FoodSafety, FoodSafety, DryMatter, InternalInspection, 
                     TransportReview, SampleCollection, Percentage,
-                    Cuadrilla, Corte, Lote, 
+                    TransportInspection, TransportCondition,
+                    SensorySpecification, SampleWeight, CropThreat,
+                    Lote, 
                     )
 from common.base.mixins import (ByOrganizationAdminMixin)
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle
@@ -11,7 +13,11 @@ import nested_admin
 from .mixins import CustomNestedStackedInlineMixin
 from .forms import ScheduleHarvestVehicleForm
 from nested_admin import NestedStackedInline
-from packhouses.catalogs.models import ProductFoodSafetyProcess
+from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductPest
+from common.base.models import Pest
+
+from common.base.mixins import (DisableInlineRelatedLinksMixin)
+import nested_admin
 
 # Inlines para el corte
 class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
@@ -91,76 +97,122 @@ class PalletReceivedInline(CustomNestedStackedInlineMixin, admin.StackedInline):
 # Reciba
 @admin.register(IncomingProduct)
 class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
-    list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_orchard', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_product',
-                    'guide_number', 'status',)
-    fields = ('status', 'phytosanitary_certificate', 'guide_number', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pallets_received', 'packhouse_weight_result',
-              'mrl', 'kg_sample', 'boxes_assigned', 'full_boxes', 'empty_boxes', 'missing_boxes', 'average_per_box', 'current_kg_available')
-    inlines = [PalletReceivedInline, ScheduleHarvestInline]
-    # readonly_fields = ('pallets_received', 'boxes_assigned', 'missing_boxes', 'average_per_box', 'current_kg_available')
+    # list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_orchard', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_product',
+    #                 'guide_number', 'status',)
+    # fields = ('status', 'phytosanitary_certificate', 'guide_number', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pallets_received', 'packhouse_weight_result',
+    #           'mrl', 'kg_sample', 'boxes_assigned', 'full_boxes', 'empty_boxes', 'missing_boxes', 'average_per_box', 'current_kg_available')
+    # inlines = [PalletReceivedInline, ScheduleHarvestInline]
+    # # readonly_fields = ('pallets_received', 'boxes_assigned', 'missing_boxes', 'average_per_box', 'current_kg_available')
 
-    def get_scheduleharvest_ooid(self, obj):
-        schedule_harvest = obj.scheduleharvest
-        return schedule_harvest.ooid if schedule_harvest else None
+    # def get_scheduleharvest_ooid(self, obj):
+    #     schedule_harvest = obj.scheduleharvest
+    #     return schedule_harvest.ooid if schedule_harvest else None
 
-    def get_scheduleharvest_harvest_date(self, obj):
-        schedule_harvest = obj.scheduleharvest
-        return schedule_harvest.harvest_date if schedule_harvest else None
+    # def get_scheduleharvest_harvest_date(self, obj):
+    #     schedule_harvest = obj.scheduleharvest
+    #     return schedule_harvest.harvest_date if schedule_harvest else None
 
-    def get_scheduleharvest_product(self, obj):
-        schedule_harvest = obj.scheduleharvest
-        return schedule_harvest.product if schedule_harvest else None
+    # def get_scheduleharvest_product(self, obj):
+    #     schedule_harvest = obj.scheduleharvest
+    #     return schedule_harvest.product if schedule_harvest else None
 
-    def get_scheduleharvest_orchard(self, obj):
-        schedule_harvest = obj.scheduleharvest
-        return schedule_harvest.orchard if schedule_harvest else None
+    # def get_scheduleharvest_orchard(self, obj):
+    #     schedule_harvest = obj.scheduleharvest
+    #     return schedule_harvest.orchard if schedule_harvest else None
 
-    get_scheduleharvest_ooid.admin_order_field = 'scheduleharvest__ooid'
-    get_scheduleharvest_ooid.short_description = _('Harvest Number')
-    get_scheduleharvest_harvest_date.admin_order_field = 'scheduleharvest__harvest_date'
-    get_scheduleharvest_harvest_date.short_description = _('Harvest Date')
-    get_scheduleharvest_product.admin_order_field = 'scheduleharvest__product'
-    get_scheduleharvest_product.short_description = _('Product')
-    get_scheduleharvest_orchard.admin_order_field = 'scheduleharvest__orchard'
-    get_scheduleharvest_orchard.short_description = _('Orchard')
+    # get_scheduleharvest_ooid.admin_order_field = 'scheduleharvest__ooid'
+    # get_scheduleharvest_ooid.short_description = _('Harvest Number')
+    # get_scheduleharvest_harvest_date.admin_order_field = 'scheduleharvest__harvest_date'
+    # get_scheduleharvest_harvest_date.short_description = _('Harvest Date')
+    # get_scheduleharvest_product.admin_order_field = 'scheduleharvest__product'
+    # get_scheduleharvest_product.short_description = _('Product')
+    # get_scheduleharvest_orchard.admin_order_field = 'scheduleharvest__orchard'
+    # get_scheduleharvest_orchard.short_description = _('Orchard')
 
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/incoming_product.js',)
+    # class Media:
+    #     js = ('js/admin/forms/packhouses/receiving/incoming_product.js',)
 
-@admin.register(Cuadrilla)
-class CuadrillaAdmin(admin.ModelAdmin):
-    list_display = ('pax',)
-    list_filter = ['pax']
-
-@admin.register(Corte)
-class CorteAdmin(admin.ModelAdmin):
-    list_display = ('sample_number', 'product')
+    list_display = ('borrar',)
 
 @admin.register(Lote)
-class LoteAdmin(admin.ModelAdmin):
-    list_display = ('sample_number', 'corte',)
+class LoteAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
+    list_display = ('sample_number',)
 
 class DryMatterInline(admin.TabularInline):
     model = DryMatter
     extra = 1
-    # list_display = ('number', 'product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage',)
+    fields = ['number', 'product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage']
     readonly_fields = ('number',)
 
 class InternalInspectionInline(admin.TabularInline):
     model = InternalInspection
     extra = 1
+    fields = ['number', 'internal_temperature', 'pests']
     readonly_fields = ('number',)
 
-class TransportReviewInline(admin.TabularInline):
-    model = TransportReview
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "pests":
+            object_id = request.resolver_match.kwargs.get("object_id")
+
+            if object_id:
+                try:
+                    food_safety = FoodSafety.objects.get(pk=object_id)
+                    incoming_product = IncomingProduct.objects.filter(lote=food_safety.lote).first()
+                    schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
+                    product = schedule_harvest.product
+
+                    pest_ids = ProductPest.objects.filter(product=product).values_list('pest_id', flat=True)
+                    kwargs["queryset"] = Pest.objects.filter(id__in=pest_ids, inside=True)
+
+                except InternalInspection.DoesNotExist:
+                    kwargs['queryset'] = Pest.objects.none()
+            else:
+                kwargs['queryset'] = Pest.objects.none()
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class TransportInspectionInline(nested_admin.NestedTabularInline):
+    model = TransportInspection
+    extra = 0
+
+class TransportConditionInline(nested_admin.NestedTabularInline):
+    model = TransportCondition
+    extra = 0
+
+class TransportReviewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
+    model = TransportReview 
+    inlines = [TransportInspection, TransportCondition]
+
+class SensorySpecificationInline(admin.TabularInline):
+    model = SensorySpecification
     extra = 1
+
+class SampleWeightInline(admin.TabularInline):
+    model = SampleWeight
+    extra = 1
+
+# class CropThreatInline(admin.TabularInline):
+#     model = CropThreat
+#     extra = 1
 
 class SampleCollectionInline(admin.TabularInline):
     model = SampleCollection
     extra = 1
+    # inlines = [SensorySpecification, SampleWeight, CropThreat]
+    inlines = [SensorySpecification, SampleWeight]
 
 class PercentageInline(admin.TabularInline):
     model = Percentage
-    extra = 1
+    can_delete = False
+    extra = 0
+    max_num = 0
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 # Mapeo de nombres de inlines con sus clases
 INLINE_CLASSES = {
@@ -172,10 +224,9 @@ INLINE_CLASSES = {
 }
 
 @admin.register(FoodSafety)
-class FoodSafetyAdmin(admin.ModelAdmin):
+class FoodSafetyAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     list_display = ('lote',)
     list_filter = ['lote']
-    exclude = ['corte']
     inlines = [DryMatterInline, InternalInspectionInline, TransportReviewInline, SampleCollectionInline]
 
     def get_inlines(self, request, obj=None):
@@ -185,10 +236,31 @@ class FoodSafetyAdmin(admin.ModelAdmin):
             return inlines_list
 
         try:
-            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=obj.lote.corte.product).values_list('procedure__model', flat=True)
+            incoming_product = IncomingProduct.objects.filter(lote=obj.lote).first()
+            schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
+            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__model', flat=True)
             inlines_list = [INLINE_CLASSES[inline] for inline in food_safety_config if inline in INLINE_CLASSES]
 
         except ProductFoodSafetyProcess.DoesNotExist:
             return inlines_list
 
         return inlines_list
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "lote":
+            this_organization = request.organization 
+            obj_id = request.resolver_match.kwargs.get("object_id")
+            inocuidad_lote = FoodSafety.objects.filter(organization=this_organization).values_list('lote', flat=True)
+
+            if obj_id:
+                food_safety = FoodSafety.objects.get(id=obj_id)
+                print(f"food: {food_safety.lote}")
+                if food_safety:
+                    kwargs["queryset"] = Lote.objects.filter(id=food_safety.lote.id)
+                else:
+                    kwargs["queryset"] = Lote.objects.none()
+
+            else:
+                kwargs["queryset"] = Lote.objects.filter(organization=this_organization).exclude(id__in=inocuidad_lote)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)

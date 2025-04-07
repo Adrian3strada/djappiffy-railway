@@ -5,44 +5,56 @@ import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_incoming_product_categories_status
 from packhouses.catalogs.models import WeighingScale, ProductFoodSafetyProcess, Product, Vehicle
+from common.base.models import Pest
 
 # Create your models here.
 
-class IncomingProduct(models.Model):
-    status = models.CharField(max_length=20, verbose_name=_('Status'), choices=get_incoming_product_categories_status(), default='pending')
-    public_weighing_scale = models.ForeignKey(WeighingScale, verbose_name=_("Public Weighing Scale"), on_delete=models.PROTECT, null=True, blank=True)
-    public_weight_result = models.FloatField(default=0, verbose_name=_("Public Weight Result"),)
-    packhouse_weight_result = models.FloatField(default=0, verbose_name=_("Packhouse Weight Result"),)
-    weighing_record_number = models.CharField(max_length=30, verbose_name=_('Weighing Record Number'),)
-    guide_number = models.CharField(max_length=20, verbose_name=_('Guide Number'),)
-    pallets_received = models.PositiveIntegerField(default=0, verbose_name=_('Pallets Received'))
-    mrl = models.FloatField(default=0, verbose_name=_('Maximum Residue Limit'), null=True, blank=True)
-    phytosanitary_certificate = models.CharField(max_length=50, verbose_name=_('Phytosanitary Certificate'), null=True, blank=True)
-    kg_sample = models.FloatField(default=0, verbose_name=_("Kg for Sample"), validators=[MinValueValidator(0.00)])
-    current_kg_available = models.FloatField(default=0, verbose_name=_("Current Kg Available"),)
-    boxes_assigned = models.PositiveIntegerField(default=0, verbose_name=_('Boxes Assigned'))
-    empty_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Empty Boxes'))
-    full_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Full Boxes'))
-    missing_boxes = models.IntegerField(default=0, verbose_name=_('Missing Boxes'))
-    average_per_box = models.FloatField(default=0, verbose_name=_("Average per Box"),)
+class Lote(models.Model):
+    sample_number = models.IntegerField()
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
 
     def __str__(self):
-        from packhouses.gathering.models import ScheduleHarvest
+        return f"{self.sample_number}"
 
-        schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=self).first()
-        if schedule_harvest:
-            return f"{schedule_harvest.ooid} - {schedule_harvest.orchard}"
+class IncomingProduct(models.Model):
+    # status = models.CharField(max_length=20, verbose_name=_('Status'), choices=get_incoming_product_categories_status(), default='pending')
+    # public_weighing_scale = models.ForeignKey(WeighingScale, verbose_name=_("Public Weighing Scale"), on_delete=models.PROTECT, null=True, blank=True)
+    # public_weight_result = models.FloatField(default=0, verbose_name=_("Public Weight Result"),)
+    # packhouse_weight_result = models.FloatField(default=0, verbose_name=_("Packhouse Weight Result"),)
+    # weighing_record_number = models.CharField(max_length=30, verbose_name=_('Weighing Record Number'),)
+    # guide_number = models.CharField(max_length=20, verbose_name=_('Guide Number'),)
+    # pallets_received = models.PositiveIntegerField(default=0, verbose_name=_('Pallets Received'))
+    # mrl = models.FloatField(default=0, verbose_name=_('Maximum Residue Limit'), null=True, blank=True)
+    # phytosanitary_certificate = models.CharField(max_length=50, verbose_name=_('Phytosanitary Certificate'), null=True, blank=True)
+    # kg_sample = models.FloatField(default=0, verbose_name=_("Kg for Sample"), validators=[MinValueValidator(0.00)])
+    # current_kg_available = models.FloatField(default=0, verbose_name=_("Current Kg Available"),)
+    # boxes_assigned = models.PositiveIntegerField(default=0, verbose_name=_('Boxes Assigned'))
+    # empty_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Empty Boxes'))
+    # full_boxes = models.PositiveIntegerField(default=0, verbose_name=_('Full Boxes'))
+    # missing_boxes = models.IntegerField(default=0, verbose_name=_('Missing Boxes'))
+    # average_per_box = models.FloatField(default=0, verbose_name=_("Average per Box"),)
+    # organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
 
-    class Meta:
-        verbose_name = _('Incoming Product')
-        verbose_name_plural = _('Incoming Product')
-        """constraints = [
-            models.UniqueConstraint(
-                fields=['harvest', 'organization'],
-                name='unique_incoming_product_harvest'
-            )
-        ]"""
+    # def __str__(self):
+    #     from packhouses.gathering.models import ScheduleHarvest
+
+    #     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=self).first()
+    #     if schedule_harvest:
+    #         return f"{schedule_harvest.ooid} - {schedule_harvest.orchard}"
+
+    # class Meta:
+    #     verbose_name = _('Incoming Product')
+    #     verbose_name_plural = _('Incoming Product')
+    #     """constraints = [
+    #         models.UniqueConstraint(
+    #             fields=['harvest', 'organization'],
+    #             name='unique_incoming_product_harvest'
+    #         )
+    #     ]"""
+
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
+    lote = models.ForeignKey(Lote, on_delete=models.PROTECT, verbose_name=_('Lote'), null=True, blank=True)
+    borrar = models.IntegerField(default=0, verbose_name=_('Missing Boxes'))
 
 class PalletReceived(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_("Pallet Number"),null=True, blank=True, unique=True)
@@ -72,30 +84,9 @@ class PalletReceived(models.Model):
         verbose_name = _('Pallet Received')
         verbose_name_plural = _('Pallets Received')
 
-class Cuadrilla(models.Model):
-    pax = models.IntegerField()
-    def __str__(self):
-        return f"{self.pax}"
-
-class Corte(models.Model):
-    sample_number = models.IntegerField()
-    cuadrilla = models.ManyToManyField(Cuadrilla, verbose_name=_('Cuadrilla'))
-    vehicle = models.ManyToManyField(Vehicle, verbose_name=_('Vehicle'))
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.sample_number} - {self.product}"
-
-class Lote(models.Model):
-    sample_number = models.IntegerField()
-    corte = models.ForeignKey(Corte, verbose_name=_('Corte'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.sample_number} - {self.corte}"
-
 class FoodSafety(models.Model):
-    corte = models.ForeignKey(Corte, verbose_name=_('corte'), on_delete=models.PROTECT, null=True)
     lote = models.OneToOneField(Lote, verbose_name=_('lote'), on_delete=models.PROTECT)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
     
     class Meta:
         verbose_name = _('Food Safety')
@@ -112,7 +103,7 @@ class DryMatter(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.number:
-            last_sample = DryMatter.objects.filter(food_safety=self.food_safety).order_by('number').first()
+            last_sample = DryMatter.objects.filter(food_safety=self.food_safety).order_by('-number').first()
             if last_sample:
                 self.number = last_sample.number + 1
             else:
@@ -126,6 +117,7 @@ class DryMatter(models.Model):
 class InternalInspection(models.Model):
     number = models.IntegerField(verbose_name=_('Number'))
     internal_temperature = models.DecimalField(max_digits=10, decimal_places=2)
+    pests = models.ManyToManyField(Pest, verbose_name=_('Pests'), blank=True)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
 
     def save(self, *args, **kwargs):
@@ -151,7 +143,7 @@ class Percentage(models.Model):
         verbose_name_plural = _('Percentages')
 
 class TransportReview(models.Model):
-    # vehicle = models.ForeignKey(vehicle, verbose_name=_('vehicle'), on_delete=models.PROTECT)
+    vehicle = models.ForeignKey(Vehicle, verbose_name=_('vehicle'), on_delete=models.PROTECT)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
 
     class Meta:
@@ -203,7 +195,6 @@ class SensorySpecification(models.Model):
         verbose_name_plural = _('Sensory Specifications')
 
 class SampleWeight(models.Model):
-    sample_number = models.IntegerField()
     weight = models.DecimalField(max_digits=10, decimal_places=2)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.PROTECT)
 
@@ -213,4 +204,5 @@ class SampleWeight(models.Model):
 
 class CropThreat(models.Model):
     sample_number = models.IntegerField()
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.PROTECT)
 
