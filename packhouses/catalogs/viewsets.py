@@ -85,7 +85,9 @@ class ProviderViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         queryset = Provider.objects.filter(organization=self.request.organization)
+
         categories = self.request.GET.get('categories')
+
         if categories:
             category_list = categories.split(',')
             queryset = queryset.filter(category__in=category_list)
@@ -111,7 +113,7 @@ class ProductMarketClassViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
-    filterset_fields = ['is_enabled']
+    filterset_fields = ['kind', 'price_measure_unit_category', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -119,7 +121,15 @@ class ProductViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return Product.objects.filter(organization=self.request.organization)
+        queryset = Product.objects.filter(organization=self.request.organization)
+
+        markets = self.request.GET.get('markets')
+
+        if markets:
+            category_list = markets.split(',')
+            queryset = queryset.filter(markets__in=category_list)
+
+        return queryset
 
 
 class PalletViewSet(viewsets.ModelViewSet):
@@ -195,7 +205,7 @@ class ProductPackagingViewSet(viewsets.ModelViewSet):
 
 class ProductSizeViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSizeSerializer
-    filterset_fields = ['product', 'market', 'is_enabled']
+    filterset_fields = ['product', 'market', 'category', 'standard_size', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -203,7 +213,20 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return ProductSize.objects.filter(product__organization=self.request.organization)
+        queryset = ProductSize.objects.filter(product__organization=self.request.organization)
+
+        categories = self.request.GET.get('categories')
+        varieties = self.request.GET.get('varieties')
+
+        if categories:
+            category_list = categories.split(',')
+            queryset = queryset.filter(category__in=category_list)
+
+        if varieties:
+            variety_list = varieties.split(',')
+            queryset = queryset.filter(varieties__in=variety_list)
+
+        return queryset
 
 
 class ProductPresentationViewSet(viewsets.ModelViewSet):
