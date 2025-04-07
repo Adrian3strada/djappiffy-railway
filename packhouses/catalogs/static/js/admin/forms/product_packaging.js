@@ -60,17 +60,20 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateName() {
     const packagingName = packagingField.val() ? packagingField.find('option:selected').text() : '';
     const productSizeName = productSizeField.val() ? productSizeField.find('option:selected').text() : '';
-    let nameString = `${packagingName} ${productSizeName}`
+
+    const productWeight = productWeightPerPackagingField.val() ? ' W:' + productWeightPerPackagingField.val() : '';
+
+    let nameString = `${packagingName} ${productSizeName}${productWeight}`
+
     if (categoryField.val() === 'presentation' && productPresentationField.val()) {
       let productPresentationPerPackaging = ' ';
       if (productPresentationsPerPackagingField.val()) {
         productPresentationPerPackaging = ` ${productPresentationsPerPackagingField.val()} `;
       }
       const productPresentationName = productPresentationField.find('option:selected').text();
-      nameString = `${nameString}${productPresentationPerPackaging}${productPresentationName}`;
+      nameString = `${nameString}${productPresentationPerPackaging}${productPresentationName}${productWeight}`;
     }
     nameField.val(nameString.trim())
-    aliasField.val(null)
   }
 
   function updateProduct() {
@@ -78,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
       fetchOptions(`/rest/v1/catalogs/product/?markets=${marketField.val()}`)
         .then(data => {
           console.log("updateProduct", data);
-          updateFieldOptions(productField, data);
+          updateFieldOptions(productField, data, productProperties ? productProperties.id : null);
         })
     }
   }
@@ -118,6 +121,9 @@ document.addEventListener('DOMContentLoaded', function () {
               productWeightPerPackagingField.val(supply_data.capacity);
               productWeightPerPackagingField.attr('max', supply_data.capacity);
               productWeightPerPackagingField.attr('min', 0.01);
+            })
+            .then(() => {
+              updateName();
             })
         })
     } else {
@@ -160,30 +166,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  productWeightPerPackagingField.on('change', () => {
-    if (productWeightPerPackagingField.val() && categoryField.val() === 'packaging') {
-      const maxProductAmount = parseFloat(packagingSupplyProperties.capacity);
-      if (parseFloat(productWeightPerPackagingField.val()) > maxProductAmount) {
-        productWeightPerPackagingField.val(maxProductAmount);
-      }
-    }
-  });
-
-  productPresentationsPerPackagingField.on('change', () => {
-    let value = productPresentationsPerPackagingField.val();
-    console.log(value);
-    if (!isNaN(value)) {
-      productPresentationsPerPackagingField.val('');
-    }
-    if (value && categoryField.val() === 'presentation') {
-      value = value.replace(/[^\d.]/g, '');
-      const quantity = Math.floor(parseFloat(value));
-      if (!isNaN(quantity)) {
-        productPresentationsPerPackagingField.val(quantity);
-      }
-    }
-    updateName();
-  });
 
   categoryField.on('change', () => {
     productWeightPerPackagingField.val(null);
@@ -237,7 +219,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   packagingField.on('change', () => {
     updateProductPackagingProductWeight();
-    updateName();
   })
 
   productPresentationField.on('change', () => {
@@ -247,6 +228,33 @@ document.addEventListener('DOMContentLoaded', function () {
   productSizeField.on('change', () => {
     updateName();
   })
+
+  productWeightPerPackagingField.on('change', () => {
+    if (productWeightPerPackagingField.val()) {
+      const maxProductAmount = parseFloat(packagingSupplyProperties.capacity);
+      if (parseFloat(productWeightPerPackagingField.val()) > maxProductAmount) {
+        productWeightPerPackagingField.val(maxProductAmount);
+      }
+    }
+    updateName();
+  });
+
+  productPresentationsPerPackagingField.on('change', () => {
+    let value = productPresentationsPerPackagingField.val();
+    console.log(value);
+    if (!isNaN(value)) {
+      productPresentationsPerPackagingField.val('');
+    }
+    if (value && categoryField.val() === 'presentation') {
+      value = value.replace(/[^\d.]/g, '');
+      const quantity = Math.floor(parseFloat(value));
+      if (!isNaN(quantity)) {
+        productPresentationsPerPackagingField.val(quantity);
+      }
+    }
+    updateName();
+  });
+
 
   productWeightPerPackagingField.attr('step', '0.01');
   productWeightPerPackagingField.attr('min', '0.01');
@@ -262,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
       productPiecesPerPresentationField.closest('.form-group').fadeOut();
       productWeightPerPackagingField.closest('.form-group').fadeIn();
     } else if (categoryField.val() === 'presentation') {
-      productWeightPerPackagingField.closest('.form-group').fadeOut();
+      productWeightPerPackagingField.closest('.form-group').fadeIn();
       productPresentationField.closest('.form-group').fadeIn();
       productPresentationsPerPackagingField.closest('.form-group').fadeIn();
       productPiecesPerPresentationField.closest('.form-group').fadeIn();
@@ -272,12 +280,33 @@ document.addEventListener('DOMContentLoaded', function () {
       productPresentationsPerPackagingField.closest('.form-group').fadeOut();
       productPiecesPerPresentationField.closest('.form-group').fadeOut();
     }
-    updateProductPackagingProductWeight();
   } else {
     productWeightPerPackagingField.closest('.form-group').fadeOut();
     productPresentationField.closest('.form-group').fadeOut();
     productPresentationsPerPackagingField.closest('.form-group').fadeOut();
     productPiecesPerPresentationField.closest('.form-group').fadeOut();
+  }
+
+  if (marketField.val()) {
+      fetchOptions(`/rest/v1/catalogs/product/?markets=${marketField.val()}`)
+        .then(data => {
+          console.log("updateProduct", data);
+          if (productField.val()) {
+            getProductProperties();
+          }
+          updateFieldOptions(productField, data, productProperties ? productProperties.id : null);
+        })
+    }
+
+  if (packagingField.val()) {
+    fetchOptions(`/rest/v1/catalogs/packaging/${packagingField.val()}/`)
+      .then(packaging_data => {
+        packagingProperties = packaging_data;
+        fetchOptions(`/rest/v1/catalogs/supply/${packaging_data.packaging_supply}/`)
+          .then(supply_data => {
+            packagingSupplyProperties = supply_data;
+          })
+      })
   }
 
   [categoryField, productField, marketField, productSizeField, packagingField, productPresentationField].forEach(field => field.select2());

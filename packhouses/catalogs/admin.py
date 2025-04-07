@@ -1533,7 +1533,6 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         category = request.POST.get('category') if request.POST else obj.category if obj else None
 
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        print("organization_queryfilter", organization_queryfilter)
 
         if db_field.name == "market":
             if organization:
@@ -1582,13 +1581,6 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
 
         category = request.POST.get('category') if request.POST else obj.category if obj else None
-
-        if db_field.name == "product_weight_per_packaging":
-            formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
-            formfield.required = True
-            if category == 'presentation' and request.POST:
-                formfield.required = False
-            return formfield
 
         if db_field.name == "product_presentations_per_packaging":
             formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
