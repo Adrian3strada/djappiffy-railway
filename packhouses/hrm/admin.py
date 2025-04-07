@@ -36,7 +36,7 @@ class WorkShiftScheduleInline(admin.TabularInline):
 @admin.register(JobPosition)
 class JobPositionAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
-    fields = ('name', 'description', 'is_enabled')
+    fields = ('name', 'description', 'is_enabled', 'category')
     inlines = [WorkShiftScheduleInline]
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
