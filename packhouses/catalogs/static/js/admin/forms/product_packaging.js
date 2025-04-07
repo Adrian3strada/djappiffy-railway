@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   let product = productField.val();
   let productSize = productSizeField.val();
   let packaging = packagingField.val();
+  let productWeightPerPackaging = productWeightPerPackagingField.val();
   let productPresentation = productPresentationField.val();
 
   productWeightPerPackagingField.attr('step', '0.01');
@@ -35,6 +36,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   productField.closest('.form-group').hide();
   productSizeField.closest('.form-group').hide();
   packagingField.closest('.form-group').hide();
+  productWeightPerPackagingField.closest('.form-group').hide();
 
   productPresentationField.closest('.form-group').hide();
   productPresentationsPerPackagingField.closest('.form-group').hide();
@@ -44,6 +46,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   if (product) productField.closest('.form-group').show();
   if (productSize) productSizeField.closest('.form-group').show();
   if (packaging) packagingField.closest('.form-group').show();
+  if (productWeightPerPackaging) productWeightPerPackagingField.closest('.form-group').show();
   if (productPresentation) productPresentationField.closest('.form-group').show();
 
   function updateFieldOptions(field, options, selectedValue = null) {
@@ -163,6 +166,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           console.log("updatePackaging", data);
           updateFieldOptions(packagingField, data, packaging ? packaging : null);
           packagingField.closest('.form-group').fadeIn();
+          productWeightPerPackagingField.closest('.form-group').show();
         })
     } else {
       updateFieldOptions(packagingField, []);
