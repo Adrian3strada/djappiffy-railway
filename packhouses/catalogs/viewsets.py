@@ -113,7 +113,7 @@ class ProductMarketClassViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
-    filterset_fields = ['kind', 'price_measure_unit_category', 'is_enabled']
+    filterset_fields = ['kind', 'measure_unit_category', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):

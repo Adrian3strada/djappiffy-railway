@@ -96,7 +96,7 @@ class ProductResource(DehydrationResource, ExportResource):
     class Meta:
         model = Product
         exclude = default_excluded_fields
-        export_order = ('id', 'kind', 'name', 'price_measure_unit_category', 'product_managment_cost', 'product_class',  'product_variety',
+        export_order = ('id', 'kind', 'name', 'pmeasure_unit_category', 'product_management_cost', 'product_class',  'product_variety',
                         'product_phenology', 'product_harvest_size', 'product_mass_volume', 'product_ripeness', 'is_enabled')
 
 

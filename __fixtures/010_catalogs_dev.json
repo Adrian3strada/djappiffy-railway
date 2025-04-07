@@ -102,7 +102,7 @@
       "kind": 8,
       "name": "AGUACATE",
       "description": null,
-      "price_measure_unit_category": "Kg",
+      "measure_unit_category": "Kg",
       "is_enabled": true,
       "organization": 1,
       "markets": [
@@ -121,7 +121,7 @@
       "kind": 8,
       "name": "AGUACATE DOS",
       "description": null,
-      "price_measure_unit_category": "Kg",
+      "measure_unit_category": "Kg",
       "is_enabled": true,
       "organization": 2,
       "markets": []
@@ -134,7 +134,7 @@
       "kind": 8,
       "name": "PALTA",
       "description": null,
-      "price_measure_unit_category": "Kg",
+      "measure_unit_category": "Kg",
       "is_enabled": true,
       "organization": 1,
       "markets": []
@@ -147,7 +147,7 @@
       "kind": 9,
       "name": "LIMÓN AMARILLO",
       "description": null,
-      "price_measure_unit_category": "Kg",
+      "measure_unit_category": "Kg",
       "is_enabled": false,
       "organization": 1,
       "markets": [
@@ -162,7 +162,7 @@
       "kind": 8,
       "name": "VERDE",
       "description": null,
-      "price_measure_unit_category": "L",
+      "measure_unit_category": "L",
       "is_enabled": true,
       "organization": 1,
       "markets": []
@@ -175,7 +175,7 @@
       "kind": 8,
       "name": "UNO",
       "description": null,
-      "price_measure_unit_category": "g",
+      "measure_unit_category": "g",
       "is_enabled": true,
       "organization": 1,
       "markets": []
@@ -188,7 +188,7 @@
       "kind": 8,
       "name": "AGUACATE REMANENTE",
       "description": null,
-      "price_measure_unit_category": "Kg",
+      "measure_unit_category": "Kg",
       "is_enabled": true,
       "organization": 1,
       "markets": [

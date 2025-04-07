@@ -158,8 +158,8 @@ document.addEventListener("DOMContentLoaded", function () {
       fetchOptions(`${API_BASE_URL}/catalogs/product/${productField.val()}/`).then(
         (data) => {
           productProperties = data;
-          if (data.price_measure_unit_category_display) {
-            if (order_items_kind_options[0].id === 'product_weight') order_items_kind_options[0].name = data.price_measure_unit_category_display
+          if (data.measure_unit_category_display) {
+            if (order_items_kind_options[0].id === 'product_weight') order_items_kind_options[0].name = data.measure_unit_category_display
             if (cleanup) {
               orderItemsKindField.val(null);
               orderItemsKindField.trigger('change').select2();

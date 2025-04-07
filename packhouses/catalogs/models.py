@@ -64,7 +64,7 @@ class Product(CleanNameAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(ProductKind, verbose_name=_('Product kind'), on_delete=models.PROTECT)
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
-    price_measure_unit_category = models.CharField(max_length=30, verbose_name=_('Price measure unit'),
+    measure_unit_category = models.CharField(max_length=30, verbose_name=_('Measure unit category'),
                                                    choices=PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES)
     markets = models.ManyToManyField(Market, verbose_name=_('Markets'), blank=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -874,7 +874,7 @@ class PackagingComplementarySupply(models.Model):
 
 class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     category = models.CharField(max_length=20, choices=PRODUCT_PACKAGING_CATEGORY_CHOICES, verbose_name=_('Category'))
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT, limit_choices_to={'is_enabled': True})
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.CASCADE)

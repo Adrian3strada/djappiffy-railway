@@ -278,9 +278,9 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductResource]
     list_display = ('name', 'kind', 'is_enabled')
-    list_filter = (ProductKindForPackagingFilter, 'price_measure_unit_category', ByMarketForOrganizationFilter, 'is_enabled',)
+    list_filter = (ProductKindForPackagingFilter, 'measure_unit_category', ByMarketForOrganizationFilter, 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
-    fields = ('kind', 'name', 'description', 'price_measure_unit_category', 'markets', 'is_enabled')
+    fields = ('kind', 'name', 'description', 'measure_unit_category', 'markets', 'is_enabled')
     inlines = [ProductMarketMeasureUnitManagementCostInline, ProductMarketClassInline,
                ProductVarietyInline,
                ProductPhenologyKindInline, ProductHarvestSizeKindInline,
@@ -302,7 +302,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                                                   ProductMarketMeasureUnitManagementCost, ProductMarketClass,
                                                   ProductVariety, ProductPhenologyKind, ProductHarvestSizeKind,
                                                   ProductMassVolumeKind, ProductRipeness]):
-            readonly_fields.extend(['kind', 'name', 'price_measure_unit_category', 'markets', 'organization'])
+            readonly_fields.extend(['kind', 'name', 'measure_unit_category', 'markets', 'organization'])
         return readonly_fields
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):

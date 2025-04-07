@@ -56,8 +56,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
         .then(data => {
           productProperties = data;
-          if (data.price_measure_unit_category_display) {
-            unitPriceLabel = `Price (${data.price_measure_unit_category_display})`
+          if (data.measure_unit_category_display) {
+            unitPriceLabel = `Price (${data.measure_unit_category_display})`
           } else {
             unitPriceLabel.text(`Price`);
           }

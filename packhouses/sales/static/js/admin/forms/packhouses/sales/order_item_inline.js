@@ -61,8 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
           productProperties = data;
           console.log("productProperties", productProperties)
-          if (data.price_measure_unit_category_display) {
-            priceLabel = `Price (${data.price_measure_unit_category_display})`
+          if (data.measure_unit_category_display) {
+            priceLabel = `Price (${data.measure_unit_category_display})`
           } else {
             priceLabel.text(`Price`);
           }
