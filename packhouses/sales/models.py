@@ -147,7 +147,13 @@ class OrderItemPackaging(models.Model):
         return f"{self.pk}"
 
     def clean(self):
-        self.amount_price = self.unit_price * self.quantity if self.unit_price and self.quantity else 0
+        self.amount_price = 0
+        if self.pricing_by == 'product_weight':
+            self.amount_price = self.unit_price * self.quantity * self.product_weight_per_packaging if self.unit_price and self.quantity and self.product_weight_per_packaging else 0
+        if self.pricing_by == 'product_packaging':
+            self.amount_price = self.unit_price * self.quantity if self.unit_price and self.quantity else 0
+        if self.pricing_by == 'product_presentation':
+            self.amount_price = self.unit_price * self.quantity * self.product_presentations_per_packaging if self.unit_price and self.quantity and self.product_presentations_per_packaging else 0
         super().clean()
 
     class Meta:
