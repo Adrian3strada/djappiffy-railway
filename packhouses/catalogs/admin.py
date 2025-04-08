@@ -1485,7 +1485,8 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                    'is_enabled']
     list_display = ['name', 'alias', 'category', 'market', 'product', 'product_size', 'packaging',
                     'product_weight_per_packaging',
-                    'product_presentation', 'product_presentations_per_packaging', 'is_enabled']
+                    'product_presentation', 'product_pieces_per_presentation',
+                    'product_presentations_per_packaging', 'is_enabled']
     search_fields = ('name', 'alias')
     fields = ['category', 'market', 'product', 'product_size', 'packaging', 'product_weight_per_packaging',
               'product_presentation', 'product_pieces_per_presentation', 'product_presentations_per_packaging',
