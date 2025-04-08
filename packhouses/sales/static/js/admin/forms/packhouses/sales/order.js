@@ -28,12 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
     {id: "product_pallet", name: "Product pallet"},
   ]
 
-  let product_price_options = [
-    {id: "product_weight", name: "Product weight"},
-    {id: "product_packaging", name: "Product packaging"},
-    {id: "product_presentation", name: "Product presentation"}
-  ]
-
   function updateOrderItemsKindOptions(nationalClient = false) {
     order_items_kind_options = [
       {id: "product_weight", name: "Product weight"},

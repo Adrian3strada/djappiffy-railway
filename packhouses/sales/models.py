@@ -137,7 +137,7 @@ class OrderItemPackaging(models.Model):
     product_presentations_per_packaging = models.PositiveIntegerField(
         verbose_name=_('Product presentations per packaging'), null=True, blank=False)
     product_pieces_per_presentation = models.PositiveIntegerField(
-        verbose_name=_('Product pieces per packaging'), null=True, blank=False)
+        verbose_name=_('Product pieces per presentation'), null=True, blank=False)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
     amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2)
@@ -163,8 +163,7 @@ class OrderItemPallet(models.Model):
     product_presentations_per_packaging = models.PositiveIntegerField(
         verbose_name=_('Product presentations per packaging'), null=True, blank=False)
     product_pieces_per_presentation = models.PositiveIntegerField(
-        verbose_name=_('Product pieces per packaging'), null=True, blank=False)
-
+        verbose_name=_('Product pieces per presentation'), null=True, blank=False)
     product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'),
                                                  on_delete=models.PROTECT, null=True, blank=False)
     product_packaging_quantity_per_pallet = models.PositiveIntegerField(

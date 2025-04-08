@@ -6,11 +6,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   let productPhenologyOptions = [];
   let productMarketClassOptions = [];
   let productRipenessOptions = [];
+  let productPriceOptions = []
 
   let clientProperties = null;
   let productProperties = null;
-  let productSizeCategories = 'size,mix';
   let organization = null;
+  let productSizeCategories = 'size,mix';
+  let isNationalClient = false;
+
 
   function updateFieldOptions(field, options, selectedValue = null) {
     if (field) {
@@ -73,6 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function getClientProperties() {
     if (clientField.val()) {
       clientProperties = await fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
+      console.log("clientProperties", clientProperties);
     } else {
       clientProperties = null;
     }
@@ -81,6 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function getProductProperties() {
     if (productField.val()) {
       productProperties = await fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
+      console.log("productProperties", productProperties);
     } else {
       productProperties = null;
     }
@@ -98,8 +103,40 @@ document.addEventListener('DOMContentLoaded', async () => {
   getOrganizationProfile()
   await getClientProperties()
   await getProductProperties()
-  console.log("organization", organization);
-  console.log("clientProperties", clientProperties);
+
+  function getIsNationalClient() {
+    if (clientProperties && organization) {
+      isNationalClient = clientProperties.country === organization.country;
+    } else {
+      isNationalClient = false;
+    }
+    console.log("isNationalClient", isNationalClient);
+    if (isNationalClient) {
+      productPriceOptions = [
+        {id: "product_weight", name: "Product weight"},
+        {id: "product_packaging", name: "Product packaging"},
+        {id: "product_presentation", name: "Product presentation"}
+      ]
+    } else {
+      productPriceOptions = [
+        {id: "product_packaging", name: "Product packaging"},
+        {id: "product_presentation", name: "Product presentation"}
+      ]
+    }
+  }
+
+  if (clientProperties && organization) {
+    getIsNationalClient();
+  }
+
+  clientField.on('change', async () => {
+    await getClientProperties();
+    getIsNationalClient();
+  })
+
+  productField.on('change', async () => {
+    await getProductProperties();
+  })
 
 
   document.addEventListener('formset:added', (event) => {
@@ -119,19 +156,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       const unitPriceField = $(newForm).find('input[name$="-unit_price"]');
       const amountPriceField = $(newForm).find('input[name$="-amount_price"]');
 
-
       amountPriceField.prop('disabled', true).attr('readonly', true).addClass('readonly-field');
 
-      productSizeField.closest('.form-group').hide();
+
       productPhenologyField.closest('.form-group').hide();
       productMarketClassField.closest('.form-group').hide();
-      productMarketRipenessField.closest('.form-group').hide();
-      // productPackagingField.closest('.form-group').hide();
 
       updateFieldOptions(productSizeField, []);
       updateFieldOptions(productPackagingField, []);
 
       getProductOptions().then(() => {
+        updateFieldOptions(pricingByField, productPriceOptions);
         updateFieldOptions(productPhenologyField, productPhenologyOptions);
         updateFieldOptions(productMarketClassField, productMarketClassOptions);
         updateFieldOptions(productMarketRipenessField, productRipenessOptions);
@@ -139,23 +174,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       pricingByField.on('change', () => {
         if (pricingByField.val()) {
-          if (pricingByField.val() === 'product_presentation') {
-            productSizeCategories = 'size'
-          } else {
-            if (clientProperties.country === organization.country) {
-              productSizeCategories = 'size,mix'
-            } else {
+          if (isNationalClient) {
+            productSizeCategories = 'size,mix'
+            if (pricingByField.val() === 'product_presentation') {
               productSizeCategories = 'size'
             }
+          } else {
+            productSizeCategories = 'size'
           }
           fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
             .then(data => {
               updateFieldOptions(productSizeField, data);
-              productSizeField.closest('.form-group').fadeIn();
             });
         } else {
           updateFieldOptions(productSizeField, []);
-          productSizeField.closest('.form-group').fadeOut();
         }
       })
 
@@ -166,35 +198,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           if (productSizeField.val() && productSizeSelectedOptionCategory) {
 
-            if (['size'].includes(productSizeSelectedOptionCategory)) {
+            if (productSizeSelectedOptionCategory === 'size') {
               productPhenologyField.closest('.form-group').fadeIn();
               productMarketClassField.closest('.form-group').fadeIn();
               productMarketRipenessField.closest('.form-group').fadeIn();
             }
-            if (['mix'].includes(productSizeSelectedOptionCategory)) {
-              productPhenologyField.closest('.form-group').fadeOut();
-              productMarketClassField.closest('.form-group').fadeOut();
-              productMarketRipenessField.closest('.form-group').fadeIn();
-              productPhenologyField.val(null).trigger('change');
-              productMarketClassField.val(null).trigger('change');
-            }
-          } else {
-            productPhenologyField.val(null).trigger('change');
-            productMarketClassField.val(null).trigger('change');
-            productMarketRipenessField.val(null).trigger('change');
-            productPhenologyField.closest('.form-group').fadeOut();
-            productMarketClassField.closest('.form-group').fadeOut();
-            productMarketRipenessField.closest('.form-group').fadeOut();
-          }
-
-          if (productSizeField.val() && productSizeSelectedOptionCategory) {
-
-            if (['size'].includes(productSizeSelectedOptionCategory)) {
-              productPhenologyField.closest('.form-group').fadeIn();
-              productMarketClassField.closest('.form-group').fadeIn();
-              productMarketRipenessField.closest('.form-group').fadeIn();
-            }
-            if (['mix'].includes(productSizeSelectedOptionCategory)) {
+            if (productSizeSelectedOptionCategory === 'mix') {
               productPhenologyField.closest('.form-group').fadeOut();
               productMarketClassField.closest('.form-group').fadeOut();
               productMarketRipenessField.closest('.form-group').fadeIn();
@@ -211,24 +220,19 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
 
           let queryParams = {
-            category: "packaging",
             market: clientProperties.market,
             product: productProperties.id,
             product_size: productSizeField.val(),
             is_enabled: 1
           }
 
-          if (productPhenologyField.val()) {
-            queryParams.phenology = productPhenologyField.val();
-          }
-
-          if (pricingByField.val() === 'product_presentation') {
-            queryParams.category = "presentation";
-          } else {
-            queryParams.category = "packaging";
+          if (productSizeSelectedOptionCategory === 'mix') {
+            alert("El producto seleccionado es un mix");
+            queryParams.category = "single";
           }
 
           const url = `/rest/v1/catalogs/product-packaging/?${$.param(queryParams)}`;
+          console.log(url);
 
           fetchOptions(url)
             .then(data => {
@@ -245,16 +249,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                   allowEscapeKey: false,
                 })
                 updateFieldOptions(productPackagingField, []);
-                productPackagingField.closest('.form-group').fadeOut();
               }
               updateFieldOptions(productPackagingField, data);
-              productPackagingField.closest('.form-group').fadeIn();
             });
 
 
         } else {
           updateFieldOptions(productPackagingField, []);
-          productPackagingField.closest('.form-group').fadeOut();
         }
 
       });
@@ -310,7 +311,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     amountPriceField.prop('disabled', true).attr('readonly', true).addClass('readonly-field');
 
-    productSizeField.closest('.form-group').hide();
     productPhenologyField.closest('.form-group').hide();
     productMarketClassField.closest('.form-group').hide();
     productMarketRipenessField.closest('.form-group').hide();
@@ -334,9 +334,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             updateFieldOptions(productPhenologyField, productPhenologyOptions, productPhenologyField.val());
             updateFieldOptions(productMarketClassField, productMarketClassOptions, productMarketClassField.val());
             updateFieldOptions(productMarketRipenessField, productRipenessOptions, productMarketRipenessField.val());
-          })
-          .then(() => {
-            productSizeField.closest('.form-group').fadeIn();
           })
       })
 
