@@ -65,6 +65,7 @@ urlpatterns = [
     # CKEditor integration
     path("ckeditor5/", include("django_ckeditor_5.urls")),
     path("_nested_admin/", include("nested_admin.urls")),
+    path("", include('packhouses.purchases.urls'))
 ]
 
 # Add static and media files serving in debug mode
