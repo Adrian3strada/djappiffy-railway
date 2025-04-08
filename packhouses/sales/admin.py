@@ -202,7 +202,7 @@ class OrderItemPackagingInline(OrderItemInlineMixin):
         return super().formfield_for_dbfield(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)
+        # js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)
         pass
 
 

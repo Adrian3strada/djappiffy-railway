@@ -75,11 +75,9 @@ class OrderItemWeightFormSet(BaseInlineFormSet):
                         form.fields['product_ripeness'].required = False
                         form.data[f"{form.prefix}-product_phenology"] = None
                         form.data[f"{form.prefix}-product_market_class"] = None
-                        form.data[f"{form.prefix}-product_ripeness"] = None
                     else:
                         form.fields['product_phenology'].required = True
                         form.fields['product_market_class'].required = True
-                        form.fields['product_ripeness'].required = True
 
 
 class OrderItemPackagingFormSet(BaseInlineFormSet):
@@ -111,14 +109,11 @@ class OrderItemPackagingFormSet(BaseInlineFormSet):
                         if product_size.category in ['mix']:
                             form.fields['product_phenology'].required = False
                             form.fields['product_market_class'].required = False
-                            form.fields['product_ripeness'].required = False
                             form.data[f"{form.prefix}-product_phenology"] = None
                             form.data[f"{form.prefix}-product_market_class"] = None
-                            form.data[f"{form.prefix}-product_ripeness"] = None
                         else:
                             form.fields['product_phenology'].required = True
                             form.fields['product_market_class'].required = True
-                            form.fields['product_ripeness'].required = True
 
                 if product_packaging_id:
                     product_packaging = ProductPackaging.objects.filter(id=product_packaging_id).first()
