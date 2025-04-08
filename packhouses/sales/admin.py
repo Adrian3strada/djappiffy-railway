@@ -193,11 +193,11 @@ class OrderItemPalletInline(admin.StackedInline):
 @admin.register(Order)
 class OrderAdmin(ByOrganizationAdminMixin):
     list_display = ('ooid', 'client', 'maquiladora', 'shipment_date', 'delivery_date', 'delivery_kind',
-                    'product', 'product_variety', 'status')
+                    'product', 'product_variety', 'order_items_kind', 'status')
     list_filter = ('client_category', ByMaquiladoraForOrganizationOrderFilter, ByClientForOrganizationOrderFilter,
                    'registration_date', 'shipment_date', 'delivery_date', ByLocalDeliveryForOrganizationOrderFilter,
                    ByIncotermsForOrganizationOrderFilter, ByProductForOrganizationOrderFilter,
-                   ByProductVarietyForOrganizationOrderFilter, 'status')
+                   ByProductVarietyForOrganizationOrderFilter, 'order_items_kind', 'status')
     fields = (
         'ooid', 'client_category', 'maquiladora', 'client', 'local_delivery', 'incoterms',
         'registration_date', 'shipment_date', 'delivery_date',
