@@ -21,7 +21,7 @@ from .models import (
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
                                                   VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier
                                                   )
-from common.base.models import Pest, Disease
+from common.base.models import Pest, Disease, FoodSafetyProcedure
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
@@ -358,6 +358,15 @@ class ProductFoodSafetyProcessInline(admin.TabularInline):
     extra = 1
     verbose_name = _('Food Safety Process')
     verbose_name_plural = _('Food Safety Process')
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.exclude(procedure__model="Percentage")
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "procedure":
+            kwargs["queryset"] = FoodSafetyProcedure.objects.exclude(model="Percentage")
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(Product)
 class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):

@@ -1062,8 +1062,8 @@
         "pk": 5,
         "fields": {
             "is_enabled" : 1,
-            "procedure" : 3,
-            "product" : 7
+            "procedure" : 5,
+            "product" : 1
         }
     },
     {
@@ -1072,7 +1072,7 @@
         "fields": {
             "is_enabled" : 1,
             "procedure" : 3,
-            "product" : 4
+            "product" : 7
         }
     },
     {
@@ -1080,7 +1080,7 @@
         "pk": 7,
         "fields": {
             "is_enabled" : 1,
-            "procedure" : 4,
+            "procedure" : 3,
             "product" : 4
         }
     },
@@ -1089,13 +1089,22 @@
         "pk": 8,
         "fields": {
             "is_enabled" : 1,
+            "procedure" : 4,
+            "product" : 4
+        }
+    },
+    {
+        "model": "catalogs.productfoodsafetyprocess",
+        "pk": 9,
+        "fields": {
+            "is_enabled" : 1,
             "procedure" : 3,
             "product" : 2
         }
     },
     {
         "model": "catalogs.productfoodsafetyprocess",
-        "pk": 9,
+        "pk": 10,
         "fields": {
             "is_enabled" : 1,
             "procedure" : 4,

@@ -7,7 +7,7 @@ from common.base.models import FoodSafetyProcedure
 def my_handler(sender, instance, **kwargs):
     
     percentage = FoodSafetyProcedure.objects.filter(model="Percentage").first()
-    
+
     if instance.procedure.overall_percentage:
         have_percentage = ProductFoodSafetyProcess.objects.filter(product=instance.product, procedure=percentage).exists()
 
@@ -17,7 +17,7 @@ def my_handler(sender, instance, **kwargs):
                     procedure=percentage,
                     is_enabled=True,
                 )
-    else :
+    else:
         process = ProductFoodSafetyProcess.objects.filter(
             product=instance.product,
             procedure__overall_percentage=True

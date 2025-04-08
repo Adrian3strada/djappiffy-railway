@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("llego 2");
     function updateSelectOptions(selector) {
         let selects = document.querySelectorAll(selector);
         let selectedValues = new Set();
@@ -66,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Detectar cuando se agrega una nueva fila en el inline
     document.addEventListener("click", function (event) {
         if (event.target.matches(".add-row a")) {
-            // Esperar a que Django agregue la fila y luego actualizar ambos tipos de selects
+            // Esperar a que Django agregue la fila y luego actualizar los de selects
             setTimeout(() => {
                 updateSelectOptions(diseaseSelector);
                 updateSelectOptions(pestSelector);

@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import (IncomingProduct, PalletReceived, 
-                    FoodSafety, FoodSafety, DryMatter, InternalInspection, 
+from .models import (IncomingProduct, PalletReceived,
+                    FoodSafety, FoodSafety, DryMatter, InternalInspection,
                     TransportReview, SampleCollection, Percentage,
                     TransportInspection, TransportCondition,
                     SensorySpecification, SampleWeight, CropThreat,
-                    Lote, 
+                    Lote,
                     )
 from common.base.mixins import (ByOrganizationAdminMixin)
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle
@@ -13,7 +13,7 @@ import nested_admin
 from .mixins import CustomNestedStackedInlineMixin
 from .forms import ScheduleHarvestVehicleForm
 from nested_admin import NestedStackedInline
-from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductPest
+from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductPest, Vehicle
 from common.base.models import Pest
 
 from common.base.mixins import (DisableInlineRelatedLinksMixin)
@@ -138,13 +138,13 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
 class LoteAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     list_display = ('sample_number',)
 
-class DryMatterInline(admin.TabularInline):
+class DryMatterInline(nested_admin.NestedTabularInline):
     model = DryMatter
     extra = 1
     fields = ['number', 'product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage']
     readonly_fields = ('number',)
 
-class InternalInspectionInline(admin.TabularInline):
+class InternalInspectionInline(nested_admin.NestedTabularInline):
     model = InternalInspection
     extra = 1
     fields = ['number', 'internal_temperature', 'pests']
@@ -175,34 +175,67 @@ class InternalInspectionInline(admin.TabularInline):
 class TransportInspectionInline(nested_admin.NestedTabularInline):
     model = TransportInspection
     extra = 0
+    min_num = 1
+    max_num = 1
+    can_delete = False
+
+    def transport_inspection(self, obj=None):
+        return ''
+
+    readonly_fields = ['transport_inspection']
+    fields = ['transport_inspection', 'sealed', 'only_the_product', 'free_foreign_matter',
+              'free_unusual_odors', 'certificate', 'free_fecal_matter']
+
 
 class TransportConditionInline(nested_admin.NestedTabularInline):
     model = TransportCondition
     extra = 0
+    min_num = 1
+    max_num=1
+    can_delete = False
+
+    def transport_condition(self, obj=None):
+        return ''
+
+    readonly_fields = ['transport_condition']
+    fields = ['transport_condition', 'is_clean', 'good_condition', 'broken', 'damaged', 'seal']
 
 class TransportReviewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
-    model = TransportReview 
-    inlines = [TransportInspection, TransportCondition]
+    model = TransportReview
+    extra = 0
+    inlines = [TransportInspectionInline, TransportConditionInline]
 
-class SensorySpecificationInline(admin.TabularInline):
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "vehicle":
+            object_id = request.resolver_match.kwargs.get("object_id")
+
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            incoming_product = IncomingProduct.objects.filter(lote=food_safety.lote).first()
+            schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
+            kwargs["queryset"] = ScheduleHarvestVehicle.objects.filter(harvest_cutting_id=schedule_harvest)
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+class SensorySpecificationInline(nested_admin.NestedTabularInline):
     model = SensorySpecification
-    extra = 1
+    extra = 0
 
-class SampleWeightInline(admin.TabularInline):
+class SampleWeightInline(nested_admin.NestedTabularInline):
     model = SampleWeight
     extra = 1
 
 # class CropThreatInline(admin.TabularInline):
 #     model = CropThreat
-#     extra = 1
+#     extra = 0
 
-class SampleCollectionInline(admin.TabularInline):
+class SampleCollectionInline(nested_admin.NestedTabularInline):
     model = SampleCollection
-    extra = 1
+    extra = 0
+    min_min = 1
+    max_num = 1
     # inlines = [SensorySpecification, SampleWeight, CropThreat]
-    inlines = [SensorySpecification, SampleWeight]
+    # inlines = [SensorySpecification, SampleWeight]
 
-class PercentageInline(admin.TabularInline):
+class PercentageInline(nested_admin.NestedTabularInline):
     model = Percentage
     can_delete = False
     extra = 0
@@ -224,7 +257,7 @@ INLINE_CLASSES = {
 }
 
 @admin.register(FoodSafety)
-class FoodSafetyAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
+class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('lote',)
     list_filter = ['lote']
     inlines = [DryMatterInline, InternalInspectionInline, TransportReviewInline, SampleCollectionInline]
@@ -245,16 +278,15 @@ class FoodSafetyAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
             return inlines_list
 
         return inlines_list
-    
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "lote":
-            this_organization = request.organization 
+            this_organization = request.organization
             obj_id = request.resolver_match.kwargs.get("object_id")
             inocuidad_lote = FoodSafety.objects.filter(organization=this_organization).values_list('lote', flat=True)
 
             if obj_id:
                 food_safety = FoodSafety.objects.get(id=obj_id)
-                print(f"food: {food_safety.lote}")
                 if food_safety:
                     kwargs["queryset"] = Lote.objects.filter(id=food_safety.lote.id)
                 else:

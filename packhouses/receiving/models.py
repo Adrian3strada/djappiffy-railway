@@ -85,8 +85,11 @@ class PalletReceived(models.Model):
         verbose_name_plural = _('Pallets Received')
 
 class FoodSafety(models.Model):
-    lote = models.OneToOneField(Lote, verbose_name=_('lote'), on_delete=models.PROTECT)
+    lote = models.OneToOneField(Lote, verbose_name=_('lote'), on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
+
+    def __str__(self):
+        return f"{self.lote}"
     
     class Meta:
         verbose_name = _('Food Safety')
@@ -99,7 +102,10 @@ class DryMatter(models.Model):
     moisture_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     dry_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     dry_matter_percentage = models.DecimalField(max_digits=10, decimal_places=2)
-    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
+    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f""
 
     def save(self, *args, **kwargs):
         if not self.number:
@@ -118,7 +124,10 @@ class InternalInspection(models.Model):
     number = models.IntegerField(verbose_name=_('Number'))
     internal_temperature = models.DecimalField(max_digits=10, decimal_places=2)
     pests = models.ManyToManyField(Pest, verbose_name=_('Pests'), blank=True)
-    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
+    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f""
 
     def save(self, *args, **kwargs):
         if not self.number:
@@ -136,47 +145,63 @@ class InternalInspection(models.Model):
 class Percentage(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     percentage = models.DecimalField(max_digits=10, decimal_places=2)
-    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
+    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f""
 
     class Meta:
         verbose_name = _('Percentage')
         verbose_name_plural = _('Percentages')
 
 class TransportReview(models.Model):
-    vehicle = models.ForeignKey(Vehicle, verbose_name=_('vehicle'), on_delete=models.PROTECT)
-    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
+    vehicle = models.ForeignKey('gathering.ScheduleHarvestVehicle', verbose_name=_('vehicle'), on_delete=models.CASCADE)
+    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.vehicle} / {self.vehicle.stamp_number}"
 
     class Meta:
         verbose_name = _('Transport Review')
         verbose_name_plural = _('Transport Reviews')
 
 class TransportInspection(models.Model):
-    sealed  = models.BooleanField(default=False, verbose_name=_('The transport is sealed'))
-    only_the_product  = models.BooleanField(default=False, verbose_name=_('The transport carries only the product'))
-    free_foreign_matter  = models.BooleanField(default=False, verbose_name=_('The transport is free of foreign matter'))
-    free_unusual_odors  = models.BooleanField(default=False, verbose_name=_('The transport is free of unusual odors'))
-    certificate  = models.BooleanField(default=False, verbose_name=_('Has a CERTIFICATE'))
-    free_fecal_matter  = models.BooleanField(default=False, verbose_name=_('The transport is free of fecal matter'))
-    transport_review = models.ForeignKey(TransportReview, verbose_name=_('Transport Review'), on_delete=models.PROTECT)
+    sealed = models.BooleanField(default=False, verbose_name=_('The transport is sealed'))
+    only_the_product = models.BooleanField(default=False, verbose_name=_('The transport carries only the product'))
+    free_foreign_matter = models.BooleanField(default=False, verbose_name=_('The transport is free of foreign matter'))
+    free_unusual_odors = models.BooleanField(default=False, verbose_name=_('The transport is free of unusual odors'))
+    certificate = models.BooleanField(default=False, verbose_name=_('Has a CERTIFICATE'))
+    free_fecal_matter = models.BooleanField(default=False, verbose_name=_('The transport is free of fecal matter'))
+    transport_review = models.ForeignKey(TransportReview, verbose_name=_('Transport Review'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f""
 
     class Meta:
         verbose_name = _('Transport Inspection')
         verbose_name_plural = _('Transport Inspections')
 
 class TransportCondition(models.Model):
-    clean  = models.BooleanField(default=False, verbose_name=_('Clean'))
-    good_condition  = models.BooleanField(default=False, verbose_name=_('Good condition'))
-    broken  = models.BooleanField(default=False, verbose_name=_('Broken'))
-    damaged  = models.BooleanField(default=False, verbose_name=_('Damaged'))
-    seal_number  = models.BooleanField(default=False, verbose_name=_('Seal Number'))
-    transport_review = models.ForeignKey(TransportReview, verbose_name=_('Transport Review'), on_delete=models.PROTECT)
+    is_clean = models.BooleanField(default=False, verbose_name=_('It is clean'))
+    good_condition = models.BooleanField(default=False, verbose_name=_('Good condition'))
+    broken = models.BooleanField(default=False, verbose_name=_('Broken'))
+    damaged = models.BooleanField(default=False, verbose_name=_('Damaged'))
+    seal = models.BooleanField(default=False, verbose_name=_('Seal'))
+    transport_review = models.ForeignKey(TransportReview, verbose_name=_('Transport Review'), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _('Transport Condition')
         verbose_name_plural = _('Transport Conditions')
 
+    def __str__(self):
+        return f""
+
 class SampleCollection(models.Model):
-    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.PROTECT)
+    total_sample = models.IntegerField()
+    food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f""
 
     class Meta:
         verbose_name = _('Sample Collection')
@@ -188,7 +213,7 @@ class SensorySpecification(models.Model):
     insects = models.BooleanField(default=False, verbose_name=_('Insects'))
     temperature_damage = models.BooleanField(default=False, verbose_name=_('Temperature Damage'))
     unusual_odor = models.BooleanField(default=False, verbose_name=_('Unusual Odor'))
-    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.PROTECT)
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _('Sensory Specification')
@@ -196,7 +221,7 @@ class SensorySpecification(models.Model):
 
 class SampleWeight(models.Model):
     weight = models.DecimalField(max_digits=10, decimal_places=2)
-    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.PROTECT)
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _('Sample Weight')
@@ -204,5 +229,5 @@ class SampleWeight(models.Model):
 
 class CropThreat(models.Model):
     sample_number = models.IntegerField()
-    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.PROTECT)
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
