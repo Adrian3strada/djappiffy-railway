@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from common.mixins import (CleanNameAndOrganizationMixin, CleanNameAndMarketMixin, CleanUniqueNameForOrganizationMixin,
                            CleanNameAndCodeAndOrganizationMixin)
+from common.settings import DATA_TYPE_CHOICES
 # Create your models here.
 
 
@@ -89,6 +90,20 @@ class PaymentKind(CleanNameAndOrganizationMixin, models.Model):
         ordering = ('organization', 'name',)
         constraints = [
             models.UniqueConstraint(fields=['name', 'organization'], name='paymentkind_unique_name_organization'),
+        ]
+
+class PaymentKindAdditionalInput(models.Model):
+    payment_kind = models.ForeignKey(PaymentKind, verbose_name=_('Payment Kind'), on_delete=models.CASCADE)
+    name = models.CharField(max_length=120, verbose_name=_('Name'))
+    data_type = models.CharField(max_length=20, verbose_name=_('Data type'), choices=DATA_TYPE_CHOICES)
+    is_required = models.BooleanField(default=False, verbose_name=_('Is required'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    class Meta:
+        verbose_name = _('Additional Input')
+        verbose_name_plural = _('Additional Inputs')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'payment_kind'], name='paymentkindadditionalinput_unique_name_payment_kind'),
         ]
 
 

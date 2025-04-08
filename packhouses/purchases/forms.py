@@ -1,7 +1,12 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from .models import Requisition, PurchaseOrder
+from .models import Requisition, PurchaseOrder, PurchaseOrderPayment
+from django.forms.models import ModelChoiceField
+import json
+from django.utils.safestring import mark_safe
+
+
 
 class RequisitionForm(forms.ModelForm):
     class Meta:
@@ -60,3 +65,49 @@ class PurchaseOrderForm(forms.ModelForm):
             raise ValidationError(_("You must add at least one supply to the purchases order."))
 
         return cleaned_data
+
+
+class PurchaseOrderPaymentForm(forms.ModelForm):
+    class Meta:
+        model = PurchaseOrderPayment
+        fields = ('payment_date', 'payment_kind', 'amount', 'bank', 'comments', 'additional_inputs')
+        widgets = {
+            'additional_inputs': forms.HiddenInput()
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            for field in self.fields:
+                self.fields[field].disabled = True
+                # Agregar clase readonly-field a todos los campos deshabilitados
+                if 'class' in self.fields[field].widget.attrs:
+                    self.fields[field].widget.attrs['class'] += ' readonly-field'
+                else:
+                    self.fields[field].widget.attrs['class'] = 'readonly-field'
+
+            self.fields['payment_date'].widget = forms.TextInput(attrs={
+                'readonly': 'readonly',
+                'class': 'readonly-field'
+            })
+
+            # Si hay datos en additional_inputs, asignar el JSON al campo
+            if self.instance.additional_inputs:
+                self.fields['additional_inputs'].initial = json.dumps(self.instance.additional_inputs)
+
+        # Agregar clase readonly-field a cualquier campo que sea readonly o disabled
+        for field_name, field in self.fields.items():
+            if field.disabled or field.widget.attrs.get('readonly', False):
+                if 'class' in field.widget.attrs:
+                    if 'readonly-field' not in field.widget.attrs['class']:
+                        field.widget.attrs['class'] += ' readonly-field'
+                else:
+                    field.widget.attrs['class'] = 'readonly-field'
+
+        for field_name in ['payment_kind', 'bank']:
+            if hasattr(self.fields[field_name].widget, 'can_add_related'):
+                self.fields[field_name].widget.can_add_related = False
+                self.fields[field_name].widget.can_change_related = False
+                self.fields[field_name].widget.can_delete_related = False
+                self.fields[field_name].widget.can_view_related = False
+
