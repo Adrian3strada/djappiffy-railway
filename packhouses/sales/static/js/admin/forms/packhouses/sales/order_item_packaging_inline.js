@@ -6,9 +6,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   let productPhenologyOptions = [];
   let productMarketClassOptions = [];
   let productRipenessOptions = [];
-  let productSizeOptions = [];
-
-  let unitPriceLabel = 'Unit Price'
 
   let clientProperties = null;
   let productProperties = null;
@@ -22,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         field.append(new Option('---------', '', true, !selectedValue));
       }
       options.forEach(option => {
-        const newOption = new Option(option.name, option.id, false, option.id === parseInt(selectedValue));
+        const newOption = new Option(option.name, option.id, false, parseInt(selectedValue) === option.id);
         if ('alias' in option && option.alias) {
           newOption.setAttribute('data-alias', option.alias);
         }
@@ -43,38 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }).fail(error => console.error('Fetch error:', error));
   }
 
-  async function getClientProperties() {
-    if (clientField.val()) {
-      clientProperties = await fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
-    } else {
-      clientProperties = null;
-    }
-  }
-
-  function getProductProperties() {
-    if (productField.val()) {
-      fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
-        .then(data => {
-          productProperties = data;
-          if (data.measure_unit_category_display) {
-            unitPriceLabel = `Price (${data.measure_unit_category_display})`
-          } else {
-            unitPriceLabel.text(`Price`);
-          }
-        })
-    } else {
-      productProperties = null;
-    }
-  }
-
-  function updateProductOptions() {
+  function getProductOptions() {
     return new Promise((resolve, reject) => {
       if (clientProperties && productProperties && orderItemsKindField) {
-
-        const productSizePromise = fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
-          .then(data => {
-            productSizeOptions = data;
-          });
 
         const productPhenologyPromise = fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productProperties.id}&is_enabled=1`)
           .then(data => {
@@ -91,7 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             productRipenessOptions = data
           })
 
-        Promise.all([productSizePromise, productPhenologyPromise, productMarketClassPromise, productRipenessPromise])
+        Promise.all([productPhenologyPromise, productMarketClassPromise, productRipenessPromise])
           .then(() => resolve())
           .catch(error => reject(error));
       } else {
@@ -100,6 +68,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         resolve();
       }
     });
+  }
+
+  async function getClientProperties() {
+    if (clientField.val()) {
+      clientProperties = await fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
+    } else {
+      clientProperties = null;
+    }
+  }
+
+  async function getProductProperties() {
+    if (productField.val()) {
+      productProperties = await fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
+    } else {
+      productProperties = null;
+    }
   }
 
   function getOrganizationProfile() {
@@ -112,41 +96,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   getOrganizationProfile()
+  await getClientProperties()
+  await getProductProperties()
+  console.log("organization", organization);
+  console.log("clientProperties", clientProperties);
 
-  clientField.on('change', async () => {
-    if (clientField.val()) {
-      if (!organization) {
-        await getOrganizationProfile();
-      }
-      await getClientProperties();
-      if (clientProperties && organization) {
-        if (clientProperties.country === organization.country) {
-          productSizeCategories = 'size,mix'
-        } else {
-          productSizeCategories = 'size'
-        }
-      }
-    }
-  });
-
-  productField.on('change', () => {
-    if (productField.val()) {
-      getProductProperties();
-    }
-  });
-
-  if (clientField.val()) {
-    if (!organization) {
-      await getOrganizationProfile();
-    }
-    await getClientProperties();
-    console.log("organization", organization);
-    console.log("clientProperties", clientProperties);
-  }
-
-  if (productField.val()) {
-    getProductProperties();
-  }
 
   document.addEventListener('formset:added', (event) => {
     if (event.detail.formsetName === 'orderitempackaging_set') {
@@ -157,8 +111,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productMarketClassField = $(newForm).find('select[name$="-product_market_class"]');
       const productMarketRipenessField = $(newForm).find('select[name$="-product_ripeness"]');
       const productPackagingField = $(newForm).find('select[name$="-product_packaging"]');
-      const productAmountPerPackagingField = $(newForm).find('input[name$="-product_amount_per_packaging"]');
-      const productPresentationQuantityPerPackagingField = $(newForm).find('input[name$="-product_presentation_quantity_per_packaging"]');
+      const productWeightPerPackagingField = $(newForm).find('input[name$="-product_weight_per_packaging"]');
+      const productPresentationPerPackagingField = $(newForm).find('input[name$="-product_presentations_per_packaging"]');
+      const productPiecesPerPresentationField = $(newForm).find('input[name$="-product_pieces_per_presentation"]');
 
       const quantityField = $(newForm).find('input[name$="-quantity"]');
       const unitPriceField = $(newForm).find('input[name$="-unit_price"]');
@@ -171,13 +126,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       productPhenologyField.closest('.form-group').hide();
       productMarketClassField.closest('.form-group').hide();
       productMarketRipenessField.closest('.form-group').hide();
-      productPackagingField.closest('.form-group').hide();
+      // productPackagingField.closest('.form-group').hide();
 
       updateFieldOptions(productSizeField, []);
       updateFieldOptions(productPackagingField, []);
 
-      updateProductOptions().then(() => {
-        updateFieldOptions(productSizeField, productSizeOptions);
+      getProductOptions().then(() => {
         updateFieldOptions(productPhenologyField, productPhenologyOptions);
         updateFieldOptions(productMarketClassField, productMarketClassOptions);
         updateFieldOptions(productMarketRipenessField, productRipenessOptions);
@@ -309,16 +263,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (productPackagingField.val()) {
           fetchOptions(`/rest/v1/catalogs/product-packaging/${productPackagingField.val()}/`)
             .then(data => {
-              productAmountPerPackagingField.val(data.product_amount_per_packaging);
+              productWeightPerPackagingField.val(data.product_amount_per_packaging);
               if (data.product_presentation) {
-                productPresentationQuantityPerPackagingField.val(data.product_presentation_quantity_per_packaging);
+                productPresentationPerPackagingField.val(data.product_presentation_quantity_per_packaging);
               } else {
-                productPresentationQuantityPerPackagingField.val(null);
+                productPresentationPerPackagingField.val(null);
               }
             })
         } else {
-          productAmountPerPackagingField.val(null);
-          productPresentationQuantityPerPackagingField.val(null);
+          productWeightPerPackagingField.val(null);
+          productPresentationPerPackagingField.val(null);
         }
       })
 
@@ -375,9 +329,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           })
       })
       .then(() => {
-        updateProductOptions()
+        getProductOptions()
           .then(() => {
-            updateFieldOptions(productSizeField, productSizeOptions, productSizeField.val());
             updateFieldOptions(productPhenologyField, productPhenologyOptions, productPhenologyField.val());
             updateFieldOptions(productMarketClassField, productMarketClassOptions, productMarketClassField.val());
             updateFieldOptions(productMarketRipenessField, productRipenessOptions, productMarketRipenessField.val());

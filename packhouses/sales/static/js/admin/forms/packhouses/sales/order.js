@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
         {id: "product_pallet", name: "Product pallet"},
       ]
     }
-    updateFieldOptions(orderItemsKindField, order_items_kind_options)
+    updateFieldOptions(orderItemsKindField, order_items_kind_options, orderItemsKindField.val());
   }
 
   function updateFieldOptions(field, options, selected = null) {
