@@ -137,6 +137,17 @@ class OrderItemInlineMixin(admin.StackedInline):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == "amount_price":
+            formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+            formfield.widget.attrs['readonly'] = True
+            formfield.widget.attrs['class'] = 'readonly'
+            formfield.disabled = True
+            if request.POST:
+                formfield.required = False
+            return formfield
+
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 class OrderItemWeightInline(OrderItemInlineMixin):
     model = OrderItemWeight
@@ -179,6 +190,16 @@ class OrderItemPackagingInline(OrderItemInlineMixin):
                                                                      market=parent_obj.client.market, is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+
+        if db_field.name == "product_presentations_per_packaging":
+            pass
+
+        if db_field.name == "product_pieces_per_presentation":
+            pass
+
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
     class Media:
         js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)

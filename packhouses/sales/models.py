@@ -109,9 +109,9 @@ class OrderItemWeight(models.Model):
     product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
-    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
+    quantity = models.FloatField(verbose_name=_('Quantity'), validators=[MinValueValidator(0.01)])
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
-    amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
+    amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2, validators=[MinValueValidator(0.01)], null=True, blank=False)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -133,18 +133,22 @@ class OrderItemPackaging(models.Model):
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
-    product_weight_per_packaging = models.PositiveIntegerField(verbose_name=_('Product weight per packaging'), null=True, blank=False)
+    product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'), validators=[MinValueValidator(0.01)])
     product_presentations_per_packaging = models.PositiveIntegerField(
         verbose_name=_('Product presentations per packaging'), null=True, blank=False)
     product_pieces_per_presentation = models.PositiveIntegerField(
         verbose_name=_('Product pieces per presentation'), null=True, blank=False)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
-    amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2)
+    amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2, null=True, blank=False)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.pk}"
+
+    def clean(self):
+        self.amount_price = self.unit_price * self.quantity if self.unit_price and self.quantity else 0
+        super().clean()
 
     class Meta:
         verbose_name = _('Order item by packaging')
@@ -159,7 +163,8 @@ class OrderItemPallet(models.Model):
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'),
                                           on_delete=models.PROTECT, null=True, blank=False)
-    product_weight_per_packaging = models.PositiveIntegerField(verbose_name=_('Product weight per packaging'), null=True, blank=False)
+    product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'),
+                                                     validators=[MinValueValidator(0.01)])
     product_presentations_per_packaging = models.PositiveIntegerField(
         verbose_name=_('Product presentations per packaging'), null=True, blank=False)
     product_pieces_per_presentation = models.PositiveIntegerField(
@@ -171,7 +176,7 @@ class OrderItemPallet(models.Model):
         validators=[MinValueValidator(1)], null=True, blank=False)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
-    amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2)
+    amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2, null=True, blank=False)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
 
     def __str__(self):

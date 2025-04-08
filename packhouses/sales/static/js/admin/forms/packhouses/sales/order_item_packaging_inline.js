@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productMarketRipenessField = $(newForm).find('select[name$="-product_ripeness"]');
       const productPackagingField = $(newForm).find('select[name$="-product_packaging"]');
       const productWeightPerPackagingField = $(newForm).find('input[name$="-product_weight_per_packaging"]');
-      const productPresentationPerPackagingField = $(newForm).find('input[name$="-product_presentations_per_packaging"]');
+      const productPresentationsPerPackagingField = $(newForm).find('input[name$="-product_presentations_per_packaging"]');
       const productPiecesPerPresentationField = $(newForm).find('input[name$="-product_pieces_per_presentation"]');
 
       const quantityField = $(newForm).find('input[name$="-quantity"]');
@@ -227,12 +227,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
 
           if (productSizeSelectedOptionCategory === 'mix') {
-            alert("El producto seleccionado es un mix");
             queryParams.category = "single";
           }
 
           const url = `/rest/v1/catalogs/product-packaging/?${$.param(queryParams)}`;
-          console.log(url);
 
           fetchOptions(url)
             .then(data => {
@@ -253,27 +251,32 @@ document.addEventListener('DOMContentLoaded', async () => {
               updateFieldOptions(productPackagingField, data);
             });
 
-
         } else {
           updateFieldOptions(productPackagingField, []);
         }
-
       });
 
       productPackagingField.on('change', () => {
+        productWeightPerPackagingField.val(null);
+        productPresentationsPerPackagingField.val(null);
+        productPiecesPerPresentationField.val(null);
+        productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+        productPiecesPerPresentationField.closest('.form-group').fadeOut();
         if (productPackagingField.val()) {
           fetchOptions(`/rest/v1/catalogs/product-packaging/${productPackagingField.val()}/`)
             .then(data => {
-              productWeightPerPackagingField.val(data.product_amount_per_packaging);
+              productWeightPerPackagingField.val(data.product_weight_per_packaging);
               if (data.product_presentation) {
-                productPresentationPerPackagingField.val(data.product_presentation_quantity_per_packaging);
+                productPresentationsPerPackagingField.val(data.product_presentations_per_packaging);
+                productPiecesPerPresentationField.val(data.product_pieces_per_presentation)
+                productPresentationsPerPackagingField.closest('.form-group').fadeIn();
+                productPiecesPerPresentationField.closest('.form-group').fadeIn();
               } else {
-                productPresentationPerPackagingField.val(null);
+                productPresentationsPerPackagingField.val(null);
+                productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+                productPiecesPerPresentationField.closest('.form-group').fadeOut();
               }
             })
-        } else {
-          productWeightPerPackagingField.val(null);
-          productPresentationPerPackagingField.val(null);
         }
       })
 
