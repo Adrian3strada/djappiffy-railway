@@ -285,9 +285,14 @@ class OrderAdmin(ByOrganizationAdminMixin):
         client_id = request.POST.get('client') if request.POST else obj.client_id if obj else None
 
         if db_field.name == "maquiladora":
-            kwargs["queryset"] = Maquiladora.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.required = True
             if client_category and client_category == 'maquiladora':
                 kwargs["queryset"] = Maquiladora.objects.filter(**queryset_organization_filter)
+            else:
+                kwargs["queryset"] = Maquiladora.objects.none()
+                formfield.required = False
+            return formfield
 
         if db_field.name == "client":
             queryset_filter = {"organization": organization, "category": client_category, "is_enabled": True}
@@ -334,4 +339,5 @@ class OrderAdmin(ByOrganizationAdminMixin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/sales/order.js',)
+        # js = ('js/admin/forms/packhouses/sales/order.js',)
+        pass
