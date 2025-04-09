@@ -179,6 +179,137 @@
         "sort_order": 0
     }
 },
+
+  {
+    "model": "base.SupplyMeasureUnitCategory",
+    "pk": 1,
+    "fields": {
+      "name": "Pieces",
+      "name_en": "Pieces",
+      "name_pt": null,
+      "name_fr": null,
+      "name_de": null,
+      "name_es": "Piezas",
+      "is_enabled": true
+    }
+  },
+  {
+    "model": "base.SupplyMeasureUnitCategory",
+    "pk": 2,
+    "fields": {
+      "name": "Grams",
+      "name_en": "Grams",
+      "name_pt": null,
+      "name_fr": null,
+      "name_de": null,
+      "name_es": "Gramos",
+      "is_enabled": true
+    }
+  },
+  {
+    "model": "base.SupplyMeasureUnitCategory",
+    "pk": 3,
+    "fields": {
+      "name": "Kilograms",
+      "name_en": "Kilograms",
+      "name_pt": null,
+      "name_fr": null,
+      "name_de": null,
+      "name_es": "Kilogramos",
+      "is_enabled": true
+    }
+  },
+  {
+    "model": "base.SupplyMeasureUnitCategory",
+    "pk": 4,
+    "fields": {
+      "name": "Tons",
+      "name_en": "Tons",
+      "name_pt": null,
+      "name_fr": null,
+      "name_de": null,
+      "name_es": "Toneladas",
+      "is_enabled": true
+    }
+  },
+  {
+    "model": "base.SupplyMeasureUnitCategory",
+    "pk": 5,
+    "fields": {
+      "name": "Milliliters",
+      "name_en": "Milliliters",
+      "name_pt": null,
+      "name_fr": null,
+      "name_de": null,
+      "name_es": "Mililitros",
+      "is_enabled": true
+    }
+  },
+  {
+    "model": "base.SupplyMeasureUnitCategory",
+    "pk": 6,
+    "fields": {
+      "name": "Liters",
+      "name_en": "Liters",
+      "name_pt": null,
+      "name_fr": null,
+      "name_de": null,
+      "name_es": "Litros",
+      "is_enabled": true
+    }
+  },
+  {
+    "model": "base.SupplyMeasureUnitCategory",
+    "pk": 7,
+    "fields": {
+      "name": "Centimeters",
+      "name_en": "Centimeters",
+      "name_pt": null,
+      "name_fr": null,
+      "name_de": null,
+      "name_es": "Centímetros",
+      "is_enabled": true
+    }
+  },
+  {
+    "model": "base.SupplyMeasureUnitCategory",
+    "pk": 8,
+    "fields": {
+      "name": "Meters",
+      "name_en": "Meters",
+      "name_pt": null,
+      "name_fr": null,
+      "name_de": null,
+      "name_es": "Metros",
+      "is_enabled": true
+    }
+  },
+  {
+    "model": "base.SupplyMeasureUnitCategory",
+    "pk": 9,
+    "fields": {
+      "name": "Kilometers",
+      "name_en": "Kilometers",
+      "name_pt": null,
+      "name_fr": null,
+      "name_de": null,
+      "name_es": "Kilómetros",
+      "is_enabled": true
+    }
+  },
+  {
+    "model": "base.SupplyMeasureUnitCategory",
+    "pk": 10,
+    "fields": {
+      "name": "Other",
+      "name_en": "Other",
+      "name_pt": null,
+      "name_fr": null,
+      "name_de": null,
+      "name_es": "Otro",
+      "is_enabled": true
+    }
+  },
 {
     "model": "base.supplykind",
     "pk": 1,
@@ -191,7 +322,7 @@
         "name_de": null,
         "name_es": "CAJA",
         "capacity_unit_category": "Kg",
-        "usage_discount_unit_category": "pieces",
+        "usage_discount_unit_category": 1,
         "is_enabled": true
     }
 },
@@ -207,7 +338,7 @@
         "name_de": null,
         "name_es": "CHAROLA",
         "capacity_unit_category": "pieces",
-        "usage_discount_unit_category": "pieces",
+        "usage_discount_unit_category": 1,
         "is_enabled": true
     }
 },
@@ -223,7 +354,7 @@
         "name_de": null,
         "name_es": "TARIMA",
         "capacity_unit_category": null,
-        "usage_discount_unit_category": "pieces",
+        "usage_discount_unit_category": 1,
         "is_enabled": true
     }
 },
@@ -239,7 +370,7 @@
     "name_de": null,
     "name_es": "ESQUINERO",
     "capacity_unit_category": null,
-    "usage_discount_unit_category": "pieces",
+    "usage_discount_unit_category": 1,
     "is_enabled": true
   }
 },
@@ -255,7 +386,7 @@
         "name_de": null,
         "name_es": "TAPA",
         "capacity_unit_category": null,
-        "usage_discount_unit_category": "pieces",
+        "usage_discount_unit_category": 1,
         "is_enabled": true
     }
 },
@@ -271,7 +402,7 @@
         "name_de": null,
         "name_es": "MALLA",
         "capacity_unit_category": "pieces",
-        "usage_discount_unit_category": "cm",
+        "usage_discount_unit_category": 7,
         "is_enabled": true
     }
 },
@@ -287,7 +418,7 @@
         "name_de": null,
         "name_es": "FILM",
         "capacity_unit_category": null,
-        "usage_discount_unit_category": "cm",
+        "usage_discount_unit_category": 7,
         "is_enabled": true
     }
 },
@@ -303,7 +434,7 @@
     "name_de": null,
     "name_es": "FLEJE",
     "capacity_unit_category": null,
-    "usage_discount_unit_category": "m",
+    "usage_discount_unit_category": 8,
     "is_enabled": true
   }
 },
@@ -319,7 +450,7 @@
         "name_de": null,
         "name_es": "CAJA DE CAMPO",
         "capacity_unit_category": null,
-        "usage_discount_unit_category": "pieces",
+        "usage_discount_unit_category": 1,
         "is_enabled": true
     }
 },

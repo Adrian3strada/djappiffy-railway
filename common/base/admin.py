@@ -6,7 +6,7 @@ from organizations.models import Organization, OrganizationUser
 from .models import (ProductKind, ProductKindCountryStandard, ProductKindCountryStandardSize, LegalEntityCategory, CapitalFramework,
                      ProductKindCountryStandardPackaging, SupplyKind,
                      Incoterm, LocalDelivery, Currency,
-                     CertificationEntity, CertificationFormat)
+                     CertificationEntity, CertificationFormat, SupplyMeasureUnitCategory)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
 from wagtail.documents.models import Document
@@ -128,6 +128,9 @@ class CurrencyAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, **kwargs)
         return form
 
+@admin.register(SupplyMeasureUnitCategory)
+class SupplyMeasureUnitCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_enabled')
 
 @admin.register(SupplyKind)
 class SupplyKindAdmin(admin.ModelAdmin):

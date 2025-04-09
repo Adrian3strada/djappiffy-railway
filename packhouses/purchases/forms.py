@@ -1,10 +1,11 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from .models import Requisition, PurchaseOrder, PurchaseOrderPayment
+from .models import Requisition, PurchaseOrder, PurchaseOrderPayment,RequisitionSupply
 from django.forms.models import ModelChoiceField
 import json
 from django.utils.safestring import mark_safe
+from packhouses.catalogs.models import Supply
 
 
 
@@ -110,4 +111,42 @@ class PurchaseOrderPaymentForm(forms.ModelForm):
                 self.fields[field_name].widget.can_change_related = False
                 self.fields[field_name].widget.can_delete_related = False
                 self.fields[field_name].widget.can_view_related = False
+
+
+
+class RequisitionSupplyForm(forms.ModelForm):
+    class Meta:
+        model = RequisitionSupply
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        supply = None
+        # Si la instancia ya existe, obtenemos el supply directamente
+        if self.instance and self.instance.pk:
+            supply = self.instance.supply
+        else:
+            # Si es una nueva instancia, intentamos obtener el supply desde los datos iniciales
+            if 'supply' in self.data:
+                try:
+                    supply_id = int(self.data.get('supply'))
+                    supply = Supply.objects.get(pk=supply_id)
+                except (ValueError, Supply.DoesNotExist):
+                    pass
+            elif 'supply' in self.initial:
+                try:
+                    supply = Supply.objects.get(pk=self.initial.get('supply'))
+                except Supply.DoesNotExist:
+                    pass
+
+        if supply:
+            # A partir del supply, obtenemos las unidades permitidas de su SupplyKind (campo ManyToManyField)
+            requested_units = supply.kind.requested_unit_category.all()
+            choices = [(unit.pk, unit.name) for unit in requested_units]
+            self.fields['unit_category'].choices = choices
+        else:
+            # En caso de no tener supply definido, dejamos el campo sin opciones
+            self.fields['unit_category'].choices = []
+
 

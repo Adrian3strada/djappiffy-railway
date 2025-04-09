@@ -10,7 +10,7 @@ from organizations.models import Organization
 from cities_light.models import City, Country, Region, SubRegion
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
-from common.base.models import ProductKind, CapitalFramework, LegalEntityCategory, Currency
+from common.base.models import ProductKind, CapitalFramework, LegalEntityCategory, Currency, SupplyMeasureUnitCategory
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   OrchardCertificationVerifier,
@@ -92,10 +92,10 @@ class RequisitionSupply(models.Model):
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0.01)]
     )
-    unit_category = models.CharField(
-        max_length=30,
+    unit_category = models.ForeignKey(
+        SupplyMeasureUnitCategory,
         verbose_name=_('Unit category'),
-        choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
+        on_delete=models.PROTECT
     )
     delivery_deadline = models.DateField(
         verbose_name=_('Delivery deadline'),

@@ -14,7 +14,7 @@ from common.base.mixins import (
     DisableInlineRelatedLinksMixin, ByUserAdminMixin,
 )
 from django.core.exceptions import ObjectDoesNotExist
-from .forms import RequisitionForm, PurchaseOrderForm, PurchaseOrderPaymentForm
+from .forms import RequisitionForm, PurchaseOrderForm, PurchaseOrderPaymentForm, RequisitionSupplyForm
 from django.utils.html import format_html, format_html_join
 from django.urls import reverse
 import nested_admin
@@ -25,6 +25,7 @@ from common.utils import is_instance_used
 
 class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
     model = RequisitionSupply
+    #form = RequisitionSupplyForm
     fields = ('supply', 'quantity', 'unit_category','delivery_deadline', 'comments')
     extra = 0
 
@@ -63,6 +64,9 @@ class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInlin
         if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
             return False
         return super().has_delete_permission(request, obj)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/purchases/requisition_supply_inline.js',)
 
 
 @admin.register(Requisition)
