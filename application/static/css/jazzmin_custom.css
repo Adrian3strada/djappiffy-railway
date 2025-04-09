@@ -7,19 +7,19 @@
 }
 
 .readonly-field {
-  background-color: #bababa !important; /* Fondo gris claro para el campo deshabilitado */
-  color: #888686 !important; /* Color de texto gris */
+  background-color: #ececec !important; /* Fondo gris claro para el campo deshabilitado */
+  color: #464646 !important; /* Color de texto gris */
   cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
   pointer-events: none; /* Desactiva eventos de mouse, haciendo que parezca completamente deshabilitado */
   opacity: 0.6; /* Opcional: hace que el campo se vea un poco translúcido */
 }
 
 .select2-container.disabled-field .select2-selection {
-  background-color: #dbdbdb; /* Fondo gris claro para el campo deshabilitado */
-  color: #888686 !important; /* Color de texto gris */
+  background-color: #eee !important; /* Fondo gris claro para el campo deshabilitado */
+  color: #848484 !important;
   cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
   pointer-events: none; /* Desactiva eventos de mouse, haciendo que parezca completamente deshabilitado */
-  opacity: 1; /* Opcional: hace que el campo se vea un poco translúcido */
+  border: 1px solid #ced4da;
 }
 
 
@@ -253,3 +253,19 @@ label:not(.form-check-label):not(.custom-file-label) {
     justify-content: flex-end;
     margin-bottom: 15px;
 }
+
+.fade-in {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-in.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+select[disabled] + .select2 .select2-selection__rendered {
+  color: #848484 !important;
+}
+

@@ -1,5 +1,5 @@
-Django>=4.2,<5.1
-wagtail>=6.2,<6.3
+Django>=4.2,<5.3
+wagtail>=6.2,<6.5
 psycopg2-binary
 gdal
 django-sass
@@ -54,6 +54,7 @@ django-modeladmin-reorder
 django-weasyprint
 django-import-export
 setuptools
+qrcode
 
 geopandas
 numpy

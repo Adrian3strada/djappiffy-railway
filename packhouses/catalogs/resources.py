@@ -96,7 +96,7 @@ class ProductResource(DehydrationResource, ExportResource):
     class Meta:
         model = Product
         exclude = default_excluded_fields
-        export_order = ('id', 'kind', 'name', 'price_measure_unit_category', 'product_managment_cost', 'product_class',  'product_variety',
+        export_order = ('id', 'kind', 'name', 'pmeasure_unit_category', 'product_management_cost', 'product_class',  'product_variety',
                         'product_phenology', 'product_harvest_size', 'product_mass_volume', 'product_ripeness', 'is_enabled')
 
 
@@ -243,9 +243,9 @@ class PackagingResource(DehydrationResource, ExportResource):
         if not containers:
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{i.inside.name} ({i.product_amount_per_packaging})" for i in containers]) + "</ul>"
+            return "<ul>" + "".join([f"<li>{i.inside.name} ({i.product_weight_per_packaging})" for i in containers]) + "</ul>"
         else:
-            return ", ".join([f"{i.inside.name} ({i.product_amount_per_packaging})" for i in containers])
+            return ", ".join([f"{i.inside.name} ({i.product_weight_per_packaging})" for i in containers])
 
     class Meta:
         model = Packaging

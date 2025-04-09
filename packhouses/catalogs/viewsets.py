@@ -113,7 +113,7 @@ class ProductMarketClassViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
-    filterset_fields = ['kind', 'price_measure_unit_category', 'is_enabled']
+    filterset_fields = ['kind', 'measure_unit_category', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -190,7 +190,7 @@ class PackagingViewSet(viewsets.ModelViewSet):
 
 class ProductPackagingViewSet(viewsets.ModelViewSet):
     serializer_class = ProductPackagingSerializer
-    filterset_fields = ['product', 'market', 'is_enabled']
+    filterset_fields = ['product', 'market', 'category', 'product_size', 'product_presentation', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -199,6 +199,11 @@ class ProductPackagingViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         queryset = ProductPackaging.objects.filter(organization=self.request.organization)
+
+        product_presentation__isnull = self.request.GET.get('product_presentation__isnull')
+
+        if product_presentation__isnull:
+            queryset = queryset.filter(product_presentation__isnull=product_presentation__isnull)
 
         return queryset
 

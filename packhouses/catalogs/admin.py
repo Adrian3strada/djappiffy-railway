@@ -278,9 +278,9 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductResource]
     list_display = ('name', 'kind', 'is_enabled')
-    list_filter = (ProductKindForPackagingFilter, 'price_measure_unit_category', ByMarketForOrganizationFilter, 'is_enabled',)
+    list_filter = (ProductKindForPackagingFilter, 'measure_unit_category', ByMarketForOrganizationFilter, 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
-    fields = ('kind', 'name', 'description', 'price_measure_unit_category', 'markets', 'is_enabled')
+    fields = ('kind', 'name', 'description', 'measure_unit_category', 'markets', 'is_enabled')
     inlines = [ProductMarketMeasureUnitManagementCostInline, ProductMarketClassInline,
                ProductVarietyInline,
                ProductPhenologyKindInline, ProductHarvestSizeKindInline,
@@ -302,7 +302,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                                                   ProductMarketMeasureUnitManagementCost, ProductMarketClass,
                                                   ProductVariety, ProductPhenologyKind, ProductHarvestSizeKind,
                                                   ProductMassVolumeKind, ProductRipeness]):
-            readonly_fields.extend(['kind', 'name', 'price_measure_unit_category', 'markets', 'organization'])
+            readonly_fields.extend(['kind', 'name', 'measure_unit_category', 'markets', 'organization'])
         return readonly_fields
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -1459,7 +1459,7 @@ class ProductPackagingPalletInline(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_obj_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = Packaging.objects.get(id=parent_obj_id) if parent_obj_id else None
+        parent_obj = ProductPackaging.objects.get(id=parent_obj_id) if parent_obj_id else None
         organization = request.organization if hasattr(request, 'organization') else None
 
         if db_field.name == "pallet":
@@ -1483,11 +1483,14 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                    ByPackagingForOrganizationProductPackagingFilter,
                    ByProductPresentationForOrganizationProductPackagingFilter,
                    'is_enabled']
-    list_display = ['name', 'alias', 'category', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging',
-                    'product_presentation', 'product_presentation_quantity_per_packaging', 'is_enabled']
+    list_display = ['name', 'alias', 'category', 'market', 'product', 'product_size', 'packaging',
+                    'product_weight_per_packaging',
+                    'product_presentation', 'product_pieces_per_presentation',
+                    'product_presentations_per_packaging', 'is_enabled']
     search_fields = ('name', 'alias')
-    fields = ['category', 'market', 'product', 'product_size', 'packaging', 'product_amount_per_packaging',
-              'product_presentation', 'product_presentation_quantity_per_packaging', 'name', 'alias', 'is_enabled']
+    fields = ['category', 'market', 'product', 'product_size', 'packaging', 'product_weight_per_packaging',
+              'product_presentation', 'product_pieces_per_presentation', 'product_presentations_per_packaging',
+              'name', 'alias', 'is_enabled']
     inlines = [ProductPackagingPalletInline]
 
     @uppercase_form_charfield('name')
@@ -1531,7 +1534,6 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         category = request.POST.get('category') if request.POST else obj.category if obj else None
 
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        print("organization_queryfilter", organization_queryfilter)
 
         if db_field.name == "market":
             if organization:
@@ -1569,7 +1571,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
             kwargs["queryset"] = queryset
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.required = True
-            if category == 'packaging' and request.POST:
+            if category == 'single' and request.POST:
                 formfield.required = False
             return formfield
 
@@ -1581,17 +1583,17 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
 
         category = request.POST.get('category') if request.POST else obj.category if obj else None
 
-        if db_field.name == "product_amount_per_packaging":
+        if db_field.name == "product_presentations_per_packaging":
             formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
             formfield.required = True
-            if category == 'presentation' and request.POST:
+            if category == 'single' and request.POST:
                 formfield.required = False
             return formfield
 
-        if db_field.name == "product_presentation_quantity_per_packaging":
+        if db_field.name == "product_pieces_per_presentation":
             formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
             formfield.required = True
-            if category == 'packaging' and request.POST:
+            if category == 'single' and request.POST:
                 formfield.required = False
             return formfield
 

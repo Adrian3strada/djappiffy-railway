@@ -11,12 +11,12 @@ from packhouses.purchases.models import PurchaseOrderSupply
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    price_measure_unit_category_display = serializers.SerializerMethodField(read_only=True)
+    measure_unit_category_display = serializers.SerializerMethodField(read_only=True)
     product_market_classes = serializers.SerializerMethodField(read_only=True)
     packaging = serializers.SerializerMethodField(read_only=True)
 
-    def get_price_measure_unit_category_display(self, obj):
-        return obj.get_price_measure_unit_category_display()
+    def get_measure_unit_category_display(self, obj):
+        return obj.get_measure_unit_category_display()
 
     def get_product_market_classes(self, obj):
         product_market_classes = ProductMarketClass.objects.filter(product=obj)
@@ -32,12 +32,22 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class PackagingSerializer(serializers.ModelSerializer):
+    packaging_supply_detail = serializers.SerializerMethodField(read_only=True)
+
+    def get_packaging_supply_detail(self, obj):
+        # supply = obj.packaging_set.first()
+        print("obj", obj.packaging_supply)
+        print("obj", dir(obj))
+        return SupplySerializer(obj.packaging_supply, read_only=True).data
+        # return []
+
     class Meta:
         model = Packaging
         fields = '__all__'
 
 
 class ProductPackagingSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ProductPackaging
         fields = '__all__'

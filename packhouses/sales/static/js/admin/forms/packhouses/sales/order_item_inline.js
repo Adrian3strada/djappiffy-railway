@@ -61,8 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
           productProperties = data;
           console.log("productProperties", productProperties)
-          if (data.price_measure_unit_category_display) {
-            priceLabel = `Price (${data.price_measure_unit_category_display})`
+          if (data.measure_unit_category_display) {
+            priceLabel = `Price (${data.measure_unit_category_display})`
           } else {
             priceLabel.text(`Price`);
           }
@@ -78,14 +78,14 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log("pricingByField", pricingByField)
       let productSizeCategories = 'none'
 
-      if (orderItemsKindField.val() === 'product_measure_unit') {
-        if (pricingByField.val() === 'product_measure_unit') {
+      if (orderItemsKindField.val() === 'product_weight') {
+        if (pricingByField.val() === 'product_weight') {
           productSizeCategories = 'size,mix,waste,biomass'
         }
       }
 
       if (orderItemsKindField.val() === 'product_packaging') {
-        if (pricingByField.val() === 'product_measure_unit') {
+        if (pricingByField.val() === 'product_weight') {
           productSizeCategories = 'size,mix'
         }
         if (pricingByField.val() === 'product_packaging') {
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (orderItemsKindField.val() === 'product_pallet') {
-        if (pricingByField.val() === 'product_measure_unit') {
+        if (pricingByField.val() === 'product_weight') {
           productSizeCategories = 'size,mix'
         }
         if (pricingByField.val() === 'product_packaging') {
