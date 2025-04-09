@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const packhouseWeightResultField = $('#id_packhouse_weight_result');
-    const preLotField = $('#id_pre_lot_quantity');
-    const preLotFullContainerField = $('#id_pre_lot_full_containers')
+    const weighedSetField = $('#id_total_weighed_sets');
+    const weighedSetContainerField = $('#id_total_weighed_set_containers')
 
     // ================ CONSTANTES ================
-    const PRE_LOT_FORM_SELECTOR = 'div[id^="prelot_set-"]:not([id*="group"], [id*="empty"])';
-    const CONTAINER_FORM_SELECTOR = 'tbody[id*="-prelotcontainer_set-"]:not([id*="empty"])';
+    const WEIGHING_SET_FORM_SELECTOR = 'div[id^="weighingset_set-"]:not([id*="group"], [id*="empty"])';
+    const CONTAINER_FORM_SELECTOR = 'tbody[id*="-weighingsetcontainer_set-"]:not([id*="empty"])';
 
     const debounce = (func, wait) => {
         let timeout;
@@ -66,32 +66,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ================ ACTUALIZACIÓN DE CONTEO DE PRE-LOTES ================
-    const updatePreLotCount = () => {
-        // Solo contar pre-lotes que no estén marcados para eliminación (usando el checkbox de pre-lote)
-        const validPreLots = $(PRE_LOT_FORM_SELECTOR).filter((i, el) => {
+    // ================ ACTUALIZACIÓN DE CONTEO DE WEIGHING SETS ================
+    const updateWeighedSetCount = () => {
+        // Solo contar weighing sets que no estén marcados para eliminación (usando el checkbox de weighing set)
+        const validWeighedSets = $(WEIGHING_SET_FORM_SELECTOR).filter((i, el) => {
             const $el = $(el);
-            const $preLotDelete = $el.find('input[name$="-DELETE"]').filter(function() {
+            const $weighingSetDelete = $el.find('input[name$="-DELETE"]').filter(function() {
                 return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
             });
-            return !$preLotDelete.prop('checked');
+            return !$weighingSetDelete.prop('checked');
         }).length;
-        preLotField.val(validPreLots).trigger('change');
+        weighedSetField.val(validWeighedSets).trigger('change');
     };
 
-    // ================ CÁLCULO DE TARA DEL PRE-LOTE ================
-    const calculatePreLotTare = async ($preLotForm) => {
-        // Filtra el checkbox de eliminación del pre-lote (excluyendo los que pertenecen a un container)
-        const $preLotDeleteCheckbox = $preLotForm
+    // ================ CÁLCULO DE TARA DEL WEIGHING SET ================
+    const calculateWeighingSetTare = async ($weighingSetForm) => {
+        // Filtra el checkbox de eliminación del weighing set (excluyendo los que pertenecen a un container)
+        const $weighingSetDeleteCheckbox = $weighingSetForm
             .find('input[name$="-DELETE"]')
             .filter(function() {
                 return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
             });
-        if ($preLotDeleteCheckbox.prop('checked')) return;
+        if ($weighingSetDeleteCheckbox.prop('checked')) return;
 
         let totalTare = 0;
         let totalContainers = 0;
-        const containers = $preLotForm.find(CONTAINER_FORM_SELECTOR);
+        const containers = $weighingSetForm.find(CONTAINER_FORM_SELECTOR);
         debouncedUpdateTotalContainers();
 
         for (const container of containers) {
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const observer = new MutationObserver(mutations => {
                     mutations.forEach(mutation => {
                         if (mutation.attributeName === 'checked') {
-                            calculatePreLotTare($preLotForm);
+                            calculateWeighingSetTare($weighingSetForm);
                         }
                     });
                 });
@@ -122,39 +122,39 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         const truncatedTare = Math.trunc(totalTare * 1000) / 1000;
-        $preLotForm.find('input[name$="-container_tare"]').val(truncatedTare);
-        $preLotForm.find('input[name$="-total_containers"]').val(totalContainers);
-        updateNetWeight($preLotForm);
+        $weighingSetForm.find('input[name$="-container_tare"]').val(truncatedTare);
+        $weighingSetForm.find('input[name$="-total_containers"]').val(totalContainers);
+        updateNetWeight($weighingSetForm);
     };
 
-    // ================ ACTUALIZACIÓN DE PESO NETO DEL PRE-LOTE ================
-    const updateNetWeight = ($preLotForm) => {
-        const $preLotDeleteCheckbox = $preLotForm
+    // ================ ACTUALIZACIÓN DE PESO NETO DEL WEIGHING SET ================
+    const updateNetWeight = ($weighingSetForm) => {
+        const $weighingSetDeleteCheckbox = $weighingSetForm
             .find('input[name$="-DELETE"]')
             .filter(function() {
                 return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
             });
-        if ($preLotDeleteCheckbox.prop('checked')) return;
+        if ($weighingSetDeleteCheckbox.prop('checked')) return;
 
-        const gross = parseFloat($preLotForm.find('input[name$="-gross_weight"]').val()) || 0;
-        const platform = parseFloat($preLotForm.find('input[name$="-platform_tare"]').val()) || 0;
-        const container = parseFloat($preLotForm.find('input[name$="-container_tare"]').val()) || 0;
+        const gross = parseFloat($weighingSetForm.find('input[name$="-gross_weight"]').val()) || 0;
+        const platform = parseFloat($weighingSetForm.find('input[name$="-platform_tare"]').val()) || 0;
+        const container = parseFloat($weighingSetForm.find('input[name$="-container_tare"]').val()) || 0;
         
         const net = Math.trunc((gross - platform - container) * 1000) / 1000;
-        $preLotForm.find('input[name$="-net_weight"]').val(net);
+        $weighingSetForm.find('input[name$="-net_weight"]').val(net);
         debouncedUpdatePackhouse();
     };
     
     // ================ ACTUALIZACIÓN TOTAL DEL PACKHOUSE ================
     const updatePackhouseWeight = () => {
         let total = 0;
-        $(PRE_LOT_FORM_SELECTOR).each(function() {
-            const $preLot = $(this);
-            const $preLotDelete = $preLot.find('input[name$="-DELETE"]').filter(function() {
+        $(WEIGHING_SET_FORM_SELECTOR).each(function() {
+            const $weighingSet = $(this);
+            const $weighingSetDelete = $weighingSet.find('input[name$="-DELETE"]').filter(function() {
                 return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
             });
-            if ($preLotDelete.prop('checked')) return;
-            const netWeight = parseFloat($preLot.find('input[name$="-net_weight"]').val()) || 0;
+            if ($weighingSetDelete.prop('checked')) return;
+            const netWeight = parseFloat($weighingSet.find('input[name$="-net_weight"]').val()) || 0;
             total += netWeight;
         });
         const truncatedTotal = Math.trunc(total * 1000) / 1000;
@@ -168,17 +168,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateTotalFullContainers = () => {
         let total = 0;
         
-        $(PRE_LOT_FORM_SELECTOR).each(function() {
-            const $preLot = $(this);
-            const $preLotDelete = $preLot.find('input[name$="-DELETE"]').filter(function() {
+        $(WEIGHING_SET_FORM_SELECTOR).each(function() {
+            const $weighingSet = $(this);
+            const $weighingSetDelete = $weighingSet.find('input[name$="-DELETE"]').filter(function() {
                 return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
             });
             
-            // Si el pre-lote está marcado para eliminar, saltar
-            if ($preLotDelete.prop('checked')) return;
+            // Si el weighing set está marcado para eliminar, saltar
+            if ($weighingSetDelete.prop('checked')) return;
 
-            // Sumar contenedores de TODOS los containers no eliminados en este pre-lote
-            $preLot.find(CONTAINER_FORM_SELECTOR).each(function() {
+            // Sumar contenedores de TODOS los containers no eliminados en este weighing set
+            $weighingSet.find(CONTAINER_FORM_SELECTOR).each(function() {
                 const $container = $(this);
                 const $deleteCheckbox = $container.find('input[name$="-DELETE"]');
                 
@@ -189,18 +189,18 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
         
-        preLotFullContainerField.val(total);
+        weighedSetContainerField.val(total);
     };
 
     const debouncedUpdateTotalContainers = debounce(updateTotalFullContainers, 300);
 
 
-    // ================ INICIALIZACIÓN DE UN PRE-LOTE ================
-    const initializePreLot = (preLoteForm) => {
-        const $preLot = $(preLoteForm);
+    // ================ INICIALIZACIÓN DE UN WEIGHING SET ================
+    const initializeWeighingSet = (weighingSetForm) => {
+        const $weighingSet = $(weighingSetForm);
         
-        const providerField = $(preLoteForm).find('select[name$="-provider"]'); 
-        const harvestingCrewField = $(preLoteForm).find('select[name$="-harvesting_crew"]');
+        const providerField = $(weighingSetForm).find('select[name$="-provider"]'); 
+        const harvestingCrewField = $(weighingSetForm).find('select[name$="-harvesting_crew"]');
         const selectedHarvestingCrew = harvestingCrewField.val();
 
         
@@ -216,51 +216,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
 
-        // --- Observer para detectar cambios en el checkbox DELETE del pre-lote ---
-        const $preLotDeleteCheckbox = $preLot
+        // --- Observer para detectar cambios en el checkbox DELETE del weighing set ---
+        const $weighingSetDeleteCheckbox = $weighingSet
             .find('input[name$="-DELETE"]')
             .filter(function() {
                 return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
             });
-        if ($preLotDeleteCheckbox.length) {
+        if ($weighingSetDeleteCheckbox.length) {
             const observer = new MutationObserver(mutations => {
                 mutations.forEach(mutation => {
                     if (mutation.attributeName === 'checked') {
                         debouncedUpdatePackhouse();
-                        updatePreLotCount();
+                        updateWeighedSetCount();
                     }
                 });
             });
-            observer.observe($preLotDeleteCheckbox[0], { attributes: true });
+            observer.observe($weighingSetDeleteCheckbox[0], { attributes: true });
         }
         
-        if (!$preLot.data('childListObserverAttached')) {
+        if (!$weighingSet.data('childListObserverAttached')) {
             const childObserver = new MutationObserver(mutations => {
                 mutations.forEach(mutation => {
                     if (mutation.removedNodes && mutation.removedNodes.length) {
                         mutation.removedNodes.forEach(node => {
                             if ($(node).is(CONTAINER_FORM_SELECTOR)) {
-                                calculatePreLotTare($preLot);
+                                calculateWeighingSetTare($weighingSet);
                             }
                         });
                     }
                 });
             });
-            childObserver.observe($preLot[0], { childList: true, subtree: true });
-            $preLot.data('childListObserverAttached', true);
+            childObserver.observe($weighingSet[0], { childList: true, subtree: true });
+            $weighingSet.data('childListObserverAttached', true);
         }
         
-        const debouncedCalculateTare = debounce(() => calculatePreLotTare($preLot), 300);
-        $preLot.off('input').on('input', 'input[name$="-gross_weight"], input[name$="-platform_tare"], input[name$="-quantity"]', debouncedCalculateTare);
-        $preLot.off('change').on('change', 'select[name$="-harvest_container"]', debouncedCalculateTare);
+        const debouncedCalculateTare = debounce(() => calculateWeighingSetTare($weighingSet), 300);
+        $weighingSet.off('input').on('input', 'input[name$="-gross_weight"], input[name$="-platform_tare"], input[name$="-quantity"]', debouncedCalculateTare);
+        $weighingSet.off('change').on('change', 'select[name$="-harvest_container"]', debouncedCalculateTare);
 
-        // Cálculo inicial al cargar el pre-lote
-        calculatePreLotTare($preLot);
-        updatePreLotCount();
+        // Cálculo inicial al cargar el weighing set
+        calculateWeighingSetTare($weighingSet);
+        updateWeighedSetCount();
     };
 
-    // Inicializa todos los pre-lote existentes
-    $(PRE_LOT_FORM_SELECTOR).each((i, form) => initializePreLot(form));
+    // Inicializa todos los weighing set existentes
+    $(WEIGHING_SET_FORM_SELECTOR).each((i, form) => initializeWeighingSet(form));
 
     // ================ MANEJO DE FORMSETS ================
     document.addEventListener('formset:added', (event) => {
@@ -275,41 +275,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Actualizar las opciones del campo harvesting_crew cuando se agrega un nuevo formulario
         handleProviderChange(providerField, harvestingCrewField);
-        if (formsetName === 'prelot_set') {
-            initializePreLot(event.target);
-        } else if (formsetName === 'prelotcontainer_set') {
-            const $preLot = $(event.target).closest(PRE_LOT_FORM_SELECTOR);
-            debounce(() => calculatePreLotTare($preLot), 300)();
+        if (formsetName === 'weighingset_set') {
+            initializeWeighingSet(event.target);
+        } else if (formsetName === 'weighingsetcontainer_set') {
+            const $weighingSet = $(event.target).closest(WEIGHING_SET_FORM_SELECTOR);
+            debounce(() => calculateWeighingSetTare($weighingSet), 300)();
         }
-        updatePreLotCount();
+        updateWeighedSetCount();
         debouncedUpdateTotalContainers();
     });
 
     document.addEventListener('formset:removed', () => {
         debouncedUpdatePackhouse();
-        updatePreLotCount();
+        updateWeighedSetCount();
         debouncedUpdateTotalContainers();
     });
 
-    // ================ MANEJO DE BOTÓN ELIMINAR EN PRE-LOTE  ================
+    // ================ MANEJO DE BOTÓN ELIMINAR EN WEIGHING SET  ================
     $(document).on('click', '.deletelink', function() {
-        const $preLot = $(this).closest(PRE_LOT_FORM_SELECTOR);
+        const $weighingSet = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
         setTimeout(() => {
-            calculatePreLotTare($preLot);
-            updatePreLotCount();
+            calculateWeighingSetTare($weighingSet);
+            updateWeighedSetCount();
         }, 100);
     });
 
     // ================ MANEJO DE BOTÓN ELIMINAR EN CONTAINERS ================
     $(document).on('click', CONTAINER_FORM_SELECTOR + ' .deletelink', function() {
-        const $preLot = $(this).closest(PRE_LOT_FORM_SELECTOR);
+        const $weighingSet = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
         setTimeout(() => {
-            calculatePreLotTare($preLot);
+            calculateWeighingSetTare($weighingSet);
         }, 100);
     });
 
     $(document).on('change', CONTAINER_FORM_SELECTOR + ' input[name$="-DELETE"]', function() {
-        const $preLot = $(this).closest(PRE_LOT_FORM_SELECTOR);
-        calculatePreLotTare($preLot);
+        const $weighingSet = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
+        calculateWeighingSetTare($weighingSet);
     });
 });

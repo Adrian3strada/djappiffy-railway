@@ -1,10 +1,10 @@
 from django.contrib import admin
-from packhouses.receiving.views import pre_lot_weighing_report
+from packhouses.receiving.views import weighing_set_report
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle
 from packhouses.catalogs.models import (Supply, HarvestingCrew, Vehicle, Provider, Product, ProductVariety, Gatherer, Maquiladora, 
                                         Market, Orchard, OrchardCertification, WeighingScale, ProductPhenologyKind, ProductHarvestSizeKind)
 from packhouses.catalogs.utils import get_harvest_cutting_categories_choices
-from .models import IncomingProduct, PreLot, PreLotContainer
+from .models import IncomingProduct, WeighingSet, WeighingSetContainer
 from common.base.mixins import (ByOrganizationAdminMixin)
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin
@@ -213,8 +213,8 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
               'js/admin/forms/packhouses/receiving/schedule_harvest_inline.js')
 
 # Inlines para los pallets
-class PreLotContainerInline(nested_admin.NestedTabularInline):
-    model = PreLotContainer
+class WeighingSetContainerInline(nested_admin.NestedTabularInline):
+    model = WeighingSetContainer
     extra = 0
 
     def get_formset(self, request, obj=None, **kwargs):
@@ -237,9 +237,9 @@ class PreLotContainerInline(nested_admin.NestedTabularInline):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-class PreLotInline(CustomNestedStackedInlineMixin, admin.StackedInline):
-    model = PreLot
-    inlines = [PreLotContainerInline]
+class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
+    model = WeighingSet
+    inlines = [WeighingSetContainerInline]
     fields = ('ooid', 'provider', 'harvesting_crew', 'gross_weight', 'total_containers', 'container_tare', 'platform_tare', 'net_weight')
     extra = 0
 
@@ -287,24 +287,24 @@ class PreLotInline(CustomNestedStackedInlineMixin, admin.StackedInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/pre_lot_inline.js',)
+        js = ('js/admin/forms/packhouses/receiving/weighing_set_inline.js',)
 
 # Reciba
 @admin.register(IncomingProduct)
 class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard', 
                     'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'status','generate_actions_buttons')
-    fields = ('status', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pre_lot_quantity', 
-              'packhouse_weight_result', 'mrl', 'kg_sample', 'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'pre_lot_full_containers', 
+    fields = ('status', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'total_weighed_sets', 
+              'packhouse_weight_result', 'mrl', 'kg_sample', 'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'total_weighed_set_containers', 
               'average_per_container', 'current_kg_available', 'comments')
     list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                    ByCategoryForOrganizationIncomingProductFilter)
     search_fields = ('scheduleharvest__ooid',)
-    inlines = [PreLotInline, ScheduleHarvestInline]
+    inlines = [WeighingSetInline, ScheduleHarvestInline]
     form = IncomingProductForm
     actions = None
 
-    # Filtrar en el Admin solo los cortes que su status sea "pending"
+    # Filtrar en el Admin solo los cortes que su status sea distinto a "accepted"
     # def get_queryset(self, request):
     #    return super().get_queryset(request).exclude(status="accepted")
 
@@ -322,15 +322,15 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
         urls = super().get_urls()
         custom_urls = [
             # Registra la URL custom usando admin_site.admin_view para aplicar permisos y manejo
-            path('pre_lot_weighing_report/<int:pk>/', self.admin_site.admin_view(pre_lot_weighing_report), name='receiving_incomingproduct_pre_lot_weighing_report'),
+            path('weighing_set_report/<int:pk>/', self.admin_site.admin_view(weighing_set_report), name='receiving_incomingproduct_weighing_set_report'),
         ]
         # Colocar custom_urls antes o después según convenga para no interferir con otros patrones
         return custom_urls + urls
 
     def generate_actions_buttons(self, obj):
         # Ahora usamos el namespace 'admin' y el nombre que definimos en get_urls
-        pdf_url = reverse('admin:receiving_incomingproduct_pre_lot_weighing_report', args=[obj.pk])
-        tooltip_weighing_report = _('Generate Pre-Lot Weight Report')
+        pdf_url = reverse('admin:receiving_incomingproduct_weighing_set_report', args=[obj.pk])
+        tooltip_weighing_report = _('Generate Weighing Set Report')
         return format_html(
             '''
             <a class="button d-flex justify-content-center align-items-center" 

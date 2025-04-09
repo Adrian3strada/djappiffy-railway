@@ -195,6 +195,12 @@ def cancel_schedule_harvest(request, pk):
             'message': 'You cannot cancel this harvest.'
         }, status=403)  # 403: Forbidden
 
+    if schedule_harvest.incoming_product is not None:
+        return JsonResponse({
+            'success': False,
+            'message': 'Cannot cancel harvest because an incoming product is linked.'
+        }, status=403)
+
     schedule_harvest.status = 'canceled'
     schedule_harvest.save()
     success_message = _('Harvest canceled successfully.')

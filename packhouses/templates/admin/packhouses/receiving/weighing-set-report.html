@@ -146,7 +146,7 @@ tr {
     <div class="info-container">
         <div class="info-row">
             <div class="info-item">{% translate "Harvest Date: " %}{{harvest.harvest_date}}</div>
-            <div class="info-item">{% translate "Status" %}: {{harvest.status}}</div>
+            <div class="info-item">{% translate "Status" %}: {{harvest.get_status_display}}</div>
         </div>
     
         <div class="info-row">

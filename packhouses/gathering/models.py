@@ -192,6 +192,7 @@ class ScheduleHarvestVehicle(models.Model):
     guide_number = models.CharField(
         max_length=20, 
         verbose_name=_('Guide Number'),
+        blank=True,
         )
     stamp_number = models.CharField(
         max_length=20,
@@ -201,6 +202,7 @@ class ScheduleHarvestVehicle(models.Model):
         default=False,
         verbose_name=_('Vehicle has Arrived')
     )
+    
     def __str__(self):
         return f"{self.vehicle.license_plate} / {self.vehicle.name}"
 

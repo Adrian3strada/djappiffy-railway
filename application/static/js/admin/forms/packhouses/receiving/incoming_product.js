@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
         row.style.display = "none";  
     });
 
-    const palletsReceivedField = $('#id_pre_lot_quantity');
+    const totalWeighingSetsField = $('#id_total_weighed_sets');
     const packhouseWeightResultField = $('#id_packhouse_weight_result');
     const containersAssignedField = $('#id_containers_assigned');
     const fullContainersField = $('#id_full_containers_per_harvest');
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const containerTare= $('input[name$="-container_tare"]');
     const totalContainers= $('input[name$="-total_containers"]');
     const missingVehicleContainerField = $('input[name$="-missing_containers"]');
-    const fullContainersPreLotField = $('#id_pre_lot_full_containers');
+    const totaWeighedSetContainersField = $('#id_total_weighed_set_containers');
 
     // deshabilitar edición en campos, pero permitir que los valores se envíen
     function disableField(field) {
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     disableField(currentKgField);
-    disableField(palletsReceivedField);
+    disableField(totalWeighingSetsField);
     disableField(packhouseWeightResultField);
     disableField(containersAssignedField);
     disableField(missingContainersField);
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
     disableField(fullContainersField);
     disableField(emptyContainersField);
     disableField(missingVehicleContainerField);
-    disableField(fullContainersPreLotField);
+    disableField(totaWeighedSetContainersField);
     
     // Función para actualizar missingBoxes
     function updateMissingContainers() {
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Función para actualizar averageBox
     function updateAveragePerContainers() {
         const packhouseWeightResult = parseFloat(packhouseWeightResultField.val());
-        const fullBoxes = parseFloat(fullContainersPreLotField.val());
+        const fullBoxes = parseFloat(totaWeighedSetContainersField.val());
     
         const averagePerBox = fullBoxes > 0 
             ? Math.floor((packhouseWeightResult / fullBoxes) * 1000) / 1000 

@@ -4,7 +4,7 @@ from packhouses.gathering.models import ScheduleHarvestVehicle, ScheduleHarvest
 
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
-from .models import IncomingProduct, PreLot
+from .models import IncomingProduct, WeighingSet
 from cities_light.models import City, Country, Region, SubRegion
 from django.utils.text import capfirst
 from datetime import datetime
@@ -17,7 +17,7 @@ import json
 from .resources import get_model_fields_verbose_names, transform_data
 
     
-def pre_lot_weighing_report(request, pk):
+def weighing_set_report(request, pk):
     # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
     if not request.user.is_authenticated:
         login_url = reverse('admin:login')
@@ -47,7 +47,7 @@ def pre_lot_weighing_report(request, pk):
         else:
             logo_url = None
 
-    pdf_title = _('Pre-Lot Weighing')
+    pdf_title = _('Weighing Sets')
     packhouse_name = organization
     company_address = f"{add}, {district_name}, {city_name}, {state_name}, {country_name}"
     date = datetime.now()
@@ -57,7 +57,7 @@ def pre_lot_weighing_report(request, pk):
     harvest = ScheduleHarvest.objects.filter(incoming_product=incomingProduct).first()
     print(harvest)
     # Obtener pallets de IncomingProduct y transformar datos
-    pallet_received_records = incomingProduct.prelot_set.all()
+    pallet_received_records = incomingProduct.weighingset_set.all()
     pallet_received_json = serializers.serialize('json', pallet_received_records)
     
     json_data = json.loads(pallet_received_json)
@@ -68,7 +68,7 @@ def pre_lot_weighing_report(request, pk):
     
     # Excluir los campos no deseados
     excluded_fields = ['id', 'incoming_product']
-    headers = get_model_fields_verbose_names(PreLot, excluded_fields=excluded_fields)
+    headers = get_model_fields_verbose_names(WeighingSet, excluded_fields=excluded_fields)
 
         
     data = [[item['fields'].get(header) for header in headers] for item in json_data]
@@ -93,7 +93,7 @@ def pre_lot_weighing_report(request, pk):
         }''')
 
     # Renderizar el template HTML
-    html_string = render_to_string('admin/packhouses/receiving/pre-lot-weighing-report.html', {
+    html_string = render_to_string('admin/packhouses/receiving/weighing-set-report.html', {
         'packhouse_name': packhouse_name,
         'company_address': company_address,
         'pdf_title': pdf_title,
@@ -112,7 +112,7 @@ def pre_lot_weighing_report(request, pk):
     html.write_pdf(pdf_buffer, stylesheets=[css],)
 
     # Traducir el nombre del archivo manualmente
-    filename = f"{_('pre_lot_weighing')}_{incomingProduct.id}.pdf"
+    filename = f"{_('weighing_set')}_{incomingProduct.id}.pdf"
 
     # Devolver el PDF como respuesta
     pdf_buffer.seek(0)
