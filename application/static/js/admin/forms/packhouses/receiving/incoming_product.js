@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Función para actualizar averageBox
     function updateAveragePerContainers() {
         const packhouseWeightResult = parseFloat(packhouseWeightResultField.val());
-        const fullBoxes = parseFloat(fullContainersField.val());
+        const fullBoxes = parseFloat(fullContainersPreLotField.val());
     
         const averagePerBox = fullBoxes > 0 
             ? Math.floor((packhouseWeightResult / fullBoxes) * 1000) / 1000 
@@ -110,8 +110,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 const threshold = publicWeight * 0.015; 
                 const diff = publicWeight - packhouseWeight; 
                 const status = $('#id_status').val();
+                console.log("El status: ", status)
 
-                if (publicWeight > packhouseWeight && diff >= threshold && status !== "pending") {
+                if (publicWeight > packhouseWeight && diff >= threshold && status === "accepted") {
                     e.preventDefault();
                     const diffPerc = (diff / publicWeight) * 100; 
                     Swal.fire({

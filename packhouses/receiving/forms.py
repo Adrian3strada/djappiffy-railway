@@ -4,6 +4,32 @@ from packhouses.gathering.models import ScheduleHarvestVehicle
 from .models import IncomingProduct, PreLot
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from django.forms.models import BaseInlineFormSet
+from django.utils.safestring import mark_safe
+
+class BaseScheduleHarvestVehicleFormSet(BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+
+        incoming_status = None
+        if hasattr(self.instance, 'incoming_product'):
+            incoming_status = self.instance.incoming_product.status
+        else:
+            incoming_status = self.data.get('status')
+
+        if incoming_status == "accepted":
+            valid_forms = [
+                form.cleaned_data
+                for form in self.forms
+                if form.cleaned_data and not form.cleaned_data.get('DELETE', False)
+            ]
+            
+            has_arrived_flags = [data.get('has_arrived', False) for data in valid_forms]
+            
+            if not any(has_arrived_flags):
+                error_msg = mark_safe('<span style="color: red;">You must register at least one vehicle as having arrived for the Incoming Product.</span>')
+                raise ValidationError(error_msg)
+        
 
 class ScheduleHarvestVehicleForm(forms.ModelForm):
     stamp_vehicle_number = forms.CharField(label=_('Stamp'), required=False,)
@@ -59,19 +85,27 @@ class IncomingProductForm(forms.ModelForm):
         # Obtiener el status final
         final_status = cleaned_data.get('status', initial_status)
 
-        # VALIDACIÓN PARA PALLETS RECEIVED:
-        total_pallets = int(self.data.get('palletreceived_set-TOTAL_FORMS', 0))
-        if total_pallets < 1 and final_status != "pending":
-            raise ValidationError("You must add at least one Pallet to the Incoming Product.")
+        # VALIDACIÓN PARA PRE LOTES:
+        total_prelots = int(self.data.get('prelot_set-TOTAL_FORMS', 0))
 
-        for i in range(total_pallets):
-            pallet_prefix = f'palletreceived_set-{i}-'
-            provider = self.data.get(pallet_prefix + 'provider')
-            harvesting_crew = self.data.get(pallet_prefix + 'harvesting_crew')
+        remaining_prelots = 0
+        for i in range(total_prelots):
+            delete_key = f'prelot_set-{i}-DELETE'
+            if self.data.get(delete_key, 'off') != 'on':
+                remaining_prelots += 1
+
+        if remaining_prelots < 1 and final_status == "accepted":
+            raise ValidationError("At least one Pre-Lot must be registered for the Incoming Product.")
+
+        for i in range(remaining_prelots):
+            prelot_prefix = f'prelot_set-{i}-'
+            provider = self.data.get(prelot_prefix + 'provider')
+            harvesting_crew = self.data.get(prelot_prefix + 'harvesting_crew')
 
             if not provider or not provider.strip():
-                raise ValidationError(_(f'Pallet Received {i + 1} is missing a provider.'))
+                raise ValidationError(_(f'Pre-Lot {i + 1} is missing a provider.'))
             if not harvesting_crew or not harvesting_crew.strip():
-                raise ValidationError(_(f'Pallet Received {i + 1} is missing a harvesting crew.'))
+                raise ValidationError(_(f'Pre-Lot {i + 1} is missing a harvesting crew.'))
+        
 
         return cleaned_data

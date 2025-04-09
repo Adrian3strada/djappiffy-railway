@@ -14,7 +14,6 @@ class IncomingProduct(models.Model):
     public_weight_result = models.FloatField(default=0, verbose_name=_("Public Weight Result"),)
     packhouse_weight_result = models.FloatField(default=0, verbose_name=_("Packhouse Weight Result"),)
     weighing_record_number = models.CharField(max_length=30, verbose_name=_('Weighing Record Number'),)
-    guide_number = models.CharField(max_length=20, verbose_name=_('Guide Number'),)
     pre_lot_quantity = models.PositiveIntegerField(default=0, verbose_name=_('Pre-Lot Quantity'))
     mrl = models.FloatField(default=0, verbose_name=_('Maximum Residue Limit'), null=True, blank=True)
     phytosanitary_certificate = models.CharField(max_length=50, verbose_name=_('Phytosanitary Certificate'), null=True, blank=True)

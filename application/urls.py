@@ -13,7 +13,7 @@ from packhouses.purchases.views import (requisition_pdf, set_requisition_ready, 
                                         set_purchase_order_supply_ready, set_purchase_order_supply_open,
                                         set_purchase_order_supply_payment)
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-from packhouses.receiving.views import  weighing_report
+
 
 urlpatterns = [
     # Admin URLs personalizadas
@@ -40,7 +40,7 @@ urlpatterns = [
     path('dadmin/purchases/set_purchase_order_supply_payment/<int:purchase_order_supply_id>/',
          set_purchase_order_supply_payment,
          name='set_purchase_order_supply_payment'),
-    path('dadmin/receiving/incomingproduct/weighing_report/<int:pk>/', weighing_report, name='weighing_report'),
+    
     # Admin URLs
     path("dadmin/", admin.site.urls),
     path("wadmin/", include(wagtailadmin_urls)),
@@ -61,6 +61,7 @@ urlpatterns = [
     path("", include("packhouses.packhouse_settings.urls")),
     path("", include("eudr.parcels.urls")),
     path("", include("packhouses.gathering.urls")),
+    path("", include("packhouses.receiving.urls")),
 
     # Internationalization
     path("i18n/", include("django.conf.urls.i18n")),

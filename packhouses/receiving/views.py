@@ -17,7 +17,7 @@ import json
 from .resources import get_model_fields_verbose_names, transform_data
 
     
-def weighing_report(request, pk):
+def pre_lot_weighing_report(request, pk):
     # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
     if not request.user.is_authenticated:
         login_url = reverse('admin:login')
@@ -47,7 +47,7 @@ def weighing_report(request, pk):
         else:
             logo_url = None
 
-    pdf_title = _('Weighing')
+    pdf_title = _('Pre-Lot Weighing')
     packhouse_name = organization
     company_address = f"{add}, {district_name}, {city_name}, {state_name}, {country_name}"
     date = datetime.now()
@@ -93,7 +93,7 @@ def weighing_report(request, pk):
         }''')
 
     # Renderizar el template HTML
-    html_string = render_to_string('admin/packhouses/receiving/weighing-report.html', {
+    html_string = render_to_string('admin/packhouses/receiving/pre-lot-weighing-report.html', {
         'packhouse_name': packhouse_name,
         'company_address': company_address,
         'pdf_title': pdf_title,
@@ -112,7 +112,7 @@ def weighing_report(request, pk):
     html.write_pdf(pdf_buffer, stylesheets=[css],)
 
     # Traducir el nombre del archivo manualmente
-    filename = f"{_('good_harvest_practices')}_{incomingProduct.id}.pdf"
+    filename = f"{_('pre_lot_weighing')}_{incomingProduct.id}.pdf"
 
     # Devolver el PDF como respuesta
     pdf_buffer.seek(0)

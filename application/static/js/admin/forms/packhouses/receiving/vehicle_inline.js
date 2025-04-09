@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const emptyBoxes = parseFloat($container.find("input[name$='-empty_containers']").val()) || 0;
         const missingBoxes = quantity - fullBoxes - emptyBoxes;
         $container.find("input[name$='-missing_containers']").val(missingBoxes);
-        console.log(`Container ${$container.attr("id")}: quantity=${quantity}, full=${fullBoxes}, empty=${emptyBoxes} → missing=${missingBoxes}`);
     }
 
     // Inicializa un contenedor: agrega listeners para inputs y checkbox DELETE
@@ -83,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function() {
             vehicleEmptyBoxes += parseFloat($container.find("input[name$='-empty_containers']").val()) || 0;
             vehicleMissingBoxes += parseFloat($container.find("input[name$='-missing_containers']").val()) || 0;
         });
-        console.log("Totales para vehículo", $vehicle.attr("id"), "→ quantity:", vehicleQuantity, ", full_boxes:", vehicleFullBoxes, ", empty_boxes:", vehicleEmptyBoxes, ", missing_boxes:", vehicleMissingBoxes);
+        
     }
 
     // Función para actualizar totales globales (en todos los vehículos)
@@ -106,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function() {
             emptyContainersField.val(globalEmptyContainers);
             missingContainersField.val(globalMissingContainers);
         });
-        console.log("Totales Globales → quantity:", globalQuantity, ", full_containers:", globalFullContainers, ", empty_containers:", globalEmptyContainers, ", missing_containers:", globalMissingContainers);
+        
     }
 
 

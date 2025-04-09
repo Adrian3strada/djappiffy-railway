@@ -1,4 +1,5 @@
 from django.contrib import admin
+from packhouses.receiving.views import pre_lot_weighing_report
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle
 from packhouses.catalogs.models import (Supply, HarvestingCrew, Vehicle, Provider, Product, ProductVariety, Gatherer, Maquiladora, 
                                         Market, Orchard, OrchardCertification, WeighingScale, ProductPhenologyKind, ProductHarvestSizeKind)
@@ -7,7 +8,7 @@ from .models import IncomingProduct, PreLot, PreLotContainer
 from common.base.mixins import (ByOrganizationAdminMixin)
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin
-from .forms import IncomingProductForm, ScheduleHarvestVehicleForm  
+from .forms import IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                       ByCategoryForOrganizationIncomingProductFilter)
 from .utils import update_pallet_numbers,  CustomScheduleHarvestFormSet
@@ -16,6 +17,7 @@ from common.base.decorators import uppercase_form_charfield, uppercase_alphanume
 import nested_admin
 from django.urls import reverse
 from django.utils.html import format_html
+from django.urls import path, reverse
 
 # Inlines para datos del corte
 class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
@@ -83,8 +85,9 @@ class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
 
 class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = ScheduleHarvestVehicle
-    form = ScheduleHarvestVehicleForm  # Usar el Form personalizado
-    fields = ('provider', 'vehicle', 'has_arrived', 'stamp_vehicle_number')  # Agregar el nuevo campo
+    form = ScheduleHarvestVehicleForm  
+    formset = BaseScheduleHarvestVehicleFormSet
+    fields = ('provider', 'vehicle', 'has_arrived', 'guide_number', 'stamp_vehicle_number')  # Agregar el nuevo campo
     extra = 0
     inlines = [HarvestCuttingContainerVehicleInline]
 
@@ -291,7 +294,7 @@ class PreLotInline(CustomNestedStackedInlineMixin, admin.StackedInline):
 class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard', 
                     'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'status','generate_actions_buttons')
-    fields = ('status', 'phytosanitary_certificate', 'guide_number', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pre_lot_quantity', 
+    fields = ('status', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'pre_lot_quantity', 
               'packhouse_weight_result', 'mrl', 'kg_sample', 'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'pre_lot_full_containers', 
               'average_per_container', 'current_kg_available', 'comments')
     list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
@@ -299,11 +302,12 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     search_fields = ('scheduleharvest__ooid',)
     inlines = [PreLotInline, ScheduleHarvestInline]
     form = IncomingProductForm
+    actions = None
+
     # Filtrar en el Admin solo los cortes que su status sea "pending"
     # def get_queryset(self, request):
     #    return super().get_queryset(request).exclude(status="accepted")
 
-    @uppercase_form_charfield('guide_number')
     @uppercase_form_charfield('weighing_record_number')
     @uppercase_form_charfield('phytosanitary_certificate')
     def get_form(self, request, obj=None, **kwargs):
@@ -313,14 +317,25 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     def has_add_permission(self, request):
         return False 
 
-    def generate_actions_buttons(self, obj):
-        pdf_url = reverse('weighing_report', args=[obj.pk])
-        tooltip_weighing_report = _('Generate Weight Report')
 
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            # Registra la URL custom usando admin_site.admin_view para aplicar permisos y manejo
+            path('pre_lot_weighing_report/<int:pk>/', self.admin_site.admin_view(pre_lot_weighing_report), name='receiving_incomingproduct_pre_lot_weighing_report'),
+        ]
+        # Colocar custom_urls antes o después según convenga para no interferir con otros patrones
+        return custom_urls + urls
+
+    def generate_actions_buttons(self, obj):
+        # Ahora usamos el namespace 'admin' y el nombre que definimos en get_urls
+        pdf_url = reverse('admin:receiving_incomingproduct_pre_lot_weighing_report', args=[obj.pk])
+        tooltip_weighing_report = _('Generate Pre-Lot Weight Report')
         return format_html(
             '''
             <a class="button d-flex justify-content-center align-items-center" 
-            href="{}" target="_blank" data-toggle="tooltip" title="{}" style="display: flex; justify-content: center; align-items: center;">
+               href="{}" target="_blank" data-toggle="tooltip" title="{}" 
+               style="display: flex; justify-content: center; align-items: center;">
                 <i class="fa-solid fa-print"></i>
             </a>
             ''',

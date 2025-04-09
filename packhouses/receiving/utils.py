@@ -3,7 +3,7 @@ from django.db import transaction
 from django.forms.models import BaseInlineFormSet
 
 def update_pallet_numbers(incoming_product):
-    pallets = incoming_product.palletreceived_set.all().order_by('id')
+    pallets = incoming_product.prelot_set.all().order_by('id')
     with transaction.atomic():
         for index, pallet in enumerate(pallets, start=1):
             if pallet.ooid != index:

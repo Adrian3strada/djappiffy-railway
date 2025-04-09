@@ -189,6 +189,10 @@ class ScheduleHarvestVehicle(models.Model):
         verbose_name=_("Vehicle"),
         on_delete=models.CASCADE,
     )
+    guide_number = models.CharField(
+        max_length=20, 
+        verbose_name=_('Guide Number'),
+        )
     stamp_number = models.CharField(
         max_length=20,
         verbose_name=_("Stamp Number"),
