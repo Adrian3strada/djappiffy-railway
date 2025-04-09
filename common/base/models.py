@@ -38,6 +38,8 @@ class ProductKind(models.Model):
 
 class SupplyMeasureUnitCategory(models.Model):
     name = models.CharField(max_length=100)
+    factor = models.FloatField(verbose_name=_('Factor'), validators=[MinValueValidator(0.01)], default=1.0)
+    unit_category = models.CharField(max_length=30, verbose_name=_('Unit category'), choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):

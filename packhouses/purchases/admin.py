@@ -20,6 +20,7 @@ from django.urls import reverse
 import nested_admin
 from common.forms import SelectWidgetWithData
 from common.utils import is_instance_used
+from common.base.models import SupplyMeasureUnitCategory
 
 
 
@@ -193,7 +194,6 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
 
             kwargs["queryset"] = queryset
             kwargs["widget"] = SelectWidgetWithData(model=RequisitionSupply, data_fields=["quantity", "comments","unit_category","delivery_deadline"])
-
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

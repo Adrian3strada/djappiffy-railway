@@ -210,10 +210,10 @@ class PurchaseOrderSupply(models.Model):
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0.01)]
     )
-    unit_category = models.CharField(
-        max_length=30,
+    unit_category = models.ForeignKey(
+        SupplyMeasureUnitCategory,
         verbose_name=_('Unit category'),
-        choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
+        on_delete=models.PROTECT,
     )
     delivery_deadline = models.DateField(
         verbose_name=_('Delivery deadline'),

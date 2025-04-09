@@ -45,7 +45,7 @@ class StorehouseEntrySupplyInline(admin.StackedInline):
     def display_inventoried_quantity(self, obj):
         if not obj.pk:
             return ""
-        usage_unit = obj.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category
+        usage_unit = obj.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category.unit_category
         if usage_unit == "cm":
             unit = "meters"
         elif usage_unit == "gr":
@@ -53,14 +53,14 @@ class StorehouseEntrySupplyInline(admin.StackedInline):
         elif usage_unit == "ml":
             unit = "liters"
         else:
-            unit = obj.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category
+            unit = obj.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category.unit_category
         return f"{obj.inventoried_quantity} {unit}"
     display_inventoried_quantity.short_description = _("Quantity in Inventory")
 
     def display_converted_inventoried_quantity(self, obj):
         if not obj.pk:
             return ""
-        usage_unit = obj.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category
+        usage_unit = obj.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category.unit_category
         return f"{obj.converted_inventoried_quantity} {usage_unit}"
     display_converted_inventoried_quantity.short_description = _("Equivalent in inventory for discount")
 

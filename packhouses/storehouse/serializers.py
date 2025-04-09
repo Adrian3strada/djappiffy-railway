@@ -8,34 +8,27 @@ class PurchaseOrderSupplySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PurchaseOrderSupply
-        fields = (
-            "id",
-            "requisition_supply",
-            "quantity",
-            "unit_category",
-            "delivery_deadline",
-            "comments",
-            "is_in_inventory",
-            "purchase_order_supply_options",
-        )
+        fields = ("id", "requisition_supply", "quantity", 'unit_category', 'delivery_deadline',
+                  "comments", "is_in_inventory", "purchase_order_supply_options")
 
     def get_purchase_order_supply_options(self, obj):
-        supplies = PurchaseOrderSupply.objects.filter(purchase_order=obj.purchase_order)
-        results = []
+        unit_mapping = {
+            "cm": _("meters"),
+            "ml": _("liters"),
+            "gr": _("kilograms"),
+            "piece": _("pieces"),
+        }
 
-        for pos in supplies:
-            kind = pos.requisition_supply.supply.kind
-            unit_category_obj = getattr(kind, "usage_discount_unit_category", None)
-
-            translated_unit = str(unit_category_obj) if unit_category_obj else ""
-
-            results.append({
+        return [
+            {
                 "id": pos.id,
-                "kind": str(kind),
+                "kind": str(pos.requisition_supply.supply.kind.usage_discount_unit_category),
                 "name": str(pos.requisition_supply.supply),
-                "unit": translated_unit,  # Mostramos el nombre traducido de la categoría
-                "real_unit": translated_unit,  # O lo que necesites aquí
-            })
-
-        return results
-
+                "unit": unit_mapping.get(
+                    getattr(pos.requisition_supply.supply.kind.usage_discount_unit_category, "unit_category", ""),
+                    getattr(pos.requisition_supply.supply.kind.usage_discount_unit_category, "unit_category", "")
+                ),
+                "real_unit": str(pos.requisition_supply.supply.kind.usage_discount_unit_category.unit_category),
+            }
+            for pos in PurchaseOrderSupply.objects.filter(purchase_order=obj.purchase_order)
+        ]
