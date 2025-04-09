@@ -11,9 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let clientProperties = null;
   let productProperties = null;
   let organization = null;
-  let productSizeCategories = 'size,mix';
   let isNationalClient = false;
-
 
   function updateFieldOptions(field, options, selectedValue = null) {
     if (field) {
@@ -21,8 +19,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!field.prop('multiple')) {
         field.append(new Option('---------', '', true, !selectedValue));
       }
+      const selected = selectedValue ? parseInt(selectedValue) || selectedValue : null;
       options.forEach(option => {
-        const newOption = new Option(option.name, option.id, false, parseInt(selectedValue) === option.id);
+        const newOption = new Option(option.name, option.id, false, selected === option.id);
         if ('alias' in option && option.alias) {
           newOption.setAttribute('data-alias', option.alias);
         }
@@ -85,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function getProductProperties() {
     if (productField.val()) {
       productProperties = await fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
-      console.log("productProperties", productProperties);
+      console.log("function productProperties", productProperties);
     } else {
       productProperties = null;
     }
@@ -100,17 +99,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
   }
 
-  getOrganizationProfile()
+  await getOrganizationProfile()
   await getClientProperties()
   await getProductProperties()
 
-  function getIsNationalClient() {
+  function setIsNationalClient() {
     if (clientProperties && organization) {
       isNationalClient = clientProperties.country === organization.country;
     } else {
       isNationalClient = false;
     }
-    console.log("isNationalClient", isNationalClient);
     if (isNationalClient) {
       productPriceOptions = [
         {id: "product_weight", name: "Product weight"},
@@ -125,19 +123,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  if (clientProperties && organization) {
-    getIsNationalClient();
-  }
+  await setIsNationalClient();
 
   clientField.on('change', async () => {
     await getClientProperties();
-    getIsNationalClient();
+    await setIsNationalClient();
   })
 
   productField.on('change', async () => {
     await getProductProperties();
   })
 
+  if (clientField.val()) {
+    await getClientProperties();
+    await setIsNationalClient();
+  }
+
+  if (productField.val()) {
+    await getProductProperties();
+  }
 
   document.addEventListener('formset:added', (event) => {
     if (event.detail.formsetName === 'orderitempackaging_set') {
@@ -156,8 +160,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const unitPriceField = $(newForm).find('input[name$="-unit_price"]');
       const amountPriceField = $(newForm).find('input[name$="-amount_price"]');
 
-      amountPriceField.prop('disabled', true).attr('readonly', true).addClass('readonly-field');
+      let productSizeCategories = 'size,mix';
 
+      amountPriceField.prop('disabled', true).attr('readonly', true).addClass('readonly-field');
 
       productPhenologyField.closest('.form-group').hide();
       productMarketClassField.closest('.form-group').hide();
@@ -230,6 +235,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             queryParams.category = "single";
           }
 
+          if (pricingByField.val() === 'product_presentation' && productSizeSelectedOptionCategory === 'size') {
+            queryParams.category = "presentation";
+          }
+
           const url = `/rest/v1/catalogs/product-packaging/?${$.param(queryParams)}`;
 
           fetchOptions(url)
@@ -299,97 +308,196 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
 
-  const existingForms = $('div[id^="orderitempackaging_set-"]').filter((index, form) => {
-    return /\d+$/.test(form.id);
-  });
+  setTimeout(async () => {
 
-  existingForms.each((index, form) => {
-    const productSizeField = $(form).find(`select[name$="${index}-product_size"]`);
-    const productPhenologyField = $(form).find(`select[name$="${index}-product_phenology"]`);
-    const productMarketClassField = $(form).find(`select[name$="${index}-product_market_class"]`);
-    const productMarketRipenessField = $(form).find(`select[name$="${index}-product_ripeness"]`);
-    const quantityField = $(form).find(`input[name$="${index}-quantity"]`);
-    const unitPriceField = $(form).find(`input[name$="${index}-unit_price"]`);
-    const amountPriceField = $(form).find(`input[name$="${index}-amount_price"]`);
+    await setIsNationalClient();
 
-    amountPriceField.prop('disabled', true).attr('readonly', true).addClass('readonly-field');
-
-    productPhenologyField.closest('.form-group').hide();
-    productMarketClassField.closest('.form-group').hide();
-    productMarketRipenessField.closest('.form-group').hide();
-
-    // const productSize = productSizeField.val();
-
-
-    fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
-      .then(data => {
-        productProperties = data;
-      })
-      .then(() => {
-        fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
-          .then(data => {
-            clientProperties = data;
-          })
-      })
-      .then(() => {
-        getProductOptions()
-          .then(() => {
-            updateFieldOptions(productPhenologyField, productPhenologyOptions, productPhenologyField.val());
-            updateFieldOptions(productMarketClassField, productMarketClassOptions, productMarketClassField.val());
-            updateFieldOptions(productMarketRipenessField, productRipenessOptions, productMarketRipenessField.val());
-          })
-      })
-
-    productSizeField.on('change', () => {
-      const productSizeSelectedOption = productSizeField.find('option:selected');
-      const productSizeSelectedOptionCategory = productSizeSelectedOption.data('category');
-
-      if (productSizeField.val() && productSizeSelectedOptionCategory) {
-        if (['size'].includes(productSizeSelectedOptionCategory)) {
-          productPhenologyField.closest('.form-group').fadeIn();
-          productMarketClassField.closest('.form-group').fadeIn();
-          productMarketRipenessField.closest('.form-group').fadeIn();
-        } else if (['mix'].includes(productSizeSelectedOptionCategory)) {
-          productPhenologyField.closest('.form-group').fadeOut();
-          productMarketClassField.closest('.form-group').fadeOut();
-          productMarketRipenessField.closest('.form-group').fadeIn();
-          productPhenologyField.val(null).trigger('change');
-          productMarketClassField.val(null).trigger('change');
-        } else {
-          productPhenologyField.closest('.form-group').fadeOut();
-          productMarketClassField.closest('.form-group').fadeOut();
-          productMarketRipenessField.closest('.form-group').fadeOut();
-          productPhenologyField.val(null).trigger('change');
-          productMarketClassField.val(null).trigger('change');
-          productMarketRipenessField.val(null).trigger('change');
-        }
-      } else {
-        productPhenologyField.val(null).trigger('change');
-        productMarketClassField.val(null).trigger('change');
-        productMarketRipenessField.val(null).trigger('change');
-        productPhenologyField.closest('.form-group').fadeOut();
-        productMarketClassField.closest('.form-group').fadeOut();
-        productMarketRipenessField.closest('.form-group').fadeOut();
-      }
-
-
+    const existingForms = $('div[id^="orderitempackaging_set-"]').filter((index, form) => {
+      return /^\d+$/.test(form.id.split('-').pop());
     });
 
-    quantityField.on('change', () => {
-      if (quantityField.val() && unitPriceField.val()) {
-        amountPriceField.val(quantityField.val() * unitPriceField.val());
-      } else {
-        amountPriceField.val(0);
-      }
-    })
+    existingForms.each(async (index, form) => {
+      console.log("existingForms", index, form)
+      const pricingByField = $(form).find(`select[name$="${index}-pricing_by"]`);
+      const productSizeField = $(form).find(`select[name$="${index}-product_size"]`);
+      const productPhenologyField = $(form).find(`select[name$="${index}-product_phenology"]`);
+      const productMarketClassField = $(form).find(`select[name$="${index}-product_market_class"]`);
+      const productMarketRipenessField = $(form).find(`select[name$="${index}-product_ripeness"]`);
+      const productPackagingField = $(form).find(`select[name$="${index}-product_packaging"]`);
+      const productWeightPerPackagingField = $(form).find(`input[name$="${index}-product_weight_per_packaging"]`);
+      const productPresentationsPerPackagingField = $(form).find(`input[name$="${index}-product_presentations_per_packaging"]`);
+      const productPiecesPerPresentationField = $(form).find(`input[name$="${index}-product_pieces_per_presentation"]`);
+      const quantityField = $(form).find(`input[name$="${index}-quantity"]`);
+      const unitPriceField = $(form).find(`input[name$="${index}-unit_price"]`);
+      const amountPriceField = $(form).find(`input[name$="${index}-amount_price"]`);
 
-    unitPriceField.on('change', () => {
-      if (quantityField.val() && unitPriceField.val()) {
-        amountPriceField.val(quantityField.val() * unitPriceField.val());
-      } else {
-        amountPriceField.val(0);
-      }
-    })
+      let productSizeCategories = 'size,mix';
 
-  });
+      amountPriceField.prop('disabled', true).attr('readonly', true).addClass('readonly-field');
+
+      if (!productPhenologyField.val()) productPhenologyField.closest('.form-group').hide();
+      if (!productMarketClassField.val()) productMarketClassField.closest('.form-group').hide();
+
+      // await getProductOptions();
+      console.log("aqui")
+      console.log("productProperties", productProperties)
+      console.log("clientProperties", clientProperties)
+
+      getProductOptions().then(() => {
+        updateFieldOptions(pricingByField, productPriceOptions, pricingByField.val());
+        updateFieldOptions(productPhenologyField, productPhenologyOptions, productPhenologyField.val());
+        updateFieldOptions(productMarketClassField, productMarketClassOptions, productMarketClassField.val());
+        updateFieldOptions(productMarketRipenessField, productRipenessOptions, productMarketRipenessField.val());
+      });
+
+      if (pricingByField.val()) {
+        if (isNationalClient) {
+          productSizeCategories = 'size,mix'
+          if (pricingByField.val() === 'product_presentation') {
+            productSizeCategories = 'size'
+          }
+        } else {
+          productSizeCategories = 'size'
+        }
+        fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
+          .then(data => {
+            updateFieldOptions(productSizeField, data, productSizeField.val());
+          });
+      }
+
+      pricingByField.on('change', () => {
+        if (pricingByField.val()) {
+          if (isNationalClient) {
+            productSizeCategories = 'size,mix'
+            if (pricingByField.val() === 'product_presentation') {
+              productSizeCategories = 'size'
+            }
+          } else {
+            productSizeCategories = 'size'
+          }
+          fetchOptions(`/rest/v1/catalogs/product-size/?market=${clientProperties.market}&product=${productProperties.id}&categories=${productSizeCategories}&is_enabled=1`)
+            .then(data => {
+              updateFieldOptions(productSizeField, data, productSizeField.val());
+            });
+        } else {
+          updateFieldOptions(productSizeField, []);
+        }
+      })
+
+      productSizeField.on('change', () => {
+        if (productSizeField.val()) {
+          console.log("productSizeField", productSizeField)
+          const productSizeSelectedOption = productSizeField.find('option:selected');
+          const productSizeSelectedOptionCategory = productSizeSelectedOption.data('category');
+
+          console.log("productSizeSelectedOption", productSizeSelectedOption)
+          console.log("productSizeSelectedOptionCategory", productSizeSelectedOptionCategory)
+
+          if (productSizeField.val() && productSizeSelectedOptionCategory) {
+
+            if (productSizeSelectedOptionCategory === 'size') {
+              productPhenologyField.closest('.form-group').fadeIn();
+              productMarketClassField.closest('.form-group').fadeIn();
+              productMarketRipenessField.closest('.form-group').fadeIn();
+            }
+            if (productSizeSelectedOptionCategory === 'mix') {
+              productPhenologyField.closest('.form-group').fadeOut();
+              productMarketClassField.closest('.form-group').fadeOut();
+              productMarketRipenessField.closest('.form-group').fadeIn();
+              productPhenologyField.val(null).trigger('change');
+              productMarketClassField.val(null).trigger('change');
+            }
+          } else {
+            productPhenologyField.val(null).trigger('change');
+            productMarketClassField.val(null).trigger('change');
+            productMarketRipenessField.val(null).trigger('change');
+            productPhenologyField.closest('.form-group').fadeOut();
+            productMarketClassField.closest('.form-group').fadeOut();
+            productMarketRipenessField.closest('.form-group').fadeOut();
+          }
+
+          let queryParams = {
+            market: clientProperties.market,
+            product: productProperties.id,
+            product_size: productSizeField.val(),
+            is_enabled: 1
+          }
+
+          if (productSizeSelectedOptionCategory === 'mix') {
+            queryParams.category = "single";
+          }
+
+          if (pricingByField.val() === 'product_presentation' && productSizeSelectedOptionCategory === 'size') {
+            queryParams.category = "presentation";
+          }
+
+          const url = `/rest/v1/catalogs/product-packaging/?${$.param(queryParams)}`;
+
+          fetchOptions(url)
+            .then(data => {
+              if (data.length === 0) {
+                Swal.fire({
+                  icon: "info",
+                  text: "No packaging found for the selected product size and pricing category, it must exists at least one for this combination at 'Product Packaging' catalog.",
+                  showCancelButton: true,
+                  confirmButtonText: "Entendido",
+                  cancelButtonText: "Cerrar",
+                  confirmButtonColor: "#4daf50",
+                  cancelButtonColor: "#d33",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                })
+                updateFieldOptions(productPackagingField, []);
+              }
+              updateFieldOptions(productPackagingField, data, productPackagingField.val());
+            });
+
+        } else {
+          updateFieldOptions(productPackagingField, []);
+        }
+      });
+
+      productPackagingField.on('change', () => {
+        productWeightPerPackagingField.val(null);
+        productPresentationsPerPackagingField.val(null);
+        productPiecesPerPresentationField.val(null);
+        productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+        productPiecesPerPresentationField.closest('.form-group').fadeOut();
+        if (productPackagingField.val()) {
+          fetchOptions(`/rest/v1/catalogs/product-packaging/${productPackagingField.val()}/`)
+            .then(data => {
+              productWeightPerPackagingField.val(data.product_weight_per_packaging);
+              if (data.product_presentation) {
+                productPresentationsPerPackagingField.val(data.product_presentations_per_packaging);
+                productPiecesPerPresentationField.val(data.product_pieces_per_presentation)
+                productPresentationsPerPackagingField.closest('.form-group').fadeIn();
+                productPiecesPerPresentationField.closest('.form-group').fadeIn();
+              } else {
+                productPresentationsPerPackagingField.val(null);
+                productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+                productPiecesPerPresentationField.closest('.form-group').fadeOut();
+              }
+            })
+        }
+      })
+
+      quantityField.on('change', () => {
+        if (quantityField.val() && unitPriceField.val()) {
+          amountPriceField.val(quantityField.val() * unitPriceField.val());
+        } else {
+          amountPriceField.val(0);
+        }
+      })
+
+      unitPriceField.on('change', () => {
+        if (quantityField.val() && unitPriceField.val()) {
+          amountPriceField.val(quantityField.val() * unitPriceField.val());
+        } else {
+          amountPriceField.val(0);
+        }
+      })
+    });
+
+  }, 300)
+
 });
