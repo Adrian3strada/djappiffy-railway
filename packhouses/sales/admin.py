@@ -191,24 +191,37 @@ class OrderItemPackagingInline(OrderItemInlineMixin):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def formfield_for_dbfield(self, db_field, request, **kwargs):
-
-        if db_field.name == "product_presentations_per_packaging":
-            pass
-
-        if db_field.name == "product_pieces_per_presentation":
-            pass
-
-        return super().formfield_for_dbfield(db_field, request, **kwargs)
-
     class Media:
         js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)
-        pass
 
 
-class OrderItemPalletInline(admin.StackedInline):
+
+class OrderItemPalletInline(OrderItemInlineMixin):
     model = OrderItemPallet
-    extra = 0
+    formset = OrderItemPalletFormSet
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.form.base_fields['product_packaging'].widget.can_add_related = False
+        formset.form.base_fields['product_packaging'].widget.can_change_related = False
+        formset.form.base_fields['product_packaging'].widget.can_delete_related = False
+        formset.form.base_fields['product_packaging'].widget.can_view_related = False
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = Order.objects.get(id=parent_object_id) if parent_object_id else None
+
+        if db_field.name == "product_packaging":
+            kwargs["queryset"] = ProductPackaging.objects.none()
+            if parent_obj and parent_obj.product:
+                kwargs["queryset"] = ProductPackaging.objects.filter(product=parent_obj.product,
+                                                                     market=parent_obj.client.market, is_enabled=True)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/sales/order_item_pallet_inline.js',)
 
 
 @admin.register(Order)
