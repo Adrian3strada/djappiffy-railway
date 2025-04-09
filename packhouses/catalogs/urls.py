@@ -26,6 +26,7 @@ drf_router.register(r'rest/v1/catalogs/product-variety', ProductVarietyViewSet, 
 drf_router.register(r'rest/v1/catalogs/product-size', ProductSizeViewSet, basename='product_size')
 drf_router.register(r'rest/v1/catalogs/product-presentation', ProductPresentationViewSet, basename='product_presentation')
 drf_router.register(r'rest/v1/catalogs/product-packaging', ProductPackagingViewSet, basename='product_packaging')
+drf_router.register(r'rest/v1/catalogs/product-packaging-pallet', ProductPackagingViewSet, basename='product_packaging')
 drf_router.register(r'rest/v1/catalogs/packaging', PackagingViewSet, basename='packaging')
 drf_router.register(r'rest/v1/catalogs/provider', ProviderViewSet, basename='provider')
 drf_router.register(r'rest/v1/catalogs/supply', SupplyViewSet, basename='supply')

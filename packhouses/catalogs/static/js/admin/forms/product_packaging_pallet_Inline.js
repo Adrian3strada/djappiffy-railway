@@ -44,9 +44,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (event.detail.formsetName === 'productpackagingpallet_set') {
       const newForm = event.target;
       const palletField = $(newForm).find('select[name$="-pallet"]');
-      const maxPackagingQuantityField = $(newForm).find('input[name$="-max_packaging_quantity"]');
+      const productPackagingQuantityField = $(newForm).find('input[name$="-product_packaging_quantity"]');
 
-      maxPackagingQuantityField.attr('min', 1);
+      productPackagingQuantityField.attr('min', 1);
       updateFieldOptions(palletField, palletOptions);
     }
   });
@@ -55,8 +55,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const existingForms = document.querySelectorAll('tr[id^="productpackagingpallet_set-"].form-row.has_original.dynamic-productpackagingpallet_set');
     existingForms.forEach((form, index) => {
       const palletField = $(form).find(`select[name="productpackagingpallet_set-${index}-pallet"]`);
-      const maxPackagingQuantityField = $(form).find(`input[name="productpackagingpallet_set-${index}-max_packaging_quantity"]`);
-      maxPackagingQuantityField.attr('min', 1);
+      const productPackagingQuantityField = $(form).find(`input[name="productpackagingpallet_set-${index}-product_packaging_quantity"]`);
+      productPackagingQuantityField.attr('min', 1);
       const selectedPallet = palletField.val();
       updateFieldOptions(palletField, palletOptions, selectedPallet);
       palletField.val(selectedPallet);

@@ -927,21 +927,21 @@ class ProductPackagingPresentation(models.Model):
 class ProductPackagingPallet(models.Model):
     product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
     pallet = models.ForeignKey(Pallet, on_delete=models.CASCADE)
-    max_packaging_quantity = models.PositiveIntegerField(verbose_name=_('Max packaging quantity'),
-                                                         help_text=_(
-                                                             'Max amount of product packaging for this pallet.'),
-                                                         validators=[MinValueValidator(1)])
+    product_packaging_quantity = models.PositiveIntegerField(verbose_name=_('Product packaging quantity'),
+                                                             help_text=_(
+                                                             'Amount of product packaging units for this pallet.'),
+                                                             validators=[MinValueValidator(1)])
 
     def __str__(self):
-        return f"{self.product_packaging} - {self.pallet} ({self.max_packaging_quantity})"
+        return f"{self.product_packaging} - {self.pallet} ({self.product_packaging_quantity})"
 
     class Meta:
         verbose_name = _('Product packaging pallet')
         verbose_name_plural = _('Product packaging pallets')
         ordering = ('product_packaging', 'pallet')
         constraints = [
-            models.UniqueConstraint(fields=('product_packaging', 'pallet', 'max_packaging_quantity'),
-                                    name='productpackagingpallet_unique_productpackaging_pallet_max_packaging_quantity'),
+            models.UniqueConstraint(fields=('product_packaging', 'pallet', 'product_packaging_quantity'),
+                                    name='productpackagingpallet_unique_productpackaging_pallet_product_packaging_quantity'),
         ]
 
 

@@ -169,17 +169,17 @@ class OrderItemPallet(models.Model):
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'),
                                           on_delete=models.PROTECT, null=True, blank=False)
+    product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'),
+                                                 on_delete=models.PROTECT, null=True, blank=False)
+    product_packaging_quantity_per_pallet = models.PositiveIntegerField(
+        verbose_name=_('Product packaging quantity per pallet'),
+        validators=[MinValueValidator(1)], null=True, blank=False)
     product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'),
                                                      validators=[MinValueValidator(0.01)])
     product_presentations_per_packaging = models.PositiveIntegerField(
         verbose_name=_('Product presentations per packaging'), null=True, blank=False)
     product_pieces_per_presentation = models.PositiveIntegerField(
         verbose_name=_('Product pieces per presentation'), null=True, blank=False)
-    product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'),
-                                                 on_delete=models.PROTECT, null=True, blank=False)
-    product_packaging_quantity_per_pallet = models.PositiveIntegerField(
-        verbose_name=_('Product packaging quantity per pallet'),
-        validators=[MinValueValidator(1)], null=True, blank=False)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
     amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2, null=True, blank=False)
