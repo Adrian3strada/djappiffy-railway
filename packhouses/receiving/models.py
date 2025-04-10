@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_incoming_product_categories_status
-from packhouses.catalogs.models import WeighingScale, ProductFoodSafetyProcess, Product, Vehicle
+from packhouses.catalogs.models import WeighingScale, ProductFoodSafetyProcess, Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue
 from common.base.models import Pest
 
 # Create your models here.
@@ -123,7 +123,7 @@ class DryMatter(models.Model):
 class InternalInspection(models.Model):
     number = models.IntegerField(verbose_name=_('Number'))
     internal_temperature = models.DecimalField(max_digits=10, decimal_places=2)
-    pests = models.ManyToManyField(Pest, verbose_name=_('Pests'), blank=True)
+    product_pest = models.ManyToManyField(ProductPest, verbose_name=_('Pests'), blank=True)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -197,7 +197,7 @@ class TransportCondition(models.Model):
         return f""
 
 class SampleCollection(models.Model):
-    total_sample = models.IntegerField()
+    total_sample = models.IntegerField(verbose_name=_('Total samples'))
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -215,19 +215,62 @@ class SensorySpecification(models.Model):
     unusual_odor = models.BooleanField(default=False, verbose_name=_('Unusual Odor'))
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f""
+
     class Meta:
         verbose_name = _('Sensory Specification')
         verbose_name_plural = _('Sensory Specifications')
 
 class SampleWeight(models.Model):
+    number = models.IntegerField(verbose_name=_('Number'))
     weight = models.DecimalField(max_digits=10, decimal_places=2)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f""
+
+    def save(self, *args, **kwargs):
+        if not self.number:
+            last_sample = SampleWeight.objects.filter(sample_collection=self.sample_collection).order_by('-number').first()
+            if last_sample:
+                self.number = last_sample.number + 1
+            else:
+                self.number = 1
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Sample Weight')
         verbose_name_plural = _('Sample Weights')
 
-class CropThreat(models.Model):
-    sample_number = models.IntegerField()
+class SamplePest(models.Model):
+    sample_pest = models.IntegerField(verbose_name=_('Samples With Pests'))
+    product_pest = models.ForeignKey(ProductPest, verbose_name=_('Pest'), on_delete=models.CASCADE)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f""
+
+class SampleDisease(models.Model):
+    sample_disease = models.IntegerField(verbose_name=_('Samples With Diseases'))
+    product_disease = models.ForeignKey(ProductDisease, verbose_name=_('Disease'), on_delete=models.CASCADE)
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f""
+
+class SamplePhysicalDamage(models.Model):
+    sample_physical_damage = models.IntegerField(verbose_name=_('Samples With Physical Damage'))
+    product_physical_damage = models.ForeignKey(ProductPhysicalDamage, verbose_name=_('Physical Damage'), on_delete=models.CASCADE)
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f""
+
+class SampleResidue(models.Model):
+    sample_residue = models.IntegerField(verbose_name=_('Samples With Residue'))
+    product_residue = models.ForeignKey(ProductResidue, verbose_name=_('Residue'), on_delete=models.CASCADE)
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f""

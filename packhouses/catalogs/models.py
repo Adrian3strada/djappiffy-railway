@@ -219,6 +219,9 @@ class ProductPest(models.Model):
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
+    def __str__(self):
+        return f"{self.name}"
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['product', 'pest', 'name'], 
@@ -231,6 +234,9 @@ class ProductDisease(models.Model):
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
+    def __str__(self):
+        return f"{self.name}"
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['product', 'disease', 'name'], 
@@ -241,6 +247,9 @@ class ProductPhysicalDamage(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Product physical damage')
@@ -255,6 +264,9 @@ class ProductResidue(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Product residue')

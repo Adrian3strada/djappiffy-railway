@@ -1,19 +1,20 @@
 from django.contrib import admin
 from .models import (IncomingProduct, PalletReceived,
-                    FoodSafety, FoodSafety, DryMatter, InternalInspection,
+                    FoodSafety, FoodSafety, DryMatter, InternalInspection, 
                     TransportReview, SampleCollection, Percentage,
                     TransportInspection, TransportCondition,
-                    SensorySpecification, SampleWeight, CropThreat,
+                    SensorySpecification, SampleWeight, SamplePest,
+                    SampleDisease, SamplePhysicalDamage, SampleResidue,
                     Lote,
                     )
-from common.base.mixins import (ByOrganizationAdminMixin)
+from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLinksMixin)
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle
 from django.utils.translation import gettext_lazy as _
 import nested_admin
 from .mixins import CustomNestedStackedInlineMixin
 from .forms import ScheduleHarvestVehicleForm
 from nested_admin import NestedStackedInline
-from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductPest, Vehicle
+from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue
 from common.base.models import Pest
 
 from common.base.mixins import (DisableInlineRelatedLinksMixin)
@@ -147,11 +148,11 @@ class DryMatterInline(nested_admin.NestedTabularInline):
 class InternalInspectionInline(nested_admin.NestedTabularInline):
     model = InternalInspection
     extra = 1
-    fields = ['number', 'internal_temperature', 'pests']
+    fields = ['number', 'internal_temperature', 'product_pest']
     readonly_fields = ('number',)
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
-        if db_field.name == "pests":
+        if db_field.name == "product_pest":
             object_id = request.resolver_match.kwargs.get("object_id")
 
             if object_id:
@@ -160,17 +161,14 @@ class InternalInspectionInline(nested_admin.NestedTabularInline):
                     incoming_product = IncomingProduct.objects.filter(lote=food_safety.lote).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
                     product = schedule_harvest.product
-
-                    pest_ids = ProductPest.objects.filter(product=product).values_list('pest_id', flat=True)
-                    kwargs["queryset"] = Pest.objects.filter(id__in=pest_ids, inside=True)
+                    kwargs["queryset"] = ProductPest.objects.filter(product=product)
 
                 except InternalInspection.DoesNotExist:
-                    kwargs['queryset'] = Pest.objects.none()
+                    kwargs['queryset'] = ProductPest.objects.none()
             else:
-                kwargs['queryset'] = Pest.objects.none()
+                kwargs['queryset'] = ProductPest.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
 
 class TransportInspectionInline(nested_admin.NestedTabularInline):
     model = TransportInspection
@@ -218,22 +216,118 @@ class TransportReviewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedS
 class SensorySpecificationInline(nested_admin.NestedTabularInline):
     model = SensorySpecification
     extra = 0
+    min_num = 1
+    max_num = 1
+    can_delete = False
+
+    # def sensory_specification(self, obj=None):
+    #     return ''
+
+    # readonly_fields = ['sensory_specification']
+    # fields = ['whole', 'foreign_material', 'insects', 'temperature_damage', 'unusual_odor']
 
 class SampleWeightInline(nested_admin.NestedTabularInline):
     model = SampleWeight
-    extra = 1
-
-# class CropThreatInline(admin.TabularInline):
-#     model = CropThreat
-#     extra = 0
-
-class SampleCollectionInline(nested_admin.NestedTabularInline):
-    model = SampleCollection
     extra = 0
-    min_min = 1
+    min_num = 1
+    readonly_fields = ('number',)
+    fields = ['number', 'weight']
+
+class SamplePestInline(nested_admin.NestedTabularInline):
+    model = SamplePest
+    extra = 0
+    fields = ['product_pest', 'sample_pest']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "product_pest":
+            object_id = request.resolver_match.kwargs.get("object_id")
+            if object_id:
+                try:
+                    food_safety = FoodSafety.objects.get(pk=object_id)
+                    incoming_product = IncomingProduct.objects.filter(lote=food_safety.lote).first()
+                    schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
+                    kwargs["queryset"] = ProductPest.objects.filter(product=schedule_harvest.product)
+                except FoodSafety.DoesNotExist:
+                    kwargs['queryset'] = ProductPest.objects.none()
+            else:
+                kwargs['queryset'] = ProductPest.objects.none()
+
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/select.js',)
+
+
+class SampleDiseaseInline(nested_admin.NestedTabularInline):
+    model = SampleDisease
+    extra = 0
+    fields = ['product_disease', 'sample_disease']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "product_disease":
+            object_id = request.resolver_match.kwargs.get("object_id")
+            if object_id:
+                try:
+                    food_safety = FoodSafety.objects.get(pk=object_id)
+                    incoming_product = IncomingProduct.objects.filter(lote=food_safety.lote).first()
+                    schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
+                    kwargs["queryset"] = ProductDisease.objects.filter(product=schedule_harvest.product)
+                except FoodSafety.DoesNotExist:
+                    kwargs['queryset'] = ProductDisease.objects.none()
+            else:
+                kwargs['queryset'] = ProductDisease.objects.none()
+
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
+    model = SamplePhysicalDamage
+    extra = 0
+    fields = ['product_physical_damage', 'sample_physical_damage']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "product_physical_damage":
+            object_id = request.resolver_match.kwargs.get("object_id")
+            if object_id:
+                try:
+                    food_safety = FoodSafety.objects.get(pk=object_id)
+                    incoming_product = IncomingProduct.objects.filter(lote=food_safety.lote).first()
+                    schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
+                    kwargs["queryset"] = ProductPhysicalDamage.objects.filter(product=schedule_harvest.product)
+                except FoodSafety.DoesNotExist:
+                    kwargs['queryset'] = ProductPhysicalDamage.objects.none()
+            else:
+                kwargs['queryset'] = ProductPhysicalDamage.objects.none()
+
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+class SampleResidueInline(nested_admin.NestedTabularInline):
+    model = SampleResidue
+    extra = 0
+    fields = ['product_residue', 'sample_residue']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "product_residue":
+            object_id = request.resolver_match.kwargs.get("object_id")
+            if object_id:
+                try:
+                    food_safety = FoodSafety.objects.get(pk=object_id)
+                    incoming_product = IncomingProduct.objects.filter(lote=food_safety.lote).first()
+                    schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
+                    kwargs["queryset"] = ProductResidue.objects.filter(product=schedule_harvest.product)
+                except FoodSafety.DoesNotExist:
+                    kwargs['queryset'] = ProductResidue.objects.none()
+            else:
+                kwargs['queryset'] = ProductResidue.objects.none()
+
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+class SampleCollectionInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
+    model = SampleCollection
+    extra = 1
+    min_num = 1
     max_num = 1
-    # inlines = [SensorySpecification, SampleWeight, CropThreat]
-    # inlines = [SensorySpecification, SampleWeight]
+    can_delete = False
+    inlines = [SensorySpecificationInline, SamplePestInline, SampleDiseaseInline, SamplePhysicalDamageInline, SampleResidueInline, SampleWeightInline]
 
 class PercentageInline(nested_admin.NestedTabularInline):
     model = Percentage
