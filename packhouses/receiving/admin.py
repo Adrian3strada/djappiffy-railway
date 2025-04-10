@@ -11,13 +11,11 @@ from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLi
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle
 from django.utils.translation import gettext_lazy as _
 import nested_admin
-from .mixins import CustomNestedStackedInlineMixin
+from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInlineMixin
 from .forms import ScheduleHarvestVehicleForm
 from nested_admin import NestedStackedInline
 from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue
 from common.base.models import Pest
-
-from common.base.mixins import (DisableInlineRelatedLinksMixin)
 import nested_admin
 
 # Inlines para el corte
@@ -139,13 +137,13 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
 class LoteAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     list_display = ('sample_number',)
 
-class DryMatterInline(nested_admin.NestedTabularInline):
+class DryMatterInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
     model = DryMatter
     extra = 1
     fields = ['number', 'product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage']
     readonly_fields = ('number',)
 
-class InternalInspectionInline(nested_admin.NestedTabularInline):
+class InternalInspectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
     model = InternalInspection
     extra = 1
     fields = ['number', 'internal_temperature', 'product_pest']
@@ -184,7 +182,6 @@ class TransportInspectionInline(nested_admin.NestedTabularInline):
     fields = ['transport_inspection', 'sealed', 'only_the_product', 'free_foreign_matter',
               'free_unusual_odors', 'certificate', 'free_fecal_matter']
 
-
 class TransportConditionInline(nested_admin.NestedTabularInline):
     model = TransportCondition
     extra = 0
@@ -198,7 +195,7 @@ class TransportConditionInline(nested_admin.NestedTabularInline):
     readonly_fields = ['transport_condition']
     fields = ['transport_condition', 'is_clean', 'good_condition', 'broken', 'damaged', 'seal']
 
-class TransportReviewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
+class TransportReviewInline(nested_admin.NestedStackedInline):
     model = TransportReview
     extra = 0
     inlines = [TransportInspectionInline, TransportConditionInline]
@@ -321,13 +318,13 @@ class SampleResidueInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-class SampleCollectionInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
+class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
     model = SampleCollection
     extra = 1
     min_num = 1
     max_num = 1
     can_delete = False
-    inlines = [SensorySpecificationInline, SamplePestInline, SampleDiseaseInline, SamplePhysicalDamageInline, SampleResidueInline, SampleWeightInline]
+    inlines = [SamplePestInline, SampleDiseaseInline, SamplePhysicalDamageInline, SampleResidueInline, SampleWeightInline]
 
 class PercentageInline(nested_admin.NestedTabularInline):
     model = Percentage

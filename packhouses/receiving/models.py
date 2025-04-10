@@ -197,7 +197,11 @@ class TransportCondition(models.Model):
         return f""
 
 class SampleCollection(models.Model):
-    total_sample = models.IntegerField(verbose_name=_('Total samples'))
+    whole = models.BooleanField(default=False, verbose_name=_('Whole'))
+    foreign_material = models.BooleanField(default=False, verbose_name=_('Foreign Material'))
+    insects = models.BooleanField(default=False, verbose_name=_('Insects'))
+    temperature_damage = models.BooleanField(default=False, verbose_name=_('Temperature Damage'))
+    unusual_odor = models.BooleanField(default=False, verbose_name=_('Unusual Odor'))
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):
