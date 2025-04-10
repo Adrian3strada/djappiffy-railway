@@ -188,6 +188,16 @@ class OrderItemPallet(models.Model):
     def __str__(self):
         return f"{self.pk}"
 
+    def clean(self):
+        self.amount_price = 0
+        if self.pricing_by == 'product_weight':
+            self.amount_price = self.product_packaging_quantity_per_pallet * self.unit_price * self.quantity * self.product_weight_per_packaging if self.product_packaging_quantity_per_pallet and self.unit_price and self.quantity and self.product_weight_per_packaging else 0
+        if self.pricing_by == 'product_packaging':
+            self.amount_price = self.product_packaging_quantity_per_pallet * self.unit_price * self.quantity if self.product_packaging_quantity_per_pallet and self.unit_price and self.quantity else 0
+        if self.pricing_by == 'product_presentation':
+            self.amount_price = self.product_packaging_quantity_per_pallet * self.unit_price * self.quantity * self.product_presentations_per_packaging if self.product_packaging_quantity_per_pallet and self.unit_price and self.quantity and self.product_presentations_per_packaging else 0
+        super().clean()
+
     class Meta:
         verbose_name = _('Order item by pallet')
         verbose_name_plural = _('Order items by pallet')

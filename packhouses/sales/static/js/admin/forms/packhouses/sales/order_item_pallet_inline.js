@@ -151,11 +151,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productPhenologyField = $(newForm).find('select[name$="-product_phenology"]');
       const productMarketClassField = $(newForm).find('select[name$="-product_market_class"]');
       const productMarketRipenessField = $(newForm).find('select[name$="-product_ripeness"]');
-      const productPackagingField = $(newForm).find('select[name$="-product_packaging"]');
+      const productPackagingPalletField = $(newForm).find(`select[name$="-product_packaging_pallet"]`);
+      const productPackagingQuantityPerPalletField = $(newForm).find(`input[name$="-product_packaging_quantity_per_pallet"]`);
       const productWeightPerPackagingField = $(newForm).find('input[name$="-product_weight_per_packaging"]');
       const productPresentationsPerPackagingField = $(newForm).find('input[name$="-product_presentations_per_packaging"]');
       const productPiecesPerPresentationField = $(newForm).find('input[name$="-product_pieces_per_presentation"]');
-
       const quantityField = $(newForm).find('input[name$="-quantity"]');
       const unitPriceField = $(newForm).find('input[name$="-unit_price"]');
       const amountPriceField = $(newForm).find('input[name$="-amount_price"]');
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       productMarketClassField.closest('.form-group').hide();
 
       updateFieldOptions(productSizeField, []);
-      updateFieldOptions(productPackagingField, []);
+      updateFieldOptions(productPackagingPalletField, []);
 
       getProductOptions().then(() => {
         updateFieldOptions(pricingByField, productPriceOptions);
@@ -225,21 +225,21 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
 
           let queryParams = {
-            market: clientProperties.market,
-            product: productProperties.id,
-            product_size: productSizeField.val(),
+            product_packaging__market: clientProperties.market,
+            product_packaging__product: productProperties.id,
+            product_packaging__product_size: productSizeField.val(),
             is_enabled: 1
           }
 
           if (productSizeSelectedOptionCategory === 'mix') {
-            queryParams.category = "single";
+            queryParams.product_packaging__category = "single";
           }
 
           if (pricingByField.val() === 'product_presentation' && productSizeSelectedOptionCategory === 'size') {
-            queryParams.category = "presentation";
+            queryParams.product_packaging__category = "presentation";
           }
 
-          const url = `/rest/v1/catalogs/product-packaging/?${$.param(queryParams)}`;
+          const url = `/rest/v1/catalogs/product-packaging-pallet/?${$.param(queryParams)}`;
 
           fetchOptions(url)
             .then(data => {
@@ -255,29 +255,31 @@ document.addEventListener('DOMContentLoaded', async () => {
                   allowOutsideClick: false,
                   allowEscapeKey: false,
                 })
-                updateFieldOptions(productPackagingField, []);
+                updateFieldOptions(productPackagingPalletField, []);
               }
-              updateFieldOptions(productPackagingField, data);
+              updateFieldOptions(productPackagingPalletField, data, productPackagingPalletField.val());
+              console.log("data", data)
+              console.log("productPackagingPalletField", productPackagingPalletField)
             });
-
         } else {
-          updateFieldOptions(productPackagingField, []);
+          updateFieldOptions(productPackagingPalletField, []);
         }
       });
 
-      productPackagingField.on('change', () => {
+      productPackagingPalletField.on('change', () => {
         productWeightPerPackagingField.val(null);
         productPresentationsPerPackagingField.val(null);
         productPiecesPerPresentationField.val(null);
         productPresentationsPerPackagingField.closest('.form-group').fadeOut();
         productPiecesPerPresentationField.closest('.form-group').fadeOut();
-        if (productPackagingField.val()) {
-          fetchOptions(`/rest/v1/catalogs/product-packaging/${productPackagingField.val()}/`)
+        if (productPackagingPalletField.val()) {
+          fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${productPackagingPalletField.val()}/`)
             .then(data => {
-              productWeightPerPackagingField.val(data.product_weight_per_packaging);
-              if (data.product_presentation) {
-                productPresentationsPerPackagingField.val(data.product_presentations_per_packaging);
-                productPiecesPerPresentationField.val(data.product_pieces_per_presentation)
+              productPackagingQuantityPerPalletField.val(data.product_packaging_quantity)
+              productWeightPerPackagingField.val(data.product_packaging_detail.product_weight_per_packaging)
+              if (data.product_packaging_detail.product_presentation) {
+                productPresentationsPerPackagingField.val(data.product_packaging_detail.product_presentations_per_packaging)
+                productPiecesPerPresentationField.val(data.product_packaging_detail.product_pieces_per_presentation)
                 productPresentationsPerPackagingField.closest('.form-group').fadeIn();
                 productPiecesPerPresentationField.closest('.form-group').fadeIn();
               } else {
@@ -323,7 +325,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productPhenologyField = $(form).find(`select[name$="${index}-product_phenology"]`);
       const productMarketClassField = $(form).find(`select[name$="${index}-product_market_class"]`);
       const productMarketRipenessField = $(form).find(`select[name$="${index}-product_ripeness"]`);
-      const productPackagingField = $(form).find(`select[name$="${index}-product_packaging"]`);
+      const productPackagingPalletField = $(form).find(`select[name$="${index}-product_packaging_pallet"]`);
+      const productPackagingQuantityPerPalletField = $(form).find(`input[name$="${index}-product_packaging_quantity_per_pallet"]`);
       const productWeightPerPackagingField = $(form).find(`input[name$="${index}-product_weight_per_packaging"]`);
       const productPresentationsPerPackagingField = $(form).find(`input[name$="${index}-product_presentations_per_packaging"]`);
       const productPiecesPerPresentationField = $(form).find(`input[name$="${index}-product_pieces_per_presentation"]`);
@@ -417,21 +420,21 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
 
           let queryParams = {
-            market: clientProperties.market,
-            product: productProperties.id,
-            product_size: productSizeField.val(),
+            product_packaging__market: clientProperties.market,
+            product_packaging__product: productProperties.id,
+            product_packaging__product_size: productSizeField.val(),
             is_enabled: 1
           }
 
           if (productSizeSelectedOptionCategory === 'mix') {
-            queryParams.category = "single";
+            queryParams.product_packaging__category = "single";
           }
 
           if (pricingByField.val() === 'product_presentation' && productSizeSelectedOptionCategory === 'size') {
-            queryParams.category = "presentation";
+            queryParams.product_packaging__category = "presentation";
           }
 
-          const url = `/rest/v1/catalogs/product-packaging/?${$.param(queryParams)}`;
+          const url = `/rest/v1/catalogs/product-packaging-pallet/?${$.param(queryParams)}`;
 
           fetchOptions(url)
             .then(data => {
@@ -447,29 +450,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                   allowOutsideClick: false,
                   allowEscapeKey: false,
                 })
-                updateFieldOptions(productPackagingField, []);
+                updateFieldOptions(productPackagingPalletField, []);
               }
-              updateFieldOptions(productPackagingField, data, productPackagingField.val());
+              updateFieldOptions(productPackagingPalletField, data, productPackagingPalletField.val());
             });
 
         } else {
-          updateFieldOptions(productPackagingField, []);
+          updateFieldOptions(productPackagingPalletField, []);
         }
       });
 
-      productPackagingField.on('change', () => {
+      productPackagingPalletField.on('change', () => {
         productWeightPerPackagingField.val(null);
         productPresentationsPerPackagingField.val(null);
         productPiecesPerPresentationField.val(null);
         productPresentationsPerPackagingField.closest('.form-group').fadeOut();
         productPiecesPerPresentationField.closest('.form-group').fadeOut();
-        if (productPackagingField.val()) {
-          fetchOptions(`/rest/v1/catalogs/product-packaging/${productPackagingField.val()}/`)
+        if (productPackagingPalletField.val()) {
+          fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${productPackagingPalletField.val()}/`)
             .then(data => {
-              productWeightPerPackagingField.val(data.product_weight_per_packaging);
-              if (data.product_presentation) {
-                productPresentationsPerPackagingField.val(data.product_presentations_per_packaging);
-                productPiecesPerPresentationField.val(data.product_pieces_per_presentation)
+              productPackagingQuantityPerPalletField.val(data.product_packaging_quantity)
+              productWeightPerPackagingField.val(data.product_packaging_detail.product_weight_per_packaging);
+              if (data.product_packaging_detail.product_presentation) {
+                productPresentationsPerPackagingField.val(data.product_packaging_detail.product_presentations_per_packaging);
+                productPiecesPerPresentationField.val(data.product_packaging_detail.product_pieces_per_presentation)
                 productPresentationsPerPackagingField.closest('.form-group').fadeIn();
                 productPiecesPerPresentationField.closest('.form-group').fadeIn();
               } else {

@@ -224,7 +224,6 @@ class ProductPackagingPalletViewSet(viewsets.ModelViewSet):
         product_packaging__category = self.request.GET.get('product_packaging__category')
         product_packaging__product_size = self.request.GET.get('product_packaging__product_size')
         product_packaging__product_presentation__isnull = self.request.GET.get('product_packaging__product_presentation__isnull')
-        print("product_packaging__product_presentation__isnull", product_packaging__product_presentation__isnull)
 
         if product_packaging__product:
             queryset = queryset.filter(product_packaging__product=product_packaging__product)
