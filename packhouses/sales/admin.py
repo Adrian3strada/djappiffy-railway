@@ -15,7 +15,7 @@ from .filters import (ByMaquiladoraForOrganizationOrderFilter, ByClientForOrgani
 from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
                                         ProductPackaging,
-                                        ProductPhenologyKind, ProductMarketClass, Packaging)
+                                        ProductPhenologyKind, ProductMarketClass, Packaging, ProductPackagingPallet)
 from .models import Order, OrderItemBak, OrderItemWeight, OrderItemPackaging, OrderItemPallet
 from .forms import OrderItemWeightFormSet, OrderItemPackagingFormSet, OrderItemPalletFormSet
 from django.utils.safestring import mark_safe
@@ -202,7 +202,6 @@ class OrderItemPalletInline(OrderItemInlineMixin):
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        formset.form.base_fields['product_packaging'].disabled = True
         formset.form.base_fields['product_packaging_pallet'].widget.can_add_related = False
         formset.form.base_fields['product_packaging_pallet'].widget.can_change_related = False
         formset.form.base_fields['product_packaging_pallet'].widget.can_delete_related = False
@@ -213,11 +212,11 @@ class OrderItemPalletInline(OrderItemInlineMixin):
         parent_object_id = request.resolver_match.kwargs.get("object_id")
         parent_obj = Order.objects.get(id=parent_object_id) if parent_object_id else None
 
-        if db_field.name == "product_packaging":
-            kwargs["queryset"] = ProductPackaging.objects.none()
+        if db_field.name == "product_packaging_pallet":
+            kwargs["queryset"] = ProductPackagingPallet.objects.none()
             if parent_obj and parent_obj.product:
-                kwargs["queryset"] = ProductPackaging.objects.filter(product=parent_obj.product,
-                                                                     market=parent_obj.client.market, is_enabled=True)
+                kwargs["queryset"] = ProductPackagingPallet.objects.filter(product_packaging__product=parent_obj.product,
+                                                                     product_packaging__market=parent_obj.client.market, is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
