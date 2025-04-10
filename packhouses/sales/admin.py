@@ -202,10 +202,11 @@ class OrderItemPalletInline(OrderItemInlineMixin):
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        formset.form.base_fields['product_packaging'].widget.can_add_related = False
-        formset.form.base_fields['product_packaging'].widget.can_change_related = False
-        formset.form.base_fields['product_packaging'].widget.can_delete_related = False
-        formset.form.base_fields['product_packaging'].widget.can_view_related = False
+        formset.form.base_fields['product_packaging'].disabled = True
+        formset.form.base_fields['product_packaging_pallet'].widget.can_add_related = False
+        formset.form.base_fields['product_packaging_pallet'].widget.can_change_related = False
+        formset.form.base_fields['product_packaging_pallet'].widget.can_delete_related = False
+        formset.form.base_fields['product_packaging_pallet'].widget.can_view_related = False
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -255,7 +256,6 @@ class OrderAdmin(ByOrganizationAdminMixin):
         if 'status' in form.base_fields:
             form.base_fields['status'].choices = [choice for choice in form.base_fields['status'].choices if choice[0] != 'closed']
         if not obj or obj.status not in ['closed', 'canceled']:
-
             form.base_fields['maquiladora'].widget.can_add_related = False
             form.base_fields['maquiladora'].widget.can_change_related = False
             form.base_fields['maquiladora'].widget.can_delete_related = False

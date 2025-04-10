@@ -931,6 +931,7 @@ class ProductPackagingPallet(models.Model):
                                                              help_text=_(
                                                              'Amount of product packaging units for this pallet.'),
                                                              validators=[MinValueValidator(1)])
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
         return f"{self.product_packaging} - {self.pallet} ({self.product_packaging_quantity})"
