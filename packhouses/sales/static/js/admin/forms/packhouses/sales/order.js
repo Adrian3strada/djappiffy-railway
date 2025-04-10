@@ -20,6 +20,8 @@ document.addEventListener("DOMContentLoaded", function () {
   let productProperties = null;
   let organization = null;
 
+  let clientCategory = clientCategoryField.val();
+
   const API_BASE_URL = "/rest/v1";
 
   let order_items_kind_options = [
@@ -90,8 +92,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function updateClientOptions() {
-    const clientCategory = clientCategoryField.val();
-    if (clientCategory && clientCategory === 'packhouse') {
+    // clientCategory = clientCategoryField.val();
+    if (!!clientCategory && clientCategory === 'packhouse') {
       fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&is_enabled=1`).then(
         (data) => {
           updateFieldOptions(clientField, data);
@@ -101,9 +103,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function updateMaquiladoraClientOptions() {
-    const clientCategory = clientCategoryField.val();
+    // const clientCategory = clientCategoryField.val();
     const maquiladora = maquiladoraField.val()
-    if (clientCategory && clientCategory === 'maquiladora' && maquiladora) {
+    if (!!clientCategory && clientCategory === 'maquiladora' && maquiladora) {
       fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&maquiladora=${maquiladora}&is_enabled=1`).then(
         (data) => {
           updateFieldOptions(clientField, data);
@@ -113,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function updateMaquiladoraOptions() {
-    const clientCategory = clientCategoryField.val();
+    // const clientCategory = clientCategoryField.val();
     if (clientCategory && clientCategory === 'maquiladora') {
       fetchOptions(`${API_BASE_URL}/catalogs/maquiladora/?is_enabled=1`).then(
         (data) => {
@@ -191,10 +193,11 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   clientCategoryField.on("change", () => {
-    if (clientCategoryField.val() && clientCategoryField.val() === 'packhouse') {
+    clientCategory = clientCategoryField.val()
+    if (!!clientCategory && clientCategory === 'packhouse') {
       updateClientOptions()
       maquiladoraField.closest('.form-group').fadeOut();
-    } else if (clientCategoryField.val() && clientCategoryField.val() === 'maquiladora') {
+    } else if (!!clientCategory && clientCategory === 'maquiladora') {
       updateMaquiladoraOptions()
       maquiladoraField.closest('.form-group').fadeIn();
       updateFieldOptions(clientField, []);
@@ -275,8 +278,8 @@ document.addEventListener("DOMContentLoaded", function () {
     orderItemsKindField.closest('.form-group').hide();
   }
 
-  if (clientCategoryField.val()) {
-    if (clientCategoryField.val() === 'maquiladora') {
+  if (!!clientCategory) {
+    if (clientCategory === 'maquiladora') {
       maquiladoraField.closest('.form-group').show();
     }
   }

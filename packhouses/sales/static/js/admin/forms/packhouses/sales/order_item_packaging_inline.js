@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function getClientProperties() {
     if (clientField.val()) {
       clientProperties = await fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
-      console.log("clientProperties", clientProperties);
     } else {
       clientProperties = null;
     }
@@ -84,7 +83,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function getProductProperties() {
     if (productField.val()) {
       productProperties = await fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
-      console.log("function productProperties", productProperties);
     } else {
       productProperties = null;
     }
@@ -342,7 +340,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     existingForms.each(async (index, form) => {
-      console.log("existingForms", index, form)
       const pricingByField = $(form).find(`select[name$="${index}-pricing_by"]`);
       const productSizeField = $(form).find(`select[name$="${index}-product_size"]`);
       const productPhenologyField = $(form).find(`select[name$="${index}-product_phenology"]`);
@@ -406,12 +403,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       productSizeField.on('change', () => {
         if (productSizeField.val()) {
-          console.log("productSizeField", productSizeField)
           const productSizeSelectedOption = productSizeField.find('option:selected');
           const productSizeSelectedOptionCategory = productSizeSelectedOption.data('category');
-
-          console.log("productSizeSelectedOption", productSizeSelectedOption)
-          console.log("productSizeSelectedOptionCategory", productSizeSelectedOptionCategory)
 
           if (productSizeField.val() && productSizeSelectedOptionCategory) {
 
