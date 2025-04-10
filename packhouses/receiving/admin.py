@@ -92,14 +92,24 @@ class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.Stacked
     inlines = [HarvestCuttingContainerVehicleInline]
 
     def get_formset(self, request, obj=None, **kwargs):
+        # Obtén el formset base
         formset = super().get_formset(request, obj, **kwargs)
-        # Configurar widgets de campos relacionados
+        
+        # Configurar widgets de campos relacionados en el form base
         for field in formset.form.base_fields.values():
             field.widget.can_add_related = False
             field.widget.can_change_related = False
             field.widget.can_delete_related = False
             field.widget.can_view_related = False
-        return formset
+
+        # Definir una clase interna para pasar el request a cada formulario del formset
+        class CustomFormSet(formset):
+            def _construct_form(self, i, **kwargs_inner):
+                kwargs_inner['request'] = request  # Pasar el objeto request
+                return super()._construct_form(i, **kwargs_inner)
+
+        return CustomFormSet
+
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = None
@@ -120,6 +130,20 @@ class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.Stacked
             )
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        form_field = super().formfield_for_dbfield(db_field, request, **kwargs)
+        
+        if db_field.name == 'guide_number':
+            print("Procesando el campo 'guide_number'")
+            if request.POST:
+                has_arrived_str = request.POST.get('has_arrived')
+                has_arrived = True if has_arrived_str == 'on' else False
+                form_field.required = has_arrived
+            else:
+                form_field.required = True
+
+        return form_field
 
     
 class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline):

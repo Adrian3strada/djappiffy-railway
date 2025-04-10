@@ -192,7 +192,8 @@ class ScheduleHarvestVehicle(models.Model):
     guide_number = models.CharField(
         max_length=20, 
         verbose_name=_('Guide Number'),
-        blank=True,
+        null= True,
+        blank=False,
         )
     stamp_number = models.CharField(
         max_length=20,

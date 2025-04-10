@@ -118,6 +118,40 @@ document.addEventListener("DOMContentLoaded", function() {
     // Inicializa cada formulario de vehículo y configura listeners para su checkbox "has_arrived"
     $(VEHICLE_FORM_SELECTOR).each(function(i, vehicleForm) {
         const $vehicle = $(vehicleForm);
+        const hasArrivedField = $(vehicleForm).find('input[name$="-has_arrived"]');
+        const guideNumberField = $(vehicleForm).find('input[name$="-guide_number"]');
+        const stampVehicleNumberField = $(vehicleForm).find('input[name$="-stamp_vehicle_number"]');
+
+        const guideNumberWrapper = guideNumberField.closest('.row');
+        const stampVehicleWrapper = stampVehicleNumberField.closest('.row');
+
+        // Buscar el siguiente .row después del campo guide_number para mensajes de error
+        const guideNumberErrorRow = guideNumberWrapper.next('.row');
+        const stampVehicleErrorRow = stampVehicleWrapper.next('.row');
+
+        guideNumberWrapper.hide();
+        stampVehicleWrapper.hide();
+
+        if (hasArrivedField.prop('checked')) {
+            guideNumberWrapper.show();
+            stampVehicleWrapper.show();
+        }    
+
+        hasArrivedField.on('change', () => {
+            const isChecked = hasArrivedField.prop('checked');
+            if (isChecked === true) {
+                guideNumberWrapper.fadeIn();
+                stampVehicleWrapper.fadeIn();
+                guideNumberErrorRow.fadeIn();
+                stampVehicleErrorRow.fadeIn();
+            } else {
+                guideNumberWrapper.fadeOut();
+                stampVehicleWrapper.fadeOut();
+                guideNumberErrorRow.fadeOut();
+                stampVehicleErrorRow.fadeOut();
+            }
+        });
+
         $vehicle.find("input[type='checkbox'][name$='-has_arrived']").on("change", function() {
             updateVehicleTotals(vehicleForm);
             updateGlobalTotals();

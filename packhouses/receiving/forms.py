@@ -31,19 +31,29 @@ class BaseScheduleHarvestVehicleFormSet(BaseInlineFormSet):
         
 
 class ScheduleHarvestVehicleForm(forms.ModelForm):
-    stamp_vehicle_number = forms.CharField(label=_('Stamp'), required=False,)
+    stamp_vehicle_number = forms.CharField(label=_('Stamp'), required=True,)
 
     class Meta:
         model = ScheduleHarvestVehicle
         fields = '__all__'
     
     def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
+
         has_arrived_init = self.instance.has_arrived
-        if has_arrived_init == True:
-            self.fields['stamp_vehicle_number'].initial = self.instance.stamp_number if self.instance else ''
-        else: 
-            self.fields['stamp_vehicle_number'].initial = " "
+        if has_arrived_init:
+            self.fields['stamp_vehicle_number'].initial = self.instance.stamp_number
+        else:
+            self.fields['stamp_vehicle_number'].initial = ""
+
+        if request:
+            if request.POST:
+                has_arrived_str = request.POST.get('has_arrived')
+                has_arrived = has_arrived_str == 'on'
+                self.fields['stamp_vehicle_number'].required = has_arrived
+            else:
+                self.fields['stamp_vehicle_number'].required = True
 
     def clean(self):
         cleaned_data = super().clean()
@@ -57,15 +67,15 @@ class ScheduleHarvestVehicleForm(forms.ModelForm):
         errors = {} 
         # Validación cuando cambia de False → True
         if not has_arrived_initial and has_arrived_final:
-            self.fields['stamp_vehicle_number'].required = True
-            self.fields['guide_number'].required = True
             if stamp_vehicle_number and instance and instance.stamp_number != stamp_vehicle_number:
                 errors['stamp_vehicle_number'] = _('The provided Stamp does not match the original.')
             
             if not stamp_vehicle_number:
+                self.fields['stamp_vehicle_number'].required = True
                 errors['stamp_vehicle_number'] = _('Stamp Vehicle Number is required when the vehicle has arrived.')
 
             if not guide_number:
+                self.fields['guide_number'].required = True
                 errors['guide_number'] = _('Guide Number is required when the vehicle has arrived.')
         if errors:
             raise forms.ValidationError(errors)
