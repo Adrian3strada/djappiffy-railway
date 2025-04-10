@@ -289,21 +289,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       })
 
-      quantityField.on('change', () => {
-        if (quantityField.val() && unitPriceField.val()) {
-          amountPriceField.val(quantityField.val() * unitPriceField.val());
-        } else {
-          amountPriceField.val(0);
+      function setAmountPrice() {
+        let amountPrice = 0;
+
+        if (pricingByField.val() === 'product_weight') {
+          if (unitPriceField.val() && quantityField.val() && productWeightPerPackagingField.val() && unitPriceField.val() > 0 && quantityField.val() > 0 && productWeightPerPackagingField.val() > 0) {
+            amountPrice = unitPriceField.val() * quantityField.val() * productWeightPerPackagingField.val();
+          }
         }
+
+        if (pricingByField.val() === 'product_packaging') {
+          if (unitPriceField.val() && quantityField.val() && unitPriceField.val() > 0 && quantityField.val() > 0) {
+            amountPrice = unitPriceField.val() * quantityField.val();
+          }
+        }
+
+        if (pricingByField.val() === 'product_presentation') {
+          if (unitPriceField.val() && quantityField.val() && productPresentationsPerPackagingField.val() && unitPriceField.val() > 0 && quantityField.val() > 0 && productPresentationsPerPackagingField.val() > 0) {
+            amountPrice = unitPriceField.val() * quantityField.val() * productPresentationsPerPackagingField.val()
+          }
+        }
+
+        amountPriceField.val(amountPrice);
+      }
+
+      quantityField.on('change', () => {
+        setAmountPrice();
       })
 
       unitPriceField.on('change', () => {
-        if (quantityField.val() && unitPriceField.val()) {
-          amountPriceField.val(quantityField.val() * unitPriceField.val());
-        } else {
-          amountPriceField.val(0);
-        }
+        setAmountPrice();
       })
+
+      productWeightPerPackagingField.on('change', () => {
+        setAmountPrice();
+      })
+
+      productPresentationsPerPackagingField.on('change', () => {
+        setAmountPrice();
+      })
+
     }
   });
 
@@ -481,21 +506,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       })
 
-      quantityField.on('change', () => {
-        if (quantityField.val() && unitPriceField.val()) {
-          amountPriceField.val(quantityField.val() * unitPriceField.val());
-        } else {
-          amountPriceField.val(0);
+      function setAmountPrice() {
+        let amountPrice = 0;
+
+        if (pricingByField.val() === 'product_weight') {
+          if (unitPriceField.val() && quantityField.val() && productWeightPerPackagingField.val() && unitPriceField.val() > 0 && quantityField.val() > 0 && productWeightPerPackagingField.val() > 0) {
+            amountPrice = unitPriceField.val() * quantityField.val() * productWeightPerPackagingField.val();
+          }
         }
+
+        if (pricingByField.val() === 'product_packaging') {
+          if (unitPriceField.val() && quantityField.val() && unitPriceField.val() > 0 && quantityField.val() > 0) {
+            amountPrice = unitPriceField.val() * quantityField.val();
+          }
+        }
+
+        if (pricingByField.val() === 'product_presentation') {
+          if (unitPriceField.val() && quantityField.val() && productPresentationsPerPackagingField.val() && unitPriceField.val() > 0 && quantityField.val() > 0 && productPresentationsPerPackagingField.val() > 0) {
+            amountPrice = unitPriceField.val() * quantityField.val() * productPresentationsPerPackagingField.val()
+          }
+        }
+
+        amountPriceField.val(amountPrice);
+      }
+
+      quantityField.on('change', () => {
+        setAmountPrice();
       })
 
       unitPriceField.on('change', () => {
-        if (quantityField.val() && unitPriceField.val()) {
-          amountPriceField.val(quantityField.val() * unitPriceField.val());
-        } else {
-          amountPriceField.val(0);
-        }
+        setAmountPrice();
       })
+
+      productWeightPerPackagingField.on('change', () => {
+        setAmountPrice();
+      })
+
+      productPresentationsPerPackagingField.on('change', () => {
+        setAmountPrice();
+      })
+
     });
 
   }, 300)
