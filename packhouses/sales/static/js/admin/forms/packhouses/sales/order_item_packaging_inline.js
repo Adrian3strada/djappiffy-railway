@@ -363,11 +363,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!productPhenologyField.val()) productPhenologyField.closest('.form-group').hide();
       if (!productMarketClassField.val()) productMarketClassField.closest('.form-group').hide();
 
-      // await getProductOptions();
-      console.log("aqui")
-      console.log("productProperties", productProperties)
-      console.log("clientProperties", clientProperties)
-
       getProductOptions().then(() => {
         updateFieldOptions(pricingByField, productPriceOptions, pricingByField.val());
         updateFieldOptions(productPhenologyField, productPhenologyOptions, productPhenologyField.val());
@@ -508,6 +503,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       function setAmountPrice() {
         let amountPrice = 0;
+        alert(pricingByField.val())
 
         if (pricingByField.val() === 'product_weight') {
           if (unitPriceField.val() && quantityField.val() && productWeightPerPackagingField.val() && unitPriceField.val() > 0 && quantityField.val() > 0 && productWeightPerPackagingField.val() > 0) {
