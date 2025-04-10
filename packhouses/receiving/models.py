@@ -250,6 +250,7 @@ class SampleWeight(models.Model):
 class SamplePest(models.Model):
     sample_pest = models.IntegerField(verbose_name=_('Samples With Pests'))
     product_pest = models.ForeignKey(ProductPest, verbose_name=_('Pest'), on_delete=models.CASCADE)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -258,6 +259,7 @@ class SamplePest(models.Model):
 class SampleDisease(models.Model):
     sample_disease = models.IntegerField(verbose_name=_('Samples With Diseases'))
     product_disease = models.ForeignKey(ProductDisease, verbose_name=_('Disease'), on_delete=models.CASCADE)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -266,6 +268,7 @@ class SampleDisease(models.Model):
 class SamplePhysicalDamage(models.Model):
     sample_physical_damage = models.IntegerField(verbose_name=_('Samples With Physical Damage'))
     product_physical_damage = models.ForeignKey(ProductPhysicalDamage, verbose_name=_('Physical Damage'), on_delete=models.CASCADE)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -274,6 +277,7 @@ class SamplePhysicalDamage(models.Model):
 class SampleResidue(models.Model):
     sample_residue = models.IntegerField(verbose_name=_('Samples With Residue'))
     product_residue = models.ForeignKey(ProductResidue, verbose_name=_('Residue'), on_delete=models.CASCADE)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     def __str__(self):

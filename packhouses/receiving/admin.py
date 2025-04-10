@@ -173,7 +173,7 @@ class TransportInspectionInline(nested_admin.NestedTabularInline):
     extra = 0
     min_num = 1
     max_num = 1
-    can_delete = False
+    # can_delete = False
 
     def transport_inspection(self, obj=None):
         return ''
@@ -187,7 +187,7 @@ class TransportConditionInline(nested_admin.NestedTabularInline):
     extra = 0
     min_num = 1
     max_num=1
-    can_delete = False
+    # can_delete = False
 
     def transport_condition(self, obj=None):
         return ''
@@ -198,7 +198,7 @@ class TransportConditionInline(nested_admin.NestedTabularInline):
 class TransportReviewInline(nested_admin.NestedStackedInline):
     model = TransportReview
     extra = 0
-    inlines = [TransportInspectionInline, TransportConditionInline]
+    # inlines = [TransportInspectionInline, TransportConditionInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "vehicle":
@@ -209,6 +209,9 @@ class TransportReviewInline(nested_admin.NestedStackedInline):
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
             kwargs["queryset"] = ScheduleHarvestVehicle.objects.filter(harvest_cutting_id=schedule_harvest)
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/select_stacked.js',)
 
 class SensorySpecificationInline(nested_admin.NestedTabularInline):
     model = SensorySpecification
@@ -227,13 +230,14 @@ class SampleWeightInline(nested_admin.NestedTabularInline):
     model = SampleWeight
     extra = 0
     min_num = 1
-    readonly_fields = ('number',)
+    # readonly_fields = ('number',)
     fields = ['number', 'weight']
 
 class SamplePestInline(nested_admin.NestedTabularInline):
     model = SamplePest
     extra = 0
-    fields = ['product_pest', 'sample_pest']
+    readonly_fields = ('percentage',)
+    fields = ['product_pest', 'sample_pest', 'percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_pest":
@@ -254,11 +258,11 @@ class SamplePestInline(nested_admin.NestedTabularInline):
     class Media:
         js = ('js/admin/forms/select.js',)
 
-
 class SampleDiseaseInline(nested_admin.NestedTabularInline):
     model = SampleDisease
     extra = 0
-    fields = ['product_disease', 'sample_disease']
+    readonly_fields = ('percentage',)
+    fields = ['product_disease', 'sample_disease', 'percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_disease":
@@ -279,7 +283,8 @@ class SampleDiseaseInline(nested_admin.NestedTabularInline):
 class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
     model = SamplePhysicalDamage
     extra = 0
-    fields = ['product_physical_damage', 'sample_physical_damage']
+    readonly_fields = ('percentage',)
+    fields = ['product_physical_damage', 'sample_physical_damage', 'percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_physical_damage":
@@ -300,7 +305,8 @@ class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
 class SampleResidueInline(nested_admin.NestedTabularInline):
     model = SampleResidue
     extra = 0
-    fields = ['product_residue', 'sample_residue']
+    readonly_fields = ('percentage',)
+    fields = ['product_residue', 'sample_residue', 'percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_residue":
@@ -325,6 +331,9 @@ class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInl
     max_num = 1
     can_delete = False
     inlines = [SamplePestInline, SampleDiseaseInline, SamplePhysicalDamageInline, SampleResidueInline, SampleWeightInline]
+
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/percentage.js',)
 
 class PercentageInline(nested_admin.NestedTabularInline):
     model = Percentage
