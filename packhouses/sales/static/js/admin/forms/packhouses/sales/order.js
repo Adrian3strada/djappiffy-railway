@@ -28,9 +28,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   let clientProperties = null;
   let productProperties = null;
   let organization = null;
+  let nationalClient = true
 
   localDeliveryField.closest('.form-group').hide();
   incotermsField.closest('.form-group').hide();
+  productField.closest('.form-group').hide();
 
   const API_BASE_URL = "/rest/v1";
 
@@ -52,7 +54,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   await getOrganization();
 
-  function updateOrderItemsKindOptions(nationalClient = false) {
+  function updateOrderItemsKindOptions() {
     order_items_kind_options = [
       {id: "product_weight", name: "Product weight"},
       {id: "product_packaging", name: "Product packaging"},
@@ -99,6 +101,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   async function getClientProperties() {
     if (clientField.val()) {
       clientProperties = await fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
+      nationalClient = clientProperties.country === organization.country;
+      updateOrderItemsKindOptions()
     } else {
       clientProperties = null;
     }
@@ -145,8 +149,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   function updateMaquiladoraClientOptions() {
-    if (!!clientCategory && clientCategory === 'maquiladora' && maquiladora) {
-      fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&maquiladora=${maquiladora}&is_enabled=1`).then(
+    if (!!clientCategory && clientCategory === 'maquiladora' && maquiladoraField.val()) {
+      fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&maquiladora=${maquiladoraField.val()}&is_enabled=1`).then(
         (data) => {
           updateFieldOptions(clientField, data, maquiladora);
         }
@@ -226,7 +230,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   maquiladoraField.on("change", () => {
     const maquiladora = maquiladoraField.val()
-    if (maquiladora) {
+    if (maquiladoraField.val()) {
+      console.log(maquiladoraField.val())
       updateMaquiladoraClientOptions()
     } else {
       updateFieldOptions(clientField, []);
@@ -241,10 +246,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (client) {
       clientProperties = await fetchOptions(`${API_BASE_URL}/catalogs/client/${client}/`)
       await updateProductOptions();
-      if (clientProperties.country === organization.country) {
+      await getClientProperties();
+      if (nationalClient) {
+        incotermsField.closest('.form-group').fadeOut();
         localDeliveryField.closest('.form-group').fadeIn();
       } else {
         incotermsField.closest('.form-group').fadeIn();
+        localDeliveryField.closest('.form-group').fadeOut();
       }
       await updateOrderItemsKindOptions()
       productField.closest('.form-group').fadeIn();
@@ -252,6 +260,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       clientProperties = null;
       updateFieldOptions(productField, []);
       productField.closest('.form-group').fadeOut();
+      localDeliveryField.closest('.form-group').fadeOut();
+      incotermsField.closest('.form-group').fadeOut();
     }
   });
 
@@ -312,12 +322,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     fetchOptions(`${API_BASE_URL}/catalogs/client/${clientField.val()}/`)
       .then((client_data) => {
         clientProperties = client_data;
-        if (clientProperties.country === organization.country) {
+        nationalClient = client_data.country === organization.country;
+        updateOrderItemsKindOptions()
+        if (nationalClient) {
           localDeliveryField.closest('.form-group').show();
-          updateOrderItemsKindOptions(true)
         } else {
           incotermsField.closest('.form-group').show();
-          updateOrderItemsKindOptions(false)
         }
         updateProductOptions();
         setTimeout(() => {
