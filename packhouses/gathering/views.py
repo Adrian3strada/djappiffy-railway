@@ -195,6 +195,12 @@ def cancel_schedule_harvest(request, pk):
             'message': 'You cannot cancel this harvest.'
         }, status=403)  # 403: Forbidden
 
+    if schedule_harvest.incoming_product is not None:
+        return JsonResponse({
+            'success': False,
+            'message': 'Cannot cancel harvest because an incoming product is linked.'
+        }, status=403)
+
     schedule_harvest.status = 'canceled'
     schedule_harvest.save()
     success_message = _('Harvest canceled successfully.')
@@ -217,15 +223,12 @@ def set_scheduleharvest_ready(request, harvest_id):
         }, status=403)
 
     scheduleharvest.status = 'ready'
-    scheduleharvestvehicleinline = ScheduleHarvestVehicle.objects.filter(harvest_cutting=scheduleharvest).prefetch_related(
-        Prefetch('scheduleharvestcontainervehicle_set',queryset=ScheduleHarvestContainerVehicle.objects.all(),)
-    )
-    total_box = ScheduleHarvestContainerVehicle.objects.filter(harvest_cutting__in=scheduleharvestvehicleinline).aggregate(total=Sum('quantity'))['total'] or 0
-    incoming_product = IncomingProduct.objects.create(organization=scheduleharvest.organization, boxes_assigned=total_box)
+    incoming_product = IncomingProduct.objects.create(organization=scheduleharvest.organization)
     scheduleharvest.incoming_product = incoming_product
     scheduleharvest.save()
-    success_message = _('Harvest sent to Fruit Receiving Area successfully.')
 
+
+    success_message = _('Harvest sent to Fruit Receiving Area successfully.')
     return JsonResponse({
         'success': True,
         'message': success_message
