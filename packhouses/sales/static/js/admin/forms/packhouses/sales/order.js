@@ -16,13 +16,21 @@ document.addEventListener("DOMContentLoaded", async function () {
   const productVarietyField = $("#id_product_variety")
   const orderItemsKindField = $("#id_order_items_kind")
 
+  let clientCategory = clientCategoryField.val();
+  let maquiladora = maquiladoraField.val()
+  let client = clientField.val()
+  let localDelivery = localDeliveryField.val()
+  let incoterms = incotermsField.val()
+  let product = productField.val()
+  let productVariety = productVarietyField.val()
+  let orderItemsKind = orderItemsKindField.val()
+
   let clientProperties = null;
   let productProperties = null;
   let organization = null;
 
-  let clientCategory = clientCategoryField.val();
 
-  let orderItemsKind = orderItemsKindField.val()
+
 
   const API_BASE_URL = "/rest/v1";
 
@@ -151,23 +159,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
-  function getProductProperties(cleanup = false) {
+  function getProductProperties() {
     if (productField.val()) {
       fetchOptions(`${API_BASE_URL}/catalogs/product/${productField.val()}/`).then(
         (data) => {
           productProperties = data;
           if (data.measure_unit_category_display) {
             if (order_items_kind_options[0].id === 'product_weight') order_items_kind_options[0].name = data.measure_unit_category_display
-            if (cleanup) {
-              orderItemsKindField.val(null);
-              orderItemsKindField.trigger('change').select2();
-            }
-            const orderItemsKindValue = orderItemsKind;
-            updateFieldOptions(orderItemsKindField, order_items_kind_options);
-            if (orderItemsKindValue) {
-              orderItemsKindField.val(orderItemsKindValue);
-              orderItemsKindField.trigger('change').select2();
-            }
+            updateFieldOptions(orderItemsKindField, order_items_kind_options, orderItemsKindField.val());
           }
         });
     } else {
@@ -178,19 +177,18 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
-  productField.on("change", () => {
-    updateProductVarietyOptions();
-    getProductProperties(true);
+  productField.on("change", async () => {
+
     if (productField.val()) {
+      await getProductProperties();
+      await updateProductVarietyOptions();
       productVarietyField.closest('.form-group').fadeIn();
       orderItemsKindField.closest('.form-group').fadeIn();
     } else {
       productVarietyField.closest('.form-group').fadeOut();
       orderItemsKindField.closest('.form-group').fadeOut();
-      setTimeout(() => {
-        productVarietyField.val(null).trigger('change');
-        orderItemsKindField.val(null).trigger('change');
-      }, 100);
+      productVarietyField.val(null).trigger('change');
+      orderItemsKindField.val(null).trigger('change');
     }
   });
 
@@ -220,7 +218,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   clientField.on('change', () => {
-    const client = clientField.val();
+    client = clientField.val();
     localDeliveryField.closest('.form-group').fadeOut();
     incotermsField.closest('.form-group').fadeOut();
     setTimeout(() => {
