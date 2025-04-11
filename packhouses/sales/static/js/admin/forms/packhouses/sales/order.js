@@ -251,6 +251,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   orderItemsKindField.on('change', () => {
+    orderItemsKind = orderItemsKindField.val();
     if (orderItemsKind) {
       toggleShowOrderItemInline();
     }
