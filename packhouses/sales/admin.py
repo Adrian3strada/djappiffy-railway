@@ -97,23 +97,25 @@ class OrderItemInlineMixin(admin.StackedInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_object_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = Order.objects.get(id=parent_object_id) if parent_object_id else None
-        client_id = request.POST.get('client') if request.POST else None
-        product_id = request.POST.get('product') if request.POST else None
+        parent_object = Order.objects.get(id=parent_object_id) if parent_object_id else None
+
+        client_id = request.POST.get('client') if request.POST else parent_object.client.id if parent_object else None
+        product_id = request.POST.get('product') if request.POST else parent_object.product.id if parent_object else None
         client = Client.objects.get(id=client_id) if client_id else None
         product = Product.objects.get(id=product_id) if product_id else None
 
         if db_field.name == "product_size":
-            kwargs["queryset"] = ProductSize.objects.none()
-
             if client and product:
                 kwargs["queryset"] = ProductSize.objects.filter(product=product,
                                                                 market=client.market, is_enabled=True)
-            print("product_size queryset", kwargs["queryset"])
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda \
-                item: f"{item.name} ({item.description})" if item.description else f"{item.name}"
-            return formfield
+                formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+                formfield.label_from_instance = lambda \
+                    item: f"{item.name} ({item.description})" if item.description else f"{item.name}"
+                return formfield
+            else:
+                kwargs["queryset"] = ProductSize.objects.none()
+
+            print('kwargs["queryset"]', kwargs["queryset"])
 
         if db_field.name == "product_phenology":
             kwargs["queryset"] = ProductPhenologyKind.objects.none()
@@ -154,6 +156,7 @@ class OrderItemInlineMixin(admin.StackedInline):
             return formfield
 
         return super().formfield_for_dbfield(db_field, request, **kwargs)
+
 
 class OrderItemWeightInline(OrderItemInlineMixin):
     model = OrderItemWeight
@@ -199,7 +202,6 @@ class OrderItemPackagingInline(OrderItemInlineMixin):
 
     class Media:
         js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)
-
 
 
 class OrderItemPalletInline(OrderItemInlineMixin):

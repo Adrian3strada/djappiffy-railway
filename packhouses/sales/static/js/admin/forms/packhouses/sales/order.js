@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (product) {
       fetchOptions(`${API_BASE_URL}/catalogs/product-variety/?product=${product}&is_enabled=1`).then(
         (data) => {
-          updateFieldOptions(productVarietyField, data);
+          updateFieldOptions(productVarietyField, data, productVarietyField.val());
         });
     } else {
       updateFieldOptions(productVarietyField, []);
@@ -256,7 +256,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   productField.on("change", async () => {
-
     if (productField.val()) {
       await getProductProperties();
       await updateProductVarietyOptions();
@@ -269,6 +268,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       orderItemsKindField.val(null).trigger('change');
     }
   });
+
+  productVarietyField.on("change", async () => {
+    productVariety = productVarietyField.val();
+  })
 
   orderItemsKindField.on('change', () => {
     orderItemsKind = orderItemsKindField.val();

@@ -142,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
       productMarketClassField.closest('.form-group').hide();
       productMarketRipenessField.closest('.form-group').hide();
 
-
       updateFieldOptions(productSizeField, []);
 
       updateProductOptions().then(() => {
@@ -206,103 +205,94 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  setTimeout(async () => {
+    await getProductProperties();
+    await getClientProperties();
 
-  const existingForms = $('div[id^="orderitemweight_set-"]').filter((index, form) => {
-    return /\d+$/.test(form.id);
-  });
+    const existingForms = $('div[id^="orderitemweight_set-"]').filter((index, form) => {
+      return /^\d+$/.test(form.id.split('-').pop());
+    });
 
-  existingForms.each((index, form) => {
-    const productSizeField = $(form).find(`select[name$="${index}-product_size"]`);
-    const productPhenologyField = $(form).find(`select[name$="${index}-product_phenology"]`);
-    const productMarketClassField = $(form).find(`select[name$="${index}-product_market_class"]`);
-    const productMarketRipenessField = $(form).find(`select[name$="${index}-product_ripeness"]`);
-    const quantityField = $(form).find(`input[name$="${index}-quantity"]`);
-    const unitPriceField = $(form).find(`input[name$="${index}-unit_price"]`);
-    const amountPriceField = $(form).find(`input[name$="${index}-amount_price"]`);
-
-    amountPriceField.prop('disabled', true).attr('readonly', true).addClass('readonly-field');
-
-    productSizeField.closest('.form-group').hide();
-    productPhenologyField.closest('.form-group').hide();
-    productMarketClassField.closest('.form-group').hide();
-    productMarketRipenessField.closest('.form-group').hide();
-
-    // const productSize = productSizeField.val();
+    console.log("existingForms", existingForms)
+    existingForms.each((index, form) => {
+      const productSizeField = $(form).find(`select[name$="${index}-product_size"]`);
+      const productPhenologyField = $(form).find(`select[name$="${index}-product_phenology"]`);
+      const productMarketClassField = $(form).find(`select[name$="${index}-product_market_class"]`);
+      const productMarketRipenessField = $(form).find(`select[name$="${index}-product_ripeness"]`);
+      const quantityField = $(form).find(`input[name$="${index}-quantity"]`);
+      const unitPriceField = $(form).find(`input[name$="${index}-unit_price"]`);
+      const amountPriceField = $(form).find(`input[name$="${index}-amount_price"]`);
+      console.log("form", index, form)
+      console.log("productSizeField", productSizeField.val())
 
 
-    fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
-      .then(data => {
-        productProperties = data;
-      })
-      .then(() => {
-        fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
-          .then(data => {
-            clientProperties = data;
-          })
-      })
-      .then(() => {
-        updateProductOptions()
-          .then(() => {
-            updateFieldOptions(productSizeField, productSizeOptions, productSizeField.val());
-            updateFieldOptions(productPhenologyField, productPhenologyOptions, productPhenologyField.val());
-            updateFieldOptions(productMarketClassField, productMarketClassOptions, productMarketClassField.val());
-            updateFieldOptions(productMarketRipenessField, productRipenessOptions, productMarketRipenessField.val());
-          })
-          .then(() => {
-            productSizeField.closest('.form-group').fadeIn();
-          })
+      amountPriceField.prop('disabled', true).attr('readonly', true).addClass('readonly-field');
+
+      // productSizeField.closest('.form-group').hide();
+      productPhenologyField.closest('.form-group').hide();
+      productMarketClassField.closest('.form-group').hide();
+      productMarketRipenessField.closest('.form-group').hide();
+
+      updateProductOptions().then(() => {
+        updateFieldOptions(productSizeField, productSizeOptions, productSizeField.val());
+        updateFieldOptions(productPhenologyField, productPhenologyOptions, productPhenologyField.val());
+        updateFieldOptions(productMarketClassField, productMarketClassOptions, productMarketClassField.val());
+        updateFieldOptions(productMarketRipenessField, productRipenessOptions, productMarketRipenessField.val());
       })
 
-    productSizeField.on('change', () => {
-      const productSizeSelectedOption = productSizeField.find('option:selected');
-      const productSizeSelectedOptionCategory = productSizeSelectedOption.data('category');
 
-      if (productSizeField.val() && productSizeSelectedOptionCategory) {
-        if (['size'].includes(productSizeSelectedOptionCategory)) {
-          productPhenologyField.closest('.form-group').fadeIn();
-          productMarketClassField.closest('.form-group').fadeIn();
-          productMarketRipenessField.closest('.form-group').fadeIn();
-        }
-        if (['mix'].includes(productSizeSelectedOptionCategory)) {
-          productPhenologyField.closest('.form-group').fadeOut();
-          productMarketClassField.closest('.form-group').fadeOut();
-          productMarketRipenessField.closest('.form-group').fadeIn();
-          productPhenologyField.val(null).trigger('change');
-          productMarketClassField.val(null).trigger('change');
-        }
-        if (['waste', 'biomass'].includes(productSizeSelectedOptionCategory)) {
-          productPhenologyField.closest('.form-group').fadeOut();
-          productMarketClassField.closest('.form-group').fadeOut();
-          productMarketRipenessField.closest('.form-group').fadeOut();
+      productSizeField.on('change', () => {
+        const productSizeSelectedOption = productSizeField.find('option:selected');
+        const productSizeSelectedOptionCategory = productSizeSelectedOption.data('category');
+
+        if (productSizeField.val() && productSizeSelectedOptionCategory) {
+          if (['size'].includes(productSizeSelectedOptionCategory)) {
+            productPhenologyField.closest('.form-group').fadeIn();
+            productMarketClassField.closest('.form-group').fadeIn();
+            productMarketRipenessField.closest('.form-group').fadeIn();
+          }
+          if (['mix'].includes(productSizeSelectedOptionCategory)) {
+            productPhenologyField.closest('.form-group').fadeOut();
+            productMarketClassField.closest('.form-group').fadeOut();
+            productMarketRipenessField.closest('.form-group').fadeIn();
+            productPhenologyField.val(null).trigger('change');
+            productMarketClassField.val(null).trigger('change');
+          }
+          if (['waste', 'biomass'].includes(productSizeSelectedOptionCategory)) {
+            productPhenologyField.closest('.form-group').fadeOut();
+            productMarketClassField.closest('.form-group').fadeOut();
+            productMarketRipenessField.closest('.form-group').fadeOut();
+            productPhenologyField.val(null).trigger('change');
+            productMarketClassField.val(null).trigger('change');
+            productMarketRipenessField.val(null).trigger('change');
+          }
+        } else {
           productPhenologyField.val(null).trigger('change');
           productMarketClassField.val(null).trigger('change');
           productMarketRipenessField.val(null).trigger('change');
+          productPhenologyField.closest('.form-group').fadeOut();
+          productMarketClassField.closest('.form-group').fadeOut();
+          productMarketRipenessField.closest('.form-group').fadeOut();
         }
-      } else {
-        productPhenologyField.val(null).trigger('change');
-        productMarketClassField.val(null).trigger('change');
-        productMarketRipenessField.val(null).trigger('change');
-        productPhenologyField.closest('.form-group').fadeOut();
-        productMarketClassField.closest('.form-group').fadeOut();
-        productMarketRipenessField.closest('.form-group').fadeOut();
-      }
+      });
+
+      quantityField.on('change', () => {
+        if (quantityField.val() && unitPriceField.val()) {
+          amountPriceField.val(quantityField.val() * unitPriceField.val());
+        } else {
+          amountPriceField.val(0);
+        }
+      })
+
+      unitPriceField.on('change', () => {
+        if (quantityField.val() && unitPriceField.val()) {
+          amountPriceField.val(quantityField.val() * unitPriceField.val());
+        } else {
+          amountPriceField.val(0);
+        }
+      })
+
     });
 
-    quantityField.on('change', () => {
-      if (quantityField.val() && unitPriceField.val()) {
-        amountPriceField.val(quantityField.val() * unitPriceField.val());
-      } else {
-        amountPriceField.val(0);
-      }
-    })
-
-    unitPriceField.on('change', () => {
-      if (quantityField.val() && unitPriceField.val()) {
-        amountPriceField.val(quantityField.val() * unitPriceField.val());
-      } else {
-        amountPriceField.val(0);
-      }
-    })
-
-  });
+  }, 300);
 });
