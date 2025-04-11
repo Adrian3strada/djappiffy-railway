@@ -96,7 +96,6 @@ class FoodSafety(models.Model):
         verbose_name_plural = _('Food Safeties')
 
 class DryMatter(models.Model):
-    number = models.IntegerField(verbose_name=_('Number'))
     product_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     paper_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     moisture_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -107,36 +106,17 @@ class DryMatter(models.Model):
     def __str__(self):
         return f""
 
-    def save(self, *args, **kwargs):
-        if not self.number:
-            last_sample = DryMatter.objects.filter(food_safety=self.food_safety).order_by('-number').first()
-            if last_sample:
-                self.number = last_sample.number + 1
-            else:
-                self.number = 1
-        super().save(*args, **kwargs)
-
     class Meta:
         verbose_name = _('Dry Matter')
         verbose_name_plural = _('Dry Matters')
 
 class InternalInspection(models.Model):
-    number = models.IntegerField(verbose_name=_('Number'))
     internal_temperature = models.DecimalField(max_digits=10, decimal_places=2)
     product_pest = models.ManyToManyField(ProductPest, verbose_name=_('Pests'), blank=True)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):
         return f""
-
-    def save(self, *args, **kwargs):
-        if not self.number:
-            last_sample = InternalInspection.objects.filter(food_safety=self.food_safety).order_by('-number').first()
-            if last_sample:
-                self.number = last_sample.number + 1
-            else:
-                self.number = 1
-        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Internal Inspection')
@@ -227,21 +207,11 @@ class SensorySpecification(models.Model):
         verbose_name_plural = _('Sensory Specifications')
 
 class SampleWeight(models.Model):
-    number = models.IntegerField(verbose_name=_('Number'))
     weight = models.DecimalField(max_digits=10, decimal_places=2)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     def __str__(self):
         return f""
-
-    def save(self, *args, **kwargs):
-        if not self.number:
-            last_sample = SampleWeight.objects.filter(sample_collection=self.sample_collection).order_by('-number').first()
-            if last_sample:
-                self.number = last_sample.number + 1
-            else:
-                self.number = 1
-        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Sample Weight')

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (IncomingProduct, PalletReceived,
-                    FoodSafety, FoodSafety, DryMatter, InternalInspection, 
+                    FoodSafety, FoodSafety, DryMatter, InternalInspection,
                     TransportReview, SampleCollection, Percentage,
                     TransportInspection, TransportCondition,
                     SensorySpecification, SampleWeight, SamplePest,
@@ -13,10 +13,10 @@ from django.utils.translation import gettext_lazy as _
 import nested_admin
 from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInlineMixin
 from .forms import ScheduleHarvestVehicleForm
-from nested_admin import NestedStackedInline
+from nested_admin import NestedStackedInline, NestedTabularInline
 from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue
 from common.base.models import Pest
-import nested_admin
+from django import forms
 
 # Inlines para el corte
 class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
@@ -137,17 +137,28 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
 class LoteAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     list_display = ('sample_number',)
 
-class DryMatterInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
+class DryMatterInline(NestedTabularInline):
     model = DryMatter
     extra = 1
-    fields = ['number', 'product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage']
-    readonly_fields = ('number',)
 
-class InternalInspectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
+    def number(self, obj=None):
+        return ''
+
+    readonly_fields = ('number',)
+    fields = ['number','product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage']
+
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/counter_weight.js',)
+
+class InternalInspectionInline(NestedTabularInline):
     model = InternalInspection
     extra = 1
-    fields = ['number', 'internal_temperature', 'product_pest']
+
+    def number(self, obj=None):
+        return ''
+
     readonly_fields = ('number',)
+    fields = ['number','internal_temperature', 'product_pest']
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == "product_pest":
@@ -168,7 +179,7 @@ class InternalInspectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedI
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-class TransportInspectionInline(nested_admin.NestedTabularInline):
+class VehicleInspectionInline(nested_admin.NestedTabularInline):
     model = TransportInspection
     extra = 0
     min_num = 1
@@ -182,7 +193,7 @@ class TransportInspectionInline(nested_admin.NestedTabularInline):
     fields = ['transport_inspection', 'sealed', 'only_the_product', 'free_foreign_matter',
               'free_unusual_odors', 'certificate', 'free_fecal_matter']
 
-class TransportConditionInline(nested_admin.NestedTabularInline):
+class VehicleConditionInline(nested_admin.NestedTabularInline):
     model = TransportCondition
     extra = 0
     min_num = 1
@@ -195,10 +206,10 @@ class TransportConditionInline(nested_admin.NestedTabularInline):
     readonly_fields = ['transport_condition']
     fields = ['transport_condition', 'is_clean', 'good_condition', 'broken', 'damaged', 'seal']
 
-class TransportReviewInline(nested_admin.NestedStackedInline):
+class VehicleReviewInline(nested_admin.NestedStackedInline):
     model = TransportReview
     extra = 0
-    # inlines = [TransportInspectionInline, TransportConditionInline]
+    inlines = [VehicleInspectionInline, VehicleConditionInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "vehicle":
@@ -211,7 +222,7 @@ class TransportReviewInline(nested_admin.NestedStackedInline):
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/select_stacked.js',)
+        js = ('js/admin/forms/packhouses/receiving/select_vehicle.js',)
 
 class SensorySpecificationInline(nested_admin.NestedTabularInline):
     model = SensorySpecification
@@ -220,24 +231,34 @@ class SensorySpecificationInline(nested_admin.NestedTabularInline):
     max_num = 1
     can_delete = False
 
-    # def sensory_specification(self, obj=None):
-    #     return ''
-
-    # readonly_fields = ['sensory_specification']
-    # fields = ['whole', 'foreign_material', 'insects', 'temperature_damage', 'unusual_odor']
-
 class SampleWeightInline(nested_admin.NestedTabularInline):
     model = SampleWeight
     extra = 0
     min_num = 1
-    # readonly_fields = ('number',)
+
+    def number(self, obj=None):
+        return ''
+
+    readonly_fields = ('number',)
     fields = ['number', 'weight']
+
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/counter_weight.js',)
+
+class SamplePestForm(forms.ModelForm):
+    class Meta:
+        model = SamplePest
+        fields = ['product_pest', 'sample_pest', 'percentage']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
 
 class SamplePestInline(nested_admin.NestedTabularInline):
     model = SamplePest
     extra = 0
-    readonly_fields = ('percentage',)
     fields = ['product_pest', 'sample_pest', 'percentage']
+    form = SamplePestForm
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_pest":
@@ -256,13 +277,22 @@ class SamplePestInline(nested_admin.NestedTabularInline):
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/select.js',)
+        js = ('js/admin/forms/packhouses/receiving/percentage_pest.js',)
+
+class SampleDiseaseForm(forms.ModelForm):
+    class Meta:
+        model = SampleDisease
+        fields = ['product_disease', 'sample_disease', 'percentage']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
 
 class SampleDiseaseInline(nested_admin.NestedTabularInline):
     model = SampleDisease
     extra = 0
-    readonly_fields = ('percentage',)
     fields = ['product_disease', 'sample_disease', 'percentage']
+    form = SampleDiseaseForm
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_disease":
@@ -280,11 +310,23 @@ class SampleDiseaseInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/percentage_disease.js',)
+
+class SamplePhysicalDamageForm(forms.ModelForm):
+    class Meta:
+        model = SamplePhysicalDamage
+        fields = ['product_physical_damage', 'sample_physical_damage', 'percentage']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
+
 class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
     model = SamplePhysicalDamage
     extra = 0
-    readonly_fields = ('percentage',)
     fields = ['product_physical_damage', 'sample_physical_damage', 'percentage']
+    form = SamplePhysicalDamageForm
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_physical_damage":
@@ -302,11 +344,23 @@ class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/percentage_physical_damage.js',)
+
+class SampleResidueForm(forms.ModelForm):
+    class Meta:
+        model = SampleResidue
+        fields = ['product_residue', 'sample_residue', 'percentage']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
+
 class SampleResidueInline(nested_admin.NestedTabularInline):
     model = SampleResidue
     extra = 0
-    readonly_fields = ('percentage',)
     fields = ['product_residue', 'sample_residue', 'percentage']
+    form = SampleResidueForm
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_residue":
@@ -324,16 +378,19 @@ class SampleResidueInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/percentage_residue.js',)
+
 class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
     model = SampleCollection
     extra = 1
     min_num = 1
     max_num = 1
     can_delete = False
-    inlines = [SamplePestInline, SampleDiseaseInline, SamplePhysicalDamageInline, SampleResidueInline, SampleWeightInline]
+    inlines = [SampleWeightInline, SamplePestInline, SampleDiseaseInline, SamplePhysicalDamageInline, SampleResidueInline]
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/percentage.js',)
+        js = ('js/admin/forms/packhouses/receiving/select_sample.js',)
 
 class PercentageInline(nested_admin.NestedTabularInline):
     model = Percentage
@@ -351,7 +408,7 @@ class PercentageInline(nested_admin.NestedTabularInline):
 INLINE_CLASSES = {
     "DryMatter": DryMatterInline,
     "InternalInspection": InternalInspectionInline,
-    "TransportReview": TransportReviewInline,
+    "TransportReview": VehicleReviewInline,
     "SampleCollection": SampleCollectionInline,
     "Percentage": PercentageInline,
 }
@@ -360,7 +417,7 @@ INLINE_CLASSES = {
 class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('lote',)
     list_filter = ['lote']
-    inlines = [DryMatterInline, InternalInspectionInline, TransportReviewInline, SampleCollectionInline]
+    inlines = [DryMatterInline, InternalInspectionInline, VehicleReviewInline, SampleCollectionInline]
 
     def get_inlines(self, request, obj=None):
         inlines_list = []
