@@ -15,7 +15,16 @@ from django.core import serializers
 from django.http import JsonResponse
 import json
 from .resources import get_model_fields_verbose_names, transform_data
+from .forms import ContainerInlineForm
 
+def create_contenedor(request):
+    if request.method == 'POST':
+        form = ContainerInlineForm(request.POST)
+        if form.is_valid():
+            form.save()  
+    else:
+        form = ContainerInlineForm()
+    return
     
 def weighing_set_report(request, pk):
     # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.

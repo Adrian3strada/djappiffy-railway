@@ -8,7 +8,7 @@ from .models import IncomingProduct, WeighingSet, WeighingSetContainer
 from common.base.mixins import (ByOrganizationAdminMixin)
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin
-from .forms import IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet
+from .forms import IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                       ByCategoryForOrganizationIncomingProductFilter)
 from .utils import update_pallet_numbers,  CustomScheduleHarvestFormSet
@@ -23,7 +23,20 @@ from django.urls import path, reverse
 class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
     model = ScheduleHarvestContainerVehicle
     extra = 0
+    formset = ContainerInlineFormSet
+    form = ContainerInlineForm
+    exclude = ("created_by",)
 
+    def get_readonly_fields(self, request, obj=None):
+        """ Aplica solo lectura a los campos de contenedor solo si `created_by == 'gathering'` """
+        if obj and isinstance(obj, ScheduleHarvestContainerVehicle):
+            # Verificamos el campo 'created_by' del contenedor
+            if obj.created_by == 'gathering':
+                # Retorna todos los campos menos 'created_by' como solo lectura
+                return [f.name for f in self.model._meta.fields if f.name != 'created_by']
+        return []
+
+    
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         form = formset.form
@@ -33,6 +46,7 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
             field.widget.can_delete_related = False
             field.widget.can_view_related = False
         return formset
+    
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = None
         if hasattr(request, 'organization'):

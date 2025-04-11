@@ -1,10 +1,66 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from packhouses.gathering.models import ScheduleHarvestVehicle
+from packhouses.gathering.models import ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle
 from .models import IncomingProduct
 from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
 from django.utils.safestring import mark_safe
+
+class ContainerInlineFormSet(BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for form in self.forms:
+            if form.instance.pk and form.instance.created_by == 'gathering':
+                if 'DELETE' in form.fields:
+                    form.fields['DELETE'].widget = forms.HiddenInput()
+                    form.fields['DELETE'].initial = False
+
+    def _construct_form(self, i, **kwargs):
+        form = super()._construct_form(i, **kwargs)
+        if form.instance.pk and form.instance.created_by == 'gathering':
+            if "DELETE" in form.fields:
+                form.fields["DELETE"].widget = forms.HiddenInput()
+                form.fields["DELETE"].initial = False
+                form.fields["DELETE"].disabled = True
+        return form
+
+    def clean(self):
+        cleaned_data = super().clean()
+        for form in self.forms:
+            if form.instance.pk and form.instance.created_by == 'gathering':
+                form.cleaned_data['DELETE'] = False
+        return cleaned_data
+
+class ContainerInlineForm(forms.ModelForm):
+    class Meta:
+        model = ScheduleHarvestContainerVehicle
+        exclude = ("created_by",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+
+        if instance and instance.pk and instance.created_by == 'gathering':
+            for field_name in self.fields:
+                if field_name not in ['full_containers', 'empty_containers']:
+                    self.fields[field_name].disabled = True
+                    self.fields[field_name].widget.attrs.update({
+                        "style": (
+                            "pointer-events: none; "
+                            "background-color: #e9ecef; "
+                            "border: none; "
+                            "color: #555;"
+                        )
+                    })
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if not instance.created_by:  
+            instance.created_by = 'incoming_product'  
+        if commit:
+            instance.save()
+        return instance
+    
 
 class BaseScheduleHarvestVehicleFormSet(BaseInlineFormSet):
     def clean(self):

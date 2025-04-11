@@ -44,7 +44,7 @@ from django.db.models import Q
 from django.contrib.admin.widgets import AdminDateWidget
 from django.utils.html import format_html
 from django.urls import reverse
-from .forms import ScheduleHarvestForm
+from .forms import ScheduleHarvestForm, ContainerInlineForm, ContainerInlineFormSet
 
 
 class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
@@ -87,6 +87,17 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
     model = ScheduleHarvestContainerVehicle
     fields = ('harvest_container', 'quantity')
     extra = 0
+    formset = ContainerInlineFormSet
+    form = ContainerInlineForm
+
+    def get_readonly_fields(self, request, obj=None):
+        """ Aplica solo lectura a los campos de contenedor solo si `created_by == 'incoming_product'` """
+        if obj and isinstance(obj, ScheduleHarvestContainerVehicle):
+            # Verificamos el campo 'created_by' del contenedor
+            if obj.created_by == 'incoming_product':
+                # Retorna todos los campos menos 'created_by' como solo lectura
+                return [f.name for f in self.model._meta.fields if f.name != 'created_by']
+        return []
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)

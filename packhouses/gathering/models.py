@@ -30,7 +30,8 @@ from django.db.models import Q, F
 import datetime
 from common.settings import STATUS_CHOICES
 from packhouses.receiving.models import IncomingProduct
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 # Create your models here.
@@ -224,8 +225,14 @@ class ScheduleHarvestContainerVehicle(models.Model):
     full_containers = models.PositiveIntegerField(default=0, verbose_name=_('Full containers'))
     empty_containers = models.PositiveIntegerField(default=0,verbose_name=_('Empty containers'))
     missing_containers = models.IntegerField(default=0, verbose_name=_('Missing containers'))
+    created_by = models.CharField(max_length=20, blank=True, null=True) 
     
     def __str__(self):
         return ""
 
 
+@receiver(post_save, sender=ScheduleHarvestContainerVehicle)
+def set_created_from_app1(sender, instance, created, **kwargs):
+    if created and not instance.created_by: 
+        instance.created_by = 'gathering' 
+        instance.save()

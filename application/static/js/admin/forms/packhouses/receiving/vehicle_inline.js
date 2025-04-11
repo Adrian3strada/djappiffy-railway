@@ -26,34 +26,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Inicializa un contenedor: agrega listeners para inputs y checkbox DELETE
-    function initializeContainer(containerForm, aux) {
+    function initializeContainer(containerForm) {
         const $container = $(containerForm);
         updateMissingBoxes(containerForm);
-        if (aux === true){
-            // hacer campos no editables pero que no cause conflicto al guardar los valores
-            $container.find("select[name$='-harvest_container']").each(function() {
-                const $select = $(this);
-                const selectedValue = $select.val(); // Obtiene el valor seleccionado
-                
-                $select.prop("disabled", true);
-                // Agrega un campo oculto con el mismo nombre y valor
-                $("<input>")
-                    .attr("type", "hidden")
-                    .attr("name", $select.attr("name"))
-                    .val(selectedValue)
-                    .appendTo($container);
-            });
-            $container.find('input[name$="-quantity"]').each(function() {
-                const $input = $(this);  
-                $input.prop("readonly", true);  
-                $input.css({
-                    "pointer-events": "none", 
-                    "background-color": "#e9ecef", 
-                    "border": "none",  
-                    "color": "#555"  
-                });
-            });
-        }
+        
         $container.on("input change", "input[name$='-quantity'], input[name$='-full_containers'], input[name$='-empty_containers']", function() {
             updateMissingBoxes(containerForm);
             updateGlobalTotals();
@@ -111,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Inicializa los contenedores existentes
     $(CONTAINER_FORM_SELECTOR).each(function(i, containerForm) {
-        initializeContainer(containerForm, true);
+        initializeContainer(containerForm);
     });
 
 
@@ -169,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.addEventListener("formset:added", function(event) {
         const formsetName = event.detail.formsetName;
         if (formsetName.includes("scheduleharvestcontainervehicle_set")) {
-            initializeContainer(event.target, null);
+            initializeContainer(event.target);
             updateGlobalTotals();
             const $parentVehicle = $(event.target).closest(VEHICLE_FORM_SELECTOR);
             if ($parentVehicle.length) {
