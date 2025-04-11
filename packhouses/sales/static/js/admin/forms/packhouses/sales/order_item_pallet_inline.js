@@ -336,7 +336,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
   setTimeout(async () => {
-
+    await getProductProperties();
+    await getClientProperties();
     await setIsNationalClient();
 
     const existingForms = $('div[id^="orderitempallet_set-"]').filter((index, form) => {

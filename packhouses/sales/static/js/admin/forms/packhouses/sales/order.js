@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   const orderItemsWightTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-by-weight-tab']").closest('li');
   const orderItemsPackagingTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-by-packaging-tab']").closest('li');
   const orderItemsPalletTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-by-pallet-tab']").closest('li');
@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let clientCategory = clientCategoryField.val();
 
+  let orderItemsKind = orderItemsKindField.val()
+
   const API_BASE_URL = "/rest/v1";
 
   let order_items_kind_options = [
@@ -42,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
         {id: "product_pallet", name: "Product pallet"},
       ]
     }
-    updateFieldOptions(orderItemsKindField, order_items_kind_options, orderItemsKindField.val());
+    updateFieldOptions(orderItemsKindField, order_items_kind_options, orderItemsKind);
   }
 
   function updateFieldOptions(field, options, selected = null) {
@@ -77,14 +79,14 @@ document.addEventListener("DOMContentLoaded", function () {
     orderItemsWightTab.addClass('hidden')
     orderItemsPackagingTab.addClass('hidden')
     orderItemsPalletTab.addClass('hidden')
-    if (clientField.val() && productField.val() && orderItemsKindField.val()) {
-      if (orderItemsKindField.val() === 'product_weight') {
+    if (clientField.val() && productField.val() && orderItemsKind) {
+      if (orderItemsKind === 'product_weight') {
         orderItemsWightTab.removeClass('hidden')
       }
-      if (orderItemsKindField.val() === 'product_packaging') {
+      if (orderItemsKind === 'product_packaging') {
         orderItemsPackagingTab.removeClass('hidden')
       }
-      if (orderItemsKindField.val() === 'product_pallet') {
+      if (orderItemsKind === 'product_pallet') {
         orderItemsPalletTab.removeClass('hidden')
       }
     }
@@ -160,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
               orderItemsKindField.val(null);
               orderItemsKindField.trigger('change').select2();
             }
-            const orderItemsKindValue = orderItemsKindField.val();
+            const orderItemsKindValue = orderItemsKind;
             updateFieldOptions(orderItemsKindField, order_items_kind_options);
             if (orderItemsKindValue) {
               orderItemsKindField.val(orderItemsKindValue);
@@ -249,18 +251,23 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   orderItemsKindField.on('change', () => {
-    if (orderItemsKindField.val()) {
+    if (orderItemsKind) {
       toggleShowOrderItemInline();
     }
   })
 
-  fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
-    (data) => {
-      if (data.count === 1) {
-        organization = data.results.pop()
+  function getOrganization() {
+    fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
+      (data) => {
+        if (data.count === 1) {
+          organization = data.results.pop()
+        }
       }
-    }
-  );
+    );
+  }
+
+  await getOrganization();
+
 
   maquiladoraField.closest('.form-group').hide();
   localDeliveryField.closest('.form-group').hide();
@@ -287,12 +294,13 @@ document.addEventListener("DOMContentLoaded", function () {
   if (clientField.val()) {
     const product = productField.val()
     const productVariety = productVarietyField.val()
-    const orderItemsKind = orderItemsKindField.val()
+
+    if (!organization) await getOrganization();
 
     fetchOptions(`${API_BASE_URL}/catalogs/client/${clientField.val()}/`)
-      .then((client) => {
-        clientProperties = client;
-        if (client.country === organization.country) {
+      .then((client_data) => {
+        clientProperties = client_data;
+        if (clientProperties.country === organization.country) {
           localDeliveryField.closest('.form-group').show();
           updateOrderItemsKindOptions(true)
         } else {
