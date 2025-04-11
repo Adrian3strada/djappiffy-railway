@@ -29,8 +29,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   let productProperties = null;
   let organization = null;
 
-
-
+  localDeliveryField.closest('.form-group').hide();
+  incotermsField.closest('.form-group').hide();
 
   const API_BASE_URL = "/rest/v1";
 
@@ -39,6 +39,18 @@ document.addEventListener("DOMContentLoaded", async function () {
     {id: "product_packaging", name: "Product packaging"},
     {id: "product_pallet", name: "Product pallet"},
   ]
+
+  function getOrganization() {
+    fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
+      (data) => {
+        if (data.count === 1) {
+          organization = data.results.pop()
+        }
+      }
+    );
+  }
+
+  await getOrganization();
 
   function updateOrderItemsKindOptions(nationalClient = false) {
     order_items_kind_options = [
@@ -52,16 +64,28 @@ document.addEventListener("DOMContentLoaded", async function () {
         {id: "product_pallet", name: "Product pallet"},
       ]
     }
-    updateFieldOptions(orderItemsKindField, order_items_kind_options, orderItemsKind);
+    updateFieldOptions(orderItemsKindField, order_items_kind_options, orderItemsKindField.val());
   }
 
-  function updateFieldOptions(field, options, selected = null) {
-    field.empty();
-    field.append(new Option("---------", "", true, !selected));
-    options.forEach((option) => {
-      field.append(new Option(option.name, option.id, false, selected));
-    });
-    field.trigger("change").select2();
+  function updateFieldOptions(field, options, selectedValue = null) {
+    if (field) {
+      field.empty();
+      if (!field.prop('multiple')) {
+        field.append(new Option('---------', '', true, !selectedValue));
+      }
+      const selected = selectedValue ? parseInt(selectedValue) || selectedValue : null;
+      options.forEach(option => {
+        const newOption = new Option(option.name, option.id, false, selected === option.id);
+        if ('alias' in option && option.alias) {
+          newOption.setAttribute('data-alias', option.alias);
+        }
+        if ('category' in option && option.category) {
+          newOption.setAttribute('data-category', option.category);
+        }
+        field.append(newOption);
+      });
+      field.trigger('change').select2();
+    }
   }
 
   function fetchOptions(url) {
@@ -70,6 +94,14 @@ document.addEventListener("DOMContentLoaded", async function () {
       method: "GET",
       dataType: "json",
     }).fail((error) => console.error("Fetch error:", error));
+  }
+
+  async function getClientProperties() {
+    if (clientField.val()) {
+      clientProperties = await fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
+    } else {
+      clientProperties = null;
+    }
   }
 
   const deleteOrderItemInline = () => {
@@ -87,14 +119,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     orderItemsWightTab.addClass('hidden')
     orderItemsPackagingTab.addClass('hidden')
     orderItemsPalletTab.addClass('hidden')
-    if (clientField.val() && productField.val() && orderItemsKind) {
-      if (orderItemsKind === 'product_weight') {
+    if (clientField.val() && productField.val() && orderItemsKindField.val()) {
+      if (orderItemsKindField.val() === 'product_weight') {
         orderItemsWightTab.removeClass('hidden')
       }
-      if (orderItemsKind === 'product_packaging') {
+      if (orderItemsKindField.val() === 'product_packaging') {
         orderItemsPackagingTab.removeClass('hidden')
       }
-      if (orderItemsKind === 'product_pallet') {
+      if (orderItemsKindField.val() === 'product_pallet') {
         orderItemsPalletTab.removeClass('hidden')
       }
     }
@@ -106,19 +138,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (!!clientCategory && clientCategory === 'packhouse') {
       fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&is_enabled=1`).then(
         (data) => {
-          updateFieldOptions(clientField, data);
+          updateFieldOptions(clientField, data, client);
         }
       );
     }
   }
 
   function updateMaquiladoraClientOptions() {
-    // const clientCategory = clientCategoryField.val();
-    const maquiladora = maquiladoraField.val()
     if (!!clientCategory && clientCategory === 'maquiladora' && maquiladora) {
       fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&maquiladora=${maquiladora}&is_enabled=1`).then(
         (data) => {
-          updateFieldOptions(clientField, data);
+          updateFieldOptions(clientField, data, maquiladora);
         }
       );
     }
@@ -129,17 +159,18 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (clientCategory && clientCategory === 'maquiladora') {
       fetchOptions(`${API_BASE_URL}/catalogs/maquiladora/?is_enabled=1`).then(
         (data) => {
-          updateFieldOptions(maquiladoraField, data);
+          updateFieldOptions(maquiladoraField, data, maquiladora);
         }
       );
     }
   }
 
-  function updateProductOptions() {
+  async function updateProductOptions() {
+    if (!clientProperties) await getClientProperties();
     if (clientProperties) {
       fetchOptions(`${API_BASE_URL}/catalogs/product/?markets=${clientProperties.market}&is_enabled=1`).then(
         (data) => {
-          updateFieldOptions(productField, data);
+          updateFieldOptions(productField, data, productField.val());
         }
       )
     } else {
@@ -172,25 +203,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     } else {
       productProperties = null;
       if (order_items_kind_options[0].id === 'product_weight') order_items_kind_options[0].name = "Product weight"
-      orderItemsKindField.val(null);
-      orderItemsKindField.trigger('change').select2();
+      // orderItemsKindField.val(null);
+      // orderItemsKindField.trigger('change').select2();
     }
   }
-
-  productField.on("change", async () => {
-
-    if (productField.val()) {
-      await getProductProperties();
-      await updateProductVarietyOptions();
-      productVarietyField.closest('.form-group').fadeIn();
-      orderItemsKindField.closest('.form-group').fadeIn();
-    } else {
-      productVarietyField.closest('.form-group').fadeOut();
-      orderItemsKindField.closest('.form-group').fadeOut();
-      productVarietyField.val(null).trigger('change');
-      orderItemsKindField.val(null).trigger('change');
-    }
-  });
 
   clientCategoryField.on("change", () => {
     clientCategory = clientCategoryField.val()
@@ -217,34 +233,40 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   });
 
-  clientField.on('change', () => {
+  clientField.on('change', async () => {
     client = clientField.val();
-    localDeliveryField.closest('.form-group').fadeOut();
-    incotermsField.closest('.form-group').fadeOut();
-    setTimeout(() => {
-      localDeliveryField.val(null).trigger('change');
-      incotermsField.val(null).trigger('change');
-    }, 100);
+    await localDeliveryField.val(null).trigger('change');
+    await incotermsField.val(null).trigger('change');
+
     if (client) {
-      fetchOptions(`${API_BASE_URL}/catalogs/client/${client}/`)
-        .then((data) => {
-          clientProperties = data;
-          updateProductOptions();
-          setTimeout(() => {
-            if (data.country === organization.country) {
-              localDeliveryField.closest('.form-group').fadeIn();
-              updateOrderItemsKindOptions(true)
-            } else {
-              incotermsField.closest('.form-group').fadeIn();
-              updateOrderItemsKindOptions(false)
-            }
-          }, 300);
-        })
+      clientProperties = await fetchOptions(`${API_BASE_URL}/catalogs/client/${client}/`)
+      await updateProductOptions();
+      if (clientProperties.country === organization.country) {
+        localDeliveryField.closest('.form-group').fadeIn();
+      } else {
+        incotermsField.closest('.form-group').fadeIn();
+      }
+      await updateOrderItemsKindOptions()
       productField.closest('.form-group').fadeIn();
     } else {
       clientProperties = null;
       updateFieldOptions(productField, []);
       productField.closest('.form-group').fadeOut();
+    }
+  });
+
+  productField.on("change", async () => {
+
+    if (productField.val()) {
+      await getProductProperties();
+      await updateProductVarietyOptions();
+      productVarietyField.closest('.form-group').fadeIn();
+      orderItemsKindField.closest('.form-group').fadeIn();
+    } else {
+      productVarietyField.closest('.form-group').fadeOut();
+      orderItemsKindField.closest('.form-group').fadeOut();
+      productVarietyField.val(null).trigger('change');
+      orderItemsKindField.val(null).trigger('change');
     }
   });
 
@@ -254,18 +276,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       toggleShowOrderItemInline();
     }
   })
-
-  function getOrganization() {
-    fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
-      (data) => {
-        if (data.count === 1) {
-          organization = data.results.pop()
-        }
-      }
-    );
-  }
-
-  await getOrganization();
 
 
   maquiladoraField.closest('.form-group').hide();
