@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from packhouses.catalogs.models import (
-    Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, Pallet,
+    Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, Pallet, ProductPackagingPallet,
     ProductVariety, ProductPhenologyKind, ProductMassVolumeKind, Maquiladora, ProductPresentation,
     CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, Packaging,
     HarvestingCrew, OrchardCertification, ProductRipeness, ProductPackaging
@@ -35,11 +35,7 @@ class PackagingSerializer(serializers.ModelSerializer):
     packaging_supply_detail = serializers.SerializerMethodField(read_only=True)
 
     def get_packaging_supply_detail(self, obj):
-        # supply = obj.packaging_set.first()
-        print("obj", obj.packaging_supply)
-        print("obj", dir(obj))
         return SupplySerializer(obj.packaging_supply, read_only=True).data
-        # return []
 
     class Meta:
         model = Packaging
@@ -50,6 +46,21 @@ class ProductPackagingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductPackaging
+        fields = '__all__'
+
+
+class ProductPackagingPalletSerializer(serializers.ModelSerializer):
+    product_packaging_detail = serializers.SerializerMethodField(read_only=True)
+    name = serializers.SerializerMethodField(read_only=True)
+
+    def get_name(self, obj):
+        return f"{obj.pallet} [{obj.product_packaging_quantity}] -- {obj.product_packaging}"
+
+    def get_product_packaging_detail(self, obj):
+        return ProductPackagingSerializer(obj.product_packaging, read_only=True).data
+
+    class Meta:
+        model = ProductPackagingPallet
         fields = '__all__'
 
 

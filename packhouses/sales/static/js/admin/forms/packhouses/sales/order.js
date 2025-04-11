@@ -28,12 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
     {id: "product_pallet", name: "Product pallet"},
   ]
 
-  let product_price_options = [
-    {id: "product_weight", name: "Product weight"},
-    {id: "product_packaging", name: "Product packaging"},
-    {id: "product_presentation", name: "Product presentation"}
-  ]
-
   function updateOrderItemsKindOptions(nationalClient = false) {
     order_items_kind_options = [
       {id: "product_weight", name: "Product weight"},
@@ -46,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
         {id: "product_pallet", name: "Product pallet"},
       ]
     }
-    updateFieldOptions(orderItemsKindField, order_items_kind_options)
+    updateFieldOptions(orderItemsKindField, order_items_kind_options, orderItemsKindField.val());
   }
 
   function updateFieldOptions(field, options, selected = null) {

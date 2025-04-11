@@ -15,7 +15,7 @@ from .filters import (ByMaquiladoraForOrganizationOrderFilter, ByClientForOrgani
 from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
                                         ProductPackaging,
-                                        ProductPhenologyKind, ProductMarketClass, Packaging)
+                                        ProductPhenologyKind, ProductMarketClass, Packaging, ProductPackagingPallet)
 from .models import Order, OrderItemBak, OrderItemWeight, OrderItemPackaging, OrderItemPallet
 from .forms import OrderItemWeightFormSet, OrderItemPackagingFormSet, OrderItemPalletFormSet
 from django.utils.safestring import mark_safe
@@ -137,6 +137,17 @@ class OrderItemInlineMixin(admin.StackedInline):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == "amount_price":
+            formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+            formfield.widget.attrs['readonly'] = True
+            formfield.widget.attrs['class'] = 'readonly'
+            formfield.disabled = True
+            if request.POST:
+                formfield.required = False
+            return formfield
+
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 class OrderItemWeightInline(OrderItemInlineMixin):
     model = OrderItemWeight
@@ -182,22 +193,45 @@ class OrderItemPackagingInline(OrderItemInlineMixin):
 
     class Media:
         js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)
-        pass
 
 
-class OrderItemPalletInline(admin.StackedInline):
+
+class OrderItemPalletInline(OrderItemInlineMixin):
     model = OrderItemPallet
-    extra = 0
+    formset = OrderItemPalletFormSet
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.form.base_fields['product_packaging_pallet'].widget.can_add_related = False
+        formset.form.base_fields['product_packaging_pallet'].widget.can_change_related = False
+        formset.form.base_fields['product_packaging_pallet'].widget.can_delete_related = False
+        formset.form.base_fields['product_packaging_pallet'].widget.can_view_related = False
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = Order.objects.get(id=parent_object_id) if parent_object_id else None
+
+        if db_field.name == "product_packaging_pallet":
+            kwargs["queryset"] = ProductPackagingPallet.objects.none()
+            if parent_obj and parent_obj.product:
+                kwargs["queryset"] = ProductPackagingPallet.objects.filter(product_packaging__product=parent_obj.product,
+                                                                     product_packaging__market=parent_obj.client.market, is_enabled=True)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/sales/order_item_pallet_inline.js',)
 
 
 @admin.register(Order)
 class OrderAdmin(ByOrganizationAdminMixin):
     list_display = ('ooid', 'client', 'maquiladora', 'shipment_date', 'delivery_date', 'delivery_kind',
-                    'product', 'product_variety', 'status')
+                    'product', 'product_variety', 'order_items_kind', 'status')
     list_filter = ('client_category', ByMaquiladoraForOrganizationOrderFilter, ByClientForOrganizationOrderFilter,
                    'registration_date', 'shipment_date', 'delivery_date', ByLocalDeliveryForOrganizationOrderFilter,
                    ByIncotermsForOrganizationOrderFilter, ByProductForOrganizationOrderFilter,
-                   ByProductVarietyForOrganizationOrderFilter, 'status')
+                   ByProductVarietyForOrganizationOrderFilter, 'order_items_kind', 'status')
     fields = (
         'ooid', 'client_category', 'maquiladora', 'client', 'local_delivery', 'incoterms',
         'registration_date', 'shipment_date', 'delivery_date',
@@ -221,7 +255,6 @@ class OrderAdmin(ByOrganizationAdminMixin):
         if 'status' in form.base_fields:
             form.base_fields['status'].choices = [choice for choice in form.base_fields['status'].choices if choice[0] != 'closed']
         if not obj or obj.status not in ['closed', 'canceled']:
-
             form.base_fields['maquiladora'].widget.can_add_related = False
             form.base_fields['maquiladora'].widget.can_change_related = False
             form.base_fields['maquiladora'].widget.can_delete_related = False
@@ -285,9 +318,14 @@ class OrderAdmin(ByOrganizationAdminMixin):
         client_id = request.POST.get('client') if request.POST else obj.client_id if obj else None
 
         if db_field.name == "maquiladora":
-            kwargs["queryset"] = Maquiladora.objects.none()
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.required = True
             if client_category and client_category == 'maquiladora':
                 kwargs["queryset"] = Maquiladora.objects.filter(**queryset_organization_filter)
+            else:
+                kwargs["queryset"] = Maquiladora.objects.none()
+                formfield.required = False
+            return formfield
 
         if db_field.name == "client":
             queryset_filter = {"organization": organization, "category": client_category, "is_enabled": True}
@@ -335,3 +373,4 @@ class OrderAdmin(ByOrganizationAdminMixin):
 
     class Media:
         js = ('js/admin/forms/packhouses/sales/order.js',)
+        # pass
