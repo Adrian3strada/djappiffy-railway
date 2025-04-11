@@ -87,7 +87,7 @@ class BaseScheduleHarvestVehicleFormSet(BaseInlineFormSet):
         
 
 class ScheduleHarvestVehicleForm(forms.ModelForm):
-    stamp_vehicle_number = forms.CharField(label=_('Stamp'), required=True,)
+    stamp_vehicle_number = forms.CharField(label=_('Stamp Number'), required=True,)
 
     class Meta:
         model = ScheduleHarvestVehicle

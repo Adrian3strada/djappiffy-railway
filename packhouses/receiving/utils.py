@@ -42,3 +42,18 @@ class CustomScheduleHarvestFormSet(BaseInlineFormSet):
                 form.fields['gatherer'].widget.can_change_related = False
                 form.fields['gatherer'].widget.can_delete_related = False
                 form.fields['gatherer'].widget.can_view_related = False
+            if 'orchard' in form.fields: 
+                form.fields['orchard'].widget.can_add_related = False
+                form.fields['orchard'].widget.can_change_related = False
+                form.fields['orchard'].widget.can_delete_related = False
+                form.fields['orchard'].widget.can_view_related = False
+            if 'market' in form.fields: 
+                form.fields['market'].widget.can_add_related = False
+                form.fields['market'].widget.can_change_related = False
+                form.fields['market'].widget.can_delete_related = False
+                form.fields['market'].widget.can_view_related = False
+            if 'weighing_scale' in form.fields: 
+                form.fields['weighing_scale'].widget.can_add_related = False
+                form.fields['weighing_scale'].widget.can_change_related = False
+                form.fields['weighing_scale'].widget.can_delete_related = False
+                form.fields['weighing_scale'].widget.can_view_related = False

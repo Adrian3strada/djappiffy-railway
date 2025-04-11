@@ -149,7 +149,6 @@ class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.Stacked
         form_field = super().formfield_for_dbfield(db_field, request, **kwargs)
         
         if db_field.name == 'guide_number':
-            print("Procesando el campo 'guide_number'")
             if request.POST:
                 has_arrived_str = request.POST.get('has_arrived')
                 has_arrived = True if has_arrived_str == 'on' else False
@@ -350,6 +349,11 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     @uppercase_form_charfield('phytosanitary_certificate')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        if 'public_weighing_scale' in form.base_fields:
+            form.base_fields['public_weighing_scale'].widget.can_add_related = False
+            form.base_fields['public_weighing_scale'].widget.can_change_related = False
+            form.base_fields['public_weighing_scale'].widget.can_delete_related = False
+            form.base_fields['public_weighing_scale'].widget.can_view_related = False
         return form
     
     def has_add_permission(self, request):

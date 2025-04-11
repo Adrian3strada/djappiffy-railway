@@ -60,7 +60,6 @@ urlpatterns = [
     path("", include("packhouses.catalogs.urls")),
     path("", include("packhouses.packhouse_settings.urls")),
     path("", include("eudr.parcels.urls")),
-    path("", include("packhouses.gathering.urls")),
     path("", include("packhouses.receiving.urls")),
 
     # Internationalization
