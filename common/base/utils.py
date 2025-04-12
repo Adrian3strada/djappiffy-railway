@@ -106,6 +106,16 @@ class ExportResource(resources.ModelResource):
                     pass
         return fields
 
+def render_html_list(items):
+        if not items:
+            return ''
+        ul_style = "margin:0; padding:0; list-style-type: disc; list-style-position: inside; text-align:left;"
+        li_style = "margin:0; padding:0;"
+        return "<ul style='{}'>{}</ul>".format(
+            ul_style,
+            "".join([f"<li style='{li_style}'>{item}</li>" for item in items])
+        )
+
 class DehydrationResource():
     def dehydrate_countries(self, obj):
         return ", ".join(country.name for country in obj.countries.all()) if obj.countries.exists() else ""
@@ -126,7 +136,14 @@ class DehydrationResource():
         return obj.market.name if obj.market else ""
 
     def dehydrate_markets(self, obj):
-        return ", ".join(market.name for market in obj.markets.all()) if obj.markets.exists() else ""
+        if not obj.markets.exists():
+            return ''
+        
+        if self.export_format == 'pdf':
+            return render_html_list([market.name for market in obj.markets.all()])
+        else:
+            return ", ".join(market.name for market in obj.markets.all())
+
         #return obj.market.name if obj.market else ""
 
     def dehydrate_market_class(self, obj):

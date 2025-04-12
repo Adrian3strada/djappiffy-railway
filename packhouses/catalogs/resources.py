@@ -4,7 +4,7 @@ from .models import (Market, Product, ProductSize, Provider, Client, Vehicle, Ga
                      ExportingCompany, Transfer, LocalTransporter, BorderToDestinationTransporter, CustomsBroker,
                      Vessel, Airline, InsuranceCompany)
 from django.http import HttpResponse
-from common.base.utils import ExportResource, DehydrationResource, default_excluded_fields
+from common.base.utils import ExportResource, DehydrationResource, default_excluded_fields, render_html_list
 from import_export import resources, fields
 from django.utils.translation import gettext_lazy as _
 from .utils import get_vehicle_category_choices, get_provider_categories_choices
@@ -15,8 +15,11 @@ from django.utils.safestring import mark_safe
 class MarketResource(DehydrationResource, ExportResource):
     class Meta:
         model = Market
-        exclude = tuple(default_excluded_fields + ("address_label",))
-        export_order = ('id', 'name', 'alias', 'countries', 'management_cost_per_kg', 'is_mixable' ,'is_enabled')
+        exclude = tuple(
+            field for field in default_excluded_fields + ("address_label",)
+            if field != "label_language"
+        )
+        export_order = ('id', 'name', 'alias', 'countries', 'management_cost_per_kg', 'label_language', 'is_mixable' ,'is_enabled')
 
 
 class ProductResource(DehydrationResource, ExportResource):
@@ -34,69 +37,78 @@ class ProductResource(DehydrationResource, ExportResource):
 
     def dehydrate_product_managment_cost(self, product):
         product_managment_costs = product.productmarketmeasureunitmanagementcost_set.filter(is_enabled=True)
-        if not product_managment_costs:
+        if not product_managment_costs.exists():
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{pmc.measure_unit_management_cost} ({pmc.market})</li>" for pmc in product_managment_costs]) + "</ul>"
+            product_managment_costs = [f"{pmc.measure_unit_management_cost} ({pmc.market.alias})" for pmc in product_managment_costs]
+            return render_html_list(product_managment_costs)
         else:
-            return ", ".join([f"{pmc.measure_unit_management_cost} ({pmc.market})" for pmc in product_managment_costs])
+            return ", ".join([f"{pmc.measure_unit_management_cost} ({pmc.market.alias})" for pmc in product_managment_costs])
 
     def dehydrate_product_class(self, product):
         product_classes = product.productmarketclass_set.filter(is_enabled=True)
-        if not product_classes:
+        if not product_classes.exists():
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{pc.name} ({pc.market})</li>" for pc in product_classes]) + "</ul>"
+            product_classes = [f"{pc.name} ({pc.market.alias})" for pc in product_classes]
+            return render_html_list(product_classes)
         else:
-            return ", ".join([f"{pc.name} ({pc.market})" for pc in product_classes])
+            return ", ".join([f"{pc.name} ({pc.market.alias})" for pc in product_classes])
+        
     def dehydrate_product_variety(self, product):
         product_varieties = product.productvariety_set.filter(is_enabled=True)
-        if not product_varieties:
+        if not product_varieties.exists():
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{pv.name} ({pv.alias})</li>" for pv in product_varieties]) + "</ul>"
+            product_varieties = [f"{pv.name} ({pv.alias})" for pv in product_varieties]
+            return render_html_list(product_varieties)
         else:
             return ", ".join([f"{pv.name} ({pv.alias})" for pv in product_varieties])
 
     def dehydrate_product_phenology(self, product):
         product_phenologies = product.productphenologykind_set.filter(is_enabled=True)
-        if not product_phenologies:
+        if not product_phenologies.exists():
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{pph.name}</li>" for pph in product_phenologies]) + "</ul>"
+            product_phenologies = [pph.name for pph in product_phenologies]
+            return render_html_list(product_phenologies)
         else:
             return ", ".join([pph.name for pph in product_phenologies])
 
     def dehydrate_product_harvest_size(self, product):
         product_harvest_sizes = product.productharvestsizekind_set.filter(is_enabled=True)
-        if not product_harvest_sizes:
+        if not product_harvest_sizes.exists():
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{phk.name}</li>" for phk in product_harvest_sizes]) + "</ul>"
+            product_harvest_sizes = [phk.name for phk in product_harvest_sizes]
+            return render_html_list(product_harvest_sizes)
         else:
             return ", ".join([phk.name for phk in product_harvest_sizes])
 
     def dehydrate_product_mass_volume(self, product):
         product_mass_volumes = product.productmassvolumekind_set.filter(is_enabled=True)
-        if not product_mass_volumes:
+        if not product_mass_volumes.exists():
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{pmv.name}</li>" for pmv in product_mass_volumes]) + "</ul>"
+            product_mass_volumes = [pmv.name for pmv in product_mass_volumes]
+            return render_html_list(product_mass_volumes)
         else:
             return ", ".join([pmv.name for pmv in product_mass_volumes])
 
     def dehydrate_product_ripeness(self, product):
         product_ripeness = product.productripeness_set.filter(is_enabled=True)
-        if not product_ripeness:
-            return ' '
+        if not product_ripeness.exists():
+            return ''
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{pr.name}</li>" for pr in product_ripeness]) + "</ul>"
+            product_ripeness = [pr.name for pr in product_ripeness]
+            return render_html_list(product_ripeness)
         else:
             return ", ".join([pr.name for pr in product_ripeness])
+
     class Meta:
         model = Product
         exclude = default_excluded_fields
-        export_order = ('id', 'kind', 'name', 'pmeasure_unit_category', 'product_management_cost', 'product_class',  'product_variety',
+        export_order = ('id', 'kind', 'name', 'measure_unit_category', 'markets', 'product_managment_cost', 'product_class',  'product_variety',
                         'product_phenology', 'product_harvest_size', 'product_mass_volume', 'product_ripeness', 'is_enabled')
 
 
