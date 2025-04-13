@@ -9,12 +9,28 @@ from common.base.models import Pest
 
 # Create your models here.
 
-class Lote(models.Model):
+class Batch(models.Model):
     sample_number = models.IntegerField()
+    ooid = models.PositiveIntegerField(verbose_name=_("Harvest Number"),null=True, blank=True, unique=True)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
 
     def __str__(self):
-        return f"{self.sample_number}"
+        return f"{self.ooid}"
+
+    def save(self, *args, **kwargs):
+        if not self.ooid:
+            # Usar transacción y bloqueo de fila para evitar condiciones de carrera
+            with transaction.atomic():
+                last_order = Batch.objects.select_for_update().filter(organization=self.organization).order_by('-ooid').first()
+                if last_order:
+                    self.ooid = last_order.ooid + 1
+                else:
+                    self.ooid = 1
+        super().save(*args, **kwargs)
+    
+    class Meta:
+        verbose_name = _('Batch')
+        verbose_name_plural = _('Batches')
 
 class IncomingProduct(models.Model):
     # status = models.CharField(max_length=20, verbose_name=_('Status'), choices=get_incoming_product_categories_status(), default='pending')
@@ -53,7 +69,7 @@ class IncomingProduct(models.Model):
     #     ]"""
 
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
-    lote = models.ForeignKey(Lote, on_delete=models.PROTECT, verbose_name=_('Lote'), null=True, blank=True)
+    lote = models.ForeignKey(Batch, on_delete=models.PROTECT, verbose_name=_('Lote'), null=True, blank=True)
     borrar = models.IntegerField(default=0, verbose_name=_('Missing Boxes'))
 
 class PalletReceived(models.Model):
@@ -85,11 +101,11 @@ class PalletReceived(models.Model):
         verbose_name_plural = _('Pallets Received')
 
 class FoodSafety(models.Model):
-    lote = models.OneToOneField(Lote, verbose_name=_('lote'), on_delete=models.CASCADE)
+    batch = models.OneToOneField(Batch, verbose_name=_('Batch'), on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
 
     def __str__(self):
-        return f"{self.lote}"
+        return f"{self.batch}"
     
     class Meta:
         verbose_name = _('Food Safety')
@@ -134,7 +150,7 @@ class Percentage(models.Model):
         verbose_name = _('Percentage')
         verbose_name_plural = _('Percentages')
 
-class TransportReview(models.Model):
+class VehicleReview(models.Model):
     vehicle = models.ForeignKey('gathering.ScheduleHarvestVehicle', verbose_name=_('vehicle'), on_delete=models.CASCADE)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
@@ -142,36 +158,36 @@ class TransportReview(models.Model):
         return f"{self.vehicle} / {self.vehicle.stamp_number}"
 
     class Meta:
-        verbose_name = _('Transport Review')
-        verbose_name_plural = _('Transport Reviews')
+        verbose_name = _('Vehicle Review')
+        verbose_name_plural = _('Vehicle Reviews')
 
-class TransportInspection(models.Model):
+class VehicleInspection(models.Model):
     sealed = models.BooleanField(default=False, verbose_name=_('The transport is sealed'))
     only_the_product = models.BooleanField(default=False, verbose_name=_('The transport carries only the product'))
     free_foreign_matter = models.BooleanField(default=False, verbose_name=_('The transport is free of foreign matter'))
     free_unusual_odors = models.BooleanField(default=False, verbose_name=_('The transport is free of unusual odors'))
     certificate = models.BooleanField(default=False, verbose_name=_('Has a CERTIFICATE'))
     free_fecal_matter = models.BooleanField(default=False, verbose_name=_('The transport is free of fecal matter'))
-    transport_review = models.ForeignKey(TransportReview, verbose_name=_('Transport Review'), on_delete=models.CASCADE)
+    vehicle_review = models.ForeignKey(VehicleReview, verbose_name=_('Vehicle Review'), on_delete=models.CASCADE)
 
     def __str__(self):
         return f""
 
     class Meta:
-        verbose_name = _('Transport Inspection')
-        verbose_name_plural = _('Transport Inspections')
+        verbose_name = _('Vehicle Inspection')
+        verbose_name_plural = _('Vehicle Inspections')
 
-class TransportCondition(models.Model):
+class VehicleCondition(models.Model):
     is_clean = models.BooleanField(default=False, verbose_name=_('It is clean'))
     good_condition = models.BooleanField(default=False, verbose_name=_('Good condition'))
     broken = models.BooleanField(default=False, verbose_name=_('Broken'))
     damaged = models.BooleanField(default=False, verbose_name=_('Damaged'))
     seal = models.BooleanField(default=False, verbose_name=_('Seal'))
-    transport_review = models.ForeignKey(TransportReview, verbose_name=_('Transport Review'), on_delete=models.CASCADE)
+    vehicle_review = models.ForeignKey(VehicleReview, verbose_name=_('Vehicle Review'), on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = _('Transport Condition')
-        verbose_name_plural = _('Transport Conditions')
+        verbose_name = _('Vehicle Condition')
+        verbose_name_plural = _('Vehicle Conditions')
 
     def __str__(self):
         return f""

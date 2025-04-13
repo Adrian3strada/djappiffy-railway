@@ -1,11 +1,11 @@
 from django.contrib import admin
 from .models import (IncomingProduct, PalletReceived,
                     FoodSafety, FoodSafety, DryMatter, InternalInspection,
-                    TransportReview, SampleCollection, Percentage,
-                    TransportInspection, TransportCondition,
+                    VehicleReview, SampleCollection, Percentage,
+                    VehicleInspection, VehicleCondition,
                     SensorySpecification, SampleWeight, SamplePest,
                     SampleDisease, SamplePhysicalDamage, SampleResidue,
-                    Lote,
+                    Batch,
                     )
 from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLinksMixin)
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle
@@ -133,8 +133,8 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
 
     list_display = ('borrar',)
 
-@admin.register(Lote)
-class LoteAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
+@admin.register(Batch)
+class BatchAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     list_display = ('sample_number',)
 
 class DryMatterInline(NestedTabularInline):
@@ -167,7 +167,7 @@ class InternalInspectionInline(NestedTabularInline):
             if object_id:
                 try:
                     food_safety = FoodSafety.objects.get(pk=object_id)
-                    incoming_product = IncomingProduct.objects.filter(lote=food_safety.lote).first()
+                    incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
                     product = schedule_harvest.product
                     kwargs["queryset"] = ProductPest.objects.filter(product=product)
@@ -180,11 +180,10 @@ class InternalInspectionInline(NestedTabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class VehicleInspectionInline(nested_admin.NestedTabularInline):
-    model = TransportInspection
+    model = VehicleInspection
     extra = 0
     min_num = 1
     max_num = 1
-    # can_delete = False
 
     def transport_inspection(self, obj=None):
         return ''
@@ -194,11 +193,10 @@ class VehicleInspectionInline(nested_admin.NestedTabularInline):
               'free_unusual_odors', 'certificate', 'free_fecal_matter']
 
 class VehicleConditionInline(nested_admin.NestedTabularInline):
-    model = TransportCondition
+    model = VehicleCondition
     extra = 0
     min_num = 1
     max_num=1
-    # can_delete = False
 
     def transport_condition(self, obj=None):
         return ''
@@ -207,7 +205,7 @@ class VehicleConditionInline(nested_admin.NestedTabularInline):
     fields = ['transport_condition', 'is_clean', 'good_condition', 'broken', 'damaged', 'seal']
 
 class VehicleReviewInline(nested_admin.NestedStackedInline):
-    model = TransportReview
+    model = VehicleReview
     extra = 0
     inlines = [VehicleInspectionInline, VehicleConditionInline]
 
@@ -266,7 +264,7 @@ class SamplePestInline(nested_admin.NestedTabularInline):
             if object_id:
                 try:
                     food_safety = FoodSafety.objects.get(pk=object_id)
-                    incoming_product = IncomingProduct.objects.filter(lote=food_safety.lote).first()
+                    incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
                     kwargs["queryset"] = ProductPest.objects.filter(product=schedule_harvest.product)
                 except FoodSafety.DoesNotExist:
@@ -300,7 +298,7 @@ class SampleDiseaseInline(nested_admin.NestedTabularInline):
             if object_id:
                 try:
                     food_safety = FoodSafety.objects.get(pk=object_id)
-                    incoming_product = IncomingProduct.objects.filter(lote=food_safety.lote).first()
+                    incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
                     kwargs["queryset"] = ProductDisease.objects.filter(product=schedule_harvest.product)
                 except FoodSafety.DoesNotExist:
@@ -334,7 +332,7 @@ class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
             if object_id:
                 try:
                     food_safety = FoodSafety.objects.get(pk=object_id)
-                    incoming_product = IncomingProduct.objects.filter(lote=food_safety.lote).first()
+                    incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
                     kwargs["queryset"] = ProductPhysicalDamage.objects.filter(product=schedule_harvest.product)
                 except FoodSafety.DoesNotExist:
@@ -368,7 +366,7 @@ class SampleResidueInline(nested_admin.NestedTabularInline):
             if object_id:
                 try:
                     food_safety = FoodSafety.objects.get(pk=object_id)
-                    incoming_product = IncomingProduct.objects.filter(lote=food_safety.lote).first()
+                    incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
                     kwargs["queryset"] = ProductResidue.objects.filter(product=schedule_harvest.product)
                 except FoodSafety.DoesNotExist:
@@ -415,8 +413,8 @@ INLINE_CLASSES = {
 
 @admin.register(FoodSafety)
 class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
-    list_display = ('lote',)
-    list_filter = ['lote']
+    list_display = ('batch',)
+    list_filter = ['batch']
     inlines = [DryMatterInline, InternalInspectionInline, VehicleReviewInline, SampleCollectionInline]
 
     def get_inlines(self, request, obj=None):
@@ -426,7 +424,7 @@ class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             return inlines_list
 
         try:
-            incoming_product = IncomingProduct.objects.filter(lote=obj.lote).first()
+            incoming_product = IncomingProduct.objects.filter(batch=obj.batch).first()
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
             food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__model', flat=True)
             inlines_list = [INLINE_CLASSES[inline] for inline in food_safety_config if inline in INLINE_CLASSES]
@@ -437,19 +435,19 @@ class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         return inlines_list
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "lote":
+        if db_field.name == "batch":
             this_organization = request.organization
             obj_id = request.resolver_match.kwargs.get("object_id")
-            inocuidad_lote = FoodSafety.objects.filter(organization=this_organization).values_list('lote', flat=True)
+            inocuidad_batch = FoodSafety.objects.filter(organization=this_organization).values_list('batch', flat=True)
 
             if obj_id:
                 food_safety = FoodSafety.objects.get(id=obj_id)
                 if food_safety:
-                    kwargs["queryset"] = Lote.objects.filter(id=food_safety.lote.id)
+                    kwargs["queryset"] = Batch.objects.filter(id=food_safety.batch.id)
                 else:
-                    kwargs["queryset"] = Lote.objects.none()
+                    kwargs["queryset"] = Batch.objects.none()
 
             else:
-                kwargs["queryset"] = Lote.objects.filter(organization=this_organization).exclude(id__in=inocuidad_lote)
+                kwargs["queryset"] = Batch.objects.filter(organization=this_organization).exclude(id__in=inocuidad_batch)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
