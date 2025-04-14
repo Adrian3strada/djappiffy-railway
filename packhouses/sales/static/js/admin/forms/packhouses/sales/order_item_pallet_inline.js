@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function getClientProperties() {
     if (clientField.val()) {
       clientProperties = await fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
-      console.log("clientProperties", clientProperties);
     } else {
       clientProperties = null;
     }
@@ -84,7 +83,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function getProductProperties() {
     if (productField.val()) {
       productProperties = await fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
-      console.log("function productProperties", productProperties);
     } else {
       productProperties = null;
     }
@@ -166,6 +164,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       productPhenologyField.closest('.form-group').hide();
       productMarketClassField.closest('.form-group').hide();
+
 
       updateFieldOptions(productSizeField, []);
       updateFieldOptions(productPackagingPalletField, []);
@@ -258,7 +257,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 updateFieldOptions(productPackagingPalletField, []);
               }
               updateFieldOptions(productPackagingPalletField, data, productPackagingPalletField.val());
-              console.log("data", data)
               console.log("productPackagingPalletField", productPackagingPalletField)
             });
         } else {
@@ -267,26 +265,30 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       productPackagingPalletField.on('change', () => {
-        productWeightPerPackagingField.val(null);
-        productPresentationsPerPackagingField.val(null);
-        productPiecesPerPresentationField.val(null);
-        productPresentationsPerPackagingField.closest('.form-group').fadeOut();
-        productPiecesPerPresentationField.closest('.form-group').fadeOut();
+        // productWeightPerPackagingField.val(null);
+        // productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+        // productPiecesPerPresentationField.closest('.form-group').fadeOut();
         if (productPackagingPalletField.val()) {
           fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${productPackagingPalletField.val()}/`)
             .then(data => {
               productPackagingQuantityPerPalletField.val(data.product_packaging_quantity)
               productWeightPerPackagingField.val(data.product_packaging_detail.product_weight_per_packaging)
-              if (data.product_packaging_detail.product_presentation) {
-                productPresentationsPerPackagingField.val(data.product_packaging_detail.product_presentations_per_packaging)
-                productPiecesPerPresentationField.val(data.product_packaging_detail.product_pieces_per_presentation)
-                productPresentationsPerPackagingField.closest('.form-group').fadeIn();
-                productPiecesPerPresentationField.closest('.form-group').fadeIn();
-              } else {
-                productPresentationsPerPackagingField.val(null);
-                productPresentationsPerPackagingField.closest('.form-group').fadeOut();
-                productPiecesPerPresentationField.closest('.form-group').fadeOut();
-              }
+              setTimeout(() => {
+                if (data.product_packaging_detail.product_presentation) {
+                  productPresentationsPerPackagingField.val(data.product_packaging_detail.product_presentations_per_packaging)
+                  productPiecesPerPresentationField.val(data.product_packaging_detail.product_pieces_per_presentation)
+                  if (!productPresentationsPerPackagingField.closest('.form-group').is(':visible')) {
+                    productPresentationsPerPackagingField.closest('.form-group').fadeIn();
+                  }
+                  if (!productPiecesPerPresentationField.closest('.form-group').is(':visible')) {
+                    productPiecesPerPresentationField.closest('.form-group').fadeIn();
+                  }
+                } else {
+                  productPresentationsPerPackagingField.val(null);
+                  productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+                  productPiecesPerPresentationField.closest('.form-group').fadeOut();
+                }
+              }, 100)
             })
         }
       })
@@ -336,7 +338,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
   setTimeout(async () => {
-
+    await getProductProperties();
+    await getClientProperties();
     await setIsNationalClient();
 
     const existingForms = $('div[id^="orderitempallet_set-"]').filter((index, form) => {
@@ -367,10 +370,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!productMarketClassField.val()) productMarketClassField.closest('.form-group').hide();
 
       // await getProductOptions();
-      console.log("aqui")
-      console.log("productProperties", productProperties)
-      console.log("clientProperties", clientProperties)
-
       getProductOptions().then(() => {
         updateFieldOptions(pricingByField, productPriceOptions, pricingByField.val());
         updateFieldOptions(productPhenologyField, productPhenologyOptions, productPhenologyField.val());
@@ -414,12 +413,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       productSizeField.on('change', () => {
         if (productSizeField.val()) {
-          console.log("productSizeField", productSizeField)
           const productSizeSelectedOption = productSizeField.find('option:selected');
           const productSizeSelectedOptionCategory = productSizeSelectedOption.data('category');
-
-          console.log("productSizeSelectedOption", productSizeSelectedOption)
-          console.log("productSizeSelectedOptionCategory", productSizeSelectedOptionCategory)
 
           if (productSizeField.val() && productSizeSelectedOptionCategory) {
 
@@ -486,26 +481,31 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       productPackagingPalletField.on('change', () => {
-        productWeightPerPackagingField.val(null);
-        productPresentationsPerPackagingField.val(null);
-        productPiecesPerPresentationField.val(null);
-        productPresentationsPerPackagingField.closest('.form-group').fadeOut();
-        productPiecesPerPresentationField.closest('.form-group').fadeOut();
+        // productWeightPerPackagingField.val(null);
+        // productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+        // productPiecesPerPresentationField.closest('.form-group').fadeOut();
         if (productPackagingPalletField.val()) {
           fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${productPackagingPalletField.val()}/`)
             .then(data => {
               productPackagingQuantityPerPalletField.val(data.product_packaging_quantity)
               productWeightPerPackagingField.val(data.product_packaging_detail.product_weight_per_packaging);
-              if (data.product_packaging_detail.product_presentation) {
-                productPresentationsPerPackagingField.val(data.product_packaging_detail.product_presentations_per_packaging);
-                productPiecesPerPresentationField.val(data.product_packaging_detail.product_pieces_per_presentation)
-                productPresentationsPerPackagingField.closest('.form-group').fadeIn();
-                productPiecesPerPresentationField.closest('.form-group').fadeIn();
-              } else {
-                productPresentationsPerPackagingField.val(null);
-                productPresentationsPerPackagingField.closest('.form-group').fadeOut();
-                productPiecesPerPresentationField.closest('.form-group').fadeOut();
-              }
+              setTimeout(() => {
+                if (data.product_packaging_detail.product_presentation) {
+                  productPresentationsPerPackagingField.val(data.product_packaging_detail.product_presentations_per_packaging);
+                  productPiecesPerPresentationField.val(data.product_packaging_detail.product_pieces_per_presentation)
+                  if (!productPresentationsPerPackagingField.closest('.form-group').is(':visible')) {
+                    productPresentationsPerPackagingField.closest('.form-group').fadeIn();
+                  }
+                  if (!productPiecesPerPresentationField.closest('.form-group').is(':visible')) {
+                    productPiecesPerPresentationField.closest('.form-group').fadeIn();
+                  }
+                } else {
+                  productPresentationsPerPackagingField.val(null);
+                  productPiecesPerPresentationField.val(null);
+                  productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+                  productPiecesPerPresentationField.closest('.form-group').fadeOut();
+                }
+              }, 100)
             })
         }
       })
