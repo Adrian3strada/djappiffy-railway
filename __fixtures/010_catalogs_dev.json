@@ -1154,6 +1154,82 @@
   }
 },
 {
+  "model": "catalogs.vehicle",
+  "pk": 4,
+  "fields": {
+    "name": "NISSAN VERSA",
+    "category": "harvesting_crew",
+    "kind": 2,
+    "brand": 2,
+    "model": "2020",
+    "license_plate": "ABC-123-CD",
+    "serial_number": "3N1CN7AD2KL842379",
+    "color": "PLATA",
+    "ownership": 1,
+    "fuel": 1,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.vehicle",
+  "pk": 5,
+  "fields": {
+    "name": "TOYOTA HILUX",
+    "category": "harvesting_crew",
+    "kind": 1,
+    "brand": 3,
+    "model": "2019",
+    "license_plate": "TRK-452-GH",
+    "serial_number": "MR0KA3CD6K0412365",
+    "color": "BLANCO",
+    "ownership": 1,
+    "fuel": 1,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.vehicle",
+  "pk": 6,
+  "fields": {
+    "name": "CHEVROLET AVEO",
+    "category": "packhouse",
+    "kind": 1,
+    "brand": 1,
+    "model": "2021",
+    "license_plate": "HJK-990-LM",
+    "serial_number": "KL1TD5667MB278544",
+    "color": "ROJO",
+    "ownership": 1,
+    "fuel": 1,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.vehicle",
+  "pk": 7,
+  "fields": {
+    "name": "FORD RANGER XLT",
+    "category": "packhouse",
+    "kind": 1,
+    "brand": 5,
+    "model": "2018",
+    "license_plate": "PQR-284-FT",
+    "serial_number": "1FTYR10C8JPA67451",
+    "color": "AZUL MARINO",
+    "ownership": 1,
+    "fuel": 1,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
   "model": "catalogs.provider",
   "pk": 1,
   "fields": {
@@ -1303,6 +1379,114 @@
     "vehicle_provider": [
       1,
       3
+    ]
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 7,
+  "fields": {
+    "name": "JUAN CARLOS MÉNDEZ RODRÍGUEZ",
+    "category": "product_provider",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2275,
+    "city": 25026,
+    "district": 85036,
+    "postal_code": "01120",
+    "neighborhood": "SAN MIGUEL CHAPULTEPEC",
+    "address": "AV. REVOLUCIÓN",
+    "external_number": "123",
+    "internal_number": null,
+    "tax_id": "MERJ800415HJ5",
+    "email": "juan.mendez@proveemx.com",
+    "phone_number": "5523456789",
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1,
+    "vehicle_provider": []
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 8,
+  "fields": {
+    "name": "MARÍA FERNANDA RÍOS TORRES",
+    "category": "product_provider",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2286,
+    "city": 25160,
+    "district": 87802,
+    "postal_code": "44100",
+    "neighborhood": "AMERICANA",
+    "address": "LÓPEZ COTILLA",
+    "external_number": "234",
+    "internal_number": null,
+    "tax_id": "RITF910213SD4",
+    "email": "mf.rios@consultamexico.mx",
+    "phone_number": "3334567890",
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1,
+    "vehicle_provider": []
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 9,
+  "fields": {
+    "name": "LUIS ALBERTO ZAMORA",
+    "category": "harvesting_provider",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2290,
+    "city": 25000,
+    "district": 86210,
+    "postal_code": "80320",
+    "neighborhood": "LAS QUINTAS",
+    "address": "CALLE CEDRO",
+    "external_number": "125",
+    "internal_number": null,
+    "tax_id": "ZAML850102K78",
+    "email": "lzamora@cosechasmx.com",
+    "phone_number": "6671984521",
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1,
+    "vehicle_provider": [
+      6,
+      7,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 10,
+  "fields": {
+    "name": "AGROCOSECHAS DEL BAJÍO",
+    "category": "harvesting_provider",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2287,
+    "city": 27031,
+    "district": 86186,
+    "postal_code": "36740",
+    "neighborhood": "SANTA CECILIA",
+    "address": "AV. AGRÍCOLA",
+    "external_number": "890",
+    "internal_number": "Planta 2",
+    "tax_id": "ACB021203K11",
+    "email": "contacto@agrocosechas.com",
+    "phone_number": "4611234455",
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1,
+    "vehicle_provider": [
+      2,
+      4,
+      5
     ]
   }
 },
@@ -1987,6 +2171,69 @@
   }
 },
 {
+  "model": "catalogs.crewchief",
+  "pk": 3,
+  "fields": {
+    "name": "JOSÉ MANUEL REYES",
+    "provider": 9,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 4,
+  "fields": {
+    "name": "MARIO CASTAÑEDA",
+    "provider": 9,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 5,
+  "fields": {
+    "name": "JORGE LUIS RAMOS",
+    "provider": 9,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 6,
+  "fields": {
+    "name": "RICARDO TORRES",
+    "provider": 10,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 7,
+  "fields": {
+    "name": "SAÚL MENDOZA",
+    "provider": 10,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 8,
+  "fields": {
+    "name": "ERNESTO VÁZQUEZ",
+    "provider": 10,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 9,
+  "fields": {
+    "name": "OMAR BELTRÁN",
+    "provider": 10,
+    "is_enabled": true
+  }
+},
+{
   "model": "catalogs.harvestingcrew",
   "pk": 1,
   "fields": {
@@ -2008,6 +2255,62 @@
     "name": "CUADRILLA 2",
     "certification_name": "EXPORT 28",
     "crew_chief": 2,
+    "persons_number": 8,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.harvestingcrew",
+  "pk": 3,
+  "fields": {
+    "provider": 10,
+    "name": "CUADRILLA 3 NORTE",
+    "certification_name": null,
+    "crew_chief": 7,
+    "persons_number": 10,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.harvestingcrew",
+  "pk": 4,
+  "fields": {
+    "provider": 10,
+    "name": "CUADRILLA EL PALMAR",
+    "certification_name": null,
+    "crew_chief": 9,
+    "persons_number": 10,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.harvestingcrew",
+  "pk": 5,
+  "fields": {
+    "provider": 9,
+    "name": "CUADRILLA BRISA VERDE",
+    "certification_name": null,
+    "crew_chief": 4,
+    "persons_number": 10,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.harvestingcrew",
+  "pk": 6,
+  "fields": {
+    "provider": 9,
+    "name": "CUADRILLA LOS PINOS",
+    "certification_name": null,
+    "crew_chief": 3,
     "persons_number": 8,
     "comments": null,
     "is_enabled": true,
@@ -2046,6 +2349,142 @@
     "type_payment_for_false_out": "fixed_amount",
     "amount_for_false_out": 2.0,
     "harvesting_crew": 2
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 3,
+  "fields": {
+    "type_harvest": "local",
+    "more_than_kg": 9000.0,
+    "pay_per_box_complete": 8.5,
+    "pay_per_kg_complete": 15.0,
+    "pay_per_day_complete": 900.0,
+    "pay_per_box_incomplete": 13.0,
+    "pay_per_kg_incomplete": 1.2,
+    "pay_per_day_incomplete": 700.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 300.0,
+    "harvesting_crew": 3
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 4,
+  "fields": {
+    "type_harvest": "exportacion",
+    "more_than_kg": 8.5,
+    "pay_per_box_complete": 8.0,
+    "pay_per_kg_complete": 14.0,
+    "pay_per_day_complete": 850.0,
+    "pay_per_box_incomplete": 12.5,
+    "pay_per_kg_incomplete": 1.1,
+    "pay_per_day_incomplete": 650.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 250.0,
+    "harvesting_crew": 3
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 5,
+  "fields": {
+    "type_harvest": "local",
+    "more_than_kg": 10.0,
+    "pay_per_box_complete": 9.5,
+    "pay_per_kg_complete": 16.0,
+    "pay_per_day_complete": 950.0,
+    "pay_per_box_incomplete": 14.0,
+    "pay_per_kg_incomplete": 1.3,
+    "pay_per_day_incomplete": 780.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 350.0,
+    "harvesting_crew": 4
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 6,
+  "fields": {
+    "type_harvest": "exportacion",
+    "more_than_kg": 7.8,
+    "pay_per_box_complete": 7.5,
+    "pay_per_kg_complete": 13.0,
+    "pay_per_day_complete": 800.0,
+    "pay_per_box_incomplete": 11.0,
+    "pay_per_kg_incomplete": 1.0,
+    "pay_per_day_incomplete": 600.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 200.0,
+    "harvesting_crew": 4
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 7,
+  "fields": {
+    "type_harvest": "local",
+    "more_than_kg": 10000.0,
+    "pay_per_box_complete": 9000.0,
+    "pay_per_kg_complete": 25.5,
+    "pay_per_day_complete": 3.5,
+    "pay_per_box_incomplete": 1250.0,
+    "pay_per_kg_incomplete": 23.5,
+    "pay_per_day_incomplete": 3.3,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 300.0,
+    "harvesting_crew": 5
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 8,
+  "fields": {
+    "type_harvest": "exportacion",
+    "more_than_kg": 9900.0,
+    "pay_per_box_complete": 8950.0,
+    "pay_per_kg_complete": 25.4,
+    "pay_per_day_complete": 1240.0,
+    "pay_per_box_incomplete": 23.4,
+    "pay_per_kg_incomplete": 3.25,
+    "pay_per_day_incomplete": 1135.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 290.0,
+    "harvesting_crew": 5
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 9,
+  "fields": {
+    "type_harvest": "local",
+    "more_than_kg": 9800.0,
+    "pay_per_box_complete": 8900.0,
+    "pay_per_kg_complete": 25.3,
+    "pay_per_day_complete": 1230.0,
+    "pay_per_box_incomplete": 23.3,
+    "pay_per_kg_incomplete": 3.4,
+    "pay_per_day_incomplete": 1120.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 280.0,
+    "harvesting_crew": 6
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 10,
+  "fields": {
+    "type_harvest": "exportacion",
+    "more_than_kg": 9700.0,
+    "pay_per_box_complete": 8850.0,
+    "pay_per_kg_complete": 3.35,
+    "pay_per_day_complete": 1220.0,
+    "pay_per_box_incomplete": 23.2,
+    "pay_per_kg_incomplete": 3.15,
+    "pay_per_day_incomplete": 1105.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 270.0,
+    "harvesting_crew": 6
   }
 },
 {
@@ -2894,7 +3333,8 @@
   "fields": {
     "product_packaging": 1,
     "pallet": 1,
-    "product_packaging_quantity": 80
+    "product_packaging_quantity": 80,
+    "is_enabled": true
   }
 },
 {
@@ -2903,7 +3343,8 @@
   "fields": {
     "product_packaging": 1,
     "pallet": 1,
-    "product_packaging_quantity": 104
+    "product_packaging_quantity": 104,
+    "is_enabled": true
   }
 },
 {
@@ -2912,7 +3353,8 @@
   "fields": {
     "product_packaging": 3,
     "pallet": 1,
-    "product_packaging_quantity": 100
+    "product_packaging_quantity": 100,
+    "is_enabled": true
   }
 },
 {
@@ -2921,7 +3363,8 @@
   "fields": {
     "product_packaging": 3,
     "pallet": 1,
-    "product_packaging_quantity": 80
+    "product_packaging_quantity": 80,
+    "is_enabled": true
   }
 },
 {
@@ -2930,7 +3373,8 @@
   "fields": {
     "product_packaging": 3,
     "pallet": 2,
-    "product_packaging_quantity": 88
+    "product_packaging_quantity": 88,
+    "is_enabled": true
   }
 },
 {
@@ -2939,7 +3383,8 @@
   "fields": {
     "product_packaging": 4,
     "pallet": 4,
-    "product_packaging_quantity": 80
+    "product_packaging_quantity": 80,
+    "is_enabled": true
   }
 },
 {
@@ -2948,7 +3393,8 @@
   "fields": {
     "product_packaging": 4,
     "pallet": 3,
-    "product_packaging_quantity": 80
+    "product_packaging_quantity": 80,
+    "is_enabled": true
   }
 },
 {
@@ -2957,7 +3403,8 @@
   "fields": {
     "product_packaging": 2,
     "pallet": 4,
-    "product_packaging_quantity": 90
+    "product_packaging_quantity": 90,
+    "is_enabled": true
   }
 },
 {
@@ -2973,6 +3420,44 @@
     "postal_code": "76357",
     "address": "CENTRO DE TACÁMBARO",
     "external_number": "873",
+    "internal_number": null,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.weighingscale",
+  "pk": 2,
+  "fields": {
+    "name": "BÁSCULA AGROLINE",
+    "number": "345",
+    "state": 2289,
+    "city": 24993,
+    "district": 88250,
+    "neighborhood": "LOMAS DEL VALLE",
+    "postal_code": "45129",
+    "address": "AV. UNIVERSIDAD",
+    "external_number": "320",
+    "internal_number": null,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.weighingscale",
+  "pk": 3,
+  "fields": {
+    "name": "EMPASCALE PRO",
+    "number": "11",
+    "state": 2265,
+    "city": 25142,
+    "district": 85539,
+    "neighborhood": "LA CAMPIÑA",
+    "postal_code": "80060",
+    "address": "AV. DE LOS PINOS",
+    "external_number": "301",
     "internal_number": null,
     "comments": null,
     "is_enabled": true,
