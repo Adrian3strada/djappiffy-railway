@@ -376,6 +376,7 @@ JAZZMIN_SETTINGS = {
         "sales",
         "gathering",
         "receiving",
+        "product_packaging",
         "purchases",
         "storehouse",
         "catalogs",

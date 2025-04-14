@@ -6,7 +6,7 @@ import uuid
 # Create your models here.
 
 class PackerLabel(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True) 
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     employee = models.ForeignKey(Employee, verbose_name=_('Employee'), on_delete=models.PROTECT)
     scanned_at = models.DateTimeField(null=True, blank=True)
 
@@ -27,7 +27,7 @@ class PackerEmployeeManager(models.Manager):
 
 
 class PackerEmployee(Employee):
-    objects = PackerEmployeeManager()  
+    objects = PackerEmployeeManager()
 
     class Meta:
         proxy = True
@@ -35,10 +35,10 @@ class PackerEmployee(Employee):
         verbose_name_plural = _("Packer Employees")
 
     def position(self):
-        job_position = self.employeejobposition  
+        job_position = self.employeejobposition
         return job_position.job_position.name if job_position else "N/A"
-    
+
     def full_name_column(self, obj):
-        return obj.full_name  
-    
-    full_name_column.short_description = _("Full name") 
+        return obj.full_name
+
+    full_name_column.short_description = _("Full name")

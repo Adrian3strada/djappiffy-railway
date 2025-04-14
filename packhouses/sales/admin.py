@@ -131,12 +131,6 @@ class OrderItemInlineMixin(admin.StackedInline):
             formfield.label_from_instance = lambda item: f"{item.name}"
             return formfield
 
-        if db_field.name == "product_market_class":
-            kwargs["queryset"] = ProductMarketClass.objects.none()
-            if product and client:
-                kwargs["queryset"] = ProductMarketClass.objects.filter(product=product,
-                                                                       market=client.market, is_enabled=True)
-
         if db_field.name == "product_packaging":
             kwargs["queryset"] = ProductPackaging.objects.none()
             if product and client:
