@@ -286,7 +286,7 @@
             "name" : "Materia Seca",
             "description" : "N Materia seca",
             "model" : "DryMatter",
-            "overall_percentage": 1
+            "overall_average": 1
         }
     },
     {
@@ -296,7 +296,7 @@
             "name" : "Inspección interna",
             "description" : "N Inspecciones Internas",
             "model" : "InternalInspection",
-            "overall_percentage": 1
+            "overall_average": 1
         }
     },
     {
@@ -305,8 +305,8 @@
         "fields": {
             "name" : "Transporte",
             "description" : "Transporte",
-            "model" : "TransportReview",
-            "overall_percentage": 0
+            "model" : "VehicleReview",
+            "overall_average": 0
         }
     },
     {
@@ -316,17 +316,17 @@
             "name" : "Muestras",
             "description" : "N Muestras",
             "model" : "SampleCollection",
-            "overall_percentage": 1
+            "overall_average": 1
         }
     },
     {
         "model": "base.foodsafetyprocedure",
         "pk": 5,
         "fields": {
-            "name" : "Porcentaje",
-            "description" : "Porcentajes generales",
-            "model" : "Percentage",
-            "overall_percentage": 0
+            "name" : "Average",
+            "description" : "Promedios generales",
+            "model" : "Average",
+            "overall_average": 0
         }
     },
     {

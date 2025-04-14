@@ -10,8 +10,8 @@ from common.base.models import Pest
 # Create your models here.
 
 class Batch(models.Model):
-    sample_number = models.IntegerField()
-    ooid = models.PositiveIntegerField(verbose_name=_("Harvest Number"),null=True, blank=True, unique=True)
+    status = models.CharField(max_length=20, verbose_name=_('Status'))
+    ooid = models.PositiveIntegerField(verbose_name=_("Harvest Number"), null=True, blank=True, unique=True)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
 
     def __str__(self):
@@ -69,7 +69,7 @@ class IncomingProduct(models.Model):
     #     ]"""
 
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
-    lote = models.ForeignKey(Batch, on_delete=models.PROTECT, verbose_name=_('Lote'), null=True, blank=True)
+    batch = models.ForeignKey(Batch, on_delete=models.PROTECT, verbose_name=_('Batch'), null=True, blank=True)
     borrar = models.IntegerField(default=0, verbose_name=_('Missing Boxes'))
 
 class PalletReceived(models.Model):
@@ -138,17 +138,17 @@ class InternalInspection(models.Model):
         verbose_name = _('Internal Inspection')
         verbose_name_plural = _('Internal Inspections')
 
-class Percentage(models.Model):
+class Average(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    percentage = models.DecimalField(max_digits=10, decimal_places=2)
+    average = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Average'))
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):
         return f""
 
     class Meta:
-        verbose_name = _('Percentage')
-        verbose_name_plural = _('Percentages')
+        verbose_name = _('Average')
+        verbose_name_plural = _('Averages')
 
 class VehicleReview(models.Model):
     vehicle = models.ForeignKey('gathering.ScheduleHarvestVehicle', verbose_name=_('vehicle'), on_delete=models.CASCADE)

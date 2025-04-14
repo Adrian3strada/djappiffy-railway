@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (IncomingProduct, PalletReceived,
                     FoodSafety, FoodSafety, DryMatter, InternalInspection,
-                    VehicleReview, SampleCollection, Percentage,
+                    VehicleReview, SampleCollection, Average,
                     VehicleInspection, VehicleCondition,
                     SensorySpecification, SampleWeight, SamplePest,
                     SampleDisease, SamplePhysicalDamage, SampleResidue,
@@ -135,7 +135,8 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
 
 @admin.register(Batch)
 class BatchAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
-    list_display = ('sample_number',)
+    list_display = ('ooid', 'status',)
+    exclude = ('ooid',)
 
 class DryMatterInline(NestedTabularInline):
     model = DryMatter
@@ -148,7 +149,7 @@ class DryMatterInline(NestedTabularInline):
     fields = ['number','product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage']
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/counter_weight.js',)
+        js = ('js/admin/forms/packhouses/receiving/counter.js',)
 
 class InternalInspectionInline(NestedTabularInline):
     model = InternalInspection
@@ -170,7 +171,7 @@ class InternalInspectionInline(NestedTabularInline):
                     incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
                     product = schedule_harvest.product
-                    kwargs["queryset"] = ProductPest.objects.filter(product=product)
+                    kwargs["queryset"] = ProductPest.objects.filter(product=product, pest__inside=True)
 
                 except InternalInspection.DoesNotExist:
                     kwargs['queryset'] = ProductPest.objects.none()
@@ -214,7 +215,7 @@ class VehicleReviewInline(nested_admin.NestedStackedInline):
             object_id = request.resolver_match.kwargs.get("object_id")
 
             food_safety = FoodSafety.objects.get(pk=object_id)
-            incoming_product = IncomingProduct.objects.filter(lote=food_safety.lote).first()
+            incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
             kwargs["queryset"] = ScheduleHarvestVehicle.objects.filter(harvest_cutting_id=schedule_harvest)
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -241,7 +242,7 @@ class SampleWeightInline(nested_admin.NestedTabularInline):
     fields = ['number', 'weight']
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/counter_weight.js',)
+        js = ('js/admin/forms/packhouses/receiving/counter.js',)
 
 class SamplePestForm(forms.ModelForm):
     class Meta:
@@ -390,8 +391,8 @@ class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInl
     class Media:
         js = ('js/admin/forms/packhouses/receiving/select_sample.js',)
 
-class PercentageInline(nested_admin.NestedTabularInline):
-    model = Percentage
+class AverageInline(nested_admin.NestedTabularInline):
+    model = Average
     can_delete = False
     extra = 0
     max_num = 0
@@ -406,16 +407,16 @@ class PercentageInline(nested_admin.NestedTabularInline):
 INLINE_CLASSES = {
     "DryMatter": DryMatterInline,
     "InternalInspection": InternalInspectionInline,
-    "TransportReview": VehicleReviewInline,
+    "VehicleReview": VehicleReviewInline,
     "SampleCollection": SampleCollectionInline,
-    "Percentage": PercentageInline,
+    "Average": AverageInline,
 }
 
 @admin.register(FoodSafety)
 class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('batch',)
     list_filter = ['batch']
-    inlines = [DryMatterInline, InternalInspectionInline, VehicleReviewInline, SampleCollectionInline]
+    inlines = [DryMatterInline, InternalInspectionInline, VehicleReviewInline, SampleCollectionInline, AverageInline]
 
     def get_inlines(self, request, obj=None):
         inlines_list = []

@@ -331,7 +331,7 @@ class FoodSafetyProcedure(models.Model):
     name = models.CharField(max_length=255, unique=True, verbose_name=_('Name'))
     description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
     model = models.CharField(max_length=255, unique=True, verbose_name=_('Model'), choices=MODEL_CHOICES)
-    overall_percentage = models.BooleanField(default=True, verbose_name=_('Overall Percentage'))
+    overall_average = models.BooleanField(default=True, verbose_name=_('Overall Average'))
 
     class Meta:
         ordering = ['name']

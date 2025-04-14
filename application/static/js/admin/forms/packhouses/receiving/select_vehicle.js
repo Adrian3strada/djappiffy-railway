@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    const vehicleSelector = '.inline-group [name^="transportreview_set-"][name$="-vehicle"]';
+    const vehicleSelector = '.inline-group [name^="vehiclereview_set-"][name$="-vehicle"]';
 
     // Inicial al cargar
     updateSelectOptions(vehicleSelector);
