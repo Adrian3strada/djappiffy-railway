@@ -30,7 +30,8 @@ from django.db.models import Q, F
 import datetime
 from common.settings import STATUS_CHOICES
 from packhouses.receiving.models import IncomingProduct
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 # Create your models here.
@@ -189,11 +190,21 @@ class ScheduleHarvestVehicle(models.Model):
         verbose_name=_("Vehicle"),
         on_delete=models.CASCADE,
     )
+    guide_number = models.CharField(
+        max_length=20, 
+        verbose_name=_('Guide Number'),
+        null= True,
+        blank=False,
+        )
     stamp_number = models.CharField(
         max_length=20,
         verbose_name=_("Stamp Number"),
     )
-
+    has_arrived = models.BooleanField(
+        default=False,
+        verbose_name=_('Vehicle has Arrived')
+    )
+    
     def __str__(self):
         return f"{self.vehicle.license_plate} / {self.vehicle.name}"
 
@@ -208,11 +219,25 @@ class ScheduleHarvestContainerVehicle(models.Model):
     harvest_container = models.ForeignKey(
         Supply,
         on_delete=models.CASCADE,
-        limit_choices_to={'kind__category': 'harvest_container'}
+        limit_choices_to={'kind__category': 'harvest_container'}, 
+        verbose_name=_('Harvest Containments')
     )
     quantity = models.PositiveIntegerField()
-
+    full_containers = models.PositiveIntegerField(default=0, verbose_name=_('Full containments'))
+    empty_containers = models.PositiveIntegerField(default=0,verbose_name=_('Empty containments'))
+    missing_containers = models.IntegerField(default=0, verbose_name=_('Missing containments'))
+    created_by = models.CharField(max_length=20, blank=True, null=True) 
+    
     def __str__(self):
         return ""
+    
+    class Meta:
+        verbose_name = _('Schedule Harvest Containment Vehicle')
+        verbose_name_plural = _('Schedule Harvest Containment Vehicle')
 
 
+@receiver(post_save, sender=ScheduleHarvestContainerVehicle)
+def set_created_from_app1(sender, instance, created, **kwargs):
+    if created and not instance.created_by: 
+        instance.created_by = 'gathering' 
+        instance.save()
