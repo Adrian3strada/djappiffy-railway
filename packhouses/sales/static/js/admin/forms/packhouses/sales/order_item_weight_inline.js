@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // productSizeField.closest('.form-group').hide();
       productPhenologyField.closest('.form-group').hide();
       productMarketClassField.closest('.form-group').hide();
-      productMarketRipenessField.closest('.form-group').hide();
+      productMarketRipenessField.closest('.form-group').hide();ƒ
 
       updateProductOptions().then(() => {
         updateFieldOptions(productSizeField, productSizeOptions, productSizeField.val());

@@ -496,8 +496,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       function setAmountPrice() {
         let amountPrice = 0;
-        alert(pricingByField.val())
-
         if (pricingByField.val() === 'product_weight') {
           if (unitPriceField.val() && quantityField.val() && productWeightPerPackagingField.val() && unitPriceField.val() > 0 && quantityField.val() > 0 && productWeightPerPackagingField.val() > 0) {
             amountPrice = unitPriceField.val() * quantityField.val() * productWeightPerPackagingField.val();
