@@ -7,10 +7,15 @@ from django.db.models import Manager, QuerySet
 from django.db.models import Case, When, IntegerField, Value
 from django.db.models.functions import Cast
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import FileExtensionValidator
+from common.mixins import CleanDocumentsMixin
+from django.utils.text import slugify
+import os
 
 # Create your models here.
 
-from .settings import SUPPLY_USAGE_UNIT_KIND_CHOICES, SUPPLY_CATEGORY_CHOICES
+from .settings import (SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES, SUPPLY_CATEGORY_CHOICES,
+                       PRODUCT_MEASURE_UNIT_CATEGORY_CHOICES)
 
 class ProductKind(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -31,9 +36,16 @@ class ProductKind(models.Model):
 
 
 class SupplyKind(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'), unique=True)
-    usage_unit_kind = models.CharField(max_length=30, verbose_name=_('Usage unit kind'), choices=SUPPLY_USAGE_UNIT_KIND_CHOICES)
     category = models.CharField(max_length=40, verbose_name=_('Category'), choices=SUPPLY_CATEGORY_CHOICES)
+    name = models.CharField(max_length=100, verbose_name=_('Name'), unique=True)
+    capacity_unit_category = models.CharField(max_length=30, verbose_name=_('Capacity unit category'),
+                                              null=True, blank=False,
+                                              help_text=_('Capacity unit to group supply kinds by his capacity'),
+                                              choices=PRODUCT_MEASURE_UNIT_CATEGORY_CHOICES)
+    usage_discount_unit_category = models.CharField(max_length=30, verbose_name=_('Usage discount unit category'),
+                                                    help_text=_(
+                                                        'Usage unit kind to measure when supplies are consumed'),
+                                                    choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
@@ -71,57 +83,48 @@ class ProductKindCountryStandard(models.Model):
         ]
 
 
-class CountryProductStandardSizeManager(Manager):
-    def get_queryset(self):
-        return super().get_queryset().annotate(
-            name_as_int=Case(
-                When(name__regex=r'^\d+$', then=Cast('name', output_field=IntegerField())),
-                default=Value(None),
-                output_field=IntegerField(),
-            )
-        ).order_by('name_as_int', 'name')
-
 # Ejemplo:
 #   - Comercial, Extra, Mediano, Primera, Super, ... (de APEAM para AGUACATES en MÉXICO)
 #   - 32, 36, 40, 48, 60, 70, ... (de APEAM para AGUACATES en ESTADOS UNIDOS)
 #   - 300, 400, 500, 600, ... (de APEAM para LIMÓN-MEXICANO en MÉXICO)
 #   - 110, 150, 175, 200, 230, 250, ... (de "ALGUNA ASOCIACIÓN" para LIMÓN-PERSA en ESTADOS UNIDOS)
-class CountryProductStandardSize(models.Model):
-    name = models.CharField(max_length=255)
+class ProductKindCountryStandardSize(models.Model):
     standard = models.ForeignKey(ProductKindCountryStandard, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=10, verbose_name=_('Code'))
     description = models.CharField(max_length=255, null=True, blank=True)
+    sort_order = models.PositiveIntegerField(default=0)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
         return self.name
 
-    objects = CountryProductStandardSizeManager()
-
     class Meta:
-        verbose_name = _('Product standard, Size')
-        verbose_name_plural = _('Product standard, Sizes')
+        verbose_name = _('Product kind country standard, Size')
+        verbose_name_plural = _('Product kind country standard, Sizes')
+        ordering = ['sort_order']
         constraints = [
-            models.UniqueConstraint(fields=['name', 'standard'], name='countryproductstandardsize_unique_name_standard')
+            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='productkindcountrystandardsize_unique_standard_name_code')
         ]
 
 
-class ProductStandardPackaging(models.Model):
+class ProductKindCountryStandardPackaging(models.Model):
+    standard = models.ForeignKey(ProductKindCountryStandard, on_delete=models.CASCADE)
     supply_kind = models.ForeignKey(SupplyKind, on_delete=models.PROTECT)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, verbose_name=_('Code'))
     max_product_amount = models.FloatField(verbose_name=_('Max product amount'), validators=[MinValueValidator(0.01)])
     description = models.CharField(max_length=255, null=True, blank=True)
-    standard = models.ForeignKey(ProductKindCountryStandard, on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = _('Product packaging standard')
-        verbose_name_plural = _('Product packaging standard')
+        verbose_name = _('Product kind country standard, Packaging')
+        verbose_name_plural = _('Product kind country standard, Packaging')
         constraints = [
-            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='productpackagingstandard_unique_name_code_standard')
+            models.UniqueConstraint(fields=['name', 'code', 'standard'], name='productkindcountrystandardpackaging_unique_name_code_standard')
         ]
 
 
@@ -207,3 +210,56 @@ class Currency(models.Model):
             models.UniqueConstraint(fields=['id', 'name'], name='currency_unique_id_name')
         ]
 
+class CertificationEntity(models.Model):
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product'), on_delete=models.PROTECT)
+    country = models.ForeignKey(Country, verbose_name=_('Country'), null=True, blank=True, on_delete=models.PROTECT)
+    entity = models.CharField(max_length=255, verbose_name=_('Certification Entity'))
+    name_certification = models.CharField(max_length=255, verbose_name=_('Certification'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.entity} -- {self.name_certification} -- {self.product_kind}"
+
+    class Meta:
+        verbose_name = _('Certification Entity')
+        verbose_name_plural = _('Certification Entities')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['entity', 'name_certification'],
+                name='certificationEntity_unique_certification_entity'
+            )
+        ]
+
+def certification_file_path(instance, filename):
+
+    certification_id = instance.certification_entity.id
+    certification_entity = slugify(instance.certification_entity.entity.replace(" ", ""))
+    certification_product_kind = slugify(instance.certification_entity.product_kind).replace(" ", "")
+
+    file_extension = os.path.splitext(filename)[1]
+    file_name = slugify(instance.name.replace(" ", ""))
+
+    return f'certifications/requirements/{certification_id}_{certification_product_kind}_{certification_entity}_{file_name}{file_extension}'
+
+class CertificationFormat(CleanDocumentsMixin, models.Model):
+    name = models.CharField(max_length=255)
+    route = models.FileField(
+        upload_to=certification_file_path,
+        validators=[FileExtensionValidator(allowed_extensions=['docx'])],
+        verbose_name=_('Document')
+        )
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    certification_entity = models.ForeignKey(CertificationEntity, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = _('Certification Format')
+        verbose_name_plural = _('Certification Formats')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'certification_entity'],
+                name='certificationFormat_unique_certification_entity_name'
+            )
+        ]

@@ -2,7 +2,7 @@ from django.db import models
 from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
-
+import os
 
 
 # Create your mixins here.
@@ -530,7 +530,7 @@ class IncotermsAndLocalDeliveryMarketMixin(models.Model):
 class CleanNameAndServiceProviderAndOrganizationMixin(models.Model):
     def __str__(self):
         return f"{self.name}"
-    
+
     def clean(self):
         self.name = getattr(self, 'name', None)
         self.service_provider = getattr(self, 'service_provider', None)
@@ -543,7 +543,7 @@ class CleanNameAndServiceProviderAndOrganizationMixin(models.Model):
 
         errors = {}
 
-        try: 
+        try:
             super().clean()
         except ValidationError as e:
             errors = e.message_dict
@@ -553,7 +553,7 @@ class CleanNameAndServiceProviderAndOrganizationMixin(models.Model):
 
                 errors['name'] = _('Name and service provider must be unique together.')
                 errors['service_provider'] = _('Name and service provider must be unique together.')
-                
+
         if errors:
             raise ValidationError(errors)
 
@@ -566,14 +566,14 @@ class CleanNameAndServiceProviderAndOrganizationMixin(models.Model):
 
 class CleanEmployeeAndOrganizationMixin(models.Model):
     def clean(self):
-        errors = {} 
+        errors = {}
         if hasattr(self, 'name') and isinstance(self.name, str):
             self.name = self.name.strip().upper()
 
         if hasattr(self, 'employee') and hasattr(self, 'organization'):
             if not self.organization_id:
                 self.organization = self.employee.organization
-            
+
             if self.organization != self.employee.organization:
                 errors['employee'] = _("Employee does not belong to the organization.")
                 errors['organization'] = _("Employee does not belong to the organization.")
@@ -582,6 +582,27 @@ class CleanEmployeeAndOrganizationMixin(models.Model):
             raise ValidationError(errors)
 
         super().clean()
+
+    class Meta:
+        abstract = True
+
+
+class CleanDocumentsMixin(models.Model):
+    def save(self, *args, **kwargs):
+        try:
+            old_instance = self.__class__.objects.get(pk=self.pk)
+            if old_instance.route and old_instance.route != self.route:
+                if os.path.isfile(old_instance.route.path):
+                    os.remove(old_instance.route.path)
+        except self.__class__.DoesNotExist:
+            pass
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.route and os.path.isfile(self.route.path):
+            os.remove(self.route.path)
+        super().delete(*args, **kwargs)
 
     class Meta:
         abstract = True

@@ -7,6 +7,15 @@ STATUS_CHOICES = [
     ('canceled', _('Canceled')),
 ]
 
+DATA_TYPE_CHOICES = [
+    ('text', _('Text')),
+    ('int', _('Integer')),
+    ('number', _('Decimal')),
+    ('date', _('Date')),
+    ('checkbox', _('Checkbox')),
+]
+
+
 WEEKDAYS_CHOICES = [
         ('Monday', _('Monday')),
         ('Tuesday', _('Tuesday')),

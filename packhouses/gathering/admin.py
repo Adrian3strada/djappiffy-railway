@@ -10,21 +10,21 @@ from cities_light.models import Country, Region, SubRegion, City
 from django.utils.translation import gettext_lazy as _
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget, AutoGrowingTextareaWidget
 from packhouses.catalogs.filters import (StatesForOrganizationCountryFilter, ByCountryForOrganizationMarketsFilter,
-                      ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
-                      ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
-                      ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
-                      ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
-                      ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
-                      ByCityForOrganizationClientsFilter,
-                      ByProductVarietiesForOrganizationFilter, ByMarketsForOrganizationFilter,
-                      ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
-                      ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
-                      ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
-                      ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter
-                      )
+                                         ByProductForOrganizationFilter, ByProductSeasonKindForOrganizationFilter,
+                                         ByProductVarietyForOrganizationFilter, ByMarketForOrganizationFilter,
+                                         ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
+                                         ByStateForOrganizationFilter, ByCityForOrganizationFilter, ByDistrictForOrganizationFilter,
+                                         ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
+                                         ByCityForOrganizationClientsFilter,
+                                         ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
+                                         ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
+                                         ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
+                                         ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
+                                         ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter
+                                         )
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, Market, WeighingScale,
-                                        ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind, HarvestContainer,
-                                        OrchardCertification)
+                                        ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind,
+                                        OrchardCertification, Supply)
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
 from common.base.models import ProductKind
@@ -44,7 +44,7 @@ from django.db.models import Q
 from django.contrib.admin.widgets import AdminDateWidget
 from django.utils.html import format_html
 from django.urls import reverse
-from .forms import ScheduleHarvestForm
+from .forms import ScheduleHarvestForm, ContainerInlineForm, ContainerInlineFormSet
 
 
 class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
@@ -85,13 +85,25 @@ class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_
 
 class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
     model = ScheduleHarvestContainerVehicle
+    fields = ('harvest_container', 'quantity')
     extra = 0
+    formset = ContainerInlineFormSet
+    form = ContainerInlineForm
+
+    def get_readonly_fields(self, request, obj=None):
+        """ Aplica solo lectura a los campos de contenedor solo si `created_by == 'incoming_product'` """
+        if obj and isinstance(obj, ScheduleHarvestContainerVehicle):
+            # Verificamos el campo 'created_by' del contenedor
+            if obj.created_by == 'incoming_product':
+                # Retorna todos los campos menos 'created_by' como solo lectura
+                return [f.name for f in self.model._meta.fields if f.name != 'created_by']
+        return []
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         form = formset.form
         for field in form.base_fields.values():
-            field.widget.can_add_related = True
+            field.widget.can_add_related = False
             field.widget.can_change_related = False
             field.widget.can_delete_related = False
             field.widget.can_view_related = False
@@ -102,8 +114,8 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
         if hasattr(request, 'organization'):
             organization = request.organization
 
-        if db_field.name == "harvest_cutting_container":
-            kwargs["queryset"] = HarvestContainer.objects.filter(
+        if db_field.name == "harvest_container":
+            kwargs["queryset"] = Supply.objects.filter(
                 organization=organization,
                 is_enabled=True
             )
@@ -114,6 +126,7 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
 class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = ScheduleHarvestVehicle
     extra = 0
+    fields = ('harvest_cutting', 'provider', 'vehicle', 'stamp_number')
     inlines = [HarvestCuttingContainerVehicleInline]
 
     def get_formset(self, request, obj=None, **kwargs):

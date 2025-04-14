@@ -1,28 +1,29 @@
 from rest_framework import serializers
 from packhouses.catalogs.models import (
-    Market, ProductMarketClass, Vehicle, HarvestingCrewProvider,
-    ProductVariety, ProductPhenologyKind, ProductMassVolumeKind, Maquiladora,
-    CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, ProductPackaging,
-    HarvestingCrew, OrchardCertification, ProductRipeness
+    Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, Pallet, ProductPackagingPallet,
+    ProductVariety, ProductPhenologyKind, ProductMassVolumeKind, Maquiladora, ProductPresentation,
+    CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, Packaging,
+    HarvestingCrew, OrchardCertification, ProductRipeness, ProductPackaging
 )
 from django.utils.translation import gettext_lazy as _
+from packhouses.purchases.models import PurchaseOrderSupply
 
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    price_measure_unit_category_display = serializers.SerializerMethodField(read_only=True)
+    measure_unit_category_display = serializers.SerializerMethodField(read_only=True)
     product_market_classes = serializers.SerializerMethodField(read_only=True)
     packaging = serializers.SerializerMethodField(read_only=True)
 
-    def get_price_measure_unit_category_display(self, obj):
-        return obj.get_price_measure_unit_category_display()
+    def get_measure_unit_category_display(self, obj):
+        return obj.get_measure_unit_category_display()
 
     def get_product_market_classes(self, obj):
         product_market_classes = ProductMarketClass.objects.filter(product=obj)
         return ProductMarketClassSerializer(product_market_classes, many=True).data
 
     def get_packaging(self, obj):
-        packaging = ProductPackaging.objects.filter(product=obj)
+        packaging = Packaging.objects.filter(product=obj)
         return PackagingSerializer(packaging, many=True).data
 
     class Meta:
@@ -31,8 +32,35 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class PackagingSerializer(serializers.ModelSerializer):
+    packaging_supply_detail = serializers.SerializerMethodField(read_only=True)
+
+    def get_packaging_supply_detail(self, obj):
+        return SupplySerializer(obj.packaging_supply, read_only=True).data
+
+    class Meta:
+        model = Packaging
+        fields = '__all__'
+
+
+class ProductPackagingSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ProductPackaging
+        fields = '__all__'
+
+
+class ProductPackagingPalletSerializer(serializers.ModelSerializer):
+    product_packaging_detail = serializers.SerializerMethodField(read_only=True)
+    name = serializers.SerializerMethodField(read_only=True)
+
+    def get_name(self, obj):
+        return f"{obj.pallet} [{obj.product_packaging_quantity}] -- {obj.product_packaging}"
+
+    def get_product_packaging_detail(self, obj):
+        return ProductPackagingSerializer(obj.product_packaging, read_only=True).data
+
+    class Meta:
+        model = ProductPackagingPallet
         fields = '__all__'
 
 
@@ -72,6 +100,12 @@ class MarketSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class PalletSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pallet
+        fields = '__all__'
+
+
 class ProductMarketClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductMarketClass
@@ -87,6 +121,12 @@ class ProductVarietySerializer(serializers.ModelSerializer):
 class ProductSizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductSize
+        fields = '__all__'
+
+
+class ProductPresentationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductPresentation
         fields = '__all__'
 
 
@@ -150,3 +190,36 @@ class ProductRipenessSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductRipeness
         fields = '__all__'
+
+
+class PurchaseOrderSupplySerializer(serializers.ModelSerializer):
+    purchase_order_supply_options = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PurchaseOrderSupply
+        fields = ("id", "requisition_supply", "quantity", 'unit_category', 'delivery_deadline',
+                  "comments", "is_in_inventory", "purchase_order_supply_options")
+
+    def get_purchase_order_supply_options(self, obj):
+        unit_mapping = {
+            "cm": _("meters"),
+            "ml": _("liters"),
+            "gr": _("kilograms"),
+            "piece": _("pieces"),
+        }
+
+        return [
+            {
+                "id": pos.id,
+                "kind": str(pos.requisition_supply.supply.kind),
+                "name": str(pos.requisition_supply.supply),
+                "unit": unit_mapping.get(
+                    getattr(pos.requisition_supply.supply.kind, "usage_discount_unit_category", ""),
+                    getattr(pos.requisition_supply.supply.kind, "usage_discount_unit_category", "")
+                ),
+                "real_unit": str(pos.requisition_supply.supply.kind.usage_discount_unit_category),
+            }
+            for pos in PurchaseOrderSupply.objects.filter(purchase_order=obj.purchase_order)
+        ]
+
+

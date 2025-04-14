@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from .serializers import (ProductKindSerializer, CitySerializer, SubRegionSerializer, RegionSerializer,
-                          CapitalFrameworkSerializer, ProductStandardPackagingSerializer,
+                          CapitalFrameworkSerializer, ProductStandardPackagingSerializer, SupplyKindSerializer,
                           CountrySerializer, CountryProductStandardSizeSerializer)
-from .models import ProductKind, CountryProductStandardSize, CapitalFramework, ProductStandardPackaging
+from .models import ProductKind, ProductKindCountryStandardSize, CapitalFramework, ProductKindCountryStandardPackaging, SupplyKind
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
 from cities_light.contrib.restframework3 import SubRegionModelViewSet as BaseSubRegionModelViewSet
 from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
@@ -15,7 +15,14 @@ class ProductKindViewSet(viewsets.ModelViewSet):
     serializer_class = ProductKindSerializer
     pagination_class = None
     queryset = ProductKind.objects.all()
-    filterset_fields = ['for_packaging', 'for_orchard', 'for_eudr']
+    filterset_fields = ['for_packaging', 'for_orchard', 'for_eudr', 'is_enabled']
+
+
+class SupplyKindViewSet(viewsets.ModelViewSet):
+    serializer_class = SupplyKindSerializer
+    pagination_class = None
+    queryset = SupplyKind.objects.all()
+    filterset_fields = ['category', 'is_enabled']
 
 
 class CapitalFrameworkViewSet(viewsets.ModelViewSet):
@@ -37,7 +44,7 @@ class CountryProductStandardSizeViewSet(viewsets.ModelViewSet):
     multiple_standards = False
 
     def get_queryset(self):
-        queryset = CountryProductStandardSize.objects.all()
+        queryset = ProductKindCountryStandardSize.objects.all()
         product_kind = self.request.GET.get('product_kind')
         country = self.request.GET.get('country')
         countries = self.request.GET.get('countries')
@@ -60,7 +67,7 @@ class ProductStandardPackagingViewSet(viewsets.ModelViewSet):
     pagination_class = None
 
     def get_queryset(self):
-        queryset = ProductStandardPackaging.objects.all()
+        queryset = ProductKindCountryStandardPackaging.objects.all()
         supply_kind__category = self.request.GET.get('supply_kind__category')
         standard__country__in = self.request.GET.get('standard__country__in')
         max_product_amount__lte = self.request.GET.get('max_product_amount__lte')
@@ -132,5 +139,7 @@ class CityViewSet(BaseCityModelViewSet):
         if subregion:
             queryset = queryset.filter(subregion_id=subregion)
         return queryset
+
+
 
 

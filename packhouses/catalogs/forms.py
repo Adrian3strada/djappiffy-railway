@@ -3,7 +3,7 @@ from .models import (
     Product, ProductSize, OrchardCertification, HarvestingCrew,
     ProductHarvestSizeKind,
     HarvestingPaymentSetting,
-    ProductPackaging, Provider
+    Packaging, Provider
 )
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
@@ -88,7 +88,7 @@ class ProductHarvestSizeKindInlineFormSet(BaseInlineFormSet):
 
 class PackagingKindForm(forms.ModelForm):
     class Meta:
-        model = ProductPackaging
+        model = Packaging
         fields = '__all__'
 
     def clean(self):

@@ -1,9 +1,12 @@
+from unicodedata import category
+
 from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
-from .models import (ProductKind, ProductKindCountryStandard, CountryProductStandardSize, LegalEntityCategory, CapitalFramework,
-                     ProductStandardPackaging, SupplyKind,
-                     Incoterm, LocalDelivery, Currency)
+from .models import (ProductKind, ProductKindCountryStandard, ProductKindCountryStandardSize, LegalEntityCategory, CapitalFramework,
+                     ProductKindCountryStandardPackaging, SupplyKind,
+                     Incoterm, LocalDelivery, Currency,
+                     CertificationEntity, CertificationFormat)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
 from wagtail.documents.models import Document
@@ -23,19 +26,14 @@ class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
 
 
 class CountryProductStandardSizeInline(admin.TabularInline):
-    model = CountryProductStandardSize
+    model = ProductKindCountryStandardSize
     extra = 0
     verbose_name = 'Size'
     verbose_name_plural = 'Sizes'
 
-# TODO: Remover este cuando todo packaging esté completo
-@admin.register(ProductStandardPackaging)
-class CountryProductStandardPackagingAdmin(admin.ModelAdmin):
-    pass
-
 
 class CountryProductStandardPackagingInline(admin.TabularInline):
-    model = ProductStandardPackaging
+    model = ProductKindCountryStandardPackaging
     extra = 0
     verbose_name = 'Standard packaging'
     verbose_name_plural = 'Standard packaging'
@@ -57,7 +55,7 @@ class CountryProductStandardPackagingInline(admin.TabularInline):
 
 
 @admin.register(ProductKindCountryStandard)
-class CountryProductStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
+class ProductKindCountryStandardAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'product_kind', 'country', 'is_enabled', 'sort_order')
     list_filter = [ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter, 'is_enabled']
     search_fields = ['name']
@@ -133,10 +131,53 @@ class CurrencyAdmin(admin.ModelAdmin):
 
 @admin.register(SupplyKind)
 class SupplyKindAdmin(admin.ModelAdmin):
-    list_display = ('name', 'usage_unit_kind', 'category', 'is_enabled')
-    list_filter = ('category', 'usage_unit_kind', 'is_enabled',)
+    list_display = ('name', 'category', 'capacity_unit_category', 'usage_discount_unit_category', 'is_enabled')
+    list_filter = ('category', 'capacity_unit_category', 'usage_discount_unit_category', 'is_enabled',)
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
+        return form
+
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = SupplyKind.objects.get(id=object_id) if object_id else None
+        packaging_container_kinds = ['packaging_containment', 'packaging_separator', 'packaging_presentation']
+
+        if db_field.name == 'capacity_unit_category':
+            if request.POST:
+                category = request.POST.get('category')
+            else:
+                category = obj.category if obj else None
+            if category:
+                formfield = super().formfield_for_choice_field(db_field, request, **kwargs)
+                formfield.required = category in packaging_container_kinds
+                return formfield
+            formfield = super().formfield_for_choice_field(db_field, request, **kwargs)
+            formfield.required = False
+            return formfield
+
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/supply_kind.js',)
+
+class CertificationFormatInline(admin.TabularInline):
+    model = CertificationFormat
+    extra = 0
+
+@admin.register(CertificationEntity)
+class CertificationEntityAdmin(admin.ModelAdmin):
+    list_display = ('entity', 'name_certification', 'product_kind', 'country', 'is_enabled')
+    list_filter = ['entity', 'name_certification', 'product_kind', 'country', 'is_enabled']
+    inlines = [CertificationFormatInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+
+        form.base_fields['product_kind'].widget.can_add_related = False
+        form.base_fields['product_kind'].widget.can_change_related = False
+        form.base_fields['product_kind'].widget.can_delete_related = False
+        form.base_fields['product_kind'].widget.can_view_related = False
+
         return form

@@ -102,9 +102,16 @@
     "kind": 8,
     "name": "AGUACATE",
     "description": null,
-    "price_measure_unit_category": "Kg",
+    "measure_unit_category": "Kg",
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "markets": [
+      4,
+      5,
+      6,
+      3,
+      1
+    ]
   }
 },
 {
@@ -114,9 +121,10 @@
     "kind": 8,
     "name": "AGUACATE DOS",
     "description": null,
-    "price_measure_unit_category": "Kg",
+    "measure_unit_category": "Kg",
     "is_enabled": true,
-    "organization": 2
+    "organization": 2,
+    "markets": []
   }
 },
 {
@@ -126,9 +134,10 @@
     "kind": 8,
     "name": "PALTA",
     "description": null,
-    "price_measure_unit_category": "Kg",
+    "measure_unit_category": "Kg",
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "markets": []
   }
 },
 {
@@ -138,9 +147,12 @@
     "kind": 9,
     "name": "LIMÓN AMARILLO",
     "description": null,
-    "price_measure_unit_category": "Kg",
+    "measure_unit_category": "Kg",
     "is_enabled": false,
-    "organization": 1
+    "organization": 1,
+    "markets": [
+      1
+    ]
   }
 },
 {
@@ -150,9 +162,10 @@
     "kind": 8,
     "name": "VERDE",
     "description": null,
-    "price_measure_unit_category": "L",
+    "measure_unit_category": "L",
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "markets": []
   }
 },
 {
@@ -162,9 +175,25 @@
     "kind": 8,
     "name": "UNO",
     "description": null,
-    "price_measure_unit_category": "g",
+    "measure_unit_category": "g",
     "is_enabled": true,
-    "organization": 1
+    "organization": 1,
+    "markets": []
+  }
+},
+{
+  "model": "catalogs.product",
+  "pk": 7,
+  "fields": {
+    "kind": 8,
+    "name": "AGUACATE REMANENTE",
+    "description": null,
+    "measure_unit_category": "Kg",
+    "is_enabled": true,
+    "organization": 1,
+    "markets": [
+      1
+    ]
   }
 },
 {
@@ -288,6 +317,16 @@
   }
 },
 {
+  "model": "catalogs.productmarketmeasureunitmanagementcost",
+  "pk": 5,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "measure_unit_management_cost": "10",
+    "is_enabled": true
+  }
+},
+{
   "model": "catalogs.productmarketclass",
   "pk": 1,
   "fields": {
@@ -344,6 +383,56 @@
     "product": 1,
     "market": 1,
     "name": "B",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 7,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "name": "MATERIA ORGANICA",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 8,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "name": "REVUELTO",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 9,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "name": "DESECHO",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 10,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "name": "BORONA",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 11,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "name": "CANICA",
     "is_enabled": true
   }
 },
@@ -433,6 +522,28 @@
     "description": null,
     "is_enabled": true,
     "product": 4
+  }
+},
+{
+  "model": "catalogs.productvariety",
+  "pk": 11,
+  "fields": {
+    "name": "HASS",
+    "alias": "HA",
+    "description": null,
+    "is_enabled": true,
+    "product": 7
+  }
+},
+{
+  "model": "catalogs.productvariety",
+  "pk": 14,
+  "fields": {
+    "name": "MENDEZ",
+    "alias": "MD",
+    "description": null,
+    "is_enabled": true,
+    "product": 7
   }
 },
 {
@@ -570,7 +681,7 @@
   "pk": 15,
   "fields": {
     "product": 1,
-    "name": "Revuelta / Parejo",
+    "name": "Revuelto / Parejo",
     "is_enabled": true,
     "sort_order": 9
   }
@@ -668,6 +779,7 @@
   "fields": {
     "product": 1,
     "market": 1,
+    "category": "size",
     "standard_size": 1,
     "name": "COMERCIAL",
     "alias": "COM",
@@ -686,6 +798,7 @@
   "fields": {
     "product": 1,
     "market": 1,
+    "category": "size",
     "standard_size": 4,
     "name": "EXTRA",
     "alias": "EXT",
@@ -704,6 +817,7 @@
   "fields": {
     "product": 1,
     "market": 1,
+    "category": "size",
     "standard_size": 2,
     "name": "MEDIANO",
     "alias": "MED",
@@ -722,6 +836,7 @@
   "fields": {
     "product": 1,
     "market": 1,
+    "category": "size",
     "standard_size": 3,
     "name": "PRIMERA",
     "alias": "PRI",
@@ -740,6 +855,7 @@
   "fields": {
     "product": 1,
     "market": 1,
+    "category": "size",
     "standard_size": 5,
     "name": "SUPER",
     "alias": "SUP",
@@ -758,12 +874,13 @@
   "fields": {
     "product": 1,
     "market": 3,
-    "standard_size": 28,
+    "category": "size",
+    "standard_size": 51,
     "name": "32",
     "alias": "32",
     "description": null,
     "is_enabled": true,
-    "sort_order": 6,
+    "sort_order": 11,
     "varieties": [
       1,
       2
@@ -776,12 +893,13 @@
   "fields": {
     "product": 1,
     "market": 3,
-    "standard_size": 27,
+    "category": "size",
+    "standard_size": 52,
     "name": "36",
     "alias": "36",
     "description": null,
     "is_enabled": true,
-    "sort_order": 7,
+    "sort_order": 12,
     "varieties": [
       1,
       2
@@ -794,12 +912,13 @@
   "fields": {
     "product": 1,
     "market": 3,
-    "standard_size": 26,
+    "category": "size",
+    "standard_size": 53,
     "name": "40",
     "alias": "40",
     "description": null,
     "is_enabled": true,
-    "sort_order": 8,
+    "sort_order": 13,
     "varieties": [
       1,
       2
@@ -812,12 +931,13 @@
   "fields": {
     "product": 1,
     "market": 3,
-    "standard_size": 25,
+    "category": "size",
+    "standard_size": 54,
     "name": "48",
     "alias": "48",
     "description": null,
     "is_enabled": true,
-    "sort_order": 9,
+    "sort_order": 14,
     "varieties": [
       1,
       2
@@ -830,12 +950,13 @@
   "fields": {
     "product": 1,
     "market": 3,
-    "standard_size": 24,
+    "category": "size",
+    "standard_size": 55,
     "name": "60",
     "alias": "60",
     "description": null,
     "is_enabled": true,
-    "sort_order": 10,
+    "sort_order": 15,
     "varieties": [
       1,
       2
@@ -848,12 +969,13 @@
   "fields": {
     "product": 1,
     "market": 3,
-    "standard_size": 23,
+    "category": "size",
+    "standard_size": 56,
     "name": "70",
     "alias": "70",
     "description": null,
     "is_enabled": true,
-    "sort_order": 11,
+    "sort_order": 16,
     "varieties": [
       1,
       2
@@ -866,16 +988,245 @@
   "fields": {
     "product": 1,
     "market": 3,
-    "standard_size": 22,
+    "category": "size",
+    "standard_size": 57,
     "name": "84",
     "alias": "84",
     "description": null,
     "is_enabled": true,
-    "sort_order": 12,
+    "sort_order": 17,
     "varieties": [
       1,
       2
     ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 13,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "category": "mix",
+    "standard_size": 48,
+    "name": "BORONA",
+    "alias": "BOR",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 7,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 14,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "category": "size",
+    "standard_size": 48,
+    "name": "CANICA",
+    "alias": "CAN",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 6,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 15,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "category": "mix",
+    "standard_size": 48,
+    "name": "REVUELTO",
+    "alias": "REV",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 8,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 16,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "category": "waste",
+    "standard_size": 50,
+    "name": "DESECHO",
+    "alias": "DES",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 9,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 17,
+  "fields": {
+    "product": 1,
+    "market": 1,
+    "category": "biomass",
+    "standard_size": 49,
+    "name": "MATERIA ORGÁNICA",
+    "alias": "MAT",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 10,
+    "varieties": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.vehicle",
+  "pk": 1,
+  "fields": {
+    "name": "FORD ROJA",
+    "category": "harvesting_crew",
+    "kind": 1,
+    "brand": 5,
+    "model": "2018",
+    "license_plate": "6DH3-36DH",
+    "serial_number": "7638DHBD63HJF9866D36H",
+    "color": "ROJO",
+    "ownership": 1,
+    "fuel": 1,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.vehicle",
+  "pk": 2,
+  "fields": {
+    "name": "NISSAN AZUL",
+    "category": "packhouse",
+    "kind": 1,
+    "brand": 2,
+    "model": "2020",
+    "license_plate": "J83-388DH",
+    "serial_number": "386DHC77292NF76CGHN27",
+    "color": "AZUL",
+    "ownership": 1,
+    "fuel": 2,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.vehicle",
+  "pk": 3,
+  "fields": {
+    "name": "FORD ROJA",
+    "category": "packhouse",
+    "kind": 1,
+    "brand": 5,
+    "model": "2020",
+    "license_plate": "DH7-HHD7",
+    "serial_number": "NHD76DNN3786DHFONN7",
+    "color": "ROJA",
+    "ownership": 1,
+    "fuel": 2,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.vehicle",
+  "pk": 4,
+  "fields": {
+    "name": "NISSAN VERSA",
+    "category": "harvesting_crew",
+    "kind": 2,
+    "brand": 2,
+    "model": "2020",
+    "license_plate": "ABC-123-CD",
+    "serial_number": "3N1CN7AD2KL842379",
+    "color": "PLATA",
+    "ownership": 1,
+    "fuel": 1,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.vehicle",
+  "pk": 5,
+  "fields": {
+    "name": "TOYOTA HILUX",
+    "category": "harvesting_crew",
+    "kind": 1,
+    "brand": 3,
+    "model": "2019",
+    "license_plate": "TRK-452-GH",
+    "serial_number": "MR0KA3CD6K0412365",
+    "color": "BLANCO",
+    "ownership": 1,
+    "fuel": 1,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.vehicle",
+  "pk": 6,
+  "fields": {
+    "name": "CHEVROLET AVEO",
+    "category": "packhouse",
+    "kind": 1,
+    "brand": 1,
+    "model": "2021",
+    "license_plate": "HJK-990-LM",
+    "serial_number": "KL1TD5667MB278544",
+    "color": "ROJO",
+    "ownership": 1,
+    "fuel": 1,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.vehicle",
+  "pk": 7,
+  "fields": {
+    "name": "FORD RANGER XLT",
+    "category": "packhouse",
+    "kind": 1,
+    "brand": 5,
+    "model": "2018",
+    "license_plate": "PQR-284-FT",
+    "serial_number": "1FTYR10C8JPA67451",
+    "color": "AZUL MARINO",
+    "ownership": 1,
+    "fuel": 1,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
   }
 },
 {
@@ -926,6 +1277,217 @@
     "is_enabled": true,
     "organization": 1,
     "vehicle_provider": []
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 3,
+  "fields": {
+    "name": "INSUMOX",
+    "category": "supply_provider",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2290,
+    "city": 24996,
+    "district": 89818,
+    "postal_code": "00000",
+    "neighborhood": "NA",
+    "address": "NA",
+    "external_number": "NA",
+    "internal_number": null,
+    "tax_id": "NA",
+    "email": "na@na.com",
+    "phone_number": "32242",
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1,
+    "vehicle_provider": []
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 4,
+  "fields": {
+    "name": "DIAUWA",
+    "category": "supply_provider",
+    "provider_provider": null,
+    "country": 234,
+    "state": 3624,
+    "city": 42846,
+    "district": 128062,
+    "postal_code": "na",
+    "neighborhood": "NA",
+    "address": "NA",
+    "external_number": "na",
+    "internal_number": null,
+    "tax_id": "na",
+    "email": "na@na.com",
+    "phone_number": "na",
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1,
+    "vehicle_provider": []
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 5,
+  "fields": {
+    "name": "JUAN PEREZ",
+    "category": "product_provider",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2282,
+    "city": 25771,
+    "district": 90548,
+    "postal_code": "83749",
+    "neighborhood": "NA",
+    "address": "NA",
+    "external_number": "na",
+    "internal_number": null,
+    "tax_id": "JHD83",
+    "email": "GH@JD.COM",
+    "phone_number": "83774283",
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1,
+    "vehicle_provider": []
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 6,
+  "fields": {
+    "name": "AVOCADOX",
+    "category": "harvesting_provider",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2282,
+    "city": 25742,
+    "district": 88478,
+    "postal_code": "58000",
+    "neighborhood": "CENTRO",
+    "address": "DOMICILIO CONOCIDO",
+    "external_number": "382",
+    "internal_number": null,
+    "tax_id": "JHD83",
+    "email": "hrc@email.com",
+    "phone_number": "38873764",
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1,
+    "vehicle_provider": [
+      1,
+      3
+    ]
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 7,
+  "fields": {
+    "name": "JUAN CARLOS MÉNDEZ RODRÍGUEZ",
+    "category": "product_provider",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2275,
+    "city": 25026,
+    "district": 85036,
+    "postal_code": "01120",
+    "neighborhood": "SAN MIGUEL CHAPULTEPEC",
+    "address": "AV. REVOLUCIÓN",
+    "external_number": "123",
+    "internal_number": null,
+    "tax_id": "MERJ800415HJ5",
+    "email": "juan.mendez@proveemx.com",
+    "phone_number": "5523456789",
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1,
+    "vehicle_provider": []
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 8,
+  "fields": {
+    "name": "MARÍA FERNANDA RÍOS TORRES",
+    "category": "product_provider",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2286,
+    "city": 25160,
+    "district": 87802,
+    "postal_code": "44100",
+    "neighborhood": "AMERICANA",
+    "address": "LÓPEZ COTILLA",
+    "external_number": "234",
+    "internal_number": null,
+    "tax_id": "RITF910213SD4",
+    "email": "mf.rios@consultamexico.mx",
+    "phone_number": "3334567890",
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1,
+    "vehicle_provider": []
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 9,
+  "fields": {
+    "name": "LUIS ALBERTO ZAMORA",
+    "category": "harvesting_provider",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2290,
+    "city": 25000,
+    "district": 86210,
+    "postal_code": "80320",
+    "neighborhood": "LAS QUINTAS",
+    "address": "CALLE CEDRO",
+    "external_number": "125",
+    "internal_number": null,
+    "tax_id": "ZAML850102K78",
+    "email": "lzamora@cosechasmx.com",
+    "phone_number": "6671984521",
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1,
+    "vehicle_provider": [
+      6,
+      7,
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.provider",
+  "pk": 10,
+  "fields": {
+    "name": "AGROCOSECHAS DEL BAJÍO",
+    "category": "harvesting_provider",
+    "provider_provider": null,
+    "country": 158,
+    "state": 2287,
+    "city": 27031,
+    "district": 86186,
+    "postal_code": "36740",
+    "neighborhood": "SANTA CECILIA",
+    "address": "AV. AGRÍCOLA",
+    "external_number": "890",
+    "internal_number": "Planta 2",
+    "tax_id": "ACB021203K11",
+    "email": "contacto@agrocosechas.com",
+    "phone_number": "4611234455",
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1,
+    "vehicle_provider": [
+      2,
+      4,
+      5
+    ]
   }
 },
 {
@@ -1427,6 +1989,30 @@
   }
 },
 {
+  "model": "catalogs.gatherer",
+  "pk": 1,
+  "fields": {
+    "name": "GOKU GONZALEZ",
+    "zone": "CENTRO",
+    "tax_registry_code": "D773HD8",
+    "population_registry_code": null,
+    "social_number_code": null,
+    "state": 2282,
+    "city": 25771,
+    "district": null,
+    "postal_code": "76357",
+    "neighborhood": "EL TESTARAZO",
+    "address": "CENTRO DE TACÁMBARO",
+    "external_number": "873",
+    "internal_number": null,
+    "email": "",
+    "phone_number": null,
+    "vehicle": 3,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
   "model": "catalogs.maquiladora",
   "pk": 1,
   "fields": {
@@ -1499,14 +2085,419 @@
   }
 },
 {
+  "model": "catalogs.orchard",
+  "pk": 1,
+  "fields": {
+    "name": "LA APLANADORA",
+    "code": "HUE2382023844",
+    "category": "conventional",
+    "producer": 2,
+    "safety_authority_registration_date": "2022-03-19",
+    "state": 2282,
+    "city": 25771,
+    "district": 90548,
+    "ha": 43.0,
+    "sanitary_certificate": "8763782984628",
+    "is_enabled": true,
+    "organization": 1,
+    "product": [
+      1
+    ]
+  }
+},
+{
+  "model": "catalogs.orchard",
+  "pk": 2,
+  "fields": {
+    "name": "RANCHO VIEJO",
+    "code": "HUE87353725574",
+    "category": "organic",
+    "producer": 2,
+    "safety_authority_registration_date": "2023-03-19",
+    "state": 2282,
+    "city": 25771,
+    "district": 88489,
+    "ha": 32.0,
+    "sanitary_certificate": "87635DGGD5324",
+    "is_enabled": true,
+    "organization": 1,
+    "product": [
+      1
+    ]
+  }
+},
+{
+  "model": "catalogs.orchardcertification",
+  "pk": 1,
+  "fields": {
+    "certification_kind": 1,
+    "certification_number": "763GD663HD6",
+    "expiration_date": "2026-03-19",
+    "verifier": 1,
+    "extra_code": "6637H",
+    "is_enabled": true,
+    "orchard": 1
+  }
+},
+{
+  "model": "catalogs.orchardcertification",
+  "pk": 2,
+  "fields": {
+    "certification_kind": 2,
+    "certification_number": "ORG65367823",
+    "expiration_date": "2027-03-19",
+    "verifier": 4,
+    "extra_code": "665D7H",
+    "is_enabled": true,
+    "orchard": 2
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 1,
+  "fields": {
+    "name": "ANDRÉS BRUSTAMENTE",
+    "provider": 6,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 2,
+  "fields": {
+    "name": "FELIPE MELGAREJO",
+    "provider": 6,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 3,
+  "fields": {
+    "name": "JOSÉ MANUEL REYES",
+    "provider": 9,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 4,
+  "fields": {
+    "name": "MARIO CASTAÑEDA",
+    "provider": 9,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 5,
+  "fields": {
+    "name": "JORGE LUIS RAMOS",
+    "provider": 9,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 6,
+  "fields": {
+    "name": "RICARDO TORRES",
+    "provider": 10,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 7,
+  "fields": {
+    "name": "SAÚL MENDOZA",
+    "provider": 10,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 8,
+  "fields": {
+    "name": "ERNESTO VÁZQUEZ",
+    "provider": 10,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.crewchief",
+  "pk": 9,
+  "fields": {
+    "name": "OMAR BELTRÁN",
+    "provider": 10,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.harvestingcrew",
+  "pk": 1,
+  "fields": {
+    "provider": 6,
+    "name": "CUADRILLA 1",
+    "certification_name": null,
+    "crew_chief": 1,
+    "persons_number": 6,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.harvestingcrew",
+  "pk": 2,
+  "fields": {
+    "provider": 6,
+    "name": "CUADRILLA 2",
+    "certification_name": "EXPORT 28",
+    "crew_chief": 2,
+    "persons_number": 8,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.harvestingcrew",
+  "pk": 3,
+  "fields": {
+    "provider": 10,
+    "name": "CUADRILLA 3 NORTE",
+    "certification_name": null,
+    "crew_chief": 7,
+    "persons_number": 10,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.harvestingcrew",
+  "pk": 4,
+  "fields": {
+    "provider": 10,
+    "name": "CUADRILLA EL PALMAR",
+    "certification_name": null,
+    "crew_chief": 9,
+    "persons_number": 10,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.harvestingcrew",
+  "pk": 5,
+  "fields": {
+    "provider": 9,
+    "name": "CUADRILLA BRISA VERDE",
+    "certification_name": null,
+    "crew_chief": 4,
+    "persons_number": 10,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.harvestingcrew",
+  "pk": 6,
+  "fields": {
+    "provider": 9,
+    "name": "CUADRILLA LOS PINOS",
+    "certification_name": null,
+    "crew_chief": 3,
+    "persons_number": 8,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 1,
+  "fields": {
+    "type_harvest": "local",
+    "more_than_kg": 1.0,
+    "pay_per_box_complete": 1.0,
+    "pay_per_kg_complete": 1.0,
+    "pay_per_day_complete": 1.0,
+    "pay_per_box_incomplete": 1.0,
+    "pay_per_kg_incomplete": 1.0,
+    "pay_per_day_incomplete": 1.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 1.0,
+    "harvesting_crew": 1
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 2,
+  "fields": {
+    "type_harvest": "exportacion",
+    "more_than_kg": 2.0,
+    "pay_per_box_complete": 2.0,
+    "pay_per_kg_complete": 2.0,
+    "pay_per_day_complete": 2.0,
+    "pay_per_box_incomplete": 2.0,
+    "pay_per_kg_incomplete": 2.0,
+    "pay_per_day_incomplete": 2.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 2.0,
+    "harvesting_crew": 2
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 3,
+  "fields": {
+    "type_harvest": "local",
+    "more_than_kg": 9000.0,
+    "pay_per_box_complete": 8.5,
+    "pay_per_kg_complete": 15.0,
+    "pay_per_day_complete": 900.0,
+    "pay_per_box_incomplete": 13.0,
+    "pay_per_kg_incomplete": 1.2,
+    "pay_per_day_incomplete": 700.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 300.0,
+    "harvesting_crew": 3
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 4,
+  "fields": {
+    "type_harvest": "exportacion",
+    "more_than_kg": 8.5,
+    "pay_per_box_complete": 8.0,
+    "pay_per_kg_complete": 14.0,
+    "pay_per_day_complete": 850.0,
+    "pay_per_box_incomplete": 12.5,
+    "pay_per_kg_incomplete": 1.1,
+    "pay_per_day_incomplete": 650.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 250.0,
+    "harvesting_crew": 3
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 5,
+  "fields": {
+    "type_harvest": "local",
+    "more_than_kg": 10.0,
+    "pay_per_box_complete": 9.5,
+    "pay_per_kg_complete": 16.0,
+    "pay_per_day_complete": 950.0,
+    "pay_per_box_incomplete": 14.0,
+    "pay_per_kg_incomplete": 1.3,
+    "pay_per_day_incomplete": 780.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 350.0,
+    "harvesting_crew": 4
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 6,
+  "fields": {
+    "type_harvest": "exportacion",
+    "more_than_kg": 7.8,
+    "pay_per_box_complete": 7.5,
+    "pay_per_kg_complete": 13.0,
+    "pay_per_day_complete": 800.0,
+    "pay_per_box_incomplete": 11.0,
+    "pay_per_kg_incomplete": 1.0,
+    "pay_per_day_incomplete": 600.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 200.0,
+    "harvesting_crew": 4
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 7,
+  "fields": {
+    "type_harvest": "local",
+    "more_than_kg": 10000.0,
+    "pay_per_box_complete": 9000.0,
+    "pay_per_kg_complete": 25.5,
+    "pay_per_day_complete": 3.5,
+    "pay_per_box_incomplete": 1250.0,
+    "pay_per_kg_incomplete": 23.5,
+    "pay_per_day_incomplete": 3.3,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 300.0,
+    "harvesting_crew": 5
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 8,
+  "fields": {
+    "type_harvest": "exportacion",
+    "more_than_kg": 9900.0,
+    "pay_per_box_complete": 8950.0,
+    "pay_per_kg_complete": 25.4,
+    "pay_per_day_complete": 1240.0,
+    "pay_per_box_incomplete": 23.4,
+    "pay_per_kg_incomplete": 3.25,
+    "pay_per_day_incomplete": 1135.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 290.0,
+    "harvesting_crew": 5
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 9,
+  "fields": {
+    "type_harvest": "local",
+    "more_than_kg": 9800.0,
+    "pay_per_box_complete": 8900.0,
+    "pay_per_kg_complete": 25.3,
+    "pay_per_day_complete": 1230.0,
+    "pay_per_box_incomplete": 23.3,
+    "pay_per_kg_incomplete": 3.4,
+    "pay_per_day_incomplete": 1120.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 280.0,
+    "harvesting_crew": 6
+  }
+},
+{
+  "model": "catalogs.harvestingpaymentsetting",
+  "pk": 10,
+  "fields": {
+    "type_harvest": "exportacion",
+    "more_than_kg": 9700.0,
+    "pay_per_box_complete": 8850.0,
+    "pay_per_kg_complete": 3.35,
+    "pay_per_day_complete": 1220.0,
+    "pay_per_box_incomplete": 23.2,
+    "pay_per_kg_incomplete": 3.15,
+    "pay_per_day_incomplete": 1105.0,
+    "type_payment_for_false_out": "fixed_amount",
+    "amount_for_false_out": 270.0,
+    "harvesting_crew": 6
+  }
+},
+{
   "model": "catalogs.supply",
   "pk": 1,
   "fields": {
     "kind": 1,
     "name": "CARTÓN 4 KG",
-    "size": 4.0,
+    "capacity": 4.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1517,9 +2508,11 @@
   "fields": {
     "kind": 1,
     "name": "CARTÓN 6 KG",
-    "size": 6.0,
+    "capacity": 6.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1530,9 +2523,11 @@
   "fields": {
     "kind": 1,
     "name": "CARTÓN 11.3 KG",
-    "size": 11.3,
+    "capacity": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1543,9 +2538,11 @@
   "fields": {
     "kind": 1,
     "name": "MADERA 11.3 KG",
-    "size": 11.3,
+    "capacity": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 100,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": false,
     "organization": 1
   }
@@ -1556,9 +2553,11 @@
   "fields": {
     "kind": 1,
     "name": "PLÁSTICO 11.3 KG",
-    "size": 11.3,
+    "capacity": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 500,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1569,9 +2568,11 @@
   "fields": {
     "kind": 5,
     "name": "CARTÓN",
-    "size": 1.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 3000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1582,9 +2583,11 @@
   "fields": {
     "kind": 5,
     "name": "PLÁSTICO",
-    "size": 1.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 500,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1595,9 +2598,11 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 16",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1608,9 +2613,11 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 18",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1621,9 +2628,11 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 20",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1634,9 +2643,11 @@
   "fields": {
     "kind": 2,
     "name": "EURO 23",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1647,9 +2658,11 @@
   "fields": {
     "kind": 2,
     "name": "EURO 27",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1660,9 +2673,11 @@
   "fields": {
     "kind": 2,
     "name": "EURO 30",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1673,9 +2688,11 @@
   "fields": {
     "kind": 2,
     "name": "EURO 36A",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1686,9 +2703,11 @@
   "fields": {
     "kind": 2,
     "name": "EURO 36B",
-    "size": 1.0,
+    "capacity": 0.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1699,9 +2718,11 @@
   "fields": {
     "kind": 4,
     "name": "PLÁSTICO (TRANSPARENTE)",
-    "size": 1.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 4000,
+    "usage_discount_quantity": 4,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1712,9 +2733,11 @@
   "fields": {
     "kind": 4,
     "name": "PLÁSTICO (NEGRO)",
-    "size": 1.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 4000,
+    "usage_discount_quantity": 4,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1725,9 +2748,11 @@
   "fields": {
     "kind": 8,
     "name": "TRANSPARENTE",
-    "size": 140000.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 2500,
+    "usage_discount_quantity": 18,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1738,9 +2763,11 @@
   "fields": {
     "kind": 8,
     "name": "NEGRO",
-    "size": 120000.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 2500,
+    "usage_discount_quantity": 18,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1751,9 +2778,11 @@
   "fields": {
     "kind": 6,
     "name": "8 (BLANCA)",
-    "size": 14000.0,
+    "capacity": 8.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 15000,
+    "usage_discount_quantity": 16,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1764,9 +2793,11 @@
   "fields": {
     "kind": 6,
     "name": "12 (MORADA)",
-    "size": 14000.0,
+    "capacity": 6.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 15000,
+    "usage_discount_quantity": 18,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1777,9 +2808,11 @@
   "fields": {
     "kind": 3,
     "name": "MADERA 14",
-    "size": 1.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 150,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1790,9 +2823,11 @@
   "fields": {
     "kind": 3,
     "name": "PLÁSTICO 11",
-    "size": 1.0,
+    "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 150,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1803,9 +2838,11 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 24",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1816,9 +2853,11 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 30",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1829,9 +2868,11 @@
   "fields": {
     "kind": 2,
     "name": "ESTÁNDAR 35",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1842,9 +2883,11 @@
   "fields": {
     "kind": 2,
     "name": "CHAROLA EURO 45",
-    "size": 1.0,
+    "capacity": 0.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
   }
@@ -1855,318 +2898,570 @@
   "fields": {
     "kind": 2,
     "name": "CHAROLA EURO 49",
-    "size": 1.0,
+    "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 29,
+  "fields": {
+    "kind": 1,
+    "name": "CARTÓN 10",
+    "capacity": 10.0,
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 1000000000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.0,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 30,
+  "fields": {
+    "kind": 7,
+    "name": "GENERICO",
+    "capacity": null,
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 12000000,
+    "usage_discount_quantity": 3,
+    "kg_tare": 0.0,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 31,
+  "fields": {
+    "kind": 9,
+    "name": "CAJA DE CAMPO DE 25",
+    "capacity": null,
+    "minimum_stock_quantity": 100,
+    "maximum_stock_quantity": 20000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.5,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 32,
+  "fields": {
+    "kind": 9,
+    "name": "CAJA DE CAMPO DE 20",
+    "capacity": null,
+    "minimum_stock_quantity": 100,
+    "maximum_stock_quantity": 20000,
+    "usage_discount_quantity": 1,
+    "kg_tare": 0.3,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.pallet",
+  "pk": 1,
+  "fields": {
+    "market": 1,
+    "product": 1,
+    "supply": 22,
+    "name": "AGUACATE MX MADERA 14",
+    "alias": "AGMXMAD14",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.pallet",
+  "pk": 2,
+  "fields": {
+    "market": 1,
+    "product": 1,
+    "supply": 23,
+    "name": "AGUACATE MX PLASTICO 14",
+    "alias": "AAP14",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.pallet",
+  "pk": 3,
+  "fields": {
+    "market": 3,
+    "product": 1,
+    "supply": 23,
+    "name": "AGUACATE US PLASTICO 11",
+    "alias": "AGUSP11",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.pallet",
+  "pk": 4,
+  "fields": {
+    "market": 3,
+    "product": 1,
+    "supply": 22,
+    "name": "AGUACATE US MADERA 14",
+    "alias": "AGUSM14",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.palletcomplementarysupply",
+  "pk": 1,
+  "fields": {
+    "pallet": 1,
+    "kind": 4,
+    "supply": 17,
+    "quantity": 2
+  }
+},
+{
+  "model": "catalogs.palletcomplementarysupply",
+  "pk": 2,
+  "fields": {
+    "pallet": 1,
+    "kind": 8,
+    "supply": 19,
+    "quantity": 1
+  }
+},
+{
+  "model": "catalogs.palletcomplementarysupply",
+  "pk": 3,
+  "fields": {
+    "pallet": 2,
+    "kind": 4,
+    "supply": 17,
+    "quantity": 1
+  }
+},
+{
+  "model": "catalogs.palletcomplementarysupply",
+  "pk": 4,
+  "fields": {
+    "pallet": 2,
+    "kind": 8,
+    "supply": 19,
+    "quantity": 1
+  }
+},
+{
+  "model": "catalogs.productpresentation",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "presentation_supply_kind": 6,
+    "presentation_supply": 21,
+    "name": "MALLA MORADA 12 PZ",
+    "is_enabled": true,
+    "organization": 1,
+    "markets": [
+      3,
+      1
+    ]
+  }
+},
+{
+  "model": "catalogs.productpresentation",
+  "pk": 2,
+  "fields": {
+    "product": 1,
+    "presentation_supply_kind": 6,
+    "presentation_supply": 20,
+    "name": "MALLA BLANCA 8 PZ",
+    "is_enabled": true,
+    "organization": 1,
+    "markets": [
+      3,
+      1
+    ]
+  }
+},
+{
+  "model": "catalogs.productpresentation",
+  "pk": 3,
+  "fields": {
+    "product": 2,
+    "presentation_supply_kind": 6,
+    "presentation_supply": 21,
+    "name": "MALLA 12 (MORADA)",
+    "is_enabled": true,
+    "organization": 2,
+    "markets": [
+      2
+    ]
+  }
+},
+{
+  "model": "catalogs.productpresentationcomplementarysupply",
+  "pk": 1,
+  "fields": {
+    "product_presentation": 2,
+    "kind": 7,
+    "supply": 30
+  }
+},
+{
+  "model": "catalogs.packaging",
+  "pk": 1,
+  "fields": {
+    "market": 1,
+    "product": 1,
+    "packaging_supply_kind": 1,
+    "country_standard_packaging": 1,
+    "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
+    "packaging_supply": 5,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.packaging",
+  "pk": 2,
+  "fields": {
+    "market": 1,
+    "product": 1,
+    "packaging_supply_kind": 1,
+    "country_standard_packaging": 1,
+    "name": "CAJA CARTÓN 11.3 (AGMX)",
+    "packaging_supply": 3,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.packaging",
+  "pk": 4,
+  "fields": {
+    "market": 3,
+    "product": 1,
+    "packaging_supply_kind": 1,
+    "country_standard_packaging": 5,
+    "name": "CAJA CARTON DE 11.3",
+    "packaging_supply": 3,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.packaging",
+  "pk": 5,
+  "fields": {
+    "market": 1,
+    "product": 1,
+    "packaging_supply_kind": 1,
+    "country_standard_packaging": 4,
+    "name": "CAJA CARTÓN 10 (AGMX)",
+    "packaging_supply": 29,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.packagingcomplementarysupply",
+  "pk": 1,
+  "fields": {
+    "packaging": 1,
+    "kind": 5,
+    "supply": 6,
+    "quantity": 1
+  }
+},
+{
+  "model": "catalogs.packagingcomplementarysupply",
+  "pk": 3,
+  "fields": {
+    "packaging": 2,
+    "kind": 2,
+    "supply": 24,
+    "quantity": 2
+  }
+},
+{
+  "model": "catalogs.packagingcomplementarysupply",
+  "pk": 4,
+  "fields": {
+    "packaging": 1,
+    "kind": 2,
+    "supply": 26,
+    "quantity": 2
+  }
+},
+{
+  "model": "catalogs.packagingcomplementarysupply",
+  "pk": 5,
+  "fields": {
+    "packaging": 2,
+    "kind": 5,
+    "supply": 6,
+    "quantity": 1
+  }
+},
+{
+  "model": "catalogs.packagingcomplementarysupply",
+  "pk": 6,
+  "fields": {
+    "packaging": 4,
+    "kind": 2,
+    "supply": 26,
+    "quantity": 2
+  }
+},
+{
+  "model": "catalogs.packagingcomplementarysupply",
+  "pk": 7,
+  "fields": {
+    "packaging": 4,
+    "kind": 5,
+    "supply": 6,
+    "quantity": 1
+  }
+},
+{
+  "model": "catalogs.packagingcomplementarysupply",
+  "pk": 8,
+  "fields": {
+    "packaging": 5,
+    "kind": 2,
+    "supply": 24,
+    "quantity": 2
+  }
+},
+{
+  "model": "catalogs.packagingcomplementarysupply",
+  "pk": 9,
+  "fields": {
+    "packaging": 5,
+    "kind": 5,
+    "supply": 6,
+    "quantity": 1
+  }
+},
+{
+  "model": "catalogs.productpackaging",
+  "pk": 1,
+  "fields": {
+    "category": "single",
+    "market": 1,
+    "product": 1,
+    "product_size": 1,
+    "packaging": 2,
+    "product_weight_per_packaging": 11.3,
+    "product_presentation": null,
+    "product_presentations_per_packaging": null,
+    "product_pieces_per_presentation": null,
+    "name": "CAJA CARTÓN 11.3 (AGMX) COMERCIAL - W:11.3",
+    "alias": "AA",
     "is_enabled": true,
     "organization": 1
   }
 },
 {
   "model": "catalogs.productpackaging",
-  "pk": 1,
-  "fields": {
-    "product": 1,
-    "packaging_supply_kind": 1,
-    "product_standard_packaging": 1,
-    "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
-    "max_product_amount_per_package": 1.0,
-    "packaging_supply": 1,
-    "packaging_supply_quantity": 1,
-    "is_enabled": true,
-    "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
-  }
-},
-{
-  "model": "catalogs.productpackaging",
   "pk": 2,
   "fields": {
+    "category": "single",
+    "market": 3,
     "product": 1,
-    "packaging_supply_kind": 1,
-    "product_standard_packaging": 1,
-    "name": "CAJA CARTÓN 11.3 KG PARA 48'S",
-    "max_product_amount_per_package": 11.3,
-    "packaging_supply": 3,
-    "packaging_supply_quantity": 1,
+    "product_size": 6,
+    "packaging": 4,
+    "product_weight_per_packaging": 11.3,
+    "product_presentation": null,
+    "product_presentations_per_packaging": null,
+    "product_pieces_per_presentation": null,
+    "name": "CAJA CARTON DE 11.3 32 - W:11.3",
+    "alias": "AA2",
     "is_enabled": true,
-    "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
+    "organization": 1
   }
 },
 {
   "model": "catalogs.productpackaging",
   "pk": 3,
   "fields": {
+    "category": "presentation",
+    "market": 1,
     "product": 1,
-    "packaging_supply_kind": 1,
-    "product_standard_packaging": 1,
-    "name": "MALLA SENCILLA",
-    "max_product_amount_per_package": 1.0,
-    "packaging_supply": 1,
-    "packaging_supply_quantity": 1,
+    "product_size": 1,
+    "packaging": 2,
+    "product_weight_per_packaging": 11.3,
+    "product_presentation": 2,
+    "product_presentations_per_packaging": 12,
+    "product_pieces_per_presentation": 8,
+    "name": "CAJA CARTÓN 11.3 (AGMX) - COMERCIAL - MALLA BLANCA 8 PZ - P:8, Q:12, W:11.3",
+    "alias": "AB1",
     "is_enabled": true,
-    "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
+    "organization": 1
   }
 },
 {
   "model": "catalogs.productpackaging",
   "pk": 4,
   "fields": {
+    "category": "presentation",
+    "market": 3,
     "product": 1,
-    "packaging_supply_kind": 1,
-    "product_standard_packaging": 1,
-    "name": "CAJA CARTÓN 11.3 KG PARA 70'S (ENMALLADOS)",
-    "max_product_amount_per_package": 1.0,
-    "packaging_supply": 1,
-    "packaging_supply_quantity": 1,
+    "product_size": 6,
+    "packaging": 4,
+    "product_weight_per_packaging": 11.3,
+    "product_presentation": 2,
+    "product_presentations_per_packaging": 10,
+    "product_pieces_per_presentation": 8,
+    "name": "CAJA CARTON DE 11.3 - 32 - MALLA BLANCA 8 PZ - P:8, Q:10, W:11.3",
+    "alias": "ABC1",
     "is_enabled": true,
-    "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
+    "organization": 1
   }
 },
 {
-  "model": "catalogs.productpackaging",
-  "pk": 5,
+  "model": "catalogs.productpackagingpallet",
+  "pk": 2,
   "fields": {
-    "product": 1,
-    "packaging_supply_kind": 1,
-    "product_standard_packaging": 1,
-    "name": "CAJA CARTÓN 11.3 KG PARA 48'S (ENMALLADOS)",
-    "max_product_amount_per_package": 1.0,
-    "packaging_supply": 1,
-    "packaging_supply_quantity": 1,
-    "is_enabled": true,
-    "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
+    "product_packaging": 1,
+    "pallet": 1,
+    "product_packaging_quantity": 80,
+    "is_enabled": true
   }
 },
 {
-  "model": "catalogs.productpackaging",
-  "pk": 6,
-  "fields": {
-    "product": 1,
-    "packaging_supply_kind": 1,
-    "product_standard_packaging": 1,
-    "name": "PALLET 48'S + 70'S",
-    "max_product_amount_per_package": 1.0,
-    "packaging_supply": 1,
-    "packaging_supply_quantity": 1,
-    "is_enabled": true,
-    "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
-  }
-},
-{
-  "model": "catalogs.productpackaging",
-  "pk": 7,
-  "fields": {
-    "product": 1,
-    "packaging_supply_kind": 1,
-    "product_standard_packaging": 1,
-    "name": "PALLET 48'S + 70'S (ENMALLADOS)",
-    "max_product_amount_per_package": 1.0,
-    "packaging_supply": 1,
-    "packaging_supply_quantity": 1,
-    "is_enabled": true,
-    "organization": 1,
-    "markets": [
-      3,
-      1
-    ]
-  }
-},
-{
-  "model": "catalogs.packagingsupply",
-  "pk": 1,
-  "fields": {
-    "packaging_kind": 1,
-    "supply_kind": 5,
-    "supply": 6,
-    "quantity": 1
-  }
-},
-{
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingpallet",
   "pk": 3,
   "fields": {
-    "packaging_kind": 2,
-    "supply_kind": 2,
-    "supply": 24,
-    "quantity": 2
+    "product_packaging": 1,
+    "pallet": 1,
+    "product_packaging_quantity": 104,
+    "is_enabled": true
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingpallet",
   "pk": 4,
   "fields": {
-    "packaging_kind": 1,
-    "supply_kind": 2,
-    "supply": 26,
-    "quantity": 2
+    "product_packaging": 3,
+    "pallet": 1,
+    "product_packaging_quantity": 100,
+    "is_enabled": true
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingpallet",
   "pk": 5,
   "fields": {
-    "packaging_kind": 2,
-    "supply_kind": 5,
-    "supply": 6,
-    "quantity": 1
+    "product_packaging": 3,
+    "pallet": 1,
+    "product_packaging_quantity": 80,
+    "is_enabled": true
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingpallet",
   "pk": 6,
   "fields": {
-    "packaging_kind": 4,
-    "supply_kind": 2,
-    "supply": 26,
-    "quantity": 2
+    "product_packaging": 3,
+    "pallet": 2,
+    "product_packaging_quantity": 88,
+    "is_enabled": true
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingpallet",
   "pk": 7,
   "fields": {
-    "packaging_kind": 4,
-    "supply_kind": 5,
-    "supply": 6,
-    "quantity": 1
+    "product_packaging": 4,
+    "pallet": 4,
+    "product_packaging_quantity": 80,
+    "is_enabled": true
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingpallet",
   "pk": 8,
   "fields": {
-    "packaging_kind": 5,
-    "supply_kind": 2,
-    "supply": 24,
-    "quantity": 2
+    "product_packaging": 4,
+    "pallet": 3,
+    "product_packaging_quantity": 80,
+    "is_enabled": true
   }
 },
 {
-  "model": "catalogs.packagingsupply",
+  "model": "catalogs.productpackagingpallet",
   "pk": 9,
   "fields": {
-    "packaging_kind": 5,
-    "supply_kind": 5,
-    "supply": 6,
-    "quantity": 1
+    "product_packaging": 2,
+    "pallet": 4,
+    "product_packaging_quantity": 90,
+    "is_enabled": true
   }
 },
 {
-  "model": "catalogs.packagingsupply",
-  "pk": 10,
-  "fields": {
-    "packaging_kind": 6,
-    "supply_kind": 4,
-    "supply": 17,
-    "quantity": 4
-  }
-},
-{
-  "model": "catalogs.packagingsupply",
-  "pk": 11,
-  "fields": {
-    "packaging_kind": 6,
-    "supply_kind": 8,
-    "supply": 19,
-    "quantity": 8
-  }
-},
-{
-  "model": "catalogs.packagingsupply",
-  "pk": 12,
-  "fields": {
-    "packaging_kind": 7,
-    "supply_kind": 4,
-    "supply": 17,
-    "quantity": 4
-  }
-},
-{
-  "model": "catalogs.packagingsupply",
-  "pk": 13,
-  "fields": {
-    "packaging_kind": 7,
-    "supply_kind": 8,
-    "supply": 19,
-    "quantity": 8
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
+  "model": "catalogs.weighingscale",
   "pk": 1,
   "fields": {
-    "outside": 4,
-    "inside": 3,
-    "quantity": 10
+    "name": "EL CENTRO",
+    "number": "123",
+    "state": 2282,
+    "city": 25771,
+    "district": null,
+    "neighborhood": "EL TESTARAZO",
+    "postal_code": "76357",
+    "address": "CENTRO DE TACÁMBARO",
+    "external_number": "873",
+    "internal_number": null,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
   }
 },
 {
-  "model": "catalogs.relationpackaging",
+  "model": "catalogs.weighingscale",
   "pk": 2,
   "fields": {
-    "outside": 5,
-    "inside": 3,
-    "quantity": 10
+    "name": "BÁSCULA AGROLINE",
+    "number": "345",
+    "state": 2289,
+    "city": 24993,
+    "district": 88250,
+    "neighborhood": "LOMAS DEL VALLE",
+    "postal_code": "45129",
+    "address": "AV. UNIVERSIDAD",
+    "external_number": "320",
+    "internal_number": null,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
   }
 },
 {
-  "model": "catalogs.relationpackaging",
+  "model": "catalogs.weighingscale",
   "pk": 3,
   "fields": {
-    "outside": 6,
-    "inside": 2,
-    "quantity": 6
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 4,
-  "fields": {
-    "outside": 6,
-    "inside": 1,
-    "quantity": 10
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 5,
-  "fields": {
-    "outside": 7,
-    "inside": 5,
-    "quantity": 6
-  }
-},
-{
-  "model": "catalogs.relationpackaging",
-  "pk": 6,
-  "fields": {
-    "outside": 7,
-    "inside": 4,
-    "quantity": 10
+    "name": "EMPASCALE PRO",
+    "number": "11",
+    "state": 2265,
+    "city": 25142,
+    "district": 85539,
+    "neighborhood": "LA CAMPIÑA",
+    "postal_code": "80060",
+    "address": "AV. DE LOS PINOS",
+    "external_number": "301",
+    "internal_number": null,
+    "comments": null,
+    "is_enabled": true,
+    "organization": 1
   }
 }
 ]

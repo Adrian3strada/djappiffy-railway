@@ -5,17 +5,21 @@ from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketSerializer, ProductMarketClassSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
                           ProductPhenologyKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
-                          MaquiladoraSerializer, PackagingSerializer,
+                          MaquiladoraSerializer, PackagingSerializer, ProductPresentationSerializer,
                           SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
+                          ProductPackagingSerializer, PalletSerializer, ProductPackagingPalletSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
-                          OrchardCertificationSerializer, ProductRipenessSerializer
+                          OrchardCertificationSerializer, ProductRipenessSerializer, PurchaseOrderSupplySerializer,
+
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
-                     Product, ProductPackaging,
-                     Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness
+                     Product, Packaging, ProductPresentation, ProductPackaging, Pallet, ProductPackagingPallet,
+                     Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness,
                      )
 from django_filters.rest_framework import DjangoFilterBackend
+from packhouses.purchases.models import PurchaseOrderSupply
+
 
 class ProductHarvestSizeKindViewSet(viewsets.ModelViewSet):
     serializer_class = ProductHarvestSizeKindSerializer
@@ -81,7 +85,9 @@ class ProviderViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         queryset = Provider.objects.filter(organization=self.request.organization)
+
         categories = self.request.GET.get('categories')
+
         if categories:
             category_list = categories.split(',')
             queryset = queryset.filter(category__in=category_list)
@@ -107,7 +113,7 @@ class ProductMarketClassViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
-    filterset_fields = ['organization', 'is_enabled']
+    filterset_fields = ['kind', 'measure_unit_category', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -115,7 +121,29 @@ class ProductViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return Product.objects.filter(organization=self.request.organization)
+        queryset = Product.objects.filter(organization=self.request.organization)
+
+        markets = self.request.GET.get('markets')
+
+        if markets:
+            category_list = markets.split(',')
+            queryset = queryset.filter(markets__in=category_list)
+
+        return queryset
+
+
+class PalletViewSet(viewsets.ModelViewSet):
+    serializer_class = PalletSerializer
+    filterset_fields = ['market', 'product', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return Pallet.objects.filter(organization=self.request.organization)
+
 
 class MaquiladoraViewSet(viewsets.ModelViewSet):
     serializer_class = MaquiladoraSerializer
@@ -145,21 +173,8 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
         return ProductVariety.objects.filter(product__organization=self.request.organization)
 
 
-class ProductPackagingViewSet(viewsets.ModelViewSet):
+class PackagingViewSet(viewsets.ModelViewSet):
     serializer_class = PackagingSerializer
-    filterset_fields = ['product', 'markets', 'is_enabled']
-    pagination_class = None
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            raise NotAuthenticated()
-
-        return ProductPackaging.objects.filter(organization=self.request.organization)
-
-
-class ProductSizeViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductSizeSerializer
     filterset_fields = ['product', 'market', 'is_enabled']
     pagination_class = None
 
@@ -168,12 +183,14 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return ProductSize.objects.all()
+        queryset = Packaging.objects.filter(organization=self.request.organization)
+
+        return queryset
 
 
-class SupplyViewSet(viewsets.ModelViewSet):
-    serializer_class = SupplySerializer
-    filterset_fields = ['kind', 'size', 'is_enabled']
+class ProductPackagingViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductPackagingSerializer
+    filterset_fields = ['product', 'market', 'category', 'product_size', 'product_presentation', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -181,15 +198,112 @@ class SupplyViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        queryset = Supply.objects.all()
+        queryset = ProductPackaging.objects.filter(organization=self.request.organization)
 
-        size__lte = self.request.GET.get('size__lte')
-        size__gte = self.request.GET.get('size__gte')
+        product_presentation__isnull = self.request.GET.get('product_presentation__isnull')
 
-        if size__lte:
-            queryset = queryset.filter(size__lte=size__lte)
-        if size__gte:
-            queryset = queryset.filter(size__gte=size__gte)
+        if product_presentation__isnull:
+            queryset = queryset.filter(product_presentation__isnull=product_presentation__isnull)
+
+        return queryset
+
+class ProductPackagingPalletViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductPackagingPalletSerializer
+    filterset_fields = ['product_packaging', 'pallet']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = ProductPackagingPallet.objects.filter(product_packaging__organization=self.request.organization)
+
+        product_packaging__product = self.request.GET.get('product_packaging__product')
+        product_packaging__market = self.request.GET.get('product_packaging__market')
+        product_packaging__category = self.request.GET.get('product_packaging__category')
+        product_packaging__product_size = self.request.GET.get('product_packaging__product_size')
+        product_packaging__product_presentation__isnull = self.request.GET.get('product_packaging__product_presentation__isnull')
+
+        if product_packaging__product:
+            queryset = queryset.filter(product_packaging__product=product_packaging__product)
+
+        if product_packaging__market:
+            queryset = queryset.filter(product_packaging__market=product_packaging__market)
+
+        if product_packaging__category:
+            queryset = queryset.filter(product_packaging__category=product_packaging__category)
+
+        if product_packaging__product_size:
+            queryset = queryset.filter(product_packaging__product_size=product_packaging__product_size)
+
+        if product_packaging__product:
+            queryset = queryset.filter(product_packaging__product=product_packaging__product)
+
+        if product_packaging__product_presentation__isnull:
+            queryset = queryset.filter(product_packaging__product_presentation__isnull=True if product_packaging__product_presentation__isnull == '1' else False)
+
+        return queryset
+
+
+class ProductSizeViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductSizeSerializer
+    filterset_fields = ['product', 'market', 'category', 'standard_size', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = ProductSize.objects.filter(product__organization=self.request.organization)
+
+        categories = self.request.GET.get('categories')
+        varieties = self.request.GET.get('varieties')
+
+        if categories:
+            category_list = categories.split(',')
+            queryset = queryset.filter(category__in=category_list)
+
+        if varieties:
+            variety_list = varieties.split(',')
+            queryset = queryset.filter(varieties__in=variety_list)
+
+        return queryset
+
+
+class ProductPresentationViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductPresentationSerializer
+    filterset_fields = ['product', 'markets', 'presentation_supply_kind', 'presentation_supply', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return ProductPresentation.objects.filter(organization=self.request.organization)
+
+
+class SupplyViewSet(viewsets.ModelViewSet):
+    serializer_class = SupplySerializer
+    filterset_fields = ['kind', 'usage_discount_quantity', 'capacity', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = Supply.objects.filter(organization=self.request.organization)
+
+        capacity__gte = self.request.GET.get('capacity__gte')
+        capacity__lte = self.request.GET.get('capacity__lte')
+
+        if capacity__gte:
+            queryset = queryset.filter(capacity__gte=capacity__gte)
+        if capacity__lte:
+            queryset = queryset.filter(capacity__lte=capacity__lte)
 
         return queryset
 
@@ -312,6 +426,18 @@ class ProductRipenessViewSet(viewsets.ModelViewSet):
 
         return ProductRipeness.objects.filter(product__organization=self.request.organization)
 
+class PurchaseOrderSupplyViewSet(viewsets.ModelViewSet):
+    serializer_class = PurchaseOrderSupplySerializer
+    filterset_fields = ['purchase_order']  # Filtra por purchase_order
+    pagination_class = None  # Desactiva la paginación
 
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
 
-
+        # Filtra los PurchaseOrderSupply por purchase_order_id
+        purchase_order_id = self.request.query_params.get('purchase_order', None)
+        if purchase_order_id:
+            return PurchaseOrderSupply.objects.filter(purchase_order_id=purchase_order_id)
+        return PurchaseOrderSupply.objects.none()

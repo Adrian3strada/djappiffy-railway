@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from common.mixins import CleanNameAndOrganizationMixin, CleanEmployeeAndOrganizationMixin
 from common.billing.models import LegalEntityCategory
 from packhouses.packhouse_settings.models import Bank
-from .utils import (EMPLOYEE_GENDER_CHOICES, EMPLOYEE_BLOOD_TYPE_CHOICES, EMPLOYEE_ACADEMIC_CHOICES, EMPLOYEE_PAYMENT_CHOICES, 
+from .utils import (EMPLOYEE_GENDER_CHOICES, EMPLOYEE_BLOOD_TYPE_CHOICES, EMPLOYEE_ACADEMIC_CHOICES, EMPLOYEE_PAYMENT_CHOICES,
                     EMERGENCY_CONTACT_RELATIONSHIP_CHOICES, MARITAL_STATUS_CHOICES, EMPLOYEE_PAYMENT_METHOD_CHOICES, )
 from django.core.exceptions import ValidationError
 from datetime import datetime
@@ -40,8 +40,8 @@ class JobPosition(CleanNameAndOrganizationMixin, models.Model):
 
     def __str__(self):
         return f"{self.name}"
-    
-    class Meta: 
+
+    class Meta:
         verbose_name = _('Job Position')
         verbose_name_plural = _('Job Positions')
         ordering = ('name', )
@@ -59,8 +59,8 @@ class WorkSchedule(CleanNameAndOrganizationMixin, models.Model):
 
     def __str__(self):
         return f"{self.name}: {self.start_time} - {self.end_time}"
-    
-    
+
+
     class Meta:
         verbose_name = _('Work Schedule')
         verbose_name_plural = _('Work Schedules')
@@ -76,19 +76,6 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
     marital_status = models.CharField(max_length=20, choices=MARITAL_STATUS_CHOICES, verbose_name=_('Marital Status'))
     hire_date = models.DateField(verbose_name=_('Hire Date'), blank=False, null=False)
     termination_date = models.DateField(verbose_name=_('Termination Date'), blank=True, null=True)
-    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)  
-    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
-    city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
-    district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT, null=True, blank=True)
-    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
-    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
-    address = models.CharField(max_length=255, verbose_name=_('Address'))
-    external_number = models.CharField(max_length=10, verbose_name=_('External number'))
-    internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
-    phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'))
-    email = models.EmailField(max_length=255, verbose_name=_('Email'))
-    is_staff = models.BooleanField(default=False, verbose_name=_('Is Staff'))
-    staff_username = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('Staff Username'), null=True, blank=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def get_full_name(self):
@@ -97,24 +84,7 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
             parts.append(self.middle_name)
         parts.append(self.last_name)
         return ' '.join(parts)
-    
-    def get_seniority(self):
-        today = datetime.now().date()
-        if self.termination_date:  
-            end_date = self.termination_date  
-        else:
-            end_date = today  
-        
-        difference = end_date - self.hire_date
-        years = difference.days // 365
-        months = (difference.days % 365) // 30
-        days = (difference.days % 365) % 30
 
-        return _("%(years)d years, %(months)d months, %(days)d days") % {
-            "years": years, "months": months, "days": days
-        }
-    get_seniority.short_description = _("Seniority")
-    
     def save(self, *args, **kwargs):
         self.full_name = self.get_full_name()
         super().save(*args, **kwargs)
@@ -122,7 +92,7 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
     def __str__(self):
         return f"{self.full_name}"
 
-    class Meta: 
+    class Meta:
         verbose_name = _('Employee')
         verbose_name_plural = _('Employees')
         ordering = ('full_name',)
@@ -137,7 +107,7 @@ class EmployeeWorkSchedule(models.Model):
         constraints = [
             models.CheckConstraint(
                 check=(
-                    models.Q(employee__isnull=False, job_position__isnull=True) | 
+                    models.Q(employee__isnull=False, job_position__isnull=True) |
                     models.Q(employee__isnull=True, job_position__isnull=False)
                 ),
                 name='work_schedule_single_parent'
@@ -160,7 +130,7 @@ class EmployeeJobPosition(models.Model):
     license = models.BooleanField(default=False, verbose_name=_('License'), help_text=_('Employee requires drivers license'))
     equipment = models.BooleanField(default=True, verbose_name=_('Equipment'), help_text=_('Employee requires uniform and/or equipment'))
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
-    
+
     def __str__(self):
         return f"{self.employee} - {self.job_position}"
 
@@ -188,14 +158,34 @@ class EmployeeTaxAndMedicalInformation(models.Model):
     emergency_contact_name = models.CharField(max_length=100, verbose_name=_('Emergency Contact Name'), blank=False, null=False, help_text=_('Name of the emergency contact'))
     emergency_contact_phone = models.CharField(max_length=20, verbose_name=_('Emergency Contact Phone'), blank=False, null=False, help_text=_('Phone number of the emergency contact'))
     emergency_contact_relationship = models.CharField(max_length=20, choices=EMERGENCY_CONTACT_RELATIONSHIP_CHOICES, verbose_name=_('Emergency Contact Relationship'), blank=False, null=False)
+
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
-    
-    def __str__(self):
-        return f"{self.employee} - {self.tax_id}"
-    
+
     class Meta:
-        verbose_name = _('Tax and Medical Record')
-        verbose_name_plural = _('Tax and Medical Records')
+        verbose_name = _('Tax and Medical Information')
+        verbose_name_plural = _('Tax and Medical Information Records')
+
+
+class EmployeeContactInformation(models.Model):
+    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)
+    state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
+    city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
+    district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT, null=True, blank=True)
+    postal_code = models.CharField(max_length=10, verbose_name=_('Postal code'))
+    neighborhood = models.CharField(max_length=255, verbose_name=_('Neighborhood'))
+    address = models.CharField(max_length=255, verbose_name=_('Address'))
+    external_number = models.CharField(max_length=10, verbose_name=_('External number'))
+    internal_number = models.CharField(max_length=10, verbose_name=_('Internal number'), null=True, blank=True)
+    phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'))
+    email = models.EmailField(max_length=255, verbose_name=_('Email'))
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
+
+    def __str__(self):
+        return f"Address and Contact Information: {self.employee} "
+
+    class Meta:
+        verbose_name = _('Address and Contact Information')
+        verbose_name_plural = _('Address and Contact Information Records')
 
 class EmployeeAcademicAndWorkInformation(models.Model):
     academic_status = models.CharField(default='none', max_length=30, choices=EMPLOYEE_ACADEMIC_CHOICES, verbose_name=_('Academic Formation'))
@@ -205,10 +195,10 @@ class EmployeeAcademicAndWorkInformation(models.Model):
     graduation_year = models.DateField(verbose_name=_('Graduation Year'), blank=True, null=True)
     field_of_study = models.CharField(max_length=100, verbose_name=_('Field of Study'), blank=True, null=True)
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
-    
+
     def __str__(self):
         return f"{self.employee} - {self.get_academic_status_display()}"
-    
+
     class Meta:
         verbose_name = _('Academic and Work Record')
         verbose_name_plural = _('Academic and Work Records')
@@ -218,7 +208,7 @@ class EmployeeWorkExperience(models.Model):
     title = models.CharField(max_length=255, verbose_name=_('Previous Role'))
     company_name = models.CharField(max_length=255, verbose_name=_("Company Name"))
     time_in_position = models.CharField(max_length=20, verbose_name="Time in Position", help_text=_("Example: '2 years 3 months'"))
-    
+
     def __str__(self):
         return f"{self.title} at {self.company_name}" if self.company_name else self.title
 
@@ -227,11 +217,11 @@ class EmployeeCertificationInformation(models.Model):
     certification_name = models.CharField(max_length=200)
     issuing_organization = models.CharField(max_length=200)
     issue_date = models.DateField()
-    expiration_date = models.DateField(null=True, blank=True)  
-    
+    expiration_date = models.DateField(null=True, blank=True)
+
     def __str__(self):
         return f"{self.certification_name}"
-    
+
 class EmployeeStatusChange(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name=_("Employee"))
     old_status = models.ForeignKey(EmployeeStatus, on_delete=models.SET_NULL, null=True, related_name='old_status_changes', verbose_name=_("Previous Status"))
@@ -254,7 +244,7 @@ def log_status_change(sender, instance, **kwargs):
 
     if old_instance.status != instance.status:
         EmployeeStatusChange.objects.create(
-            employee=instance,  
+            employee=instance,
             old_status=old_instance.status,
             new_status=instance.status,
             organization=instance.organization
@@ -269,7 +259,7 @@ class EmployeeEvent(models.Model):
     end_date = models.DateField(verbose_name=_("End Date"))
     description = models.TextField(verbose_name=_("Description"))
     approval_status = models.CharField(max_length=20, choices=[('pending', _('Pending')), ('approved', _('Approved')), ('rejected', _('Rejected')),], default='pending', verbose_name=_("Approval Status"))
-    
+
     # Para correcciones
     parent_event = models.ForeignKey(
         'self',
@@ -280,7 +270,7 @@ class EmployeeEvent(models.Model):
 
     def __str__(self):
         return f"{self.employee} - {self.event_type.name} ({self.start_date})"
-    
+
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -311,7 +301,7 @@ def log_status_change(sender, instance, **kwargs):
     if instance.approval_status == 'APPROVED' and instance.event_type:
         # Obtener el estado anterior del empleado
         old_status = instance.employee.status
-        
+
         # Crear un registro en EmployeeStatusChange
         EmployeeStatusChange.objects.create(
             employee=instance.employee,

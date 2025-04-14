@@ -1,6 +1,6 @@
 from django.contrib import admin, messages
-from .models import (Employee, JobPosition, EmployeeJobPosition, EmployeeTaxAndMedicalInformation, EmployeeAcademicAndWorkInformation, 
-                     EmployeeStatus, EmployeeCertificationInformation, EmployeeWorkExperience, EmployeeStatusChange, 
+from .models import (Employee, JobPosition, EmployeeJobPosition, EmployeeTaxAndMedicalInformation, EmployeeAcademicAndWorkInformation,
+                     EmployeeStatus, EmployeeCertificationInformation, EmployeeWorkExperience, EmployeeStatusChange,
                      EmployeeEvent, WorkSchedule, EmployeeWorkSchedule)
 from django.forms.models import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
@@ -14,7 +14,7 @@ from .resources import EmployeeResource
 from common.users.models import User
 from django.utils.html import format_html, format_html_join
 from django.urls import reverse, path
-from .forms import (EmployeeEventForm, EmployeeForm, JobPositionInlineForm, TaxAndMedicalInlineForm, AcademicAndWorkInlineForm, 
+from .forms import (EmployeeEventForm, EmployeeForm, JobPositionInlineForm, TaxAndMedicalInlineForm, AcademicAndWorkInlineForm,
                     EmployeeStatusForm)
 from django.shortcuts import redirect
 from django.core.exceptions import ValidationError
@@ -32,7 +32,7 @@ class WorkScheduleAdmin(ByOrganizationAdminMixin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         return form
-    
+
 class EmployeeWorkScheduleInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         if 'instance' in kwargs and not kwargs['instance'].pk:
@@ -50,13 +50,13 @@ class EmployeeWorkScheduleInlineFormSet(BaseInlineFormSet):
     def clean(self):
         super().clean()
         days = []
-        
+
         valid_forms = [form for form in self.forms if form.cleaned_data and not self._should_delete_form(form)]
-        
+
         # Verificar que no se agreguen más de 7 formularios
         if len(valid_forms) > 7:
             raise forms.ValidationError(_('You cannot have more than 7 days.'))
-        
+
         # Verificar que no se repitan los días
         for form in valid_forms:
             if 'day' in form.cleaned_data:
@@ -75,16 +75,16 @@ class WorkScheduleInline(admin.TabularInline):
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        
+
         if db_field.name == "schedule":
             kwargs["queryset"] = WorkSchedule.objects.filter(**organization_queryfilter)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-    
+
     def get_extra(self, request, obj=None, **kwargs):
         if obj is None or not obj.employeeworkschedule_set.exists():
             return 7
         return 0
-    
+
 class ScheduleInline(admin.TabularInline):
     model = EmployeeWorkSchedule
     fields = ('day', 'schedule')
@@ -94,11 +94,11 @@ class ScheduleInline(admin.TabularInline):
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        
+
         if db_field.name == "schedule":
             kwargs["queryset"] = WorkSchedule.objects.filter(**organization_queryfilter)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-    
+
     def get_extra(self, request, obj=None, **kwargs):
         if obj is None or not obj.employeeworkschedule_set.exists():
             return 7
@@ -107,13 +107,24 @@ class ScheduleInline(admin.TabularInline):
 @admin.register(JobPosition)
 class JobPositionAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
-    fields = ('name', 'description', 'is_enabled')
+    fields = ('name', 'description', 'is_enabled', 'category')
     inlines = [ScheduleInline,]
-
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         return super().get_form(request, obj, **kwargs)
 
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if not change:
+            days_of_week = [
+                _("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"),
+                _("Friday"), _("Saturday"), _("Sunday")
+            ]
+            for day in days_of_week:
+                WorkShiftSchedule.objects.create(
+                    day=day,
+                    job_position=obj,
+                )
 
 class EmployeeWorkScheduleInline(admin.TabularInline, nested_admin.NestedStackedInline):
     model = EmployeeWorkSchedule
@@ -123,29 +134,29 @@ class EmployeeWorkScheduleInline(admin.TabularInline, nested_admin.NestedStacked
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        
+
         if db_field.name == "schedule":
             kwargs["queryset"] = WorkSchedule.objects.filter(**organization_queryfilter)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-    
+
     def get_extra(self, request, obj=None, **kwargs):
         if obj is None or not obj.employeeworkschedule_set.exists():
             return 7
         return 0
-  
+
 
 class EmployeeJobPositionInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeJobPosition
     form = JobPositionInlineForm
-    
+
     class Media:
         js = ('js/admin/forms/packhouses/hrm/job-position-inline.js',)
 
 
 class EmployeeTaxAndMedicalInformationInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = EmployeeTaxAndMedicalInformation
-    fields = ('country', 'tax_id', 'legal_category', 'has_private_insurance', 'medical_insurance_provider', 'medical_insurance_number', 
-              'medical_insurance_start_date', 'medical_insurance_end_date', 'private_insurance_details','blood_type', 'has_disability', 
+    fields = ('country', 'tax_id', 'legal_category', 'has_private_insurance', 'medical_insurance_provider', 'medical_insurance_number',
+              'medical_insurance_start_date', 'medical_insurance_end_date', 'private_insurance_details','blood_type', 'has_disability',
               'disability_details', 'has_chronic_illness', 'chronic_illness_details', 'emergency_contact_name', 'emergency_contact_phone',
               'emergency_contact_relationship')
     form = TaxAndMedicalInlineForm
@@ -173,12 +184,10 @@ class EmployeeAcademicAndWorkInformationInline(DisableInlineRelatedLinksMixin, n
 class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     report_function = staticmethod(basic_report)
     resource_classes = [EmployeeResource]
-    list_display = ('full_name', 'get_job_position', 'gender', 'hire_date', 'get_seniority', 'status', 'is_staff')
-    list_filter = ('status', 'is_staff')
-    fields = ('status', 'name', 'middle_name', 'last_name', 'population_registry_code', 'gender', 
-              'marital_status', 'country', 'state', 'city', 'district', 'postal_code', 
-              'neighborhood', 'address', 'external_number', 'internal_number', 'phone_number', 
-              'email', 'hire_date', 'termination_date', 'is_staff', 'staff_username')
+    list_display = ('full_name', 'get_job_position', 'gender', 'hire_date', 'status', 'is_staff')
+    list_filter = ('status',)
+    fields = ('status', 'name', 'middle_name', 'last_name', 'population_registry_code', 'gender',
+              'marital_status', 'hire_date', 'termination_date',)
     search_fields = ('full_name', )
     inlines = [EmployeeJobPositionInline, EmployeeWorkScheduleInline, EmployeeTaxAndMedicalInformationInline, EmployeeAcademicAndWorkInformationInline,]
     form = EmployeeForm
@@ -194,7 +203,7 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
         form.base_fields['staff_username'].widget.can_change_related = False
         form.base_fields['staff_username'].widget.can_view_related = False
         return form
-    
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = Employee.objects.get(id=object_id) if object_id else None
@@ -206,7 +215,7 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
                 kwargs["queryset"] = User.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
-        
+
         if db_field.name == "status":
             if hasattr(request, 'organization'):
                 kwargs["queryset"] = EmployeeStatus.objects.filter(organization=request.organization, is_enabled=True)
@@ -262,7 +271,7 @@ class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, neste
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-        
+
     def get_job_position(self, obj):
         if hasattr(obj, 'employeejobposition') and obj.employeejobposition.job_position:
             return obj.employeejobposition.job_position
@@ -297,7 +306,7 @@ class EmployeeEventAdmin(ByOrganizationAdminMixin):
     list_filter = ('event_type__name',)
     search_fields = ('employee__name', 'event_type__name')
     fields = ('employee', 'event_type', 'start_date', 'end_date', 'description', 'parent_event')
-    
+
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if 'event_type' in form.base_fields:
@@ -306,7 +315,7 @@ class EmployeeEventAdmin(ByOrganizationAdminMixin):
                 is_enabled=True
             )
         return form
-    
+
     def generate_actions_buttons(self, obj):
         if obj.approval_status == 'pending':
             approve_url = reverse('admin:approve_event', args=[obj.pk])

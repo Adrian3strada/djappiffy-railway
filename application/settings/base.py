@@ -93,7 +93,11 @@ INSTALLED_APPS = [
     "packhouses.sales",
     "packhouses.gathering",
     "packhouses.hrm",
-    "packhouses.purchase_operations",
+    "packhouses.purchases",
+    "packhouses.storehouse",
+    "packhouses.certifications",
+    "packhouses.receiving",
+    "packhouses.product_packaging",
 
     "eudr.parcels",
 
@@ -175,6 +179,11 @@ TIME_ZONE = "America/Mexico_City"
 USE_I18N = True
 
 USE_TZ = True
+
+USE_THOUSAND_SEPARATOR=True
+THOUSAND_SEPARATOR=','
+DECIMAL_SEPARATOR='.'
+NUMBER_GROUPING = (3, 2, 0)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -366,11 +375,17 @@ JAZZMIN_SETTINGS = {
     "order_with_respect_to": [
         "sales",
         "gathering",
-        "purchase_operations",
+        "receiving",
+        "purchases",
+        "storehouse",
         "catalogs",
         "catalogs.Market",
         "catalogs.Product",
-        "catalogs.MarketProductSize",
+        "catalogs.ProductSize",
+        "catalogs.Supply",
+        "catalogs.Pallet",
+        "catalogs.Packaging",
+        "catalogs.ProductPresentation",
         "catalogs.ProductPackaging",
         "catalogs.Provider",
         "catalogs.Client",
@@ -380,15 +395,9 @@ JAZZMIN_SETTINGS = {
         "catalogs.Orchard",
         "catalogs.HarvestingCrew",
         "catalogs.Crew",
-        "catalogs.Supply",
-        "catalogs.PackagingPresentation",
-        "catalogs.MeshBag",
         "catalogs.Service",
-        # "catalogs.TipoEmpaque(Ismael)",
         "catalogs.WeighingScale",
         "catalogs.ColdChamber",
-        "catalogs.Pallet",
-        "catalogs.PalletConfiguration",
         "catalogs.ExportingCompany",
         "catalogs.Transfer",
         "catalogs.LocalTransporter",
@@ -436,8 +445,10 @@ JAZZMIN_SETTINGS = {
         "gathering": "fas fa-tractor",
         "catalogs": "fas fa-dollar-sign",
         "parcels": "fas fa-map-marked-alt",
-        "purchase_operations": "fas fa-shopping-cart",
+        "purchases": "fas fa-shopping-cart",
         "hrm": "fas fa-clipboard",
+        "storehouse": "fas fa-warehouse",
+        "receiving": "fas fa-truck-ramp-box",
 
     },
     # Icons that are used when one is not manually specified

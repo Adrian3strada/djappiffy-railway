@@ -1,15 +1,15 @@
 from import_export.fields import Field
 from .models import (Market, Product, ProductSize, Provider, Client, Vehicle, Gatherer, Maquiladora, Orchard, HarvestingCrew,
-                     Supply, ProductPackaging, Service, WeighingScale, ColdChamber, PalletConfiguration,
+                     Supply, Packaging, Service, WeighingScale, ColdChamber, Pallet,
                      ExportingCompany, Transfer, LocalTransporter, BorderToDestinationTransporter, CustomsBroker,
-                     Vessel, Airline, InsuranceCompany, HarvestContainer)
+                     Vessel, Airline, InsuranceCompany)
 from django.http import HttpResponse
 from common.base.utils import ExportResource, DehydrationResource, default_excluded_fields
 from import_export import resources, fields
 from django.utils.translation import gettext_lazy as _
 from .utils import get_vehicle_category_choices, get_provider_categories_choices
 from .settings import ORCHARD_PRODUCT_CLASSIFICATION_CHOICES
-from common.base.settings import SUPPLY_USAGE_UNIT_KIND_CHOICES
+from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
 from django.utils.safestring import mark_safe
 
 class MarketResource(DehydrationResource, ExportResource):
@@ -96,11 +96,11 @@ class ProductResource(DehydrationResource, ExportResource):
     class Meta:
         model = Product
         exclude = default_excluded_fields
-        export_order = ('id', 'kind', 'name', 'price_measure_unit_category', 'product_managment_cost', 'product_class',  'product_variety',
+        export_order = ('id', 'kind', 'name', 'pmeasure_unit_category', 'product_management_cost', 'product_class',  'product_variety',
                         'product_phenology', 'product_harvest_size', 'product_mass_volume', 'product_ripeness', 'is_enabled')
 
 
-class MarketProductSizeResource(DehydrationResource, ExportResource):
+class ProductSizeResource(DehydrationResource, ExportResource):
     class Meta:
         model = ProductSize
         exclude = tuple(default_excluded_fields + ("sort_order",))
@@ -243,15 +243,16 @@ class PackagingResource(DehydrationResource, ExportResource):
         if not containers:
             return ' '
         if self.export_format == 'pdf':
-            return "<ul>" + "".join([f"<li>{i.inside.name} ({i.quantity})" for i in containers]) + "</ul>"
+            return "<ul>" + "".join([f"<li>{i.inside.name} ({i.product_weight_per_packaging})" for i in containers]) + "</ul>"
         else:
-            return ", ".join([f"{i.inside.name} ({i.quantity})" for i in containers])
-            
+            return ", ".join([f"{i.inside.name} ({i.product_weight_per_packaging})" for i in containers])
+
     class Meta:
-        model = ProductPackaging
+        model = Packaging
         exclude = default_excluded_fields
-        export_order = ('id', 'name', 'packaging_supply_quantity', 'packaging_supply_kind', 'packaging_supply', 'product', 'markets', 'product_standard_packaging', 
+        export_order = ('id', 'name', 'packaging_supply_quantity', 'packaging_supply_kind', 'packaging_supply', 'product', 'markets', 'product_standard_packaging',
                         'max_product_amount_per_package', 'supply_kind', 'relation_packaging', 'is_enabled')
+
 
 class ServiceResource(DehydrationResource, ExportResource):
     class Meta:
@@ -268,9 +269,9 @@ class ColdChamberResource(DehydrationResource, ExportResource):
         model = ColdChamber
         exclude = default_excluded_fields
 
-class PalletConfigurationResource(DehydrationResource, ExportResource):
+class PalletResource(DehydrationResource, ExportResource):
     class Meta:
-        model = PalletConfiguration
+        model = Pallet
         exclude = default_excluded_fields
 
 
@@ -284,7 +285,6 @@ class TransferResource(DehydrationResource, ExportResource):
     class Meta:
         model = Transfer
         exclude = default_excluded_fields
-    
 
 class LocalTransporterResource(DehydrationResource, ExportResource):
     class Meta:
@@ -316,13 +316,3 @@ class InsuranceCompanyResource(DehydrationResource, ExportResource):
         model = InsuranceCompany
         exclude = default_excluded_fields
 
-class HarvestContainerResource(DehydrationResource, ExportResource):
-    def dehydrate_unit_kind(self, obj):
-        choices_dict = dict(SUPPLY_USAGE_UNIT_KIND_CHOICES)
-        category_value = obj.unit_kind
-        category_display = choices_dict.get(category_value, "")
-
-        return f"{category_display}"
-    class Meta:
-        model = HarvestContainer
-        exclude = default_excluded_fields
