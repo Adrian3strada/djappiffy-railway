@@ -564,6 +564,29 @@ class CleanNameAndServiceProviderAndOrganizationMixin(models.Model):
     class Meta:
         abstract = True
 
+class CleanEmployeeAndOrganizationMixin(models.Model):
+    def clean(self):
+        errors = {}
+        if hasattr(self, 'name') and isinstance(self.name, str):
+            self.name = self.name.strip().upper()
+
+        if hasattr(self, 'employee') and hasattr(self, 'organization'):
+            if not self.organization_id:
+                self.organization = self.employee.organization
+
+            if self.organization != self.employee.organization:
+                errors['employee'] = _("Employee does not belong to the organization.")
+                errors['organization'] = _("Employee does not belong to the organization.")
+
+        if errors:
+            raise ValidationError(errors)
+
+        super().clean()
+
+    class Meta:
+        abstract = True
+
+
 class CleanDocumentsMixin(models.Model):
     def save(self, *args, **kwargs):
         try:
@@ -572,7 +595,7 @@ class CleanDocumentsMixin(models.Model):
                 if os.path.isfile(old_instance.route.path):
                     os.remove(old_instance.route.path)
         except self.__class__.DoesNotExist:
-            pass 
+            pass
 
         super().save(*args, **kwargs)
 
