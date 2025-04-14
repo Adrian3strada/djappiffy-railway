@@ -398,9 +398,9 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     generate_actions_buttons.short_description = _('Actions')
     generate_actions_buttons.allow_tags = True
 
-    # def get_scheduleharvest_ooid(self, obj):
-    #     schedule_harvest = obj.scheduleharvest
-    #     return schedule_harvest.ooid if schedule_harvest else None
+    def get_scheduleharvest_ooid(self, obj):
+        schedule_harvest = obj.scheduleharvest
+        return schedule_harvest.ooid if schedule_harvest else None
 
     def get_scheduleharvest_harvest_date(self, obj):
         schedule_harvest = obj.scheduleharvest
@@ -411,9 +411,9 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
         choices = dict(get_harvest_cutting_categories_choices())
         return choices.get(schedule_harvest.category, schedule_harvest.category) 
 
-    # def get_scheduleharvest_product(self, obj):
-    #     schedule_harvest = obj.scheduleharvest
-    #     return schedule_harvest.product if schedule_harvest else None
+    def get_scheduleharvest_product(self, obj):
+        schedule_harvest = obj.scheduleharvest
+        return schedule_harvest.product if schedule_harvest else None
 
     def get_scheduleharvest_orchard(self, obj):
         schedule_harvest = obj.scheduleharvest
@@ -443,9 +443,6 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
 
     class Media:
          js = ('js/admin/forms/packhouses/receiving/incoming_product.js',)
-         
-
-    list_display = ('borrar',)
 
 @admin.register(Batch)
 class BatchAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):

@@ -49,6 +49,8 @@ class IncomingProduct(models.Model):
     missing_containers = models.IntegerField(default=0, verbose_name=_('Missing Containments'), help_text=_('Missing containments per harvest'))
     average_per_container = models.FloatField(default=0, verbose_name=_("Average per Container"), help_text=_('Based on packhouse weight result and weighed set containments'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
+    batch = models.ForeignKey(Batch, on_delete=models.PROTECT, verbose_name=_('Batch'), null=True, blank=True)
+    comments = models.TextField(verbose_name=_("Comments"), blank=True, null=True)
 
     def __str__(self):
         from packhouses.gathering.models import ScheduleHarvest

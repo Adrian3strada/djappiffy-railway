@@ -4,11 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from common.mixins import (CleanNameAndOrganizationMixin, CleanNameAndMarketMixin, CleanUniqueNameForOrganizationMixin,
                            CleanNameAndCodeAndOrganizationMixin)
-<<<<<<< HEAD
-
-=======
 from common.settings import DATA_TYPE_CHOICES
->>>>>>> dev-certiffy
 # Create your models here.
 
 
