@@ -1,18 +1,10 @@
 from django.utils.translation import gettext_lazy as _
 
-PAYMENT_CHOICES = [
-        ('full', _("Full Payment")),       
-        ('half', _("Half Payment")),       
-        ('none', _("No Payment")),         
-        ('double', _("Double Payment")),   
-    ]
-
 EMPLOYEE_GENDER_CHOICES = [
     ('male', _('Male')),
     ('female', _('Female')),
     ('non_binary',  _('Non-binary')),
     ('other', _('Other')),
-    ('prefer_not_to_say', _('Prefer not to say')),
 ]
 
 EMPLOYEE_BLOOD_TYPE_CHOICES = [
@@ -26,20 +18,6 @@ EMPLOYEE_BLOOD_TYPE_CHOICES = [
     ('unknown', _('Unknown')),
 ]
 
-EMPLOYEE_STATUS_CHOICES = [
-    ('active', _('Active')),
-    ('inactive', _('Inactive')),
-    ('vacation',  _('Vacation')),
-    ('suspended', _('Suspended')),
-    ('resigned', _('Resigned')),
-    ('terminated', _('Terminated')),
-    ('retired', _('Retired')),
-    ('sick', _('Sick')),
-    ('absent', _('Absent Without Reason')),
-    ('special_leave', _('Special Leave')),
-    ('parental_leave', _('Parental Leave')),
-]
-
 EMPLOYEE_PAYMENT_CHOICES = [
     ('daily', _('Daily')),
     ('weekly', _('Weekly')),         
@@ -50,13 +28,13 @@ EMPLOYEE_PAYMENT_CHOICES = [
 EMPLOYEE_PAYMENT_METHOD_CHOICES = [
     ('bank_transfer', _('Bank Transfer')),
     ('cash', _('Cash')),         
-    ('check', _('Check')),        
+    ('cheque', _('Cheque')),        
 ]
 
 EMPLOYEE_ACADEMIC_CHOICES = [
-    ('basic', _('Basic')),
-    ('upper_secondary', _('Upper Secondary')),
-    ('higher', _('Higher')),
+    ('basic_education', _('Basic Education')),
+    ('upper_secondary_education', _('Upper Secondary Education')),
+    ('higher_education', _('Higher Education')),
     ('none', _('None')),
 ]
 
@@ -64,7 +42,6 @@ EMERGENCY_CONTACT_RELATIONSHIP_CHOICES = [
     ('spouse', _('Spouse')),  
     ('father', _('Father')), 
     ('mother', _('Mother')), 
-    ('child', _('Child')),  
     ('sibling', _('Sibling')),  
     ('grandparent', _('Grandparent')),  
     ('grandchild', _('Grandchild')),  
