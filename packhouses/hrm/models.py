@@ -15,7 +15,10 @@ from common.users.models import User
 from common.settings import WEEKDAYS_CHOICES
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from .settings import JOB_CATEGORIES
+
 # Create your models here.
+
 
 class EmployeeStatus(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Status'))
@@ -35,6 +38,7 @@ class EmployeeStatus(CleanNameAndOrganizationMixin, models.Model):
 class JobPosition(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Job Title'))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
+    category = models.CharField(max_length=20, verbose_name=_('Category'), choices=JOB_CATEGORIES, blank=True, null=True, default="general_operator")
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
