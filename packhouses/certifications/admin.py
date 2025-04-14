@@ -75,12 +75,10 @@ class CertificationAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
                     kwargs["queryset"] = CertificationEntity.objects.none()  # En caso de error, que no muestre opciones
 
             else:
-                queryset = CertificationEntity.objects.filter(
+                kwargs["queryset"] = CertificationEntity.objects.filter(
                     Q(product_kind__id__in=product_kinds) & 
                     (Q(country__isnull=True) | Q(country=organization_country))
                 ).exclude(id__in=existing_certifications)
-
-                kwargs["queryset"] = queryset
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

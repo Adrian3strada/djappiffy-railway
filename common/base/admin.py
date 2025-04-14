@@ -6,7 +6,7 @@ from organizations.models import Organization, OrganizationUser
 from .models import (ProductKind, ProductKindCountryStandard, ProductKindCountryStandardSize, LegalEntityCategory, CapitalFramework,
                      ProductKindCountryStandardPackaging, SupplyKind,
                      Incoterm, LocalDelivery, Currency,
-                     CertificationEntity, CertificationFormat)
+                     CertificationEntity, CertificationFormat, Pest, Disease, PestProductKind, DiseaseProductKind, FoodSafetyProcedure)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
 from wagtail.documents.models import Document
@@ -15,14 +15,30 @@ from taggit.models import Tag
 from adminsortable2.admin import SortableAdminMixin
 from .decorators import uppercase_form_charfield
 from django.utils.translation import gettext_lazy as _
+from .utils import get_filtered_models
 
 #
 
+class PestProductKindInline(admin.TabularInline):
+    model = PestProductKind
+    extra = 1
+    verbose_name = _('Pest')
+    verbose_name_plural = _('Pests')    
+
+class DiseaseProductKindInline(admin.TabularInline):
+    model = DiseaseProductKind
+    extra = 1
+    verbose_name = _('Disease')
+    verbose_name_plural = _('Diseases')
 
 @admin.register(ProductKind)
 class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'for_packaging', 'for_orchard', 'for_eudr', 'is_enabled', 'sort_order')
     list_filter = ['for_packaging', 'for_orchard', 'for_eudr', 'is_enabled']
+    inlines = [PestProductKindInline, DiseaseProductKindInline]
+
+    class Media:
+        js = ('js/admin/forms/select.js',)
 
 
 class CountryProductStandardSizeInline(admin.TabularInline):
@@ -181,3 +197,35 @@ class CertificationEntityAdmin(admin.ModelAdmin):
         form.base_fields['product_kind'].widget.can_view_related = False
 
         return form
+
+@admin.register(Pest)
+class PestnAdmin(admin.ModelAdmin):
+    list_display = ('name', 'inside', 'outside', 'is_enabled')
+    list_filter = ['name', 'inside', 'outside', 'is_enabled']
+
+@admin.register(Disease)
+class DiseaseAdmin(admin.ModelAdmin):
+    list_display = ('name', 'inside', 'outside', 'is_enabled')
+    list_filter = ['name', 'inside', 'outside', 'is_enabled']
+
+@admin.register(FoodSafetyProcedure)
+class FoodSafetyProcedureAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description')
+    list_filter = ['name', 'description']
+
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        if db_field.name == "model":
+            used_models = FoodSafetyProcedure.objects.values_list('model', flat=True)
+            available_choices = [(m, m) for m in get_filtered_models() if m not in used_models]
+
+            if not request.resolver_match.kwargs.get('object_id'):
+                available_choices.insert(0, ('', '---------'))
+
+            obj_id = request.resolver_match.kwargs.get('object_id')
+            if obj_id:
+                obj = FoodSafetyProcedure.objects.filter(pk=obj_id).first()
+                if obj and obj.model:
+                    available_choices.append((obj.model, obj.model))
+
+            kwargs['choices'] = available_choices
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
