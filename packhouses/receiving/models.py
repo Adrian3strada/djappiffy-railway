@@ -98,26 +98,6 @@ class WeighingSet(models.Model):
         verbose_name = _('Batch')
         verbose_name_plural = _('Batches')
 
-class WeighingSet(models.Model):
-    ooid = models.PositiveIntegerField(verbose_name=_("ID"),null=True, blank=True)
-    provider = models.ForeignKey(Provider, verbose_name=_('Harvesting Crew Provider'),on_delete=models.CASCADE,)
-    harvesting_crew = models.ForeignKey(HarvestingCrew, verbose_name=_("Harvesting Crew"), on_delete=models.CASCADE,)
-    gross_weight = models.FloatField(default=0.0, verbose_name=_("Gross Weight"),)
-    total_containers = models.PositiveIntegerField(default=0, verbose_name=_('Total Containments'))
-    container_tare = models.FloatField(default=0.0, verbose_name=_("Container Tare"),)
-    platform_tare = models.FloatField(default=0.0, verbose_name=_("Platform Tare"),)
-    net_weight = models.FloatField(default=0.0, verbose_name=_("Net Weight"),)
-    incoming_product = models.ForeignKey(IncomingProduct, verbose_name=_('Incoming Product'), on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.ooid}"
-
-    class Meta:
-        verbose_name = _('Weighing Set')
-        verbose_name_plural = _('Weighing Sets')
-        constraints = [
-            models.UniqueConstraint(fields=['incoming_product', 'ooid'], name='weighing_unique_incomingproduct')
-        ]
 
 class WeighingSetContainer(models.Model):
     harvest_container = models.ForeignKey(Supply,on_delete=models.CASCADE, limit_choices_to={'kind__category': 'harvest_container'}, verbose_name=_('Harvest Containments'))
