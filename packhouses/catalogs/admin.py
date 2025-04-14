@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 from common.billing.models import LegalEntityCategory
 from .models import (
     Market, Product, ProductMarketClass, ProductVariety, ProductSize,
@@ -13,12 +14,14 @@ from .models import (
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     PackagingComplementarySupply, ProductRipeness, ProductPackagingPresentation,
-    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary,
+    Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary, 
+    ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue, ProductFoodSafetyProcess
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
                                                   VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier
                                                   )
+from common.base.models import Pest, Disease, FoodSafetyProcedure
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
@@ -272,6 +275,98 @@ class ProductRipenessInline(admin.TabularInline):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
 
+class ProductPestInline(admin.TabularInline):
+    model = ProductPest
+    extra = 1
+    verbose_name = _('Pest')
+    verbose_name_plural = _('Pest')
+
+    can_delete = True
+    show_change_link = True
+    raw_id_fields = ['pest']
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "pest":
+            product_id = request.resolver_match.kwargs.get("object_id")
+
+            if product_id:
+                try:
+                    product = Product.objects.get(pk=product_id)
+                    
+                    kwargs['queryset'] = Pest.objects.filter(
+                        pestproductkind__product_kind=product.kind
+                    ).distinct()
+                except Product.DoesNotExist:
+                    kwargs['queryset'] = Pest.objects.none()
+            else:
+                kwargs['queryset'] = Pest.objects.none()
+
+            kwargs['widget'] = forms.Select(choices=kwargs['queryset'].values_list('id', 'name'))
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+class ProductDiseaseInline(admin.TabularInline):
+    model = ProductDisease
+    extra = 0
+    verbose_name = _('Disease')
+    verbose_name_plural = _('Diseases')
+
+    can_delete = True
+    show_change_link = False 
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "disease":
+            product_id = request.resolver_match.kwargs.get("object_id")
+
+            if product_id:
+                try:
+                    product = Product.objects.get(pk=product_id)
+                    
+                    kwargs["queryset"] = Disease.objects.filter(
+                        diseaseproductkind__product_kind=product.kind
+                    ).distinct()
+                except Product.DoesNotExist:
+                    kwargs["queryset"] = Disease.objects.none()
+            else:
+                kwargs["queryset"] = Disease.objects.none()
+
+            kwargs['widget'] = forms.Select(choices=kwargs['queryset'].values_list('id', 'name'))
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+class ProductPhysicalDamageInline(admin.TabularInline):
+    model = ProductPhysicalDamage
+    extra = 1
+    verbose_name = _('Physical Damage')
+    verbose_name_plural = _('Physical Damages')
+
+class ProductResidueInline(admin.TabularInline):
+    model = ProductResidue
+    extra = 1
+    verbose_name = _('Residue')
+    verbose_name_plural = _('Residues')
+
+class ProductFoodSafetyProcessInline(admin.TabularInline):
+    model = ProductFoodSafetyProcess
+    extra = 1
+    verbose_name = _('Food Safety Process')
+    verbose_name_plural = _('Food Safety Process')
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.exclude(procedure__model="Percentage")
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "procedure":
+            kwargs["queryset"] = FoodSafetyProcedure.objects.exclude(model="Percentage")
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(Product)
 class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
@@ -284,7 +379,13 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     inlines = [ProductMarketMeasureUnitManagementCostInline, ProductMarketClassInline,
                ProductVarietyInline,
                ProductPhenologyKindInline, ProductHarvestSizeKindInline,
-               ProductMassVolumeKindInline, ProductRipenessInline]
+               ProductMassVolumeKindInline, ProductRipenessInline,
+               ProductPestInline,
+               ProductDiseaseInline, 
+               ProductPhysicalDamageInline, 
+               ProductResidueInline,
+               ProductFoodSafetyProcessInline
+               ]
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
@@ -325,6 +426,9 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    class Media:
+        js = ('js/admin/forms/select.js',)
 
 
 @admin.register(ProductSize)
@@ -2219,3 +2323,4 @@ class ProviderAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
 
 # /Providers
+

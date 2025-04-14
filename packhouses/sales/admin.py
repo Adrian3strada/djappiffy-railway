@@ -115,6 +115,8 @@ class OrderItemInlineMixin(admin.StackedInline):
             else:
                 kwargs["queryset"] = ProductSize.objects.none()
 
+            print('kwargs["queryset"]', kwargs["queryset"])
+
         if db_field.name == "product_phenology":
             kwargs["queryset"] = ProductPhenologyKind.objects.none()
             if product:
@@ -128,6 +130,12 @@ class OrderItemInlineMixin(admin.StackedInline):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: f"{item.name}"
             return formfield
+
+        if db_field.name == "product_market_class":
+            kwargs["queryset"] = ProductMarketClass.objects.none()
+            if product and client:
+                kwargs["queryset"] = ProductMarketClass.objects.filter(product=product,
+                                                                       market=client.market, is_enabled=True)
 
         if db_field.name == "product_packaging":
             kwargs["queryset"] = ProductPackaging.objects.none()

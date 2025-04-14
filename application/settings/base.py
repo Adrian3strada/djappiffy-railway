@@ -376,7 +376,6 @@ JAZZMIN_SETTINGS = {
         "sales",
         "gathering",
         "receiving",
-        "product_packaging",
         "purchases",
         "storehouse",
         "catalogs",
@@ -409,10 +408,6 @@ JAZZMIN_SETTINGS = {
         "catalogs.InsuranceCompany",
         "packhouse_settings",
         "hrm",
-        "hrm.EmployeeStatus",
-        "hrm.WorkSchedule",
-        "hrm.JobPosition",
-        "hrm.Employee",
     ],
 
     # Custom links to append to app groups, keyed on app name
