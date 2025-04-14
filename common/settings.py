@@ -15,13 +15,3 @@ DATA_TYPE_CHOICES = [
     ('checkbox', _('Checkbox')),
 ]
 
-
-WEEKDAYS_CHOICES = [
-        ('Monday', _('Monday')),
-        ('Tuesday', _('Tuesday')),
-        ('Wednesday', _('Wednesday')),
-        ('Thursday', _('Thursday')),
-        ('Friday', _('Friday')),
-        ('Saturday', _('Saturday')),
-        ('Sunday', _('Sunday')),
-    ]

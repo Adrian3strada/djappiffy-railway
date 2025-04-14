@@ -213,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return /^\d+$/.test(form.id.split('-').pop());
     });
 
+    console.log("existingForms", existingForms)
     existingForms.each((index, form) => {
       const productSizeField = $(form).find(`select[name$="${index}-product_size"]`);
       const productPhenologyField = $(form).find(`select[name$="${index}-product_phenology"]`);
@@ -221,12 +222,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const quantityField = $(form).find(`input[name$="${index}-quantity"]`);
       const unitPriceField = $(form).find(`input[name$="${index}-unit_price"]`);
       const amountPriceField = $(form).find(`input[name$="${index}-amount_price"]`);
+      console.log("form", index, form)
+      console.log("productSizeField", productSizeField.val())
+
 
       amountPriceField.prop('disabled', true).attr('readonly', true).addClass('readonly-field');
 
+      // productSizeField.closest('.form-group').hide();
       productPhenologyField.closest('.form-group').hide();
       productMarketClassField.closest('.form-group').hide();
-      productMarketRipenessField.closest('.form-group').hide();
+      productMarketRipenessField.closest('.form-group').hide();ƒ
 
       updateProductOptions().then(() => {
         updateFieldOptions(productSizeField, productSizeOptions, productSizeField.val());
@@ -234,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateFieldOptions(productMarketClassField, productMarketClassOptions, productMarketClassField.val());
         updateFieldOptions(productMarketRipenessField, productRipenessOptions, productMarketRipenessField.val());
       })
+
 
       productSizeField.on('change', () => {
         const productSizeSelectedOption = productSizeField.find('option:selected');
@@ -285,6 +291,8 @@ document.addEventListener('DOMContentLoaded', () => {
           amountPriceField.val(0);
         }
       })
+
     });
+
   }, 300);
 });
