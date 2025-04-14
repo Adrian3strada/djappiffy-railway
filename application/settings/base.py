@@ -96,8 +96,6 @@ INSTALLED_APPS = [
     "packhouses.purchases",
     "packhouses.storehouse",
     "packhouses.certifications",
-    "packhouses.receiving",
-    "packhouses.product_packaging",
 
     "eudr.parcels",
 
@@ -376,6 +374,7 @@ JAZZMIN_SETTINGS = {
         "sales",
         "gathering",
         "receiving",
+        "packing",
         "purchases",
         "storehouse",
         "catalogs",
