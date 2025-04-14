@@ -115,8 +115,6 @@ class OrderItemInlineMixin(admin.StackedInline):
             else:
                 kwargs["queryset"] = ProductSize.objects.none()
 
-            print('kwargs["queryset"]', kwargs["queryset"])
-
         if db_field.name == "product_phenology":
             kwargs["queryset"] = ProductPhenologyKind.objects.none()
             if product:
