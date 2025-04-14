@@ -184,7 +184,7 @@ class EmployeeAcademicAndWorkInformationInline(DisableInlineRelatedLinksMixin, n
 class EmployeeAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     report_function = staticmethod(basic_report)
     resource_classes = [EmployeeResource]
-    list_display = ('full_name', 'get_job_position', 'gender', 'hire_date', 'status', 'is_staff')
+    list_display = ('full_name', 'get_job_position', 'gender', 'hire_date', 'status')
     list_filter = ('status',)
     fields = ('status', 'name', 'middle_name', 'last_name', 'population_registry_code', 'gender',
               'marital_status', 'hire_date', 'termination_date',)
