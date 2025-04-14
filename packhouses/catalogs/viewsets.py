@@ -7,14 +7,14 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
                           ProductPhenologyKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
                           MaquiladoraSerializer, PackagingSerializer, ProductPresentationSerializer,
                           SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
-                          ProductPackagingSerializer, PalletSerializer,
+                          ProductPackagingSerializer, PalletSerializer, ProductPackagingPalletSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
                           OrchardCertificationSerializer, ProductRipenessSerializer, PurchaseOrderSupplySerializer,
 
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
-                     Product, Packaging, ProductPresentation, ProductPackaging, Pallet,
+                     Product, Packaging, ProductPresentation, ProductPackaging, Pallet, ProductPackagingPallet,
                      Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness,
                      )
 from django_filters.rest_framework import DjangoFilterBackend
@@ -113,7 +113,7 @@ class ProductMarketClassViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
-    filterset_fields = ['kind', 'price_measure_unit_category', 'is_enabled']
+    filterset_fields = ['kind', 'measure_unit_category', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -190,7 +190,7 @@ class PackagingViewSet(viewsets.ModelViewSet):
 
 class ProductPackagingViewSet(viewsets.ModelViewSet):
     serializer_class = ProductPackagingSerializer
-    filterset_fields = ['product', 'market', 'is_enabled']
+    filterset_fields = ['product', 'market', 'category', 'product_size', 'product_presentation', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -199,6 +199,49 @@ class ProductPackagingViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         queryset = ProductPackaging.objects.filter(organization=self.request.organization)
+
+        product_presentation__isnull = self.request.GET.get('product_presentation__isnull')
+
+        if product_presentation__isnull:
+            queryset = queryset.filter(product_presentation__isnull=product_presentation__isnull)
+
+        return queryset
+
+class ProductPackagingPalletViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductPackagingPalletSerializer
+    filterset_fields = ['product_packaging', 'pallet']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = ProductPackagingPallet.objects.filter(product_packaging__organization=self.request.organization)
+
+        product_packaging__product = self.request.GET.get('product_packaging__product')
+        product_packaging__market = self.request.GET.get('product_packaging__market')
+        product_packaging__category = self.request.GET.get('product_packaging__category')
+        product_packaging__product_size = self.request.GET.get('product_packaging__product_size')
+        product_packaging__product_presentation__isnull = self.request.GET.get('product_packaging__product_presentation__isnull')
+
+        if product_packaging__product:
+            queryset = queryset.filter(product_packaging__product=product_packaging__product)
+
+        if product_packaging__market:
+            queryset = queryset.filter(product_packaging__market=product_packaging__market)
+
+        if product_packaging__category:
+            queryset = queryset.filter(product_packaging__category=product_packaging__category)
+
+        if product_packaging__product_size:
+            queryset = queryset.filter(product_packaging__product_size=product_packaging__product_size)
+
+        if product_packaging__product:
+            queryset = queryset.filter(product_packaging__product=product_packaging__product)
+
+        if product_packaging__product_presentation__isnull:
+            queryset = queryset.filter(product_packaging__product_presentation__isnull=True if product_packaging__product_presentation__isnull == '1' else False)
 
         return queryset
 

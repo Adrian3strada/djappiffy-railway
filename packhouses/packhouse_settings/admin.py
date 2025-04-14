@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (Status, Bank, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
                      PaymentKind, VehicleBrand, AuthorityPackagingKind,
                      OrchardCertificationVerifier,
-                     OrchardCertificationKind)
+                     OrchardCertificationKind, PaymentKindAdditionalInput)
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget
 from organizations.models import Organization
 from common.utils import is_instance_used
@@ -103,11 +103,23 @@ class VehicleFuelAdmin(ByOrganizationAdminMixin):
         return readonly_fields
 
 
+class PaymentKindAdditionalInputInlineAdmin(admin.TabularInline):
+    model = PaymentKindAdditionalInput
+    extra = 0
+    fields = ('name','data_type', 'is_required', 'is_enabled',)
+
+    @uppercase_formset_charfield('name')
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+
 @admin.register(PaymentKind)
 class PaymentKindAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
     fields = ('name', 'is_enabled')
+    inlines = [PaymentKindAdditionalInputInlineAdmin, ]
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):

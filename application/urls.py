@@ -14,6 +14,7 @@ from packhouses.purchases.views import (requisition_pdf, set_requisition_ready, 
                                         set_purchase_order_supply_payment)
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
+
 urlpatterns = [
     # Admin URLs personalizadas
     path('dadmin/gathering/scheduleharvest/harvest_order_pdf/<int:harvest_id>/', harvest_order_pdf,
@@ -39,6 +40,7 @@ urlpatterns = [
     path('dadmin/purchases/set_purchase_order_supply_payment/<int:purchase_order_supply_id>/',
          set_purchase_order_supply_payment,
          name='set_purchase_order_supply_payment'),
+    
     # Admin URLs
     path("dadmin/", admin.site.urls),
     path("wadmin/", include(wagtailadmin_urls)),
@@ -58,6 +60,7 @@ urlpatterns = [
     path("", include("packhouses.catalogs.urls")),
     path("", include("packhouses.packhouse_settings.urls")),
     path("", include("eudr.parcels.urls")),
+    path("", include("packhouses.receiving.urls")),
 
     # Internationalization
     path("i18n/", include("django.conf.urls.i18n")),
@@ -65,6 +68,7 @@ urlpatterns = [
     # CKEditor integration
     path("ckeditor5/", include("django_ckeditor_5.urls")),
     path("_nested_admin/", include("nested_admin.urls")),
+    path("", include('packhouses.purchases.urls'))
 ]
 
 # Add static and media files serving in debug mode

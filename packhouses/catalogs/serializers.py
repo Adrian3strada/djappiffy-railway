@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from packhouses.catalogs.models import (
-    Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, Pallet,
+    Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, Pallet, ProductPackagingPallet,
     ProductVariety, ProductPhenologyKind, ProductMassVolumeKind, Maquiladora, ProductPresentation,
     CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, Packaging,
     HarvestingCrew, OrchardCertification, ProductRipeness, ProductPackaging
@@ -11,12 +11,12 @@ from packhouses.purchases.models import PurchaseOrderSupply
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    price_measure_unit_category_display = serializers.SerializerMethodField(read_only=True)
+    measure_unit_category_display = serializers.SerializerMethodField(read_only=True)
     product_market_classes = serializers.SerializerMethodField(read_only=True)
     packaging = serializers.SerializerMethodField(read_only=True)
 
-    def get_price_measure_unit_category_display(self, obj):
-        return obj.get_price_measure_unit_category_display()
+    def get_measure_unit_category_display(self, obj):
+        return obj.get_measure_unit_category_display()
 
     def get_product_market_classes(self, obj):
         product_market_classes = ProductMarketClass.objects.filter(product=obj)
@@ -32,14 +32,35 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class PackagingSerializer(serializers.ModelSerializer):
+    packaging_supply_detail = serializers.SerializerMethodField(read_only=True)
+
+    def get_packaging_supply_detail(self, obj):
+        return SupplySerializer(obj.packaging_supply, read_only=True).data
+
     class Meta:
         model = Packaging
         fields = '__all__'
 
 
 class ProductPackagingSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ProductPackaging
+        fields = '__all__'
+
+
+class ProductPackagingPalletSerializer(serializers.ModelSerializer):
+    product_packaging_detail = serializers.SerializerMethodField(read_only=True)
+    name = serializers.SerializerMethodField(read_only=True)
+
+    def get_name(self, obj):
+        return f"{obj.pallet} [{obj.product_packaging_quantity}] -- {obj.product_packaging}"
+
+    def get_product_packaging_detail(self, obj):
+        return ProductPackagingSerializer(obj.product_packaging, read_only=True).data
+
+    class Meta:
+        model = ProductPackagingPallet
         fields = '__all__'
 
 

@@ -304,3 +304,51 @@ class PurchaseOrderDeduction(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['purchase_order', 'deduction'], name='unique_purchase_order_deduction')
         ]
+
+class PurchaseOrderPayment(models.Model):
+    purchase_order = models.ForeignKey(
+        PurchaseOrder,
+        verbose_name=_("Purchase Order"),
+        on_delete=models.CASCADE
+    )
+    payment_date = models.DateField(
+        verbose_name=_('Payment date'),
+        default=datetime.date.today
+    )
+    amount = models.DecimalField(
+        verbose_name=_("Amount"),
+        max_digits=12, decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+    payment_kind = models.ForeignKey(
+        PaymentKind,
+        verbose_name=_("Payment kind"),
+        on_delete=models.PROTECT
+    )
+    bank = models.ForeignKey(
+        Bank,
+        verbose_name=_("Bank"),
+        on_delete=models.PROTECT
+    )
+    comments = models.CharField(
+        max_length=255,
+        verbose_name=_("Comments"),
+        null=True, blank=True
+    )
+    additional_inputs = models.JSONField(
+        verbose_name=_("Additional inputs"),
+        null=True, blank=True
+    )
+    status = models.CharField(
+        max_length=255,
+        choices=STATUS_CHOICES,
+        default='closed',
+    )
+
+    def __str__(self):
+        return f"{self.payment_date} - ${self.amount}"
+
+    class Meta:
+        verbose_name = _("Payment")
+        verbose_name_plural = _("Payments")
+

@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', function () {
             return this.nodeType === 3;
           }).text().trim();
 
-          if (data.price_measure_unit_category_display) {
-            const newText = originalText.replace('amount', data.price_measure_unit_category_display);
+          if (data.measure_unit_category_display) {
+            const newText = originalText.replace('amount', data.measure_unit_category_display);
             maxProductAmountLabel.contents().filter(function () {
               return this.nodeType === 3;
             }).first().replaceWith(newText + ' ');
