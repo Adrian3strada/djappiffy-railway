@@ -285,10 +285,29 @@ class ProductResidue(models.Model):
         ]
 
 class ProductFoodSafetyProcess(models.Model):
-    procedure = models.ForeignKey(FoodSafetyProcedure, verbose_name=_('Food Safety Procedure'), on_delete=models.PROTECT)
-    product = models.ForeignKey(Product, verbose_name=_('Product kind'), on_delete=models.PROTECT)
+    procedure = models.ForeignKey(FoodSafetyProcedure, verbose_name=_('Food Safety Procedure'), on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
+    def __str__(self):
+        return f"{self.procedure}"
+
+    class Meta:
+        verbose_name = _('Product Food Safety Process')
+        verbose_name_plural = _('Product Food Safety Process')
+        constraints = [
+            models.UniqueConstraint(fields=['procedure', 'product'],
+                                    name='productfoodsafetyprocess_unique_procedure_product'),
+        ]
+
+class ProductAdditionalValue(models.Model):
+    acceptance_report = models.IntegerField(verbose_name=_('Acceptance Report'))
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    class Meta:
+        verbose_name = _('Product Additional Value')
+        verbose_name_plural = _('Product Additional Values')
 
 # /Products
 
