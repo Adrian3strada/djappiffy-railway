@@ -242,5 +242,27 @@ class DehydrationResource():
 
     def dehydrate_is_mixable(self, obj):
         return "✅" if obj.is_mixable else "❌"
+    
+    def dehydrate_label_language(self, obj):
+        return obj.get_label_language_display()
+        
+    def dehydrate_country_standard_packaging(self, obj):
+        return obj.country_standard_packaging.name if obj.country_standard_packaging else ""
+    
+    def dehydrate_presentation_supply_kind(self, obj):
+        return obj.presentation_supply_kind.name if obj.presentation_supply_kind else ""
+    
+    def dehydrate_presentation_supply(self, obj):
+        return f"{obj.presentation_supply.name} ({obj.presentation_supply.capacity} {_('pieces')})" if obj.presentation_supply else ""
+    
+    def dehydrate_supply(self, obj):
+        return obj.supply.name if obj.supply else ""
+    
+    def dehydrate_packaging(self, obj):
+        return obj.packaging.name if obj.packaging else ""
+    
+    def dehydrate_product_presentation(self, obj):
+        return obj.product_presentation.name if obj.product_presentation else ""
+    
 
 default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization', 'description')
