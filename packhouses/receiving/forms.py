@@ -10,14 +10,14 @@ class ContainerInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for form in self.forms:
-            if form.instance.pk and form.instance.created_by == 'gathering':
+            if form.instance.pk and form.instance.created_at_model == 'gathering':
                 if 'DELETE' in form.fields:
                     form.fields['DELETE'].widget = forms.HiddenInput()
                     form.fields['DELETE'].initial = False
 
     def _construct_form(self, i, **kwargs):
         form = super()._construct_form(i, **kwargs)
-        if form.instance.pk and form.instance.created_by == 'gathering':
+        if form.instance.pk and form.instance.created_at_model == 'gathering':
             if "DELETE" in form.fields:
                 form.fields["DELETE"].widget = forms.HiddenInput()
                 form.fields["DELETE"].initial = False
@@ -27,20 +27,20 @@ class ContainerInlineFormSet(BaseInlineFormSet):
     def clean(self):
         cleaned_data = super().clean()
         for form in self.forms:
-            if form.instance.pk and form.instance.created_by == 'gathering':
+            if form.instance.pk and form.instance.created_at_model == 'gathering':
                 form.cleaned_data['DELETE'] = False
         return cleaned_data
 
 class ContainerInlineForm(forms.ModelForm):
     class Meta:
         model = ScheduleHarvestContainerVehicle
-        exclude = ("created_by",)
+        exclude = ("created_at_model",)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         instance = kwargs.get('instance')
 
-        if instance and instance.pk and instance.created_by == 'gathering':
+        if instance and instance.pk and instance.created_at_model == 'gathering':
             for field_name in self.fields:
                 if field_name not in ['full_containers', 'empty_containers']:
                     self.fields[field_name].disabled = True
@@ -55,8 +55,8 @@ class ContainerInlineForm(forms.ModelForm):
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        if not instance.created_by:  
-            instance.created_by = 'incoming_product'  
+        if not instance.created_at_model:  
+            instance.created_at_model = 'incoming_product'  
         if commit:
             instance.save()
         return instance

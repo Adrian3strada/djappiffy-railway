@@ -334,7 +334,7 @@
     "full_containers": 200,
     "empty_containers": 38,
     "missing_containers": 0,
-    "created_by": "gathering"
+    "created_at_model": "gathering"
     }
 },
 {
@@ -347,7 +347,7 @@
     "full_containers": 10,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -360,7 +360,7 @@
     "full_containers": 90,
     "empty_containers": 10,
     "missing_containers": 0,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -373,7 +373,7 @@
     "full_containers": 100,
     "empty_containers": 10,
     "missing_containers": 10,
-    "created_by": "gathering"
+    "created_at_model": "gathering"
     }
 },
 {
@@ -386,7 +386,7 @@
     "full_containers": 77,
     "empty_containers": 2,
     "missing_containers": 1,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -399,7 +399,7 @@
     "full_containers": 30,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "gathering"
+    "created_at_model": "gathering"
     }
 },
 {
@@ -412,7 +412,7 @@
     "full_containers": 0,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -425,7 +425,7 @@
     "full_containers": 0,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "gathering"
+    "created_at_model": "gathering"
     }
 },
 {
@@ -438,7 +438,7 @@
     "full_containers": 30,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -451,7 +451,7 @@
     "full_containers": 20,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -464,7 +464,7 @@
     "full_containers": 20,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "gathering"
+    "created_at_model": "gathering"
     }
 },
 {
@@ -477,7 +477,7 @@
     "full_containers": 60,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -490,7 +490,7 @@
     "full_containers": 0,
     "empty_containers": 0,
     "missing_containers": 60,
-    "created_by": "gathering"
+    "created_at_model": "gathering"
     }
 }
 ]

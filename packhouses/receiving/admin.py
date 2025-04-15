@@ -36,15 +36,15 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
     extra = 0
     formset = ContainerInlineFormSet
     form = ContainerInlineForm
-    exclude = ("created_by",)
+    exclude = ("created_at_model",)
 
     def get_readonly_fields(self, request, obj=None):
-        """ Aplica solo lectura a los campos de contenedor solo si `created_by == 'gathering'` """
+        """ Aplica solo lectura a los campos de contenedor solo si `created_at_model == 'gathering'` """
         if obj and isinstance(obj, ScheduleHarvestContainerVehicle):
-            # Verificamos el campo 'created_by' del contenedor
-            if obj.created_by == 'gathering':
-                # Retorna todos los campos menos 'created_by' como solo lectura
-                return [f.name for f in self.model._meta.fields if f.name != 'created_by']
+            # Verificamos el campo 'created_at_model' del contenedor
+            if obj.created_at_model == 'gathering':
+                # Retorna todos los campos menos 'created_at_model' como solo lectura
+                return [f.name for f in self.model._meta.fields if f.name != 'created_at_model']
         return []
 
 
