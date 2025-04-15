@@ -1,6 +1,33 @@
 
 [
 {
+    "model": "receiving.batch",
+    "pk": 1,
+    "fields": {
+        "status" : "Pending 1",
+        "ooid" : 1,
+        "organization" : 1
+    }
+},
+{
+    "model": "receiving.batch",
+    "pk": 2,
+    "fields": {
+        "status" : "Pending 2",
+        "ooid" : 2,
+        "organization" : 1
+    }
+},
+{
+    "model": "receiving.batch",
+    "pk": 3,
+    "fields": {
+        "status" : "Pending 3",
+        "ooid" : 3,
+        "organization" : 1
+    }
+},
+{
     "model": "receiving.incomingproduct",
     "pk": 1,
     "fields": {
@@ -21,7 +48,8 @@
     "missing_containers": 12,
     "average_per_container": 23.788,
     "organization": 1,
-    "comments": ""
+    "comments": "",
+    "batch": 1
     }
 },
 {
@@ -45,7 +73,8 @@
     "missing_containers": 10,
     "average_per_container": 32.54,
     "organization": 1,
-    "comments": ""
+    "comments": "",
+    "batch": 2
     }
 },
 {
@@ -69,7 +98,8 @@
     "missing_containers": 1,
     "average_per_container": 25.48,
     "organization": 1,
-    "comments": ""
+    "comments": "",
+    "batch": 3
     }
 },
 {

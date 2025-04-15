@@ -285,78 +285,29 @@ class ProductResidue(models.Model):
         ]
 
 class ProductFoodSafetyProcess(models.Model):
-    procedure = models.ForeignKey(FoodSafetyProcedure, verbose_name=_('Food Safety Procedure'), on_delete=models.PROTECT)
-    product = models.ForeignKey(Product, verbose_name=_('Product kind'), on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-
-class ProductPest(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    pest = models.ForeignKey(Pest, verbose_name=_('Pest'), on_delete=models.PROTECT)
-    name = models.CharField(max_length=255, unique=False)
+    procedure = models.ForeignKey(FoodSafetyProcedure, verbose_name=_('Food Safety Procedure'), on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.procedure}"
 
     class Meta:
+        verbose_name = _('Product Food Safety Process')
+        verbose_name_plural = _('Product Food Safety Process')
         constraints = [
-            models.UniqueConstraint(fields=['product', 'pest', 'name'],
-                                    name='unique_product_pest_name')
+            models.UniqueConstraint(fields=['procedure', 'product'],
+                                    name='productfoodsafetyprocess_unique_procedure_product'),
         ]
 
-class ProductDisease(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    disease = models.ForeignKey(Disease, verbose_name=_('Disease'), on_delete=models.PROTECT)
-    name = models.CharField(max_length=255, unique=False)
+class ProductAdditionalValue(models.Model):
+    acceptance_report = models.IntegerField(verbose_name=_('Acceptance Report'))
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-
-    def __str__(self):
-        return f"{self.name}"
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['product', 'disease', 'name'],
-                                    name='unique_product_disease_name')
-        ]
-
-class ProductPhysicalDamage(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    name = models.CharField(max_length=255, unique=False)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Product physical damage')
-        verbose_name_plural = _('Product physical damages')
-        ordering = ('name', 'product')
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'product'],
-                                    name='productphysicaldamage_unique_name_product'),
-        ]
-
-class ProductResidue(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    name = models.CharField(max_length=255, unique=False)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-
-    def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        verbose_name = _('Product residue')
-        verbose_name_plural = _('Product Residues')
-        ordering = ('name', 'product')
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'product'],
-                                    name='productresidue_unique_name_product'),
-        ]
-
-class ProductFoodSafetyProcess(models.Model):
-    procedure = models.ForeignKey(FoodSafetyProcedure, verbose_name=_('Food Safety Procedure'), on_delete=models.PROTECT)
-    product = models.ForeignKey(Product, verbose_name=_('Product kind'), on_delete=models.PROTECT)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+        verbose_name = _('Product Additional Value')
+        verbose_name_plural = _('Product Additional Values')
 
 # /Products
 
