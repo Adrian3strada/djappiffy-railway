@@ -303,8 +303,8 @@
         "model": "base.foodsafetyprocedure",
         "pk": 3,
         "fields": {
-            "name" : "Transporte",
-            "description" : "Transporte",
+            "name" : "Vehicle",
+            "description" : "Vehicle",
             "model" : "VehicleReview",
             "overall_average": 0
         }
@@ -316,14 +316,14 @@
             "name" : "Muestras",
             "description" : "N Muestras",
             "model" : "SampleCollection",
-            "overall_average": 1
+            "overall_average": 0
         }
     },
     {
         "model": "base.foodsafetyprocedure",
         "pk": 5,
         "fields": {
-            "name" : "Average",
+            "name" : "Promedios",
             "description" : "Promedios generales",
             "model" : "Average",
             "overall_average": 0
@@ -591,16 +591,6 @@
         "fields": {
             "pest" : 16,
             "product_kind" : 10
-        }
-    },
-    {
-        "model": "catalogs.productdisease",
-        "pk": 1,
-        "fields": {
-            "name" : "Ant (Aguacate)",
-		    "is_enabled" : 1,
-            "disease" : 1,
-            "product" : 1
         }
     },
     {

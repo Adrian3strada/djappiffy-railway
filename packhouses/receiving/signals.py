@@ -1,6 +1,6 @@
 from django.dispatch import receiver
-from django.db.models.signals import post_save, post_delete
-from .models import DryMatter, InternalInspection, Average
+from django.db.models.signals import post_save, post_delete, pre_save
+from .models import DryMatter, InternalInspection, Average, SampleCollection, SampleWeight
 from django.db.models import Avg
 from decimal import Decimal
 
@@ -27,7 +27,6 @@ def my_handler(sender, instance, **kwargs):
             ).update(
                 average=average['dry_matter_percentage__avg'],
             )
-
 
 @receiver(post_delete, sender=DryMatter)
 def my_handler(sender, instance, **kwargs):
@@ -87,4 +86,18 @@ def my_handler(sender, instance, **kwargs):
             food_safety=instance.food_safety
             ).update(
                 average=0,
+            )
+
+@receiver(pre_save, sender=SampleWeight)
+def my_handler(sender, instance, **kwargs):
+    have_sample_colletion = SampleCollection.objects.filter(food_safety=instance.food_safety).exists()
+
+    if not have_average:
+        SampleCollection.objects.create(
+                whole=False,
+                foreign_material=False,
+                insects=False,
+                temperature_damage=False,
+                unusual_odor=False,
+                food_safety=instance.food_safety,
             )

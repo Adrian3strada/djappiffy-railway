@@ -453,24 +453,13 @@ class DryMatterInline(NestedTabularInline):
     model = DryMatter
     extra = 1
 
-    def number(self, obj=None):
-        return ''
-
-    readonly_fields = ('number',)
-    fields = ['number','product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage']
-
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/counter.js',)
+    fields = ['product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage']
 
 class InternalInspectionInline(NestedTabularInline):
     model = InternalInspection
     extra = 1
 
-    def number(self, obj=None):
-        return ''
-
-    readonly_fields = ('number',)
-    fields = ['number','internal_temperature', 'product_pest']
+    fields = ['internal_temperature', 'product_pest']
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == "product_pest":
@@ -544,16 +533,8 @@ class SensorySpecificationInline(nested_admin.NestedTabularInline):
 class SampleWeightInline(nested_admin.NestedTabularInline):
     model = SampleWeight
     extra = 0
-    min_num = 1
 
-    def number(self, obj=None):
-        return ''
-
-    readonly_fields = ('number',)
-    fields = ['number', 'weight']
-
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/counter.js',)
+    fields = ['weight']
 
 class SamplePestForm(forms.ModelForm):
     class Meta:
@@ -578,6 +559,7 @@ class SamplePestInline(nested_admin.NestedTabularInline):
                     food_safety = FoodSafety.objects.get(pk=object_id)
                     incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
+                    print(ProductPest.objects.filter(product=schedule_harvest.product))
                     kwargs["queryset"] = ProductPest.objects.filter(product=schedule_harvest.product)
                 except FoodSafety.DoesNotExist:
                     kwargs['queryset'] = ProductPest.objects.none()

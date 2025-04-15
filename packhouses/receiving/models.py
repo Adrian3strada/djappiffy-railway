@@ -158,7 +158,7 @@ class Average(models.Model):
         verbose_name_plural = _('Averages')
 
 class VehicleReview(models.Model):
-    vehicle = models.ForeignKey('gathering.ScheduleHarvestVehicle', verbose_name=_('vehicle'), on_delete=models.CASCADE)
+    vehicle = models.ForeignKey('gathering.ScheduleHarvestVehicle', verbose_name=_('Vehicle'), on_delete=models.CASCADE)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -169,12 +169,12 @@ class VehicleReview(models.Model):
         verbose_name_plural = _('Vehicle Reviews')
 
 class VehicleInspection(models.Model):
-    sealed = models.BooleanField(default=False, verbose_name=_('The transport is sealed'))
-    only_the_product = models.BooleanField(default=False, verbose_name=_('The transport carries only the product'))
-    free_foreign_matter = models.BooleanField(default=False, verbose_name=_('The transport is free of foreign matter'))
-    free_unusual_odors = models.BooleanField(default=False, verbose_name=_('The transport is free of unusual odors'))
+    sealed = models.BooleanField(default=False, verbose_name=_('The vehicle is sealed'))
+    only_the_product = models.BooleanField(default=False, verbose_name=_('The vehicle carries only the product'))
+    free_foreign_matter = models.BooleanField(default=False, verbose_name=_('The vehicle is free of foreign matter'))
+    free_unusual_odors = models.BooleanField(default=False, verbose_name=_('The vehicle is free of unusual odors'))
     certificate = models.BooleanField(default=False, verbose_name=_('Has a CERTIFICATE'))
-    free_fecal_matter = models.BooleanField(default=False, verbose_name=_('The transport is free of fecal matter'))
+    free_fecal_matter = models.BooleanField(default=False, verbose_name=_('The vehicle is free of fecal matter'))
     vehicle_review = models.ForeignKey(VehicleReview, verbose_name=_('Vehicle Review'), on_delete=models.CASCADE)
 
     def __str__(self):
