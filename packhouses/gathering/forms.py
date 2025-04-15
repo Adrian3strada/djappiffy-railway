@@ -55,7 +55,7 @@ class ContainerInlineForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         if not instance.created_by:  
-            instance.created_by = 'incoming_product'  
+            instance.created_by = 'gathering'  
         if commit:
             instance.save()
         return instance

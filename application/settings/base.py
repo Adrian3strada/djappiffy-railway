@@ -96,6 +96,7 @@ INSTALLED_APPS = [
     "packhouses.purchases",
     "packhouses.storehouse",
     "packhouses.certifications",
+    "packhouses.receiving",
 
     "eudr.parcels",
 
