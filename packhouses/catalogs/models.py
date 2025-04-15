@@ -230,6 +230,7 @@ class ProductPest(models.Model):
         return f"{self.name}"
 
     class Meta:
+        ordering = ['name']
         constraints = [
             models.UniqueConstraint(fields=['product', 'pest', 'name'],
                                     name='unique_product_pest_name')
@@ -245,6 +246,7 @@ class ProductDisease(models.Model):
         return f"{self.name}"
 
     class Meta:
+        ordering = ['name']
         constraints = [
             models.UniqueConstraint(fields=['product', 'disease', 'name'],
                                     name='unique_product_disease_name')
@@ -259,6 +261,7 @@ class ProductPhysicalDamage(models.Model):
         return f"{self.name}"
 
     class Meta:
+        ordering = ['name']
         verbose_name = _('Product physical damage')
         verbose_name_plural = _('Product physical damages')
         ordering = ('name', 'product')
@@ -276,6 +279,7 @@ class ProductResidue(models.Model):
         return f"{self.name}"
 
     class Meta:
+        ordering = ['name']
         verbose_name = _('Product residue')
         verbose_name_plural = _('Product Residues')
         ordering = ('name', 'product')
@@ -303,11 +307,21 @@ class ProductFoodSafetyProcess(models.Model):
 class ProductAdditionalValue(models.Model):
     acceptance_report = models.IntegerField(verbose_name=_('Acceptance Report'))
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
+
+    def __str__(self):
+        return f"{self.acceptance_report}"
 
     class Meta:
+        ordering = ('-created_at',)
         verbose_name = _('Product Additional Value')
         verbose_name_plural = _('Product Additional Values')
+
+    def save_model(self, request, obj, form, change):
+        latest = ProductAdditionalValue.objects.order_by('-created_at').first()
+        if obj.pk != latest.pk:
+            return  # No guardar si no es el último
+        super().save_model(request, obj, form, change)
 
 # /Products
 

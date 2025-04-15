@@ -199,7 +199,7 @@ class CertificationEntityAdmin(admin.ModelAdmin):
         return form
 
 @admin.register(Pest)
-class PestnAdmin(admin.ModelAdmin):
+class PestAdmin(admin.ModelAdmin):
     list_display = ('name', 'inside', 'outside', 'is_enabled')
     list_filter = ['name', 'inside', 'outside', 'is_enabled']
 
