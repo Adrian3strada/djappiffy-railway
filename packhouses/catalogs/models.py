@@ -305,7 +305,7 @@ class ProductFoodSafetyProcess(models.Model):
         ]
 
 class ProductAdditionalValue(models.Model):
-    acceptance_report = models.IntegerField(verbose_name=_('Acceptance Report'))
+    acceptance_report = models.IntegerField(verbose_name=_('Acceptance Report'), null=True, blank=True)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
 
