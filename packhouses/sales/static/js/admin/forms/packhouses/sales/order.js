@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   const orderItemsWightTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-by-weight-tab']").closest('li');
   const orderItemsPackagingTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-by-packaging-tab']").closest('li');
   const orderItemsPalletTab = $("#jazzy-tabs .nav-item .nav-link[href='#order-items-by-pallet-tab']").closest('li');
@@ -16,9 +16,23 @@ document.addEventListener("DOMContentLoaded", function () {
   const productVarietyField = $("#id_product_variety")
   const orderItemsKindField = $("#id_order_items_kind")
 
+  let clientCategory = clientCategoryField.val();
+  let maquiladora = maquiladoraField.val()
+  let client = clientField.val()
+  let localDelivery = localDeliveryField.val()
+  let incoterms = incotermsField.val()
+  let product = productField.val()
+  let productVariety = productVarietyField.val()
+  let orderItemsKind = orderItemsKindField.val()
+
   let clientProperties = null;
   let productProperties = null;
   let organization = null;
+  let nationalClient = true
+
+  localDeliveryField.closest('.form-group').hide();
+  incotermsField.closest('.form-group').hide();
+  productField.closest('.form-group').hide();
 
   const API_BASE_URL = "/rest/v1";
 
@@ -28,7 +42,19 @@ document.addEventListener("DOMContentLoaded", function () {
     {id: "product_pallet", name: "Product pallet"},
   ]
 
-  function updateOrderItemsKindOptions(nationalClient = false) {
+  function getOrganization() {
+    fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
+      (data) => {
+        if (data.count === 1) {
+          organization = data.results.pop()
+        }
+      }
+    );
+  }
+
+  await getOrganization();
+
+  function updateOrderItemsKindOptions() {
     order_items_kind_options = [
       {id: "product_weight", name: "Product weight"},
       {id: "product_packaging", name: "Product packaging"},
@@ -43,13 +69,25 @@ document.addEventListener("DOMContentLoaded", function () {
     updateFieldOptions(orderItemsKindField, order_items_kind_options, orderItemsKindField.val());
   }
 
-  function updateFieldOptions(field, options, selected = null) {
-    field.empty();
-    field.append(new Option("---------", "", true, !selected));
-    options.forEach((option) => {
-      field.append(new Option(option.name, option.id, false, selected));
-    });
-    field.trigger("change").select2();
+  function updateFieldOptions(field, options, selectedValue = null) {
+    if (field) {
+      field.empty();
+      if (!field.prop('multiple')) {
+        field.append(new Option('---------', '', true, !selectedValue));
+      }
+      const selected = selectedValue ? parseInt(selectedValue) || selectedValue : null;
+      options.forEach(option => {
+        const newOption = new Option(option.name, option.id, false, selected === option.id);
+        if ('alias' in option && option.alias) {
+          newOption.setAttribute('data-alias', option.alias);
+        }
+        if ('category' in option && option.category) {
+          newOption.setAttribute('data-category', option.category);
+        }
+        field.append(newOption);
+      });
+      field.trigger('change').select2();
+    }
   }
 
   function fetchOptions(url) {
@@ -58,6 +96,16 @@ document.addEventListener("DOMContentLoaded", function () {
       method: "GET",
       dataType: "json",
     }).fail((error) => console.error("Fetch error:", error));
+  }
+
+  async function getClientProperties() {
+    if (clientField.val()) {
+      clientProperties = await fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
+      nationalClient = clientProperties.country === organization.country;
+      updateOrderItemsKindOptions()
+    } else {
+      clientProperties = null;
+    }
   }
 
   const deleteOrderItemInline = () => {
@@ -90,44 +138,43 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function updateClientOptions() {
-    const clientCategory = clientCategoryField.val();
-    if (clientCategory && clientCategory === 'packhouse') {
+    // clientCategory = clientCategoryField.val();
+    if (!!clientCategory && clientCategory === 'packhouse') {
       fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&is_enabled=1`).then(
         (data) => {
-          updateFieldOptions(clientField, data);
+          updateFieldOptions(clientField, data, client);
         }
       );
     }
   }
 
   function updateMaquiladoraClientOptions() {
-    const clientCategory = clientCategoryField.val();
-    const maquiladora = maquiladoraField.val()
-    if (clientCategory && clientCategory === 'maquiladora' && maquiladora) {
-      fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&maquiladora=${maquiladora}&is_enabled=1`).then(
+    if (!!clientCategory && clientCategory === 'maquiladora' && maquiladoraField.val()) {
+      fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&maquiladora=${maquiladoraField.val()}&is_enabled=1`).then(
         (data) => {
-          updateFieldOptions(clientField, data);
+          updateFieldOptions(clientField, data, maquiladora);
         }
       );
     }
   }
 
   function updateMaquiladoraOptions() {
-    const clientCategory = clientCategoryField.val();
+    // const clientCategory = clientCategoryField.val();
     if (clientCategory && clientCategory === 'maquiladora') {
       fetchOptions(`${API_BASE_URL}/catalogs/maquiladora/?is_enabled=1`).then(
         (data) => {
-          updateFieldOptions(maquiladoraField, data);
+          updateFieldOptions(maquiladoraField, data, maquiladora);
         }
       );
     }
   }
 
-  function updateProductOptions() {
+  async function updateProductOptions() {
+    if (!clientProperties) await getClientProperties();
     if (clientProperties) {
       fetchOptions(`${API_BASE_URL}/catalogs/product/?markets=${clientProperties.market}&is_enabled=1`).then(
         (data) => {
-          updateFieldOptions(productField, data);
+          updateFieldOptions(productField, data, productField.val());
         }
       )
     } else {
@@ -140,61 +187,37 @@ document.addEventListener("DOMContentLoaded", function () {
     if (product) {
       fetchOptions(`${API_BASE_URL}/catalogs/product-variety/?product=${product}&is_enabled=1`).then(
         (data) => {
-          updateFieldOptions(productVarietyField, data);
+          updateFieldOptions(productVarietyField, data, productVarietyField.val());
         });
     } else {
       updateFieldOptions(productVarietyField, []);
     }
   }
 
-  function getProductProperties(cleanup = false) {
+  function getProductProperties() {
     if (productField.val()) {
       fetchOptions(`${API_BASE_URL}/catalogs/product/${productField.val()}/`).then(
         (data) => {
           productProperties = data;
           if (data.measure_unit_category_display) {
             if (order_items_kind_options[0].id === 'product_weight') order_items_kind_options[0].name = data.measure_unit_category_display
-            if (cleanup) {
-              orderItemsKindField.val(null);
-              orderItemsKindField.trigger('change').select2();
-            }
-            const orderItemsKindValue = orderItemsKindField.val();
-            updateFieldOptions(orderItemsKindField, order_items_kind_options);
-            if (orderItemsKindValue) {
-              orderItemsKindField.val(orderItemsKindValue);
-              orderItemsKindField.trigger('change').select2();
-            }
+            updateFieldOptions(orderItemsKindField, order_items_kind_options, orderItemsKindField.val());
           }
         });
     } else {
       productProperties = null;
       if (order_items_kind_options[0].id === 'product_weight') order_items_kind_options[0].name = "Product weight"
-      orderItemsKindField.val(null);
-      orderItemsKindField.trigger('change').select2();
+      // orderItemsKindField.val(null);
+      // orderItemsKindField.trigger('change').select2();
     }
   }
 
-  productField.on("change", () => {
-    updateProductVarietyOptions();
-    getProductProperties(true);
-    if (productField.val()) {
-      productVarietyField.closest('.form-group').fadeIn();
-      orderItemsKindField.closest('.form-group').fadeIn();
-    } else {
-      productVarietyField.closest('.form-group').fadeOut();
-      orderItemsKindField.closest('.form-group').fadeOut();
-      setTimeout(() => {
-        productVarietyField.val(null).trigger('change');
-        orderItemsKindField.val(null).trigger('change');
-      }, 100);
-    }
-  });
-
   clientCategoryField.on("change", () => {
-    if (clientCategoryField.val() && clientCategoryField.val() === 'packhouse') {
+    clientCategory = clientCategoryField.val()
+    if (!!clientCategory && clientCategory === 'packhouse') {
       updateClientOptions()
       maquiladoraField.closest('.form-group').fadeOut();
-    } else if (clientCategoryField.val() && clientCategoryField.val() === 'maquiladora') {
+    } else if (!!clientCategory && clientCategory === 'maquiladora') {
       updateMaquiladoraOptions()
       maquiladoraField.closest('.form-group').fadeIn();
       updateFieldOptions(clientField, []);
@@ -207,57 +230,66 @@ document.addEventListener("DOMContentLoaded", function () {
 
   maquiladoraField.on("change", () => {
     const maquiladora = maquiladoraField.val()
-    if (maquiladora) {
+    if (maquiladoraField.val()) {
+      console.log(maquiladoraField.val())
       updateMaquiladoraClientOptions()
     } else {
       updateFieldOptions(clientField, []);
     }
   });
 
-  clientField.on('change', () => {
-    const client = clientField.val();
-    localDeliveryField.closest('.form-group').fadeOut();
-    incotermsField.closest('.form-group').fadeOut();
-    setTimeout(() => {
-      localDeliveryField.val(null).trigger('change');
-      incotermsField.val(null).trigger('change');
-    }, 100);
+  clientField.on('change', async () => {
+    client = clientField.val();
+    await localDeliveryField.val(null).trigger('change');
+    await incotermsField.val(null).trigger('change');
+
     if (client) {
-      fetchOptions(`${API_BASE_URL}/catalogs/client/${client}/`)
-        .then((data) => {
-          clientProperties = data;
-          updateProductOptions();
-          setTimeout(() => {
-            if (data.country === organization.country) {
-              localDeliveryField.closest('.form-group').fadeIn();
-              updateOrderItemsKindOptions(true)
-            } else {
-              incotermsField.closest('.form-group').fadeIn();
-              updateOrderItemsKindOptions(false)
-            }
-          }, 300);
-        })
+      clientProperties = await fetchOptions(`${API_BASE_URL}/catalogs/client/${client}/`)
+      await updateProductOptions();
+      await getClientProperties();
+      if (nationalClient) {
+        incotermsField.closest('.form-group').fadeOut();
+        localDeliveryField.closest('.form-group').fadeIn();
+      } else {
+        incotermsField.closest('.form-group').fadeIn();
+        localDeliveryField.closest('.form-group').fadeOut();
+      }
+      await updateOrderItemsKindOptions()
       productField.closest('.form-group').fadeIn();
     } else {
       clientProperties = null;
       updateFieldOptions(productField, []);
       productField.closest('.form-group').fadeOut();
+      localDeliveryField.closest('.form-group').fadeOut();
+      incotermsField.closest('.form-group').fadeOut();
     }
   });
 
+  productField.on("change", async () => {
+    if (productField.val()) {
+      await getProductProperties();
+      await updateProductVarietyOptions();
+      productVarietyField.closest('.form-group').fadeIn();
+      orderItemsKindField.closest('.form-group').fadeIn();
+    } else {
+      productVarietyField.closest('.form-group').fadeOut();
+      orderItemsKindField.closest('.form-group').fadeOut();
+      productVarietyField.val(null).trigger('change');
+      orderItemsKindField.val(null).trigger('change');
+    }
+  });
+
+  productVarietyField.on("change", async () => {
+    productVariety = productVarietyField.val();
+  })
+
   orderItemsKindField.on('change', () => {
-    if (orderItemsKindField.val()) {
+    orderItemsKind = orderItemsKindField.val();
+    if (orderItemsKind) {
       toggleShowOrderItemInline();
     }
   })
 
-  fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
-    (data) => {
-      if (data.count === 1) {
-        organization = data.results.pop()
-      }
-    }
-  );
 
   maquiladoraField.closest('.form-group').hide();
   localDeliveryField.closest('.form-group').hide();
@@ -275,8 +307,8 @@ document.addEventListener("DOMContentLoaded", function () {
     orderItemsKindField.closest('.form-group').hide();
   }
 
-  if (clientCategoryField.val()) {
-    if (clientCategoryField.val() === 'maquiladora') {
+  if (!!clientCategory) {
+    if (clientCategory === 'maquiladora') {
       maquiladoraField.closest('.form-group').show();
     }
   }
@@ -284,17 +316,18 @@ document.addEventListener("DOMContentLoaded", function () {
   if (clientField.val()) {
     const product = productField.val()
     const productVariety = productVarietyField.val()
-    const orderItemsKind = orderItemsKindField.val()
+
+    if (!organization) await getOrganization();
 
     fetchOptions(`${API_BASE_URL}/catalogs/client/${clientField.val()}/`)
-      .then((client) => {
-        clientProperties = client;
-        if (client.country === organization.country) {
+      .then((client_data) => {
+        clientProperties = client_data;
+        nationalClient = client_data.country === organization.country;
+        updateOrderItemsKindOptions()
+        if (nationalClient) {
           localDeliveryField.closest('.form-group').show();
-          updateOrderItemsKindOptions(true)
         } else {
           incotermsField.closest('.form-group').show();
-          updateOrderItemsKindOptions(false)
         }
         updateProductOptions();
         setTimeout(() => {

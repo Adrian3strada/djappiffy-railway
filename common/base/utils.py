@@ -5,6 +5,7 @@ from import_export import resources
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import gettext_lazy as _
+from django.apps import apps
 
 # Para exportar solo a PDF
 class ReportExportAdminMixin(ExportMixin):
@@ -266,3 +267,18 @@ class DehydrationResource():
     
 
 default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization', 'description')
+
+
+def get_filtered_models():
+    filtered_models = set()
+
+    for model in apps.get_models():
+        if any(field.name == 'food_safety' for field in model._meta.get_fields()):
+            filtered_models.add(model.__name__)
+
+        for field in model._meta.get_fields():
+            if field.is_relation and field.related_model:
+                if any(f.name == 'food_safety' for f in field.related_model._meta.get_fields()):
+                    filtered_models.add(field.related_model.__name__)
+
+    return list(filtered_models)

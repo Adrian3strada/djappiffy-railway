@@ -10,7 +10,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import FileExtensionValidator
 from common.mixins import CleanDocumentsMixin
 from django.utils.text import slugify
+from .utils import get_filtered_models
+from django.utils.functional import lazy
 import os
+
 
 # Create your models here.
 
@@ -221,6 +224,7 @@ class CertificationEntity(models.Model):
         return f"{self.entity} -- {self.name_certification} -- {self.product_kind}"
 
     class Meta:
+        ordering = ['name_certification']
         verbose_name = _('Certification Entity')
         verbose_name_plural = _('Certification Entities')
         constraints = [
@@ -242,7 +246,7 @@ def certification_file_path(instance, filename):
     return f'certifications/requirements/{certification_id}_{certification_product_kind}_{certification_entity}_{file_name}{file_extension}'
 
 class CertificationFormat(CleanDocumentsMixin, models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
     route = models.FileField(
         upload_to=certification_file_path,
         validators=[FileExtensionValidator(allowed_extensions=['docx'])],
@@ -263,3 +267,76 @@ class CertificationFormat(CleanDocumentsMixin, models.Model):
                 name='certificationFormat_unique_certification_entity_name'
             )
         ]
+
+class Pest(models.Model):
+    name = models.CharField(max_length=255, unique=True, verbose_name=_('Name'))
+    inside = models.BooleanField(verbose_name=_('Inside'))
+    outside = models.BooleanField(verbose_name=_('Outside'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = _('Pest')
+        verbose_name_plural = _('Pests')
+
+    def __str__(self):
+        return f"{self.name}"
+
+class Disease(models.Model):
+    name = models.CharField(max_length=255, unique=True, verbose_name=_('Name'))
+    inside = models.BooleanField(verbose_name=_('Inside'))
+    outside = models.BooleanField(verbose_name=_('Outside'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = _('Disease')
+        verbose_name_plural = _('Diseases')
+
+    def __str__(self):
+        return f"{self.name}"
+
+class PestProductKind(models.Model):
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product'), on_delete=models.PROTECT)
+    pest = models.ForeignKey(Pest, verbose_name=_('Pest'), on_delete=models.PROTECT)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    class Meta:
+        ordering = ['pest']
+        verbose_name = _('Pest Product Kind')
+        verbose_name_plural = _('Pests Product Kind')
+
+    def __str__(self):
+        return f"{self.product_kind} - {self.pest}"
+
+class DiseaseProductKind(models.Model):
+    product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product'), on_delete=models.PROTECT)
+    disease = models.ForeignKey(Disease, verbose_name=_('Disease'), on_delete=models.PROTECT)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    class Meta:
+        ordering = ['disease']
+        verbose_name = _('Disease Product Kind')
+        verbose_name_plural = _('Diseases Product Kind')
+
+    def __str__(self):
+        return f"{self.product_kind} - {self.disease}"
+
+def get_model_choices():
+    return [(model, model) for model in get_filtered_models()]
+
+MODEL_CHOICES = lazy(get_model_choices, list)
+
+class FoodSafetyProcedure(models.Model):
+    name = models.CharField(max_length=255, unique=True, verbose_name=_('Name'))
+    description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
+    model = models.CharField(max_length=255, unique=True, verbose_name=_('Model'), choices=MODEL_CHOICES)
+    overall_average = models.BooleanField(default=True, verbose_name=_('Overall Average'))
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = _('Food Safety Procedure')
+        verbose_name_plural = _('Food Safety Procedures')
+
+    def __str__(self):
+        return f"{self.name}"

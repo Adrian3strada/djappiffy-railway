@@ -97,43 +97,51 @@ class OrderItemInlineMixin(admin.StackedInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_object_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = Order.objects.get(id=parent_object_id) if parent_object_id else None
+        parent_object = Order.objects.get(id=parent_object_id) if parent_object_id else None
+
+        client_id = request.POST.get('client') if request.POST else parent_object.client.id if parent_object else None
+        product_id = request.POST.get('product') if request.POST else parent_object.product.id if parent_object else None
+        client = Client.objects.get(id=client_id) if client_id else None
+        product = Product.objects.get(id=product_id) if product_id else None
 
         if db_field.name == "product_size":
-            kwargs["queryset"] = ProductSize.objects.none()
-            if parent_obj and parent_obj.product:
-                kwargs["queryset"] = ProductSize.objects.filter(product=parent_obj.product,
-                                                                market=parent_obj.client.market, is_enabled=True)
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda \
-                item: f"{item.name} ({item.description})" if item.description else f"{item.name}"
-            return formfield
+            if client and product:
+                kwargs["queryset"] = ProductSize.objects.filter(product=product,
+                                                                market=client.market, is_enabled=True)
+                formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+                formfield.label_from_instance = lambda \
+                    item: f"{item.name} ({item.description})" if item.description else f"{item.name}"
+                return formfield
+            else:
+                kwargs["queryset"] = ProductSize.objects.none()
+
+            print('kwargs["queryset"]', kwargs["queryset"])
 
         if db_field.name == "product_phenology":
             kwargs["queryset"] = ProductPhenologyKind.objects.none()
-            if parent_obj and parent_obj.product:
-                kwargs["queryset"] = ProductPhenologyKind.objects.filter(product=parent_obj.product, is_enabled=True)
+            if product:
+                kwargs["queryset"] = ProductPhenologyKind.objects.filter(product=product, is_enabled=True)
 
         if db_field.name == "product_market_class":
             kwargs["queryset"] = ProductMarketClass.objects.none()
-            if parent_obj and parent_obj.product and parent_obj.client.market:
-                kwargs["queryset"] = ProductMarketClass.objects.filter(product=parent_obj.product,
-                                                                       market=parent_obj.client.market, is_enabled=True)
+            if product and client:
+                kwargs["queryset"] = ProductMarketClass.objects.filter(product=product,
+                                                                       market=client.market, is_enabled=True)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: f"{item.name}"
             return formfield
 
         if db_field.name == "product_market_class":
             kwargs["queryset"] = ProductMarketClass.objects.none()
-            if parent_obj and parent_obj.product and parent_obj.client.market:
-                kwargs["queryset"] = ProductMarketClass.objects.filter(product=parent_obj.product,
-                                                                       market=parent_obj.client.market, is_enabled=True)
+            if product and client:
+                kwargs["queryset"] = ProductMarketClass.objects.filter(product=product,
+                                                                       market=client.market, is_enabled=True)
 
         if db_field.name == "product_packaging":
             kwargs["queryset"] = ProductPackaging.objects.none()
-            if parent_obj and parent_obj.product:
-                kwargs["queryset"] = ProductPackaging.objects.filter(product=parent_obj.product,
-                                                                     market=parent_obj.client.market, is_enabled=True)
+            if product and client:
+                kwargs["queryset"] = ProductPackaging.objects.filter(product=product,
+                                                                     market=client.market, is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -148,6 +156,7 @@ class OrderItemInlineMixin(admin.StackedInline):
             return formfield
 
         return super().formfield_for_dbfield(db_field, request, **kwargs)
+
 
 class OrderItemWeightInline(OrderItemInlineMixin):
     model = OrderItemWeight
@@ -195,7 +204,6 @@ class OrderItemPackagingInline(OrderItemInlineMixin):
         js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)
 
 
-
 class OrderItemPalletInline(OrderItemInlineMixin):
     model = OrderItemPallet
     formset = OrderItemPalletFormSet
@@ -210,13 +218,18 @@ class OrderItemPalletInline(OrderItemInlineMixin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_object_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = Order.objects.get(id=parent_object_id) if parent_object_id else None
+        parent_object = Order.objects.get(id=parent_object_id) if parent_object_id else None
+
+        client_id = request.POST.get('client') if request.POST else parent_object.client.id if parent_object else None
+        product_id = request.POST.get('product') if request.POST else parent_object.product.id if parent_object else None
+        client = Client.objects.get(id=client_id) if client_id else None
+        product = Product.objects.get(id=product_id) if product_id else None
 
         if db_field.name == "product_packaging_pallet":
             kwargs["queryset"] = ProductPackagingPallet.objects.none()
-            if parent_obj and parent_obj.product:
-                kwargs["queryset"] = ProductPackagingPallet.objects.filter(product_packaging__product=parent_obj.product,
-                                                                     product_packaging__market=parent_obj.client.market, is_enabled=True)
+            if client and product:
+                kwargs["queryset"] = ProductPackagingPallet.objects.filter(product_packaging__product=product,
+                                                                     product_packaging__market=client.market, is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
