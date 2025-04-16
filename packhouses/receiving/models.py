@@ -16,7 +16,11 @@ class Batch(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
 
     def __str__(self):
-        return f"{self.ooid}"
+        return f"{self.ooid} - {_('Incoming Product')} " + ", ".join(
+            f"id: {prod.id} - " +
+            (f"{_('Schedule Harvest Number')}: {prod.scheduleharvest.ooid}" if getattr(prod, 'scheduleharvest', None) else _('sin corte'))
+            for prod in self.incomingproduct_set.all()
+        )
 
     def save(self, *args, **kwargs):
         if not self.ooid:
