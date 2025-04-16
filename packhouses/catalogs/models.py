@@ -221,8 +221,8 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
 
 
 class ProductPest(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    pest = models.ForeignKey(Pest, verbose_name=_('Pest'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    pest = models.ForeignKey(Pest, verbose_name=_('Pest'), on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -237,8 +237,8 @@ class ProductPest(models.Model):
         ]
 
 class ProductDisease(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    disease = models.ForeignKey(Disease, verbose_name=_('Disease'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    disease = models.ForeignKey(Disease, verbose_name=_('Disease'), on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -253,7 +253,7 @@ class ProductDisease(models.Model):
         ]
 
 class ProductPhysicalDamage(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -271,7 +271,7 @@ class ProductPhysicalDamage(models.Model):
         ]
 
 class ProductResidue(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
