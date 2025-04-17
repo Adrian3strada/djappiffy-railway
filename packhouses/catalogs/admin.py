@@ -21,7 +21,7 @@ from .models import (
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
                                                   VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier
                                                   )
-from common.base.models import Pest, Disease, FoodSafetyProcedure
+# from common.base.models import Pest, Disease, FoodSafetyProcedure
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
@@ -59,7 +59,7 @@ from .filters import (ByCountryForOrganizationMarketsFilter, ByProductForOrganiz
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
 from common.base.models import (ProductKind, ProductKindCountryStandardSize, CapitalFramework, SupplyKind,
-                                ProductKindCountryStandard)
+                                ProductKindCountryStandard, FoodSafetyProcedure, PestProductKind, DiseaseProductKind)
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, \
@@ -278,12 +278,11 @@ class ProductRipenessInline(admin.TabularInline):
 
 class ProductPestInline(admin.TabularInline):
     model = ProductPest
-    extra = 1
+    extra = 0
     verbose_name = _('Pest')
     verbose_name_plural = _('Pest')
 
     can_delete = True
-    raw_id_fields = ['pest']
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -296,18 +295,16 @@ class ProductPestInline(admin.TabularInline):
             if product_id:
                 try:
                     product = Product.objects.get(pk=product_id)
-                    
-                    kwargs['queryset'] = Pest.objects.filter(
-                        pestproductkind__product_kind=product.kind
-                    ).distinct()
+                    kwargs['queryset'] = PestProductKind.objects.filter(product_kind=product.kind)
                 except Product.DoesNotExist:
-                    kwargs['queryset'] = Pest.objects.none()
+                    kwargs['queryset'] = PestProductKind.objects.none()
             else:
-                kwargs['queryset'] = Pest.objects.none()
-
-            kwargs['widget'] = forms.Select(choices=kwargs['queryset'].values_list('id', 'name'))
+                kwargs['queryset'] = PestProductKind.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
 
 class ProductDiseaseInline(admin.TabularInline):
     model = ProductDisease
@@ -316,7 +313,6 @@ class ProductDiseaseInline(admin.TabularInline):
     verbose_name_plural = _('Diseases')
 
     can_delete = True
-    raw_id_fields = ['disease']
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -329,27 +325,26 @@ class ProductDiseaseInline(admin.TabularInline):
             if product_id:
                 try:
                     product = Product.objects.get(pk=product_id)
-                    
-                    kwargs["queryset"] = Disease.objects.filter(
-                        diseaseproductkind__product_kind=product.kind
-                    ).distinct()
+                    kwargs["queryset"] = DiseaseProductKind.objects.filter(product_kind=product.kind)
                 except Product.DoesNotExist:
-                    kwargs["queryset"] = Disease.objects.none()
+                    kwargs["queryset"] = DiseaseProductKind.objects.none()
             else:
-                kwargs["queryset"] = Disease.objects.none()
+                kwargs["queryset"] = DiseaseProductKind.objects.none()
 
-            kwargs['widget'] = forms.Select(choices=kwargs['queryset'].values_list('id', 'name'))
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
 
 class ProductPhysicalDamageInline(admin.TabularInline):
     model = ProductPhysicalDamage
-    extra = 1
+    extra = 0
     verbose_name = _('Physical Damage')
     verbose_name_plural = _('Physical Damages')
 
 class ProductResidueInline(admin.TabularInline):
     model = ProductResidue
-    extra = 1
+    extra = 0
     verbose_name = _('Residue')
     verbose_name_plural = _('Residues')
 
@@ -367,7 +362,7 @@ class ProductFoodSafetyProcessFormInline(forms.ModelForm):
 
 class ProductFoodSafetyProcessInline(admin.TabularInline):
     model = ProductFoodSafetyProcess
-    extra = 1
+    extra = 0
     form = ProductFoodSafetyProcessFormInline
     verbose_name = _('Food Safety Process')
     verbose_name_plural = _('Food Safety Process')
@@ -383,6 +378,9 @@ class ProductFoodSafetyProcessInline(admin.TabularInline):
         if db_field.name == "procedure":
             kwargs["queryset"] = FoodSafetyProcedure.objects.exclude(model="Average")
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
 
 class ProductAdditionalValueInline(admin.TabularInline):
     model = ProductAdditionalValue
@@ -487,10 +485,6 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    class Media:
-        js = ('js/admin/forms/select.js',)
-
 
 @admin.register(ProductSize)
 class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
