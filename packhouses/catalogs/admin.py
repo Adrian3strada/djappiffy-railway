@@ -388,9 +388,48 @@ class ProductAdditionalValueInline(admin.TabularInline):
     model = ProductAdditionalValue
     extra = 0
     min_num = 1
-    max_num = 1
     verbose_name = _('Product Additional Value')
     verbose_name_plural = _('Product Additional Values')
+    readonly_fields = ['created_at']
+    can_delete = False
+
+    def has_change_permission(self, request, obj=None):
+        # Permitir acceso al inline como tal
+        return True
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly = list(self.readonly_fields)
+
+        # Si no hay objeto, es un nuevo formulario, no hacer nada especial
+        if obj is None:
+            return readonly
+
+        # Obtener todos los valores relacionados con este producto
+        additional_values = self.model.objects.filter(product=obj).order_by('-created_at')
+
+        # Si hay más de uno, hacer todos menos el último de solo lectura
+        if additional_values.exists():
+            last = additional_values.first()
+            self.readonly_instances = [v.pk for v in additional_values if v.pk != last.pk]
+        else:
+            self.readonly_instances = []
+
+        return readonly
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        original_get_form = formset.form.__init__
+
+        def form_init(form_self, *args, **kwargs):
+            original_get_form(form_self, *args, **kwargs)
+            instance = kwargs.get('instance')
+            if instance and instance.pk in getattr(self, 'readonly_instances', []):
+                for field in form_self.fields:
+                    form_self.fields[field].disabled = True
+
+        formset.form.__init__ = form_init
+        return formset
+
 
 @admin.register(Product)
 class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):

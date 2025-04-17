@@ -4,7 +4,9 @@ from django.utils.translation import gettext_lazy as _
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_incoming_product_categories_status, get_batch_review_categories_status, get_batch_operational_categories_status
-from packhouses.catalogs.models import WeighingScale, Supply, HarvestingCrew, Provider, ProductFoodSafetyProcess, Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue
+from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, Provider, ProductFoodSafetyProcess, 
+                                        Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage, 
+                                        ProductResidue, ProductAdditionalValue)
 from common.base.models import Pest
 
 # Create your models here.
@@ -157,8 +159,9 @@ class InternalInspection(models.Model):
         verbose_name_plural = _('Internal Inspections')
 
 class Average(models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    average = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Average'))
+    average_dry_matter = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_('Average Dry Matter'))
+    average_internal_temperature = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_('Average Internal Temperature'))
+    acceptance_report = models.ForeignKey(ProductAdditionalValue, verbose_name=_('Acceptance Report'), on_delete=models.CASCADE, null=True)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -178,6 +181,11 @@ class VehicleReview(models.Model):
     class Meta:
         verbose_name = _('Vehicle Review')
         verbose_name_plural = _('Vehicle Reviews')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['food_safety','vehicle'], 
+                name='unique_food_safety_vehicle'),
+        ]
 
 class VehicleInspection(models.Model):
     sealed = models.BooleanField(default=False, verbose_name=_('The vehicle is sealed'))
@@ -225,21 +233,6 @@ class SampleCollection(models.Model):
         verbose_name = _('Sample Collection')
         verbose_name_plural = _('Sample Collections')
 
-class SensorySpecification(models.Model):
-    whole = models.BooleanField(default=False, verbose_name=_('Whole'))
-    foreign_material = models.BooleanField(default=False, verbose_name=_('Foreign Material'))
-    insects = models.BooleanField(default=False, verbose_name=_('Insects'))
-    temperature_damage = models.BooleanField(default=False, verbose_name=_('Temperature Damage'))
-    unusual_odor = models.BooleanField(default=False, verbose_name=_('Unusual Odor'))
-    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f""
-
-    class Meta:
-        verbose_name = _('Sensory Specification')
-        verbose_name_plural = _('Sensory Specifications')
-
 class SampleWeight(models.Model):
     weight = models.DecimalField(max_digits=10, decimal_places=2)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
@@ -260,6 +253,15 @@ class SamplePest(models.Model):
     def __str__(self):
         return f""
 
+    class Meta:
+        verbose_name = _('Sample Pest')
+        verbose_name_plural = _('Sample Pests')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['sample_collection','product_pest'], 
+                name='unique_sample_collection_product_pest'),
+        ]
+
 class SampleDisease(models.Model):
     sample_disease = models.IntegerField(verbose_name=_('Samples With Diseases'))
     product_disease = models.ForeignKey(ProductDisease, verbose_name=_('Disease'), on_delete=models.CASCADE)
@@ -268,6 +270,15 @@ class SampleDisease(models.Model):
 
     def __str__(self):
         return f""
+
+    class Meta:
+        verbose_name = _('Sample Disease')
+        verbose_name_plural = _('Sample Diseases')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['sample_collection','product_disease'], 
+                name='unique_sample_collection_product_disease'),
+        ]
 
 class SamplePhysicalDamage(models.Model):
     sample_physical_damage = models.IntegerField(verbose_name=_('Samples With Physical Damage'))
@@ -278,6 +289,15 @@ class SamplePhysicalDamage(models.Model):
     def __str__(self):
         return f""
 
+    class Meta:
+        verbose_name = _('Sample Physical Damage')
+        verbose_name_plural = _('Sample Physical Damages')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['sample_collection','product_physical_damage'], 
+                name='unique_sample_collection_product_physical_damage'),
+        ]
+
 class SampleResidue(models.Model):
     sample_residue = models.IntegerField(verbose_name=_('Samples With Residue'))
     product_residue = models.ForeignKey(ProductResidue, verbose_name=_('Residue'), on_delete=models.CASCADE)
@@ -286,3 +306,12 @@ class SampleResidue(models.Model):
 
     def __str__(self):
         return f""
+
+    class Meta:
+        verbose_name = _('Sample Residue')
+        verbose_name_plural = _('Sample Residue')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['sample_collection','product_residue'], 
+                name='unique_sample_collection_product_residue'),
+        ]

@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    const pestSelector = 'select[name$="-product_pest"]';
+    const pestSelector = 'select[name$="-samplepest_set-0-product_pest"]';
     const diseaseSelector = 'select[name$="-product_disease"]';
     const physicalDamageSelector = 'select[name$="-product_physical_damage"]';
     const residueSelector = 'select[name$="-product_residue"]';
