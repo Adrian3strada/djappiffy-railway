@@ -451,13 +451,13 @@ class BatchAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
 
 class DryMatterInline(NestedTabularInline):
     model = DryMatter
-    extra = 1
+    extra = 0
 
     fields = ['product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage']
 
 class InternalInspectionInline(NestedTabularInline):
     model = InternalInspection
-    extra = 1
+    extra = 0
 
     fields = ['internal_temperature', 'product_pest']
 
@@ -470,8 +470,8 @@ class InternalInspectionInline(NestedTabularInline):
                     food_safety = FoodSafety.objects.get(pk=object_id)
                     incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-                    print(ProductPest.objects.filter(product=schedule_harvest.product, pest__inside=True))
-                    kwargs["queryset"] = ProductPest.objects.filter(product=schedule_harvest.product, pest__inside=True)
+                    print(ProductPest.objects.filter(product=schedule_harvest.product, pest__pest__inside=True))
+                    kwargs["queryset"] = ProductPest.objects.filter(product=schedule_harvest.product, pest__pest__inside=True)
 
                 except InternalInspection.DoesNotExist:
                     kwargs['queryset'] = ProductPest.objects.none()
@@ -479,6 +479,9 @@ class InternalInspectionInline(NestedTabularInline):
                 kwargs['queryset'] = ProductPest.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    # class Media:
+    #     js = ('js/admin/forms/packhouses/receiving/food_safety/select_internal_inspection.js',)
 
 class VehicleInspectionInline(nested_admin.NestedTabularInline):
     model = VehicleInspection
@@ -521,7 +524,7 @@ class VehicleReviewInline(nested_admin.NestedStackedInline):
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/select_vehicle.js',)
+        js = ('js/admin/forms/packhouses/receiving/food_safety/select_vehicle.js',)
 
 class SampleWeightInline(nested_admin.NestedTabularInline):
     model = SampleWeight
@@ -559,9 +562,6 @@ class SamplePestInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/percentage_pest.js',)
-
 class SampleDiseaseForm(forms.ModelForm):
     class Meta:
         model = SampleDisease
@@ -592,9 +592,6 @@ class SampleDiseaseInline(nested_admin.NestedTabularInline):
                 kwargs['queryset'] = ProductDisease.objects.none()
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/percentage_disease.js',)
 
 class SamplePhysicalDamageForm(forms.ModelForm):
     class Meta:
@@ -627,9 +624,6 @@ class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/percentage_physical_damage.js',)
-
 class SampleResidueForm(forms.ModelForm):
     class Meta:
         model = SampleResidue
@@ -661,9 +655,6 @@ class SampleResidueInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/percentage_residue.js',)
-
 class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
     model = SampleCollection
     extra = 1
@@ -673,7 +664,10 @@ class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInl
     inlines = [SampleWeightInline, SamplePestInline, SampleDiseaseInline, SamplePhysicalDamageInline, SampleResidueInline]
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/select_sample.js',)
+        js = (
+            'js/admin/forms/packhouses/receiving/food_safety/select_sample.js', 
+            'js/admin/forms/packhouses/receiving/food_safety/percentage.js',
+            )
 
 class AverageInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
     model = Average
