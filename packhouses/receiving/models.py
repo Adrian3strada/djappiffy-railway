@@ -3,14 +3,17 @@ from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
-from .utils import get_incoming_product_categories_status
+from .utils import get_incoming_product_categories_status, get_batch_review_categories_status, get_batch_operational_categories_status
 from packhouses.catalogs.models import WeighingScale, Supply, HarvestingCrew, Provider, ProductFoodSafetyProcess, Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue
 from common.base.models import Pest
 
 # Create your models here.
 class Batch(models.Model):
-    status = models.CharField(max_length=20, verbose_name=_('Status'))
-    ooid = models.PositiveIntegerField(verbose_name=_("Harvest Number"), null=True, blank=True, unique=True)
+    ooid = models.PositiveIntegerField(verbose_name=_('Batch Number'), null=True, blank=True, unique=True)
+    review_status = models.CharField(max_length=20, verbose_name=_('Review Status'), choices=get_batch_review_categories_status(), default='', blank=True)
+    operational_status = models.CharField(max_length=20, choices=get_batch_operational_categories_status(),  default='', verbose_name=_('Operational Status'), blank=True)
+    is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
 
     def __str__(self):
@@ -62,6 +65,18 @@ class IncomingProduct(models.Model):
         schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=self).first()
         if schedule_harvest:
             return f"{schedule_harvest.ooid} - {schedule_harvest.orchard}"
+    
+    def create_batch(self):
+        if self.status == 'accepted' and not self.batch:
+            with transaction.atomic():
+                new_batch = Batch.objects.create(
+                    review_status='accepted',        
+                    operational_status='in_progress',
+                    is_available_for_processing=False,
+                    organization=self.organization
+                )
+                self.batch = new_batch
+                self.save(update_fields=["batch"])
 
     class Meta:
         verbose_name = _('Incoming Product')
@@ -87,20 +102,12 @@ class WeighingSet(models.Model):
     def __str__(self):
         return f"{self.ooid}"
 
-    def save(self, *args, **kwargs):
-        if not self.ooid:
-            # Usar transacción y bloqueo de fila para evitar condiciones de carrera
-            with transaction.atomic():
-                last_order = Batch.objects.select_for_update().filter(organization=self.organization).order_by('-ooid').first()
-                if last_order:
-                    self.ooid = last_order.ooid + 1
-                else:
-                    self.ooid = 1
-        super().save(*args, **kwargs)
-
     class Meta:
-        verbose_name = _('Batch')
-        verbose_name_plural = _('Batches')
+        verbose_name = _('Weighing Set')
+        verbose_name_plural = _('Weighing Sets')
+        constraints = [
+            models.UniqueConstraint(fields=['incoming_product', 'ooid'], name='weighing_unique_incomingproduct')
+        ]
 
 
 class WeighingSetContainer(models.Model):

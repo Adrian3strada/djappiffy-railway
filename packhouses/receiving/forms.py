@@ -42,7 +42,7 @@ class ContainerInlineForm(forms.ModelForm):
 
         if instance and instance.pk and instance.created_at_model == 'gathering':
             for field_name in self.fields:
-                if field_name not in ['full_containers', 'empty_containers']:
+                if field_name not in ['full_containers', 'empty_containers', 'missing_containers']:
                     self.fields[field_name].disabled = True
                     self.fields[field_name].widget.attrs.update({
                         "style": (
@@ -145,25 +145,31 @@ class IncomingProductForm(forms.ModelForm):
         fields = '__all__'
 
     def clean(self):
-        cleaned_data = super().clean()
+        cleaned_data = super().clean() or {}
 
         # Status guardado en la base de datos
         initial_status = self.instance.status if self.instance and self.instance.pk else None
-        # Obtiener el status final
+        # Obtener el status final (del form)
         final_status = cleaned_data.get('status', initial_status)
 
-        # VALIDACIÓN PARA PESADAS:
-        total_weighing_sets = int(self.data.get('weighingset_set-TOTAL_FORMS', 0))
+        # Si ya está aceptado, se impide cambiar el status a otro valor.
+        if self.instance.pk and initial_status == 'accepted' and final_status != 'accepted':
+            raise ValidationError(_("Once accepted, the status cannot be changed."))
 
+        # VALIDACIÓN PARA WEIGHING SETS:
+        total_weighing_sets = int(self.data.get('weighingset_set-TOTAL_FORMS', 0))
         remaining_weighing_sets = 0
+        
+        # Contar los weighing sets que NO se marcaron para borrar.
         for i in range(total_weighing_sets):
             delete_key = f'weighingset_set-{i}-DELETE'
             if self.data.get(delete_key, 'off') != 'on':
                 remaining_weighing_sets += 1
 
         if remaining_weighing_sets < 1 and final_status == "accepted":
-            raise ValidationError("At least one Weighing Set must be registered for the Incoming Product.")
+            raise ValidationError(_("At least one Weighing Set must be registered for the Incoming Product."))
 
+        # Validar cada weighing set
         for i in range(remaining_weighing_sets):
             weighingset_prefix = f'weighingset_set-{i}-'
             provider = self.data.get(weighingset_prefix + 'provider')
@@ -174,5 +180,14 @@ class IncomingProductForm(forms.ModelForm):
             if not harvesting_crew or not harvesting_crew.strip():
                 raise ValidationError(_(f'Weighing Set {i + 1} is missing a harvesting crew.'))
         
-
         return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+    
+        if instance.status == 'accepted' and not instance.batch:
+            instance.create_batch()
+
+        if commit:
+            instance.save()
+        return instance

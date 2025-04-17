@@ -41,7 +41,7 @@ class ContainerInlineForm(forms.ModelForm):
 
         if instance and instance.pk and instance.created_at_model == 'incoming_product':
             for field_name in self.fields:
-                if field_name not in ['full_containers', 'empty_containers']:
+                if field_name not in ['full_containers', 'empty_containers', 'missing_containers']:
                     self.fields[field_name].disabled = True
                     self.fields[field_name].widget.attrs.update({
                         "style": (

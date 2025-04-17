@@ -18,6 +18,22 @@ def get_incoming_product_categories_status():
         ('quarintine', _('Quarintine')),
     ]
 
+def get_batch_review_categories_status():
+    return [
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+        ('quarantine', 'Quarantine'),
+    ]
+
+def get_batch_operational_categories_status():
+    return [
+        ('in_progress', 'In Progress'),
+        ('in_another_batch', 'In Another Batch'),
+        ('cancelled', 'Cancelled'),
+        ('finished', 'Finished'),
+]
+
+
 class CustomScheduleHarvestFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

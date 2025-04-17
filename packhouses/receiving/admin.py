@@ -114,6 +114,7 @@ class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.Stacked
     formset = BaseScheduleHarvestVehicleFormSet
     fields = ('provider', 'vehicle', 'has_arrived', 'guide_number', 'stamp_vehicle_number')  # Agregar el nuevo campo
     extra = 0
+    max_num = 0
     inlines = [HarvestCuttingContainerVehicleInline]
 
     def get_formset(self, request, obj=None, **kwargs):
@@ -187,7 +188,7 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
 
     def get_fields(self, request, obj=None):
         fields = [
-            'ooid', 'status', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
+            'ooid', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
             'product_phenologies', 'product_harvest_size_kind', 'orchard', 'orchard_certification', 'market',
             'weight_expected', 'weighing_scale', 'comments'
         ]
@@ -257,8 +258,8 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/vehicle_inline.js',
-              'js/admin/forms/packhouses/receiving/schedule_harvest_inline.js')
+        js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',
+              'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js')
 
 # Inlines para los pallets
 class WeighingSetContainerInline(nested_admin.NestedTabularInline):
@@ -335,7 +336,7 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/weighing_set_inline.js',)
+        js = ('js/admin/forms/packhouses/receiving/incomingproduct/weighing_set_inline.js',)
 
 # Reciba
 @admin.register(IncomingProduct)
@@ -442,13 +443,44 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
         update_pallet_numbers(form.instance)
 
     class Media:
-         js = ('js/admin/forms/packhouses/receiving/incoming_product.js',)
+         js = ('js/admin/forms/packhouses/receiving/incomingproduct/incoming_product.js',)
+
+
+# Lotes
+class ScheduleHarvestInlineForBatch(ScheduleHarvestInline):
+    custom_title = _("Schedule Harvest Information")
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',
+              'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js')
+        
+class WeighingSetInlineForBatch(WeighingSetInline):
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/incomingproduct/weighing_set_inline.js',)
+
+class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline):
+    model = IncomingProduct
+    fields = ('status', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'total_weighed_sets',
+              'packhouse_weight_result', 'mrl', 'kg_sample', 'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'total_weighed_set_containers',
+              'average_per_container', 'current_kg_available', 'comments')
+    readonly_fields = ('status',)
+    extra = 0
+    max_num = 0
+    show_change_link = True
+    custom_title = _("Incoming Product Information")  
+    inlines = [WeighingSetInlineForBatch, ScheduleHarvestInlineForBatch] 
+
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/batch/incoming_product_for_batch.js',)
 
 @admin.register(Batch)
-class BatchAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
-    list_display = ('ooid', 'status',)
-    exclude = ('ooid',)
+class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
+    list_display = ('ooid', 'review_status', 'operational_status', 'is_available_for_processing', 'created_at')
+    fields = ['ooid', 'review_status', 'operational_status', 'is_available_for_processing']
+    readonly_fields = ['ooid',]
+    inlines = [IncomingProductInline]
 
+
+# Inocuidad
 class DryMatterInline(NestedTabularInline):
     model = DryMatter
     extra = 1
