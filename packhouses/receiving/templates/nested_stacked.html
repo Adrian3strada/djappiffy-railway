@@ -37,18 +37,25 @@
                             <h3 class="card-title">
                                 <span class="card-tools text-sm" style="font-size:1.07rem !important; font-weight: bold;">
                                     {% if inline_admin_form.original %}
-                                      {% if inline_admin_form.model_admin.custom_title %}
+                                    {% if inline_admin_formset.opts.show_change_link and inline_admin_formset.has_change_permission %}
+                                        <a
+                                        href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}"
+                                        class="inlinechangelink">
+                                        <i class="fas fa-pencil-alt fa-sm"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if inline_admin_form.model_admin.custom_title %}
                                         {{ inline_admin_form.model_admin.custom_title }}: {{ inline_admin_form.original }}
-                                      {% else %}
-                                        {{ inline_admin_form.original }}
-                                      {% endif %}
                                     {% else %}
-                                      <i class="fas fa-plus fa-sm text-success"></i>
-                                      {% if inline_admin_form.model_admin.custom_title %}
+                                        {{ inline_admin_form.original }}
+                                    {% endif %}
+                                    {% else %}
+                                    <i class="fas fa-plus fa-sm text-success"></i>
+                                    {% if inline_admin_form.model_admin.custom_title %}
                                         {% trans "New" %} {{ inline_admin_form.model_admin.custom_title }}
-                                      {% else %}
+                                    {% else %}
                                         {% trans "New" %} {{ inline_admin_formset.opts.verbose_name|capfirst }}
-                                      {% endif %}
+                                    {% endif %}
                                     {% endif %}
                                   </span>
                                   

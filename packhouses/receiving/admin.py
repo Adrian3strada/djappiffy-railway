@@ -16,7 +16,8 @@ from .models import (IncomingProduct, WeighingSet, WeighingSetContainer,
 from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLinksMixin)
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInlineMixin
-from .forms import IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet
+from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, 
+                    ContainerInlineFormSet)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                       ByCategoryForOrganizationIncomingProductFilter)
 from .utils import update_pallet_numbers,  CustomScheduleHarvestFormSet
@@ -469,17 +470,73 @@ class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     custom_title = _("Incoming Product Information")  
     inlines = [WeighingSetInlineForBatch, ScheduleHarvestInlineForBatch] 
 
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        base_fields = formset.form.base_fields
+        if 'public_weighing_scale' in base_fields:
+            widget = base_fields['public_weighing_scale'].widget
+            for attr in ('can_add_related', 'can_change_related', 'can_delete_related', 'can_view_related'):
+                setattr(widget, attr, False)
+        return formset
+    
     class Media:
         js = ('js/admin/forms/packhouses/receiving/batch/incoming_product_for_batch.js',)
 
 @admin.register(Batch)
 class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
-    list_display = ('ooid', 'review_status', 'operational_status', 'is_available_for_processing', 'created_at')
+    list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product', 'get_scheduleharvest_product_provider',  'get_scheduleharvest_orchard', 
+                    'get_scheduleharvest_category', 'get_scheduleharvest_harvest_date', 'created_at', 
+                    'review_status', 'operational_status', 'is_available_for_processing')
     fields = ['ooid', 'review_status', 'operational_status', 'is_available_for_processing']
     readonly_fields = ['ooid',]
     inlines = [IncomingProductInline]
 
-
+    def get_scheduleharvest_ooid(self, obj):
+        incoming_product = obj.incomingproduct_set.first()
+        if incoming_product and incoming_product.scheduleharvest and incoming_product.scheduleharvest.ooid:
+            return incoming_product.scheduleharvest.ooid
+        return None
+    def get_scheduleharvest_harvest_date(self, obj):
+        incoming_product = obj.incomingproduct_set.first()
+        if incoming_product and incoming_product.scheduleharvest and incoming_product.scheduleharvest.harvest_date:
+            return incoming_product.scheduleharvest.harvest_date
+        return None
+    def get_scheduleharvest_product(self, obj):
+        incoming_product = obj.incomingproduct_set.first()
+        if incoming_product and incoming_product.scheduleharvest and incoming_product.scheduleharvest.product:
+            return incoming_product.scheduleharvest.product
+        return None
+    def get_scheduleharvest_orchard(self, obj):
+        incoming_product = obj.incomingproduct_set.first()
+        if incoming_product and incoming_product.scheduleharvest and incoming_product.scheduleharvest.orchard:
+            return incoming_product.scheduleharvest.orchard
+        return None
+    def get_scheduleharvest_product_provider(self, obj):
+        incoming_product = obj.incomingproduct_set.first()
+        if incoming_product and incoming_product.scheduleharvest and incoming_product.scheduleharvest.product_provider:
+            return incoming_product.scheduleharvest.product_provider
+        return None
+    def get_scheduleharvest_category(self, obj):
+        incoming_product = obj.incomingproduct_set.first()
+        if incoming_product and incoming_product.scheduleharvest:
+            schedule_harvest = incoming_product.scheduleharvest
+            choices = dict(get_harvest_cutting_categories_choices())
+            return choices.get(schedule_harvest.category, schedule_harvest.category)
+        return None
+    
+    get_scheduleharvest_ooid.admin_order_field = 'incomingproduct__scheduleharvest__harvest_date'
+    get_scheduleharvest_ooid.short_description = _("Harvest Number")
+    get_scheduleharvest_harvest_date.admin_order_field = 'incomingproduct__scheduleharvest__harvest_date'
+    get_scheduleharvest_harvest_date.short_description = _("Schedule Harvest Date")
+    get_scheduleharvest_product.admin_order_field = 'incomingproduct__scheduleharvest__product'
+    get_scheduleharvest_product.short_description = _("Product")
+    get_scheduleharvest_orchard.admin_order_field = 'incomingproduct__scheduleharvest__orchard'
+    get_scheduleharvest_orchard.short_description = _("Orchard")
+    get_scheduleharvest_product_provider.admin_order_field = 'incomingproduct__scheduleharvest__product_provider'
+    get_scheduleharvest_product_provider.short_description = _("Product Provider")
+    get_scheduleharvest_category.admin_order_field = 'incomingproduct__scheduleharvest__category'
+    get_scheduleharvest_category.short_description = _("Category")
+    
 # Inocuidad
 class DryMatterInline(NestedTabularInline):
     model = DryMatter
