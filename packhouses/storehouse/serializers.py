@@ -22,7 +22,7 @@ class PurchaseOrderSupplySerializer(serializers.ModelSerializer):
         return [
             {
                 "id": pos.id,
-                "kind": str(pos.requisition_supply.supply.kind.usage_discount_unit_category),
+                "kind": str(pos.requisition_supply.supply.kind.name),
                 "name": str(pos.requisition_supply.supply),
                 "unit": unit_mapping.get(
                     getattr(pos.requisition_supply.supply.kind.usage_discount_unit_category, "unit_category", ""),
