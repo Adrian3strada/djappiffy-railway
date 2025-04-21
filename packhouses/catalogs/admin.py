@@ -26,7 +26,7 @@ from common.profiles.models import UserProfile, PackhouseExporterProfile, Organi
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet,
-                    PackagingKindForm, ProviderForm)
+                    PackagingKindForm, ProviderForm, ProductFoodSafetyProcessForm)
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization
 from cities_light.models import Country, Region, SubRegion, City
@@ -348,22 +348,10 @@ class ProductResidueInline(admin.TabularInline):
     verbose_name = _('Residue')
     verbose_name_plural = _('Residues')
 
-class ProductFoodSafetyProcessFormInline(forms.ModelForm):
-    class Meta:
-        model = ProductFoodSafetyProcess
-        fields = ['procedure']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['procedure'].widget.can_add_related = False
-        self.fields['procedure'].widget.can_change_related = False
-        self.fields['procedure'].widget.can_delete_related = False
-        self.fields['procedure'].widget.can_view_related = False
-
 class ProductFoodSafetyProcessInline(admin.TabularInline):
     model = ProductFoodSafetyProcess
     extra = 0
-    form = ProductFoodSafetyProcessFormInline
+    form = ProductFoodSafetyProcessForm
     verbose_name = _('Food Safety Process')
     verbose_name_plural = _('Food Safety Process')
 
@@ -385,7 +373,6 @@ class ProductFoodSafetyProcessInline(admin.TabularInline):
 class ProductAdditionalValueInline(admin.TabularInline):
     model = ProductAdditionalValue
     extra = 0
-    min_num = 1
     verbose_name = _('Product Additional Value')
     verbose_name_plural = _('Product Additional Values')
     readonly_fields = ['created_at']

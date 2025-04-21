@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from packhouses.gathering.models import ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle
-from .models import IncomingProduct
+from .models import IncomingProduct, SamplePest, SampleDisease, SamplePhysicalDamage, SampleResidue, FoodSafety
 from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
 from django.utils.safestring import mark_safe
@@ -176,3 +176,51 @@ class IncomingProductForm(forms.ModelForm):
         
 
         return cleaned_data
+
+class SamplePestForm(forms.ModelForm):
+    class Meta:
+        model = SamplePest
+        fields = ['product_pest', 'sample_pest', 'percentage']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
+
+class SampleDiseaseForm(forms.ModelForm):
+    class Meta:
+        model = SampleDisease
+        fields = ['product_disease', 'sample_disease', 'percentage']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
+
+class SamplePhysicalDamageForm(forms.ModelForm):
+    class Meta:
+        model = SamplePhysicalDamage
+        fields = ['product_physical_damage', 'sample_physical_damage', 'percentage']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
+
+class SampleResidueForm(forms.ModelForm):
+    class Meta:
+        model = SampleResidue
+        fields = ['product_residue', 'sample_residue', 'percentage']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
+
+class FoodSafetyFormInline(forms.ModelForm):
+    class Meta:
+        model = FoodSafety
+        fields = ['batch']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['batch'].widget.can_add_related = False
+        self.fields['batch'].widget.can_change_related = False
+        self.fields['batch'].widget.can_delete_related = False
+        self.fields['batch'].widget.can_view_related = False
