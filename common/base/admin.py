@@ -21,13 +21,13 @@ from .utils import get_filtered_models
 
 class PestProductKindInline(admin.TabularInline):
     model = PestProductKind
-    extra = 1
+    extra = 0
     verbose_name = _('Pest')
     verbose_name_plural = _('Pests')    
 
 class DiseaseProductKindInline(admin.TabularInline):
     model = DiseaseProductKind
-    extra = 1
+    extra = 0
     verbose_name = _('Disease')
     verbose_name_plural = _('Diseases')
 
@@ -38,7 +38,7 @@ class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
     inlines = [PestProductKindInline, DiseaseProductKindInline]
 
     class Media:
-        js = ('js/admin/forms/select.js',)
+        js = ('js/admin/forms/common/select_product_kind.js',)
 
 
 class CountryProductStandardSizeInline(admin.TabularInline):

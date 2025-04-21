@@ -16,7 +16,8 @@ from .models import (IncomingProduct, WeighingSet, WeighingSetContainer,
 from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLinksMixin)
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInlineMixin
-from .forms import IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet
+from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet, 
+                    SamplePestForm, SampleDiseaseForm, SampleResidueForm, FoodSafetyFormInline, SamplePhysicalDamageForm)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                       ByCategoryForOrganizationIncomingProductFilter)
 from .utils import update_pallet_numbers,  CustomScheduleHarvestFormSet
@@ -28,7 +29,7 @@ from django.utils.html import format_html
 from django.urls import path, reverse
 from nested_admin import NestedStackedInline, NestedTabularInline
 from common.base.models import Pest
-from django import forms
+# from django import forms
 
 # Inlines para datos del corte
 class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
@@ -451,13 +452,13 @@ class BatchAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
 
 class DryMatterInline(NestedTabularInline):
     model = DryMatter
-    extra = 1
+    extra = 0
 
     fields = ['product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage']
 
 class InternalInspectionInline(NestedTabularInline):
     model = InternalInspection
-    extra = 1
+    extra = 0
 
     fields = ['internal_temperature', 'product_pest']
 
@@ -470,8 +471,8 @@ class InternalInspectionInline(NestedTabularInline):
                     food_safety = FoodSafety.objects.get(pk=object_id)
                     incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-                    print(ProductPest.objects.filter(product=schedule_harvest.product, pest__inside=True))
-                    kwargs["queryset"] = ProductPest.objects.filter(product=schedule_harvest.product, pest__inside=True)
+                    print(ProductPest.objects.filter(product=schedule_harvest.product, pest__pest__inside=True))
+                    kwargs["queryset"] = ProductPest.objects.filter(product=schedule_harvest.product, pest__pest__inside=True)
 
                 except InternalInspection.DoesNotExist:
                     kwargs['queryset'] = ProductPest.objects.none()
@@ -521,21 +522,12 @@ class VehicleReviewInline(nested_admin.NestedStackedInline):
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/select_vehicle.js',)
+        js = ('js/admin/forms/packhouses/receiving/food_safety/select_vehicle.js',)
 
 class SampleWeightInline(nested_admin.NestedTabularInline):
     model = SampleWeight
     extra = 0
     fields = ['weight']
-
-class SamplePestForm(forms.ModelForm):
-    class Meta:
-        model = SamplePest
-        fields = ['product_pest', 'sample_pest', 'percentage']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
 
 class SamplePestInline(nested_admin.NestedTabularInline):
     model = SamplePest
@@ -559,18 +551,6 @@ class SamplePestInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/percentage_pest.js',)
-
-class SampleDiseaseForm(forms.ModelForm):
-    class Meta:
-        model = SampleDisease
-        fields = ['product_disease', 'sample_disease', 'percentage']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
-
 class SampleDiseaseInline(nested_admin.NestedTabularInline):
     model = SampleDisease
     extra = 0
@@ -592,18 +572,6 @@ class SampleDiseaseInline(nested_admin.NestedTabularInline):
                 kwargs['queryset'] = ProductDisease.objects.none()
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/percentage_disease.js',)
-
-class SamplePhysicalDamageForm(forms.ModelForm):
-    class Meta:
-        model = SamplePhysicalDamage
-        fields = ['product_physical_damage', 'sample_physical_damage', 'percentage']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
 
 class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
     model = SamplePhysicalDamage
@@ -627,18 +595,6 @@ class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/percentage_physical_damage.js',)
-
-class SampleResidueForm(forms.ModelForm):
-    class Meta:
-        model = SampleResidue
-        fields = ['product_residue', 'sample_residue', 'percentage']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
-
 class SampleResidueInline(nested_admin.NestedTabularInline):
     model = SampleResidue
     extra = 0
@@ -661,9 +617,6 @@ class SampleResidueInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/percentage_residue.js',)
-
 class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
     model = SampleCollection
     extra = 1
@@ -673,7 +626,10 @@ class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInl
     inlines = [SampleWeightInline, SamplePestInline, SampleDiseaseInline, SamplePhysicalDamageInline, SampleResidueInline]
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/select_sample.js',)
+        js = (
+            'js/admin/forms/packhouses/receiving/food_safety/select_sample.js', 
+            'js/admin/forms/packhouses/receiving/food_safety/percentage.js',
+            )
 
 class AverageInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
     model = Average
@@ -720,18 +676,6 @@ INLINE_CLASSES = {
     "SampleCollection": SampleCollectionInline,
     "Average": AverageInline,
 }
-
-class FoodSafetyFormInline(forms.ModelForm):
-    class Meta:
-        model = FoodSafety
-        fields = ['batch']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['batch'].widget.can_add_related = False
-        self.fields['batch'].widget.can_change_related = False
-        self.fields['batch'].widget.can_delete_related = False
-        self.fields['batch'].widget.can_view_related = False
 
 @admin.register(FoodSafety)
 class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):

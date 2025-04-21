@@ -305,9 +305,13 @@ class PestProductKind(models.Model):
         ordering = ['pest']
         verbose_name = _('Pest Product Kind')
         verbose_name_plural = _('Pests Product Kind')
+        constraints = [
+            models.UniqueConstraint(fields=['pest', 'product_kind'],
+                                    name='pestproductkind_unique_pest_product_kind'),
+        ]
 
     def __str__(self):
-        return f"{self.product_kind} - {self.pest}"
+        return f"{self.pest}"
 
 class DiseaseProductKind(models.Model):
     product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product'), on_delete=models.PROTECT)
@@ -318,9 +322,13 @@ class DiseaseProductKind(models.Model):
         ordering = ['disease']
         verbose_name = _('Disease Product Kind')
         verbose_name_plural = _('Diseases Product Kind')
+        constraints = [
+            models.UniqueConstraint(fields=['disease', 'product_kind'],
+                                    name='diseaseproductkind_unique_disease_product_kind'),
+        ]
 
     def __str__(self):
-        return f"{self.product_kind} - {self.disease}"
+        return f"{self.disease}"
 
 def get_model_choices():
     return [(model, model) for model in get_filtered_models()]
