@@ -3,7 +3,7 @@ from .models import (
     Product, ProductSize, OrchardCertification, HarvestingCrew,
     ProductHarvestSizeKind,
     HarvestingPaymentSetting,
-    Packaging, Provider
+    Packaging, Provider, ProductFoodSafetyProcess
 )
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
@@ -184,3 +184,15 @@ class ProviderForm(forms.ModelForm):
         if category == 'harvesting_provider' and not vehicle_provider:
             self.add_error('vehicle_provider', _('This field is required when category is Harvesting Provider.'))
         return cleaned_data
+
+class ProductFoodSafetyProcessForm(forms.ModelForm):
+    class Meta:
+        model = ProductFoodSafetyProcess
+        fields = ['procedure']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['procedure'].widget.can_add_related = False
+        self.fields['procedure'].widget.can_change_related = False
+        self.fields['procedure'].widget.can_delete_related = False
+        self.fields['procedure'].widget.can_view_related = False

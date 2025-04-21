@@ -15,9 +15,8 @@ from django.conf import settings
 from .utils import (vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices,
                     get_vehicle_category_choices, get_provider_categories_choices)
 from django.core.exceptions import ValidationError
-from common.base.models import (ProductKind, ProductKindCountryStandardSize, ProductKindCountryStandardPackaging,
-                                CapitalFramework,
-                                ProductKindCountryStandard, LegalEntityCategory, SupplyKind)
+from common.base.models import (ProductKind, ProductKindCountryStandardSize, ProductKindCountryStandardPackaging, CapitalFramework,
+                                ProductKindCountryStandard, LegalEntityCategory, SupplyKind, PestProductKind, DiseaseProductKind)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   AuthorityPackagingKind,
@@ -26,6 +25,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
 from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES, PRODUCT_PACKAGING_CATEGORY_CHOICES,
                        PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES, PRODUCT_SIZE_CATEGORY_CHOICES)
 from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
+from common.base.models import FoodSafetyProcedure
 
 
 # Create your models here.
@@ -219,6 +219,109 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
                                     name='productsize_unique_alias_product_market'),
         ]
 
+
+class ProductPest(models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    pest = models.ForeignKey(PestProductKind, verbose_name=_('Pest'), on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, unique=False)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        ordering = ['name']
+        constraints = [
+            models.UniqueConstraint(fields=['product', 'pest', 'name'],
+                                    name='unique_product_pest_name')
+        ]
+
+class ProductDisease(models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    disease = models.ForeignKey(DiseaseProductKind, verbose_name=_('Disease'), on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, unique=False)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        ordering = ['name']
+        constraints = [
+            models.UniqueConstraint(fields=['product', 'disease', 'name'],
+                                    name='unique_product_disease_name')
+        ]
+
+class ProductPhysicalDamage(models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, unique=False)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = _('Product physical damage')
+        verbose_name_plural = _('Product physical damages')
+        ordering = ('name', 'product')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product'],
+                                    name='productphysicaldamage_unique_name_product'),
+        ]
+
+class ProductResidue(models.Model):
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, unique=False)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = _('Product residue')
+        verbose_name_plural = _('Product Residues')
+        ordering = ('name', 'product')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product'],
+                                    name='productresidue_unique_name_product'),
+        ]
+
+class ProductFoodSafetyProcess(models.Model):
+    procedure = models.ForeignKey(FoodSafetyProcedure, verbose_name=_('Food Safety Procedure'), on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return f"{self.procedure}"
+
+    class Meta:
+        verbose_name = _('Product Food Safety Process')
+        verbose_name_plural = _('Product Food Safety Process')
+        constraints = [
+            models.UniqueConstraint(fields=['procedure', 'product'],
+                                    name='productfoodsafetyprocess_unique_procedure_product'),
+        ]
+
+class ProductAdditionalValue(models.Model):
+    acceptance_report = models.IntegerField(verbose_name=_('Acceptance Report'), null=True, blank=True)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
+
+    def __str__(self):
+        return f"{self.acceptance_report}"
+
+    class Meta:
+        ordering = ('-created_at',)
+        verbose_name = _('Product Additional Value')
+        verbose_name_plural = _('Product Additional Values')
+
+    def save_model(self, request, obj, form, change):
+        latest = ProductAdditionalValue.objects.order_by('-created_at').first()
+        if obj.pk != latest.pk:
+            return  # No guardar si no es el último
+        super().save_model(request, obj, form, change)
 
 # /Products
 

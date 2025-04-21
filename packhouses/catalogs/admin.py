@@ -14,16 +14,19 @@ from .models import (
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
     PackagingComplementarySupply, ProductRipeness, ProductPackagingPresentation,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary,
+    ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue, ProductFoodSafetyProcess,
+    ProductAdditionalValue
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
                                                   VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier
                                                   )
+# from common.base.models import Pest, Disease, FoodSafetyProcedure
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet,
-                    PackagingKindForm, ProviderForm)
+                    PackagingKindForm, ProviderForm, ProductFoodSafetyProcessForm)
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization
 from cities_light.models import Country, Region, SubRegion, City
@@ -56,7 +59,7 @@ from .filters import (ByCountryForOrganizationMarketsFilter, ByProductForOrganiz
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
 from common.base.models import (ProductKind, ProductKindCountryStandardSize, CapitalFramework, SupplyKind,
-                                ProductKindCountryStandard)
+                                ProductKindCountryStandard, FoodSafetyProcedure, PestProductKind, DiseaseProductKind)
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 from common.base.mixins import ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, \
@@ -73,6 +76,7 @@ from .resources import (ProductResource, MarketResource, ProductSizeResource, Pr
                         ExportingCompanyResource, TransferResource, LocalTransporterResource,
                         BorderToDestinationTransporterResource, CustomsBrokerResource, VesselResource, AirlineResource,
                         InsuranceCompanyResource, )
+from django import forms
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -272,6 +276,145 @@ class ProductRipenessInline(admin.TabularInline):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
 
+class ProductPestInline(admin.TabularInline):
+    model = ProductPest
+    extra = 0
+    verbose_name = _('Pest')
+    verbose_name_plural = _('Pest')
+
+    can_delete = True
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "pest":
+            product_id = request.resolver_match.kwargs.get("object_id")
+
+            if product_id:
+                try:
+                    product = Product.objects.get(pk=product_id)
+                    kwargs['queryset'] = PestProductKind.objects.filter(product_kind=product.kind)
+                except Product.DoesNotExist:
+                    kwargs['queryset'] = PestProductKind.objects.none()
+            else:
+                kwargs['queryset'] = PestProductKind.objects.none()
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
+
+class ProductDiseaseInline(admin.TabularInline):
+    model = ProductDisease
+    extra = 0
+    verbose_name = _('Disease')
+    verbose_name_plural = _('Diseases')
+
+    can_delete = True
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "disease":
+            product_id = request.resolver_match.kwargs.get("object_id")
+
+            if product_id:
+                try:
+                    product = Product.objects.get(pk=product_id)
+                    kwargs["queryset"] = DiseaseProductKind.objects.filter(product_kind=product.kind)
+                except Product.DoesNotExist:
+                    kwargs["queryset"] = DiseaseProductKind.objects.none()
+            else:
+                kwargs["queryset"] = DiseaseProductKind.objects.none()
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
+
+class ProductPhysicalDamageInline(admin.TabularInline):
+    model = ProductPhysicalDamage
+    extra = 0
+    verbose_name = _('Physical Damage')
+    verbose_name_plural = _('Physical Damages')
+
+class ProductResidueInline(admin.TabularInline):
+    model = ProductResidue
+    extra = 0
+    verbose_name = _('Residue')
+    verbose_name_plural = _('Residues')
+
+class ProductFoodSafetyProcessInline(admin.TabularInline):
+    model = ProductFoodSafetyProcess
+    extra = 0
+    form = ProductFoodSafetyProcessForm
+    verbose_name = _('Food Safety Process')
+    verbose_name_plural = _('Food Safety Process')
+
+    can_delete = True
+    show_change_link = False
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.exclude(procedure__model="Average")
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "procedure":
+            kwargs["queryset"] = FoodSafetyProcedure.objects.exclude(model="Average")
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
+
+class ProductAdditionalValueInline(admin.TabularInline):
+    model = ProductAdditionalValue
+    extra = 0
+    verbose_name = _('Product Additional Value')
+    verbose_name_plural = _('Product Additional Values')
+    readonly_fields = ['created_at']
+    can_delete = False
+
+    def has_change_permission(self, request, obj=None):
+        # Permitir acceso al inline como tal
+        return True
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly = list(self.readonly_fields)
+
+        # Si no hay objeto, es un nuevo formulario, no hacer nada especial
+        if obj is None:
+            return readonly
+
+        # Obtener todos los valores relacionados con este producto
+        additional_values = self.model.objects.filter(product=obj).order_by('-created_at')
+
+        # Si hay más de uno, hacer todos menos el último de solo lectura
+        if additional_values.exists():
+            last = additional_values.first()
+            self.readonly_instances = [v.pk for v in additional_values if v.pk != last.pk]
+        else:
+            self.readonly_instances = []
+
+        return readonly
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        original_get_form = formset.form.__init__
+
+        def form_init(form_self, *args, **kwargs):
+            original_get_form(form_self, *args, **kwargs)
+            instance = kwargs.get('instance')
+            if instance and instance.pk in getattr(self, 'readonly_instances', []):
+                for field in form_self.fields:
+                    form_self.fields[field].disabled = True
+
+        formset.form.__init__ = form_init
+        return formset
+
 
 @admin.register(Product)
 class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
@@ -284,7 +427,11 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     inlines = [ProductMarketMeasureUnitManagementCostInline, ProductMarketClassInline,
                ProductVarietyInline,
                ProductPhenologyKindInline, ProductHarvestSizeKindInline,
-               ProductMassVolumeKindInline, ProductRipenessInline]
+               ProductMassVolumeKindInline, ProductRipenessInline,
+               ProductPestInline, ProductDiseaseInline, 
+               ProductPhysicalDamageInline, ProductResidueInline,
+               ProductFoodSafetyProcessInline, ProductAdditionalValueInline
+               ]
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
@@ -325,7 +472,6 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
 
 @admin.register(ProductSize)
 class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):

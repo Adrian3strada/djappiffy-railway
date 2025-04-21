@@ -2,7 +2,7 @@ from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
 
 
-class ProductPackagingConfig(AppConfig):
+class PackingConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'packhouses.product_packaging'
-    verbose_name = _('Product packaging')
+    name = 'packhouses.packing'
+    verbose_name = _('Packing')
