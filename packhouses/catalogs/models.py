@@ -16,7 +16,7 @@ from .utils import (vehicle_year_choices, vehicle_validate_year, get_type_choice
                     get_vehicle_category_choices, get_provider_categories_choices)
 from django.core.exceptions import ValidationError
 from common.base.models import (ProductKind, ProductKindCountryStandardSize, ProductKindCountryStandardPackaging, CapitalFramework,
-                                ProductKindCountryStandard, LegalEntityCategory, SupplyKind, Pest, Disease)
+                                ProductKindCountryStandard, LegalEntityCategory, SupplyKind, PestProductKind, DiseaseProductKind)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   AuthorityPackagingKind,
@@ -222,7 +222,7 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
 
 class ProductPest(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
-    pest = models.ForeignKey(Pest, verbose_name=_('Pest'), on_delete=models.CASCADE)
+    pest = models.ForeignKey(PestProductKind, verbose_name=_('Pest'), on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -238,7 +238,7 @@ class ProductPest(models.Model):
 
 class ProductDisease(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
-    disease = models.ForeignKey(Disease, verbose_name=_('Disease'), on_delete=models.CASCADE)
+    disease = models.ForeignKey(DiseaseProductKind, verbose_name=_('Disease'), on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 

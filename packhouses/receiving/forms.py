@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from packhouses.gathering.models import ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle
-from .models import IncomingProduct, Batch
+from .models import IncomingProduct, Batch, SamplePest, SampleDisease, SamplePhysicalDamage, SampleResidue, FoodSafety
 from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
 from django.utils.safestring import mark_safe
@@ -219,3 +219,89 @@ class BatchForm(forms.ModelForm):
                 )
 
         return cleaned
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+    
+        if instance.status == 'accepted' and not instance.batch:
+            instance.create_batch()
+
+        if commit:
+            instance.save()
+        return instance
+
+
+class BatchForm(forms.ModelForm):
+    class Meta:
+        model = Batch
+        fields = '__all__'
+
+    def clean(self):
+        cleaned = super().clean()
+
+        # Recorre cada IncomingProduct y comprueba que tenga al menos un WeighingSet no marcado para borrar
+        for i in range(int(self.data.get('incomingproduct_set-TOTAL_FORMS', 0))):
+            ws_prefix = f'incomingproduct_set-{i}-weighingset_set'
+            total_ws = int(self.data.get(f'{ws_prefix}-TOTAL_FORMS', 0))
+
+            # Cuenta los que NO tienen DELETE = 'on'
+            remaining = sum(
+                1
+                for j in range(total_ws)
+                if self.data.get(f'{ws_prefix}-{j}-DELETE', 'off') != 'on'
+            )
+
+            if remaining < 1:
+                raise ValidationError(
+                    _('At least one Weighing Set must be registered.')
+                )
+
+        return cleaned
+
+class SamplePestForm(forms.ModelForm):
+    class Meta:
+        model = SamplePest
+        fields = ['product_pest', 'sample_pest', 'percentage']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
+
+class SampleDiseaseForm(forms.ModelForm):
+    class Meta:
+        model = SampleDisease
+        fields = ['product_disease', 'sample_disease', 'percentage']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
+
+class SamplePhysicalDamageForm(forms.ModelForm):
+    class Meta:
+        model = SamplePhysicalDamage
+        fields = ['product_physical_damage', 'sample_physical_damage', 'percentage']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
+
+class SampleResidueForm(forms.ModelForm):
+    class Meta:
+        model = SampleResidue
+        fields = ['product_residue', 'sample_residue', 'percentage']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
+
+class FoodSafetyFormInline(forms.ModelForm):
+    class Meta:
+        model = FoodSafety
+        fields = ['batch']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['batch'].widget.can_add_related = False
+        self.fields['batch'].widget.can_change_related = False
+        self.fields['batch'].widget.can_delete_related = False
+        self.fields['batch'].widget.can_view_related = False
