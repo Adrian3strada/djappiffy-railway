@@ -1,315 +1,318 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const packhouseWeightResultField = $('#id_packhouse_weight_result');
-    const weighedSetField = $('#id_total_weighed_sets');
-    const weighedSetContainerField = $('#id_total_weighed_set_containers')
+  /**
+   * Combined script for:
+   *  - Counting active weighing sets (direct & nested)
+   *  - Calculating tare, net weight, and packhouse total
+   *  for inline and nested WeighingSet forms in IncomingProduct/Batch.
+   */
+  const DEL_SEL = 'input[name^="incomingproduct_set-0-weighingset_set-"][name$="-DELETE"]';
+  const CNT_SEL = 'div[id^="incomingproduct_set-0-weighingset_set-"]';
+  const TOTAL_ID = 'id_incomingproduct_set-0-total_weighed_sets';
+  const observed = new WeakSet();
 
-    // ================ CONSTANTES ================
-    const WEIGHING_SET_FORM_SELECTOR = 'div[id^="weighingset_set-"]:not([id*="group"], [id*="empty"])';
-    const CONTAINER_FORM_SELECTOR = 'tbody[id*="-weighingsetcontainer_set-"]:not([id*="empty"])';
-
-    const debounce = (func, wait) => {
-        let timeout;
-        return (...args) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
+  const debounce = (fn, wait = 300) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn(...args), wait);
     };
+  };
 
-    // ================ OBTENCIÓN DE TARA DEL CONTAINER ================
-    const fetchContainerTare = async (containerId) => {
-        if (!containerId) return 0;
-        try {
-            const response = await $.ajax({
-                url: `/rest/v1/catalogs/supply/${containerId}/`,
-                method: 'GET',
-                timeout: 5000
-            });
-            return parseFloat(response.kg_tare) || 0;
-        } catch (error) {
-            console.error('Error:', error);
-            return 0;
+  function recalcWeighingSets() {
+    const allSets = Array.from(document.querySelectorAll(CNT_SEL))
+      .filter(el => /^\d+$/.test(el.id.split('-').pop())); // exclude "-empty"
+
+    const activeCount = allSets.reduce((sum, el) => {
+      const cb = el.querySelector(DEL_SEL);
+      return sum + ((cb && cb.checked) ? 0 : 1);
+    }, 0);
+
+    const fld = document.getElementById(TOTAL_ID);
+    if (fld) {
+      fld.value = activeCount;
+      fld.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
+  function observeCheckbox(cb) {
+    if (observed.has(cb)) return;
+    const mo = new MutationObserver(muts => {
+      muts.forEach(m => {
+        if (m.attributeName === 'checked') debounce(recalcWeighingSets)();
+      });
+    });
+    mo.observe(cb, { attributes: true });
+    observed.add(cb);
+  }
+
+  // init count
+  recalcWeighingSets();
+  document.querySelectorAll(DEL_SEL).forEach(observeCheckbox);
+  document.addEventListener('change', e => {
+    if (e.target.matches(DEL_SEL)) debounce(recalcWeighingSets)();
+  });
+  document.addEventListener('formset:added', e => {
+    if (e.detail.formsetName.includes('weighingset_set')) {
+      const cb = e.target.querySelector(DEL_SEL);
+      if (cb) observeCheckbox(cb);
+      recalcWeighingSets();
+    }
+  });
+  document.addEventListener('formset:removed', debounce(recalcWeighingSets));
+
+  // ---------- 2) Tare / Net weight / Packhouse total ----------
+  const $packhouseField = $('#id_packhouse_weight_result');
+  const $weighedSetField = $('#id_total_weighed_sets');
+  const $weighedContainerField = $('#id_total_weighed_set_containers');
+
+  const WEIGHING_SET_FORM_SELECTOR = 'div[id*="weighingset_set-"]:not([id*="group"],[id*="empty"])';
+  const CONTAINER_FORM_SELECTOR = 'tbody[id*="weighingsetcontainer_set-"]:not([id*="empty"])';
+
+  const disableField = field => {
+    field.readOnly = true;
+    field.style.pointerEvents = 'none';
+    field.style.backgroundColor = '#e9ecef';
+    field.style.border = 'none';
+    field.style.color = '#555';
+  };
+
+  const fetchContainerTare = async id => {
+    if (!id) return 0;
+    try {
+      const res = await $.ajax({
+        url: `/rest/v1/catalogs/supply/${id}/`,
+        method: 'GET',
+        timeout: 5000
+      });
+      return parseFloat(res.kg_tare) || 0;
+    } catch {
+      return 0;
+    }
+  };
+
+  function fetchOptions(url) {
+    return $.ajax({ url, method: 'GET', dataType: 'json' })
+             .fail(err => console.error('Error fetching options:', err));
+  }
+
+  function updateFieldOptions($field, options, selected) {
+    $field.empty();
+    if (!$field.prop('multiple')) {
+      $field.append(new Option('---------', '', true, false));
+    }
+    options.forEach(o => {
+      $field.append(new Option(o.name, o.id, false, o.id == selected));
+    });
+    $field.val(selected);
+  }
+
+  function handleProviderChange($prov, $crew, selectedCrew = null) {
+    const provId = $prov.val();
+    if (provId) {
+      fetchOptions(`/rest/v1/catalogs/harvesting-crew/?provider=${provId}`)
+        .then(crews => updateFieldOptions($crew, crews, selectedCrew));
+    } else {
+      updateFieldOptions($crew, [], null);
+    }
+  }
+
+  const updateWeighedSetCount = () => {
+    const count = $(WEIGHING_SET_FORM_SELECTOR)
+      .filter((i, el) => {
+        const $el = $(el);
+        const $del = $el.find('input[name$="-DELETE"]').filter(function() {
+          return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
+        });
+        return !$del.prop('checked');
+      }).length;
+    $weighedSetField.val(count).trigger('change');
+  };
+
+  const calculateWeighingSetTare = async $form => {
+    const $delSet = $form.find('input[name$="-DELETE"]').filter(function() {
+      return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
+    });
+    if ($delSet.prop('checked')) return;
+
+    let totalTare = 0;
+    let totalContainers = 0;
+    const $containers = $form.find(CONTAINER_FORM_SELECTOR);
+    debouncedUpdateTotalContainers();
+
+    for (let i = 0; i < $containers.length; i++) {
+      const $c = $($containers[i]);
+      const $delC = $c.find('input[name$="-DELETE"]');
+        const delElem = $delC.get(0);
+
+        if (delElem && !$delC.data('obs')) {
+        const mo = new MutationObserver(muts => {
+            muts.forEach(m => m.attributeName === 'checked' && calculateWeighingSetTare($form));
+        });
+        mo.observe(delElem, { attributes: true });
+        $delC.data('obs', true);
         }
-    };
 
-    // ================ OBTENCIÓN DE CUADRILLAS ================
-    function fetchOptions(url) {
-        return $.ajax({
-          url: url, // La URL para obtener las opciones
-          method: 'GET',
-          dataType: 'json'
-        }).fail(error => console.error('Error al obtener opciones:', error));
+      if ($delC.prop('checked')) continue;
+
+      const cid = $c.find('select[name$="-harvest_container"]').val();
+      const qty = parseFloat($c.find('input[name$="-quantity"]').val()) || 0;
+      if (cid) {
+        totalTare += qty * await fetchContainerTare(cid);
+        totalContainers += qty;
       }
-    
-    function updateFieldOptions(field, options, selectedValue) {
-        field.empty(); // Limpiar las opciones existentes
-        if (!field.prop('multiple')) {
-            field.append(new Option('---------', '', true, false)); // Añadir opción por defecto
-        }
-        options.forEach(option => {
-            field.append(new Option(option.name, option.id, false, option.id === selectedValue)); // Añadir cada opción
-        });
-        field.val(selectedValue); // Establecer el valor seleccionado
     }
 
-    function handleProviderChange(providerField, harvestingCrewField, selectedHarvestingCrew = null) {
-        const providerId = providerField.val(); 
-        
-        if (providerId) {
-            fetchOptions(`/rest/v1/catalogs/harvesting-crew/?provider=${providerId}`)
-            .then(harvestingCrews => {
-                updateFieldOptions(harvestingCrewField, harvestingCrews, selectedHarvestingCrew); // Actualizar opciones
-            })
-            .catch(error => console.error('Error:', error));
-        } else {
-            // Si no se ha seleccionado un proveedor, limpiar las opciones del campo harvesting_crew
-            updateFieldOptions(harvestingCrewField, [], null);
+    const tT = Math.trunc(totalTare * 1000) / 1000;
+    $form.find('input[name$="-container_tare"]').val(tT);
+    $form.find('input[name$="-total_containers"]').val(totalContainers);
+    updateNetWeight($form);
+  };
+
+  const updateNetWeight = $form => {
+    const $del = $form.find('input[name$="-DELETE"]').filter(function() {
+      return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
+    });
+    if ($del.prop('checked')) return;
+
+    const gross    = parseFloat($form.find('input[name$="-gross_weight"]').val()) || 0;
+    const platform = parseFloat($form.find('input[name$="-platform_tare"]').val())   || 0;
+    const container= parseFloat($form.find('input[name$="-container_tare"]').val())  || 0;
+    const net = Math.trunc((gross - platform - container) * 1000) / 1000;
+    $form.find('input[name$="-net_weight"]').val(net);
+    debouncedUpdatePackhouse();
+  };
+
+  const updatePackhouseWeight = () => {
+    let total = 0, prefix = null;
+    $(WEIGHING_SET_FORM_SELECTOR).each(function() {
+      const $ws = $(this);
+      if (!prefix) {
+        const m = this.id.match(/^(.*)-weighingset_set-\d+$/);
+        if (m) prefix = m[1];
+      }
+      const $del = $ws.find('input[name$="-DELETE"]').filter(function() {
+        return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
+      });
+      if ($del.prop('checked')) return;
+      total += parseFloat($ws.find('input[name$="-net_weight"]').val()) || 0;
+    });
+    const truncated = Math.trunc(total * 1000) / 1000;
+    if ($packhouseField.length) {
+      $packhouseField.val(truncated).trigger('change');
+    } else if (prefix) {
+      const $pf = $(`input[name="${prefix}-packhouse_weight_result"]`);
+      if ($pf.length) $pf.val(truncated).trigger('change');
+    }
+  };
+  const debouncedUpdatePackhouse = debounce(updatePackhouseWeight, 300);
+  const updateTotalFullContainers = () => {
+    let total = 0;
+    $(WEIGHING_SET_FORM_SELECTOR).each(function() {
+      const $ws = $(this);
+      const $del = $ws.find('input[name$="-DELETE"]').filter(function() {
+        return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
+      });
+      if ($del.prop('checked')) return;
+      $ws.find(CONTAINER_FORM_SELECTOR).each(function() {
+        const $c = $(this);
+        if (!$c.find('input[name$="-DELETE"]').prop('checked')) {
+          total += parseFloat($c.find('input[name$="-quantity"]').val()) || 0;
         }
+      });
+    });
+    $weighedContainerField.val(total);
+  };
+  const debouncedUpdateTotalContainers = debounce(updateTotalFullContainers, 300);
+
+  function initializeWeighingSet(form) {
+    const $ws = $(form);
+    const $prov = $ws.find('select[name$="-provider"]');
+    const $crew = $ws.find('select[name$="-harvesting_crew"]');
+    const selCrew = $crew.val();
+
+    if ($prov.val()) handleProviderChange($prov, $crew, selCrew);
+    else updateFieldOptions($crew, [], null);
+    $prov.on('change', () => handleProviderChange($prov, $crew, $crew.val()));
+
+    // observe delete on weighing set
+    const $delSet = $ws.find('input[name$="-DELETE"]').filter(function() {
+      return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
+    });
+    if ($delSet.length) {
+      const mo = new MutationObserver(muts => muts.forEach(m => {
+        if (m.attributeName==='checked') {
+          debouncedUpdatePackhouse();
+          updateWeighedSetCount();
+        }
+      }));
+      mo.observe($delSet[0], { attributes: true });
     }
 
-    // ================ ACTUALIZACIÓN DE CONTEO DE WEIGHING SETS ================
-    const updateWeighedSetCount = () => {
-        // Solo contar weighing sets que no estén marcados para eliminación (usando el checkbox de weighing set)
-        const validWeighedSets = $(WEIGHING_SET_FORM_SELECTOR).filter((i, el) => {
-            const $el = $(el);
-            const $weighingSetDelete = $el.find('input[name$="-DELETE"]').filter(function() {
-                return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
-            });
-            return !$weighingSetDelete.prop('checked');
-        }).length;
-        weighedSetField.val(validWeighedSets).trigger('change');
-    };
-
-    // ================ CÁLCULO DE TARA DEL WEIGHING SET ================
-    const calculateWeighingSetTare = async ($weighingSetForm) => {
-        // Filtra el checkbox de eliminación del weighing set (excluyendo los que pertenecen a un container)
-        const $weighingSetDeleteCheckbox = $weighingSetForm
-            .find('input[name$="-DELETE"]')
-            .filter(function() {
-                return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
-            });
-        if ($weighingSetDeleteCheckbox.prop('checked')) return;
-
-        let totalTare = 0;
-        let totalContainers = 0;
-        const containers = $weighingSetForm.find(CONTAINER_FORM_SELECTOR);
-        debouncedUpdateTotalContainers();
-
-        for (const container of containers) {
-            const $container = $(container);
-            const $deleteCheckbox = $container.find('input[name$="-DELETE"]');
-
-            if ($deleteCheckbox.length && !$deleteCheckbox.data('observerAttached')) {
-                const observer = new MutationObserver(mutations => {
-                    mutations.forEach(mutation => {
-                        if (mutation.attributeName === 'checked') {
-                            calculateWeighingSetTare($weighingSetForm);
-                        }
-                    });
-                });
-                observer.observe($deleteCheckbox[0], { attributes: true });
-                $deleteCheckbox.data('observerAttached', true);
-            }
-            
-            if ($deleteCheckbox.prop('checked')) continue;
-            const harvestContainerId = $container.find('select[name$="-harvest_container"]').val();
-            const quantity = parseFloat($container.find('input[name$="-quantity"]').val()) || 0;
-
-            if (harvestContainerId) {
-                const tare = await fetchContainerTare(harvestContainerId);
-                totalTare += quantity * tare;
-                totalContainers += quantity;
-                
-            }
-        }
-        const truncatedTare = Math.trunc(totalTare * 1000) / 1000;
-        $weighingSetForm.find('input[name$="-container_tare"]').val(truncatedTare);
-        $weighingSetForm.find('input[name$="-total_containers"]').val(totalContainers);
-        updateNetWeight($weighingSetForm);
-    };
-
-    // ================ ACTUALIZACIÓN DE PESO NETO DEL WEIGHING SET ================
-    const updateNetWeight = ($weighingSetForm) => {
-        const $weighingSetDeleteCheckbox = $weighingSetForm
-            .find('input[name$="-DELETE"]')
-            .filter(function() {
-                return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
-            });
-        if ($weighingSetDeleteCheckbox.prop('checked')) return;
-
-        const gross = parseFloat($weighingSetForm.find('input[name$="-gross_weight"]').val()) || 0;
-        const platform = parseFloat($weighingSetForm.find('input[name$="-platform_tare"]').val()) || 0;
-        const container = parseFloat($weighingSetForm.find('input[name$="-container_tare"]').val()) || 0;
-        
-        const net = Math.trunc((gross - platform - container) * 1000) / 1000;
-        $weighingSetForm.find('input[name$="-net_weight"]').val(net);
-        debouncedUpdatePackhouse();
-    };
-    
-    // ================ ACTUALIZACIÓN TOTAL DEL PACKHOUSE ================
-    const updatePackhouseWeight = () => {
-        let total = 0;
-        $(WEIGHING_SET_FORM_SELECTOR).each(function() {
-            const $weighingSet = $(this);
-            const $weighingSetDelete = $weighingSet.find('input[name$="-DELETE"]').filter(function() {
-                return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
-            });
-            if ($weighingSetDelete.prop('checked')) return;
-            const netWeight = parseFloat($weighingSet.find('input[name$="-net_weight"]').val()) || 0;
-            total += netWeight;
+    // observe container removal
+    if (!$ws.data('childObs')) {
+      const childObs = new MutationObserver(muts => muts.forEach(m => {
+        m.removedNodes && m.removedNodes.forEach(node => {
+          if ($(node).is(CONTAINER_FORM_SELECTOR)) calculateWeighingSetTare($ws);
         });
-        const truncatedTotal = Math.trunc(total * 1000) / 1000;
-        packhouseWeightResultField.val(truncatedTotal).trigger('change');
-    };
+      }));
+      childObs.observe(form, { childList: true, subtree: true });
+      $ws.data('childObs', true);
+    }
 
-    const debouncedUpdatePackhouse = debounce(updatePackhouseWeight, 300);
+    const debTare = debounce(() => calculateWeighingSetTare($ws), 300);
+    $ws.off('input').on('input', 'input[name$="-gross_weight"], input[name$="-platform_tare"], input[name$="-quantity"]', debTare);
+    $ws.off('change').on('change', 'select[name$="-harvest_container"]', debTare);
 
+    // initial calc
+    calculateWeighingSetTare($ws);
+    updateWeighedSetCount();
+  }
 
-    // ================ ACTUALIZAR CONTENEDORES COMPLETOS ================
-    const updateTotalFullContainers = () => {
-        let total = 0;
-        
-        $(WEIGHING_SET_FORM_SELECTOR).each(function() {
-            const $weighingSet = $(this);
-            const $weighingSetDelete = $weighingSet.find('input[name$="-DELETE"]').filter(function() {
-                return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
-            });
-            
-            // Si el weighing set está marcado para eliminar, saltar
-            if ($weighingSetDelete.prop('checked')) return;
+  // initialize existing weighing sets
+  $(WEIGHING_SET_FORM_SELECTOR).each((i, f) => initializeWeighingSet(f));
 
-            // Sumar contenedores de TODOS los containers no eliminados en este weighing set
-            $weighingSet.find(CONTAINER_FORM_SELECTOR).each(function() {
-                const $container = $(this);
-                const $deleteCheckbox = $container.find('input[name$="-DELETE"]');
-                
-                if (!$deleteCheckbox.prop('checked')) {
-                    const quantity = parseFloat($container.find('input[name$="-quantity"]').val()) || 0;
-                    total += quantity;
-                }
-            });
-        });
-        
-        weighedSetContainerField.val(total);
-    };
+  // handle dynamic formset additions/removals
+  document.addEventListener('formset:added', e => {
+    const name = e.detail.formsetName;
+    if (name.endsWith('weighingset_set')) initializeWeighingSet(e.target);
+    if (name.endsWith('weighingsetcontainer_set')) {
+      const $ws = $(e.target).closest(WEIGHING_SET_FORM_SELECTOR);
+      debounce(() => calculateWeighingSetTare($ws), 300)();
+    }
+    updateWeighedSetCount();
+    debouncedUpdateTotalContainers();
+    debouncedUpdatePackhouse();
+  });
+  document.addEventListener('formset:removed', () => {
+    updateWeighedSetCount();
+    debouncedUpdateTotalContainers();
+    debouncedUpdatePackhouse();
+  });
 
-    const debouncedUpdateTotalContainers = debounce(updateTotalFullContainers, 300);
+  // delete‑link buttons
+  $(document).on('click', '.deletelink', function() {
+    const $ws = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
+    setTimeout(() => {
+      calculateWeighingSetTare($ws);
+      updateWeighedSetCount();
+    }, 100);
+  });
+  $(document).on('click', `${CONTAINER_FORM_SELECTOR} .deletelink`, function() {
+    const $ws = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
+    setTimeout(() => calculateWeighingSetTare($ws), 100);
+  });
+  $(document).on('change', `${CONTAINER_FORM_SELECTOR} input[name$="-DELETE"]`, function() {
+    const $ws = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
+    calculateWeighingSetTare($ws);
+  });
 
-
-    // ================ INICIALIZACIÓN DE UN WEIGHING SET ================
-    const initializeWeighingSet = (weighingSetForm) => {
-        const $weighingSet = $(weighingSetForm);
-        
-        const providerField = $(weighingSetForm).find('select[name$="-provider"]'); 
-        const harvestingCrewField = $(weighingSetForm).find('select[name$="-harvesting_crew"]');
-        const selectedHarvestingCrew = harvestingCrewField.val();
-
-        
-        if (providerField.val()) {
-            handleProviderChange(providerField, harvestingCrewField, selectedHarvestingCrew);
-        } else {
-            updateFieldOptions(harvestingCrewField, [], null);
-        }
-
-        // Manejar el cambio de proveedor en formularios existentes
-        providerField.on('change', function() {
-            handleProviderChange(providerField, harvestingCrewField, harvestingCrewField.val());
-        });
-
-
-        // --- Observer para detectar cambios en el checkbox DELETE del weighing set ---
-        const $weighingSetDeleteCheckbox = $weighingSet
-            .find('input[name$="-DELETE"]')
-            .filter(function() {
-                return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
-            });
-        if ($weighingSetDeleteCheckbox.length) {
-            const observer = new MutationObserver(mutations => {
-                mutations.forEach(mutation => {
-                    if (mutation.attributeName === 'checked') {
-                        debouncedUpdatePackhouse();
-                        updateWeighedSetCount();
-                    }
-                });
-            });
-            observer.observe($weighingSetDeleteCheckbox[0], { attributes: true });
-        }
-        
-        if (!$weighingSet.data('childListObserverAttached')) {
-            const childObserver = new MutationObserver(mutations => {
-                mutations.forEach(mutation => {
-                    if (mutation.removedNodes && mutation.removedNodes.length) {
-                        mutation.removedNodes.forEach(node => {
-                            if ($(node).is(CONTAINER_FORM_SELECTOR)) {
-                                calculateWeighingSetTare($weighingSet);
-                            }
-                        });
-                    }
-                });
-            });
-            childObserver.observe($weighingSet[0], { childList: true, subtree: true });
-            $weighingSet.data('childListObserverAttached', true);
-        }
-        
-        const debouncedCalculateTare = debounce(() => calculateWeighingSetTare($weighingSet), 300);
-        $weighingSet.off('input').on('input', 'input[name$="-gross_weight"], input[name$="-platform_tare"], input[name$="-quantity"]', debouncedCalculateTare);
-        $weighingSet.off('change').on('change', 'select[name$="-harvest_container"]', debouncedCalculateTare);
-
-        // Cálculo inicial al cargar el weighing set
-        calculateWeighingSetTare($weighingSet);
-        updateWeighedSetCount();
-    };
-
-    // Inicializa todos los weighing set existentes
-    $(WEIGHING_SET_FORM_SELECTOR).each((i, form) => initializeWeighingSet(form));
-
-    // ================ MANEJO DE FORMSETS ================
-    document.addEventListener('formset:added', (event) => {
-        const formsetName = event.detail.formsetName;
-
-        const providerField = $(formsetName).find('select[name$="-provider"]'); 
-        const harvestingCrewField = $(formsetName).find('select[name$="-harvesting_crew"]');
-        // Manejar el cambio de proveedor en el formulario agregado
-        providerField.on('change', function() {
-            handleProviderChange(providerField, harvestingCrewField);
-        });
-
-        // Actualizar las opciones del campo harvesting_crew cuando se agrega un nuevo formulario
-        handleProviderChange(providerField, harvestingCrewField);
-        if (formsetName === 'weighingset_set') {
-            initializeWeighingSet(event.target);
-        } else if (formsetName === 'weighingsetcontainer_set') {
-            const $weighingSet = $(event.target).closest(WEIGHING_SET_FORM_SELECTOR);
-            debounce(() => calculateWeighingSetTare($weighingSet), 300)();
-        }
-        updateWeighedSetCount();
-        debouncedUpdateTotalContainers();
+  // disable computed fields
+  $('input[name$="-total_containers"], input[name$="-container_tare"]').each(function() {
+    disableField(this);
+  });
+  document.addEventListener('formset:added', e => {
+    $(e.target).find('input[name$="-total_containers"], input[name$="-container_tare"]').each(function() {
+      disableField(this);
     });
-
-    document.addEventListener('formset:removed', () => {
-        debouncedUpdatePackhouse();
-        updateWeighedSetCount();
-        debouncedUpdateTotalContainers();
-    });
-
-    // ================ MANEJO DE BOTÓN ELIMINAR EN WEIGHING SET  ================
-    $(document).on('click', '.deletelink', function() {
-        const $weighingSet = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
-        setTimeout(() => {
-            calculateWeighingSetTare($weighingSet);
-            updateWeighedSetCount();
-        }, 100);
-    });
-
-    // ================ MANEJO DE BOTÓN ELIMINAR EN CONTAINERS ================
-    $(document).on('click', CONTAINER_FORM_SELECTOR + ' .deletelink', function() {
-        const $weighingSet = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
-        setTimeout(() => {
-            calculateWeighingSetTare($weighingSet);
-        }, 100);
-    });
-
-    $(document).on('change', CONTAINER_FORM_SELECTOR + ' input[name$="-DELETE"]', function() {
-        const $weighingSet = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
-        calculateWeighingSetTare($weighingSet);
-    });
+  });
 });

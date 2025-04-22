@@ -17,7 +17,7 @@ from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLi
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInlineMixin
 from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, 
-                    ContainerInlineFormSet)
+                    ContainerInlineFormSet, BatchForm)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                       ByCategoryForOrganizationIncomingProductFilter)
 from .utils import update_pallet_numbers,  CustomScheduleHarvestFormSet
@@ -454,9 +454,6 @@ class ScheduleHarvestInlineForBatch(ScheduleHarvestInline):
         js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',
               'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js')
         
-class WeighingSetInlineForBatch(WeighingSetInline):
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/incomingproduct/weighing_set_inline.js',)
 
 class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = IncomingProduct
@@ -467,8 +464,8 @@ class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     extra = 0
     max_num = 0
     show_change_link = True
-    custom_title = _("Incoming Product Information")  
-    inlines = [WeighingSetInlineForBatch, ScheduleHarvestInlineForBatch] 
+    custom_title = _("Incoming Product Information")
+    inlines = [WeighingSetInline, ScheduleHarvestInlineForBatch] 
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -489,6 +486,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
                     'review_status', 'operational_status', 'is_available_for_processing')
     fields = ['ooid', 'review_status', 'operational_status', 'is_available_for_processing']
     readonly_fields = ['ooid',]
+    form = BatchForm
     inlines = [IncomingProductInline]
 
     def get_scheduleharvest_ooid(self, obj):

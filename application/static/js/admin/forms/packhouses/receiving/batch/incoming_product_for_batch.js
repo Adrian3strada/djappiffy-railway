@@ -35,7 +35,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    const statusField = incomingProductForm.querySelector('select[name$="-status"]');
     const packhouseWeightResultField = incomingProductForm.querySelector('input[name$="-packhouse_weight_result"]');
     const totalWeighedSetsField = incomingProductForm.querySelector('input[name$="-total_weighed_sets"]');
     const containersAssignedField = incomingProductForm.querySelector('input[name$="-containers_assigned"]');

@@ -8,6 +8,7 @@ from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, P
                                         Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage, 
                                         ProductResidue, ProductAdditionalValue)
 from common.base.models import Pest
+from django.db.models import F
 
 # Create your models here.
 class Batch(models.Model):
@@ -103,6 +104,32 @@ class WeighingSet(models.Model):
 
     def __str__(self):
         return f"{self.ooid}"
+    
+    def save(self, *args, **kwargs):
+        if not self.ooid:
+            with transaction.atomic():
+                last_ws = (
+                    WeighingSet.objects
+                    .select_for_update()
+                    .filter(incoming_product=self.incoming_product)
+                    .order_by('-ooid')
+                    .first()
+                )
+                self.ooid = (last_ws.ooid + 1) if last_ws else 1
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Captura el incoming_product y el ooid antes de borrar
+        inc = self.incoming_product
+        deleted_ooid = self.ooid
+        with transaction.atomic():
+            super().delete(*args, **kwargs)
+            # Decrementa en 1 todos los ooid > eliminado para reacomodar
+            WeighingSet.objects.filter(
+                incoming_product=inc,
+                ooid__gt=deleted_ooid
+            ).update(ooid=F('ooid') - 1)
 
     class Meta:
         verbose_name = _('Weighing Set')

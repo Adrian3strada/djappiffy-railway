@@ -1,7 +1,14 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Selectores: ajusta estos selectores según la estructura real del HTML generado por Django admin
-    const SCHEDULEHARVEST_FORM_SELECTOR = 'div[id^="scheduleharvest-0"]';
-    const VEHICLE_FORM_SELECTOR = SCHEDULEHARVEST_FORM_SELECTOR + ' div[id^="scheduleharvest-0-scheduleharvestvehicle_set-"]:not([id*="group"], [id*="empty"])';
+    /**
+     * Funciona para cualquier nivel de inline anidado (nested inlines) y
+     * sirve con cualquier modelo que utilice la misma convención de campos:
+     *  - checkbox name$='-has_arrived'
+     *  - campos guide_number y stamp_vehicle_number junto al mismo prefijo
+     *  - contenedores como inline gathering-scheduleharvestcontainervehicle
+     */
+
+    // Selectores: inline directo o anidado
+    const VEHICLE_FORM_SELECTOR = "div[id*='scheduleharvestvehicle_set-']:not([id*='group'], [id*='empty'])";
     const CONTAINER_FORM_SELECTOR = "tbody.djn-inline-form[data-inline-model='gathering-scheduleharvestcontainervehicle']:not([id*='empty'])";
 
     const containersAssignedField = $('#id_containers_assigned');
@@ -9,191 +16,128 @@ document.addEventListener("DOMContentLoaded", function() {
     const emptyContainersField = $('#id_empty_containers');
     const missingContainersField = $('#id_missing_containers');
 
-    // Ocultar botones de agregar/eliminar vehículo en el inline de ScheduleHarvest
-    document.querySelectorAll(SCHEDULEHARVEST_FORM_SELECTOR + " #scheduleharvest-0-scheduleharvestvehicle_set-group a.djn-add-handler.djn-model-gathering-scheduleharvestvehicle")
-        .forEach(button => { button.style.display = "none"; });
-    document.querySelectorAll(SCHEDULEHARVEST_FORM_SELECTOR + " #scheduleharvest-0-scheduleharvestvehicle_set-group span.djn-delete-handler.djn-model-gathering-scheduleharvestvehicle")
-        .forEach(element => { element.style.display = "none"; });
+    // 1) Ocultar botones de agregar/eliminar vehículo en cualquier nivel
+    document.querySelectorAll(
+        "a.djn-add-handler.djn-model-gathering-scheduleharvestvehicle,"
+      + "span.djn-delete-handler.djn-model-gathering-scheduleharvestvehicle"
+    ).forEach(el => {
+        el.style.display = "none";
+    });
 
-    // Función para actualizar missing_boxes en un contenedor
+    // 2) Mostrar/ocultar campos según checkbox has_arrived en cualquier inline
+    $('input[name$="-has_arrived"]').each(function() {
+        const $checkbox = $(this);
+        const name = $checkbox.attr('name');
+        const prefix = name.replace(/-has_arrived$/, '');
+        const guideSelector = `input[name='${prefix}-guide_number']`;
+        const stampSelector = `input[name='${prefix}-stamp_vehicle_number']`;
+        const $guide = $(guideSelector).closest('.row');
+        const $stamp = $(stampSelector).closest('.row');
+        function toggleFields() {
+            const checked = $checkbox.prop('checked');
+            if (checked) {
+                $guide.fadeIn();
+                $stamp.fadeIn();
+            } else {
+                $guide.fadeOut();
+                $stamp.fadeOut();
+            }
+        }
+        toggleFields();
+        $checkbox.on('change', () => {
+            toggleFields();
+            // Opcional: recalcular totales al cambiar visibilidad
+            const $veh = $checkbox.closest(VEHICLE_FORM_SELECTOR);
+            updateVehicleTotals($veh);
+            updateGlobalTotals();
+        });
+    });
+
+    // Funcion de actualización de missing_containers
     function updateMissingBoxes(containerForm) {
-        const $container = $(containerForm);
-        const quantity = parseFloat($container.find("input[name$='-quantity']").val()) || 0;
-        const fullBoxes = parseFloat($container.find("input[name$='-full_containers']").val()) || 0;
-        const emptyBoxes = parseFloat($container.find("input[name$='-empty_containers']").val()) || 0;
-        const missingBoxes = quantity - fullBoxes - emptyBoxes;
-        $container.find("input[name$='-missing_containers']").val(missingBoxes);
+        const $c = $(containerForm);
+        const qty = parseFloat($c.find("input[name$='-quantity']").val()) || 0;
+        const full = parseFloat($c.find("input[name$='-full_containers']").val()) || 0;
+        const empty = parseFloat($c.find("input[name$='-empty_containers']").val()) || 0;
+        const missing = qty - full - empty;
+        $c.find("input[name$='-missing_containers']").val(missing);
     }
 
-    // Inicializa un contenedor: agrega listeners para inputs y checkbox DELETE
+    // Configura contenedor para cálculos
     function initializeContainer(containerForm) {
-        const $container = $(containerForm);
         updateMissingBoxes(containerForm);
-        
-        $container.on("input change", "input[name$='-quantity'], input[name$='-full_containers'], input[name$='-empty_containers']", function() {
+        $(containerForm).on("input change", "input[name$='-quantity'], input[name$='-full_containers'], input[name$='-empty_containers']", () => {
             updateMissingBoxes(containerForm);
             updateGlobalTotals();
-            // Actualiza el vehículo padre
-            const $parentVehicle = $container.closest(VEHICLE_FORM_SELECTOR);
-            if ($parentVehicle.length) {
-                updateVehicleTotals($parentVehicle);
-            } 
+            const $parent = $(containerForm).closest(VEHICLE_FORM_SELECTOR);
+            updateVehicleTotals($parent);
         });
     }
 
-    // Función para actualizar totales de un vehículo sumando sus contenedores
-    function updateVehicleTotals(vehicleForm) {
-        const $vehicle = $(vehicleForm);
-        let vehicleQuantity = 0, vehicleFullBoxes = 0, vehicleEmptyBoxes = 0, vehicleMissingBoxes = 0;
-        // Se suman solo si el vehículo tiene marcado "has_arrived"
-        const $hasArrived = $vehicle.find("input[type='checkbox'][name$='-has_arrived']");
-        if (!$hasArrived.prop("checked")) {
+    // Totales por vehículo
+    function updateVehicleTotals($vehicle) {
+        if (!$vehicle || !$vehicle.length) return;
+        let qty=0, full=0, empty=0, miss=0;
+        if (!$vehicle.find("input[name$='-has_arrived']").prop('checked')) {
             return;
         }
-        $vehicle.find(CONTAINER_FORM_SELECTOR).each(function(i, containerForm) {
-            const $container = $(containerForm);
-            if ($container.find("input[name$='-DELETE']").prop("checked")) return;
-            vehicleQuantity += parseFloat($container.find("input[name$='-quantity']").val()) || 0;
-            vehicleFullBoxes += parseFloat($container.find("input[name$='-full_containers']").val()) || 0;
-            vehicleEmptyBoxes += parseFloat($container.find("input[name$='-empty_containers']").val()) || 0;
-            vehicleMissingBoxes += parseFloat($container.find("input[name$='-missing_containers']").val()) || 0;
+        $vehicle.find(CONTAINER_FORM_SELECTOR).each((_, cf) => {
+            const $c = $(cf);
+            if ($c.find("input[name$='-DELETE']").prop('checked')) return;
+            qty += parseFloat($c.find("input[name$='-quantity']").val())||0;
+            full += parseFloat($c.find("input[name$='-full_containers']").val())||0;
+            empty += parseFloat($c.find("input[name$='-empty_containers']").val())||0;
+            miss += parseFloat($c.find("input[name$='-missing_containers']").val())||0;
         });
-        
     }
 
-    // Función para actualizar totales globales (en todos los vehículos)
+    // Totales globales
     function updateGlobalTotals() {
-        let globalQuantity = 0, globalFullContainers = 0, globalEmptyContainers = 0, globalMissingContainers = 0;
-        $(VEHICLE_FORM_SELECTOR).each(function(i, vehicleForm) {
-            const $vehicle = $(vehicleForm);
-            if ($vehicle.find("input[type='checkbox'][name$='-has_arrived']").prop("checked")) {
-                $vehicle.find(CONTAINER_FORM_SELECTOR).each(function(j, containerForm) {
-                    const $container = $(containerForm);
-                    if ($container.find("input[name$='-DELETE']").prop("checked")) return;
-                    globalQuantity += parseFloat($container.find("input[name$='-quantity']").val()) || 0;
-                    globalFullContainers += parseFloat($container.find("input[name$='-full_containers']").val()) || 0;
-                    globalEmptyContainers += parseFloat($container.find("input[name$='-empty_containers']").val()) || 0;
-                    globalMissingContainers += parseFloat($container.find("input[name$='-missing_containers']").val()) || 0;
+        let gQty=0, gFull=0, gEmpty=0, gMiss=0;
+        $(VEHICLE_FORM_SELECTOR).each((_, vf) => {
+            const $v = $(vf);
+            if ($v.find("input[name$='-has_arrived']").prop('checked')) {
+                $v.find(CONTAINER_FORM_SELECTOR).each((_, cf) => {
+                    const $c = $(cf);
+                    if ($c.find("input[name$='-DELETE']").prop('checked')) return;
+                    gQty += parseFloat($c.find("input[name$='-quantity']").val())||0;
+                    gFull += parseFloat($c.find("input[name$='-full_containers']").val())||0;
+                    gEmpty += parseFloat($c.find("input[name$='-empty_containers']").val())||0;
+                    gMiss += parseFloat($c.find("input[name$='-missing_containers']").val())||0;
                 });
             }
-            containersAssignedField.val(globalQuantity);
-            fullContainersField.val(globalFullContainers);
-            emptyContainersField.val(globalEmptyContainers);
-            missingContainersField.val(globalMissingContainers);
         });
-        
+        containersAssignedField.val(gQty);
+        fullContainersField.val(gFull);
+        emptyContainersField.val(gEmpty);
+        missingContainersField.val(gMiss);
     }
 
+    // Inicializar contenedores existentes
+    $(CONTAINER_FORM_SELECTOR).each((_, cf) => initializeContainer(cf));
 
-    // Inicializa los contenedores existentes
-    $(CONTAINER_FORM_SELECTOR).each(function(i, containerForm) {
-        initializeContainer(containerForm);
-    });
-
-
-    // Inicializa cada formulario de vehículo y configura listeners para su checkbox "has_arrived"
-    $(VEHICLE_FORM_SELECTOR).each(function(i, vehicleForm) {
-        const $vehicle = $(vehicleForm);
-        const hasArrivedField = $(vehicleForm).find('input[name$="-has_arrived"]');
-        const guideNumberField = $(vehicleForm).find('input[name$="-guide_number"]');
-        const stampVehicleNumberField = $(vehicleForm).find('input[name$="-stamp_vehicle_number"]');
-
-        const guideNumberWrapper = guideNumberField.closest('.row');
-        const stampVehicleWrapper = stampVehicleNumberField.closest('.row');
-
-        // Buscar el siguiente .row después del campo guide_number para mensajes de error
-        const guideNumberErrorRow = guideNumberWrapper.next('.row');
-        const stampVehicleErrorRow = stampVehicleWrapper.next('.row');
-
-        guideNumberWrapper.hide();
-        stampVehicleWrapper.hide();
-
-        if (hasArrivedField.prop('checked')) {
-            guideNumberWrapper.show();
-            stampVehicleWrapper.show();
-        }    
-
-        hasArrivedField.on('change', () => {
-            const isChecked = hasArrivedField.prop('checked');
-            if (isChecked === true) {
-                guideNumberWrapper.fadeIn();
-                stampVehicleWrapper.fadeIn();
-                guideNumberErrorRow.fadeIn();
-                stampVehicleErrorRow.fadeIn();
-            } else {
-                guideNumberWrapper.fadeOut();
-                stampVehicleWrapper.fadeOut();
-                guideNumberErrorRow.fadeOut();
-                stampVehicleErrorRow.fadeOut();
-            }
-        });
-
-        $vehicle.find("input[type='checkbox'][name$='-has_arrived']").on("change", function() {
-            updateVehicleTotals(vehicleForm);
+    // Nuevos contenedores
+    document.addEventListener('formset:added', e => {
+        if (e.detail.formsetName.includes('scheduleharvestcontainervehicle_set')) {
+            initializeContainer(e.target);
             updateGlobalTotals();
-        });
-        $vehicle.on("input change", CONTAINER_FORM_SELECTOR + " input", function() {
-            updateVehicleTotals(vehicleForm);
-            updateGlobalTotals();
-        });
-        if ($vehicle.find("input[type='checkbox'][name$='-has_arrived']").prop("checked")) {
-            updateVehicleTotals(vehicleForm);
+            const $veh = $(e.target).closest(VEHICLE_FORM_SELECTOR);
+            updateVehicleTotals($veh);
         }
     });
 
-    // Escucha el evento formset:added para nuevos contenedores
-    document.addEventListener("formset:added", function(event) {
-        const formsetName = event.detail.formsetName;
-        if (formsetName.includes("scheduleharvestcontainervehicle_set")) {
-            initializeContainer(event.target);
-            updateGlobalTotals();
-            const $parentVehicle = $(event.target).closest(VEHICLE_FORM_SELECTOR);
-            if ($parentVehicle.length) {
-                updateVehicleTotals($parentVehicle);
-            }
+    // Observador para DELETE y remociones
+    new MutationObserver(muts => muts.forEach(mut => {
+        if (mut.type==='attributes' && mut.target.matches("input[name$='-DELETE']")) {
+            const $c = $(mut.target).closest(CONTAINER_FORM_SELECTOR);
+            setTimeout(() => { updateMissingBoxes($c); updateGlobalTotals(); updateVehicleTotals($c.closest(VEHICLE_FORM_SELECTOR)); },200);
         }
-    });
-
-    const globalObserver = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-            // Si es cambio de atributo en un checkbox DELETE:
-            if (
-                mutation.type === "attributes" &&
-                mutation.target.matches("input[name$='-DELETE']") &&
-                !mutation.target.getAttribute("name").includes("crew")
-              ) {
-                const $container = $(mutation.target).closest(CONTAINER_FORM_SELECTOR);
-                setTimeout(() => {
-                  updateMissingBoxes($container);
-                  updateGlobalTotals();
-                  const $parentVehicle = $container.closest(VEHICLE_FORM_SELECTOR);
-                  if ($parentVehicle.length) {
-                    updateVehicleTotals($parentVehicle);
-                  }
-                }, 200);
-              }
-              
-            // Si se detecta eliminación de nodos (childList) que contenga el enlace "Remove"
-            if (mutation.type === "childList" && mutation.removedNodes.length > 0) {
-                mutation.removedNodes.forEach(node => {
-                    if (node.nodeType === Node.ELEMENT_NODE) {
-                        const $node = $(node);
-                        // Verifica si el nodo removido contiene un enlace con la clase del delete
-                        if ($node.find("a.inline-deletelink.djn-remove-handler.djn-level-3").length) {
-                            setTimeout(() => {
-                                updateGlobalTotals();
-                                // Recorre cada vehículo para actualizar
-                                $(VEHICLE_FORM_SELECTOR).each(function(i, vehicleForm) {
-                                    updateVehicleTotals(vehicleForm);
-                                });
-                            }, 200);
-                        }
-                    }
-                });
-            }
-        });
-    });
-
-    // Observa cambios a nivel de documento para atributos y modificaciones en el árbol DOM
-    globalObserver.observe(document.body, { attributes: true, childList: true, subtree: true });
+        if (mut.type==='childList' && mut.removedNodes.length) {
+            Array.from(mut.removedNodes).forEach(node => {
+                if (node.nodeType===1 && $(node).find('a.inline-deletelink').length) {
+                    setTimeout(() => { updateGlobalTotals(); $(VEHICLE_FORM_SELECTOR).each((_, vf) => updateVehicleTotals($(vf))); },200);
+                }
+            });
+        }
+    })).observe(document.body, { attributes:true, childList:true, subtree:true });
 });
