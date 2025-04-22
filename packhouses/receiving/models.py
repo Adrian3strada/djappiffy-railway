@@ -129,7 +129,7 @@ class DryMatter(models.Model):
     paper_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     moisture_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     dry_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    dry_matter_percentage = models.DecimalField(max_digits=10, decimal_places=2)
+    dry_matter = models.DecimalField(max_digits=10, decimal_places=2)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):
