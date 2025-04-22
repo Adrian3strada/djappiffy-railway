@@ -1,47 +1,27 @@
 document.addEventListener("DOMContentLoaded", function () {
     function updateSelectOptions(selector) {
-        const selects = document.querySelectorAll(selector);
-        const selectedValues = new Set();
+        const selects = Array.from(document.querySelectorAll(selector));
+        const selectedValues = new Set(
+            selects.map(select => select.value).filter(Boolean)
+        );
 
-        // Recopilar valores seleccionados
-        selects.forEach(select => {
-            if (select.value) {
-                selectedValues.add(select.value);
-            }
-        });
-
-        // Guardar las opciones originales solo una vez
         selects.forEach(select => {
             if (!select.dataset.originalOptions) {
-                const originalOptions = Array.from(select.options).map(option => {
-                    return {
-                        value: option.value,
-                        text: option.text,
-                    };
-                });
-                select.dataset.originalOptions = JSON.stringify(originalOptions);
+                const options = Array.from(select.options).map(({ value, text }) => ({ value, text }));
+                select.dataset.originalOptions = JSON.stringify(options);
             }
         });
 
-        // Reconstruir opciones en cada select
         selects.forEach(select => {
             const originalOptions = JSON.parse(select.dataset.originalOptions);
             const currentValue = select.value;
 
-            // Limpiar opciones actuales
-            select.innerHTML = "";
+            // Limpiar y reconstruir
+            select.innerHTML = originalOptions
+                .filter(({ value }) => value === "" || !selectedValues.has(value) || value === currentValue)
+                .map(({ value, text }) => `<option value="${value}">${text}</option>`)
+                .join("");
 
-            originalOptions.forEach(({ value, text }) => {
-                // Mostrar si está vacía, no ha sido seleccionada o es la actual
-                if (value === "" || !selectedValues.has(value) || value === currentValue) {
-                    const option = document.createElement("option");
-                    option.value = value;
-                    option.textContent = text;
-                    select.appendChild(option);
-                }
-            });
-
-            // Restaurar valor
             select.value = currentValue;
         });
     }
@@ -51,25 +31,34 @@ document.addEventListener("DOMContentLoaded", function () {
     const diseaseSelector = 'select[name*="sampledisease_set"][name$="-product_disease"]';
     const physicalDamageSelector = 'select[name*="samplephysicaldamage_set"][name$="-product_physical_damage"]';
     const residueSelector = 'select[name*="sampleresidue_set"][name$="-product_residue"]';
- 
-    function updateAll() {
-        updateSelectOptions(pestSelector);
-        updateSelectOptions(diseaseSelector);
-        updateSelectOptions(physicalDamageSelector);
-        updateSelectOptions(residueSelector);
-    }
+    
+    updateSelectOptions(pestSelector);
+    updateSelectOptions(diseaseSelector);
+    updateSelectOptions(physicalDamageSelector);
+    updateSelectOptions(residueSelector);
 
-    $(document).on('change', function () {
-        updateAll();
+    $(document).on('change', pestSelector + ', ' + diseaseSelector + ', ' + physicalDamageSelector + ', ' + residueSelector, function () {
+        if ($(this).is(pestSelector)) {
+            updateSelectOptions(pestSelector);
+        } else if ($(this).is(diseaseSelector)) {
+            updateSelectOptions(diseaseSelector);
+        } else if ($(this).is(physicalDamageSelector)) {
+            updateSelectOptions(physicalDamageSelector);
+        } else if ($(this).is(residueSelector)) {
+            updateSelectOptions(residueSelector);
+        }
     });
-
 
     $(document).on('formset:removed', function (event, $inline) {
-        updateAll();
+        if (event.detail.formsetName === 'samplecollection_set-0-samplepest_set') {
+            updateSelectOptions(pestSelector);
+        } else if (event.detail.formsetName === 'samplecollection_set-0-sampledisease_set') {
+            updateSelectOptions(diseaseSelector);
+        } else if (event.detail.formsetName === 'samplecollection_set-0-samplephysicaldamage_set') {
+            updateSelectOptions(physicalDamageSelector);
+        } else if (event.detail.formsetName === 'samplecollection_set-0-sampleresidue_set') {
+            updateSelectOptions(residueSelector);
+        }
     });
-
-    // Actualizamos al cargar la página
-    updateAll();
 });
-
 

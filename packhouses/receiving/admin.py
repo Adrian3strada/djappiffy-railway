@@ -16,8 +16,7 @@ from .models import (IncomingProduct, WeighingSet, WeighingSetContainer,
 from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLinksMixin)
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInlineMixin
-from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet, 
-                    SamplePestForm, SampleDiseaseForm, SampleResidueForm, FoodSafetyFormInline, SamplePhysicalDamageForm)
+from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                       ByCategoryForOrganizationIncomingProductFilter)
 from .utils import update_pallet_numbers,  CustomScheduleHarvestFormSet
@@ -453,13 +452,11 @@ class BatchAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
 class DryMatterInline(NestedTabularInline):
     model = DryMatter
     extra = 0
-
     fields = ['product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage']
 
 class InternalInspectionInline(NestedTabularInline):
     model = InternalInspection
     extra = 0
-
     fields = ['internal_temperature', 'product_pest']
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -533,7 +530,7 @@ class SamplePestInline(nested_admin.NestedTabularInline):
     model = SamplePest
     extra = 0
     fields = ['product_pest', 'sample_pest', 'percentage']
-    form = SamplePestForm
+    readonly_fields = ['percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_pest":
@@ -555,7 +552,7 @@ class SampleDiseaseInline(nested_admin.NestedTabularInline):
     model = SampleDisease
     extra = 0
     fields = ['product_disease', 'sample_disease', 'percentage']
-    form = SampleDiseaseForm
+    readonly_fields = ['percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_disease":
@@ -577,7 +574,7 @@ class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
     model = SamplePhysicalDamage
     extra = 0
     fields = ['product_physical_damage', 'sample_physical_damage', 'percentage']
-    form = SamplePhysicalDamageForm
+    readonly_fields = ['percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_physical_damage":
@@ -599,7 +596,7 @@ class SampleResidueInline(nested_admin.NestedTabularInline):
     model = SampleResidue
     extra = 0
     fields = ['product_residue', 'sample_residue', 'percentage']
-    form = SampleResidueForm
+    readonly_fields = ['percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_residue":
@@ -681,8 +678,16 @@ INLINE_CLASSES = {
 class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('batch',)
     list_filter = ['batch']
-    form = FoodSafetyFormInline
     inlines = [DryMatterInline, InternalInspectionInline, VehicleReviewInline, SampleCollectionInline, AverageInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['batch'].widget.can_add_related = False
+        form.base_fields['batch'].widget.can_change_related = False
+        form.base_fields['batch'].widget.can_delete_related = False
+        form.base_fields['batch'].widget.can_view_related = False
+
+        return form
 
     def get_inlines(self, request, obj=None):
         inlines_list = []

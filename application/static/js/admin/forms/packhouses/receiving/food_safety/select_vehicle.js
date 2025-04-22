@@ -45,8 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
             select.value = currentValue;
         });
     }
-
-    // Selectores para los dos tipos de selects
+    
     const vehicleSelector = '.inline-group [name^="vehiclereview_set-"][name$="-vehicle"]';
  
     function updateAll() {
