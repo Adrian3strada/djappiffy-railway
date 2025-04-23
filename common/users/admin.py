@@ -2,8 +2,25 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group as OriginalGroup
 from django.utils.translation import gettext_lazy as _
+from organizations.models import OrganizationUser
+from common.base.mixins import (ByOrganizationAdminMixin)
 
 from .models import User, Group, Permission
+
+class OrganizationUserInline(admin.TabularInline):
+    model = OrganizationUser
+    max_num = 1
+    fields = ["is_admin", "organization"]
+
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+
+        if not request.user.is_superuser:
+            fields = ["is_admin"]
+        
+            return fields
+        
+        return fields
 
 
 @admin.register(User)
@@ -70,6 +87,16 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
+    inlines = [OrganizationUserInline]
+
+    def get_inline_instances(self, request, obj=None):
+        if obj is None:
+            return []
+        return super().get_inline_instances(request, obj)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs
 
 
 admin.site.unregister(OriginalGroup)
