@@ -14,17 +14,31 @@ from common.base.mixins import (
     DisableInlineRelatedLinksMixin, ByUserAdminMixin,
 )
 from django.core.exceptions import ObjectDoesNotExist
-from .forms import RequisitionForm, PurchaseOrderForm, PurchaseOrderPaymentForm
+from .forms import RequisitionForm, PurchaseOrderForm, PurchaseOrderPaymentForm, RequisitionSupplyForm
 from django.utils.html import format_html, format_html_join
 from django.urls import reverse
 import nested_admin
 from common.forms import SelectWidgetWithData
 from common.utils import is_instance_used
+from common.base.models import SupplyMeasureUnitCategory
+from django.urls import path
+from django.http import HttpResponseRedirect
+from django.contrib import messages
+from django.utils import timezone
+from django.db import models
+from django.core.exceptions import ValidationError
+from django import forms
+from decimal import Decimal, ROUND_HALF_UP
+from django.db import transaction
+from django.contrib.messages import constants as message_constants
+
+
 
 
 
 class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
     model = RequisitionSupply
+    #form = RequisitionSupplyForm
     fields = ('supply', 'quantity', 'unit_category','delivery_deadline', 'comments')
     extra = 0
 
@@ -63,6 +77,9 @@ class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInlin
         if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
             return False
         return super().has_delete_permission(request, obj)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/purchases/requisition_supply_inline.js',)
 
 
 @admin.register(Requisition)
@@ -190,8 +207,23 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
             kwargs["queryset"] = queryset
             kwargs["widget"] = SelectWidgetWithData(model=RequisitionSupply, data_fields=["quantity", "comments","unit_category","delivery_deadline"])
 
-
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def clean(self):
+        if self.quantity <= 0:
+            raise ValidationError({'quantity': _("Quantity must be greater than 0.")})
+
+        if self.unit_price <= 0:
+            raise ValidationError({'unit_price': _("Unit price must be greater than 0.")})
+
+    def save(self, *args, **kwargs):
+        if self.quantity <= 0:
+            raise ValueError("Quantity must be greater than 0.")
+        if self.unit_price <= 0:
+            raise ValueError("Unit price must be greater than 0.")
+
+        self.total_price = self.quantity * self.unit_price
+        super().save(*args, **kwargs)
 
     class Media:
         js = ('js/admin/forms/packhouses/purchases/purchase_orders_supply.js',)
@@ -215,7 +247,7 @@ class PurchaseOrderChargerInline(admin.StackedInline):
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         parent_obj = self._get_parent_obj(request)
-        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+        if parent_obj and parent_obj.status in ['canceled',]:
             # Todos los campos se vuelven de solo lectura si el estado es cerrado, cancelado o listo
             readonly_fields.extend([
                 field.name for field in self.model._meta.fields
@@ -225,7 +257,7 @@ class PurchaseOrderChargerInline(admin.StackedInline):
 
     def has_delete_permission(self, request, obj=None):
         parent_obj = self._get_parent_obj(request)
-        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+        if parent_obj and parent_obj.status in ['canceled',]:
             return False
         return super().has_delete_permission(request, obj)
 
@@ -247,7 +279,7 @@ class PurchaseOrderDeductionInline(admin.StackedInline):
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         parent_obj = self._get_parent_obj(request)
-        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+        if parent_obj and parent_obj.status in ['canceled',]:
             # Todos los campos se vuelven de solo lectura si el estado es cerrado, cancelado o listo
             readonly_fields.extend([
                 field.name for field in self.model._meta.fields
@@ -257,7 +289,7 @@ class PurchaseOrderDeductionInline(admin.StackedInline):
 
     def has_delete_permission(self, request, obj=None):
         parent_obj = self._get_parent_obj(request)
-        if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
+        if parent_obj and parent_obj.status in ['canceled',]:
             return False
         return super().has_delete_permission(request, obj)
 
@@ -265,21 +297,91 @@ class PurchaseOrderDeductionInline(admin.StackedInline):
 class PurchaseOrderPaymentInline(admin.StackedInline):
     model = PurchaseOrderPayment
     form = PurchaseOrderPaymentForm
-    fields = ('payment_date','payment_kind', 'amount', 'bank', 'comments', 'additional_inputs')
+    fields = (
+        'cancel_button',
+        'payment_kind',
+        'payment_date',
+        'amount',
+        'bank',
+        'comments',
+        'additional_inputs',
+        'payment_info',
+    )
     extra = 0
     can_delete = False
+    # Estos campos se mostrarán de solo lectura:
+    readonly_fields = ('cancel_button', 'payment_info',)
+
+    def cancel_button(self, obj):
+        if obj.pk and obj.status != "canceled":
+            url = reverse('admin:cancel_payment', args=[obj.pk])
+            title = _("Are you sure you want to cancel this payment?")
+            confirm_text = _("Yes, cancel")
+            cancel_text = _("No, keep it")
+            button_label = _("Cancel payment")
+            return format_html(
+                '<a class="button" href="{0}" onclick="event.preventDefault(); '
+                'Swal.fire({{ '
+                'title: \'{1}\', '
+                'icon: \'warning\', '
+                'showCancelButton: true, '
+                'confirmButtonText: \'{2}\', '
+                'cancelButtonText: \'{3}\', '
+                'confirmButtonColor: \'#d33\' '
+                '}}).then((result) => {{ if (result.isConfirmed) {{ '
+                'window.location.href=\'{0}\'; '
+                '}} }});">{4}</a>',
+                url, title, confirm_text, cancel_text, button_label
+            )
+        if not obj.pk:
+            return ""
+        if obj.pk and obj.status == "canceled":
+            return format_html('<span class="canceled">{}</span>', _('Payment canceled'))
+
+    cancel_button.short_description = ""
+
+    def payment_info(self, obj):
+        if not obj.pk:
+            return ""
+        if obj.status == "canceled":
+            canceled_by = obj.canceled_by if obj.canceled_by else ""
+            cancellation_date = obj.cancellation_date.strftime("%d/%m/%Y %H:%M") if obj.cancellation_date else ""
+            created_at = obj.created_at.strftime("%d/%m/%Y %H:%M") if obj.created_at else ""
+            created_by = obj.created_by if obj.created_by else ""
+            added_by_info = format_html(
+                '<div><span>{}</span>: {}<br><span>{}</span>: {}</div>',
+                _("Registered by"), created_by,
+                _("Payment date"), created_at
+            )
+            return format_html(
+                '{}<div><span>{}</span>: {}<br><span>{}</span>: {} Hrs.</div>',
+                added_by_info, _("Canceled by"), canceled_by,
+                _("Cancellation date"), cancellation_date
+            )
+        else:
+            created_by = obj.created_by if obj.created_by else ""
+            created_at = obj.created_at.strftime("%d/%m/%Y %H:%M") if obj.created_at else ""
+            return format_html(
+                '<div><span>{}</span>: {}<br><span>{}</span>: {}</div>',
+                _("Registered by"), created_by,
+                _("Payment date"), created_at
+            )
+
+    payment_info.short_description = _("Payment info")
 
     class Media:
         js = ('js/admin/forms/packhouses/purchases/purchase_orders_payments.js',)
 
+
 @admin.register(PurchaseOrder)
 class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     form = PurchaseOrderForm
-    list_display = ('ooid', 'provider', 'currency', 'status', 'created_at', 'user', 'generate_actions_buttons')
-    fields = ('ooid', 'provider','payment_date','currency','tax', 'status', 'comments', 'save_and_send')
+    list_display = ('ooid', 'provider', 'balance_payable', 'currency', 'status', 'created_at', 'user', 'generate_actions_buttons')
+    fields = ('ooid', 'provider','payment_date', 'balance_payable', 'currency','tax', 'status', 'comments', 'save_and_send')
     list_filter = ('provider', 'currency', 'status')
-    readonly_fields = ('ooid', 'status')
+    readonly_fields = ('ooid', 'status', 'balance_payable', 'created_at', 'user')
     inlines = [PurchaseOrderRequisitionSupplyInline, PurchaseOrderChargerInline, PurchaseOrderDeductionInline]
+
 
     def get_inline_instances(self, request, obj=None):
         inline_instances = super().get_inline_instances(request, obj)
@@ -331,7 +433,7 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
 
         tooltip_payment = _('Payment application')
         set_purchase_order_supply_payment_button = ''
-        if obj.status == "closed" and not obj.is_in_payments:
+        if obj.status == "closed":
             edit_url = reverse(
                 "admin:{}_{}_change".format(obj._meta.app_label, obj._meta.model_name),
                 args=[obj.pk]
@@ -395,9 +497,180 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
             obj.user = request.user
 
         save_and_send = form.cleaned_data.get('save_and_send', False)
-        if save_and_send:
+        if save_and_send and obj.status == 'open':
             obj.status = 'ready'
+
         super().save_model(request, obj, form, change)
+
+    def get_urls(self):
+        # Obtener primero las URLs originales del admin
+        urls = super().get_urls()
+        # Definir URLs personalizadas
+        custom_urls = [
+            path(
+                'cancel-payment/<int:payment_id>/',
+                self.admin_site.admin_view(self.cancel_payment),
+                name='cancel_payment'
+            ),
+        ]
+        return custom_urls + urls
+
+    def cancel_payment(self, request, payment_id, *args, **kwargs):
+        try:
+            payment = PurchaseOrderPayment.objects.get(id=payment_id)
+            payment.status = "canceled"
+            payment.cancellation_date = timezone.now()
+            payment.canceled_by = request.user
+            payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
+            payment.purchase_order.recalculate_balance()
+            self.message_user(request, _(f"Payment canceled successfully. New balance payable: ${payment.purchase_order.balance_payable:.2f}"),
+                              level=messages.SUCCESS)
+            # Obtenemos el ID del Purchase Order asociado
+            purchase_order_id = payment.purchase_order.pk
+        except PurchaseOrderPayment.DoesNotExist:
+            self.message_user(request, _("Payment not found"), level=messages.ERROR)
+            purchase_order_id = None
+
+        if purchase_order_id:
+            # Construimos la URL de cambio del Purchase Order y le agregamos el fragmento #payments-tab
+            redirect_url = reverse('admin:purchases_purchaseorder_change', args=[purchase_order_id]) + "#payments-tab"
+        else:
+            redirect_url = request.path + "#payments-tab"
+        return HttpResponseRedirect(redirect_url)
+
+
+    def response_change(self, request, obj):
+        balance_data = obj.simulate_balance()
+
+        if balance_data['balance'] < 0:
+            if not hasattr(request, '_balance_error_shown'):
+                self.message_user(
+                    request,
+                    _(f"No se puede guardar esta orden porque el balance sería negativo (${balance_data['balance']}). "
+                      f"Insumos: ${balance_data['supplies_total']}, "
+                      f"Impuestos: ${balance_data['tax_amount']}, "
+                      f"Cargos: ${balance_data['charges_total']}, "
+                      f"Deducciones: ${balance_data['deductions_total']}, "
+                      f"Pagos: ${balance_data['payments_total']}"),
+                    level=messages.ERROR
+                )
+            url = reverse('admin:purchases_purchaseorder_change', args=[obj.pk])
+            return HttpResponseRedirect(url)
+
+        obj.balance_payable = balance_data['balance']
+        obj.save(update_fields=['balance_payable'])
+        return super().response_change(request, obj)
+
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+
+        purchase_order = form.instance
+        balance_data = purchase_order.simulate_balance()
+
+        if balance_data['balance'] < 0:
+            if not hasattr(request, '_balance_error_shown'):
+                request._balance_error_shown = True
+                self.message_user(
+                    request,
+                    _(f"El balance final sería negativo (${balance_data['balance']}). "
+                      f"Costo total de Insumos: ${balance_data['supplies_total']} "
+                      f"+ Impuestos: ${balance_data['tax_amount']} "
+                      f"+ Cargos: ${balance_data['charges_total']} "
+                      f"- Pagos: ${balance_data['payments_total']} "
+                      f"- Deducciones: ${balance_data['deductions_total']}"),
+                    level=messages.ERROR
+                )
+            return
+
+        # Solo si pasa, sí se guarda
+        purchase_order.recalculate_balance()
+
+    def save_formset(self, request, form, formset, change):
+
+        model = formset.model
+        purchase_order = form.instance
+
+        if not hasattr(formset, 'cleaned_data'):
+            return
+
+        # Cargamos objetos actuales
+        existing_qs = {obj.pk: obj for obj in model.objects.filter(purchase_order=purchase_order)}
+
+        # Lista de objetos marcados para eliminar
+        to_delete = []
+
+        for form_data in formset.cleaned_data:
+            if form_data.get('DELETE') and form_data.get('id'):
+                obj = form_data['id']
+                if obj.pk in existing_qs:
+                    to_delete.append(existing_qs.pop(obj.pk))  # lo quitamos y lo marcamos para borrar
+
+        # Nuevas instancias sin guardar aún
+        new_instances = formset.save(commit=False)
+
+        for instance in new_instances:
+            existing_qs[instance.pk] = instance  # reemplazamos si ya existía
+
+        combined = list(existing_qs.values())
+
+        # Cálculo de totales (simulación)
+        total_supplies = Decimal('0.00')
+        total_charges = Decimal('0.00')
+        total_deductions = Decimal('0.00')
+        total_payments = Decimal('0.00')
+
+        for obj in combined:
+            if isinstance(obj, PurchaseOrderSupply):
+                total_supplies += Decimal(obj.total_price or 0)
+            elif isinstance(obj, PurchaseOrderCharge):
+                total_charges += Decimal(obj.amount or 0)
+            elif isinstance(obj, PurchaseOrderDeduction):
+                total_deductions += Decimal(obj.amount or 0)
+            elif isinstance(obj, PurchaseOrderPayment) and obj.status != 'canceled':
+                total_payments += Decimal(obj.amount or 0)
+
+        other_data = purchase_order.simulate_balance()
+
+        supplies_total = total_supplies if model == PurchaseOrderSupply else other_data['supplies_total']
+        charges_total = total_charges if model == PurchaseOrderCharge else other_data['charges_total']
+        deductions_total = total_deductions if model == PurchaseOrderDeduction else other_data['deductions_total']
+        payments_total = total_payments if model == PurchaseOrderPayment else other_data['payments_total']
+
+        tax_percent = Decimal(purchase_order.tax or 0)
+        tax_decimal = tax_percent / Decimal('100.00')
+        tax_amount = (supplies_total * tax_decimal).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        balance = supplies_total + tax_amount + charges_total - deductions_total - payments_total
+        balance = balance.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        if balance < 0:
+            if not hasattr(request, '_balance_error_shown'):
+                request._balance_error_shown = True
+                self.message_user(
+                    request,
+                    _(f"El balance final sería negativo (${balance}) "
+                      f"Costo total de Insumos: ${supplies_total} "
+                      f"+ Impuestos: ${tax_amount} "
+                      f"+ Cargos: ${charges_total} "
+                      f"- Pagos: ${payments_total} "
+                      f"- Deducciones: ${deductions_total}"),
+                    level=messages.ERROR
+                )
+            return  # no guardar
+
+        #Primero eliminamos los que fueron marcados para DELETE
+        for obj in to_delete:
+            obj.delete()
+
+        #Ahora sí se guarda los nuevos o modificados
+        for instance in new_instances:
+            if not instance.pk:
+                instance.created_by = request.user
+            instance.save()
+
+        formset.save_m2m()
+
 
     class Media:
         js = ('js/admin/forms/packhouses/purchases/purchase_orders.js',)

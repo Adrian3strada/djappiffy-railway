@@ -1,3 +1,5 @@
+from random import choices
+
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 from wagtail.models import Orderable
@@ -37,6 +39,22 @@ class ProductKind(models.Model):
         verbose_name_plural = _('Product Kinds')
         ordering = ['sort_order']
 
+class SupplyMeasureUnitCategory(models.Model):
+    name = models.CharField(max_length=100)
+    factor = models.FloatField(verbose_name=_('Factor'), validators=[MinValueValidator(0.01)], default=1.0)
+    unit_category = models.CharField(max_length=30, verbose_name=_('Unit category'), choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('Supply Measure Unit Category')
+        verbose_name_plural = _('Supply Measure Unit Categories')
+        ordering = ['name']
+        constraints = [
+            models.UniqueConstraint(fields=['name'], name='supplymeasureunitcategory_unique_name')
+        ]
 
 class SupplyKind(models.Model):
     category = models.CharField(max_length=40, verbose_name=_('Category'), choices=SUPPLY_CATEGORY_CHOICES)
@@ -45,10 +63,23 @@ class SupplyKind(models.Model):
                                               null=True, blank=False,
                                               help_text=_('Capacity unit to group supply kinds by his capacity'),
                                               choices=PRODUCT_MEASURE_UNIT_CATEGORY_CHOICES)
-    usage_discount_unit_category = models.CharField(max_length=30, verbose_name=_('Usage discount unit category'),
-                                                    help_text=_(
-                                                        'Usage unit kind to measure when supplies are consumed'),
-                                                    choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES)
+    requested_unit_category = models.ManyToManyField(
+                                                SupplyMeasureUnitCategory,
+                                                verbose_name=_('Requested unit category'),
+                                                help_text=_('Type of unit of use to measure how inputs are requested from the supplier'),
+                                                related_name='supplykinds_requested',
+                                                related_query_name='supplykind_requested',
+                                            )
+
+    usage_discount_unit_category = models.ForeignKey(
+                                                SupplyMeasureUnitCategory,
+                                                verbose_name=_('Usage discount unit category'),
+                                                help_text=_('Usage unit kind to measure when supplies are consumed'),
+                                                on_delete=models.PROTECT,
+                                                related_name='supplykinds_usage_discount',
+                                                related_query_name='supplykind_usage_discount'
+                                            )
+
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):

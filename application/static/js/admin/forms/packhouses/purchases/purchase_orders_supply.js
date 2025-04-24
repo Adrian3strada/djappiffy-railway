@@ -66,8 +66,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const unitCategoryField = $('select[name="' + unitCategoryFieldName + '"]');
 
       if (unitCategoryField.length) {
-        unitCategoryField.val(dataUnitCategory).trigger('change');
+          var optionToSelect = unitCategoryField.find('option').filter(function() {
+              return $(this).text().trim() === dataUnitCategory;
+          });
+          if (optionToSelect.length) {
+              unitCategoryField.val(optionToSelect.val()).trigger('change');
+          }
       }
+
     }
     if(dataDeliveryDeadline !== undefined) {
       const currentName = $(this).attr('name');
