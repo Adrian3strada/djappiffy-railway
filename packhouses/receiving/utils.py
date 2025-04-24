@@ -2,7 +2,7 @@ from django.utils.translation import gettext_lazy as _
 from django.db import transaction
 from django.forms.models import BaseInlineFormSet
 
-def update_pallet_numbers(incoming_product):
+def update_weighing_set_numbers(incoming_product):
     pallets = incoming_product.weighingset_set.all().order_by('id')
     with transaction.atomic():
         for index, pallet in enumerate(pallets, start=1):
@@ -10,27 +10,21 @@ def update_pallet_numbers(incoming_product):
                 pallet.ooid = index
                 pallet.save(update_fields=['ooid'])
 
-def get_incoming_product_categories_status():
+def get_approval_status_choices():
+    return [
+        ('pending',    _('Pending')),
+        ('accepted',   _('Accepted')),
+        ('rejected',   _('Rejected')),
+        ('quarantine', _('Quarantine')),
+    ]
+
+
+def get_processing_status_choices():
     return [
         ('pending', _('Pending')),
-        ('accepted', _('Accepted')),
-        ('rejected', _('Rejected')),
-        ('quarintine', _('Quarintine')),
-    ]
-
-def get_batch_review_categories_status():
-    return [
-        ('accepted', 'Accepted'),
-        ('rejected', 'Rejected'),
-        ('quarantine', 'Quarantine'),
-    ]
-
-def get_batch_operational_categories_status():
-    return [
-        ('in_progress', 'In Progress'),
+        ('in_operation', 'In Operation'),
         ('in_another_batch', 'In Another Batch'),
-        ('cancelled', 'Cancelled'),
-        ('finished', 'Finished'),
+        ('finalized', 'Finalized'),
 ]
 
 

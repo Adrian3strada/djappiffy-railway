@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     // Selecciona el contenedor del inline padre por su id
     const incomingProductForm = document.getElementById("incomingproduct_set-0");
+    if (!incomingProductForm) return; 
     // Oculta las columnas de ID original
     document.querySelectorAll("td.original").forEach(row => {
         row.style.display = "none"; 
@@ -16,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function() {
         '[id^="incomingproduct_set-0-scheduleharvest-0-scheduleharvestvehicle_set-0-scheduleharvestcontainervehicle_set"]'
     ];
 
-    // Ocultar DELETE y labels solo si no están dentro de los inlines anidados
+    // Ocultar DELETE y sus labels solo si no están dentro de los inlines anidados
     incomingProductForm.querySelectorAll(`input[name$="-DELETE"]`).forEach(input => {
         let shouldExclude = false;
         excludeSelectors.forEach(selector => {
@@ -25,9 +26,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
         if (!shouldExclude) {
-            // Oculta el checkbox
             input.style.display = "none";
-            // Oculta su label asociada
             const label = incomingProductForm.querySelector(`label[for="${input.id}"]`);
             if (label) {
                 label.style.display = "none";
@@ -35,6 +34,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    // Selección de campos (trabajamos en JS puro)
     const packhouseWeightResultField = incomingProductForm.querySelector('input[name$="-packhouse_weight_result"]');
     const totalWeighedSetsField = incomingProductForm.querySelector('input[name$="-total_weighed_sets"]');
     const containersAssignedField = incomingProductForm.querySelector('input[name$="-containers_assigned"]');
@@ -48,16 +48,16 @@ document.addEventListener("DOMContentLoaded", function() {
         'input[type="number"]' +
         '[name^="incomingproduct_set-0-scheduleharvest-0-"]' +
         '[name$="-missing_containers"]'
-      );
+    );
 
-    // deshabilitar edición en campos, pero permitir que los valores se envíen
+    // Deshabilitar edición en campos pero permitir envío de sus valores
     function disableField(field) {
         if (!field) return;
-            field.readOnly = true;
-            field.style.pointerEvents = "none";
-            field.style.backgroundColor = "#e9ecef";
-            field.style.border = "none";
-            field.style.color = "#555";
+        field.readOnly = true;
+        field.style.pointerEvents = "none";
+        field.style.backgroundColor = "#e9ecef";
+        field.style.border = "none";
+        field.style.color = "#555";
     }
 
     disableField(totalWeighedSetsField);
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function() {
     disableField(averagePerContainerField);
     disableField(currentKgAvailableField);
     disableField(emptyContainersField);
-    disableField(totalWeighedSetContainmentsField)
+    disableField(totalWeighedSetContainmentsField);
     missingFields.forEach(disableField);
 
     const VEHICLE_INLINE_SELECTOR = 'div.djn-item[data-inline-model="gathering-scheduleharvestvehicle"]';
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .filter(el => el.getAttribute('data-is-initial') === 'true');
     }
 
-    // Vehiculos y Contenedores
+    // Función para contar vehículos válidos (has_arrived marcado y DELETE sin marcar)
     function countValidVehicles() {
         const vehicles = getAllVehicles();
         let valid = 0;
@@ -93,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return valid;
     }
 
+    // Función para calcular totales de contenedores por vehículo válido
     function calculateContainerTotalsPerVehicle() {
         const vehicles = getAllVehicles();
         vehicles.forEach((vehicle, idx) => {
@@ -101,7 +102,6 @@ document.addEventListener("DOMContentLoaded", function() {
             if (hasArrived && hasArrived.checked && (!del || !del.checked)) {
                 const containerGroup = vehicle.querySelector('div.inline-group.djn-group[data-inline-formset*="containervehicle_set"]');
                 if (containerGroup) {
-                    // Usamos los formularios individuales (suponiendo elementos como tbody.djn-item)
                     const containerForms = Array.from(containerGroup.querySelectorAll("tbody.djn-item"));
                     let totalQuantity = 0,
                         totalFull = 0,
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Función para sumar globalmente los totales de todos los vehículos válidos.
+    // Función para sumar globalmente los totales de todos los vehículos válidos y asignar los valores a los campos
     function calculateGlobalTotals() {
         const vehicles = getAllVehicles();
         let globalQuantity = 0,
@@ -158,11 +158,13 @@ document.addEventListener("DOMContentLoaded", function() {
         emptyContainersField.value = globalEmpty;
         missingContainersField.value = globalMissing;
     }
-    
+
+    // Llamadas iniciales
     countValidVehicles();
     calculateContainerTotalsPerVehicle();
     calculateGlobalTotals();
 
+    // Función para actualizar totales en respuesta a eventos
     function updateTotals(e) {
         if (e.target.matches("input[name$='-has_arrived'], input[name$='-DELETE'], input[type='number']")) {
             countValidVehicles();
@@ -172,5 +174,31 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     incomingProductForm.addEventListener("change", updateTotals);
     incomingProductForm.addEventListener("input", updateTotals);
+
+    let lastPackhouseValue = packhouseWeightResultField ? packhouseWeightResultField.value : null;
+    setInterval(function() {
+        if (!packhouseWeightResultField) return;
+        const currentVal = packhouseWeightResultField.value;
+        if (currentVal !== lastPackhouseValue) {
+            lastPackhouseValue = currentVal;
+            // Forzamos la actualización disparando la función
+            updateAveragePerContainers();
+            updateCurrentKg();
+        }
+    }, 100);
     
+    // Función para actualizar average y current kg
+    function updateAveragePerContainers() {
+        const packhouseWeightResult = parseFloat(packhouseWeightResultField ? packhouseWeightResultField.value : 0);
+        const fullBoxes = parseFloat(totalWeighedSetContainmentsField ? totalWeighedSetContainmentsField.value : 0);
+        const averagePerBox = fullBoxes > 0 
+            ? Math.floor((packhouseWeightResult / fullBoxes) * 1000) / 1000 
+            : 0;
+        averagePerContainerField.value = averagePerBox;
+    }
+    function updateCurrentKg() {
+        const packhouseWeightResult = parseFloat(packhouseWeightResultField ? packhouseWeightResultField.value : 0);
+        currentKgAvailableField.value = packhouseWeightResult;
+    }
+
 });

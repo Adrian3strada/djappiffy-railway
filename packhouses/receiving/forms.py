@@ -5,6 +5,7 @@ from .models import IncomingProduct, Batch, SamplePest, SampleDisease, SamplePhy
 from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
 from django.utils.safestring import mark_safe
+from django.db import transaction
 
 class ContainerInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
@@ -147,50 +148,64 @@ class IncomingProductForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean() or {}
 
-        # Status guardado en la base de datos
+        # Status guardado en base de datos
         initial_status = self.instance.status if self.instance and self.instance.pk else None
-        # Obtener el status final (del form)
+        # Status final enviado por el form
         final_status = cleaned_data.get('status', initial_status)
 
-        # Si ya está aceptado, se impide cambiar el status a otro valor.
-        if self.instance.pk and initial_status == 'accepted' and final_status != 'accepted':
+        if initial_status == 'accepted' and final_status != 'accepted':
             raise ValidationError(_("Once accepted, the status cannot be changed."))
 
-        # VALIDACIÓN PARA WEIGHING SETS:
-        total_weighing_sets = int(self.data.get('weighingset_set-TOTAL_FORMS', 0))
-        remaining_weighing_sets = 0
-        
-        # Contar los weighing sets que NO se marcaron para borrar.
-        for i in range(total_weighing_sets):
-            delete_key = f'weighingset_set-{i}-DELETE'
-            if self.data.get(delete_key, 'off') != 'on':
-                remaining_weighing_sets += 1
-
-        if remaining_weighing_sets < 1 and final_status == "accepted":
+        # Validación de los WeighingSets (igual que antes)…
+        total = int(self.data.get('weighingset_set-TOTAL_FORMS', 0))
+        remaining = sum(
+            1 for i in range(total)
+            if self.data.get(f'weighingset_set-{i}-DELETE', 'off') != 'on'
+        )
+        if remaining < 1 and final_status == "accepted":
             raise ValidationError(_("At least one Weighing Set must be registered for the Incoming Product."))
 
-        # Validar cada weighing set
-        for i in range(remaining_weighing_sets):
-            weighingset_prefix = f'weighingset_set-{i}-'
-            provider = self.data.get(weighingset_prefix + 'provider')
-            harvesting_crew = self.data.get(weighingset_prefix + 'harvesting_crew')
-
-            if not provider or not provider.strip():
+        for i in range(remaining):
+            prefix = f'weighingset_set-{i}-'
+            if not self.data.get(prefix + 'provider', '').strip():
                 raise ValidationError(_(f'Weighing Set {i + 1} is missing a provider.'))
-            if not harvesting_crew or not harvesting_crew.strip():
+            if not self.data.get(prefix + 'harvesting_crew', '').strip():
                 raise ValidationError(_(f'Weighing Set {i + 1} is missing a harvesting crew.'))
-        
+
         return cleaned_data
 
     def save(self, commit=True):
-        instance = super().save(commit=False)
-    
-        if instance.status == 'accepted' and not instance.batch:
-            instance.create_batch()
+        # 1) Obtenemos la instancia sin guardar aún
+        obj = super().save(commit=False)
+
+        # 2) Leemos el estado previo si existe
+        previous_status = None
+        if obj.pk:
+            previous_status = (
+                IncomingProduct.objects
+                .values_list('status', flat=True)
+                .get(pk=obj.pk)
+            )
 
         if commit:
-            instance.save()
-        return instance
+            obj.save()
+
+        if (
+            obj.status == 'accepted'
+            and previous_status != 'accepted'
+            and obj.batch_id is None
+        ):
+            with transaction.atomic():
+                new_batch = Batch.objects.create(
+                    review_status='pending',
+                    operational_status='pending',
+                    is_available_for_processing=False,
+                    organization=obj.organization
+                )
+                obj.batch = new_batch
+                obj.save(update_fields=['batch'])
+
+        return obj
 
 
 class BatchForm(forms.ModelForm):
@@ -212,51 +227,12 @@ class BatchForm(forms.ModelForm):
                 for j in range(total_ws)
                 if self.data.get(f'{ws_prefix}-{j}-DELETE', 'off') != 'on'
             )
-
             if remaining < 1:
                 raise ValidationError(
                     _('At least one Weighing Set must be registered.')
                 )
-
         return cleaned
 
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-    
-        if instance.status == 'accepted' and not instance.batch:
-            instance.create_batch()
-
-        if commit:
-            instance.save()
-        return instance
-
-
-class BatchForm(forms.ModelForm):
-    class Meta:
-        model = Batch
-        fields = '__all__'
-
-    def clean(self):
-        cleaned = super().clean()
-
-        # Recorre cada IncomingProduct y comprueba que tenga al menos un WeighingSet no marcado para borrar
-        for i in range(int(self.data.get('incomingproduct_set-TOTAL_FORMS', 0))):
-            ws_prefix = f'incomingproduct_set-{i}-weighingset_set'
-            total_ws = int(self.data.get(f'{ws_prefix}-TOTAL_FORMS', 0))
-
-            # Cuenta los que NO tienen DELETE = 'on'
-            remaining = sum(
-                1
-                for j in range(total_ws)
-                if self.data.get(f'{ws_prefix}-{j}-DELETE', 'off') != 'on'
-            )
-
-            if remaining < 1:
-                raise ValidationError(
-                    _('At least one Weighing Set must be registered.')
-                )
-
-        return cleaned
 
 class SamplePestForm(forms.ModelForm):
     class Meta:
