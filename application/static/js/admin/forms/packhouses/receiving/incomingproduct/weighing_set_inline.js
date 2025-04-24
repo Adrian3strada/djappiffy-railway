@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---------- 2) Tare / Net weight / Packhouse total ----------
   const $packhouseField = $('#id_packhouse_weight_result');
-  const $weighedSetField = $('#id_total_weighed_sets');
+  const $weighedSetField = $('#id_total_weighed_sets').add('input[name$="-total_weighed_sets"]');
   const $weighedContainerField = $('#id_total_weighed_set_containers');
 
   const WEIGHING_SET_FORM_SELECTOR = 'div[id*="weighingset_set-"]:not([id*="group"],[id*="empty"])';

@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
+    console.log('✅ incoming_product_for_batch.js cargado');
+
     // Selecciona el contenedor del inline padre por su id
-    const incomingProductForm = document.getElementById("incomingproduct_set-0");
+    const incomingProductForm = document.getElementById("incomingproduct-0");
     if (!incomingProductForm) return; 
     // Oculta las columnas de ID original
     document.querySelectorAll("td.original").forEach(row => {
@@ -12,9 +14,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Inlines anidados que debemos excluir
     const excludeSelectors = [
-        '[id^="incomingproduct_set-0-weighingset_set"]',
-        '[id^="incomingproduct_set-0-scheduleharvest-0-scheduleharvestharvestingcrew_set"]',
-        '[id^="incomingproduct_set-0-scheduleharvest-0-scheduleharvestvehicle_set-0-scheduleharvestcontainervehicle_set"]'
+        '[id^="incomingproduct-0-weighingset_set"]',
+        '[id^="incomingproduct-0-scheduleharvest-0-scheduleharvestharvestingcrew_set"]',
+        '[id^="incomingproduct-0-scheduleharvest-0-scheduleharvestvehicle_set-0-scheduleharvestcontainervehicle_set"]'
     ];
 
     // Ocultar DELETE y sus labels solo si no están dentro de los inlines anidados
@@ -46,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const totalWeighedSetContainmentsField = incomingProductForm.querySelector('input[name$="-total_weighed_set_containers"]');
     const missingFields = incomingProductForm.querySelectorAll(
         'input[type="number"]' +
-        '[name^="incomingproduct_set-0-scheduleharvest-0-"]' +
+        '[name^="incomingproduct-0-scheduleharvest-0-"]' +
         '[name$="-missing_containers"]'
     );
 
@@ -200,5 +202,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const packhouseWeightResult = parseFloat(packhouseWeightResultField ? packhouseWeightResultField.value : 0);
         currentKgAvailableField.value = packhouseWeightResult;
     }
+    
 
 });

@@ -30,6 +30,7 @@ from django.utils.html import format_html
 from django.urls import path, reverse
 from nested_admin import NestedStackedInline, NestedTabularInline
 from common.base.models import Pest
+from django.contrib.admin.templatetags.admin_list import _boolean_icon
 # from django import forms
 
 # Inlines para datos del corte
@@ -486,28 +487,39 @@ class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
         update_weighing_set_numbers(form.instance)
+    # class Media:
+    #     js = ('js/admin/forms/packhouses/receiving/batch/incoming_product_for_batch.js',)
     
    
 @admin.register(Batch)
 class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product', 'get_scheduleharvest_product_provider',  'get_scheduleharvest_orchard', 
-                    'get_scheduleharvest_category', 'get_scheduleharvest_harvest_date', 'created_at', 
-                    'display_review_status', 'display_available_for_processing', 'operational_status')
+                    'get_incomingproduct_packhouse_weight_result', 'get_incomingproduct_current_kg_available', 'get_scheduleharvest_harvest_date', 'created_at', 
+                    'display_review_status', 'display_available_for_processing', 'operational_status', 'generate_actions_buttons')
     fields = ['ooid', 'review_status', 'operational_status', 'is_available_for_processing']
     readonly_fields = ['ooid',]
     form = BatchForm
     inlines = [IncomingProductInline]
+    list_per_page = 10
+
+    def generate_actions_buttons(self, obj):
+        pass 
+    generate_actions_buttons.short_description = _('Actions')
+    generate_actions_buttons.allow_tags = True
 
     def display_review_status(self, obj):
-        return obj.review_status if obj.operational_status != 'in_another_batch' else ''
-    display_review_status.admin_order_field = 'approval_status'
-    display_review_status.short_description = 'Review Status'
+        if obj.operational_status == 'in_another_batch':
+            return ''
+        return obj.get_review_status_display()
+    display_review_status.admin_order_field    = 'review_status'
+    display_review_status.short_description   = _('Review Status')
 
     def display_available_for_processing(self, obj):
-        return obj.is_available_for_processing if obj.operational_status != 'in_another_batch' else ''
-    display_available_for_processing.admin_order_field = 'available_for_processing'
+        if obj.operational_status == 'in_another_batch':
+            return ''
+        return _boolean_icon(obj.is_available_for_processing)
     display_available_for_processing.short_description = _('Available for Processing')
-    
+    display_available_for_processing.admin_order_field = 'is_available_for_processing'
 
     def get_scheduleharvest_ooid(self, obj):
         incoming = getattr(obj, 'incomingproduct', None)
@@ -515,7 +527,8 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             return None
         sh = getattr(incoming, 'scheduleharvest', None)
         return sh.ooid if sh and sh.ooid is not None else None
-    get_scheduleharvest_ooid.short_description = _('Harvest #')
+    get_scheduleharvest_ooid.short_description = _('Harvest')
+    get_scheduleharvest_ooid.admin_order_field = 'incomingproduct__scheduleharvest__ooid'
 
     def get_scheduleharvest_harvest_date(self, obj):
         incoming = getattr(obj, 'incomingproduct', None)
@@ -523,7 +536,8 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             return None
         sh = getattr(incoming, 'scheduleharvest', None)
         return sh.harvest_date if sh and sh.harvest_date else None
-    get_scheduleharvest_harvest_date.short_description = _('Harvest Date')
+    get_scheduleharvest_harvest_date.short_description = _("Schedule Harvest Date")
+    get_scheduleharvest_harvest_date.admin_order_field = 'incomingproduct__scheduleharvest__harvest_date'
 
     def get_scheduleharvest_product(self, obj):
         incoming = getattr(obj, 'incomingproduct', None)
@@ -532,6 +546,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         sh = getattr(incoming, 'scheduleharvest', None)
         return sh.product if sh and sh.product else None
     get_scheduleharvest_product.short_description = _('Product')
+    get_scheduleharvest_product.admin_order_field = 'incomingproduct__scheduleharvest__product'
 
     def get_scheduleharvest_orchard(self, obj):
         incoming = getattr(obj, 'incomingproduct', None)
@@ -540,6 +555,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         sh = getattr(incoming, 'scheduleharvest', None)
         return sh.orchard if sh and sh.orchard else None
     get_scheduleharvest_orchard.short_description = _('Orchard')
+    get_scheduleharvest_orchard.admin_order_field = 'incomingproduct__scheduleharvest__orchard'
 
     def get_scheduleharvest_product_provider(self, obj):
         incoming = getattr(obj, 'incomingproduct', None)
@@ -547,31 +563,24 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             return None
         sh = getattr(incoming, 'scheduleharvest', None)
         return sh.product_provider if sh and sh.product_provider else None
-    get_scheduleharvest_product_provider.short_description = _('Provider')
-
-    def get_scheduleharvest_category(self, obj):
-        incoming = getattr(obj, 'incomingproduct', None)
-        if not incoming:
-            return None
-        sh = getattr(incoming, 'scheduleharvest', None)
-        if not sh:
-            return None
-        choices = dict(get_harvest_cutting_categories_choices())
-        return choices.get(sh.category, sh.category)
-    
-    get_scheduleharvest_category.short_description = _('Category')
-    get_scheduleharvest_ooid.admin_order_field = 'incomingproduct__scheduleharvest__harvest_date'
-    get_scheduleharvest_ooid.short_description = _("Harvest Number")
-    get_scheduleharvest_harvest_date.admin_order_field = 'incomingproduct__scheduleharvest__harvest_date'
-    get_scheduleharvest_harvest_date.short_description = _("Schedule Harvest Date")
-    get_scheduleharvest_product.admin_order_field = 'incomingproduct__scheduleharvest__product'
-    get_scheduleharvest_product.short_description = _("Product")
-    get_scheduleharvest_orchard.admin_order_field = 'incomingproduct__scheduleharvest__orchard'
-    get_scheduleharvest_orchard.short_description = _("Orchard")
+    get_scheduleharvest_product_provider.short_description = _('Product Provider')
     get_scheduleharvest_product_provider.admin_order_field = 'incomingproduct__scheduleharvest__product_provider'
-    get_scheduleharvest_product_provider.short_description = _("Product Provider")
-    get_scheduleharvest_category.admin_order_field = 'incomingproduct__scheduleharvest__category'
-    get_scheduleharvest_category.short_description = _("Category")
+    
+    def get_incomingproduct_packhouse_weight_result(self, obj):
+        incoming = getattr(obj, 'incomingproduct', None)
+        if not incoming or incoming.packhouse_weight_result is None:
+            return ''
+        return '{:,.3f}'.format(incoming.packhouse_weight_result)
+    get_incomingproduct_packhouse_weight_result.short_description = _('Total Received')
+    get_incomingproduct_packhouse_weight_result.admin_order_field = 'incomingproduct__packhouse_weight_result'
+
+    def get_incomingproduct_current_kg_available(self, obj):
+        incoming = getattr(obj, 'incomingproduct', None)
+        if not incoming or incoming.current_kg_available is None:
+            return ''
+        return '{:,.3f}'.format(incoming.current_kg_available)
+    get_incomingproduct_current_kg_available.short_description = _('Available Load')
+    get_incomingproduct_current_kg_available.admin_order_field = 'incomingproduct__current_kg_available'
 
     class Media:
         js = ('js/admin/forms/packhouses/receiving/batch/incoming_product_for_batch.js',)
