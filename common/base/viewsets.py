@@ -1,8 +1,9 @@
 from rest_framework import viewsets
 from .serializers import (ProductKindSerializer, CitySerializer, SubRegionSerializer, RegionSerializer,
                           CapitalFrameworkSerializer, ProductStandardPackagingSerializer, SupplyKindSerializer,
-                          CountrySerializer, CountryProductStandardSizeSerializer)
-from .models import ProductKind, ProductKindCountryStandardSize, CapitalFramework, ProductKindCountryStandardPackaging, SupplyKind
+                          CountrySerializer, CountryProductStandardSizeSerializer, SupplyMeasureUnitCategorySerializer)
+from .models import (ProductKind, ProductKindCountryStandardSize, CapitalFramework,
+                     ProductKindCountryStandardPackaging, SupplyKind, SupplyMeasureUnitCategory)
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
 from cities_light.contrib.restframework3 import SubRegionModelViewSet as BaseSubRegionModelViewSet
 from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
@@ -140,6 +141,11 @@ class CityViewSet(BaseCityModelViewSet):
             queryset = queryset.filter(subregion_id=subregion)
         return queryset
 
+class SupplyMeasureUnitCategoryViewSet(viewsets.ModelViewSet):
+    serializer_class = SupplyMeasureUnitCategorySerializer
+    pagination_class = None
+    queryset = SupplyMeasureUnitCategory.objects.all()
+    filterset_fields = ['is_enabled']
 
 
 

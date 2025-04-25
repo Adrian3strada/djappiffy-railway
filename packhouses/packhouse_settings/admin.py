@@ -116,9 +116,9 @@ class PaymentKindAdditionalInputInlineAdmin(admin.TabularInline):
 
 @admin.register(PaymentKind)
 class PaymentKindAdmin(ByOrganizationAdminMixin):
-    list_display = ('name', 'is_enabled')
-    list_filter = ('is_enabled',)
-    fields = ('name', 'is_enabled')
+    list_display = ('name', 'requires_bank', 'is_enabled')
+    list_filter = ('requires_bank', 'is_enabled',)
+    fields = ('name','requires_bank', 'is_enabled')
     inlines = [PaymentKindAdditionalInputInlineAdmin, ]
 
     @uppercase_form_charfield('name')
@@ -131,6 +131,7 @@ class PaymentKindAdmin(ByOrganizationAdminMixin):
         if obj and is_instance_used(obj, exclude=[Organization]):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
+
 
 
 @admin.register(VehicleBrand)

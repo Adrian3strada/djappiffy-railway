@@ -72,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.error('El formulario vacío no fue encontrado en el DOM.');
                         return;
                     }
-
                     data.forEach(supply => {
                         const newInlineForm = emptyForm.cloneNode(true);
                         newInlineForm.classList.add('dynamic-inline-form');
@@ -117,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                             const expectedQuantityInput = newInlineForm.querySelector('input[name$="-expected_quantity"]');
                             if (expectedQuantityInput) {
-                                    const unit = supply.unit_category;
+                                    const unit = supply.purchase_order_supply_options[totalForms].unit;
 
                                     let existingSpan = expectedQuantityInput.parentNode.querySelector('.unit-span');
                                     if (existingSpan) {
@@ -126,13 +125,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                     const unitSpan = document.createElement('span');
                                     unitSpan.classList.add('unit-span');
                                     unitSpan.textContent = ` ${unit}`;
-
                                     expectedQuantityInput.insertAdjacentElement("afterend", unitSpan);
                             }
 
                             const receivedQuantityInput = newInlineForm.querySelector('input[name$="-received_quantity"]');
                             if (expectedQuantityInput) {
-                                    const unit = supply.unit_category;
+                                    const unit = supply.purchase_order_supply_options[totalForms].unit;
 
                                     let existingSpan = receivedQuantityInput.parentNode.querySelector('.unit-span');
                                     if (existingSpan) {
