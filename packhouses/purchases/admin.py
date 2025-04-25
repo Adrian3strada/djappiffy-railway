@@ -372,7 +372,6 @@ class PurchaseOrderPaymentInline(admin.StackedInline):
     class Media:
         js = ('js/admin/forms/packhouses/purchases/purchase_orders_payments.js',)
 
-
 @admin.register(PurchaseOrder)
 class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     form = PurchaseOrderForm
@@ -522,7 +521,7 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
             payment.cancellation_date = timezone.now()
             payment.canceled_by = request.user
             payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
-            payment.purchase_order.recalculate_balance()
+            payment.purchase_order.recalculate_balance(save=True)
             self.message_user(request, _(f"Payment canceled successfully. New balance payable: ${payment.purchase_order.balance_payable:.2f}"),
                               level=messages.SUCCESS)
             # Obtenemos el ID del Purchase Order asociado
@@ -561,7 +560,6 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
         obj.save(update_fields=['balance_payable'])
         return super().response_change(request, obj)
 
-
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
 
@@ -581,10 +579,11 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
                       f"- Deducciones: ${balance_data['deductions_total']}"),
                     level=messages.ERROR
                 )
-            return
+            return  # No seguimos si hay error
 
-        # Solo si pasa, sí se guarda
-        purchase_order.recalculate_balance()
+        # ⚡ Aquí ACTUALIZAMOS directamente el balance
+        purchase_order.balance_payable = balance_data['balance']
+        purchase_order.save(update_fields=['balance_payable'])
 
     def save_formset(self, request, form, formset, change):
 
@@ -674,3 +673,4 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
 
     class Media:
         js = ('js/admin/forms/packhouses/purchases/purchase_orders.js',)
+

@@ -232,6 +232,7 @@ class PurchaseOrder(models.Model):
 
         if save:
             self.balance_payable = data['balance']
+            self.save(update_fields=['balance_payable'])
 
         return data
 
@@ -380,7 +381,9 @@ class PurchaseOrderPayment(models.Model):
     bank = models.ForeignKey(
         Bank,
         verbose_name=_("Bank"),
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        null = True,
+        blank = True
     )
     comments = models.CharField(
         max_length=255,

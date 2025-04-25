@@ -3,12 +3,21 @@ from common.base.mixins import (
     ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin,
     DisableInlineRelatedLinksMixin, ByUserAdminMixin
 )
-from .models import StorehouseEntry, StorehouseEntrySupply
+from .models import StorehouseEntry, StorehouseEntrySupply, InventoryTransaction, AdjustmentInventory
 from packhouses.purchases.models import PurchaseOrderSupply
-from .forms import StorehouseEntrySupplyInlineFormSet
+from .forms import StorehouseEntrySupplyInlineFormSet,AdjustmentInventoryForm
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from decimal import Decimal
+from django.db.models import F, Value, Sum, DecimalField
+from django.db.models.functions import Coalesce
+from django import forms
+from .utils import get_fifo_source_for_quantity
+from .reports import export_fifo_report
+
+
+
 
 
 
@@ -115,44 +124,103 @@ class StorehouseEntryAdmin(ByOrganizationAdminMixin):
     def save_related(self, request, form, formsets, change):
         storehouse_entry = form.instance
 
-        # 👇 Simulamos manualmente el total_price y recalculamos el balance
-        for entry_supply in list(storehouse_entry.storehouseentrysupply_set.all()):
-            pos = entry_supply.purchase_order_supply
-            if entry_supply.received_quantity == 0 and entry_supply.inventoried_quantity == 0:
-                continue  # no lo validamos aún
-            else:
-                new_quantity = entry_supply.received_quantity
-                new_total = new_quantity * pos.unit_price
-                pos.total_price = new_total
-
-        try:
-            # ❌ Lanza error si el balance quedaría negativo (sin guardar aún)
-            storehouse_entry.purchase_order.recalculate_balance(save=False, raise_exception=True)
-        except ValidationError as e:
-            self.message_user(request, e.message, level=messages.ERROR)
-            return  # ❌ Cancelamos todo antes de guardar relaciones
-
-        # ✅ Ahora sí, ya que pasó la validación, guardamos todo
+        # 🔥 Primero guardamos relaciones normales (inlines, etc)
         super().save_related(request, form, formsets, change)
 
-        # 💾 Y hacemos los updates de cantidades y flags como ya tenías
+        # 🔥 Ahora actualizamos las cantidades reales de los supplies
         for entry_supply in list(storehouse_entry.storehouseentrysupply_set.all()):
             pos = entry_supply.purchase_order_supply
+
             if entry_supply.received_quantity == 0 and entry_supply.inventoried_quantity == 0:
+                # Si no recibieron nada, lo eliminamos
                 entry_supply.delete()
                 if not pos.storehouseentrysupply_set.exists():
                     pos.delete()
-            else:
-                if not pos.is_in_inventory:
-                    pos.is_in_inventory = True
-                    pos.save(update_fields=['is_in_inventory'])
-                    pos.quantity = entry_supply.received_quantity
-                    pos.save(update_fields=['quantity'])
-                    pos.total_price = entry_supply.received_quantity * pos.unit_price
-                    pos.save(update_fields=['total_price'])
+                continue
 
-        # 💰 Finalmente guardamos el nuevo balance
-        storehouse_entry.purchase_order.recalculate_balance(save=True)
+            # Actualizamos quantity y total_price con base en lo recibido
+            pos.quantity = entry_supply.received_quantity
+            pos.total_price = entry_supply.received_quantity * pos.unit_price
+            pos.is_in_inventory = True
+            pos.save(update_fields=['quantity', 'total_price', 'is_in_inventory'])
+
+            # 🔥 Insertamos la transacción de inventario
+            InventoryTransaction.objects.create(
+                storehouse_entry_supply=entry_supply,
+                supply=entry_supply.purchase_order_supply.requisition_supply.supply,
+                transaction_kind='entry',
+                transaction_category='purchase',
+                quantity=entry_supply.converted_inventoried_quantity,
+                created_by=request.user,
+                organization=storehouse_entry.organization,
+            )
+
+        # 🔥 Recargamos el PurchaseOrder desde la base de datos
+        storehouse_entry.purchase_order.refresh_from_db()
+
+        try:
+            # 🔥 Ahora recalculamos el balance con datos actualizados
+            storehouse_entry.purchase_order.recalculate_balance(save=True)
+
+            self.message_user(
+                request,
+                _(f"Purchase Order balance updated successfully based on received quantities."),
+                level=messages.SUCCESS
+            )
+
+        except ValidationError as e:
+            self.message_user(
+                request,
+                e.message,
+                level=messages.ERROR
+            )
+            return  # 🔥 No seguimos si el balance quedó negativo
 
     class Media:
         js = ('js/admin/forms/packhouses/storehouse/storehouse_entry.js',)
+
+
+
+@admin.register(AdjustmentInventory)
+class AdjustmentInventoryAdmin(ByOrganizationAdminMixin):
+    form = AdjustmentInventoryForm
+    list_display  = ('transaction_kind', 'transaction_category', 'supply', 'quantity', 'created_at')
+    fields = ('transaction_kind', 'transaction_category', 'supply', 'quantity', 'organization', 'created_at')
+    readonly_fields = ('created_at',)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+
+        if hasattr(request, 'organization'):
+            form.request_organization = request.organization
+
+        # Asegurarnos que 'organization' exista en los fields
+        if 'organization' in form.base_fields:
+            form.base_fields['organization'].initial = request.organization
+            form.base_fields['organization'].widget = forms.HiddenInput()
+
+        # Inyectamos el usuario para usarlo en el form.save()
+        form._request_user = request.user
+
+        return form
+
+
+
+@admin.register(InventoryTransaction)
+class InventoryTransactionAdmin(ByOrganizationAdminMixin):
+    list_display = ('supply', 'transaction_kind', 'transaction_category', 'quantity', 'created_at')
+    list_filter = ('supply', 'transaction_kind', 'transaction_category')
+    actions = [export_fifo_report]
+
+    def has_add_permission(self, request):
+        return False  # No permitir crear nuevas desde el admin
+
+    def has_change_permission(self, request, obj=None):
+        return False  # No permitir edición
+
+    def has_delete_permission(self, request, obj=None):
+        return False  # No permitir eliminación
+
+    def get_readonly_fields(self, request, obj=None):
+        return [field.name for field in self.model._meta.fields]
+
