@@ -180,6 +180,156 @@
     }
 },
 {
+    "model": "base.supplymeasureunitcategory",
+    "pk": 1,
+    "fields": {
+        "name": "Piezas",
+        "name_en": "Pieces",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Piezas",
+        "factor": 1.0,
+        "unit_category": "pieces",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplymeasureunitcategory",
+    "pk": 2,
+    "fields": {
+        "name": "Gramos",
+        "name_en": "Grams",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Gramos",
+        "factor": 1000.0,
+        "unit_category": "g",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplymeasureunitcategory",
+    "pk": 3,
+    "fields": {
+        "name": "Kilogramos",
+        "name_en": "Kilograms",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Kilogramos",
+        "factor": 1.0,
+        "unit_category": "Kg",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplymeasureunitcategory",
+    "pk": 4,
+    "fields": {
+        "name": "Toneladas",
+        "name_en": "Tons",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Toneladas",
+        "factor": 1.0,
+        "unit_category": "Ton",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplymeasureunitcategory",
+    "pk": 5,
+    "fields": {
+        "name": "Mililitros",
+        "name_en": "Milliliters",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Mililitros",
+        "factor": 1000.0,
+        "unit_category": "ml",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplymeasureunitcategory",
+    "pk": 6,
+    "fields": {
+        "name": "Litros",
+        "name_en": "Liters",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Litros",
+        "factor": 1.0,
+        "unit_category": "L",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplymeasureunitcategory",
+    "pk": 7,
+    "fields": {
+        "name": "Centímetros",
+        "name_en": "Centimeters",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Centímetros",
+        "factor": 100.0,
+        "unit_category": "cm",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplymeasureunitcategory",
+    "pk": 8,
+    "fields": {
+        "name": "Metros",
+        "name_en": "Meters",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Metros",
+        "factor": 1.0,
+        "unit_category": "m",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplymeasureunitcategory",
+    "pk": 9,
+    "fields": {
+        "name": "Kilómetros",
+        "name_en": "Kilometers",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Kilómetros",
+        "factor": 1.0,
+        "unit_category": "Km",
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.supplymeasureunitcategory",
+    "pk": 10,
+    "fields": {
+        "name": "Otro",
+        "name_en": "Other",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "Otro",
+        "factor": 1.0,
+        "unit_category": "other",
+        "is_enabled": true
+    }
+},
+{
     "model": "base.supplykind",
     "pk": 1,
     "fields": {
@@ -191,8 +341,11 @@
         "name_de": null,
         "name_es": "CAJA",
         "capacity_unit_category": "Kg",
-        "usage_discount_unit_category": "pieces",
-        "is_enabled": true
+        "usage_discount_unit_category": 1,
+        "is_enabled": true,
+        "requested_unit_category": [
+            1
+        ]
     }
 },
 {
@@ -207,8 +360,11 @@
         "name_de": null,
         "name_es": "CHAROLA",
         "capacity_unit_category": "pieces",
-        "usage_discount_unit_category": "pieces",
-        "is_enabled": true
+        "usage_discount_unit_category": 1,
+        "is_enabled": true,
+        "requested_unit_category": [
+            1
+        ]
     }
 },
 {
@@ -223,25 +379,31 @@
         "name_de": null,
         "name_es": "TARIMA",
         "capacity_unit_category": null,
-        "usage_discount_unit_category": "pieces",
-        "is_enabled": true
+        "usage_discount_unit_category": 1,
+        "is_enabled": true,
+        "requested_unit_category": [
+            1
+        ]
     }
 },
 {
-  "model": "base.supplykind",
-  "pk": 4,
-  "fields": {
-    "category": "packaging_pallet_complement",
-    "name": "ESQUINERO",
-    "name_en": "CORNER PROTECTOR",
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "ESQUINERO",
-    "capacity_unit_category": null,
-    "usage_discount_unit_category": "pieces",
-    "is_enabled": true
-  }
+    "model": "base.supplykind",
+    "pk": 4,
+    "fields": {
+        "category": "packaging_pallet_complement",
+        "name": "ESQUINERO",
+        "name_en": "CORNER PROTECTOR",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "ESQUINERO",
+        "capacity_unit_category": null,
+        "usage_discount_unit_category": 1,
+        "is_enabled": true,
+        "requested_unit_category": [
+            1
+        ]
+    }
 },
 {
     "model": "base.supplykind",
@@ -255,8 +417,11 @@
         "name_de": null,
         "name_es": "TAPA",
         "capacity_unit_category": null,
-        "usage_discount_unit_category": "pieces",
-        "is_enabled": true
+        "usage_discount_unit_category": 1,
+        "is_enabled": true,
+        "requested_unit_category": [
+            1
+        ]
     }
 },
 {
@@ -271,8 +436,9 @@
         "name_de": null,
         "name_es": "MALLA",
         "capacity_unit_category": "pieces",
-        "usage_discount_unit_category": "cm",
-        "is_enabled": true
+        "usage_discount_unit_category": 7,
+        "is_enabled": true,
+        "requested_unit_category": []
     }
 },
 {
@@ -287,25 +453,35 @@
         "name_de": null,
         "name_es": "FILM",
         "capacity_unit_category": null,
-        "usage_discount_unit_category": "cm",
-        "is_enabled": true
+        "usage_discount_unit_category": 7,
+        "is_enabled": true,
+        "requested_unit_category": [
+            7,
+            8,
+            1
+        ]
     }
 },
 {
-  "model": "base.supplykind",
-  "pk": 8,
-  "fields": {
-    "category": "packaging_pallet_complement",
-    "name": "FLEJE",
-    "name_en": "STRAPPING",
-    "name_pt": null,
-    "name_fr": null,
-    "name_de": null,
-    "name_es": "FLEJE",
-    "capacity_unit_category": null,
-    "usage_discount_unit_category": "m",
-    "is_enabled": true
-  }
+    "model": "base.supplykind",
+    "pk": 8,
+    "fields": {
+        "category": "packaging_pallet_complement",
+        "name": "FLEJE",
+        "name_en": "STRAPPING",
+        "name_pt": null,
+        "name_fr": null,
+        "name_de": null,
+        "name_es": "FLEJE",
+        "capacity_unit_category": null,
+        "usage_discount_unit_category": 8,
+        "is_enabled": true,
+        "requested_unit_category": [
+            7,
+            8,
+            1
+        ]
+    }
 },
 {
     "model": "base.supplykind",
@@ -319,8 +495,11 @@
         "name_de": null,
         "name_es": "CAJA DE CAMPO",
         "capacity_unit_category": null,
-        "usage_discount_unit_category": "pieces",
-        "is_enabled": true
+        "usage_discount_unit_category": 1,
+        "is_enabled": true,
+        "requested_unit_category": [
+            1
+        ]
     }
 },
 {
@@ -423,3097 +602,3097 @@
     }
 },
 {
-  "model": "base.productkindcountrystandardsize",
-  "pk": 1,
-  "fields": {
-    "standard": 1,
-    "name": "Comercial",
-    "code": "1",
-    "description": "120 a 150 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 2,
-  "fields": {
-    "standard": 1,
-    "name": "Mediano",
-    "code": "1",
-    "description": "170 a 205 grs",
-    "sort_order": 2,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 3,
-  "fields": {
-    "standard": 1,
-    "name": "Primera",
-    "code": "1",
-    "description": "205 a 265 grs",
-    "sort_order": 3,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 4,
-  "fields": {
-    "standard": 1,
-    "name": "Extra",
-    "code": "1",
-    "description": "150 a 170 grs",
-    "sort_order": 1,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 5,
-  "fields": {
-    "standard": 1,
-    "name": "Super",
-    "code": "1",
-    "description": "+ de 265 grs",
-    "sort_order": 4,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 6,
-  "fields": {
-    "standard": 2,
-    "name": "26",
-    "code": "1",
-    "description": "120 a 150 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 7,
-  "fields": {
-    "standard": 2,
-    "name": "24",
-    "code": "1",
-    "description": "150 a 170 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 8,
-  "fields": {
-    "standard": 2,
-    "name": "22",
-    "code": "1",
-    "description": "170 a 205 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 9,
-  "fields": {
-    "standard": 2,
-    "name": "18",
-    "code": "1",
-    "description": "205 a 265 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 10,
-  "fields": {
-    "standard": 2,
-    "name": "16",
-    "code": "1",
-    "description": "265 a 300 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 11,
-  "fields": {
-    "standard": 2,
-    "name": "14",
-    "code": "1",
-    "description": "300 a 330 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 12,
-  "fields": {
-    "standard": 2,
-    "name": "12",
-    "code": "1",
-    "description": "+ de 330 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 13,
-  "fields": {
-    "standard": 3,
-    "name": "26",
-    "code": "1",
-    "description": "120 a 150 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 14,
-  "fields": {
-    "standard": 3,
-    "name": "24",
-    "code": "1",
-    "description": "150 a 170 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 15,
-  "fields": {
-    "standard": 3,
-    "name": "22",
-    "code": "1",
-    "description": "170 a 205 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 16,
-  "fields": {
-    "standard": 3,
-    "name": "18",
-    "code": "1",
-    "description": "205 a 265 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 17,
-  "fields": {
-    "standard": 3,
-    "name": "16",
-    "code": "1",
-    "description": "265 a 300 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 18,
-  "fields": {
-    "standard": 3,
-    "name": "14",
-    "code": "1",
-    "description": "300 a 330 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 19,
-  "fields": {
-    "standard": 3,
-    "name": "12",
-    "code": "1",
-    "description": "+ de 330 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 20,
-  "fields": {
-    "standard": 4,
-    "name": "30",
-    "code": "1",
-    "description": "170 a 205 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 21,
-  "fields": {
-    "standard": 4,
-    "name": "24",
-    "code": "1",
-    "description": "205 a 265 grs",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 29,
-  "fields": {
-    "standard": 6,
-    "name": "600",
-    "code": "1",
-    "description": "32 a 35 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 30,
-  "fields": {
-    "standard": 6,
-    "name": "500",
-    "code": "1",
-    "description": "35 a 37 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 31,
-  "fields": {
-    "standard": 6,
-    "name": "400",
-    "code": "1",
-    "description": "37 a 39 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 32,
-  "fields": {
-    "standard": 6,
-    "name": "300",
-    "code": "1",
-    "description": "+ de 39 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 33,
-  "fields": {
-    "standard": 7,
-    "name": "250",
-    "code": "1",
-    "description": "50 a 51 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 34,
-  "fields": {
-    "standard": 7,
-    "name": "230",
-    "code": "1",
-    "description": "52 a 53 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 35,
-  "fields": {
-    "standard": 7,
-    "name": "200",
-    "code": "1",
-    "description": "54 a 55 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 36,
-  "fields": {
-    "standard": 7,
-    "name": "175",
-    "code": "1",
-    "description": "56 a 59 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 37,
-  "fields": {
-    "standard": 7,
-    "name": "150",
-    "code": "1",
-    "description": "59 a 61 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 38,
-  "fields": {
-    "standard": 7,
-    "name": "110",
-    "code": "1",
-    "description": "61 a 63 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 39,
-  "fields": {
-    "standard": 8,
-    "name": "54",
-    "code": "1",
-    "description": "52 a 53 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 40,
-  "fields": {
-    "standard": 8,
-    "name": "48",
-    "code": "1",
-    "description": "54 a 55 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 41,
-  "fields": {
-    "standard": 8,
-    "name": "44",
-    "code": "1",
-    "description": "56 a 59 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 42,
-  "fields": {
-    "standard": 8,
-    "name": "40",
-    "code": "1",
-    "description": "59 a 61 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 43,
-  "fields": {
-    "standard": 8,
-    "name": "36",
-    "code": "1",
-    "description": "61 a 63 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 44,
-  "fields": {
-    "standard": 9,
-    "name": "63",
-    "code": "1",
-    "description": "50 a 51 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 45,
-  "fields": {
-    "standard": 9,
-    "name": "54",
-    "code": "1",
-    "description": "52 a 55 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 46,
-  "fields": {
-    "standard": 9,
-    "name": "48",
-    "code": "1",
-    "description": "56 a 59 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 47,
-  "fields": {
-    "standard": 9,
-    "name": "42",
-    "code": "1",
-    "description": "59 a 61 mm",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 48,
-  "fields": {
-    "standard": 1,
-    "name": "Mixto",
-    "code": "1",
-    "description": "Mixto",
-    "sort_order": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 49,
-  "fields": {
-    "standard": 1,
-    "name": "Materia orgánica",
-    "code": "1",
-    "description": "Materia orgánica",
-    "sort_order": 7,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 50,
-  "fields": {
-    "standard": 1,
-    "name": "Desecho",
-    "code": "1",
-    "description": "Desecho",
-    "sort_order": 6,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 51,
-  "fields": {
-    "standard": 5,
-    "name": "32",
-    "code": "2",
-    "description": "32",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 52,
-  "fields": {
-    "standard": 5,
-    "name": "36",
-    "code": "3",
-    "description": "36",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 53,
-  "fields": {
-    "standard": 5,
-    "name": "40",
-    "code": "4",
-    "description": "40",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 54,
-  "fields": {
-    "standard": 5,
-    "name": "48",
-    "code": "5",
-    "description": "48",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 55,
-  "fields": {
-    "standard": 5,
-    "name": "60",
-    "code": "6",
-    "description": "60",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 56,
-  "fields": {
-    "standard": 5,
-    "name": "70",
-    "code": "7",
-    "description": "70",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 57,
-  "fields": {
-    "standard": 5,
-    "name": "84",
-    "code": "8",
-    "description": "84",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 58,
-  "fields": {
-    "standard": 5,
-    "name": "90",
-    "code": "9",
-    "description": "90",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 59,
-  "fields": {
-    "standard": 5,
-    "name": "105",
-    "code": "10",
-    "description": "105",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 60,
-  "fields": {
-    "standard": 5,
-    "name": "16",
-    "code": "11",
-    "description": "16",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 61,
-  "fields": {
-    "standard": 5,
-    "name": "18",
-    "code": "12",
-    "description": "18",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 62,
-  "fields": {
-    "standard": 5,
-    "name": "20",
-    "code": "13",
-    "description": "20",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 63,
-  "fields": {
-    "standard": 5,
-    "name": "24",
-    "code": "14",
-    "description": "24",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 64,
-  "fields": {
-    "standard": 5,
-    "name": "28",
-    "code": "15",
-    "description": "28",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 65,
-  "fields": {
-    "standard": 5,
-    "name": "96",
-    "code": "16",
-    "description": "96",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 66,
-  "fields": {
-    "standard": 5,
-    "name": "30",
-    "code": "17",
-    "description": "30",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 67,
-  "fields": {
-    "standard": 5,
-    "name": "9",
-    "code": "20",
-    "description": "9",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 68,
-  "fields": {
-    "standard": 5,
-    "name": "10",
-    "code": "21",
-    "description": "10",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 69,
-  "fields": {
-    "standard": 5,
-    "name": "14",
-    "code": "22",
-    "description": "14",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 70,
-  "fields": {
-    "standard": 5,
-    "name": "22",
-    "code": "23",
-    "description": "22",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 71,
-  "fields": {
-    "standard": 5,
-    "name": "27",
-    "code": "24",
-    "description": "27",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 72,
-  "fields": {
-    "standard": 5,
-    "name": "126",
-    "code": "25",
-    "description": "126",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 73,
-  "fields": {
-    "standard": 5,
-    "name": "120",
-    "code": "26",
-    "description": "120",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 74,
-  "fields": {
-    "standard": 5,
-    "name": "106",
-    "code": "27",
-    "description": "106",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 75,
-  "fields": {
-    "standard": 5,
-    "name": "34",
-    "code": "28",
-    "description": "34",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 76,
-  "fields": {
-    "standard": 5,
-    "name": "35",
-    "code": "29",
-    "description": "35",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 77,
-  "fields": {
-    "standard": 5,
-    "name": "72",
-    "code": "30",
-    "description": "72",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 78,
-  "fields": {
-    "standard": 5,
-    "name": "100",
-    "code": "31",
-    "description": "100",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 79,
-  "fields": {
-    "standard": 5,
-    "name": "86",
-    "code": "32",
-    "description": "86",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 80,
-  "fields": {
-    "standard": 5,
-    "name": "80",
-    "code": "33",
-    "description": "80",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 81,
-  "fields": {
-    "standard": 5,
-    "name": "110",
-    "code": "34",
-    "description": "110",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 82,
-  "fields": {
-    "standard": 5,
-    "name": "45",
-    "code": "35",
-    "description": "45",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 83,
-  "fields": {
-    "standard": 5,
-    "name": "54",
-    "code": "36",
-    "description": "54",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 84,
-  "fields": {
-    "standard": 5,
-    "name": "26",
-    "code": "37",
-    "description": "26",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 85,
-  "fields": {
-    "standard": 5,
-    "name": "8",
-    "code": "38",
-    "description": "8",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 86,
-  "fields": {
-    "standard": 5,
-    "name": "57",
-    "code": "39",
-    "description": "57",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 87,
-  "fields": {
-    "standard": 5,
-    "name": "50",
-    "code": "40",
-    "description": "50",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 88,
-  "fields": {
-    "standard": 5,
-    "name": "55",
-    "code": "41",
-    "description": "55",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 89,
-  "fields": {
-    "standard": 5,
-    "name": "65",
-    "code": "42",
-    "description": "65",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 90,
-  "fields": {
-    "standard": 5,
-    "name": "12",
-    "code": "43",
-    "description": "12",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 91,
-  "fields": {
-    "standard": 5,
-    "name": "160",
-    "code": "44",
-    "description": "160",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 92,
-  "fields": {
-    "standard": 5,
-    "name": "88",
-    "code": "45",
-    "description": "88",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 93,
-  "fields": {
-    "standard": 5,
-    "name": "85",
-    "code": "46",
-    "description": "85",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 94,
-  "fields": {
-    "standard": 5,
-    "name": "58",
-    "code": "47",
-    "description": "58",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 95,
-  "fields": {
-    "standard": 5,
-    "name": "75",
-    "code": "48",
-    "description": "75",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 96,
-  "fields": {
-    "standard": 5,
-    "name": "95",
-    "code": "49",
-    "description": "95",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 97,
-  "fields": {
-    "standard": 5,
-    "name": "76",
-    "code": "50",
-    "description": "76",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 98,
-  "fields": {
-    "standard": 5,
-    "name": "42",
-    "code": "51",
-    "description": "42",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardsize",
-  "pk": 99,
-  "fields": {
-    "standard": 5,
-    "name": "21",
-    "code": "52",
-    "description": "21",
-    "sort_order": 0,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 1,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTÓN 11.3 (AGMX)",
-    "code": "1",
-    "max_product_amount": 11.3,
-    "description": null,
-    "standard": 1,
-    "is_enabled": true
-  }
+    "model": "base.productkindcountrystandardsize",
+    "pk": 1,
+    "fields": {
+        "standard": 1,
+        "name": "Comercial",
+        "code": "1",
+        "description": "120 a 150 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 2,
+    "fields": {
+        "standard": 1,
+        "name": "Mediano",
+        "code": "1",
+        "description": "170 a 205 grs",
+        "sort_order": 2,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 3,
+    "fields": {
+        "standard": 1,
+        "name": "Primera",
+        "code": "1",
+        "description": "205 a 265 grs",
+        "sort_order": 3,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 4,
+    "fields": {
+        "standard": 1,
+        "name": "Extra",
+        "code": "1",
+        "description": "150 a 170 grs",
+        "sort_order": 1,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 5,
+    "fields": {
+        "standard": 1,
+        "name": "Super",
+        "code": "1",
+        "description": "+ de 265 grs",
+        "sort_order": 4,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 6,
+    "fields": {
+        "standard": 2,
+        "name": "26",
+        "code": "1",
+        "description": "120 a 150 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 7,
+    "fields": {
+        "standard": 2,
+        "name": "24",
+        "code": "1",
+        "description": "150 a 170 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 8,
+    "fields": {
+        "standard": 2,
+        "name": "22",
+        "code": "1",
+        "description": "170 a 205 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 9,
+    "fields": {
+        "standard": 2,
+        "name": "18",
+        "code": "1",
+        "description": "205 a 265 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 10,
+    "fields": {
+        "standard": 2,
+        "name": "16",
+        "code": "1",
+        "description": "265 a 300 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 11,
+    "fields": {
+        "standard": 2,
+        "name": "14",
+        "code": "1",
+        "description": "300 a 330 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 12,
+    "fields": {
+        "standard": 2,
+        "name": "12",
+        "code": "1",
+        "description": "+ de 330 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 13,
+    "fields": {
+        "standard": 3,
+        "name": "26",
+        "code": "1",
+        "description": "120 a 150 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 14,
+    "fields": {
+        "standard": 3,
+        "name": "24",
+        "code": "1",
+        "description": "150 a 170 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 15,
+    "fields": {
+        "standard": 3,
+        "name": "22",
+        "code": "1",
+        "description": "170 a 205 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 16,
+    "fields": {
+        "standard": 3,
+        "name": "18",
+        "code": "1",
+        "description": "205 a 265 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 17,
+    "fields": {
+        "standard": 3,
+        "name": "16",
+        "code": "1",
+        "description": "265 a 300 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 18,
+    "fields": {
+        "standard": 3,
+        "name": "14",
+        "code": "1",
+        "description": "300 a 330 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 19,
+    "fields": {
+        "standard": 3,
+        "name": "12",
+        "code": "1",
+        "description": "+ de 330 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 20,
+    "fields": {
+        "standard": 4,
+        "name": "30",
+        "code": "1",
+        "description": "170 a 205 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 21,
+    "fields": {
+        "standard": 4,
+        "name": "24",
+        "code": "1",
+        "description": "205 a 265 grs",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 29,
+    "fields": {
+        "standard": 6,
+        "name": "600",
+        "code": "1",
+        "description": "32 a 35 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 30,
+    "fields": {
+        "standard": 6,
+        "name": "500",
+        "code": "1",
+        "description": "35 a 37 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 31,
+    "fields": {
+        "standard": 6,
+        "name": "400",
+        "code": "1",
+        "description": "37 a 39 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 32,
+    "fields": {
+        "standard": 6,
+        "name": "300",
+        "code": "1",
+        "description": "+ de 39 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 33,
+    "fields": {
+        "standard": 7,
+        "name": "250",
+        "code": "1",
+        "description": "50 a 51 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 34,
+    "fields": {
+        "standard": 7,
+        "name": "230",
+        "code": "1",
+        "description": "52 a 53 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 35,
+    "fields": {
+        "standard": 7,
+        "name": "200",
+        "code": "1",
+        "description": "54 a 55 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 36,
+    "fields": {
+        "standard": 7,
+        "name": "175",
+        "code": "1",
+        "description": "56 a 59 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 37,
+    "fields": {
+        "standard": 7,
+        "name": "150",
+        "code": "1",
+        "description": "59 a 61 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 38,
+    "fields": {
+        "standard": 7,
+        "name": "110",
+        "code": "1",
+        "description": "61 a 63 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 39,
+    "fields": {
+        "standard": 8,
+        "name": "54",
+        "code": "1",
+        "description": "52 a 53 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 40,
+    "fields": {
+        "standard": 8,
+        "name": "48",
+        "code": "1",
+        "description": "54 a 55 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 41,
+    "fields": {
+        "standard": 8,
+        "name": "44",
+        "code": "1",
+        "description": "56 a 59 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 42,
+    "fields": {
+        "standard": 8,
+        "name": "40",
+        "code": "1",
+        "description": "59 a 61 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 43,
+    "fields": {
+        "standard": 8,
+        "name": "36",
+        "code": "1",
+        "description": "61 a 63 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 44,
+    "fields": {
+        "standard": 9,
+        "name": "63",
+        "code": "1",
+        "description": "50 a 51 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 45,
+    "fields": {
+        "standard": 9,
+        "name": "54",
+        "code": "1",
+        "description": "52 a 55 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 46,
+    "fields": {
+        "standard": 9,
+        "name": "48",
+        "code": "1",
+        "description": "56 a 59 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 47,
+    "fields": {
+        "standard": 9,
+        "name": "42",
+        "code": "1",
+        "description": "59 a 61 mm",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 48,
+    "fields": {
+        "standard": 1,
+        "name": "Mixto",
+        "code": "1",
+        "description": "Mixto",
+        "sort_order": 5,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 49,
+    "fields": {
+        "standard": 1,
+        "name": "Materia orgánica",
+        "code": "1",
+        "description": "Materia orgánica",
+        "sort_order": 7,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 50,
+    "fields": {
+        "standard": 1,
+        "name": "Desecho",
+        "code": "1",
+        "description": "Desecho",
+        "sort_order": 6,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 51,
+    "fields": {
+        "standard": 5,
+        "name": "32",
+        "code": "2",
+        "description": "32",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 52,
+    "fields": {
+        "standard": 5,
+        "name": "36",
+        "code": "3",
+        "description": "36",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 53,
+    "fields": {
+        "standard": 5,
+        "name": "40",
+        "code": "4",
+        "description": "40",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 54,
+    "fields": {
+        "standard": 5,
+        "name": "48",
+        "code": "5",
+        "description": "48",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 55,
+    "fields": {
+        "standard": 5,
+        "name": "60",
+        "code": "6",
+        "description": "60",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 56,
+    "fields": {
+        "standard": 5,
+        "name": "70",
+        "code": "7",
+        "description": "70",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 57,
+    "fields": {
+        "standard": 5,
+        "name": "84",
+        "code": "8",
+        "description": "84",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 58,
+    "fields": {
+        "standard": 5,
+        "name": "90",
+        "code": "9",
+        "description": "90",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 59,
+    "fields": {
+        "standard": 5,
+        "name": "105",
+        "code": "10",
+        "description": "105",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 60,
+    "fields": {
+        "standard": 5,
+        "name": "16",
+        "code": "11",
+        "description": "16",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 61,
+    "fields": {
+        "standard": 5,
+        "name": "18",
+        "code": "12",
+        "description": "18",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 62,
+    "fields": {
+        "standard": 5,
+        "name": "20",
+        "code": "13",
+        "description": "20",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 63,
+    "fields": {
+        "standard": 5,
+        "name": "24",
+        "code": "14",
+        "description": "24",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 64,
+    "fields": {
+        "standard": 5,
+        "name": "28",
+        "code": "15",
+        "description": "28",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 65,
+    "fields": {
+        "standard": 5,
+        "name": "96",
+        "code": "16",
+        "description": "96",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 66,
+    "fields": {
+        "standard": 5,
+        "name": "30",
+        "code": "17",
+        "description": "30",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 67,
+    "fields": {
+        "standard": 5,
+        "name": "9",
+        "code": "20",
+        "description": "9",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 68,
+    "fields": {
+        "standard": 5,
+        "name": "10",
+        "code": "21",
+        "description": "10",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 69,
+    "fields": {
+        "standard": 5,
+        "name": "14",
+        "code": "22",
+        "description": "14",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 70,
+    "fields": {
+        "standard": 5,
+        "name": "22",
+        "code": "23",
+        "description": "22",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 71,
+    "fields": {
+        "standard": 5,
+        "name": "27",
+        "code": "24",
+        "description": "27",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 72,
+    "fields": {
+        "standard": 5,
+        "name": "126",
+        "code": "25",
+        "description": "126",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 73,
+    "fields": {
+        "standard": 5,
+        "name": "120",
+        "code": "26",
+        "description": "120",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 74,
+    "fields": {
+        "standard": 5,
+        "name": "106",
+        "code": "27",
+        "description": "106",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 75,
+    "fields": {
+        "standard": 5,
+        "name": "34",
+        "code": "28",
+        "description": "34",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 76,
+    "fields": {
+        "standard": 5,
+        "name": "35",
+        "code": "29",
+        "description": "35",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 77,
+    "fields": {
+        "standard": 5,
+        "name": "72",
+        "code": "30",
+        "description": "72",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 78,
+    "fields": {
+        "standard": 5,
+        "name": "100",
+        "code": "31",
+        "description": "100",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 79,
+    "fields": {
+        "standard": 5,
+        "name": "86",
+        "code": "32",
+        "description": "86",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 80,
+    "fields": {
+        "standard": 5,
+        "name": "80",
+        "code": "33",
+        "description": "80",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 81,
+    "fields": {
+        "standard": 5,
+        "name": "110",
+        "code": "34",
+        "description": "110",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 82,
+    "fields": {
+        "standard": 5,
+        "name": "45",
+        "code": "35",
+        "description": "45",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 83,
+    "fields": {
+        "standard": 5,
+        "name": "54",
+        "code": "36",
+        "description": "54",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 84,
+    "fields": {
+        "standard": 5,
+        "name": "26",
+        "code": "37",
+        "description": "26",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 85,
+    "fields": {
+        "standard": 5,
+        "name": "8",
+        "code": "38",
+        "description": "8",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 86,
+    "fields": {
+        "standard": 5,
+        "name": "57",
+        "code": "39",
+        "description": "57",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 87,
+    "fields": {
+        "standard": 5,
+        "name": "50",
+        "code": "40",
+        "description": "50",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 88,
+    "fields": {
+        "standard": 5,
+        "name": "55",
+        "code": "41",
+        "description": "55",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 89,
+    "fields": {
+        "standard": 5,
+        "name": "65",
+        "code": "42",
+        "description": "65",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 90,
+    "fields": {
+        "standard": 5,
+        "name": "12",
+        "code": "43",
+        "description": "12",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 91,
+    "fields": {
+        "standard": 5,
+        "name": "160",
+        "code": "44",
+        "description": "160",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 92,
+    "fields": {
+        "standard": 5,
+        "name": "88",
+        "code": "45",
+        "description": "88",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 93,
+    "fields": {
+        "standard": 5,
+        "name": "85",
+        "code": "46",
+        "description": "85",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 94,
+    "fields": {
+        "standard": 5,
+        "name": "58",
+        "code": "47",
+        "description": "58",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 95,
+    "fields": {
+        "standard": 5,
+        "name": "75",
+        "code": "48",
+        "description": "75",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 96,
+    "fields": {
+        "standard": 5,
+        "name": "95",
+        "code": "49",
+        "description": "95",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 97,
+    "fields": {
+        "standard": 5,
+        "name": "76",
+        "code": "50",
+        "description": "76",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 98,
+    "fields": {
+        "standard": 5,
+        "name": "42",
+        "code": "51",
+        "description": "42",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardsize",
+    "pk": 99,
+    "fields": {
+        "standard": 5,
+        "name": "21",
+        "code": "52",
+        "description": "21",
+        "sort_order": 0,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 1,
+    "fields": {
+        "standard": 1,
+        "supply_kind": 1,
+        "name": "CARTÓN 11.3 (AGMX)",
+        "code": "1",
+        "max_product_amount": 11.3,
+        "description": null,
+        "is_enabled": true
+    }
 },
 {
     "model": "base.productkindcountrystandardpackaging",
     "pk": 3,
     "fields": {
+        "standard": 4,
         "supply_kind": 1,
         "name": "CARTÓN 11.3 (AGJP)",
         "code": "1",
         "max_product_amount": 11.3,
         "description": null,
-        "standard": 4,
         "is_enabled": true
     }
 },
 {
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 4,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTÓN 10 (AGMX)",
-    "code": "2",
-    "max_product_amount": 10.0,
-    "description": null,
-    "standard": 1,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 5,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 11.3",
-    "code": "1",
-    "max_product_amount": 11.3,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 6,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 13",
-    "code": "3",
-    "max_product_amount": 13.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 7,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 10",
-    "code": "4",
-    "max_product_amount": 10.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 8,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 10.7",
-    "code": "5",
-    "max_product_amount": 10.7,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 9,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 16.9",
-    "code": "6",
-    "max_product_amount": 16.9,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 10,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 14.4",
-    "code": "7",
-    "max_product_amount": 14.4,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 11,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 16.9",
-    "code": "8",
-    "max_product_amount": 16.9,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 12,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 11.25",
-    "code": "9",
-    "max_product_amount": 11.25,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 13,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 17",
-    "code": "10",
-    "max_product_amount": 17.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 14,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 17",
-    "code": "11",
-    "max_product_amount": 17.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 15,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 14",
-    "code": "12",
-    "max_product_amount": 14.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 16,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 5.625",
-    "code": "13",
-    "max_product_amount": 5.625,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 17,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 20",
-    "code": "14",
-    "max_product_amount": 20.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 18,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 17.20",
-    "code": "15",
-    "max_product_amount": 17.2,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 19,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 18",
-    "code": "16",
-    "max_product_amount": 18.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 20,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 19",
-    "code": "17",
-    "max_product_amount": 19.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 21,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 5.6",
-    "code": "18",
-    "max_product_amount": 5.6,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 22,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 17.2",
-    "code": "19",
-    "max_product_amount": 17.2,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 23,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 16.5",
-    "code": "20",
-    "max_product_amount": 16.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 24,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 11",
-    "code": "23",
-    "max_product_amount": 11.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 25,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 5.5",
-    "code": "25",
-    "max_product_amount": 5.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 26,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 12",
-    "code": "26",
-    "max_product_amount": 12.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 27,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 14.2",
-    "code": "27",
-    "max_product_amount": 14.2,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 28,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 10.8",
-    "code": "28",
-    "max_product_amount": 10.8,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 29,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 15.2",
-    "code": "29",
-    "max_product_amount": 15.2,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 30,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 17.5",
-    "code": "30",
-    "max_product_amount": 17.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 31,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 11.20",
-    "code": "31",
-    "max_product_amount": 11.2,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 32,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 19.1",
-    "code": "32",
-    "max_product_amount": 19.1,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 33,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 18.5",
-    "code": "33",
-    "max_product_amount": 18.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 34,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 6",
-    "code": "34",
-    "max_product_amount": 6.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 35,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 15",
-    "code": "35",
-    "max_product_amount": 15.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 36,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 16.0",
-    "code": "36",
-    "max_product_amount": 16.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 37,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 15.4",
-    "code": "37",
-    "max_product_amount": 15.4,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 38,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 16",
-    "code": "38",
-    "max_product_amount": 16.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 39,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 11.34",
-    "code": "39",
-    "max_product_amount": 11.34,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 40,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 4.1",
-    "code": "40",
-    "max_product_amount": 4.1,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 41,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 17.4",
-    "code": "41",
-    "max_product_amount": 17.4,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 42,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 13.4",
-    "code": "42",
-    "max_product_amount": 13.4,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 43,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 12.3",
-    "code": "43",
-    "max_product_amount": 12.3,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 44,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 9.2",
-    "code": "44",
-    "max_product_amount": 9.2,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 45,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 5.65",
-    "code": "45",
-    "max_product_amount": 5.65,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 46,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 10.5",
-    "code": "46",
-    "max_product_amount": 10.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 47,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 10.2",
-    "code": "47",
-    "max_product_amount": 10.2,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 48,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 9",
-    "code": "48",
-    "max_product_amount": 9.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 49,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 12.3",
-    "code": "49",
-    "max_product_amount": 12.3,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 50,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 5.7",
-    "code": "50",
-    "max_product_amount": 5.7,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 51,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 3.750",
-    "code": "51",
-    "max_product_amount": 3.75,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 52,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 11.15",
-    "code": "52",
-    "max_product_amount": 11.15,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 53,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 11.14",
-    "code": "54",
-    "max_product_amount": 11.14,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 54,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 391",
-    "code": "55",
-    "max_product_amount": 391.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 55,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 16.8",
-    "code": "56",
-    "max_product_amount": 16.8,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 56,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 4",
-    "code": "57",
-    "max_product_amount": 4.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 57,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 14.5",
-    "code": "58",
-    "max_product_amount": 14.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 58,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 13.5",
-    "code": "59",
-    "max_product_amount": 13.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 59,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 18.10",
-    "code": "63",
-    "max_product_amount": 18.1,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 60,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 9.8",
-    "code": "64",
-    "max_product_amount": 9.8,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 61,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 11.10",
-    "code": "65",
-    "max_product_amount": 11.1,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 62,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 16.2",
-    "code": "66",
-    "max_product_amount": 16.2,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 63,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 22.6",
-    "code": "67",
-    "max_product_amount": 22.6,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 64,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 370",
-    "code": "68",
-    "max_product_amount": 370.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 65,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 18.14",
-    "code": "69",
-    "max_product_amount": 18.14,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 66,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 3",
-    "code": "70",
-    "max_product_amount": 3.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 67,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 390",
-    "code": "71",
-    "max_product_amount": 390.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 68,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 16.4",
-    "code": "73",
-    "max_product_amount": 16.4,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 69,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 11.5",
-    "code": "74",
-    "max_product_amount": 11.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 70,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 5.3",
-    "code": "75",
-    "max_product_amount": 5.3,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 71,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 10.9",
-    "code": "76",
-    "max_product_amount": 10.9,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 72,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 11.7",
-    "code": "77",
-    "max_product_amount": 11.7,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 73,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 11.4",
-    "code": "78",
-    "max_product_amount": 11.4,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 74,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 16.6",
-    "code": "79",
-    "max_product_amount": 16.6,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 75,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 16.6",
-    "code": "80",
-    "max_product_amount": 16.6,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 76,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 6",
-    "code": "81",
-    "max_product_amount": 6.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 77,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 14.55",
-    "code": "83",
-    "max_product_amount": 14.55,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 78,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 7.00",
-    "code": "84",
-    "max_product_amount": 7.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 79,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 14.3",
-    "code": "85",
-    "max_product_amount": 14.3,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 80,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 2.6",
-    "code": "86",
-    "max_product_amount": 2.6,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 81,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 5.4",
-    "code": "87",
-    "max_product_amount": 5.4,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 82,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 2.5",
-    "code": "88",
-    "max_product_amount": 2.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 83,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 8.5",
-    "code": "89",
-    "max_product_amount": 8.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 84,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 8.6",
-    "code": "90",
-    "max_product_amount": 8.6,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 85,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 17.3",
-    "code": "91",
-    "max_product_amount": 17.3,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 86,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 13.3",
-    "code": "92",
-    "max_product_amount": 13.3,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 87,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 16.3",
-    "code": "93",
-    "max_product_amount": 16.3,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 88,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 16.95",
-    "code": "94",
-    "max_product_amount": 16.95,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 89,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 11.6",
-    "code": "95",
-    "max_product_amount": 11.6,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 90,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 8.3",
-    "code": "96",
-    "max_product_amount": 8.3,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 91,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 8",
-    "code": "98",
-    "max_product_amount": 8.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 92,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 15.8",
-    "code": "99",
-    "max_product_amount": 15.8,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 93,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 15.5",
-    "code": "100",
-    "max_product_amount": 15.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 94,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 7.5",
-    "code": "101",
-    "max_product_amount": 7.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 95,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 5.55",
-    "code": "102",
-    "max_product_amount": 5.55,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 96,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 9.6",
-    "code": "103",
-    "max_product_amount": 9.6,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 97,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 22.5",
-    "code": "104",
-    "max_product_amount": 22.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 98,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 9.7",
-    "code": "105",
-    "max_product_amount": 9.7,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 99,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 4.8",
-    "code": "106",
-    "max_product_amount": 4.8,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 100,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 5.63",
-    "code": "107",
-    "max_product_amount": 5.63,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 101,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 13",
-    "code": "108",
-    "max_product_amount": 13.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 102,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 8.5",
-    "code": "109",
-    "max_product_amount": 8.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 103,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 8",
-    "code": "110",
-    "max_product_amount": 8.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 104,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 7",
-    "code": "111",
-    "max_product_amount": 7.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 105,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 8.6",
-    "code": "112",
-    "max_product_amount": 8.6,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 106,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 20",
-    "code": "113",
-    "max_product_amount": 20.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 107,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 16.75",
-    "code": "114",
-    "max_product_amount": 16.75,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 108,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 15",
-    "code": "115",
-    "max_product_amount": 15.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 109,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 9",
-    "code": "116",
-    "max_product_amount": 9.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 110,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 8.475",
-    "code": "117",
-    "max_product_amount": 8.475,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 111,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 10.5",
-    "code": "118",
-    "max_product_amount": 10.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 112,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 8.3",
-    "code": "119",
-    "max_product_amount": 8.3,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 113,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 14",
-    "code": "120",
-    "max_product_amount": 14.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 114,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 10.6",
-    "code": "121",
-    "max_product_amount": 10.6,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 115,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 8.4",
-    "code": "122",
-    "max_product_amount": 8.4,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 116,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 28",
-    "code": "123",
-    "max_product_amount": 28.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 117,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 380",
-    "code": "124",
-    "max_product_amount": 380.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 118,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 15.62",
-    "code": "125",
-    "max_product_amount": 15.62,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 119,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 10",
-    "code": "126",
-    "max_product_amount": 10.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 120,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 13.5",
-    "code": "127",
-    "max_product_amount": 13.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 121,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 420",
-    "code": "128",
-    "max_product_amount": 420.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 122,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 15.60",
-    "code": "129",
-    "max_product_amount": 15.6,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 123,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 15.750",
-    "code": "130",
-    "max_product_amount": 15.75,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 124,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 14.5",
-    "code": "131",
-    "max_product_amount": 14.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 125,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 16.1",
-    "code": "132",
-    "max_product_amount": 16.1,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 126,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 9.68",
-    "code": "133",
-    "max_product_amount": 9.68,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 127,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 9.27",
-    "code": "134",
-    "max_product_amount": 9.27,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 128,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 13.1",
-    "code": "135",
-    "max_product_amount": 13.1,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 129,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 4.5",
-    "code": "136",
-    "max_product_amount": 4.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 130,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 8.8",
-    "code": "140",
-    "max_product_amount": 8.8,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 131,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 55",
-    "code": "141",
-    "max_product_amount": 55.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 132,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 1100",
-    "code": "143",
-    "max_product_amount": 1100.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 133,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 8.48",
-    "code": "144",
-    "max_product_amount": 8.48,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 134,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 12.6",
-    "code": "146",
-    "max_product_amount": 12.6,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 135,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 3.7",
-    "code": "147",
-    "max_product_amount": 3.7,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 136,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 23",
-    "code": "150",
-    "max_product_amount": 23.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 137,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 320",
-    "code": "151",
-    "max_product_amount": 320.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 138,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 5.626",
-    "code": "154",
-    "max_product_amount": 5.626,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 139,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 4.56",
-    "code": "157",
-    "max_product_amount": 4.56,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 140,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 16.7",
-    "code": "158",
-    "max_product_amount": 16.7,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 141,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 13.1",
-    "code": "159",
-    "max_product_amount": 13.1,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 142,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 8.4",
-    "code": "160",
-    "max_product_amount": 8.4,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 143,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 18",
-    "code": "161",
-    "max_product_amount": 18.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 144,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 11.3",
-    "code": "162",
-    "max_product_amount": 11.3,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 145,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 8.625",
-    "code": "163",
-    "max_product_amount": 8.625,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 146,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 10.85",
-    "code": "164",
-    "max_product_amount": 10.85,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 147,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 5.75",
-    "code": "165",
-    "max_product_amount": 5.75,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 148,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 8.1",
-    "code": "166",
-    "max_product_amount": 8.1,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 149,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 395",
-    "code": "167",
-    "max_product_amount": 395.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 150,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 6.5",
-    "code": "168",
-    "max_product_amount": 6.5,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 151,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 9.72",
-    "code": "169",
-    "max_product_amount": 9.72,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 152,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 19",
-    "code": "170",
-    "max_product_amount": 19.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 153,
-  "fields": {
-    "supply_kind": 1,
-    "name": "PLASTICO DE 21",
-    "code": "171",
-    "max_product_amount": 21.0,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
-},
-{
-  "model": "base.productkindcountrystandardpackaging",
-  "pk": 154,
-  "fields": {
-    "supply_kind": 1,
-    "name": "CARTON DE 6.65",
-    "code": "172",
-    "max_product_amount": 6.65,
-    "description": null,
-    "standard": 5,
-    "is_enabled": true
-  }
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 4,
+    "fields": {
+        "standard": 1,
+        "supply_kind": 1,
+        "name": "CARTÓN 10 (AGMX)",
+        "code": "2",
+        "max_product_amount": 10.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 5,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 11.3",
+        "code": "1",
+        "max_product_amount": 11.3,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 6,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 13",
+        "code": "3",
+        "max_product_amount": 13.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 7,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 10",
+        "code": "4",
+        "max_product_amount": 10.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 8,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 10.7",
+        "code": "5",
+        "max_product_amount": 10.7,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 9,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 16.9",
+        "code": "6",
+        "max_product_amount": 16.9,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 10,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 14.4",
+        "code": "7",
+        "max_product_amount": 14.4,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 11,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 16.9",
+        "code": "8",
+        "max_product_amount": 16.9,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 12,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 11.25",
+        "code": "9",
+        "max_product_amount": 11.25,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 13,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 17",
+        "code": "10",
+        "max_product_amount": 17.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 14,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 17",
+        "code": "11",
+        "max_product_amount": 17.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 15,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 14",
+        "code": "12",
+        "max_product_amount": 14.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 16,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 5.625",
+        "code": "13",
+        "max_product_amount": 5.625,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 17,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 20",
+        "code": "14",
+        "max_product_amount": 20.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 18,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 17.20",
+        "code": "15",
+        "max_product_amount": 17.2,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 19,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 18",
+        "code": "16",
+        "max_product_amount": 18.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 20,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 19",
+        "code": "17",
+        "max_product_amount": 19.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 21,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 5.6",
+        "code": "18",
+        "max_product_amount": 5.6,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 22,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 17.2",
+        "code": "19",
+        "max_product_amount": 17.2,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 23,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 16.5",
+        "code": "20",
+        "max_product_amount": 16.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 24,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 11",
+        "code": "23",
+        "max_product_amount": 11.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 25,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 5.5",
+        "code": "25",
+        "max_product_amount": 5.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 26,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 12",
+        "code": "26",
+        "max_product_amount": 12.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 27,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 14.2",
+        "code": "27",
+        "max_product_amount": 14.2,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 28,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 10.8",
+        "code": "28",
+        "max_product_amount": 10.8,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 29,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 15.2",
+        "code": "29",
+        "max_product_amount": 15.2,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 30,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 17.5",
+        "code": "30",
+        "max_product_amount": 17.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 31,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 11.20",
+        "code": "31",
+        "max_product_amount": 11.2,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 32,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 19.1",
+        "code": "32",
+        "max_product_amount": 19.1,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 33,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 18.5",
+        "code": "33",
+        "max_product_amount": 18.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 34,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 6",
+        "code": "34",
+        "max_product_amount": 6.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 35,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 15",
+        "code": "35",
+        "max_product_amount": 15.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 36,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 16.0",
+        "code": "36",
+        "max_product_amount": 16.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 37,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 15.4",
+        "code": "37",
+        "max_product_amount": 15.4,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 38,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 16",
+        "code": "38",
+        "max_product_amount": 16.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 39,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 11.34",
+        "code": "39",
+        "max_product_amount": 11.34,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 40,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 4.1",
+        "code": "40",
+        "max_product_amount": 4.1,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 41,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 17.4",
+        "code": "41",
+        "max_product_amount": 17.4,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 42,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 13.4",
+        "code": "42",
+        "max_product_amount": 13.4,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 43,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 12.3",
+        "code": "43",
+        "max_product_amount": 12.3,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 44,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 9.2",
+        "code": "44",
+        "max_product_amount": 9.2,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 45,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 5.65",
+        "code": "45",
+        "max_product_amount": 5.65,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 46,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 10.5",
+        "code": "46",
+        "max_product_amount": 10.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 47,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 10.2",
+        "code": "47",
+        "max_product_amount": 10.2,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 48,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 9",
+        "code": "48",
+        "max_product_amount": 9.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 49,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 12.3",
+        "code": "49",
+        "max_product_amount": 12.3,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 50,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 5.7",
+        "code": "50",
+        "max_product_amount": 5.7,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 51,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 3.750",
+        "code": "51",
+        "max_product_amount": 3.75,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 52,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 11.15",
+        "code": "52",
+        "max_product_amount": 11.15,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 53,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 11.14",
+        "code": "54",
+        "max_product_amount": 11.14,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 54,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 391",
+        "code": "55",
+        "max_product_amount": 391.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 55,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 16.8",
+        "code": "56",
+        "max_product_amount": 16.8,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 56,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 4",
+        "code": "57",
+        "max_product_amount": 4.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 57,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 14.5",
+        "code": "58",
+        "max_product_amount": 14.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 58,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 13.5",
+        "code": "59",
+        "max_product_amount": 13.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 59,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 18.10",
+        "code": "63",
+        "max_product_amount": 18.1,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 60,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 9.8",
+        "code": "64",
+        "max_product_amount": 9.8,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 61,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 11.10",
+        "code": "65",
+        "max_product_amount": 11.1,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 62,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 16.2",
+        "code": "66",
+        "max_product_amount": 16.2,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 63,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 22.6",
+        "code": "67",
+        "max_product_amount": 22.6,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 64,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 370",
+        "code": "68",
+        "max_product_amount": 370.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 65,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 18.14",
+        "code": "69",
+        "max_product_amount": 18.14,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 66,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 3",
+        "code": "70",
+        "max_product_amount": 3.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 67,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 390",
+        "code": "71",
+        "max_product_amount": 390.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 68,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 16.4",
+        "code": "73",
+        "max_product_amount": 16.4,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 69,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 11.5",
+        "code": "74",
+        "max_product_amount": 11.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 70,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 5.3",
+        "code": "75",
+        "max_product_amount": 5.3,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 71,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 10.9",
+        "code": "76",
+        "max_product_amount": 10.9,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 72,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 11.7",
+        "code": "77",
+        "max_product_amount": 11.7,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 73,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 11.4",
+        "code": "78",
+        "max_product_amount": 11.4,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 74,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 16.6",
+        "code": "79",
+        "max_product_amount": 16.6,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 75,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 16.6",
+        "code": "80",
+        "max_product_amount": 16.6,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 76,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 6",
+        "code": "81",
+        "max_product_amount": 6.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 77,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 14.55",
+        "code": "83",
+        "max_product_amount": 14.55,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 78,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 7.00",
+        "code": "84",
+        "max_product_amount": 7.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 79,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 14.3",
+        "code": "85",
+        "max_product_amount": 14.3,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 80,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 2.6",
+        "code": "86",
+        "max_product_amount": 2.6,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 81,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 5.4",
+        "code": "87",
+        "max_product_amount": 5.4,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 82,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 2.5",
+        "code": "88",
+        "max_product_amount": 2.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 83,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 8.5",
+        "code": "89",
+        "max_product_amount": 8.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 84,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 8.6",
+        "code": "90",
+        "max_product_amount": 8.6,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 85,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 17.3",
+        "code": "91",
+        "max_product_amount": 17.3,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 86,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 13.3",
+        "code": "92",
+        "max_product_amount": 13.3,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 87,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 16.3",
+        "code": "93",
+        "max_product_amount": 16.3,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 88,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 16.95",
+        "code": "94",
+        "max_product_amount": 16.95,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 89,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 11.6",
+        "code": "95",
+        "max_product_amount": 11.6,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 90,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 8.3",
+        "code": "96",
+        "max_product_amount": 8.3,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 91,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 8",
+        "code": "98",
+        "max_product_amount": 8.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 92,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 15.8",
+        "code": "99",
+        "max_product_amount": 15.8,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 93,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 15.5",
+        "code": "100",
+        "max_product_amount": 15.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 94,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 7.5",
+        "code": "101",
+        "max_product_amount": 7.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 95,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 5.55",
+        "code": "102",
+        "max_product_amount": 5.55,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 96,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 9.6",
+        "code": "103",
+        "max_product_amount": 9.6,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 97,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 22.5",
+        "code": "104",
+        "max_product_amount": 22.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 98,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 9.7",
+        "code": "105",
+        "max_product_amount": 9.7,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 99,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 4.8",
+        "code": "106",
+        "max_product_amount": 4.8,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 100,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 5.63",
+        "code": "107",
+        "max_product_amount": 5.63,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 101,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 13",
+        "code": "108",
+        "max_product_amount": 13.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 102,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 8.5",
+        "code": "109",
+        "max_product_amount": 8.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 103,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 8",
+        "code": "110",
+        "max_product_amount": 8.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 104,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 7",
+        "code": "111",
+        "max_product_amount": 7.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 105,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 8.6",
+        "code": "112",
+        "max_product_amount": 8.6,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 106,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 20",
+        "code": "113",
+        "max_product_amount": 20.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 107,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 16.75",
+        "code": "114",
+        "max_product_amount": 16.75,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 108,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 15",
+        "code": "115",
+        "max_product_amount": 15.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 109,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 9",
+        "code": "116",
+        "max_product_amount": 9.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 110,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 8.475",
+        "code": "117",
+        "max_product_amount": 8.475,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 111,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 10.5",
+        "code": "118",
+        "max_product_amount": 10.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 112,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 8.3",
+        "code": "119",
+        "max_product_amount": 8.3,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 113,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 14",
+        "code": "120",
+        "max_product_amount": 14.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 114,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 10.6",
+        "code": "121",
+        "max_product_amount": 10.6,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 115,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 8.4",
+        "code": "122",
+        "max_product_amount": 8.4,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 116,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 28",
+        "code": "123",
+        "max_product_amount": 28.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 117,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 380",
+        "code": "124",
+        "max_product_amount": 380.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 118,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 15.62",
+        "code": "125",
+        "max_product_amount": 15.62,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 119,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 10",
+        "code": "126",
+        "max_product_amount": 10.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 120,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 13.5",
+        "code": "127",
+        "max_product_amount": 13.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 121,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 420",
+        "code": "128",
+        "max_product_amount": 420.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 122,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 15.60",
+        "code": "129",
+        "max_product_amount": 15.6,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 123,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 15.750",
+        "code": "130",
+        "max_product_amount": 15.75,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 124,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 14.5",
+        "code": "131",
+        "max_product_amount": 14.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 125,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 16.1",
+        "code": "132",
+        "max_product_amount": 16.1,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 126,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 9.68",
+        "code": "133",
+        "max_product_amount": 9.68,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 127,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 9.27",
+        "code": "134",
+        "max_product_amount": 9.27,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 128,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 13.1",
+        "code": "135",
+        "max_product_amount": 13.1,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 129,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 4.5",
+        "code": "136",
+        "max_product_amount": 4.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 130,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 8.8",
+        "code": "140",
+        "max_product_amount": 8.8,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 131,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 55",
+        "code": "141",
+        "max_product_amount": 55.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 132,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 1100",
+        "code": "143",
+        "max_product_amount": 1100.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 133,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 8.48",
+        "code": "144",
+        "max_product_amount": 8.48,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 134,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 12.6",
+        "code": "146",
+        "max_product_amount": 12.6,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 135,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 3.7",
+        "code": "147",
+        "max_product_amount": 3.7,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 136,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 23",
+        "code": "150",
+        "max_product_amount": 23.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 137,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 320",
+        "code": "151",
+        "max_product_amount": 320.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 138,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 5.626",
+        "code": "154",
+        "max_product_amount": 5.626,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 139,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 4.56",
+        "code": "157",
+        "max_product_amount": 4.56,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 140,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 16.7",
+        "code": "158",
+        "max_product_amount": 16.7,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 141,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 13.1",
+        "code": "159",
+        "max_product_amount": 13.1,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 142,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 8.4",
+        "code": "160",
+        "max_product_amount": 8.4,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 143,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 18",
+        "code": "161",
+        "max_product_amount": 18.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 144,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 11.3",
+        "code": "162",
+        "max_product_amount": 11.3,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 145,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 8.625",
+        "code": "163",
+        "max_product_amount": 8.625,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 146,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 10.85",
+        "code": "164",
+        "max_product_amount": 10.85,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 147,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 5.75",
+        "code": "165",
+        "max_product_amount": 5.75,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 148,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 8.1",
+        "code": "166",
+        "max_product_amount": 8.1,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 149,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 395",
+        "code": "167",
+        "max_product_amount": 395.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 150,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 6.5",
+        "code": "168",
+        "max_product_amount": 6.5,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 151,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 9.72",
+        "code": "169",
+        "max_product_amount": 9.72,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 152,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 19",
+        "code": "170",
+        "max_product_amount": 19.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 153,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "PLASTICO DE 21",
+        "code": "171",
+        "max_product_amount": 21.0,
+        "description": null,
+        "is_enabled": true
+    }
+},
+{
+    "model": "base.productkindcountrystandardpackaging",
+    "pk": 154,
+    "fields": {
+        "standard": 5,
+        "supply_kind": 1,
+        "name": "CARTON DE 6.65",
+        "code": "172",
+        "max_product_amount": 6.65,
+        "description": null,
+        "is_enabled": true
+    }
 },
 {
     "model": "base.legalentitycategory",

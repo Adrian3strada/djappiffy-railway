@@ -9,19 +9,19 @@ from decimal import Decimal
 
 @receiver(post_save, sender=DryMatter)
 def my_handler(sender, instance, **kwargs):
-    average = DryMatter.objects.filter(food_safety=instance.food_safety).aggregate(Avg('dry_matter_percentage'))
+    average = DryMatter.objects.filter(food_safety=instance.food_safety).aggregate(Avg('dry_matter'))
     have_average = Average.objects.filter(food_safety=instance.food_safety).exists()
 
     if not have_average:
         Average.objects.create(
-                average_dry_matter=average['dry_matter_percentage__avg'],
+                average_dry_matter=average['dry_matter__avg'],
                 food_safety=instance.food_safety,
             )
     else:
         Average.objects.filter(
             food_safety=instance.food_safety
             ).update(
-                average_dry_matter=average['dry_matter_percentage__avg'],
+                average_dry_matter=average['dry_matter__avg'],
             )
 
 @receiver(post_delete, sender=DryMatter)
@@ -29,11 +29,11 @@ def my_handler(sender, instance, **kwargs):
     have_inspection = DryMatter.objects.filter(food_safety=instance.food_safety).exists()
 
     if have_inspection:
-        average = DryMatter.objects.filter(food_safety=instance.food_safety).aggregate(Avg('dry_matter_percentage'))
+        average = DryMatter.objects.filter(food_safety=instance.food_safety).aggregate(Avg('dry_matter'))
         Average.objects.filter(
             food_safety=instance.food_safety
             ).update(
-                average_dry_matter=average['dry_matter_percentage__avg'],
+                average_dry_matter=average['dry_matter__avg'],
             )
     else:
         Average.objects.filter(
@@ -83,11 +83,10 @@ def my_handler(sender, instance, **kwargs):
 
     incoming_product = IncomingProduct.objects.filter(batch=instance.batch).first()
     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-    dry_matter = FoodSafetyProcedure.objects.filter(model="DryMatter").first()
-    sample_collection = FoodSafetyProcedure.objects.filter(model="SampleCollection").first()
-    food_safety_dry_matter = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product, procedure=dry_matter).exists()
-    food_safety_sample_collection = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product, procedure=sample_collection).exists()
-    
+
+    food_safety_averaga = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product, procedure__model__in=['DryMatter', 'InternalInspection']).exists()
+    food_safety_sample_collection = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product, procedure__model__in=['SampleCollection']).exists()
+
     if food_safety_sample_collection:
         have_sample_colletion = SampleCollection.objects.filter(food_safety=instance.id).exists()
 
@@ -101,24 +100,18 @@ def my_handler(sender, instance, **kwargs):
                     food_safety=instance,
                 )
 
-    if food_safety_dry_matter:
+    if food_safety_averaga:
         have_average = Average.objects.filter(food_safety=instance.id).exists()
         
         if not have_average:
-        
             if ProductAdditionalValue.objects.filter(product=schedule_harvest.product).exists():
                 Average.objects.create(
                     acceptance_report= ProductAdditionalValue.objects.filter(product=schedule_harvest.product).latest('created_at'),
                     food_safety=instance,
                 )
-            
-        else: 
-            if ProductAdditionalValue.objects.filter(product=schedule_harvest.product).exists():
-
-                Average.objects.filter(
-                food_safety=instance
-                ).update(
-                    acceptance_report=ProductAdditionalValue.objects.filter(product=schedule_harvest.product).latest('created_at'),
+            else:
+                Average.objects.create(
+                    food_safety=instance,
                 )
 
     

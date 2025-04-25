@@ -1,87 +1,66 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const fieldSuffixes = ['sample_pest', 'sample_disease', 'sample_physical_damage', 'sample_residue'];
 
-    const fieldTypes = [
-        { name: 'sample_pest', setName: 'samplepest_set' },
-        { name: 'sample_disease', setName: 'sampledisease_set' },
-        { name: 'sample_physical_damage', setName: 'samplephysicaldamage_set' },
-        { name: 'sample_residue', setName: 'sampleresidue_set' }
-    ];
+    function getValidWeightInputs() {
+        return Array.from(document.querySelectorAll('input'))
+            .filter(input =>
+                input.name.includes('sampleweight_set') &&
+                input.name.endsWith('-weight') &&
+                /^samplecollection_set-\d+-sampleweight_set-\d+-weight$/.test(input.name)
+            );
+    }
 
     function recalculatePercentage() {
-        fieldTypes.forEach(({ name: fieldType, setName }) => {
-            const sampleFields = Array.from(document.querySelectorAll(`input[name$="${fieldType}"]`));
+        const weightInputs = getValidWeightInputs();
+        const totalWeights = weightInputs.length;
 
-            const percentageFields = Array.from(document.querySelectorAll('input'))
-                .filter(input =>
-                    input.name.includes(setName) &&
-                    input.name.endsWith('-percentage') &&
-                    new RegExp(`^samplecollection_set-\\d+-${setName}-\\d+-percentage$`).test(input.name)
-                );
+        const tbodies = Array.from(document.querySelectorAll('tbody[id^="samplecollection_set-"]'));
 
-            const weightInputs = Array.from(document.querySelectorAll('input'))
-                .filter(input =>
-                    input.name.includes('sampleweight_set') &&
-                    input.name.endsWith('-weight') &&
-                    /^samplecollection_set-\d+-sampleweight_set-\d+-weight$/.test(input.name)
-                );
+        tbodies.forEach(tbody => {
+            const sampleInput = fieldSuffixes
+                .map(suffix => tbody.querySelector(`input[name$="${suffix}"]`))
+                .find(Boolean);
 
-            sampleFields.forEach((field, index) => {
-                const sample = parseFloat(field.value);
-                if (!isNaN(sample) && weightInputs.length > 0) {
-                    const percentage = sample / weightInputs.length;
-                    if (percentageFields[index]) {
-                        percentageFields[index].value = percentage.toFixed(2);
-                    }
+            const percentageDisplay = tbody.querySelector('td.field-percentage p');
+
+            if (sampleInput && percentageDisplay && totalWeights > 0) {
+                const sampleValue = parseFloat(sampleInput.value.replace(',', '.'));
+                if (!isNaN(sampleValue)) {
+                    const percentage = (sampleValue / totalWeights) * 100;
+                    percentageDisplay.textContent = `${percentage.toFixed(2).replace('.', ',')} %`;
                 }
-            });
+            }
         });
     }
 
+    function isRelevantInput(name) {
+        return fieldSuffixes.some(suffix => name.endsWith(suffix)) || name.endsWith('-weight');
+    }
+
     document.addEventListener('input', function (event) {
-        const isSampleField = fieldTypes.some(({ name }) => event.target.name.endsWith(name));
-        if (isSampleField || event.target.name.endsWith('-weight')) {
+        if (isRelevantInput(event.target.name)) {
             recalculatePercentage();
         }
     });
 
     const observer = new MutationObserver(mutations => {
-        let shouldRecalculate = false;
 
-        mutations.forEach(mutation => {
-            mutation.addedNodes.forEach(node => {
+        mutations.forEach(({ addedNodes, removedNodes }) => {
+            [...addedNodes, ...removedNodes].forEach(node => {
                 if (node.nodeType === 1) {
-                    const input = node.matches('input') ? node : node.querySelector('input');
-                    if (input && (
-                        fieldTypes.some(({ name }) => input.name.endsWith(name)) ||
-                        input.name.endsWith('-weight')
-                    )) {
-                        shouldRecalculate = true;
-                    }
-                }
-            });
+                    const inputs = node.matches('input')
+                        ? [node]
+                        : Array.from(node.querySelectorAll('input'));
 
-            mutation.removedNodes.forEach(node => {
-                if (node.nodeType === 1) {
-                    const input = node.matches('input') ? node : node.querySelector('input');
-                    if (input && (
-                        fieldTypes.some(({ name }) => input.name.endsWith(name)) ||
-                        input.name.endsWith('-weight')
-                    )) {
-                        shouldRecalculate = true;
+                    if (inputs.some(input => isRelevantInput(input.name))) {
+                        recalculatePercentage();
                     }
                 }
             });
         });
-
-        if (shouldRecalculate) {
-            recalculatePercentage();
-        }
     });
 
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+    observer.observe(document.body, { childList: true, subtree: true });
 
     recalculatePercentage();
 });

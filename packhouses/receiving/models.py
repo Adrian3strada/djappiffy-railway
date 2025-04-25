@@ -186,7 +186,7 @@ class DryMatter(models.Model):
     paper_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     moisture_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     dry_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    dry_matter_percentage = models.DecimalField(max_digits=10, decimal_places=2)
+    dry_matter = models.DecimalField(max_digits=10, decimal_places=2)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -297,7 +297,7 @@ class SampleWeight(models.Model):
 class SamplePest(models.Model):
     sample_pest = models.IntegerField(verbose_name=_('Samples With Pests'))
     product_pest = models.ForeignKey(ProductPest, verbose_name=_('Pest'), on_delete=models.CASCADE)
-    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True, blank=True)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -312,10 +312,17 @@ class SamplePest(models.Model):
                 name='unique_sample_collection_product_pest'),
         ]
 
+    def save(self, *args, **kwargs):
+        total_sample_weight = SampleWeight.objects.filter(sample_collection=self.sample_collection).count()
+        self.percentage = (self.sample_pest / total_sample_weight)*100
+
+        super().save(*args, **kwargs)
+
+
 class SampleDisease(models.Model):
     sample_disease = models.IntegerField(verbose_name=_('Samples With Diseases'))
     product_disease = models.ForeignKey(ProductDisease, verbose_name=_('Disease'), on_delete=models.CASCADE)
-    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True, blank=True)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -330,10 +337,16 @@ class SampleDisease(models.Model):
                 name='unique_sample_collection_product_disease'),
         ]
 
+    def save(self, *args, **kwargs):
+        total_sample_weight = SampleWeight.objects.filter(sample_collection=self.sample_collection).count()
+        self.percentage = (self.sample_disease / total_sample_weight)*100
+
+        super().save(*args, **kwargs)
+
 class SamplePhysicalDamage(models.Model):
     sample_physical_damage = models.IntegerField(verbose_name=_('Samples With Physical Damage'))
     product_physical_damage = models.ForeignKey(ProductPhysicalDamage, verbose_name=_('Physical Damage'), on_delete=models.CASCADE)
-    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True, blank=True)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -348,10 +361,16 @@ class SamplePhysicalDamage(models.Model):
                 name='unique_sample_collection_product_physical_damage'),
         ]
 
+    def save(self, *args, **kwargs):
+        total_sample_weight = SampleWeight.objects.filter(sample_collection=self.sample_collection).count()
+        self.percentage = (self.sample_physical_damage / total_sample_weight)*100
+
+        super().save(*args, **kwargs)
+
 class SampleResidue(models.Model):
     sample_residue = models.IntegerField(verbose_name=_('Samples With Residue'))
     product_residue = models.ForeignKey(ProductResidue, verbose_name=_('Residue'), on_delete=models.CASCADE)
-    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True, blank=True)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -365,3 +384,9 @@ class SampleResidue(models.Model):
                 fields=['sample_collection','product_residue'], 
                 name='unique_sample_collection_product_residue'),
         ]
+        
+    def save(self, *args, **kwargs):
+        total_sample_weight = SampleWeight.objects.filter(sample_collection=self.sample_collection).count()
+        self.percentage = (self.sample_residue / total_sample_weight)*100
+
+        super().save(*args, **kwargs)

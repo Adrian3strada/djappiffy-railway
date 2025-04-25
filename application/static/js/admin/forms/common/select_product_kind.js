@@ -1,47 +1,27 @@
 document.addEventListener("DOMContentLoaded", function () {
     function updateSelectOptions(selector) {
-        const selects = document.querySelectorAll(selector);
-        const selectedValues = new Set();
+        const selects = Array.from(document.querySelectorAll(selector));
+        const selectedValues = new Set(
+            selects.map(select => select.value).filter(Boolean)
+        );
 
-        // Recopilar valores seleccionados
-        selects.forEach(select => {
-            if (select.value) {
-                selectedValues.add(select.value);
-            }
-        });
-
-        // Guardar las opciones originales solo una vez
         selects.forEach(select => {
             if (!select.dataset.originalOptions) {
-                const originalOptions = Array.from(select.options).map(option => {
-                    return {
-                        value: option.value,
-                        text: option.text,
-                    };
-                });
-                select.dataset.originalOptions = JSON.stringify(originalOptions);
+                const options = Array.from(select.options).map(({ value, text }) => ({ value, text }));
+                select.dataset.originalOptions = JSON.stringify(options);
             }
         });
 
-        // Reconstruir opciones en cada select
         selects.forEach(select => {
             const originalOptions = JSON.parse(select.dataset.originalOptions);
             const currentValue = select.value;
 
-            // Limpiar opciones actuales
-            select.innerHTML = "";
+            // Limpiar y reconstruir
+            select.innerHTML = originalOptions
+                .filter(({ value }) => value === "" || !selectedValues.has(value) || value === currentValue)
+                .map(({ value, text }) => `<option value="${value}">${text}</option>`)
+                .join("");
 
-            originalOptions.forEach(({ value, text }) => {
-                // Mostrar si está vacía, no ha sido seleccionada o es la actual
-                if (value === "" || !selectedValues.has(value) || value === currentValue) {
-                    const option = document.createElement("option");
-                    option.value = value;
-                    option.textContent = text;
-                    select.appendChild(option);
-                }
-            });
-
-            // Restaurar valor
             select.value = currentValue;
         });
     }
@@ -50,34 +30,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const pestSelector = '.inline-group [name^="pestproductkind_set-"][name$="-pest"]';
     const diseaseSelector = '.inline-group [name^="diseaseproductkind_set-"][name$="-disease"]';
     
-    function updateAll() {
-        updateSelectOptions(pestSelector);
-        updateSelectOptions(diseaseSelector);
-    }
+    updateSelectOptions(pestSelector);
+    updateSelectOptions(diseaseSelector);
 
     $(document).on('change', pestSelector + ', ' + diseaseSelector, function () {
-        updateAll();
+        if ($(this).is(pestSelector)) {
+            updateSelectOptions(pestSelector);
+        } else if ($(this).is(diseaseSelector)) {
+            updateSelectOptions(diseaseSelector);
+        }
     });
 
-    // Actualizamos al cargar la página
-    updateAll();
-
-    // Cuando se agrega una fila nueva, esperamos un breve retraso para asegurarnos que el DOM se ha actualizado
-    document.addEventListener("click", function (event) {
-        // Usamos closest para asegurarnos de capturar el click en el link de añadir fila (si es que la estructura cambia un poco)
-        if (event.target.closest(".add-row a")) {
-            // Si usamos un delay, el nuevo select ya estará presente en el DOM
-            setTimeout(function () {
-                updateAll();
-            }, 100);
-        }
-        if (event.target.closest(".inline-deletelink") || 
-        event.target.closest(".inline-related .delete") || 
-        event.target.closest(".inline-related .remove")) {
-            // Esperamos a que el DOM se actualice y se elimine el elemento
-            setTimeout(function () {
-                updateAll();
-            }, 100);
+    document.addEventListener('formset:removed', (event) => {
+        if (event.detail.formsetName === 'pestproductkind_set') {
+            updateSelectOptions(pestSelector);
+        } else if (event.detail.formsetName === 'diseaseproductkind_set') {
+            updateSelectOptions(diseaseSelector);
         }
     });
 });

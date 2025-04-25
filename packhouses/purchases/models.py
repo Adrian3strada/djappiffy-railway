@@ -10,7 +10,7 @@ from organizations.models import Organization
 from cities_light.models import City, Country, Region, SubRegion
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
-from common.base.models import ProductKind, CapitalFramework, LegalEntityCategory, Currency
+from common.base.models import ProductKind, CapitalFramework, LegalEntityCategory, Currency, SupplyMeasureUnitCategory
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   OrchardCertificationVerifier,
@@ -21,6 +21,11 @@ from django.contrib.auth import get_user_model
 import datetime
 User = get_user_model()
 from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
+from django.db.models import Sum
+from decimal import Decimal, ROUND_HALF_UP
+from django.core.exceptions import ValidationError
+
+
 
 # Create your models here.
 class Requisition(models.Model):
@@ -92,10 +97,10 @@ class RequisitionSupply(models.Model):
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0.01)]
     )
-    unit_category = models.CharField(
-        max_length=30,
+    unit_category = models.ForeignKey(
+        SupplyMeasureUnitCategory,
         verbose_name=_('Unit category'),
-        choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
+        on_delete=models.PROTECT
     )
     delivery_deadline = models.DateField(
         verbose_name=_('Delivery deadline'),
@@ -158,9 +163,9 @@ class PurchaseOrder(models.Model):
         choices=STATUS_CHOICES,
         default='open',
     )
-    is_in_payments = models.BooleanField(
-        default=False,
-        verbose_name = _("Is in payments")
+    balance_payable = models.FloatField(
+        default=0,
+        verbose_name = _("Balance payable")
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(
@@ -182,6 +187,53 @@ class PurchaseOrder(models.Model):
             self.user = user
 
         super().save(*args, **kwargs)
+
+    def simulate_balance(self):
+        supplies_total = self.purchaseordersupply_set.aggregate(
+            total=models.Sum('total_price')
+        )['total'] or Decimal('0.00')
+
+        tax_percent = self.tax or Decimal('0.00')
+        tax_decimal = tax_percent / Decimal('100.00')
+        tax_amount = (supplies_total * tax_decimal).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        payments_total = self.purchaseorderpayment_set.exclude(
+            status='canceled'
+        ).aggregate(total=models.Sum('amount'))['total'] or Decimal('0.00')
+
+        charges_total = self.purchaseordercharge_set.aggregate(
+            total=models.Sum('amount')
+        )['total'] or Decimal('0.00')
+
+        deductions_total = self.purchaseorderdeduction_set.aggregate(
+            total=models.Sum('amount')
+        )['total'] or Decimal('0.00')
+
+        balance = supplies_total + tax_amount + charges_total - deductions_total - payments_total
+        balance = balance.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        return {
+            'balance': balance,
+            'supplies_total': supplies_total,
+            'tax_amount': tax_amount,
+            'charges_total': charges_total,
+            'deductions_total': deductions_total,
+            'payments_total': payments_total,
+        }
+
+    def recalculate_balance(self, save=False, raise_exception=False):
+        data = self.simulate_balance()
+
+        if data['balance'] < 0 and raise_exception:
+            raise ValidationError(
+                _(f"No se puede guardar la orden porque el balance es negativo (${data['balance']}). "
+                  f"Contacta al área de Compras.")
+            )
+
+        if save:
+            self.balance_payable = data['balance']
+
+        return data
 
     def __str__(self):
         return f"{self.ooid} - {self.provider.name}"
@@ -210,10 +262,10 @@ class PurchaseOrderSupply(models.Model):
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0.01)]
     )
-    unit_category = models.CharField(
-        max_length=30,
+    unit_category = models.ForeignKey(
+        SupplyMeasureUnitCategory,
         verbose_name=_('Unit category'),
-        choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
+        on_delete=models.PROTECT,
     )
     delivery_deadline = models.DateField(
         verbose_name=_('Delivery deadline'),
@@ -344,9 +396,32 @@ class PurchaseOrderPayment(models.Model):
         choices=STATUS_CHOICES,
         default='closed',
     )
+    created_by = models.ForeignKey(
+        User,
+        verbose_name=_("Added by"),
+        on_delete=models.PROTECT,
+        null=True, blank=True,
+        related_name="added_payments"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Created at')
+    )
+    canceled_by = models.ForeignKey(
+        User,
+        verbose_name=_("Canceled by"),
+        on_delete=models.PROTECT,
+        null=True, blank=True,
+        related_name="canceled_payments"
+    )
+    cancellation_date = models.DateTimeField(
+        verbose_name=_("Cancellation date"),
+        null=True, blank=True
+    )
 
     def __str__(self):
         return f"{self.payment_date} - ${self.amount}"
+
 
     class Meta:
         verbose_name = _("Payment")

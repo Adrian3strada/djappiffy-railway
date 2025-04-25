@@ -16,9 +16,7 @@ from .models import (IncomingProduct, WeighingSet, WeighingSetContainer,
 from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLinksMixin)
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInlineMixin
-from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, 
-                    ContainerInlineFormSet, BatchForm, SamplePestForm, SampleDiseaseForm, SampleResidueForm, FoodSafetyFormInline, 
-                    SamplePhysicalDamageForm)
+from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet, BatchForm,)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                       ByCategoryForOrganizationIncomingProductFilter)
 from .utils import update_weighing_set_numbers,  CustomScheduleHarvestFormSet
@@ -666,13 +664,14 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
 class DryMatterInline(NestedTabularInline):
     model = DryMatter
     extra = 0
+    fields = ['product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter']
 
-    fields = ['product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage']
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/food_safety/average.js',)
 
 class InternalInspectionInline(NestedTabularInline):
     model = InternalInspection
     extra = 0
-
     fields = ['internal_temperature', 'product_pest']
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -684,7 +683,6 @@ class InternalInspectionInline(NestedTabularInline):
                     food_safety = FoodSafety.objects.get(pk=object_id)
                     incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-                    print(ProductPest.objects.filter(product=schedule_harvest.product, pest__pest__inside=True))
                     kwargs["queryset"] = ProductPest.objects.filter(product=schedule_harvest.product, pest__pest__inside=True)
 
                 except InternalInspection.DoesNotExist:
@@ -693,6 +691,9 @@ class InternalInspectionInline(NestedTabularInline):
                 kwargs['queryset'] = ProductPest.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/food_safety/average.js',)
 
 class VehicleInspectionInline(nested_admin.NestedTabularInline):
     model = VehicleInspection
@@ -746,7 +747,7 @@ class SamplePestInline(nested_admin.NestedTabularInline):
     model = SamplePest
     extra = 0
     fields = ['product_pest', 'sample_pest', 'percentage']
-    form = SamplePestForm
+    readonly_fields = ['percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_pest":
@@ -768,7 +769,7 @@ class SampleDiseaseInline(nested_admin.NestedTabularInline):
     model = SampleDisease
     extra = 0
     fields = ['product_disease', 'sample_disease', 'percentage']
-    form = SampleDiseaseForm
+    readonly_fields = ['percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_disease":
@@ -790,7 +791,7 @@ class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
     model = SamplePhysicalDamage
     extra = 0
     fields = ['product_physical_damage', 'sample_physical_damage', 'percentage']
-    form = SamplePhysicalDamageForm
+    readonly_fields = ['percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_physical_damage":
@@ -812,7 +813,7 @@ class SampleResidueInline(nested_admin.NestedTabularInline):
     model = SampleResidue
     extra = 0
     fields = ['product_residue', 'sample_residue', 'percentage']
-    form = SampleResidueForm
+    readonly_fields = ['percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_residue":
@@ -881,24 +882,35 @@ class AverageInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
 
         return include_fields
 
-# Mapeo de nombres de inlines con sus clases
-INLINE_CLASSES = {
-    "DryMatter": DryMatterInline,
-    "InternalInspection": InternalInspectionInline,
-    "VehicleReview": VehicleReviewInline,
-    "SampleCollection": SampleCollectionInline,
-    "Average": AverageInline,
-}
+
 
 @admin.register(FoodSafety)
 class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('batch',)
     list_filter = ['batch']
-    form = FoodSafetyFormInline
     inlines = [DryMatterInline, InternalInspectionInline, VehicleReviewInline, SampleCollectionInline, AverageInline]
 
+
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['batch'].widget.can_add_related = False
+        form.base_fields['batch'].widget.can_change_related = False
+        form.base_fields['batch'].widget.can_delete_related = False
+        form.base_fields['batch'].widget.can_view_related = False
+
+        return form
+
     def get_inlines(self, request, obj=None):
+        # Mapeo de nombres de inlines con sus clases
+        INLINE_CLASSES = {
+            "DryMatter": DryMatterInline,
+            "InternalInspection": InternalInspectionInline,
+            "VehicleReview": VehicleReviewInline,
+            "SampleCollection": SampleCollectionInline,
+        }
         inlines_list = []
+
 
         if not obj:
             return inlines_list
@@ -908,6 +920,10 @@ class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
             food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__model', flat=True)
             inlines_list = [INLINE_CLASSES[inline] for inline in food_safety_config if inline in INLINE_CLASSES]
+            print("inlines_list", inlines_list)
+            print("AverageInline", AverageInline)
+            if DryMatterInline in inlines_list or InternalInspectionInline in inlines_list:
+                inlines_list.append(AverageInline)
 
         except ProductFoodSafetyProcess.DoesNotExist:
             return inlines_list

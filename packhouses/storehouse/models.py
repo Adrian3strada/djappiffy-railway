@@ -7,6 +7,7 @@ from packhouses.catalogs.models import Supply
 from django.contrib.auth import get_user_model
 import datetime
 User = get_user_model()
+from decimal import Decimal
 
 
 class StorehouseEntry(models.Model):
@@ -86,16 +87,12 @@ class StorehouseEntrySupply(models.Model):
         if not self.expected_quantity:
             self.expected_quantity = self.purchase_order_supply.quantity
 
-        # Obtener la unidad base definida en SupplyKind (usage_discount_unit_category)
-        usage_unit = self.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category
+        factor = self.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category.factor
+        if not factor:
+            factor = 1
 
-        factor = 1
-        if usage_unit == "cm":
-            factor = 100   # De metros a centímetros (1 m = 100 cm)
-        elif usage_unit == "gr":
-            factor = 1000  # De kilogramos a gramos (1 kg = 1000 gr)
-        elif usage_unit == "ml":
-            factor = 1000  # De litros a mililitros (1 l = 1000 ml)
+        # Convertimos el factor (float) a Decimal
+        factor = Decimal(str(factor))
 
         self.converted_inventoried_quantity = self.inventoried_quantity * factor
 
