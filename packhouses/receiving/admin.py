@@ -471,7 +471,6 @@ class InternalInspectionInline(NestedTabularInline):
                     food_safety = FoodSafety.objects.get(pk=object_id)
                     incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-                    print(ProductPest.objects.filter(product=schedule_harvest.product, pest__pest__inside=True))
                     kwargs["queryset"] = ProductPest.objects.filter(product=schedule_harvest.product, pest__pest__inside=True)
 
                 except InternalInspection.DoesNotExist:
