@@ -31,6 +31,8 @@ from django.urls import path, reverse
 from nested_admin import NestedStackedInline, NestedTabularInline
 from common.base.models import Pest
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
+from django.db.models import Q
+from django import forms
 # from django import forms
 
 # Inlines para datos del corte
@@ -456,12 +458,87 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
 
 
 # Lotes
-class ScheduleHarvestInlineForBatch(ScheduleHarvestInline):
+class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.StackedInline):
+    model = ScheduleHarvest
+    extra = 0
+    fields = ('ooid', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
+        'product_phenologies', 'product_harvest_size_kind', 'orchard', 'orchard_certification', 'market',
+        'weight_expected', 'weighing_scale', 'comments')
+    readonly_fields = ('ooid', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
+    can_delete = False
+    can_add = False
     custom_title = _("Schedule Harvest Information")
+    inlines = [ScheduleHarvestHarvestingCrewInline, ScheduleHarvestVehicleInline ]
+
+    def get_fields(self, request, obj=None):
+        """
+        Devuelve la tupla de campos, insertando 'gatherer' o 'maquiladora'
+        justo después de 'category' según obj.category.
+        """
+        base = list(self.fields)
+        # encuentra el índice donde va después de 'category':
+        idx = base.index('category') + 1
+
+        # si ya existe schedule_harvest (obj es el IncomingProduct):
+        sh = ScheduleHarvest.objects.filter(incoming_product=obj).first() if obj else None
+        if sh:
+            if sh.category == 'gathering':
+                base.insert(idx, 'gatherer')
+            elif sh.category == 'maquila':
+                base.insert(idx, 'maquiladora')
+        return tuple(base)
+
+    def get_formset(self, request, obj=None, **kwargs):
+        FormSet = super().get_formset(request, obj, **kwargs)
+        class CustomFormSet(FormSet, CustomScheduleHarvestFormSet):
+            pass
+        return CustomFormSet
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name in ("product_phenologies", "product_harvest_size_kind", "orchard"):
+            obj_id = request.resolver_match.kwargs.get("object_id")
+            sh = ScheduleHarvest.objects.filter(incoming_product__batch__pk=obj_id).first()
+
+            if sh:
+                pid = sh.product
+                if db_field.name == "product_phenologies":
+                    qs = ProductPhenologyKind.objects.filter(product=pid, is_enabled=True)
+                elif db_field.name == "product_harvest_size_kind":
+                    qs = ProductHarvestSizeKind.objects.filter(product=pid, is_enabled=True)
+                else:  # "orchard"
+                    org = sh.incoming_product.organization
+                    qs = Orchard.objects.filter(product=pid, organization=org, is_enabled=True)
+            else:
+                qs = db_field.related_model.objects.none()
+
+            kwargs["queryset"] = qs
+
+        field_filters = {
+            "market": {
+                "model": Market,
+                "filters": {"is_enabled": True},
+            },
+            "orchard_certification": {
+                "model": OrchardCertification,
+                "filters": {"is_enabled": True},
+            },
+            "weighing_scale": {
+                "model": WeighingScale,
+                "filters": {"is_enabled": True},
+            },
+        }
+
+        if db_field.name in field_filters and hasattr(request, "organization"):
+            model = field_filters[db_field.name]["model"]
+            filters = field_filters[db_field.name]["filters"]
+
+            kwargs["queryset"] = model.objects.filter(organization=request.organization, **filters)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     class Media:
         js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',
               'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js')
-        
 
 class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = IncomingProduct
@@ -487,8 +564,6 @@ class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
         update_weighing_set_numbers(form.instance)
-    # class Media:
-    #     js = ('js/admin/forms/packhouses/receiving/batch/incoming_product_for_batch.js',)
     
    
 @admin.register(Batch)
@@ -511,8 +586,8 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         if obj.operational_status == 'in_another_batch':
             return ''
         return obj.get_review_status_display()
-    display_review_status.admin_order_field    = 'review_status'
-    display_review_status.short_description   = _('Review Status')
+    display_review_status.admin_order_field = 'review_status'
+    display_review_status.short_description = _('Review Status')
 
     def display_available_for_processing(self, obj):
         if obj.operational_status == 'in_another_batch':
@@ -583,7 +658,8 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     get_incomingproduct_current_kg_available.admin_order_field = 'incomingproduct__current_kg_available'
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/batch/incoming_product_for_batch.js',)
+        js = ('js/admin/forms/packhouses/receiving/batch/incoming_product_for_batch.js',
+              'js/admin/forms/packhouses/receiving/batch/batch_operation.js',)
 
 
 # Inocuidad

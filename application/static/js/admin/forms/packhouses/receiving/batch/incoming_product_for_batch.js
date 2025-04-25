@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    console.log('✅ incoming_product_for_batch.js cargado');
-
     // Selecciona el contenedor del inline padre por su id
     const incomingProductForm = document.getElementById("incomingproduct-0");
     if (!incomingProductForm) return; 
