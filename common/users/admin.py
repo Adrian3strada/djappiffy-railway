@@ -9,6 +9,8 @@ class OrganizationUserInline(admin.TabularInline):
     model = OrganizationUser
     max_num = 1
     max_num = 1
+    verbose_name = _('Is admin')
+    verbose_name_plural = _('Is admin')
     fields = ["is_admin", "organization"]
     can_delete = False
 
@@ -99,7 +101,19 @@ class CustomUserAdmin(UserAdmin):
         ),
     )
     inlines = [OrganizationUserInline]
-    
+
+    def get_inline_instances(self, request, obj=None):
+        if obj is None:
+            return []
+        else:
+            creator_user = OrganizationUser.objects.filter(user=request.user).first()
+            if creator_user:
+                creator_is_owner = OrganizationOwner.objects.filter(organization = request.organization, organization_user_id=creator_user).exists()
+                if creator_user.is_admin and not creator_is_owner:
+                    return []
+
+        return super().get_inline_instances(request, obj)
+
     def has_delete_permission(self, request, obj=None):
         # Retorna False para desactivar la opción de eliminar
         return False
@@ -116,18 +130,6 @@ class CustomUserAdmin(UserAdmin):
                     "first_name", "last_name",
                     "is_active", "date_joined", "last_login"]
         return list
-
-    def get_inline_instances(self, request, obj=None):
-        if obj is None:
-            return []
-        else:
-            creator_user = OrganizationUser.objects.filter(user=request.user).first()
-            if creator_user:
-                creator_is_owner = OrganizationOwner.objects.filter(organization = request.organization, organization_user_id=creator_user).exists()
-                if creator_user.is_admin and not creator_is_owner:
-                    return []
-
-        return super().get_inline_instances(request, obj)
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
@@ -150,6 +152,13 @@ class CustomUserAdmin(UserAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
 
+        # users_organization = OrganizationUser.objects.filter(organization=request.organization).values_list('user_id', flat=True)
+        # if users_organization:
+        #     print(users_organization)
+        #     # queryset = queryset.filter(username__in=users_organization)
+        # else:
+        #     return queryset.none()    
+        
         if not request.user.is_superuser:
             users = OrganizationUser.objects.filter(organization=request.organization).values_list('user_id', flat=True)
             user = OrganizationUser.objects.filter(user=request.user).first()
@@ -159,6 +168,7 @@ class CustomUserAdmin(UserAdmin):
                     queryset = queryset.filter(username__in=users)
                 elif user.is_admin:
                     queryset = queryset.filter(username__in=users).exclude(username=owner.organization_user.user)
+        
         return queryset
 
     def save_model(self, request, obj, form, change):
