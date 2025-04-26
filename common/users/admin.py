@@ -11,30 +11,11 @@ class OrganizationUserInline(admin.TabularInline):
     max_num = 1
     verbose_name = _('Is admin')
     verbose_name_plural = _('Is admin')
-    fields = ["is_admin", "organization"]
+    fields = ["is_admin"]
     can_delete = False
-
-    def get_fields(self, request, obj=None):
-        fields = super().get_fields(request, obj)
-        if not request.user.is_superuser:
-            fields = ["is_admin"]
-            return fields
-        
-        return fields
-
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        if 'organization' in formset.form.base_fields:
-            formset.form.base_fields['organization'].widget.can_add_related = False
-            formset.form.base_fields['organization'].widget.can_change_related = False
-            formset.form.base_fields['organization'].widget.can_delete_related = False
-            formset.form.base_fields['organization'].widget.can_view_related = False
-
-        return formset
 
     class Media:
         js = ('js/admin/forms/common/eye_admin.js',)
-
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
@@ -109,7 +90,7 @@ class CustomUserAdmin(UserAdmin):
             creator_user = OrganizationUser.objects.filter(user=request.user).first()
             if creator_user:
                 creator_is_owner = OrganizationOwner.objects.filter(organization = request.organization, organization_user_id=creator_user).exists()
-                if creator_user.is_admin and not creator_is_owner:
+                if not request.user.is_superuser and not creator_user.is_admin and not creator_is_owner:
                     return []
 
         return super().get_inline_instances(request, obj)
@@ -152,40 +133,44 @@ class CustomUserAdmin(UserAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
 
-        # users_organization = OrganizationUser.objects.filter(organization=request.organization).values_list('user_id', flat=True)
-        # if users_organization:
-        #     print(users_organization)
-        #     # queryset = queryset.filter(username__in=users_organization)
-        # else:
-        #     return queryset.none()    
-        
-        if not request.user.is_superuser:
-            users = OrganizationUser.objects.filter(organization=request.organization).values_list('user_id', flat=True)
-            user = OrganizationUser.objects.filter(user=request.user).first()
-            if user:
-                owner = OrganizationOwner.objects.filter(organization = request.organization).first()
-                if owner.organization_user_id == user.id:
-                    queryset = queryset.filter(username__in=users)
-                elif user.is_admin:
-                    queryset = queryset.filter(username__in=users).exclude(username=owner.organization_user.user)
-        
+        users_organization = OrganizationUser.objects.filter(organization=request.organization).values_list('user_id', flat=True)
+        if users_organization:
+            queryset = queryset.filter(username__in=users_organization)
+        else:
+            return queryset.none()    
         return queryset
+    
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "groups":
+            # Primero buscamos el permiso de 'auth | user | Can add user'
+            permiso_crear_user = Permission.objects.filter(codename="add_user").first()
+            permiso_aditar_user = Permission.objects.filter(codename="change_user").first()
+            permiso_view_user = Permission.objects.filter(codename="view_user").first()
+            print(permiso_crear_user)
+            print(permiso_aditar_user)
+            print(permiso_view_user)
+            
+    #         if permiso_crear_user:
+    #             # Buscamos los grupos que **NO** tengan ese permiso
+    #             grupos_sin_permiso = Group.objects.exclude(permissions=permiso_crear_user)
+    #             kwargs["queryset"] = grupos_sin_permiso
+    #         else:
+    #             # Si no encontramos el permiso (raro, pero por si acaso), mostramos todos
+    #             kwargs["queryset"] = Group.objects.all()
+
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
         if not obj.is_staff:
-            creator_user = OrganizationUser.objects.filter(user=request.user).first()
-            if creator_user:
-                creator_is_owner = OrganizationOwner.objects.filter(organization = request.organization, organization_user_id=creator_user).exists()
-                if creator_user.is_admin or creator_is_owner:
-                    obj.is_staff = True
-                    super().save_model(request, obj, form, change)
+            obj.is_staff = True
+            super().save_model(request, obj, form, change)
 
-                    user_new = OrganizationUser.objects.filter(user_id=obj).exists()
-                    if not user_new:
-                        OrganizationUser.objects.create(
-                            organization_id = creator_user.organization_id,
-                            user_id = obj.username
-                        )
+            user_new = OrganizationUser.objects.filter(user_id=obj).exists()
+            if not user_new:
+                OrganizationUser.objects.create(
+                    organization_id = request.organization.id,
+                    user_id = obj.username
+                )
         obj.save()
 
 admin.site.unregister(OriginalGroup)
