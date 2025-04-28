@@ -242,4 +242,4 @@ def get_filtered_models():
                 if any(f.name == 'food_safety' for f in field.related_model._meta.get_fields()):
                     filtered_models.add(field.related_model.__name__)
 
-    return list(filtered_models)
+    return [(model, model) for model in list(filtered_models)]
