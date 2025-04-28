@@ -7,6 +7,7 @@ from cities_light.models import Country, Region, SubRegion, City
 from organizations.models import Organization
 from common.billing.models import LegalEntityCategory
 from common.base.models import ProductKind
+from common.base.mixins import ByOrganizationAdminMixin
 
 
 # Register your Admin classes here.
@@ -84,7 +85,7 @@ class PackhouseExporterSettingInline(admin.StackedInline):
 
 
 @admin.register(PackhouseExporterProfile)
-class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
+class PackhouseExporterProfileAdmin(ByOrganizationAdminMixin, OrganizationProfileMixin):
     inlines = [PackhouseExporterSettingInline]
 
     def get_fields(self, request, obj=None):
