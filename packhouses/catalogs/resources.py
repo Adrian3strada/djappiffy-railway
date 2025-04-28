@@ -30,6 +30,12 @@ class ProductResource(DehydrationResource, ExportResource):
     product_harvest_size = Field(column_name=_("Harvest Size"), readonly=True)
     product_mass_volume = Field(column_name=_("Mass Volume"), readonly=True)
     product_ripeness = Field(column_name=_("Ripeness"), readonly=True)
+    product_pest = Field(column_name=_("Pest"), readonly=True)
+    product_diseases = Field(column_name=_("Deseases"), readonly=True)
+    product_physical_damage = Field(column_name=_("Physical Damage"), readonly=True)
+    product_residues = Field(column_name=_("Residues"), readonly=True)
+    product_food_safety_process = Field(column_name=_("Food Safety Process"), readonly=True)
+    product_additional_values = Field(column_name=_("Product Additional Values"), readonly=True)
 
     def __init__(self, export_format=None, **kwargs):
         super().__init__(**kwargs)
@@ -104,12 +110,76 @@ class ProductResource(DehydrationResource, ExportResource):
             return render_html_list(product_ripeness)
         else:
             return ", ".join([pr.name for pr in product_ripeness])
+    
+    def dehydrate_product_pest(self, product):
+        product_pests = product.productpest_set.filter(is_enabled=True)
+        if not product_pests.exists():
+            return ''
+        if self.export_format == 'pdf':
+            product_pests = [f"{p.pest} ({p.name})" for p in product_pests]
+            return render_html_list(product_pests)
+        else:
+            return ", ".join([f"{p.pest} ({p.name})" for p in product_pests])
+    
+    def dehydrate_product_diseases(self, product):
+        product_diseases = product.productdisease_set.filter(is_enabled=True)
+        if not product_diseases.exists():
+            return ''
+        if self.export_format == 'pdf':
+            product_diseases = [f"{pd.disease} ({pd.name})" for pd in product_diseases]
+            return render_html_list(product_diseases)
+        else:
+            return ", ".join([f"{pd.disease} ({pd.name})" for pd in product_diseases])
+        
+    def dehydrate_product_physical_damage(self, product):
+        product_physical_damage = product.productphysicaldamage_set.filter(is_enabled=True)
+        if not product_physical_damage.exists():
+            return ''
+        if self.export_format == 'pdf':
+            product_physical_damage = [pd.name for pd in product_physical_damage]
+            return render_html_list(product_physical_damage)
+        else:
+            return ", ".join([pd.name for pd in product_physical_damage])
+
+    def dehydrate_product_residues(self, product):
+        product_residues = product.productresidue_set.filter(is_enabled=True)
+        if not product_residues.exists():
+            return ''
+        if self.export_format == 'pdf':
+            product_residues = [pr.name for pr in product_residues]
+            return render_html_list(product_residues)
+        else:
+            residue_names = ", ".join([pr.name for pr in product_residues])
+            return residue_names
+        
+    def dehydrate_product_food_safety_process(self, product):
+        product_food_safety_process = product.productfoodsafetyprocess_set.filter(is_enabled=True)
+        if not product_food_safety_process.exists():
+            return ''
+        if self.export_format == 'pdf':
+            product_food_safety_process = [pr.procedure for pr in product_food_safety_process]
+            return render_html_list(product_food_safety_process)
+        else:
+            product_food_safety_process = ", ".join([str(pr.procedure) for pr in product_food_safety_process])
+            return product_food_safety_process
+
+    def dehydrate_product_additional_values(self, product):
+        product_additional_values = product.productadditionalvalue_set.all()
+        if not product_additional_values.exists():
+            return ''
+        if self.export_format == 'pdf':
+            product_additional_values = [f"{pav.acceptance_report} ({date_format(pav.created_at)})" for pav in product_additional_values]
+            return render_html_list(product_additional_values)
+        else:
+            product_additional_values = ", ".join([f"{pav.acceptance_report} ({date_format(pav.created_at)})" for pav in product_additional_values])
+            return product_additional_values
 
     class Meta:
         model = Product
         exclude = default_excluded_fields
         export_order = ('id', 'kind', 'name', 'measure_unit_category', 'markets', 'product_managment_cost', 'product_class',  'product_variety',
-                        'product_phenology', 'product_harvest_size', 'product_mass_volume', 'product_ripeness', 'is_enabled')
+                        'product_phenology', 'product_harvest_size', 'product_mass_volume', 'product_ripeness', 'product_pest', 'product_diseases', 
+                        'product_physical_damage', 'product_residues', 'product_food_safety_process', 'product_additional_values', 'is_enabled')
 
 class ProductSizeResource(DehydrationResource, ExportResource):
     class Meta:
@@ -275,6 +345,30 @@ class SupplyResource(DehydrationResource, ExportResource):
     class Meta:
         model = Supply
         exclude = default_excluded_fields
+    def dehydrate_capacity(self, obj):
+        if obj.capacity and obj.capacity > 0:
+            capacity = str(int(obj.capacity) if obj.capacity.is_integer() else obj.capacity)
+            if obj.kind and obj.kind.capacity_unit_category:
+                try:
+                    units_display = obj.kind.get_capacity_unit_category_display()
+                except AttributeError:
+                    units_display = obj.kind.capacity_unit_category
+                unit = units_display[:-1] if obj.capacity == 1 and units_display[-1].lower() == 's' else units_display
+                return f"{capacity} {unit}"
+            return capacity
+        return "-"
+
+    def dehydrate_usage_discount_quantity(self, obj):
+        if obj.usage_discount_quantity:
+            if obj.kind and obj.kind.usage_discount_unit_category:
+                try:
+                    units_display = obj.kind.usage_discount_unit_category.get_unit_category_display()
+                except AttributeError:
+                    units_display = obj.kind.usage_discount_unit_category.unit_category
+                unit = units_display[:-1] if obj.usage_discount_quantity == 1 and units_display[-1].lower() == 's' else units_display
+                return f"{obj.usage_discount_quantity} {unit}"
+            return str(obj.usage_discount_quantity)
+        return "-"
 
 class PackagingResource(DehydrationResource, ExportResource):
     complementary_supplies = Field(column_name=_("Complementary Supplies"))

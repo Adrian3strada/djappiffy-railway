@@ -1104,7 +1104,7 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     capacity_display.admin_order_field = 'capacity'
 
     def usage_discount_quantity_display(self, obj):
-        units = str(obj.kind.get_usage_discount_unit_category_display())
+        units = str(obj.kind.usage_discount_unit_category.get_unit_category_display())
         unit = units[:-1] if obj.usage_discount_quantity == 1 and units[-1].lower() == 's' else units
         return f"{str(obj.usage_discount_quantity)} {unit}"
     usage_discount_quantity_display.short_description = _('Usage discount quantity')

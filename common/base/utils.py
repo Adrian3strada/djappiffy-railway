@@ -61,14 +61,14 @@ class SheetReportExportAdminMixin(ExportMixin):
 
         action = request.GET.get("export_type", "export-sheet")
         request.export_action_type = action
+        original_get = request.GET.copy()
+        clean_get = original_get.copy()
+        clean_get.pop('export_type', None)
 
-        query_params = request.GET.copy()
-
-        if 'export_type' in query_params:
-            del query_params['export_type']
-        request.GET = query_params
+        request.GET = clean_get
 
         queryset = self.get_export_queryset(request)
+        request.GET = original_get
         model_name = self.model._meta.verbose_name
 
         if action == "export-sheet":
@@ -265,6 +265,9 @@ class DehydrationResource():
     def dehydrate_product_presentation(self, obj):
         return obj.product_presentation.name if obj.product_presentation else ""
     
+    def dehydrate_measure_unit_category(self, obj):
+        return obj.get_measure_unit_category_display() if obj.measure_unit_category else ""
+
 
 default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization', 'description')
 
