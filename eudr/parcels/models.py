@@ -6,13 +6,11 @@ from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save
-from .utils import (uuid_file_path, validate_geom_vector_file, set_image_path, fix_format, fix_crs, to_polygon,
+from .utils import (uuid_file_path, validate_geom_vector_file, fix_format, fix_crs, to_polygon,
                     to_multipolygon, get_geom_from_file)
-from .gee import get_rgb_image, get_ndvi_image, get_ndvi_difference_image
 from django.contrib.gis.geos import GEOSGeometry
 from common.profiles.models import ProducerProfile
 from cities_light.models import City, Region, Country
-
 
 # Create your models here.
 
