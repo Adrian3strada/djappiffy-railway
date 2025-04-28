@@ -625,16 +625,6 @@
     },
     {
         "model": "catalogs.productdisease",
-        "pk": 5,
-        "fields": {
-            "name" : "Ant (Remanente)",
-            "is_enabled" : 1,
-            "disease" : 1,
-            "product" : 7
-        }
-    },
-    {
-        "model": "catalogs.productdisease",
         "pk": 6,
         "fields": {
             "name" : "La roy (Remanente)",
@@ -1099,6 +1089,24 @@
             "is_enabled" : 1,
             "procedure" : 4,
             "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productadditionalvalue",
+        "pk": 1,
+        "fields": {
+            "acceptance_report" : 19,
+            "created_at": "2025-04-15T12:30:00Z",
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productadditionalvalue",
+        "pk": 2,
+        "fields": {
+            "acceptance_report" : 19,
+            "created_at": "2025-04-15T12:30:00Z",
+            "product" : 7
         }
     }
 ]

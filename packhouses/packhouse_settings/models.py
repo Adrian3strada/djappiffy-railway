@@ -81,6 +81,11 @@ class VehicleFuelKind(CleanNameAndOrganizationMixin, models.Model):
 
 class PaymentKind(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=120, verbose_name=_('Name'))
+    requires_bank = models.BooleanField(
+        default=False,
+        verbose_name=_("Requires bank"),
+        help_text=_("Check if this payment kind requires selecting a bank.")
+    )
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 

@@ -6,7 +6,7 @@ from organizations.models import Organization, OrganizationUser
 from .models import (ProductKind, ProductKindCountryStandard, ProductKindCountryStandardSize, LegalEntityCategory, CapitalFramework,
                      ProductKindCountryStandardPackaging, SupplyKind,
                      Incoterm, LocalDelivery, Currency,
-                     CertificationEntity, CertificationFormat, Pest, Disease, PestProductKind, DiseaseProductKind, FoodSafetyProcedure)
+                     CertificationEntity, CertificationFormat, Pest, Disease, PestProductKind, DiseaseProductKind, FoodSafetyProcedure, SupplyMeasureUnitCategory)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
 from wagtail.documents.models import Document
@@ -21,13 +21,13 @@ from .utils import get_filtered_models
 
 class PestProductKindInline(admin.TabularInline):
     model = PestProductKind
-    extra = 1
+    extra = 0
     verbose_name = _('Pest')
-    verbose_name_plural = _('Pests')    
+    verbose_name_plural = _('Pests')
 
 class DiseaseProductKindInline(admin.TabularInline):
     model = DiseaseProductKind
-    extra = 1
+    extra = 0
     verbose_name = _('Disease')
     verbose_name_plural = _('Diseases')
 
@@ -38,7 +38,7 @@ class ProductKindAdmin(SortableAdminMixin, admin.ModelAdmin):
     inlines = [PestProductKindInline, DiseaseProductKindInline]
 
     class Media:
-        js = ('js/admin/forms/select.js',)
+        js = ('js/admin/forms/common/select_product_kind.js',)
 
 
 class CountryProductStandardSizeInline(admin.TabularInline):
@@ -144,6 +144,9 @@ class CurrencyAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, **kwargs)
         return form
 
+@admin.register(SupplyMeasureUnitCategory)
+class SupplyMeasureUnitCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_enabled')
 
 @admin.register(SupplyKind)
 class SupplyKindAdmin(admin.ModelAdmin):
@@ -199,7 +202,7 @@ class CertificationEntityAdmin(admin.ModelAdmin):
         return form
 
 @admin.register(Pest)
-class PestnAdmin(admin.ModelAdmin):
+class PestAdmin(admin.ModelAdmin):
     list_display = ('name', 'inside', 'outside', 'is_enabled')
     list_filter = ['name', 'inside', 'outside', 'is_enabled']
 
