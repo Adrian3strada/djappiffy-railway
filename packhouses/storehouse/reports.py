@@ -4,53 +4,82 @@ from .models import InventoryTransaction
 from datetime import datetime
 from django.utils.translation import gettext_lazy as _
 
-
 def strip_tz(value):
     """
-    Removes timezone info from datetime if present.
+    Elimina la información de zona horaria de un objeto datetime si está presente.
     """
+
     if isinstance(value, datetime) and value.tzinfo:
         return value.replace(tzinfo=None)
     return value
 
-
 def export_fifo_report(modeladmin, request, queryset):
     """
-    Exports a FIFO report of inventory outputs, showing the source entry for each transaction.
-    Only applies to 'output' transactions.
+    Exporta un reporte detallado de las transacciones de inventario (entradas y salidas),
+    mostrando el balance de inventario después de cada movimiento.
     """
+
     headers = (
-        _("Output date"), _("Supply"), _("Category"), _("Kind"), _("Quantity"),
-        _("Linked entry"), _("Entry date"), _("Created by"), _("Organization")
+        _("Transaction date"), _("Supply"), _("Transaction category"), _("Transaction kind"), _("Quantity"),
+        _("Linked entry or purchase order"), _("Reference date"), _("Created by"),
+        _("Inventory balance after transaction")
     )
     data = []
 
+    # Cargamos todas las transacciones seleccionadas, no sólo outputs
     transactions = InventoryTransaction.objects.filter(
         id__in=queryset.values_list('id', flat=True),
-        transaction_kind='output'
     ).select_related(
         'supply',
         'storehouse_entry_supply__storehouse_entry__purchase_order',
         'created_by',
         'organization'
-    )
+    ).order_by('created_at', 'id')  # FIFO real
+
+    # Simulador de inventarios por insumo
+    inventory_simulated = {}
 
     for t in transactions:
+        supply_id = t.supply_id
+        quantity = float(t.quantity)
+        kind = t.transaction_kind
+
+        if supply_id not in inventory_simulated:
+            inventory_simulated[supply_id] = 0.0
+
+        if kind == 'inbound':
+            inventory_simulated[supply_id] += quantity  # entradas suman
+        elif kind == 'outbound':
+            inventory_simulated[supply_id] -= quantity  # salidas restan
+
         entry = t.storehouse_entry_supply
 
-        output_date = strip_tz(t.created_at)
-        entry_date = strip_tz(entry.storehouse_entry.created_at) if entry and entry.storehouse_entry else "—"
+        # Fecha de referencia
+        reference_date = "-"
+        if kind == 'outbound' and t:
+            reference_date = strip_tz(t.created_at)
+        elif kind == 'inbound' and t:
+            reference_date = strip_tz(t.created_at)
+
+        # Identificador relacionado
+        linked_reference = "-"
+        if kind == 'outbound' and entry and entry.storehouse_entry and entry.storehouse_entry.purchase_order:
+            linked_reference = entry.storehouse_entry.purchase_order.ooid
+        elif kind == 'inbound' and entry and entry.storehouse_entry and entry.storehouse_entry.purchase_order:
+            linked_reference = entry.storehouse_entry.purchase_order.ooid
+
+        supply = f"{t.supply.kind.name}: {t.supply.name}"
 
         data.append((
-            output_date,
-            t.supply.name,
+            strip_tz(t.created_at),
+            supply,
             t.transaction_category,
-            t.transaction_kind,
-            float(t.quantity),
-            entry.storehouse_entry.purchase_order.ooid if entry and entry.storehouse_entry else "—",
-            entry_date,
-            t.created_by.get_full_name() if t.created_by else "—",
-            t.organization.name if t.organization else "—",
+            kind,
+            quantity,
+            linked_reference,
+            reference_date,
+            t.created_by if t.created_by else "—",
+            inventory_simulated[supply_id],
         ))
 
     dataset = tablib.Dataset(*data, headers=headers)
@@ -58,7 +87,7 @@ def export_fifo_report(modeladmin, request, queryset):
         dataset.xlsx,
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-    response['Content-Disposition'] = 'attachment; filename="outputs_report.xlsx"'
+    response['Content-Disposition'] = 'attachment; filename="inventory_movements_report.xlsx"'
     return response
 
-export_fifo_report.short_description = _("Export Output Report")
+export_fifo_report.short_description = _("Export Inventory Movements Report")

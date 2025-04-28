@@ -100,7 +100,7 @@ class StorehouseEntrySupply(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"#{self.storehouse_entry} - {self.purchase_order_supply.requisition_supply.supply.kind.name}: {self.purchase_order_supply.requisition_supply.supply}"
+        return f"#{self.storehouse_entry} - {self.purchase_order_supply.requisition_supply.supply}"
 
     class Meta:
         verbose_name = _("Storehouse Entry Supply")
@@ -112,7 +112,7 @@ class StorehouseEntrySupply(models.Model):
 class InventoryTransaction(models.Model):
     storehouse_entry_supply = models.ForeignKey(
         StorehouseEntrySupply,
-        verbose_name=_("Entry Supply"),
+        verbose_name=_("Inbound Supply"),
         on_delete=models.CASCADE,
         null=True, blank=True
     )
@@ -136,9 +136,9 @@ class InventoryTransaction(models.Model):
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0)]
     )
-    created_at = models.DateField(
+    created_at = models.DateTimeField(
         verbose_name=_("Created at"),
-        default=datetime.date.today
+        auto_now_add=True,
     )
     created_by = models.ForeignKey(
         User,
@@ -152,7 +152,7 @@ class InventoryTransaction(models.Model):
     )
 
     def __str__(self):
-        return f"{self.supply}: {self.quantity} used"
+        return f"{self.supply}: {self.quantity} units"
 
 # Modelo para simular entradas/salidas de inventario
 class AdjustmentInventory(models.Model):

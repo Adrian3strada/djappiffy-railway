@@ -7,7 +7,7 @@ from packhouses.purchases.models import PurchaseOrderSupply
 from decimal import Decimal
 from django.db.models import DecimalField, Value, Sum, F, Subquery, OuterRef, Q
 from django.db.models.functions import Coalesce
-from .utils import validate_inventory_availability, get_inventory_balance, get_fifo_source_for_quantity
+from .utils import validate_inventory_availability, get_inventory_balance, get_source_for_quantity_fifo
 
 
 class StorehouseEntrySupplyInlineFormSet(BaseInlineFormSet):
@@ -71,7 +71,7 @@ class AdjustmentInventoryForm(forms.ModelForm):
         if not (supply and qty and org and kind):
             return cleaned
 
-        if kind == 'output':
+        if kind == 'outbound':
             remaining = validate_inventory_availability(supply, qty, org)
             self.cleaned_data['available_quantity'] = remaining
 
@@ -88,7 +88,7 @@ class AdjustmentInventoryForm(forms.ModelForm):
 
         if commit:
             obj.save()
-            self.save_m2m()  # 🔑 Necesario si tienes relaciones many-to-many, o por consistencia
+            self.save_m2m()  # Necesario por consistencia o relaciones manytomany
 
         # Lógica de transacción de inventario
         kind = obj.transaction_kind
@@ -99,23 +99,28 @@ class AdjustmentInventoryForm(forms.ModelForm):
         if not user:
             raise ValidationError(_("Unable to determine the creator user for this transaction."))
 
-        if kind == 'entry':
+        if kind == 'inbound':
             InventoryTransaction.objects.create(
                 supply=supply,
-                transaction_kind='entry',
+                transaction_kind='inbound',
                 transaction_category=obj.transaction_category,
                 quantity=qty,
                 created_by=user,
                 organization=org
             )
 
-        elif kind == 'output':
-            fifo_movements = get_fifo_source_for_quantity(supply, qty, org)
+        elif kind == 'outbound':
+            """
+            Se obtienen los movimientos FIFO disponibles para la salida del insumo.
+            Se crean transacciones de salida en InventoryTransaction para cada movimiento
+            hasta completar la cantidad solicitada.
+            """
+            fifo_movements = get_source_for_quantity_fifo(supply, qty, org)
 
             for mov in fifo_movements:
                 InventoryTransaction.objects.create(
                     supply=supply,
-                    transaction_kind='output',
+                    transaction_kind='outbound',
                     transaction_category=obj.transaction_category,
                     quantity=mov['take'],
                     storehouse_entry_supply=mov['entry'].storehouse_entry_supply,

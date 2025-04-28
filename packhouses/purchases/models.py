@@ -117,7 +117,7 @@ class RequisitionSupply(models.Model):
     )
 
     def __str__(self):
-        return f"(Req. {self.requisition.ooid}) - {self.supply.kind}: {self.supply}"
+        return f"(Req. {self.requisition.ooid}) - {self.supply}"
 
     class Meta:
         verbose_name = _("Requisition Supply")
@@ -126,6 +126,17 @@ class RequisitionSupply(models.Model):
 
 
 class PurchaseOrder(models.Model):
+    """
+    Modelo que representa una orden de compra de insumos.
+
+    Controla no solo los datos de proveedor, moneda, impuestos y comentarios, sino también
+    el control del folio único por organización (ooid), el balance de pago pendiente y el estado
+    del flujo de compra (abierta, lista, cerrada o cancelada).
+
+    Incluye métodos para calcular dinámicamente el balance contable, considerando insumos,
+    impuestos, cargos, deducciones y pagos registrados.
+    """
+
     ooid = models.PositiveIntegerField(
         verbose_name=_("Folio"),
         null=True, blank=True, unique=True
@@ -152,7 +163,7 @@ class PurchaseOrder(models.Model):
     tax = models.DecimalField(
         max_digits=5, decimal_places=2,
         verbose_name=_("Tax (%)"),
-        null=True, blank = True
+        null=True, blank=True
     )
     comments = models.TextField(
         verbose_name=_("Comments"),
@@ -165,7 +176,7 @@ class PurchaseOrder(models.Model):
     )
     balance_payable = models.FloatField(
         default=0,
-        verbose_name = _("Balance payable")
+        verbose_name=_("Balance payable")
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(
@@ -175,12 +186,17 @@ class PurchaseOrder(models.Model):
     )
 
     def save(self, *args, **kwargs):
+        """
+        Guarda la orden de compra, asegurando la asignación de un folio único incremental (ooid)
+        de manera transaccional por organización. Permite opcionalmente asociar un usuario
+        mediante el parámetro `user_id`.
+        """
         user = kwargs.pop('user_id', None)
         if not self.ooid:
-            # Usar transacción y bloqueo de fila para evitar condiciones de carrera
             with transaction.atomic():
-                last_order = PurchaseOrder.objects.select_for_update().filter(organization=self.organization).order_by(
-                    '-ooid').first()
+                last_order = PurchaseOrder.objects.select_for_update().filter(
+                    organization=self.organization
+                ).order_by('-ooid').first()
                 self.ooid = (last_order.ooid + 1) if last_order and last_order.ooid is not None else 1
 
         if user:
@@ -189,6 +205,12 @@ class PurchaseOrder(models.Model):
         super().save(*args, **kwargs)
 
     def simulate_balance(self):
+        """
+        Calcula el balance de pago simulado de la orden de compra:
+        Suma de insumos, impuestos, cargos adicionales, deducciones aplicadas y pagos realizados (excluyendo cancelados).
+
+        El cálculo es decimalmente preciso y devuelve un resumen detallado de cada componente.
+        """
         supplies_total = self.purchaseordersupply_set.aggregate(
             total=models.Sum('total_price')
         )['total'] or Decimal('0.00')
@@ -222,12 +244,22 @@ class PurchaseOrder(models.Model):
         }
 
     def recalculate_balance(self, save=False, raise_exception=False):
+        """
+        Recalcula el balance real de la orden de compra.
+
+        Args:
+            save (bool): Si es True, guarda el nuevo balance_payable en la base de datos.
+            raise_exception (bool): Si es True y el balance resulta negativo, lanza ValidationError.
+
+        Returns:
+            dict: Resultado del cálculo simulado con detalle de totales.
+        """
         data = self.simulate_balance()
 
         if data['balance'] < 0 and raise_exception:
             raise ValidationError(
-                _(f"No se puede guardar la orden porque el balance es negativo (${data['balance']}). "
-                  f"Contacta al área de Compras.")
+                (f"Cannot save the order because the balance is negative (${data['balance']}). "
+                 f"Please contact the Purchasing department.")
             )
 
         if save:
@@ -237,6 +269,9 @@ class PurchaseOrder(models.Model):
         return data
 
     def __str__(self):
+        """
+        Representación legible de la orden de compra, usando el folio y el proveedor.
+        """
         return f"{self.ooid} - {self.provider.name}"
 
     class Meta:

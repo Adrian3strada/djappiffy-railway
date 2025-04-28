@@ -34,16 +34,25 @@ from django.contrib.messages import constants as message_constants
 
 
 
-
-
 class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
+    """
+    Inline para gestionar los insumos asociados a una requisición.
+
+    Personaliza el queryset para mostrar solo insumos de la organización activa
+    y bloquea los campos y eliminación de registros cuando la requisición ya no es editable
+    (estados 'closed', 'canceled' o 'ready').
+    """
+
     model = RequisitionSupply
-    #form = RequisitionSupplyForm
-    fields = ('supply', 'quantity', 'unit_category','delivery_deadline', 'comments')
+    fields = ('supply', 'quantity', 'unit_category', 'delivery_deadline', 'comments')
     extra = 0
 
     def _get_parent_obj(self, request):
-        """Obtiene el objeto Requisition padre a partir del parámetro object_id."""
+        """
+        Recupera el objeto Requisition padre basado en la URL actual del admin.
+
+        Permite condicionar permisos o estado de edición con base al estatus del padre.
+        """
         parent_object_id = request.resolver_match.kwargs.get("object_id")
         if parent_object_id:
             try:
@@ -53,6 +62,10 @@ class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInlin
         return None
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        Limita el campo 'supply' solo a insumos de la organización activa
+        y personaliza su etiqueta para mostrar tipo y nombre.
+        """
         if db_field.name == "supply":
             if hasattr(request, 'organization'):
                 kwargs["queryset"] = Supply.objects.filter(organization=request.organization)
@@ -62,10 +75,12 @@ class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInlin
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_readonly_fields(self, request, obj=None):
+        """
+        Hace todos los campos de solo lectura si la requisición está en un estado no editable.
+        """
         readonly_fields = list(super().get_readonly_fields(request, obj))
         parent_obj = self._get_parent_obj(request)
         if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
-            # Todos los campos se vuelven de solo lectura si el estado es cerrado, cancelado o listo
             readonly_fields.extend([
                 field.name for field in self.model._meta.fields
                 if field.name not in readonly_fields
@@ -73,6 +88,9 @@ class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInlin
         return readonly_fields
 
     def has_delete_permission(self, request, obj=None):
+        """
+        Bloquea la eliminación de insumos si la requisición ya fue enviada o cerrada.
+        """
         parent_obj = self._get_parent_obj(request)
         if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
             return False
@@ -84,6 +102,14 @@ class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInlin
 
 @admin.register(Requisition)
 class RequisitionAdmin(ByOrganizationAdminMixin, ByUserAdminMixin):
+    """
+    Admin de gestión para solicitudes de insumos (Requisition).
+
+    - Permite la edición controlada según el estado ('open', 'ready', 'closed', 'canceled').
+    - Facilita la transición rápida de estado mediante un botón 'Guardar y enviar'.
+    - Integra generación de PDF y flujos de validación de cambios para una operación segura.
+    """
+
     form = RequisitionForm
     fields = ('ooid', 'status', 'comments', 'save_and_send')
     list_display = ('ooid', 'created_at', 'status', 'generate_actions_buttons')
@@ -91,14 +117,20 @@ class RequisitionAdmin(ByOrganizationAdminMixin, ByUserAdminMixin):
     inlines = (RequisitionSupplyInline,)
 
     def save_model(self, request, obj, form, change):
+        """
+        Al guardar, cambia el estado a 'ready' si el usuario lo indica mediante 'save_and_send'.
+        """
         save_and_send = form.cleaned_data.get('save_and_send', False)
         if save_and_send:
             obj.status = 'ready'
         super().save_model(request, obj, form, change)
 
     def get_readonly_fields(self, request, obj=None):
+        """
+        Hace 'ooid' siempre de solo lectura.
+        Si la requisición está cerrada, cancelada o enviada ('ready'), vuelve todo el formulario readonly.
+        """
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        # Asegurar que 'ooid' sea de solo lectura tanto en creación como en edición
         if not obj or (obj and obj.pk):
             if 'ooid' not in readonly_fields:
                 readonly_fields.append('ooid')
@@ -107,6 +139,13 @@ class RequisitionAdmin(ByOrganizationAdminMixin, ByUserAdminMixin):
         return readonly_fields
 
     def generate_actions_buttons(self, obj):
+        """
+        Genera botones de acción:
+        - Exportar PDF de la requisición.
+        - Enviar requisición al área de Compras.
+
+        Utiliza SweetAlert para confirmar las acciones sensibles y personaliza el estilo visual de los botones.
+        """
         requisition_pdf = reverse('requisition_pdf', args=[obj.pk])
         tooltip_requisition_pdf = _('Generate Requisition PDF')
 
@@ -146,13 +185,26 @@ class RequisitionAdmin(ByOrganizationAdminMixin, ByUserAdminMixin):
 
 
 class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
+    """
+    Inline del admin para agregar y editar insumos dentro de una Orden de Compra (PurchaseOrder).
+
+    Características:
+    - Dinámicamente bloquea edición/eliminación si la orden ya está cerrada, cancelada o enviada.
+    - Ajusta automáticamente el formulario agregando clases CSS para cálculos de frontend (JS).
+    - Filtra inteligentemente el listado de insumos disponibles basándose en el estado 'ready' de las requisiciones
+      y excluyendo insumos ya utilizados en otras órdenes de compra.
+    """
+
     model = PurchaseOrderSupply
-    fields = ('requisition_supply', 'quantity','unit_category','delivery_deadline', 'unit_price', 'total_price','comments')
-    readonly_fields = ('total_price','comments',)
+    fields = ('requisition_supply', 'quantity', 'unit_category', 'delivery_deadline', 'unit_price', 'total_price', 'comments')
+    readonly_fields = ('total_price', 'comments',)
     extra = 0
 
     def _get_parent_obj(self, request):
-        """Obtiene el objeto Purchase Order padre a partir del parámetro object_id."""
+        """
+        Obtiene la instancia padre (PurchaseOrder) desde la URL del admin.
+        Permite personalizar comportamientos según el estado de la orden.
+        """
         parent_object_id = request.resolver_match.kwargs.get("object_id")
         if parent_object_id:
             try:
@@ -162,10 +214,12 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
         return None
 
     def get_readonly_fields(self, request, obj=None):
+        """
+        Vuelve todos los campos readonly si la orden de compra no está en estado 'open'.
+        """
         readonly_fields = list(super().get_readonly_fields(request, obj))
         parent_obj = self._get_parent_obj(request)
         if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
-            # Todos los campos se vuelven de solo lectura si el estado es cerrado, cancelado o listo
             readonly_fields.extend([
                 field.name for field in self.model._meta.fields
                 if field.name not in readonly_fields
@@ -173,43 +227,58 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
         return readonly_fields
 
     def has_delete_permission(self, request, obj=None):
+        """
+        Impide borrar insumos si la orden ya no está editable.
+        """
         parent_obj = self._get_parent_obj(request)
         if parent_obj and parent_obj.status in ['closed', 'canceled', 'ready']:
             return False
         return super().has_delete_permission(request, obj)
 
     def get_form(self, request, obj=None, **kwargs):
+        """
+        Agrega clases CSS a los campos clave para facilitar cálculos dinámicos en frontend.
+        """
         form = super().get_form(request, obj, **kwargs)
-        # Agregar clases o atributos personalizados a los campos
         form.base_fields['quantity'].widget.attrs.update({'class': 'quantity-field'})
         form.base_fields['unit_price'].widget.attrs.update({'class': 'unit-price-field'})
         form.base_fields['total_price'].widget.attrs.update({'class': 'total-price-field', 'readonly': 'readonly'})
         return form
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        Personaliza el campo 'requisition_supply' para:
+        - Mostrar solo insumos de requisiciones en estado 'ready'.
+        - Excluir insumos ya asociados a otras órdenes de compra.
+        - Proporcionar datos adicionales al widget para autollenado en frontend (cantidad, comentarios, unidad, fecha límite).
+        """
         if db_field.name == "requisition_supply":
-
-            # Obtener el ID del Purchase Order actual
             parent_po_id = request.resolver_match.kwargs.get('object_id')
 
-            # Excluir sólo los requisition_supply que están usados en otros PurchaseOrders
             used_requisition_supplies = PurchaseOrderSupply.objects.exclude(
                 purchase_order_id=parent_po_id
             ).values_list('requisition_supply_id', flat=True)
 
-            # Filtrar solo las RequisitionSupply con estado 'ready'
-            queryset = RequisitionSupply.objects.filter(requisition__status='ready', ).exclude(
+            queryset = RequisitionSupply.objects.filter(
+                requisition__status='ready'
+            ).exclude(
                 id__in=used_requisition_supplies
             )
             if hasattr(request, 'organization'):
                 queryset = queryset.filter(requisition__organization=request.organization)
 
             kwargs["queryset"] = queryset
-            kwargs["widget"] = SelectWidgetWithData(model=RequisitionSupply, data_fields=["quantity", "comments","unit_category","delivery_deadline"])
+            kwargs["widget"] = SelectWidgetWithData(
+                model=RequisitionSupply,
+                data_fields=["quantity", "comments", "unit_category", "delivery_deadline"]
+            )
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def clean(self):
+        """
+        Valida que la cantidad y el precio unitario sean mayores a cero.
+        """
         if self.quantity <= 0:
             raise ValidationError({'quantity': _("Quantity must be greater than 0.")})
 
@@ -217,6 +286,9 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
             raise ValidationError({'unit_price': _("Unit price must be greater than 0.")})
 
     def save(self, *args, **kwargs):
+        """
+        Calcula y guarda automáticamente el total_price antes de guardar.
+        """
         if self.quantity <= 0:
             raise ValueError("Quantity must be greater than 0.")
         if self.unit_price <= 0:
@@ -230,12 +302,21 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
 
 
 class PurchaseOrderChargerInline(admin.StackedInline):
+    """
+    Inline del admin para agregar cargos adicionales (charges) a una Orden de Compra.
+
+    - Restringe edición/borrado si la orden está cancelada.
+    - Los cargos se consideran parte del balance final de la orden de compra.
+    """
+
     model = PurchaseOrderCharge
     fields = ('charge', 'amount')
     extra = 0
 
     def _get_parent_obj(self, request):
-        """Obtiene el objeto Purchase Order padre a partir del parámetro object_id."""
+        """
+        Obtiene la instancia de la PurchaseOrder asociada desde la URL del admin.
+        """
         parent_object_id = request.resolver_match.kwargs.get("object_id")
         if parent_object_id:
             try:
@@ -245,10 +326,12 @@ class PurchaseOrderChargerInline(admin.StackedInline):
         return None
 
     def get_readonly_fields(self, request, obj=None):
+        """
+        Hace todos los campos de solo lectura si la orden está cancelada.
+        """
         readonly_fields = list(super().get_readonly_fields(request, obj))
         parent_obj = self._get_parent_obj(request)
-        if parent_obj and parent_obj.status in ['canceled',]:
-            # Todos los campos se vuelven de solo lectura si el estado es cerrado, cancelado o listo
+        if parent_obj and parent_obj.status in ['canceled']:
             readonly_fields.extend([
                 field.name for field in self.model._meta.fields
                 if field.name not in readonly_fields
@@ -256,18 +339,30 @@ class PurchaseOrderChargerInline(admin.StackedInline):
         return readonly_fields
 
     def has_delete_permission(self, request, obj=None):
+        """
+        Impide eliminar cargos si la orden está cancelada.
+        """
         parent_obj = self._get_parent_obj(request)
-        if parent_obj and parent_obj.status in ['canceled',]:
+        if parent_obj and parent_obj.status in ['canceled']:
             return False
         return super().has_delete_permission(request, obj)
 
 class PurchaseOrderDeductionInline(admin.StackedInline):
+    """
+    Inline del admin para agregar deducciones (descuentos) a una Orden de Compra.
+
+    - Restringe edición/borrado si la orden está cancelada.
+    - Las deducciones afectan el balance total a pagar de la orden.
+    """
+
     model = PurchaseOrderDeduction
     fields = ('deduction', 'amount')
     extra = 0
 
     def _get_parent_obj(self, request):
-        """Obtiene el objeto Purchase Order padre a partir del parámetro object_id."""
+        """
+        Obtiene la instancia de la PurchaseOrder asociada desde la URL del admin.
+        """
         parent_object_id = request.resolver_match.kwargs.get("object_id")
         if parent_object_id:
             try:
@@ -277,10 +372,12 @@ class PurchaseOrderDeductionInline(admin.StackedInline):
         return None
 
     def get_readonly_fields(self, request, obj=None):
+        """
+        Hace todos los campos de solo lectura si la orden está cancelada.
+        """
         readonly_fields = list(super().get_readonly_fields(request, obj))
         parent_obj = self._get_parent_obj(request)
-        if parent_obj and parent_obj.status in ['canceled',]:
-            # Todos los campos se vuelven de solo lectura si el estado es cerrado, cancelado o listo
+        if parent_obj and parent_obj.status in ['canceled']:
             readonly_fields.extend([
                 field.name for field in self.model._meta.fields
                 if field.name not in readonly_fields
@@ -288,13 +385,23 @@ class PurchaseOrderDeductionInline(admin.StackedInline):
         return readonly_fields
 
     def has_delete_permission(self, request, obj=None):
+        """
+        Impide eliminar deducciones si la orden está cancelada.
+        """
         parent_obj = self._get_parent_obj(request)
-        if parent_obj and parent_obj.status in ['canceled',]:
+        if parent_obj and parent_obj.status in ['canceled']:
             return False
         return super().has_delete_permission(request, obj)
 
 
 class PurchaseOrderPaymentInline(admin.StackedInline):
+    """
+    Inline del admin para administrar pagos de órdenes de compra.
+
+    Permite registrar pagos, mostrar su información detallada
+    y cancelar pagos de forma controlada con confirmación visual (SweetAlert).
+    """
+
     model = PurchaseOrderPayment
     form = PurchaseOrderPaymentForm
     fields = (
@@ -309,10 +416,15 @@ class PurchaseOrderPaymentInline(admin.StackedInline):
     )
     extra = 0
     can_delete = False
-    # Estos campos se mostrarán de solo lectura:
-    readonly_fields = ('cancel_button', 'payment_info',)
+    readonly_fields = ('cancel_button', 'payment_info')
 
     def cancel_button(self, obj):
+        """
+        Genera un botón dinámico para cancelar el pago si no está ya cancelado.
+
+        Usa SweetAlert para pedir confirmación antes de proceder.
+        Si ya está cancelado, muestra un estado visual de "Payment canceled".
+        """
         if obj.pk and obj.status != "canceled":
             url = reverse('admin:cancel_payment', args=[obj.pk])
             title = _("Are you sure you want to cancel this payment?")
@@ -341,13 +453,21 @@ class PurchaseOrderPaymentInline(admin.StackedInline):
     cancel_button.short_description = ""
 
     def payment_info(self, obj):
+        """
+        Muestra información contextual sobre el pago:
+        quién lo registró, cuándo se creó, y si fue cancelado, quién lo canceló y cuándo.
+
+        Presenta los datos de forma formateada en el admin.
+        """
         if not obj.pk:
             return ""
+
+        created_by = obj.created_by or ""
+        created_at = obj.created_at.strftime("%d/%m/%Y %H:%M") if obj.created_at else ""
+
         if obj.status == "canceled":
-            canceled_by = obj.canceled_by if obj.canceled_by else ""
+            canceled_by = obj.canceled_by or ""
             cancellation_date = obj.cancellation_date.strftime("%d/%m/%Y %H:%M") if obj.cancellation_date else ""
-            created_at = obj.created_at.strftime("%d/%m/%Y %H:%M") if obj.created_at else ""
-            created_by = obj.created_by if obj.created_by else ""
             added_by_info = format_html(
                 '<div><span>{}</span>: {}<br><span>{}</span>: {}</div>',
                 _("Registered by"), created_by,
@@ -359,8 +479,6 @@ class PurchaseOrderPaymentInline(admin.StackedInline):
                 _("Cancellation date"), cancellation_date
             )
         else:
-            created_by = obj.created_by if obj.created_by else ""
-            created_at = obj.created_at.strftime("%d/%m/%Y %H:%M") if obj.created_at else ""
             return format_html(
                 '<div><span>{}</span>: {}<br><span>{}</span>: {}</div>',
                 _("Registered by"), created_by,
@@ -370,10 +488,21 @@ class PurchaseOrderPaymentInline(admin.StackedInline):
     payment_info.short_description = _("Payment info")
 
     class Media:
+        """
+        Agrega JavaScript personalizado para mejorar la experiencia de edición de pagos.
+        """
         js = ('js/admin/forms/packhouses/purchases/purchase_orders_payments.js',)
 
 @admin.register(PurchaseOrder)
 class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
+    """
+    Admin de Purchase Order que administra órdenes de compra.
+
+    Gestiona entradas relacionadas como insumos, cargos, deducciones y pagos.
+    Controla dinámicamente los botones de acción según el estado de la orden
+    e integra validaciones de balance financiero en tiempo real.
+    """
+
     form = PurchaseOrderForm
     list_display = ('ooid', 'provider', 'balance_payable', 'currency', 'status', 'created_at', 'user', 'generate_actions_buttons')
     fields = ('ooid', 'provider','payment_date', 'balance_payable', 'currency','tax', 'status', 'comments', 'save_and_send')
@@ -381,69 +510,60 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     readonly_fields = ('ooid', 'status', 'balance_payable', 'created_at', 'user')
     inlines = [PurchaseOrderRequisitionSupplyInline, PurchaseOrderChargerInline, PurchaseOrderDeductionInline]
 
-
     def get_inline_instances(self, request, obj=None):
+        """
+        Agrega dinámicamente el inline de pagos solo si la orden está cerrada.
+        """
         inline_instances = super().get_inline_instances(request, obj)
-        # Mostrar PurchaseOrderPaymentInline solo si el status es "closed"
         if obj and obj.status == "closed":
             inline_instances.append(PurchaseOrderPaymentInline(self.model, self.admin_site))
-
         return inline_instances
 
     def generate_actions_buttons(self, obj):
+        """
+        Crea botones de acciones dinámicos:
+        - Generar PDF de la orden.
+        - Enviar orden a almacén.
+        - Reabrir orden si ya fue enviada.
+        - Aplicar pagos si está cerrada.
+        """
         purchase_order_supply_pdf = reverse('purchase_order_supply_pdf', args=[obj.pk])
-        tooltip_purchase_order_supply_pdf = _('Generate Purchase Order Supply PDF')
 
         tooltip_ready = _('Send to Storehouse')
         ready_url = reverse('set_purchase_order_supply_ready', args=[obj.pk])
-        confirm_ready_text = _('Are you sure you want to send this purchases order supply to Storehouse?')
-        confirm_button_text = _('Yes, send')
-        cancel_button_text = _('No')
 
         tooltip_open = _('Reopen this purchases order')
         open_url = reverse('set_purchase_order_supply_open', args=[obj.pk])
-        confirm_open_text = _(
-            'Are you sure you want to reopen this purchases order? It will no longer be available in the storehouse for entry and you can continue editing it.')
-        confirm_button_text_open = _('Yes, reopen')
+
+        tooltip_payment = _('Payment application')
+        edit_url_with_anchor = reverse(
+            "admin:{}_{}_change".format(obj._meta.app_label, obj._meta.model_name),
+            args=[obj.pk]
+        ) + "#payments-tab"
 
         set_purchase_order_supply_ready_button = ''
         if obj.status == 'open':
             set_purchase_order_supply_ready_button = format_html(
-                '''
-                <a class="button btn-ready-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
+                '''<a class="button btn-ready-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
                    data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#4daf50;">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </a>
-                ''',
-                tooltip_ready, ready_url, confirm_ready_text, confirm_button_text, cancel_button_text
+                    <i class="fa-solid fa-paper-plane"></i></a>''',
+                tooltip_ready, ready_url, _('Are you sure you want to send this purchases order supply to Storehouse?'), _('Yes, send'), _('No')
             )
 
         set_purchase_order_supply_open_button = ''
         if obj.status == 'ready':
             set_purchase_order_supply_open_button = format_html(
-                '''
-                <a class="button btn-open-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
+                '''<a class="button btn-open-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
                    data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#ffc107;">
-                    <i class="fa-solid fa-lock-open"></i>
-                </a>
-                ''',
-                tooltip_open, open_url, confirm_open_text, confirm_button_text_open, cancel_button_text
+                    <i class="fa-solid fa-lock-open"></i></a>''',
+                tooltip_open, open_url, _('Are you sure you want to reopen this purchases order?'), _('Yes, reopen'), _('No')
             )
 
-        tooltip_payment = _('Payment application')
         set_purchase_order_supply_payment_button = ''
         if obj.status == "closed":
-            edit_url = reverse(
-                "admin:{}_{}_change".format(obj._meta.app_label, obj._meta.model_name),
-                args=[obj.pk]
-            )
-            edit_url_with_anchor = f"{edit_url}#payments-tab"
             set_purchase_order_supply_payment_button = format_html(
-                '''
-                <a class="button" href="{}" data-toggle="tooltip" title="{}" style="color:#000;">
-                    <i class="fa-solid fa-dollar-sign"></i>
-                </a>
-                ''',
+                '''<a class="button" href="{}" data-toggle="tooltip" title="{}" style="color:#000;">
+                    <i class="fa-solid fa-dollar-sign"></i></a>''',
                 edit_url_with_anchor, tooltip_payment
             )
 
@@ -456,42 +576,47 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
                 <i class="fa-solid fa-print"></i>
             </a>
             ''',
-            set_purchase_order_supply_payment_button, set_purchase_order_supply_ready_button, set_purchase_order_supply_open_button, purchase_order_supply_pdf, tooltip_purchase_order_supply_pdf
+            set_purchase_order_supply_payment_button, set_purchase_order_supply_ready_button, set_purchase_order_supply_open_button,
+            purchase_order_supply_pdf, _('Generate Purchase Order Supply PDF')
         )
 
     generate_actions_buttons.short_description = _('Actions')
     generate_actions_buttons.allow_tags = True
 
     def get_readonly_fields(self, request, obj=None):
+        """
+        Hace campos de solo lectura si la orden ya fue cerrada, cancelada o enviada.
+        """
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if not obj or (obj and obj.pk):
             if 'ooid' not in readonly_fields:
                 readonly_fields.append('ooid')
         if obj and obj.status in ['closed', 'canceled', 'ready']:
             readonly_fields.extend([field for field in self.fields if hasattr(obj, field)])
-
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-
-        if db_field.name == "provider":
-            if hasattr(request, 'organization'):
-                kwargs["queryset"] = Provider.objects.filter(organization=request.organization, is_enabled=True,
-                                                category='supply_provider')
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            return formfield
+        """
+        Filtra proveedores disponibles según la organización activa.
+        """
+        if db_field.name == "provider" and hasattr(request, 'organization'):
+            kwargs["queryset"] = Provider.objects.filter(organization=request.organization, is_enabled=True, category='supply_provider')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_form(self, request, obj=None, **kwargs):
+        """
+        Oculta botones de agregar/editar/eliminar relacionados en el proveedor.
+        """
         form = super().get_form(request, obj, **kwargs)
         if 'provider' in form.base_fields:
-            form.base_fields['provider'].widget.can_add_related = False
-            form.base_fields['provider'].widget.can_change_related = False
-            form.base_fields['provider'].widget.can_delete_related = False
-            form.base_fields['provider'].widget.can_view_related = False
+            for attr in ['can_add_related', 'can_change_related', 'can_delete_related', 'can_view_related']:
+                setattr(form.base_fields['provider'].widget, attr, False)
         return form
 
     def save_model(self, request, obj, form, change):
+        """
+        Asigna automáticamente el usuario creador y permite enviar la orden directamente a almacén.
+        """
         if not change:
             obj.user = request.user
 
@@ -502,19 +627,19 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
     def get_urls(self):
-        # Obtener primero las URLs originales del admin
+        """
+        Agrega ruta personalizada para cancelar pagos desde el admin.
+        """
         urls = super().get_urls()
-        # Definir URLs personalizadas
         custom_urls = [
-            path(
-                'cancel-payment/<int:payment_id>/',
-                self.admin_site.admin_view(self.cancel_payment),
-                name='cancel_payment'
-            ),
+            path('cancel-payment/<int:payment_id>/', self.admin_site.admin_view(self.cancel_payment), name='cancel_payment')
         ]
         return custom_urls + urls
 
     def cancel_payment(self, request, payment_id, *args, **kwargs):
+        """
+        Lógica para cancelar un pago específico y recalcular el balance automáticamente.
+        """
         try:
             payment = PurchaseOrderPayment.objects.get(id=payment_id)
             payment.status = "canceled"
@@ -522,45 +647,43 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
             payment.canceled_by = request.user
             payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
             payment.purchase_order.recalculate_balance(save=True)
-            self.message_user(request, _(f"Payment canceled successfully. New balance payable: ${payment.purchase_order.balance_payable:.2f}"),
-                              level=messages.SUCCESS)
-            # Obtenemos el ID del Purchase Order asociado
+            self.message_user(request, _(f"Payment canceled successfully. New balance payable: ${payment.purchase_order.balance_payable:.2f}"), level=messages.SUCCESS)
             purchase_order_id = payment.purchase_order.pk
         except PurchaseOrderPayment.DoesNotExist:
             self.message_user(request, _("Payment not found"), level=messages.ERROR)
             purchase_order_id = None
 
-        if purchase_order_id:
-            # Construimos la URL de cambio del Purchase Order y le agregamos el fragmento #payments-tab
-            redirect_url = reverse('admin:purchases_purchaseorder_change', args=[purchase_order_id]) + "#payments-tab"
-        else:
-            redirect_url = request.path + "#payments-tab"
+        redirect_url = reverse('admin:purchases_purchaseorder_change', args=[purchase_order_id]) + "#payments-tab" if purchase_order_id else request.path + "#payments-tab"
         return HttpResponseRedirect(redirect_url)
 
-
     def response_change(self, request, obj):
+        """
+        Recalcula el balance al guardar cambios, evitando balances negativos.
+        """
         balance_data = obj.simulate_balance()
-
         if balance_data['balance'] < 0:
             if not hasattr(request, '_balance_error_shown'):
                 self.message_user(
                     request,
-                    _(f"No se puede guardar esta orden porque el balance sería negativo (${balance_data['balance']}). "
-                      f"Insumos: ${balance_data['supplies_total']}, "
-                      f"Impuestos: ${balance_data['tax_amount']}, "
-                      f"Cargos: ${balance_data['charges_total']}, "
-                      f"Deducciones: ${balance_data['deductions_total']}, "
-                      f"Pagos: ${balance_data['payments_total']}"),
+                    _(f"Cannot save this order because the balance would be negative (${balance_data['balance']}). "
+                      f"Supplies: ${balance_data['supplies_total']}, "
+                      f"Taxes: ${balance_data['tax_amount']}, "
+                      f"Charges: ${balance_data['charges_total']}, "
+                      f"Deductions: ${balance_data['deductions_total']}, "
+                      f"Payments: ${balance_data['payments_total']}")
+                    ,
                     level=messages.ERROR
                 )
-            url = reverse('admin:purchases_purchaseorder_change', args=[obj.pk])
-            return HttpResponseRedirect(url)
+            return HttpResponseRedirect(reverse('admin:purchases_purchaseorder_change', args=[obj.pk]))
 
         obj.balance_payable = balance_data['balance']
         obj.save(update_fields=['balance_payable'])
         return super().response_change(request, obj)
 
     def save_related(self, request, form, formsets, change):
+        """
+        Después de guardar los inlines, actualiza el balance de la orden.
+        """
         super().save_related(request, form, formsets, change)
 
         purchase_order = form.instance
@@ -571,49 +694,48 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
                 request._balance_error_shown = True
                 self.message_user(
                     request,
-                    _(f"El balance final sería negativo (${balance_data['balance']}). "
-                      f"Costo total de Insumos: ${balance_data['supplies_total']} "
-                      f"+ Impuestos: ${balance_data['tax_amount']} "
-                      f"+ Cargos: ${balance_data['charges_total']} "
-                      f"- Pagos: ${balance_data['payments_total']} "
-                      f"- Deducciones: ${balance_data['deductions_total']}"),
+                    _(f"The final balance would be negative (${balance_data['balance']}). "
+                      f"Total cost of supplies: ${balance_data['supplies_total']} "
+                      f"+ Taxes: ${balance_data['tax_amount']} "
+                      f"+ Charges: ${balance_data['charges_total']} "
+                      f"- Payments: ${balance_data['payments_total']} "
+                      f"- Deductions: ${balance_data['deductions_total']}")
+                    ,
                     level=messages.ERROR
                 )
-            return  # No seguimos si hay error
+            return
 
-        # ⚡ Aquí ACTUALIZAMOS directamente el balance
         purchase_order.balance_payable = balance_data['balance']
         purchase_order.save(update_fields=['balance_payable'])
 
     def save_formset(self, request, form, formset, change):
+        """
+        Valida balances antes de guardar cambios masivos de insumos, cargos, deducciones y pagos.
 
+        Si el balance resultante sería negativo, cancela la operación y lanza advertencias.
+        """
         model = formset.model
         purchase_order = form.instance
 
         if not hasattr(formset, 'cleaned_data'):
             return
 
-        # Cargamos objetos actuales
         existing_qs = {obj.pk: obj for obj in model.objects.filter(purchase_order=purchase_order)}
-
-        # Lista de objetos marcados para eliminar
         to_delete = []
 
         for form_data in formset.cleaned_data:
             if form_data.get('DELETE') and form_data.get('id'):
                 obj = form_data['id']
                 if obj.pk in existing_qs:
-                    to_delete.append(existing_qs.pop(obj.pk))  # lo quitamos y lo marcamos para borrar
+                    to_delete.append(existing_qs.pop(obj.pk))
 
-        # Nuevas instancias sin guardar aún
         new_instances = formset.save(commit=False)
 
         for instance in new_instances:
-            existing_qs[instance.pk] = instance  # reemplazamos si ya existía
+            existing_qs[instance.pk] = instance
 
         combined = list(existing_qs.values())
 
-        # Cálculo de totales (simulación)
         total_supplies = Decimal('0.00')
         total_charges = Decimal('0.00')
         total_deductions = Decimal('0.00')
@@ -648,28 +770,26 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
                 request._balance_error_shown = True
                 self.message_user(
                     request,
-                    _(f"El balance final sería negativo (${balance}) "
-                      f"Costo total de Insumos: ${supplies_total} "
-                      f"+ Impuestos: ${tax_amount} "
-                      f"+ Cargos: ${charges_total} "
-                      f"- Pagos: ${payments_total} "
-                      f"- Deducciones: ${deductions_total}"),
+                    _(f"The final balance would be negative (${balance}) "
+                      f"Total cost of supplies: ${supplies_total} "
+                      f"+ Taxes: ${tax_amount} "
+                      f"+ Charges: ${charges_total} "
+                      f"- Payments: ${payments_total} "
+                      f"- Deductions: ${deductions_total}")
+                    ,
                     level=messages.ERROR
                 )
-            return  # no guardar
+            return
 
-        #Primero eliminamos los que fueron marcados para DELETE
         for obj in to_delete:
             obj.delete()
 
-        #Ahora sí se guarda los nuevos o modificados
         for instance in new_instances:
             if not instance.pk:
                 instance.created_by = request.user
             instance.save()
 
         formset.save_m2m()
-
 
     class Media:
         js = ('js/admin/forms/packhouses/purchases/purchase_orders.js',)

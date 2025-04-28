@@ -48,8 +48,8 @@ SUPPLY_CATEGORY_CHOICES = [
 ]
 
 SUPPLY_TRANSACTION_KIND_CHOICES = [
-    ('entry', _('Entry')),
-    ('output', _('Output')),
+    ('inbound', _('Inbound')),
+    ('outbound', _('Outbound')),
 ]
 
 SUPPLY_TRANSACTION_CATEGORY_CHOICES = [

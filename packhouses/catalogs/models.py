@@ -778,8 +778,8 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
             capacity = int(self.capacity) if self.capacity % 1 == 0 else self.capacity
             unit = _(
                 'piece') if self.kind.capacity_unit_category == 'pieces' and capacity == 1 else self.kind.capacity_unit_category
-            return f"{self.name} ({capacity} {unit})"
-        return f"{self.name}"
+            return f"{self.kind.name}: {self.name} ({capacity} {unit})"
+        return f"{self.kind.name}: {self.name}"
 
     def clean(self):
         value = self.capacity

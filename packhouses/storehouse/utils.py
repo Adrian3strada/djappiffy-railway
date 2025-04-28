@@ -10,7 +10,7 @@ def get_inventory_balance(supply, organization):
     """
     total_entries = InventoryTransaction.objects.filter(
         supply=supply,
-        transaction_kind='entry',
+        transaction_kind='inbound',
         organization=organization
     ).aggregate(
         total=Coalesce(Sum('quantity'), Decimal('0'))
@@ -18,7 +18,7 @@ def get_inventory_balance(supply, organization):
 
     total_outputs = InventoryTransaction.objects.filter(
         supply=supply,
-        transaction_kind='output',
+        transaction_kind='outbound',
         organization=organization
     ).aggregate(
         total=Coalesce(Sum('quantity'), Decimal('0'))
@@ -37,7 +37,7 @@ def validate_inventory_availability(supply, quantity, organization):
 
     return remaining
 
-def get_fifo_entry_sources(supply, organization):
+def get_entry_sources_fifo(supply, organization):
     """
     Devuelve una lista de entradas disponibles en orden FIFO, con su saldo restante.
     Considera entradas con y sin `storehouse_entry_supply`.
@@ -49,19 +49,19 @@ def get_fifo_entry_sources(supply, organization):
     """
     entries = InventoryTransaction.objects.filter(
         supply=supply,
-        transaction_kind='entry',
+        transaction_kind='inbound',
         organization=organization
-    ).order_by('created_at', 'id')  # FIFO
+    ).order_by('created_at', 'id')
 
     outputs = InventoryTransaction.objects.filter(
         supply=supply,
-        transaction_kind='output',
+        transaction_kind='outbound',
         organization=organization
-    ).order_by('created_at', 'id')  # también FIFO
+    ).order_by('created_at', 'id')
 
     results = []
 
-    # Vamos a separar las salidas que no tienen origen físico
+    # Se separan las salidas que no tienen origen físico
     remaining_output_without_source = outputs.filter(storehouse_entry_supply__isnull=True)
     output_balance = sum([o.quantity for o in remaining_output_without_source])
 
@@ -88,7 +88,7 @@ def get_fifo_entry_sources(supply, organization):
 
     return results
 
-def get_fifo_source_for_quantity(supply, quantity, organization):
+def get_source_for_quantity_fifo(supply, quantity, organization):
     """
     Simula una salida y determina de qué entradas (FIFO) se tomará el inventario.
 
@@ -105,7 +105,7 @@ def get_fifo_source_for_quantity(supply, quantity, organization):
     Raises:
         ValidationError: Si no hay inventario suficiente.
     """
-    fifo_entries = get_fifo_entry_sources(supply, organization)
+    fifo_entries = get_entry_sources_fifo(supply, organization)
 
     remaining = quantity
     result = []
