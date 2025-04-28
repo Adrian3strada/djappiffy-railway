@@ -24,6 +24,7 @@ def get_processing_status_choices():
         ('pending', _('Pending')),
         ('in_operation', 'In Operation'),
         ('in_another_batch', 'In Another Batch'),
+        ('canceled', 'Canceled'),
         ('finalized', 'Finalized'),
 ]
 
