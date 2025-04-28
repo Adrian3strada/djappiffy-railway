@@ -18,8 +18,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const missingContainersField = $('#id_missing_containers');
     const averageContainersField = $('#id_average_per_container');
     const currentKgField = $('#id_current_kg_available');
-    const containerTare= $('input[name$="-container_tare"]');
-    const totalContainers= $('input[name$="-total_containers"]');
     const missingVehicleContainerField = $('input[name$="-missing_containers"]');
     const totaWeighedSetContainersField = $('#id_total_weighed_set_containers');
 
@@ -40,8 +38,6 @@ document.addEventListener("DOMContentLoaded", function() {
     disableField(containersAssignedField);
     disableField(missingContainersField);
     disableField(averageContainersField);
-    disableField(containerTare);
-    disableField(totalContainers);
     disableField(fullContainersField);
     disableField(emptyContainersField);
     disableField(missingVehicleContainerField);
