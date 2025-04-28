@@ -9,7 +9,6 @@ from shapely.geometry import shape
 from functools import wraps
 from fiona.io import ZipMemoryFile
 from django.core.files.storage import default_storage
-from tempfile import mkstemp, NamedTemporaryFile
 from fiona.io import MemoryFile
 fiona.drvsupport.supported_drivers['KML'] = 'rw'
 fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
@@ -54,8 +53,8 @@ def validate_geom_vector_file(value):
             else:
                 # ex = "Formato inválido"
                 ex = e.args[0]
-        except Exception as eee:
-            ex = eee
+        except Exception as exx:
+            ex = exx
         raise ValidationError(f"El archivo no es un archivo espacial válido: {ex}")
 
 
@@ -157,28 +156,7 @@ def fix_format(instance):
         file_content = default_storage.open(instance.file.name).read()
         file_extension = instance.file.name.split('.')[-1].lower()
 
-        # Verificar si el archivo es un ZIP
-        if file_extension == 'zip':
-            with ZipMemoryFile(file_content) as src:
-                layers = src.listlayers()
-                layer = src.open(layer=layers[0])
-
-                with MemoryFile() as memfile:
-                    with memfile.open(
-                        driver="GPKG",
-                        schema=layer.schema,
-                        crs=layer.crs
-                    ) as dst:
-                        for feature in layer:
-                            dst.write(feature)
-
-                    generated_file = memfile.read()
-                    new_file_path = default_storage.get_available_name(instance.file.name.replace('.zip', '.gpkg'))
-                    default_storage.save(new_file_path, ContentFile(generated_file))
-
-                    instance.file.name = new_file_path
-
-        elif file_extension == 'kml':
+        if file_extension == 'kml':
             with fiona.BytesCollection(file_content, driver='LIBKML') as src:
                 with MemoryFile() as memfile:
                     with memfile.open(
@@ -214,6 +192,9 @@ def fix_format(instance):
                     default_storage.save(new_file_path, ContentFile(generated_file))
 
                     instance.file.name = new_file_path
+
+        else:
+            raise ValidationError(f"formato inválido: {file_extension}")
 
     except Exception as e:
         raise ValidationError(f"fix_format Error al procesar el formato: {str(e)}")
@@ -290,31 +271,4 @@ def set_year_path(path):
 
     return decorator
 
-
-def set_rgb_2020_image_path(instance, filename):
-    ext = filename.split('.')[-1]
-    if not ext:
-        raise ValidationError("El archivo debe tener extensión")
-    filename = f"{instance.uuid}.{ext}"
-    file_path = os.path.join('verification_images/rgb_2020/', filename)
-    return file_path
-
-
-@set_year_path("2021")
-def set_rgb_2021_image_path(instance, filename):
-    ext = filename.split('.')[-1]
-    if not ext:
-        raise ValidationError("El archivo debe tener extensión")
-    filename = f"{instance.uuid}.{ext}"
-    file_path = os.path.join('verification_images/rgb_2021/', filename)
-    return file_path
-
-
-def set_image_path(instance, filename, path):
-    ext = filename.split('.')[-1]
-    if not ext:
-        raise ValidationError("El archivo debe tener extensión")
-    filename = f"{instance.uuid}.{ext}"
-    file_path = os.path.join('forestiffy', path, filename)
-    return file_path
 

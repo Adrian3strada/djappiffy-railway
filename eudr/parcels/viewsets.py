@@ -6,7 +6,6 @@ from .serializers import ParcelSerializer
 
 
 class ParcelViewSet(viewsets.ModelViewSet):
-    queryset = Parcel.objects.all()
     serializer_class = ParcelSerializer
 
     def get_queryset(self):
