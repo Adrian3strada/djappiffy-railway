@@ -1,23 +1,24 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from packhouses.gathering.models import ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle
-from .models import IncomingProduct, SamplePest, SampleDisease, SamplePhysicalDamage, SampleResidue, FoodSafety
+from .models import IncomingProduct, Batch
 from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
 from django.utils.safestring import mark_safe
+from django.db import transaction
 
 class ContainerInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for form in self.forms:
-            if form.instance.pk and form.instance.created_by == 'gathering':
+            if form.instance.pk and form.instance.created_at_model == 'gathering':
                 if 'DELETE' in form.fields:
                     form.fields['DELETE'].widget = forms.HiddenInput()
                     form.fields['DELETE'].initial = False
 
     def _construct_form(self, i, **kwargs):
         form = super()._construct_form(i, **kwargs)
-        if form.instance.pk and form.instance.created_by == 'gathering':
+        if form.instance.pk and form.instance.created_at_model == 'gathering':
             if "DELETE" in form.fields:
                 form.fields["DELETE"].widget = forms.HiddenInput()
                 form.fields["DELETE"].initial = False
@@ -27,22 +28,22 @@ class ContainerInlineFormSet(BaseInlineFormSet):
     def clean(self):
         cleaned_data = super().clean()
         for form in self.forms:
-            if form.instance.pk and form.instance.created_by == 'gathering':
+            if form.instance.pk and form.instance.created_at_model == 'gathering':
                 form.cleaned_data['DELETE'] = False
         return cleaned_data
 
 class ContainerInlineForm(forms.ModelForm):
     class Meta:
         model = ScheduleHarvestContainerVehicle
-        exclude = ("created_by",)
+        exclude = ("created_at_model",)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         instance = kwargs.get('instance')
 
-        if instance and instance.pk and instance.created_by == 'gathering':
+        if instance and instance.pk and instance.created_at_model == 'gathering':
             for field_name in self.fields:
-                if field_name not in ['full_containers', 'empty_containers']:
+                if field_name not in ['full_containers', 'empty_containers', 'missing_containers']:
                     self.fields[field_name].disabled = True
                     self.fields[field_name].widget.attrs.update({
                         "style": (
@@ -55,8 +56,8 @@ class ContainerInlineForm(forms.ModelForm):
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        if not instance.created_by:  
-            instance.created_by = 'incoming_product'  
+        if not instance.created_at_model:  
+            instance.created_at_model = 'incoming_product'  
         if commit:
             instance.save()
         return instance
@@ -145,82 +146,91 @@ class IncomingProductForm(forms.ModelForm):
         fields = '__all__'
 
     def clean(self):
-        cleaned_data = super().clean()
+        cleaned_data = super().clean() or {}
 
-        # Status guardado en la base de datos
+        # Status guardado en base de datos
         initial_status = self.instance.status if self.instance and self.instance.pk else None
-        # Obtiener el status final
+        # Status final enviado por el form
         final_status = cleaned_data.get('status', initial_status)
 
-        # VALIDACIÓN PARA PESADAS:
-        total_weighing_sets = int(self.data.get('weighingset_set-TOTAL_FORMS', 0))
+        if initial_status == 'accepted' and final_status != 'accepted':
+            raise ValidationError(_("Once accepted, the status cannot be changed."))
 
-        remaining_weighing_sets = 0
-        for i in range(total_weighing_sets):
-            delete_key = f'weighingset_set-{i}-DELETE'
-            if self.data.get(delete_key, 'off') != 'on':
-                remaining_weighing_sets += 1
+        # Validación de los WeighingSets (igual que antes)…
+        total = int(self.data.get('weighingset_set-TOTAL_FORMS', 0))
+        remaining = sum(
+            1 for i in range(total)
+            if self.data.get(f'weighingset_set-{i}-DELETE', 'off') != 'on'
+        )
+        if remaining < 1 and final_status == "accepted":
+            raise ValidationError(_("At least one Weighing Set must be registered for the Incoming Product."))
 
-        if remaining_weighing_sets < 1 and final_status == "accepted":
-            raise ValidationError("At least one Weighing Set must be registered for the Incoming Product.")
-
-        for i in range(remaining_weighing_sets):
-            weighingset_prefix = f'weighingset_set-{i}-'
-            provider = self.data.get(weighingset_prefix + 'provider')
-            harvesting_crew = self.data.get(weighingset_prefix + 'harvesting_crew')
-
-            if not provider or not provider.strip():
+        for i in range(remaining):
+            prefix = f'weighingset_set-{i}-'
+            if not self.data.get(prefix + 'provider', '').strip():
                 raise ValidationError(_(f'Weighing Set {i + 1} is missing a provider.'))
-            if not harvesting_crew or not harvesting_crew.strip():
+            if not self.data.get(prefix + 'harvesting_crew', '').strip():
                 raise ValidationError(_(f'Weighing Set {i + 1} is missing a harvesting crew.'))
-        
 
         return cleaned_data
 
-class SamplePestForm(forms.ModelForm):
+    def save(self, commit=True):
+        # 1) Obtenemos la instancia sin guardar aún
+        obj = super().save(commit=False)
+
+        # 2) Leemos el estado previo si existe
+        previous_status = None
+        if obj.pk:
+            previous_status = (
+                IncomingProduct.objects
+                .values_list('status', flat=True)
+                .get(pk=obj.pk)
+            )
+
+        if commit:
+            obj.save()
+
+        if (
+            obj.status == 'accepted'
+            and previous_status != 'accepted'
+            and obj.batch_id is None
+        ):
+            with transaction.atomic():
+                new_batch = Batch.objects.create(
+                    review_status='pending',
+                    operational_status='pending',
+                    is_available_for_processing=False,
+                    organization=obj.organization
+                )
+                obj.batch = new_batch
+                obj.save(update_fields=['batch'])
+
+        return obj
+
+
+class BatchForm(forms.ModelForm):
     class Meta:
-        model = SamplePest
-        fields = ['product_pest', 'sample_pest', 'percentage']
+        model = Batch
+        fields = '__all__'
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
+    def clean(self):
+        cleaned = super().clean()
 
-class SampleDiseaseForm(forms.ModelForm):
-    class Meta:
-        model = SampleDisease
-        fields = ['product_disease', 'sample_disease', 'percentage']
+        # Recorre cada IncomingProduct y comprueba que tenga al menos un WeighingSet no marcado para borrar
+        for i in range(int(self.data.get('incomingproduct_set-TOTAL_FORMS', 0))):
+            ws_prefix = f'incomingproduct_set-{i}-weighingset_set'
+            total_ws = int(self.data.get(f'{ws_prefix}-TOTAL_FORMS', 0))
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
+            # Cuenta los que NO tienen DELETE = 'on'
+            remaining = sum(
+                1
+                for j in range(total_ws)
+                if self.data.get(f'{ws_prefix}-{j}-DELETE', 'off') != 'on'
+            )
+            if remaining < 1:
+                raise ValidationError(
+                    _('At least one Weighing Set must be registered.')
+                )
+        return cleaned
 
-class SamplePhysicalDamageForm(forms.ModelForm):
-    class Meta:
-        model = SamplePhysicalDamage
-        fields = ['product_physical_damage', 'sample_physical_damage', 'percentage']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
-
-class SampleResidueForm(forms.ModelForm):
-    class Meta:
-        model = SampleResidue
-        fields = ['product_residue', 'sample_residue', 'percentage']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
-
-class FoodSafetyFormInline(forms.ModelForm):
-    class Meta:
-        model = FoodSafety
-        fields = ['batch']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['batch'].widget.can_add_related = False
-        self.fields['batch'].widget.can_change_related = False
-        self.fields['batch'].widget.can_delete_related = False
-        self.fields['batch'].widget.can_view_related = False

@@ -3,42 +3,69 @@ from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
-from .utils import get_incoming_product_categories_status
+from .utils import get_approval_status_choices, get_processing_status_choices
 from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, Provider, ProductFoodSafetyProcess, 
                                         Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage, 
                                         ProductResidue, ProductAdditionalValue)
 from common.base.models import Pest
+from django.db.models import F
 
 # Create your models here.
 class Batch(models.Model):
-    status = models.CharField(max_length=20, verbose_name=_('Status'))
-    ooid = models.PositiveIntegerField(verbose_name=_("Harvest Number"), null=True, blank=True, unique=True)
+    ooid = models.PositiveIntegerField(verbose_name=_('Batch Number'), null=True, blank=True, unique=True)
+    review_status = models.CharField(max_length=20, verbose_name=_('Review Status'), choices=get_approval_status_choices(), default='pending', blank=True)
+    operational_status = models.CharField(max_length=20, choices=get_processing_status_choices(),  default='pending', verbose_name=_('Operational Status'), blank=True)
+    is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
 
     def __str__(self):
-        return f"{self.ooid} - {_('Incoming Product')} " + ", ".join(
-            f"id: {prod.id} - " +
-            (f"{_('Schedule Harvest Number')}: {prod.scheduleharvest.ooid}" if getattr(prod, 'scheduleharvest', None) else _('sin corte'))
-            for prod in self.incomingproduct_set.all()
-        )
+        try:
+            incoming = self.incomingproduct
+        except IncomingProduct.DoesNotExist:
+            incoming = None
+
+        if incoming:
+            sh = getattr(incoming, 'scheduleharvest', None)
+            harvest_info = (
+                f"{_('Schedule Harvest Number')}: {sh.ooid}"
+                if sh else
+                _('No Harvest')
+            )
+            return (
+                f"{self.ooid} – {_('Incoming Product')} "
+                f"id: {incoming.id} – {harvest_info}"
+            )
+
+        return f"{self.ooid} – {_('Batch sin IncomingProduct')}"
 
     def save(self, *args, **kwargs):
-        if not self.ooid:
-            # Usar transacción y bloqueo de fila para evitar condiciones de carrera
+        # solo asignamos si aún no tiene ooid
+        if self.ooid is None:
             with transaction.atomic():
-                last_order = Batch.objects.select_for_update().filter(organization=self.organization).order_by('-ooid').first()
-                if last_order:
-                    self.ooid = last_order.ooid + 1
-                else:
-                    self.ooid = 1
+                # bloqueamos las filas de Batch de esta organización…
+                last = (
+                    Batch.objects
+                        .select_for_update()
+                        .filter(organization=self.organization)
+                        .order_by('-ooid')
+                        .first()
+                )
+                self.ooid = (last.ooid + 1) if last else 1
         super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Batch')
         verbose_name_plural = _('Batches')
+        constraints = [
+            models.UniqueConstraint(
+                    fields=['organization','ooid'],
+                    name='unique_batch_ooid_per_org'
+                )
+            ]
 
 class IncomingProduct(models.Model):
-    status = models.CharField(max_length=20, verbose_name=_('Status'), choices=get_incoming_product_categories_status(), default='pending')
+    status = models.CharField(max_length=20, verbose_name=_('Status'), choices=get_approval_status_choices(), default='pending')
     public_weighing_scale = models.ForeignKey(WeighingScale, verbose_name=_("Public Weighing Scale"), on_delete=models.PROTECT, null=True, blank=False)
     public_weight_result = models.FloatField(default=0, verbose_name=_("Public Weight Result"),)
     packhouse_weight_result = models.FloatField(default=0, verbose_name=_("Packhouse Weight Result"),)
@@ -55,7 +82,7 @@ class IncomingProduct(models.Model):
     missing_containers = models.IntegerField(default=0, verbose_name=_('Missing Containments'), help_text=_('Missing containments per harvest'))
     average_per_container = models.FloatField(default=0, verbose_name=_("Average per Container"), help_text=_('Based on packhouse weight result and weighed set containments'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
-    batch = models.ForeignKey(Batch, on_delete=models.PROTECT, verbose_name=_('Batch'), null=True, blank=True)
+    batch = models.OneToOneField(Batch, on_delete=models.PROTECT, verbose_name=_('Batch'), null=True, blank=True)
     comments = models.TextField(verbose_name=_("Comments"), blank=True, null=True)
 
     def __str__(self):
@@ -64,6 +91,18 @@ class IncomingProduct(models.Model):
         schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=self).first()
         if schedule_harvest:
             return f"{schedule_harvest.ooid} - {schedule_harvest.orchard}"
+    
+    def create_batch(self):
+        if self.status == 'accepted' and not self.batch:
+            with transaction.atomic():
+                new_batch = Batch.objects.create(
+                    review_status='accepted',        
+                    operational_status='in_progress',
+                    is_available_for_processing=False,
+                    organization=self.organization
+                )
+                self.batch = new_batch
+                self.save(update_fields=["batch"])
 
     class Meta:
         verbose_name = _('Incoming Product')
@@ -88,21 +127,39 @@ class WeighingSet(models.Model):
 
     def __str__(self):
         return f"{self.ooid}"
-
+    
     def save(self, *args, **kwargs):
         if not self.ooid:
-            # Usar transacción y bloqueo de fila para evitar condiciones de carrera
             with transaction.atomic():
-                last_order = Batch.objects.select_for_update().filter(organization=self.organization).order_by('-ooid').first()
-                if last_order:
-                    self.ooid = last_order.ooid + 1
-                else:
-                    self.ooid = 1
+                last_ws = (
+                    WeighingSet.objects
+                    .select_for_update()
+                    .filter(incoming_product=self.incoming_product)
+                    .order_by('-ooid')
+                    .first()
+                )
+                self.ooid = (last_ws.ooid + 1) if last_ws else 1
+
         super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        # Captura el incoming_product y el ooid antes de borrar
+        inc = self.incoming_product
+        deleted_ooid = self.ooid
+        with transaction.atomic():
+            super().delete(*args, **kwargs)
+            # Decrementa en 1 todos los ooid > eliminado para reacomodar
+            WeighingSet.objects.filter(
+                incoming_product=inc,
+                ooid__gt=deleted_ooid
+            ).update(ooid=F('ooid') - 1)
+
     class Meta:
-        verbose_name = _('Batch')
-        verbose_name_plural = _('Batches')
+        verbose_name = _('Weighing Set')
+        verbose_name_plural = _('Weighing Sets')
+        constraints = [
+            models.UniqueConstraint(fields=['incoming_product', 'ooid'], name='weighing_unique_incomingproduct')
+        ]
 
 
 class WeighingSetContainer(models.Model):
@@ -129,7 +186,7 @@ class DryMatter(models.Model):
     paper_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     moisture_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     dry_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    dry_matter_percentage = models.DecimalField(max_digits=10, decimal_places=2)
+    dry_matter = models.DecimalField(max_digits=10, decimal_places=2)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -240,7 +297,7 @@ class SampleWeight(models.Model):
 class SamplePest(models.Model):
     sample_pest = models.IntegerField(verbose_name=_('Samples With Pests'))
     product_pest = models.ForeignKey(ProductPest, verbose_name=_('Pest'), on_delete=models.CASCADE)
-    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True, blank=True)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -255,10 +312,17 @@ class SamplePest(models.Model):
                 name='unique_sample_collection_product_pest'),
         ]
 
+    def save(self, *args, **kwargs):
+        total_sample_weight = SampleWeight.objects.filter(sample_collection=self.sample_collection).count()
+        self.percentage = (self.sample_pest / total_sample_weight)*100
+
+        super().save(*args, **kwargs)
+
+
 class SampleDisease(models.Model):
     sample_disease = models.IntegerField(verbose_name=_('Samples With Diseases'))
     product_disease = models.ForeignKey(ProductDisease, verbose_name=_('Disease'), on_delete=models.CASCADE)
-    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True, blank=True)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -273,10 +337,16 @@ class SampleDisease(models.Model):
                 name='unique_sample_collection_product_disease'),
         ]
 
+    def save(self, *args, **kwargs):
+        total_sample_weight = SampleWeight.objects.filter(sample_collection=self.sample_collection).count()
+        self.percentage = (self.sample_disease / total_sample_weight)*100
+
+        super().save(*args, **kwargs)
+
 class SamplePhysicalDamage(models.Model):
     sample_physical_damage = models.IntegerField(verbose_name=_('Samples With Physical Damage'))
     product_physical_damage = models.ForeignKey(ProductPhysicalDamage, verbose_name=_('Physical Damage'), on_delete=models.CASCADE)
-    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True, blank=True)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -291,10 +361,16 @@ class SamplePhysicalDamage(models.Model):
                 name='unique_sample_collection_product_physical_damage'),
         ]
 
+    def save(self, *args, **kwargs):
+        total_sample_weight = SampleWeight.objects.filter(sample_collection=self.sample_collection).count()
+        self.percentage = (self.sample_physical_damage / total_sample_weight)*100
+
+        super().save(*args, **kwargs)
+
 class SampleResidue(models.Model):
     sample_residue = models.IntegerField(verbose_name=_('Samples With Residue'))
     product_residue = models.ForeignKey(ProductResidue, verbose_name=_('Residue'), on_delete=models.CASCADE)
-    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True, blank=True)
     sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -308,3 +384,9 @@ class SampleResidue(models.Model):
                 fields=['sample_collection','product_residue'], 
                 name='unique_sample_collection_product_residue'),
         ]
+        
+    def save(self, *args, **kwargs):
+        total_sample_weight = SampleWeight.objects.filter(sample_collection=self.sample_collection).count()
+        self.percentage = (self.sample_residue / total_sample_weight)*100
+
+        super().save(*args, **kwargs)

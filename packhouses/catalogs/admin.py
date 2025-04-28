@@ -26,7 +26,7 @@ from common.profiles.models import UserProfile, PackhouseExporterProfile, Organi
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet,
-                    PackagingKindForm, ProviderForm, ProductFoodSafetyProcessForm)
+                    PackagingKindForm, ProviderForm)
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization
 from cities_light.models import Country, Region, SubRegion, City
@@ -351,12 +351,19 @@ class ProductResidueInline(admin.TabularInline):
 class ProductFoodSafetyProcessInline(admin.TabularInline):
     model = ProductFoodSafetyProcess
     extra = 0
-    form = ProductFoodSafetyProcessForm
     verbose_name = _('Food Safety Process')
     verbose_name_plural = _('Food Safety Process')
 
     can_delete = True
     show_change_link = False
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.form.base_fields['procedure'].widget.can_add_related = False
+        formset.form.base_fields['procedure'].widget.can_change_related = False
+        formset.form.base_fields['procedure'].widget.can_delete_related = False
+        formset.form.base_fields['procedure'].widget.can_view_related = False
+        return formset
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

@@ -226,7 +226,7 @@ class ScheduleHarvestContainerVehicle(models.Model):
     full_containers = models.PositiveIntegerField(default=0, verbose_name=_('Full containments'))
     empty_containers = models.PositiveIntegerField(default=0,verbose_name=_('Empty containments'))
     missing_containers = models.IntegerField(default=0, verbose_name=_('Missing containments'))
-    created_by = models.CharField(max_length=20, blank=True, null=True) 
+    created_at_model = models.CharField(max_length=20, blank=True, null=True) 
     
     def __str__(self):
         return ""
@@ -238,6 +238,6 @@ class ScheduleHarvestContainerVehicle(models.Model):
 
 @receiver(post_save, sender=ScheduleHarvestContainerVehicle)
 def set_created_from_app1(sender, instance, created, **kwargs):
-    if created and not instance.created_by: 
-        instance.created_by = 'gathering' 
+    if created and not instance.created_at_model: 
+        instance.created_at_model = 'gathering' 
         instance.save()
