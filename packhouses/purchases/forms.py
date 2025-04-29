@@ -62,11 +62,27 @@ class PurchaseOrderForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        purchase_order_supplies = self.data.getlist('purchaseordersupply_set-TOTAL_FORMS', [])
-        if not purchase_order_supplies or int(purchase_order_supplies[0]) < 1:
-            raise ValidationError(_("You must add at least one supply to the purchases order."))
+
+        # ⚡ Validación temprana para evitar balances imposibles
+        purchase_order = self.instance
+
+        # Si no se ha creado todavía, no podemos hacer balance
+        if not purchase_order.pk:
+            return cleaned_data
+
+        balance_data = purchase_order.simulate_balance()
+        if balance_data['balance'] < 0:
+            raise ValidationError(_(
+                f"Cannot save this purchases order because the balance would be negative (${balance_data['balance']}). "
+                f"Supplies: ${balance_data['supplies_total']}, "
+                f"Taxes: ${balance_data['tax_amount']}, "
+                f"Charges: ${balance_data['charges_total']}, "
+                f"Payments: ${balance_data['payments_total']}, "
+                f"Deductions: ${balance_data['deductions_total']}."
+            ))
 
         return cleaned_data
+
 
 
 class PurchaseOrderPaymentForm(forms.ModelForm):
