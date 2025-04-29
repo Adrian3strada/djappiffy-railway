@@ -24,6 +24,7 @@ class PurchaseOrderSupplySerializer(serializers.ModelSerializer):
                 "id": pos.id,
                 "kind": str(pos.requisition_supply.supply.kind.name),
                 "name": str(pos.requisition_supply.supply),
+                "purchaseorder_unit_category": str(pos.unit_category.name),
                 "unit": unit_mapping.get(
                     getattr(pos.requisition_supply.supply.kind.usage_discount_unit_category, "unit_category", ""),
                     getattr(pos.requisition_supply.supply.kind.usage_discount_unit_category, "unit_category", "")

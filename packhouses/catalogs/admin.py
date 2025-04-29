@@ -302,7 +302,7 @@ class ProductPestInline(admin.TabularInline):
                 kwargs['queryset'] = PestProductKind.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-    
+
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
 
@@ -435,7 +435,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                ProductVarietyInline,
                ProductPhenologyKindInline, ProductHarvestSizeKindInline,
                ProductMassVolumeKindInline, ProductRipenessInline,
-               ProductPestInline, ProductDiseaseInline, 
+               ProductPestInline, ProductDiseaseInline,
                ProductPhysicalDamageInline, ProductResidueInline,
                ProductFoodSafetyProcessInline, ProductAdditionalValueInline
                ]
@@ -1104,7 +1104,7 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     capacity_display.admin_order_field = 'capacity'
 
     def usage_discount_quantity_display(self, obj):
-        units = str(obj.kind.usage_discount_unit_category.get_unit_category_display())
+        units = str(obj.kind.usage_discount_unit_category.unit_category)
         unit = units[:-1] if obj.usage_discount_quantity == 1 and units[-1].lower() == 's' else units
         return f"{str(obj.usage_discount_quantity)} {unit}"
     usage_discount_quantity_display.short_description = _('Usage discount quantity')

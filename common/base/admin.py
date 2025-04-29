@@ -15,7 +15,8 @@ from taggit.models import Tag
 from adminsortable2.admin import SortableAdminMixin
 from .decorators import uppercase_form_charfield
 from django.utils.translation import gettext_lazy as _
-from .utils import get_filtered_models
+from .utils import filter_models_by_food_safety
+from django import forms
 
 #
 
@@ -211,24 +212,36 @@ class DiseaseAdmin(admin.ModelAdmin):
     list_display = ('name', 'inside', 'outside', 'is_enabled')
     list_filter = ['name', 'inside', 'outside', 'is_enabled']
 
+class InlineFoodSafetyProcedureForm(forms.ModelForm):
+    name_model = forms.ChoiceField(required=True)
+
+    class Meta:
+        model = FoodSafetyProcedure
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        all_choices = filter_models_by_food_safety()
+        used_models = list(FoodSafetyProcedure.objects.values_list('name_model', flat=True))
+
+        current_value = self.instance.name_model if self.instance and self.instance.pk else None
+
+        if current_value in used_models:
+            used_models.remove(current_value)
+
+        available_choices = [choice for choice in all_choices if choice[0] not in used_models]
+
+        if current_value:
+            current_choice = next((choice for choice in all_choices if choice[0] == current_value), None)
+            if current_choice and current_choice not in available_choices:
+                available_choices.append(current_choice)
+
+        available_choices.sort(key=lambda x: x[1])
+        self.fields['name_model'].choices = [('', '--------------')] + available_choices
+
 @admin.register(FoodSafetyProcedure)
 class FoodSafetyProcedureAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description')
+    list_display = ('name', 'description',)
     list_filter = ['name', 'description']
-
-    def formfield_for_choice_field(self, db_field, request, **kwargs):
-        if db_field.name == "model":
-            used_models = FoodSafetyProcedure.objects.values_list('model', flat=True)
-            available_choices = [(m, m) for m in get_filtered_models() if m not in used_models]
-
-            if not request.resolver_match.kwargs.get('object_id'):
-                available_choices.insert(0, ('', '---------'))
-
-            obj_id = request.resolver_match.kwargs.get('object_id')
-            if obj_id:
-                obj = FoodSafetyProcedure.objects.filter(pk=obj_id).first()
-                if obj and obj.model:
-                    available_choices.append((obj.model, obj.model))
-
-            kwargs['choices'] = available_choices
-        return super().formfield_for_choice_field(db_field, request, **kwargs)
+    form = InlineFoodSafetyProcedureForm

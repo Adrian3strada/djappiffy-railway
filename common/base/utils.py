@@ -272,7 +272,7 @@ class DehydrationResource():
 default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization', 'description')
 
 
-def get_filtered_models():
+def filter_models_by_food_safety():
     filtered_models = set()
 
     for model in apps.get_models():
@@ -284,4 +284,4 @@ def get_filtered_models():
                 if any(f.name == 'food_safety' for f in field.related_model._meta.get_fields()):
                     filtered_models.add(field.related_model.__name__)
 
-    return list(filtered_models)
+    return [(model, model) for model in list(filtered_models)]
