@@ -285,7 +285,7 @@
         "fields": {
             "name" : "Materia Seca",
             "description" : "N Materia seca",
-            "model" : "DryMatter",
+            "name_model" : "DryMatter",
             "overall_average": 1
         }
     },
@@ -295,7 +295,7 @@
         "fields": {
             "name" : "Inspección interna",
             "description" : "N Inspecciones Internas",
-            "model" : "InternalInspection",
+            "name_model" : "InternalInspection",
             "overall_average": 1
         }
     },
@@ -305,7 +305,7 @@
         "fields": {
             "name" : "Vehicle",
             "description" : "Vehicle",
-            "model" : "VehicleReview",
+            "name_model" : "VehicleReview",
             "overall_average": 0
         }
     },
@@ -315,7 +315,7 @@
         "fields": {
             "name" : "Muestras",
             "description" : "N Muestras",
-            "model" : "SampleCollection",
+            "name_model" : "SampleCollection",
             "overall_average": 0
         }
     },
@@ -325,7 +325,7 @@
         "fields": {
             "name" : "Promedios",
             "description" : "Promedios generales",
-            "model" : "Average",
+            "name_model" : "Average",
             "overall_average": 0
         }
     },

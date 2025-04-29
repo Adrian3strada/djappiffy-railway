@@ -12,7 +12,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import FileExtensionValidator
 from common.mixins import CleanDocumentsMixin
 from django.utils.text import slugify
-from .utils import get_filtered_models
 from django.utils.functional import lazy
 import os
 
@@ -361,15 +360,10 @@ class DiseaseProductKind(models.Model):
     def __str__(self):
         return f"{self.disease}"
 
-def get_model_choices():
-    return [(model, model) for model in get_filtered_models()]
-
-MODEL_CHOICES = lazy(get_model_choices, list)
-
 class FoodSafetyProcedure(models.Model):
     name = models.CharField(max_length=255, unique=True, verbose_name=_('Name'))
     description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
-    model = models.CharField(max_length=255, unique=True, verbose_name=_('Model'), choices=MODEL_CHOICES)
+    name_model = models.CharField(max_length=255, unique=True, verbose_name=_('Model'))
     overall_average = models.BooleanField(default=True, verbose_name=_('Overall Average'))
 
     class Meta:
