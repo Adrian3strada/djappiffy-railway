@@ -33,14 +33,21 @@ class ByProductForOrganizationAdminMixin(admin.ModelAdmin):
         return qs
 
 class DisableInlineRelatedLinksMixin:
+    """
+    Mixin para eliminar todos los botones de "agregar", "editar", "ver" y "eliminar"
+    relacionados en los formularios inlines del admin.
+    """
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         form = formset.form
+
         for field in form.base_fields.values():
-            field.widget.can_add_related = False
-            field.widget.can_change_related = False
-            field.widget.can_delete_related = False
-            field.widget.can_view_related = False
+            widget = field.widget
+            # Solo afecta widgets que soportan relaciones (como ForeignKeyRawIdWidget, RelatedFieldWidgetWrapper, etc.)
+            for attr in ['can_add_related', 'can_change_related', 'can_delete_related', 'can_view_related']:
+                if hasattr(widget, attr):
+                    setattr(widget, attr, False)
+
         return formset
 
 class ByUserAdminMixin(admin.ModelAdmin):
@@ -56,3 +63,18 @@ class ByUserAdminMixin(admin.ModelAdmin):
         obj.user = user_profile
         super().save_model(request, obj, form, change)
 
+class DisableLinksAdminMixin:
+    """
+    Mixin para desactivar los botones de agregar, editar, ver y eliminar
+    relacionados en campos ForeignKey y ManyToManyField del admin principal (no inlines).
+    """
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+
+        for field in form.base_fields.values():
+            widget = field.widget
+            for attr in ['can_add_related', 'can_change_related', 'can_delete_related', 'can_view_related']:
+                if hasattr(widget, attr):
+                    setattr(widget, attr, False)
+
+        return form
