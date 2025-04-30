@@ -7,8 +7,6 @@ from cities_light.models import Country, Region, SubRegion, City
 from organizations.models import Organization
 from common.billing.models import LegalEntityCategory
 from common.base.models import ProductKind
-from common.base.mixins import ByOrganizationAdminMixin
-
 
 # Register your Admin classes here.
 
@@ -85,13 +83,14 @@ class PackhouseExporterSettingInline(admin.StackedInline):
 
 
 @admin.register(PackhouseExporterProfile)
-class PackhouseExporterProfileAdmin(ByOrganizationAdminMixin, OrganizationProfileMixin):
+class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
     inlines = [PackhouseExporterSettingInline]
 
     def get_fields(self, request, obj=None):
         fields = list(super().get_fields(request, obj))
         if not request.user.is_superuser:
             fields.remove('product_kinds')
+            fields.remove('organization')
         return fields
 
     def get_form(self, request, obj=None, **kwargs):

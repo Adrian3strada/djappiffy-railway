@@ -367,11 +367,11 @@ class ProductFoodSafetyProcessInline(admin.TabularInline):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.exclude(procedure__model="Average")
+        return queryset.exclude(procedure__name_model="Average")
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "procedure":
-            kwargs["queryset"] = FoodSafetyProcedure.objects.exclude(model="Average")
+            kwargs["queryset"] = FoodSafetyProcedure.objects.exclude(name_model="Average")
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
