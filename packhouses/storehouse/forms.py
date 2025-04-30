@@ -2,8 +2,12 @@ from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from .models import StorehouseEntrySupply
+from .models import StorehouseEntrySupply, AdjustmentInventory, InventoryTransaction
 from packhouses.purchases.models import PurchaseOrderSupply
+from decimal import Decimal
+from django.db.models import DecimalField, Value, Sum, F, Subquery, OuterRef, Q
+from django.db.models.functions import Coalesce
+from .utils import validate_inventory_availability, get_inventory_balance, get_source_for_quantity_fifo
 
 
 class StorehouseEntrySupplyInlineFormSet(BaseInlineFormSet):
@@ -44,3 +48,84 @@ class StorehouseEntrySupplyInlineFormSet(BaseInlineFormSet):
                         form.fields['purchase_order_supply'].queryset = qs
 
 
+
+class AdjustmentInventoryForm(forms.ModelForm):
+    """
+    Formulario para validar y aplicar ajustes de inventario (entrada o salida).
+    """
+
+    class Meta:
+        model = AdjustmentInventory
+        fields = '__all__'
+
+    def clean(self):
+        """
+        Valida si hay suficiente inventario para las transacciones de tipo salida.
+        """
+        cleaned = super().clean()
+        supply = cleaned.get('supply')
+        qty    = cleaned.get('quantity')
+        org    = getattr(self, 'request_organization', None)
+        kind   = cleaned.get('transaction_kind')
+
+        if not (supply and qty and org and kind):
+            return cleaned
+
+        if kind == 'outbound':
+            remaining = validate_inventory_availability(supply, qty, org)
+            self.cleaned_data['available_quantity'] = remaining
+
+        return cleaned
+
+    def save(self, commit=True):
+        """
+        Guarda el AdjustmentInventory y crea los movimientos reales en InventoryTransaction.
+        """
+        obj = super().save(commit=False)
+
+        if not obj.organization_id:
+            obj.organization = getattr(self, 'request_organization', None)
+
+        if commit:
+            obj.save()
+            self.save_m2m()  # Necesario por consistencia o relaciones manytomany
+
+        # Lógica de transacción de inventario
+        kind = obj.transaction_kind
+        supply = obj.supply
+        qty = obj.quantity
+        org = obj.organization
+        user = getattr(self, '_request_user', None)
+        if not user:
+            raise ValidationError(_("Unable to determine the creator user for this transaction."))
+
+        if kind == 'inbound':
+            InventoryTransaction.objects.create(
+                supply=supply,
+                transaction_kind='inbound',
+                transaction_category=obj.transaction_category,
+                quantity=qty,
+                created_by=user,
+                organization=org
+            )
+
+        elif kind == 'outbound':
+            """
+            Se obtienen los movimientos FIFO disponibles para la salida del insumo.
+            Se crean transacciones de salida en InventoryTransaction para cada movimiento
+            hasta completar la cantidad solicitada.
+            """
+            fifo_movements = get_source_for_quantity_fifo(supply, qty, org)
+
+            for mov in fifo_movements:
+                InventoryTransaction.objects.create(
+                    supply=supply,
+                    transaction_kind='outbound',
+                    transaction_category=obj.transaction_category,
+                    quantity=mov['take'],
+                    storehouse_entry_supply=mov['entry'].storehouse_entry_supply,
+                    created_by=user,
+                    organization=org
+                )
+
+        return obj

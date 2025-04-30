@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                             const expectedQuantityInput = newInlineForm.querySelector('input[name$="-expected_quantity"]');
                             if (expectedQuantityInput) {
-                                    const unit = supply.purchase_order_supply_options[totalForms].unit;
+                                    const unit = supply.purchase_order_supply_options[totalForms].purchaseorder_unit_category;
 
                                     let existingSpan = expectedQuantityInput.parentNode.querySelector('.unit-span');
                                     if (existingSpan) {
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                             const receivedQuantityInput = newInlineForm.querySelector('input[name$="-received_quantity"]');
                             if (expectedQuantityInput) {
-                                    const unit = supply.purchase_order_supply_options[totalForms].unit;
+                                    const unit = supply.purchase_order_supply_options[totalForms].purchaseorder_unit_category;
 
                                     let existingSpan = receivedQuantityInput.parentNode.querySelector('.unit-span');
                                     if (existingSpan) {
