@@ -179,6 +179,14 @@ class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
 
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+
+        if not request.user.is_superuser:
+            queryset = queryset.filter(organization=request.organization)  
+        
+        return queryset
+
 
 @admin.register(TradeExporterProfile)
 class TradeExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
