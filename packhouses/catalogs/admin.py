@@ -75,7 +75,7 @@ from .resources import (ProductResource, MarketResource, ProductSizeResource, Pr
                         ColdChamberResource, PalletResource,
                         ExportingCompanyResource, TransferResource, LocalTransporterResource,
                         BorderToDestinationTransporterResource, CustomsBrokerResource, VesselResource, AirlineResource,
-                        InsuranceCompanyResource, )
+                        InsuranceCompanyResource, ProductPresentationResource, ProductPackagingResource)
 from django import forms
 
 admin.site.unregister(Country)
@@ -1354,7 +1354,7 @@ class ProductPresentationComplementarySupplyInline(admin.TabularInline):
 @admin.register(ProductPresentation)
 class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
-    # resource_classes = [ProductPresentationResource]
+    resource_classes = [ProductPresentationResource]
     list_display = ('name', 'product', 'markets_display', 'presentation_supply_kind', 'presentation_supply',
                     'is_enabled')
     list_filter = ('product', 'is_enabled')
@@ -1461,7 +1461,7 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
 @admin.register(Packaging)
 class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
-    # resource_classes = [PackagingResource]
+    resource_classes = [PackagingResource]
     list_filter = (BySupplyKindForPackagingFilter, BySupplyForOrganizationPackagingFilter,
                    ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
                    ByProductKindCountryStandardPackagingForOrganizationPackagingFilter, 'is_enabled')
@@ -1629,7 +1629,7 @@ class ProductPackagingPalletInline(admin.TabularInline):
 @admin.register(ProductPackaging)
 class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
-    # resource_classes = [PackagingResource]
+    resource_classes = [ProductPackagingResource]
     list_filter = ['category', ByMarketForOrganizationProductPackagingFilter,
                    ByProductForOrganizationProductPackagingFilter,
                    ByProductSizeForOrganizationProductPackagingFilter,
