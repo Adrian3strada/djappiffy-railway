@@ -866,7 +866,7 @@ class AverageInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
         try:
             incoming_product = IncomingProduct.objects.filter(batch=obj.batch).first()
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__model', flat=True)
+            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__name_model', flat=True)
             all_possible_fields = {
                 "DryMatter": ['acceptance_report', 'average_dry_matter'],
                 "InternalInspection": ['average_internal_temperature'],
@@ -890,8 +890,6 @@ class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_filter = ['batch']
     inlines = [DryMatterInline, InternalInspectionInline, VehicleReviewInline, SampleCollectionInline, AverageInline]
 
-
-
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['batch'].widget.can_add_related = False
@@ -911,17 +909,15 @@ class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         }
         inlines_list = []
 
-
         if not obj:
             return inlines_list
 
         try:
             incoming_product = IncomingProduct.objects.filter(batch=obj.batch).first()
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__model', flat=True)
+            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__name_model', flat=True)
             inlines_list = [INLINE_CLASSES[inline] for inline in food_safety_config if inline in INLINE_CLASSES]
-            print("inlines_list", inlines_list)
-            print("AverageInline", AverageInline)
+
             if DryMatterInline in inlines_list or InternalInspectionInline in inlines_list:
                 inlines_list.append(AverageInline)
 

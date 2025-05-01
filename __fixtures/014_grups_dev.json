@@ -1,0 +1,80 @@
+[
+    {
+        "model": "auth.group",
+        "pk": 3,
+        "fields": {
+            "name": "Users"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 4,
+        "fields": {
+            "name": "Organizational information"
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 19,
+        "fields": {
+            "group_id": 3,
+            "permission_id": 184
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 20,
+        "fields": {
+            "group_id": 3,
+            "permission_id": 185
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 21,
+        "fields": {
+            "group_id": 3,
+            "permission_id": 187
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 22,
+        "fields": {
+            "group_id": 3,
+            "permission_id": 284
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 23,
+        "fields": {
+            "group_id": 3,
+            "permission_id": 285
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 24,
+        "fields": {
+            "group_id": 3,
+            "permission_id": 287
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 25,
+        "fields": {
+            "group_id": 4,
+            "permission_id": 309
+        }
+    },
+    {
+        "model": "auth.group_permissions",
+        "pk": 26,
+        "fields": {
+            "group_id": 3,
+            "permission_id": 311
+        }
+    }
+]
