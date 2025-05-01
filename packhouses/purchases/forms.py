@@ -1,12 +1,16 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from .models import Requisition, PurchaseOrder, PurchaseOrderPayment,RequisitionSupply
+from .models import (Requisition, PurchaseOrder, PurchaseOrderPayment,RequisitionSupply, ServiceOrder,
+                    ServiceOrderPayment
+                     )
 from django.forms.models import ModelChoiceField
 import json
 from django.utils.safestring import mark_safe
 from packhouses.catalogs.models import Supply
 from django.db import models
+from decimal import Decimal
+import datetime
 
 
 class RequisitionForm(forms.ModelForm):
@@ -171,3 +175,104 @@ class RequisitionSupplyForm(forms.ModelForm):
             self.fields['unit_category'].choices = []
 
 
+from decimal import Decimal
+import datetime
+from django.core.exceptions import ValidationError
+
+class ServiceOrderForm(forms.ModelForm):
+    class Meta:
+        model = ServiceOrder
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        category = cleaned_data.get('category')
+        cost = cleaned_data.get('cost')
+        tax = cleaned_data.get('tax')
+        batch = cleaned_data.get('batch')
+
+        if cost is not None and cost < 0:
+            self.add_error('cost', _("Cost cannot be less than 0."))
+
+        if tax is not None and (tax < 0 or tax > 100):
+            self.add_error('tax', _("Tax must be between 0% and 100%."))
+
+        if category == 'for_batch' and not batch:
+            self.add_error('batch', _("You must select a batch when category is 'for_batch'."))
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+
+        if instance.category == 'time_period':
+            instance.batch = None
+        elif instance.category == 'for_batch':
+            instance.start_date = datetime.date.today()
+            instance.end_date = datetime.date.today()
+
+        # Recalcula el total_cost y balance_payable basado en simulate_balance
+        balance_data = instance.simulate_balance()
+        instance.total_cost = balance_data['total_cost']
+        instance.balance_payable = balance_data['balance']
+
+        if commit:
+            instance.save()
+
+        return instance
+
+
+class ServiceOrderPaymentForm(forms.ModelForm):
+    class Meta:
+        model = ServiceOrderPayment
+        fields = (
+            'payment_date',
+            'payment_kind',
+            'amount',
+            'bank',
+            'comments',
+            'additional_inputs',
+        )
+        widgets = {
+            'additional_inputs': forms.HiddenInput()
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = self.instance
+
+        # Si el pago ya está registrado, todos los campos se deshabilitan
+        if instance and instance.pk:
+            for field in self.fields:
+                self.fields[field].disabled = True
+                self.fields[field].widget.attrs['class'] = self.fields[field].widget.attrs.get('class', '') + ' readonly-field'
+
+            if 'payment_date' in self.fields:
+                self.fields['payment_date'].widget = forms.TextInput(attrs={
+                    'readonly': 'readonly',
+                    'class': 'readonly-field'
+                })
+
+            if instance.additional_inputs:
+                self.fields['additional_inputs'].initial = json.dumps(instance.additional_inputs)
+
+        # Deshabilitar los controles relacionados (add, edit, delete) en ForeignKeys
+        for field_name in ['payment_kind', 'bank']:
+            if hasattr(self.fields[field_name].widget, 'can_add_related'):
+                self.fields[field_name].widget.can_add_related = False
+                self.fields[field_name].widget.can_change_related = False
+                self.fields[field_name].widget.can_delete_related = False
+                self.fields[field_name].widget.can_view_related = False
+
+        # Asegurarse de que `bank` no sea obligatorio por defecto
+        self.fields['bank'].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        payment_kind = cleaned_data.get('payment_kind')
+        bank = cleaned_data.get('bank')
+
+        if payment_kind and getattr(payment_kind, 'requires_bank', False) and not bank:
+            self.add_error('bank', _("This field is required for the selected payment kind."))
+
+        return cleaned_data
