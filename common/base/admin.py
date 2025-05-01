@@ -190,6 +190,7 @@ class CertificationFormatInline(admin.TabularInline):
 class CertificationEntityAdmin(admin.ModelAdmin):
     list_display = ('entity', 'name_certification', 'product_kind', 'country', 'is_enabled')
     list_filter = ['entity', 'name_certification', 'product_kind', 'country', 'is_enabled']
+    fields = ('product_kind', 'entity', 'name_certification', 'country', 'is_enabled')
     inlines = [CertificationFormatInline]
 
     def get_form(self, request, obj=None, **kwargs):
