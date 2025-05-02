@@ -28,6 +28,11 @@ def get_processing_status_choices():
         ('finalized', 'Finalized'),
 ]
 
+def get_batch_status_change (): 
+    return [
+        ('operational_status', 'Operational Status'),
+        ('review_status',      'Review Status'),
+    ]
 
 class CustomScheduleHarvestFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):

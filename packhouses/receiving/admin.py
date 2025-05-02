@@ -589,9 +589,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             f'is_parent={obj.is_parent}, '
             f'children_oids=[{obj.children_oids}]'
         )
-        return ''  # devolvemos algo vacío para que no estorbe en la UI
-
-    property.short_description = 'Property'
+        return ''
     
     @admin.action(description='Merge batches into a new batch.')
     def action_merge_batches(self, request, queryset):

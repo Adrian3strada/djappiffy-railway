@@ -1,6 +1,6 @@
 from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete, pre_save
-from .models import DryMatter, InternalInspection, Average, FoodSafety, SampleCollection, SampleWeight, IncomingProduct
+from .models import DryMatter, InternalInspection, Average, FoodSafety, SampleCollection, SampleWeight, IncomingProduct, Batch, BatchStatusChange
 from packhouses.gathering.models import ScheduleHarvest
 from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductAdditionalValue
 from common.base.models import FoodSafetyProcedure
@@ -113,5 +113,26 @@ def my_handler(sender, instance, **kwargs):
                 Average.objects.create(
                     food_safety=instance,
                 )
-
+ 
+@receiver(pre_save, sender=Batch)
+def batch_status_changes(sender, instance, **kwargs):
+    if not instance.pk:
+        return
+    try:
+        prev = sender.objects.get(pk=instance.pk)
+    except sender.DoesNotExist:
+        return
+    org  = instance.organization
     
+    # Registra cambios en operational_status y review_status
+    for field in ('operational_status', 'review_status'):
+        old = getattr(prev, field)
+        new = getattr(instance, field)
+        if old != new:
+            BatchStatusChange.objects.create(
+                batch        = instance,
+                organization = org,
+                field_name   = field,
+                old_status    = old,
+                new_status    = new,
+            )
