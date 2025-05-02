@@ -24,7 +24,9 @@ from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
 from django.db.models import Sum
 from decimal import Decimal, ROUND_HALF_UP
 from django.core.exceptions import ValidationError
-
+from .settings import PURCHASE_SERVICE_CATEGORY_CHOICES
+from packhouses.receiving.models import Batch
+from packhouses.catalogs.models import Service
 
 
 # Create your models here.
@@ -174,7 +176,8 @@ class PurchaseOrder(models.Model):
         choices=STATUS_CHOICES,
         default='open',
     )
-    balance_payable = models.FloatField(
+    balance_payable = models.DecimalField(
+        max_digits=12, decimal_places=2,
         default=0,
         verbose_name=_("Balance payable")
     )
@@ -465,3 +468,316 @@ class PurchaseOrderPayment(models.Model):
         verbose_name = _("Payment")
         verbose_name_plural = _("Payments")
 
+
+class ServiceOrder(models.Model):
+    """
+    Representa una orden de servicio contratada por la organización, vinculada a un proveedor,
+    un servicio específico y opcionalmente a un lote de producción (batch).
+
+    Attributes:
+        category (str): Categoría del servicio (elegida de un listado predefinido).
+        provider (Provider): Proveedor que ofrece el servicio.
+        service (Service): Servicio contratado.
+        start_date (date): Fecha de inicio del servicio.
+        end_date (date): Fecha de finalización del servicio.
+        batch (Batch, optional): Lote relacionado al servicio, si aplica.
+        cost (Decimal): Costo total del servicio.
+        tax (Decimal, optional): Porcentaje de impuestos aplicados.
+        status (str): Estado de la orden ('open', 'closed', etc.).
+        created_at (datetime): Fecha de creación de la orden.
+        created_by (User, optional): Usuario que creó la orden.
+        balance_payable (Decimal): Saldo pendiente de pago.
+        organization (Organization): Organización a la que pertenece la orden.
+    """
+
+    category = models.CharField(
+        max_length=255,
+        verbose_name=_("Category"),
+        choices=PURCHASE_SERVICE_CATEGORY_CHOICES,
+    )
+    provider = models.ForeignKey(
+        Provider,
+        verbose_name=_("Provider"),
+        on_delete=models.PROTECT
+    )
+    service = models.ForeignKey(
+        Service,
+        verbose_name=_("Service"),
+        on_delete=models.PROTECT,
+    )
+    start_date = models.DateField(
+        verbose_name=_('Start date'),
+        default=datetime.date.today
+    )
+    end_date = models.DateField(
+        verbose_name=_('End date'),
+        default=datetime.date.today
+    )
+    batch = models.ForeignKey(
+        Batch,
+        verbose_name=_("Batch"),
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True
+    )
+    payment_date = models.DateField(
+        verbose_name=_('Payment date'),
+        default=datetime.date.today
+    )
+    currency = models.ForeignKey(
+        Currency,
+        verbose_name=_("Currency"),
+        on_delete=models.PROTECT
+    )
+    cost = models.DecimalField(
+        verbose_name=_("Cost"),
+        max_digits=12,
+        decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+    tax = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        verbose_name=_("Tax (%)"),
+        null=True,
+        blank=True
+    )
+    status = models.CharField(
+        max_length=255,
+        choices=STATUS_CHOICES,
+        default='open',
+        verbose_name=_('Status')
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Created at')
+    )
+    created_by = models.ForeignKey(
+        User,
+        verbose_name=_("Created by"),
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="created_services"
+    )
+    balance_payable = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        verbose_name=_("Balance payable")
+    )
+    total_cost = models.DecimalField(
+        verbose_name=_("Total cost (with tax)"),
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+
+    organization = models.ForeignKey(
+        Organization,
+        verbose_name=_("Organization"),
+        on_delete=models.PROTECT
+    )
+
+    def simulate_balance(self):
+        """
+        Calcula el balance simulado de la orden de servicio, incluyendo:
+        costo base, impuestos, cargos adicionales, deducciones y pagos realizados.
+        """
+        base_cost = self.cost or Decimal('0.00')
+        tax_percent = self.tax or Decimal('0.00')
+        tax_decimal = tax_percent / Decimal('100.00')
+        tax_amount = (base_cost * tax_decimal).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        charges_total = self.serviceordercharge_set.aggregate(
+            total=models.Sum('amount')
+        )['total'] or Decimal('0.00')
+
+        deductions_total = self.serviceorderdeduction_set.aggregate(
+            total=models.Sum('amount')
+        )['total'] or Decimal('0.00')
+
+        payments_total = self.serviceorderpayment_set.exclude(
+            status='canceled'
+        ).aggregate(total=models.Sum('amount'))['total'] or Decimal('0.00')
+
+        # Aquí se incluye el cálculo correcto del total_cost
+        total_cost = base_cost + tax_amount + charges_total - deductions_total
+        total_cost = total_cost.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        balance = total_cost - payments_total
+        balance = balance.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        return {
+            'base_cost': base_cost,
+            'tax_amount': tax_amount,
+            'charges_total': charges_total,
+            'deductions_total': deductions_total,
+            'payments_total': payments_total,
+            'total_cost': total_cost,
+            'balance': balance
+        }
+
+    def recalculate_balance(self, save=False, raise_exception=False):
+        """
+        Recalcula el balance real de la orden de servicio.
+
+        Args:
+            save (bool): Si True, guarda el nuevo balance.
+            raise_exception (bool): Si True y el balance es negativo, lanza ValidationError.
+
+        Returns:
+            dict: Resultado detallado del cálculo del balance.
+        """
+        data = self.simulate_balance()
+
+        if data['balance'] < 0 and raise_exception:
+            raise ValidationError(
+                (f"Cannot save the service order because the balance is negative (${data['balance']}).")
+            )
+
+        if save:
+            self.balance_payable = data['balance']
+            self.save(update_fields=['balance_payable'])
+
+        return data
+
+    class Meta:
+        verbose_name = _("Service Order")
+        verbose_name_plural = _("Service Orders")
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(end_date__gte=models.F('start_date')),
+                name='check_end_date_greater_equal_start_date'
+            )
+        ]
+
+    def __str__(self) -> str:
+        """
+        Returns:
+            str: Nombre del servicio y su costo.
+        """
+        return f"{self.provider.name} - {self.service.name} - ${self.total_cost}"
+
+class ServiceOrderCharge(models.Model):
+    service_order = models.ForeignKey(
+        ServiceOrder,
+        verbose_name=_("Service Order"),
+        on_delete=models.CASCADE
+    )
+    charge = models.CharField(
+        max_length=255,
+        verbose_name=_("Charge description"),
+    )
+    amount = models.DecimalField(
+        verbose_name=_("Amount"),
+        max_digits=12, decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+
+    def __str__(self):
+        return f"{self.charge} - ${self.amount}"
+
+    class Meta:
+        verbose_name = _("Charge")
+        verbose_name_plural = _("Charges")
+        constraints = [
+            models.UniqueConstraint(fields=['service_order', 'charge'], name='unique_service_order_charge')
+        ]
+
+class ServiceOrderDeduction(models.Model):
+    service_order = models.ForeignKey(
+        ServiceOrder,
+        verbose_name=_("Service Order"),
+        on_delete=models.CASCADE
+    )
+    deduction = models.CharField(
+        max_length=255,
+        verbose_name=_("Deduction description"),
+    )
+    amount = models.DecimalField(
+        verbose_name=_("Amount"),
+        max_digits=12, decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+
+    def __str__(self):
+        return f"{self.deduction} - ${self.amount}"
+
+    class Meta:
+        verbose_name = _("Deduction")
+        verbose_name_plural = _("Deductions")
+        constraints = [
+            models.UniqueConstraint(fields=['service_order', 'deduction'], name='unique_service_order_deduction')
+        ]
+
+class ServiceOrderPayment(models.Model):
+    service_order = models.ForeignKey(
+        ServiceOrder,
+        verbose_name=_("Service Order"),
+        on_delete=models.CASCADE
+    )
+    payment_date = models.DateField(
+        verbose_name=_('Payment date'),
+        default=datetime.date.today
+    )
+    amount = models.DecimalField(
+        verbose_name=_("Amount"),
+        max_digits=12, decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+    payment_kind = models.ForeignKey(
+        PaymentKind,
+        verbose_name=_("Payment kind"),
+        on_delete=models.PROTECT
+    )
+    bank = models.ForeignKey(
+        Bank,
+        verbose_name=_("Bank"),
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True
+    )
+    comments = models.CharField(
+        max_length=255,
+        verbose_name=_("Comments"),
+        null=True, blank=True
+    )
+    additional_inputs = models.JSONField(
+        verbose_name=_("Additional inputs"),
+        null=True, blank=True
+    )
+    status = models.CharField(
+        max_length=255,
+        choices=STATUS_CHOICES,
+        default='closed',
+    )
+    created_by = models.ForeignKey(
+        User,
+        verbose_name=_("Added by"),
+        on_delete=models.PROTECT,
+        null=True, blank=True,
+        related_name="added_service_payments"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Created at')
+    )
+    canceled_by = models.ForeignKey(
+        User,
+        verbose_name=_("Canceled by"),
+        on_delete=models.PROTECT,
+        null=True, blank=True,
+        related_name="canceled_service_payments"
+    )
+    cancellation_date = models.DateTimeField(
+        verbose_name=_("Cancellation date"),
+        null=True, blank=True
+    )
+
+    def __str__(self):
+        return f"{self.payment_date} - ${self.amount}"
+
+    class Meta:
+        verbose_name = _("Payment")
+        verbose_name_plural = _("Payments")
