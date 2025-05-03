@@ -2,7 +2,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete, pre_save
 from .models import DryMatter, InternalInspection, Average, FoodSafety, SampleCollection, SampleWeight, IncomingProduct
 from packhouses.gathering.models import ScheduleHarvest
-from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductAdditionalValue
+from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductDryMatterAcceptanceReport
 from common.base.models import FoodSafetyProcedure
 from django.db.models import Avg
 from decimal import Decimal
@@ -104,9 +104,9 @@ def add_food_safety(sender, instance, **kwargs):
         have_average = Average.objects.filter(food_safety=instance.id).exists()
         
         if not have_average:
-            if ProductAdditionalValue.objects.filter(product=schedule_harvest.product).exists():
+            if ProductDryMatterAcceptanceReport.objects.filter(product=schedule_harvest.product).exists():
                 Average.objects.create(
-                    acceptance_report= ProductAdditionalValue.objects.filter(product=schedule_harvest.product).latest('created_at'),
+                    acceptance_report= ProductDryMatterAcceptanceReport.objects.filter(product=schedule_harvest.product).latest('created_at'),
                     food_safety=instance,
                 )
             else:

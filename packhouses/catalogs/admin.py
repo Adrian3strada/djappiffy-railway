@@ -15,7 +15,7 @@ from .models import (
     PackagingComplementarySupply, ProductRipeness, ProductPackagingPresentation,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary,
     ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue, ProductFoodSafetyProcess,
-    ProductAdditionalValue
+    ProductDryMatterAcceptanceReport
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
@@ -377,8 +377,8 @@ class ProductFoodSafetyProcessInline(admin.TabularInline):
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
 
-class ProductAdditionalValueInline(admin.TabularInline):
-    model = ProductAdditionalValue
+class ProductDryMatterAcceptanceReportInline(admin.TabularInline):
+    model = ProductDryMatterAcceptanceReport
     extra = 0
     verbose_name = _('Product Additional Value')
     verbose_name_plural = _('Product Additional Values')
@@ -437,7 +437,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                ProductMassVolumeKindInline, ProductRipenessInline,
                ProductPestInline, ProductDiseaseInline,
                ProductPhysicalDamageInline, ProductResidueInline,
-               ProductFoodSafetyProcessInline, ProductAdditionalValueInline
+               ProductFoodSafetyProcessInline, ProductDryMatterAcceptanceReportInline
                ]
 
     @uppercase_form_charfield('name')

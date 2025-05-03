@@ -203,6 +203,11 @@ class CertificationEntityAdmin(admin.ModelAdmin):
 
         return form
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "product_kind":
+            kwargs["queryset"] = ProductKind.objects.filter(for_packaging=True)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 @admin.register(Pest)
 class PestAdmin(admin.ModelAdmin):
     list_display = ('name', 'inside', 'outside', 'is_enabled')

@@ -279,7 +279,7 @@ class CertificationFormat(CleanDocumentsMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     route = models.FileField(
         upload_to=certification_file_path,
-        validators=[FileExtensionValidator(allowed_extensions=['docx'])],
+        validators=[FileExtensionValidator(allowed_extensions=['docx', 'doc', 'pdf', 'xls', 'xlsx', 'xml'])],
         verbose_name=_('Document')
         )
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))

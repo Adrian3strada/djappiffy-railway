@@ -211,7 +211,7 @@ class InternalInspection(models.Model):
 class Average(models.Model):
     average_dry_matter = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_('Average Dry Matter'))
     average_internal_temperature = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_('Average Internal Temperature'))
-    acceptance_report = models.ForeignKey(ProductAdditionalValue, verbose_name=_('Acceptance Report'), on_delete=models.CASCADE, null=True)
+    acceptance_report = models.ForeignKey(ProductDryMatterAcceptanceReport, verbose_name=_('Acceptance Report'), on_delete=models.CASCADE, null=True)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):

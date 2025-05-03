@@ -882,8 +882,6 @@ class AverageInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
 
         return include_fields
 
-
-
 @admin.register(FoodSafety)
 class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('batch',)

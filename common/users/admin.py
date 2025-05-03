@@ -18,10 +18,8 @@ class OrganizationUserInline(admin.TabularInline, OrganizationRoleMixin):
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = super().get_readonly_fields(request, obj)
 
-        if obj:
-            if request.user.is_superuser:
-                return readonly_fields
-            elif obj == request.user:
+        if obj and not request.user.is_superuser:
+            if obj == request.user:
                 readonly_fields = ['is_admin']
                 return readonly_fields
             
@@ -115,30 +113,34 @@ class CustomUserAdmin(UserAdmin, OrganizationRoleMixin):
     def get_readonly_fields(self, request, obj=None):
         
         readonly_fields = super().get_readonly_fields(request, obj)
-        if obj:
-            readonly_fields = ['last_login', 'date_joined']
-            if request.user.is_superuser:
-                return readonly_fields
-            elif obj == request.user:
-                readonly_fields += ['is_active', 'groups', 'user_permissions']
-                user_request = self.get_org_user(request, request.user)
-                if not request.user.is_superuser or not user_request.is_admin or not self.is_owner(request, user_request) or not request.user.has_perm("users.add_user"):
-                    readonly_fields = [field.name for field in obj._meta.fields if field.name != 'password']
-                    readonly_fields += ['groups', 'user_permissions']
-                    return readonly_fields
-                return readonly_fields
-            
-            user_request = self.get_org_user(request, request.user)
-            if user_request and self.is_owner(request, user_request):
-                return readonly_fields
+        readonly_fields = ['last_login', 'date_joined']
 
-            else:
-                user_obj = self.get_org_user(request, obj)
-                if user_obj:
-                    if user_obj.is_admin or self.is_owner(request, user_obj):
-                        readonly_fields = [field.name for field in obj._meta.fields]
-                        readonly_fields += ['groups', 'user_permissions']
-                        return readonly_fields
+        if obj and not request.user.is_superuser:
+            user_request = self.get_org_user(request, request.user)
+
+            if user_request:
+                owner_request = self.is_owner(request, user_request)
+                
+                if obj == request.user:
+                    if not user_request.is_admin or not owner_request or not request.user.has_perm("users.add_user"):
+                        
+                        excluded_fields = ['password']
+                        if owner_request:
+                            excluded_fields += ['email', 'first_name', 'last_name']
+
+                        readonly_fields = [field.name for field in obj._meta.fields if field.name not in excluded_fields]
+                        
+                    readonly_fields += ['is_active', 'groups', 'user_permissions']  
+                    return readonly_fields
+                
+                else:                               ##Si quieres editar a aguien que no seas uno mismo 
+                    if user_request and not owner_request:
+                        user_obj = self.get_org_user(request, obj)
+                        if user_obj:
+                            if user_obj.is_admin or self.is_owner(request, user_obj):
+                                readonly_fields = [field.name for field in obj._meta.fields]
+                                readonly_fields += ['groups', 'user_permissions']
+                                return readonly_fields
         return readonly_fields
 
     def has_change_permission(self, request, obj=None):
@@ -237,15 +239,14 @@ class CustomUserAdmin(UserAdmin, OrganizationRoleMixin):
         queryset = super().get_queryset(request)
 
         user_request = self.get_org_user(request, request.user)
-        if user_request:
-            if request.user.is_superuser or user_request.is_admin or self.is_owner(request, user_request) or request.user.has_perm("users.add_user"):
-                users_organization = OrganizationUser.objects.filter(organization=request.organization).values_list('user_id', flat=True)
-                if users_organization:
-                    queryset = queryset.filter(username__in=users_organization)
-                else:
-                    return queryset.none()    
+        if request.user.is_superuser or user_request.is_admin or self.is_owner(request, user_request) or request.user.has_perm("users.add_user"):
+            users_organization = OrganizationUser.objects.filter(organization=request.organization).values_list('user_id', flat=True)
+            if users_organization:
+                queryset = queryset.filter(username__in=users_organization)
             else:
-                queryset = queryset.filter(username=request.user)
+                return queryset.none()    
+        else:
+            queryset = queryset.filter(username=request.user)
         
         return queryset
     
