@@ -12,16 +12,17 @@
 
 <script>
 document.getElementById("export-sheet").addEventListener("click", function () {
-    var baseUrl = "{% url opts|admin_urlname:'export' %}{{ cl.get_query_string }}";
+    var baseUrl = "{% url opts|admin_urlname:'export' %}{{ cl.get_query_string|safe }}";
     var url = new URL(baseUrl, window.location.origin);
     url.searchParams.set('export_type', 'export-sheet');
     window.open(url.href, '_blank');
 });
 
 document.getElementById("export-pdf").addEventListener("click", function () {
-    var baseUrl = "{% url opts|admin_urlname:'export' %}{{ cl.get_query_string }}";
+    var baseUrl = "{% url opts|admin_urlname:'export' %}{{ cl.get_query_string|safe }}";
     var url = new URL(baseUrl, window.location.origin);
     url.searchParams.set('export_type', 'export-pdf');
     window.open(url.href, '_blank');
 });
 </script>
+

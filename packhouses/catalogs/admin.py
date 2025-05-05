@@ -15,7 +15,7 @@ from .models import (
     PackagingComplementarySupply, ProductRipeness, ProductPackagingPresentation,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary,
     ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue, ProductFoodSafetyProcess,
-    ProductAdditionalValue
+    ProductDryMatterAcceptanceReport
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
@@ -75,7 +75,7 @@ from .resources import (ProductResource, MarketResource, ProductSizeResource, Pr
                         ColdChamberResource, PalletResource,
                         ExportingCompanyResource, TransferResource, LocalTransporterResource,
                         BorderToDestinationTransporterResource, CustomsBrokerResource, VesselResource, AirlineResource,
-                        InsuranceCompanyResource, )
+                        InsuranceCompanyResource, ProductPresentationResource, ProductPackagingResource)
 from django import forms
 
 admin.site.unregister(Country)
@@ -367,18 +367,18 @@ class ProductFoodSafetyProcessInline(admin.TabularInline):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.exclude(procedure__model="Average")
+        return queryset.exclude(procedure__name_model="Average")
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "procedure":
-            kwargs["queryset"] = FoodSafetyProcedure.objects.exclude(model="Average")
+            kwargs["queryset"] = FoodSafetyProcedure.objects.exclude(name_model="Average")
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
 
-class ProductAdditionalValueInline(admin.TabularInline):
-    model = ProductAdditionalValue
+class ProductDryMatterAcceptanceReportInline(admin.TabularInline):
+    model = ProductDryMatterAcceptanceReport
     extra = 0
     verbose_name = _('Product Additional Value')
     verbose_name_plural = _('Product Additional Values')
@@ -437,7 +437,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                ProductMassVolumeKindInline, ProductRipenessInline,
                ProductPestInline, ProductDiseaseInline,
                ProductPhysicalDamageInline, ProductResidueInline,
-               ProductFoodSafetyProcessInline, ProductAdditionalValueInline
+               ProductFoodSafetyProcessInline, ProductDryMatterAcceptanceReportInline
                ]
 
     @uppercase_form_charfield('name')
@@ -1354,7 +1354,7 @@ class ProductPresentationComplementarySupplyInline(admin.TabularInline):
 @admin.register(ProductPresentation)
 class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
-    # resource_classes = [ProductPresentationResource]
+    resource_classes = [ProductPresentationResource]
     list_display = ('name', 'product', 'markets_display', 'presentation_supply_kind', 'presentation_supply',
                     'is_enabled')
     list_filter = ('product', 'is_enabled')
@@ -1461,7 +1461,7 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
 @admin.register(Packaging)
 class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
-    # resource_classes = [PackagingResource]
+    resource_classes = [PackagingResource]
     list_filter = (BySupplyKindForPackagingFilter, BySupplyForOrganizationPackagingFilter,
                    ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
                    ByProductKindCountryStandardPackagingForOrganizationPackagingFilter, 'is_enabled')
@@ -1629,7 +1629,7 @@ class ProductPackagingPalletInline(admin.TabularInline):
 @admin.register(ProductPackaging)
 class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
-    # resource_classes = [PackagingResource]
+    resource_classes = [ProductPackagingResource]
     list_filter = ['category', ByMarketForOrganizationProductPackagingFilter,
                    ByProductForOrganizationProductPackagingFilter,
                    ByProductSizeForOrganizationProductPackagingFilter,

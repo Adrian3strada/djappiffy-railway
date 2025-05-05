@@ -59,11 +59,7 @@ class CertificationAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "certification_entity":
-            this_organization = request.organization 
-            organization_country = OrganizationProfile.objects.filter(organization=this_organization).values_list('country', flat=True).first()
-            product_kinds = Product.objects.filter(organization=this_organization).values_list('kind', flat=True)
-            existing_certifications = Certification.objects.filter(organization=this_organization).values_list('certification_entity', flat=True)
-
+            
             obj_id = request.resolver_match.kwargs.get("object_id")
             current_certification_entity = None
 
@@ -75,6 +71,12 @@ class CertificationAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
                     kwargs["queryset"] = CertificationEntity.objects.none()  # En caso de error, que no muestre opciones
 
             else:
+
+                this_organization = request.organization 
+                organization_country = OrganizationProfile.objects.filter(organization=this_organization).values_list('country', flat=True).first()
+                product_kinds = Product.objects.filter(organization=this_organization).values_list('kind', flat=True)
+                existing_certifications = Certification.objects.filter(organization=this_organization).values_list('certification_entity', flat=True)
+
                 kwargs["queryset"] = CertificationEntity.objects.filter(
                     Q(product_kind__id__in=product_kinds) & 
                     (Q(country__isnull=True) | Q(country=organization_country))

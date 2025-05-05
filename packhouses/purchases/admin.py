@@ -2,8 +2,10 @@ from django.contrib import admin
 from common.profiles.models import UserProfile  # (Si no se usa, se puede eliminar)
 from .models import (Requisition, RequisitionSupply, PurchaseOrder,
                      PurchaseOrderSupply, PurchaseOrderCharge, PurchaseOrderDeduction,
-                     PurchaseOrderPayment)
-from packhouses.catalogs.models import Supply, Provider
+                     PurchaseOrderPayment, ServiceOrder, ServiceOrderCharge, ServiceOrderDeduction,
+                     ServiceOrderPayment
+                     )
+from packhouses.catalogs.models import Supply, Provider, Service
 from django.utils.translation import gettext_lazy as _
 from common.base.decorators import (
     uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield,
@@ -11,10 +13,12 @@ from common.base.decorators import (
 )
 from common.base.mixins import (
     ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin,
-    DisableInlineRelatedLinksMixin, ByUserAdminMixin,
+    DisableInlineRelatedLinksMixin, ByUserAdminMixin, DisableLinksAdminMixin
 )
 from django.core.exceptions import ObjectDoesNotExist
-from .forms import RequisitionForm, PurchaseOrderForm, PurchaseOrderPaymentForm, RequisitionSupplyForm
+from .forms import (RequisitionForm, PurchaseOrderForm, PurchaseOrderPaymentForm, RequisitionSupplyForm,
+                    ServiceOrderForm, ServiceOrderPaymentForm
+                    )
 from django.utils.html import format_html, format_html_join
 from django.urls import reverse
 import nested_admin
@@ -31,7 +35,8 @@ from django import forms
 from decimal import Decimal, ROUND_HALF_UP
 from django.db import transaction
 from django.contrib.messages import constants as message_constants
-
+from django.urls import path
+import datetime
 
 
 class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
@@ -392,7 +397,6 @@ class PurchaseOrderDeductionInline(admin.StackedInline):
         if parent_obj and parent_obj.status in ['canceled']:
             return False
         return super().has_delete_permission(request, obj)
-
 
 class PurchaseOrderPaymentInline(admin.StackedInline):
     """
@@ -793,4 +797,336 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
 
     class Media:
         js = ('js/admin/forms/packhouses/purchases/purchase_orders.js',)
+
+class ServiceOrderChargeInline(admin.StackedInline):
+    """
+    Inline del admin para agregar cargos adicionales a una orden de servicio.
+    """
+
+    model = ServiceOrderCharge
+    fields = ('charge', 'amount')
+    extra = 0
+
+    def _get_parent_obj(self, request):
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        if parent_object_id:
+            try:
+                return ServiceOrder.objects.get(id=parent_object_id)
+            except ServiceOrder.DoesNotExist:
+                return None
+        return None
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['canceled']:
+            readonly_fields.extend([
+                field.name for field in self.model._meta.fields
+                if field.name not in readonly_fields
+            ])
+        return readonly_fields
+
+    def has_delete_permission(self, request, obj=None):
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['canceled']:
+            return False
+        return super().has_delete_permission(request, obj)
+
+class ServiceOrderDeductionInline(admin.StackedInline):
+    """
+    Inline del admin para agregar deducciones a una orden de servicio.
+    """
+
+    model = ServiceOrderDeduction
+    fields = ('deduction', 'amount')
+    extra = 0
+
+    def _get_parent_obj(self, request):
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        if parent_object_id:
+            try:
+                return ServiceOrder.objects.get(id=parent_object_id)
+            except ServiceOrder.DoesNotExist:
+                return None
+        return None
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['canceled']:
+            readonly_fields.extend([
+                field.name for field in self.model._meta.fields
+                if field.name not in readonly_fields
+            ])
+        return readonly_fields
+
+    def has_delete_permission(self, request, obj=None):
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['canceled']:
+            return False
+        return super().has_delete_permission(request, obj)
+
+class ServiceOrderPaymentInline(admin.StackedInline):
+    """
+    Inline del admin para administrar pagos de órdenes de servicio.
+    """
+
+    model = ServiceOrderPayment
+    form = ServiceOrderPaymentForm
+    fields = (
+        'cancel_button',
+        'payment_kind',
+        'payment_date',
+        'amount',
+        'bank',
+        'comments',
+        'additional_inputs',
+        'payment_info',
+    )
+    extra = 0
+    can_delete = False
+    readonly_fields = ('cancel_button', 'payment_info')
+
+    def cancel_button(self, obj):
+        if obj.pk and obj.status != "canceled":
+            url = reverse('admin:cancel_service_payment', args=[obj.pk])
+            title = _("Are you sure you want to cancel this payment?")
+            confirm_text = _("Yes, cancel")
+            cancel_text = _("No, keep it")
+            button_label = _("Cancel payment")
+            return format_html(
+                '<a class="button" href="{0}" onclick="event.preventDefault(); '
+                'Swal.fire({{ '
+                'title: \'{1}\', '
+                'icon: \'warning\', '
+                'showCancelButton: true, '
+                'confirmButtonText: \'{2}\', '
+                'cancelButtonText: \'{3}\', '
+                'confirmButtonColor: \'#d33\' '
+                '}}).then((result) => {{ if (result.isConfirmed) {{ '
+                'window.location.href=\'{0}\'; '
+                '}} }});">{4}</a>',
+                url, title, confirm_text, cancel_text, button_label
+            )
+        if not obj.pk:
+            return ""
+        if obj.status == "canceled":
+            return format_html('<span class="canceled">{}</span>', _('Payment canceled'))
+
+    cancel_button.short_description = ""
+
+    def payment_info(self, obj):
+        if not obj.pk:
+            return ""
+
+        created_by = obj.created_by or ""
+        created_at = obj.created_at.strftime("%d/%m/%Y %H:%M") if obj.created_at else ""
+
+        if obj.status == "canceled":
+            canceled_by = obj.canceled_by or ""
+            cancellation_date = obj.cancellation_date.strftime("%d/%m/%Y %H:%M") if obj.cancellation_date else ""
+            added_by_info = format_html(
+                '<div><span>{}</span>: {}<br><span>{}</span>: {}</div>',
+                _("Registered by"), created_by,
+                _("Payment date"), created_at
+            )
+            return format_html(
+                '{}<div><span>{}</span>: {}<br><span>{}</span>: {} Hrs.</div>',
+                added_by_info, _("Canceled by"), canceled_by,
+                _("Cancellation date"), cancellation_date
+            )
+        else:
+            return format_html(
+                '<div><span>{}</span>: {}<br><span>{}</span>: {}</div>',
+                _("Registered by"), created_by,
+                _("Payment date"), created_at
+            )
+
+    payment_info.short_description = _("Payment info")
+
+    class Media:
+        js = ('js/admin/forms/packhouses/purchases/service_orders_payments.js',)
+
+@admin.register(ServiceOrder)
+class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.ModelAdmin):
+    form = ServiceOrderForm
+    list_display = (
+        'service', 'provider', 'category', 'status', 'total_cost', 'balance_payable', 'currency', 'payment_date'
+    )
+    fields = (
+        'provider', 'service', 'category', 'start_date', 'end_date', 'batch',
+        'payment_date', 'cost', 'currency', 'tax', 'total_cost', 'balance_payable', 'status'
+    )
+    list_filter = ('status', 'provider')
+    search_fields = ('provider__name', 'service__name')
+    readonly_fields = ('status', 'balance_payable', 'total_cost')
+    inlines = [ServiceOrderChargeInline, ServiceOrderDeductionInline, ServiceOrderPaymentInline]
+
+    def get_inline_instances(self, request, obj=None):
+        inlines = super().get_inline_instances(request, obj)
+        if obj and obj.status == "closed":
+            inlines.append(ServiceOrderPaymentInline(self.model, self.admin_site))
+        return inlines
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('cancel-service-payment/<int:payment_id>/', self.admin_site.admin_view(self.cancel_service_payment), name='cancel_service_payment')
+        ]
+        return custom_urls + urls
+
+    def cancel_service_payment(self, request, payment_id, *args, **kwargs):
+
+        try:
+            payment = ServiceOrderPayment.objects.get(id=payment_id)
+            payment.status = "canceled"
+            payment.cancellation_date = timezone.now()
+            payment.canceled_by = request.user
+            payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
+            payment.service_order.recalculate_balance(save=True)
+
+            self.message_user(request, _(f"Payment canceled successfully. New balance payable: ${payment.service_order.balance_payable:.2f}"), level=messages.SUCCESS)
+            service_order_id = payment.service_order.pk
+        except ServiceOrderPayment.DoesNotExist:
+            self.message_user(request, _("Payment not found"), level=messages.ERROR)
+            service_order_id = None
+
+        redirect_url = reverse('admin:purchases_serviceorder_change', args=[service_order_id]) + "#payments-tab" if service_order_id else request.path + "#payments-tab"
+        return HttpResponseRedirect(redirect_url)
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        obj = form.instance
+        data = obj.simulate_balance()
+
+        if data['balance'] < 0:
+            if not hasattr(request, '_balance_error_shown'):
+                request._balance_error_shown = True
+                self.message_user(
+                    request,
+                    _(f"The final balance would be negative (${data['balance']}). "
+                      f"Cost: ${data['base_cost']} + Tax: ${data['tax_amount']} + Charges: ${data['charges_total']} "
+                      f"- Deductions: ${data['deductions_total']} - Payments: ${data['payments_total']}."),
+                    level=messages.ERROR
+                )
+            return
+
+        obj.balance_payable = data['balance']
+        obj.save(update_fields=['balance_payable'])
+
+    def response_change(self, request, obj):
+        data = obj.simulate_balance()
+
+        if data['balance'] < 0:
+            self.message_user(
+                request,
+                _(f"Cannot save this service order because the balance would be negative (${data['balance']})."),
+                level=messages.ERROR
+            )
+            return HttpResponseRedirect(reverse('admin:purchases_serviceorder_change', args=[obj.pk]))
+
+        obj.balance_payable = data['balance']
+        obj.save(update_fields=['balance_payable'])
+        return super().response_change(request, obj)
+
+    def save_formset(self, request, form, formset, change):
+        from .models import ServiceOrderCharge, ServiceOrderDeduction, ServiceOrderPayment
+
+        model = formset.model
+        service_order = form.instance
+
+        if not hasattr(formset, 'cleaned_data'):
+            return
+
+        existing_qs = {obj.pk: obj for obj in model.objects.filter(service_order=service_order)}
+        to_delete = []
+
+        for form_data in formset.cleaned_data:
+            if form_data.get('DELETE') and form_data.get('id'):
+                obj = form_data['id']
+                if obj.pk in existing_qs:
+                    to_delete.append(existing_qs.pop(obj.pk))
+
+        new_instances = formset.save(commit=False)
+
+        for instance in new_instances:
+            existing_qs[instance.pk] = instance
+
+        combined = list(existing_qs.values())
+
+        total_cost = Decimal(service_order.cost or 0)
+        total_charges = Decimal('0.00')
+        total_deductions = Decimal('0.00')
+        total_payments = Decimal('0.00')
+
+        for obj in combined:
+            if isinstance(obj, ServiceOrderCharge):
+                total_charges += Decimal(obj.amount or 0)
+            elif isinstance(obj, ServiceOrderDeduction):
+                total_deductions += Decimal(obj.amount or 0)
+            elif isinstance(obj, ServiceOrderPayment) and obj.status != 'canceled':
+                total_payments += Decimal(obj.amount or 0)
+
+        tax_percent = Decimal(service_order.tax or 0)
+        tax_decimal = tax_percent / Decimal('100.00')
+        tax_amount = (total_cost * tax_decimal).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        balance = total_cost + tax_amount + total_charges - total_deductions - total_payments
+
+        if balance < 0:
+            if not hasattr(request, '_balance_error_shown'):
+                request._balance_error_shown = True
+                self.message_user(
+                    request,
+                    _(f"The final balance would be negative (${balance}). "
+                      f"Cost: ${total_cost} + Tax: ${tax_amount} + Charges: ${total_charges} "
+                      f"- Payments: ${total_payments} - Deductions: ${total_deductions}."),
+                    level=messages.ERROR
+                )
+            return
+
+        for obj in to_delete:
+            obj.delete()
+
+        for instance in new_instances:
+            if not instance.pk:
+                instance.created_by = request.user
+            instance.save()
+
+        formset.save_m2m()
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "provider":
+            kwargs["queryset"] = Provider.objects.filter(category="service_provider", is_enabled=True)
+
+        if db_field.name == "service":
+            provider_id = request.GET.get('provider') or request.POST.get('provider')
+
+            if provider_id:
+                kwargs["queryset"] = Service.objects.filter(service_provider_id=provider_id, is_enabled=True)
+            else:
+                kwargs["queryset"] = Service.objects.none()
+
+            if request.resolver_match and request.resolver_match.url_name.endswith('_change'):
+                obj_id = request.resolver_match.kwargs.get('object_id')
+                if obj_id:
+                    from .models import ServiceOrder
+                    try:
+                        service_order = ServiceOrder.objects.get(id=obj_id)
+                        if service_order.service_id:
+                            kwargs.setdefault('widget', db_field.formfield().widget)
+                            kwargs['widget'].attrs.update({'data-initial-value': service_order.service_id})
+                    except ServiceOrder.DoesNotExist:
+                        pass
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('provider', 'service', 'organization')
+
+    class Media:
+        js = (
+            'js/admin/forms/packhouses/purchases/serviceorder_dynamic_service.js',
+        )
 

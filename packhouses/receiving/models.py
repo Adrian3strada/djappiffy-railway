@@ -3,21 +3,24 @@ from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
-from .utils import get_approval_status_choices, get_processing_status_choices
+from .utils import get_approval_status_choices, get_processing_status_choices, get_batch_status_change
 from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, Provider, ProductFoodSafetyProcess, 
                                         Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage, 
-                                        ProductResidue, ProductAdditionalValue)
+                                        ProductResidue, ProductDryMatterAcceptanceReport)
 from common.base.models import Pest
 from django.db.models import F
+from django.core.exceptions import ValidationError
+
 
 # Create your models here.
 class Batch(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_('Batch Number'), null=True, blank=True, unique=True)
-    review_status = models.CharField(max_length=20, verbose_name=_('Review Status'), choices=get_approval_status_choices(), default='pending', blank=True)
-    operational_status = models.CharField(max_length=20, choices=get_processing_status_choices(),  default='pending', verbose_name=_('Operational Status'), blank=True)
+    review_status = models.CharField(max_length=25, verbose_name=_('Review Status'), choices=get_approval_status_choices(), default='pending', blank=True)
+    operational_status = models.CharField(max_length=25, choices=get_processing_status_choices(),  default='pending', verbose_name=_('Operational Status'), blank=True)
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
+    merged_into = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='merged_from', verbose_name=_('Merge into Batch'))
 
     def __str__(self):
         try:
@@ -37,7 +40,7 @@ class Batch(models.Model):
                 f"id: {incoming.id} – {harvest_info}"
             )
 
-        return f"{self.ooid} – {_('Batch sin IncomingProduct')}"
+        return f"{self.ooid} – {_('No IncomingProduct Asociated')}"
 
     def save(self, *args, **kwargs):
         # solo asignamos si aún no tiene ooid
@@ -54,6 +57,65 @@ class Batch(models.Model):
                 self.ooid = (last.ooid + 1) if last else 1
         super().save(*args, **kwargs)
 
+    @classmethod
+    def validate_merge_batches(cls, batches_queryset):
+        if batches_queryset.filter(merged_into__isnull=False).exists():
+            raise ValidationError(
+                _('You cannot merge batches that have already been merged into another batch.'),
+                code='invalid_merge'
+            )
+
+        if batches_queryset.exclude(review_status='accepted').exists():
+            raise ValidationError(
+                _('Only batches with a Review Status of “Accepted” can be merged.'),
+                code='invalid_status'
+            )
+
+        prefix = 'incomingproduct__scheduleharvest__'
+        checks = {
+            _('provider'): prefix + 'product_provider',
+            _('product'):  prefix + 'product',
+            _('variety'):  prefix + 'product_variety',
+            _('phenology'): prefix + 'product_phenologies',
+        }
+
+        for label, path in checks.items():
+            if batches_queryset.values_list(path, flat=True).distinct().count() != 1:
+                msg = _('All batches selected must have the same %(label)s.') % {'label': label}
+                raise ValidationError(msg, code='invalid_merge')
+    
+    @property
+    def is_merged(self):
+        return self.merged_into is not None
+
+    @property
+    def is_parent(self):
+        return self.merged_from.exists()
+
+    @property
+    def children(self):
+        return self.merged_from.all()
+
+    @property
+    def children_oids(self):
+        return ", ".join(str(b.ooid) for b in self.children)
+    
+    @property
+    def merged_into_oid(self):
+        return self.merged_into.ooid if self.merged_into else ''
+    
+    def operational_status_history(self):
+        return self.batchstatuschange_set.filter(field_name='operational_status')
+
+    def review_status_history(self):
+        return self.batchstatuschange_set.filter(field_name='review_status')
+
+    def last_operational_status_change(self):
+        return self.operational_status_history().order_by('-changed_at').first()
+
+    def last_review_status_change(self):
+        return self.review_status_history().order_by('-changed_at').first()
+    
     class Meta:
         verbose_name = _('Batch')
         verbose_name_plural = _('Batches')
@@ -63,6 +125,30 @@ class Batch(models.Model):
                     name='unique_batch_ooid_per_org'
                 )
             ]
+
+class BatchStatusChange(models.Model):
+    field_name = models.CharField(max_length=32,choices=get_batch_status_change,)
+    changed_at = models.DateTimeField(auto_now_add=True)
+    old_status  = models.CharField(max_length=25)
+    new_status  = models.CharField(max_length=25)
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, verbose_name=_('Batch'))
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
+
+    class Meta:
+        ordering = ['-changed_at']
+        indexes = [
+            models.Index(fields=['batch', 'field_name', 'changed_at']),
+        ]
+        verbose_name = _('Batch Status Change')
+        verbose_name_plural = _('Batch Status Changes')
+    
+    def __str__(self):
+        return (
+            f"{self.new_status!r} {_('at')} {self.changed_at} — "
+            f"{self.get_field_name_display()} for {_( 'Batch')} {self.batch.pk} "
+            f"(was {self.old_status!r})"
+        )
+
 
 class IncomingProduct(models.Model):
     status = models.CharField(max_length=20, verbose_name=_('Status'), choices=get_approval_status_choices(), default='pending')
@@ -211,7 +297,7 @@ class InternalInspection(models.Model):
 class Average(models.Model):
     average_dry_matter = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_('Average Dry Matter'))
     average_internal_temperature = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_('Average Internal Temperature'))
-    acceptance_report = models.ForeignKey(ProductAdditionalValue, verbose_name=_('Acceptance Report'), on_delete=models.CASCADE, null=True)
+    acceptance_report = models.ForeignKey(ProductDryMatterAcceptanceReport, verbose_name=_('Acceptance Report'), on_delete=models.CASCADE, null=True)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):

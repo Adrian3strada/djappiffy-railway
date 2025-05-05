@@ -1,8 +1,8 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from packhouses.receiving.views import weighing_set_report
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle
 from packhouses.catalogs.models import (Supply, HarvestingCrew, Vehicle, Provider, Product, ProductVariety, Gatherer, Maquiladora,
-                                        Market, Orchard, OrchardCertification, WeighingScale, ProductPhenologyKind, ProductHarvestSizeKind, ProductAdditionalValue,
+                                        Market, Orchard, OrchardCertification, WeighingScale, ProductPhenologyKind, ProductHarvestSizeKind, ProductDryMatterAcceptanceReport,
                                         ProductFoodSafetyProcess, ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue)
 from packhouses.catalogs.utils import get_harvest_cutting_categories_choices
 from .models import (IncomingProduct, WeighingSet, WeighingSetContainer,
@@ -31,6 +31,8 @@ from common.base.models import Pest
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.db.models import Q
 from django import forms
+from django.db import transaction
+from django.core.exceptions import ValidationError
 # from django import forms
 
 # Inlines para datos del corte
@@ -550,6 +552,9 @@ class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     custom_title = _("Incoming Product Information")
     inlines = [WeighingSetInline, ScheduleHarvestInlineForBatch] 
 
+    def has_add_permission(self, request, obj=None):
+        return False
+
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         base_fields = formset.form.base_fields
@@ -562,18 +567,111 @@ class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
         update_weighing_set_numbers(form.instance)
-    
-   
+
 @admin.register(Batch)
 class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product', 'get_scheduleharvest_product_provider',  'get_scheduleharvest_orchard', 
                     'get_incomingproduct_packhouse_weight_result', 'get_incomingproduct_current_kg_available', 'get_scheduleharvest_harvest_date', 'created_at', 
-                    'display_review_status', 'display_available_for_processing', 'operational_status', 'generate_actions_buttons')
+                    'display_review_status', 'display_available_for_processing', 'operational_status', 'generate_actions_buttons', 'property')
     fields = ['ooid', 'review_status', 'operational_status', 'is_available_for_processing']
     readonly_fields = ['ooid',]
     form = BatchForm
     inlines = [IncomingProductInline]
     list_per_page = 10
+    actions = ['action_merge_batches']
+    admin.site.disable_action('delete_selected')
+
+    def property(self, obj):
+        # Esto se ejecuta por cada fila al generar el changelist
+        print(
+            f'Batch {obj.ooid}: '
+            f'is_merged={obj.is_merged}, '
+            f'is_parent={obj.is_parent}, '
+            f'children_oids=[{obj.children_oids}]'
+        )
+        return ''
+    
+    @admin.action(description='Merge batches into a new batch.')
+    def action_merge_batches(self, request, queryset):
+        if queryset.count() < 2:
+            self.message_user(
+                request,
+                _('Select at least two batches to merge.'),
+                level=messages.WARNING
+            )
+            return
+
+        qs = queryset.select_related('incomingproduct__scheduleharvest')
+
+        # 2.1) Detectar cuáles ya fueron fusionados
+        already = list(qs
+            .filter(merged_into__isnull=False)
+            .values_list('ooid', flat=True)
+        )
+        if already:
+            batch_labels = ', '.join(f'batch {o}' for o in already)
+            self.message_user(
+                request,
+                _('The following bathces have been already merged in another batch: %(list)s') % {
+                    'list': batch_labels
+                },
+                level=messages.ERROR
+            )
+            return
+
+        # 2.2) Validación DRY de provider/product/variety/phenology/status
+        try:
+            Batch.validate_merge_batches(qs)
+        except ValidationError as e:
+            self.message_user(request, e.message, level=messages.ERROR)
+            return
+
+        # 2.3) Fusionar…
+        with transaction.atomic():
+            padres = [b for b in qs if b.is_parent]
+            if len(padres) > 1:
+                self.message_user(
+                    request,
+                    _('No se puede fusionar dos lotes que ya son padres entre sí.'),
+                    level=messages.ERROR
+                )
+                return
+
+            if padres:
+                destino = padres[0]
+                fuentes = [b for b in qs if b != destino]
+            else:
+                destino = Batch.objects.create(
+                    organization=queryset.first().organization,
+                    review_status='accepted',
+                    operational_status='pending',
+                )
+                fuentes = list(qs)
+
+            for origen in fuentes:
+                origen.merged_into = destino
+                origen.review_status = 'in_another_batch'
+                origen.operational_status = 'in_another_batch'
+                origen.is_available_for_processing = False
+                origen.save(update_fields=[
+                    'merged_into',
+                    'review_status',
+                    'operational_status',
+                    'is_available_for_processing',
+                ])
+
+        url = reverse(
+            'admin:%s_%s_change' % (
+                destino._meta.app_label,
+                destino._meta.model_name
+            ),
+            args=[destino.pk]
+        )
+        msg = _('Lotes fusionados en lote %(ooid)s. Ver <a href="%(url)s">aquí</a>.') % {
+            'ooid': destino.ooid, 'url': url
+        }
+        self.message_user(request, msg, level=messages.SUCCESS)
+
 
     def generate_actions_buttons(self, obj):
         pass 
@@ -866,7 +964,7 @@ class AverageInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
         try:
             incoming_product = IncomingProduct.objects.filter(batch=obj.batch).first()
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__model', flat=True)
+            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__name_model', flat=True)
             all_possible_fields = {
                 "DryMatter": ['acceptance_report', 'average_dry_matter'],
                 "InternalInspection": ['average_internal_temperature'],
@@ -882,15 +980,11 @@ class AverageInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
 
         return include_fields
 
-
-
 @admin.register(FoodSafety)
 class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('batch',)
     list_filter = ['batch']
     inlines = [DryMatterInline, InternalInspectionInline, VehicleReviewInline, SampleCollectionInline, AverageInline]
-
-
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -911,17 +1005,15 @@ class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         }
         inlines_list = []
 
-
         if not obj:
             return inlines_list
 
         try:
             incoming_product = IncomingProduct.objects.filter(batch=obj.batch).first()
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__model', flat=True)
+            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__name_model', flat=True)
             inlines_list = [INLINE_CLASSES[inline] for inline in food_safety_config if inline in INLINE_CLASSES]
-            print("inlines_list", inlines_list)
-            print("AverageInline", AverageInline)
+
             if DryMatterInline in inlines_list or InternalInspectionInline in inlines_list:
                 inlines_list.append(AverageInline)
 

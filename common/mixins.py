@@ -2,6 +2,7 @@ from django.db import models
 from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
+from organizations.models import OrganizationUser, OrganizationOwner
 import os
 
 
@@ -583,3 +584,15 @@ class CleanDocumentsMixin(models.Model):
 
     class Meta:
         abstract = True
+
+class OrganizationRoleMixin:
+
+    def get_org_user(self, request, user):
+        if not user:
+            return null
+        return OrganizationUser.objects.filter(organization=request.organization, user=user).first()
+
+    def is_owner(self, request, org_user):
+        if not org_user:
+            return False
+        return OrganizationOwner.objects.filter(organization=request.organization, organization_user_id=org_user).exists()

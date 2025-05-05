@@ -9,13 +9,13 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
                           SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
                           ProductPackagingSerializer, PalletSerializer, ProductPackagingPalletSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
-                          OrchardCertificationSerializer, ProductRipenessSerializer,
+                          OrchardCertificationSerializer, ProductRipenessSerializer, ServiceSerializer
 
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
                      Product, Packaging, ProductPresentation, ProductPackaging, Pallet, ProductPackagingPallet,
-                     Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness,
+                     Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness, Service
                      )
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -424,5 +424,18 @@ class ProductRipenessViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return ProductRipeness.objects.filter(product__organization=self.request.organization)
+
+
+class ServiceViewSet(viewsets.ModelViewSet):
+    serializer_class = ServiceSerializer
+    filterset_fields = ['service_provider', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return Service.objects.filter(organization=self.request.organization)
 
 

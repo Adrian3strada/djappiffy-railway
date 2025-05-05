@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var exportButton = document.getElementById("export-sheet");
     if (exportButton) {
         exportButton.addEventListener("click", function () {
-            var baseUrl = "{% url opts|admin_urlname:'export' %}{{ cl.get_query_string }}";
+            var baseUrl = "{% url opts|admin_urlname:'export' %}{{ cl.get_query_string|safe }}";
             window.open(baseUrl, '_blank');
         });
     }

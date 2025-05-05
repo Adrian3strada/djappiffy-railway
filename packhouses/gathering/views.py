@@ -53,7 +53,7 @@ def harvest_order_pdf(request, harvest_id):
     packhouse_name = organization
     company_address = f"{add}, {district_name}, {city_name}, {state_name}, {country_name}"
     date = datetime.now()
-    year = date.year
+    year = str(date.year)
 
     # Obtener los inlines relacionados
     scheduleharvestharvestingcrewinline = ScheduleHarvestHarvestingCrew.objects.filter(harvest_cutting=harvest)
@@ -133,7 +133,7 @@ def good_harvest_practices_format(request, harvest_id):
     packhouse_name = organization
     company_address = f"{add}, {district_name}, {city_name}, {state_name}, {country_name}"
     date = datetime.now()
-    year = date.year
+    year = str(date.year)
 
     # Obtener los inlines relacionados
     # Filtrar los ScheduleHarvestHarvestingCrew relacionados con el harvest específico
