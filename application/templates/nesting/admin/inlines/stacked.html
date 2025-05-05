@@ -75,7 +75,7 @@
                     </ul>
                 {% endif %}
 
-                {% if "5.1"|django_version_gte %}
+                {% if "5.3"|django_version_gte %}
                 {% with parent_counter=forloop.counter0 %}
                     {% for fieldset in inline_admin_form %}
                         {% include inline_admin_formset.opts.fieldset_template with heading_level=4 id_prefix=parent_counter id_suffix=forloop.counter0 %}
