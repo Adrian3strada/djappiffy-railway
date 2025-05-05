@@ -31,8 +31,8 @@ document.addEventListener("DOMContentLoaded", function() {
         const prefix = name.replace(/-has_arrived$/, '');
         const guideSelector = `input[name='${prefix}-guide_number']`;
         const stampSelector = `input[name='${prefix}-stamp_vehicle_number']`;
-        const $guide = $(guideSelector).closest('.row');
-        const $stamp = $(stampSelector).closest('.row');
+        const $guide = $(guideSelector).closest('.row.mb-3');
+        const $stamp = $(stampSelector).closest('.row.mb-3');
         function toggleFields() {
             const checked = $checkbox.prop('checked');
             if (checked) {
