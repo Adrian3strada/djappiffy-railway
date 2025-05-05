@@ -6,7 +6,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_approval_status_choices, get_processing_status_choices, get_batch_status_change
 from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, Provider, ProductFoodSafetyProcess, 
                                         Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage, 
-                                        ProductResidue, ProductAdditionalValue)
+                                        ProductResidue, ProductDryMatterAcceptanceReport)
 from common.base.models import Pest
 from django.db.models import F
 from django.core.exceptions import ValidationError
@@ -297,7 +297,7 @@ class InternalInspection(models.Model):
 class Average(models.Model):
     average_dry_matter = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_('Average Dry Matter'))
     average_internal_temperature = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_('Average Internal Temperature'))
-    acceptance_report = models.ForeignKey(ProductAdditionalValue, verbose_name=_('Acceptance Report'), on_delete=models.CASCADE, null=True)
+    acceptance_report = models.ForeignKey(ProductDryMatterAcceptanceReport, verbose_name=_('Acceptance Report'), on_delete=models.CASCADE, null=True)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):

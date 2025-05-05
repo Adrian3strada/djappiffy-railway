@@ -304,8 +304,8 @@ class ProductFoodSafetyProcess(models.Model):
                                     name='productfoodsafetyprocess_unique_procedure_product'),
         ]
 
-class ProductAdditionalValue(models.Model):
-    acceptance_report = models.IntegerField(verbose_name=_('Acceptance Report'), null=True, blank=True)
+class ProductDryMatterAcceptanceReport(models.Model):
+    acceptance_report = models.IntegerField(verbose_name=_('Dry Matter Acceptance Report'), null=True, blank=True)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
 
@@ -318,7 +318,7 @@ class ProductAdditionalValue(models.Model):
         verbose_name_plural = _('Product Additional Values')
 
     def save_model(self, request, obj, form, change):
-        latest = ProductAdditionalValue.objects.order_by('-created_at').first()
+        latest = ProductDryMatterAcceptanceReport.objects.order_by('-created_at').first()
         if obj.pk != latest.pk:
             return  # No guardar si no es el último
         super().save_model(request, obj, form, change)

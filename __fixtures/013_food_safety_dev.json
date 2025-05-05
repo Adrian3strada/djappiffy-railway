@@ -1092,7 +1092,7 @@
         }
     },
     {
-        "model": "catalogs.productadditionalvalue",
+        "model": "catalogs.productdrymatteracceptancereport",
         "pk": 1,
         "fields": {
             "acceptance_report" : 19,
@@ -1101,7 +1101,7 @@
         }
     },
     {
-        "model": "catalogs.productadditionalvalue",
+        "model": "catalogs.productdrymatteracceptancereport",
         "pk": 2,
         "fields": {
             "acceptance_report" : 19,

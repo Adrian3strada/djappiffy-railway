@@ -2,13 +2,13 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete, pre_save
 from .models import DryMatter, InternalInspection, Average, FoodSafety, SampleCollection, SampleWeight, IncomingProduct, Batch, BatchStatusChange
 from packhouses.gathering.models import ScheduleHarvest
-from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductAdditionalValue
+from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductDryMatterAcceptanceReport
 from common.base.models import FoodSafetyProcedure
 from django.db.models import Avg
 from decimal import Decimal
 
 @receiver(post_save, sender=DryMatter)
-def my_handler(sender, instance, **kwargs):
+def add_avg_dry_matter(sender, instance, **kwargs):
     average = DryMatter.objects.filter(food_safety=instance.food_safety).aggregate(Avg('dry_matter'))
     have_average = Average.objects.filter(food_safety=instance.food_safety).exists()
 
@@ -25,7 +25,7 @@ def my_handler(sender, instance, **kwargs):
             )
 
 @receiver(post_delete, sender=DryMatter)
-def my_handler(sender, instance, **kwargs):
+def delete_avg_dry_matter(sender, instance, **kwargs):
     have_inspection = DryMatter.objects.filter(food_safety=instance.food_safety).exists()
 
     if have_inspection:
@@ -43,7 +43,7 @@ def my_handler(sender, instance, **kwargs):
             )
 
 @receiver(post_save, sender=InternalInspection)
-def my_handler(sender, instance, **kwargs):
+def add_avg_internal_temperature(sender, instance, **kwargs):
     average = InternalInspection.objects.filter(food_safety=instance.food_safety).aggregate(Avg('internal_temperature'))
     have_average = Average.objects.filter(food_safety=instance.food_safety).exists()
 
@@ -61,7 +61,7 @@ def my_handler(sender, instance, **kwargs):
 
 
 @receiver(post_delete, sender=InternalInspection)
-def my_handler(sender, instance, **kwargs):
+def delete_avg_internal_temperature(sender, instance, **kwargs):
     have_inspection = InternalInspection.objects.filter(food_safety=instance.food_safety).exists()
 
     if have_inspection:
@@ -79,7 +79,7 @@ def my_handler(sender, instance, **kwargs):
             )
 
 @receiver(post_save, sender=FoodSafety)
-def my_handler(sender, instance, **kwargs):
+def add_food_safety(sender, instance, **kwargs):
 
     incoming_product = IncomingProduct.objects.filter(batch=instance.batch).first()
     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
@@ -104,9 +104,9 @@ def my_handler(sender, instance, **kwargs):
         have_average = Average.objects.filter(food_safety=instance.id).exists()
         
         if not have_average:
-            if ProductAdditionalValue.objects.filter(product=schedule_harvest.product).exists():
+            if ProductDryMatterAcceptanceReport.objects.filter(product=schedule_harvest.product).exists():
                 Average.objects.create(
-                    acceptance_report= ProductAdditionalValue.objects.filter(product=schedule_harvest.product).latest('created_at'),
+                    acceptance_report= ProductDryMatterAcceptanceReport.objects.filter(product=schedule_harvest.product).latest('created_at'),
                     food_safety=instance,
                 )
             else:
