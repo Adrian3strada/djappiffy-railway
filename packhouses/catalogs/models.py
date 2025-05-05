@@ -759,14 +759,14 @@ class HarvestingPaymentSetting(models.Model):
 class Supply(CleanNameAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    capacity = models.FloatField(verbose_name=_('Capacity'), validators=[MinValueValidator(0)],
+    capacity = models.FloatField(verbose_name=_('Capacity'), validators=[MinValueValidator(0.01)],
                                  null=True, blank=True,
                                  help_text=_('Capacity of the supply, based in the usage unit'))
 
     minimum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Minimum stock quantity'))
     maximum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Maximum stock quantity'))
-    usage_discount_quantity = models.PositiveIntegerField(verbose_name=_('Usage discount quantity'),
-                                                          validators=[MinValueValidator(1)],
+    usage_discount_quantity = models.FloatField(verbose_name=_('Usage discount quantity'),
+                                                          validators=[MinValueValidator(0.01)],
                                                           help_text=_(
                                                               'Amount of units to discount when a supply is consumed, based in the usage unit of the supply kind'))
     kg_tare = models.FloatField(default=0, verbose_name=_("Kg tare"), null=True, blank=True, )
