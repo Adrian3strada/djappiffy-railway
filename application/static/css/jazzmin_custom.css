@@ -274,3 +274,7 @@ select[disabled] + .select2 .select2-selection__rendered {
   color: #FFF;
   padding: 5px;
 }
+
+.asteriskField{
+  color: #dc3545 !important;
+}
