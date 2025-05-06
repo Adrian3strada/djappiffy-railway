@@ -50,8 +50,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }).fail(error => console.error('Error al obtener vehículos:', error));
   }
 
+  // Función para evitar peticiones duplicadas
+  function debounce(fn, ms) {
+    let timeout;
+    return function(...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn.apply(this, args), ms);
+    };
+  }
+  
+  const capacityCache = {};
   // Función para realizar una solicitud AJAX y obtener la capacidad de los contenedores
   function fetchContainerCapacity(containerId) {
+    if (capacityCache.hasOwnProperty(containerId)) {
+      return $.Deferred().resolve(capacityCache[containerId]).promise();
+    }
     return $.ajax({
       url: `/rest/v1/catalogs/supply/`,
       method: 'GET',
@@ -60,7 +73,15 @@ document.addEventListener('DOMContentLoaded', () => {
         id: containerId,    
         is_enabled: true
       }
-    }).fail(error => console.error('Error al obtener la capacidad de los contenedores:', error));
+    })
+    .then(data => {
+      capacityCache[containerId] = data;
+      return data;
+    })
+    .fail(error => {
+      console.error('Error al obtener la capacidad de los contenedores:', error);
+      throw error;
+    });
   }
 
   // Función para calcular el total del peso esperado por vehiculo
@@ -72,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
       .find('tbody[data-inline-model$="scheduleharvestcontainervehicle"]:not(.djn-empty-form)')
       .each(function() {
         var $row = $(this);
-        // ignorar borrados
         if ($row.find('input[name$="-DELETE"]').prop('checked')) return;
   
         var sel   = $row.find('select[name$="-harvest_container"]');
@@ -80,26 +100,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!sel.length || !qtyEl.length || !sel.val()) return;
   
         var containerId = sel.val();
-        var qty = parseFloat(qtyEl.val()) || 0;
-        qty = qtyEl.val();
-
-        // *** Validación estricta: solo dígitos ***
-        if (!/^\d+$/.test(qty)) {
+        var rawQty = qtyEl.val() || '';
+        var cleanQty = rawQty.replace(/\D/g, '');
+        if (!/^\d+$/.test(cleanQty)) {
           return promises.push($.Deferred()
-            .reject(`Invalid quantity "${qty}" in vehicle ${vehicleEl.id}`)
+            .reject(`Invalid quantity "${rawQty}" in vehicle ${vehicleEl.id}`)
             .promise());
         }
-
-        qty = parseInt(qty, 10);
-  
-        
+        var qty = parseInt(cleanQty, 10);
         var p = fetchContainerCapacity(containerId).then(function(data) {
           var arr = $.isArray(data) ? data : (data.results || []);
           var cont = arr.find(item => String(item.id) === containerId);
           var w = cont && cont.capacity != null ? cont.capacity : 1;
           sum += w * qty;
         }).fail(function(err) {
-          console.error('❌ Error fetching capacity for', containerId, err);
+          console.error('Error fetching capacity for', containerId, err);
           sum += 1 * qty; 
         });
         promises.push(p);
@@ -115,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const groupEl = document.getElementById('scheduleharvestvehicle_set-group');
     if (!groupEl) return;
     calcVehicleTotal(groupEl).then(total => {
-      console.log(`🧮 Total weight FOR ALL VEHICLES: ${total.toFixed(2)}`);
       $('#id_weight_expected').val(total.toFixed(2));
     });
   }
@@ -129,24 +143,20 @@ document.addEventListener('DOMContentLoaded', () => {
     vehicleEl._inited = true;
     const $veh = $(vehicleEl);
   
-    // helper que recalc individual y luego global
-    function recalcAndLog() {
+    const recalcAndLog = debounce(function() {
       calcVehicleTotal(vehicleEl)
-        .then(total => {
-          console.log(
-            `🔢 Total weight for vehicle ${vehicleEl.id}: ${total.toFixed(2)}`
-          );
-        })
-        .always(() => {
-          recalcGlobalTotal();
-        });
-    }
+        .always(recalcGlobalTotal);
+    }, 200);
   
+    // recálculo inicial
     recalcAndLog();
   
-    $veh.on('change input', 'select[name$="-harvest_container"], input[name$="-quantity"]', recalcAndLog);
-    $veh.on('click', '.djn-add-handler, .djn-remove-handler', () => setTimeout(recalcAndLog, 0));
+    $veh.on('change input', 
+      'select[name$="-harvest_container"], input[name$="-quantity"]', 
+      recalcAndLog
+    );
   
+    $veh.on('click', '.djn-add-handler, .djn-remove-handler', () => setTimeout(recalcAndLog, 0));
     $veh.on('formset:added formset:removed', e => {
       if (e.detail.formsetName.endsWith('scheduleharvestcontainervehicle_set')) {
         recalcAndLog();
