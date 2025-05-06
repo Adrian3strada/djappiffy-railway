@@ -36,15 +36,53 @@ from common.base.models import FoodSafetyProcedure
 class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
-    countries = models.ManyToManyField(Country, verbose_name=_('Countries'))
-    is_mixable = models.BooleanField(default=True, verbose_name=_('Is mixable'),
-                                     help_text=_('Conditional that does not allow mixing fruit with other markets'))
-    label_language = models.CharField(max_length=20, verbose_name=_('Label language'), choices=settings.LANGUAGES,
-                                      default='es')
-    address_label = CKEditor5Field(blank=True, null=True, verbose_name=_('Address of packaging house to show in label'),
-                                   help_text=_('Leave blank to keep the default address defined in the organization'))
+    
+    countries = models.ForeignKey(
+        Country,
+        verbose_name=_('Country'),
+        on_delete=models.PROTECT,
+        null=True,  # Permite nulos por ahora
+        blank=True
+    )
+
+    is_mixable = models.BooleanField(
+        default=True,
+        verbose_name=_('Is mixable'),
+        help_text=_('Conditional that does not allow mixing fruit with other markets')
+    )
+    
+    label_language = models.CharField(
+        max_length=20,
+        verbose_name=_('Label language'),
+        choices=settings.LANGUAGES,
+        default='es'
+    )
+    
+    address_label = CKEditor5Field(
+        blank=True,
+        null=True,
+        verbose_name=_('Address of packaging house to show in label'),
+        help_text=_('Leave blank to keep the default address defined in the organization')
+    )
+    
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    
+    organization = models.ForeignKey(
+        Organization,
+        verbose_name=_('Organization'),
+        on_delete=models.PROTECT
+    )
+
+    class Meta:
+        verbose_name = _('Market')
+        verbose_name_plural = _('Markets')
+        ordering = ('organization', 'name')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'organization'], name='market_unique_name_organization'),
+            models.UniqueConstraint(fields=['alias', 'organization'], name='market_unique_alias_organization')
+        ]
+
+
 
     class Meta:
         verbose_name = _('Market')
@@ -185,8 +223,14 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Varieties'), blank=False)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     category = models.CharField(max_length=30, verbose_name=_('Category'), choices=PRODUCT_SIZE_CATEGORY_CHOICES)
-    standard_size = models.ForeignKey(ProductKindCountryStandardSize, verbose_name=_('Standard size'),
-                                      on_delete=models.PROTECT, null=True, blank=False)
+    standard_size = models.ForeignKey(
+    ProductKindCountryStandardSize,
+    verbose_name=_('Standard size'),
+    on_delete=models.PROTECT,
+    null=True,
+    blank=True, 
+)
+
     name = models.CharField(max_length=160, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
@@ -929,6 +973,7 @@ class Packaging(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    clients = models.ManyToManyField('Client', verbose_name=_('Clients'), blank=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
     def __str__(self):

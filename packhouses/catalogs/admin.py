@@ -110,7 +110,8 @@ class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
               'label_language', 'address_label', 'is_enabled')
 
     def get_countries(self, obj):
-        return ", ".join([m.name for m in obj.countries.all()])
+        return obj.countries.name if obj.countries else "-"
+
 
     get_countries.short_description = _('countries')
 
@@ -518,13 +519,13 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
                 market = Market.objects.get(id=market_id)
                 product = Product.objects.get(id=product_id)
                 queryset = ProductKindCountryStandardSize.objects.filter(standard__product_kind=product.kind,
-                                                                         standard__country_id__in=market.countries.all(),
+                                                                         standard__country=market.countries,
                                                                          is_enabled=True)
                 kwargs["queryset"] = queryset
                 formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
                 formfield.required = queryset.exists()
                 standards = queryset.values_list('standard', flat=True).distinct()
-                if market.countries.all().count() > 1:
+                if market.countries: 
                     formfield.label_from_instance = lambda item: f"{item.standard.country.name}: {item.name}" + (
                         f"({item.standard.name})" if standards.count() > 1 else "")
                 else:
@@ -584,7 +585,12 @@ class ClientShipAddressInline(admin.StackedInline):
         else:
             market_id = parent_obj.market_id if parent_obj else None
         if market_id:
-            markets_countries = list(Market.objects.get(id=market_id).countries.all().values_list('id', flat=True))
+            market = Market.objects.filter(id=market_id).first()
+            if market and market.countries:
+                markets_countries = [market.countries.id]
+            else:
+                markets_countries = []
+
 
         if db_field.name == "country":
             if markets_countries:
@@ -689,7 +695,6 @@ class ClientAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-
         organization = getattr(request, 'organization', None)
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = Client.objects.get(id=object_id) if object_id else None
@@ -701,16 +706,21 @@ class ClientAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         if db_field.name == "country":
             if request.POST:
                 market_id = request.POST.get('market')
-            else:
-                market_id = obj.market_id if obj else None
+        else:
+            market_id = obj.market_id if obj else None
+
             if market_id:
-                countries = list(Market.objects.get(id=market_id).countries.all().values_list('id', flat=True))
-                kwargs["queryset"] = Country.objects.filter(id__in=countries)
+                market = Market.objects.filter(id=market_id).first()
+                if market and market.countries:
+                    kwargs["queryset"] = Country.objects.filter(id=market.country.id)
+                else:
+                    kwargs["queryset"] = Country.objects.none()
             else:
                 kwargs["queryset"] = Country.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda item: item.name
-            return formfield
+
+        formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+        formfield.label_from_instance = lambda item: item.name
+        return formfield
 
         if db_field.name == "state":
             if request.POST:
@@ -1227,6 +1237,8 @@ class HarvestingPaymentSettingInline(admin.StackedInline):
         return formset
 
 
+
+
 @admin.register(HarvestingCrew)
 class HarvestingCrewAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
@@ -1450,14 +1462,18 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     resource_classes = [PackagingResource]
     list_filter = (BySupplyKindForPackagingFilter, BySupplyForOrganizationPackagingFilter,
                    ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
-                   ByProductKindCountryStandardPackagingForOrganizationPackagingFilter, 'is_enabled')
+                   ByProductKindCountryStandardPackagingForOrganizationPackagingFilter, 'is_enabled', 'clients')
     list_display = ('name', 'packaging_supply_kind', 'packaging_supply', 'product', 'market',
-                    'country_standard_packaging_display', 'is_enabled')
+                    'country_standard_packaging_display', 'is_enabled', 'display_clients')
     fields = (
         'market', 'product', 'packaging_supply_kind', 'country_standard_packaging',
-        'name', 'packaging_supply', 'is_enabled'
+        'name', 'packaging_supply', 'is_enabled', 'clients'
     )
     inlines = (PackagingComplementarySupplyInline,)
+
+    def display_clients(self, obj):
+        return ", ".join([client.name for client in obj.clients.all()])
+    display_clients.short_description = 'Clients'
 
     def country_standard_packaging_display(self, obj):
         if obj.country_standard_packaging:
@@ -1507,6 +1523,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         product_kind = ProductKind.objects.get(id=Product.objects.get(id=product_id).kind_id) if product_id else None
 
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
+        
         supply_queryfilter = {'organization': organization, 'kind': packaging_supply_kind, 'is_enabled': True}
 
         if db_field.name == "market":
@@ -1534,8 +1551,18 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.required = True
             if organization and product_kind and market_id:
-                market_countries = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
-                queryset = ProductKindCountryStandardPackaging.objects.filter(standard__product_kind=product_kind, standard__country__in=market_countries)
+        # Obtén el mercado
+                market = Market.objects.get(id=market_id)
+        
+        # Accede al país asociado al mercado (sería un solo objeto 'Country')
+                market_country = market.countries
+        
+        # Ahora usa 'market_country' como un solo objeto, no un iterable
+                queryset = ProductKindCountryStandardPackaging.objects.filter(
+                    standard__product_kind=product_kind,
+                    standard__country=market_country  # Compara con un solo objeto 'Country'
+                )
+        
                 kwargs["queryset"] = queryset
                 formfield.required = queryset.exists()
             else:
@@ -1547,6 +1574,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
     class Media:
         js = ('js/admin/forms/packaging.js',)
+        
 
 
 class ProductPackagingPresentationInline(admin.TabularInline):
@@ -1712,7 +1740,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
             formfield.required = True
             if category == 'single' and request.POST:
                 formfield.required = False
-            return formfield
+            return formfield 
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
