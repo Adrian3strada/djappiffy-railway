@@ -3,13 +3,13 @@ from .models import (
     Product, ProductSize, OrchardCertification, HarvestingCrew,
     ProductHarvestSizeKind,
     HarvestingPaymentSetting,
-    Packaging, Provider, Market, Country
-
+    Packaging, Provider
 )
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from common.utils import is_instance_used
+
 
 class ProductSeasonKindInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
@@ -166,8 +166,3 @@ class ProviderForm(forms.ModelForm):
         if category == 'harvesting_provider' and not vehicle_provider:
             self.add_error('vehicle_provider', _('This field is required when category is Harvesting Provider.'))
         return cleaned_data
-
-
-
-
-
