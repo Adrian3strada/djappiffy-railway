@@ -165,21 +165,6 @@ class ProductHarvestSizeKind(CleanProductMixin, models.Model):
         ]
 
 
-class ProductMassVolumeKind(CleanNameAndProductMixin, models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
-    sort_order = models.PositiveIntegerField(default=0, verbose_name=_('Sort order'))
-
-    class Meta:
-        verbose_name = _('Product mass volume kind')
-        verbose_name_plural = _('Product mass volume kinds')
-        ordering = ('product', 'sort_order',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'product'], name='productmassvolumekind_unique_name_product'),
-        ]
-
-
 class ProductRipeness(CleanProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name=_('Name'))

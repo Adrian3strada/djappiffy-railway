@@ -3,7 +3,7 @@ from common.billing.models import LegalEntityCategory
 from .models import (
     Market, Product, ProductMarketClass, ProductVariety, ProductSize,
     ProductHarvestSizeKind, ProductMarketMeasureUnitManagementCost,
-    ProductPhenologyKind, ProductMassVolumeKind,
+    ProductPhenologyKind,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, ProductKindCountryStandardPackaging,
@@ -24,7 +24,7 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, Ve
 # from common.base.models import Pest, Disease, FoodSafetyProcedure
 from common.profiles.models import UserProfile, PackhouseExporterProfile, OrganizationProfile
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
-                    ProductSeasonKindInlineFormSet, ProductMassVolumeKindInlineFormSet,
+                    ProductSeasonKindInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet,
                     PackagingKindForm, ProviderForm)
 from django_ckeditor_5.widgets import CKEditor5Widget
@@ -249,22 +249,6 @@ class ProductHarvestSizeKindInline(admin.TabularInline):
         return formset
 
 
-class ProductMassVolumeKindInline(admin.TabularInline):
-    model = ProductMassVolumeKind
-    extra = 0
-    fields = ('name', 'is_enabled', 'sort_order')
-    ordering = ['sort_order', '-name']
-    verbose_name = _('Mass volume')
-    verbose_name_plural = _('Mass volumes')
-
-    # formset = ProductMassVolumeKindInlineFormSet
-
-    @uppercase_formset_charfield('name')
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        return formset
-
-
 class ProductRipenessInline(admin.TabularInline):
     model = ProductRipeness
     extra = 0
@@ -434,7 +418,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     inlines = [ProductMarketMeasureUnitManagementCostInline, ProductMarketClassInline,
                ProductVarietyInline,
                ProductPhenologyKindInline, ProductHarvestSizeKindInline,
-               ProductMassVolumeKindInline, ProductRipenessInline,
+               ProductRipenessInline,
                ProductPestInline, ProductDiseaseInline,
                ProductPhysicalDamageInline, ProductResidueInline,
                ProductFoodSafetyProcessInline, ProductDryMatterAcceptanceReportInline
@@ -455,7 +439,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         if obj and is_instance_used(obj, exclude=[ProductKind, Market, Organization,
                                                   ProductMarketMeasureUnitManagementCost, ProductMarketClass,
                                                   ProductVariety, ProductPhenologyKind, ProductHarvestSizeKind,
-                                                  ProductMassVolumeKind, ProductRipeness]):
+                                                  ProductRipeness]):
             readonly_fields.extend(['kind', 'name', 'measure_unit_category', 'markets', 'organization'])
         return readonly_fields
 

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
-from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind,
+from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductPhenologyKind,
                      Gatherer, PaymentKind, Supply, Packaging, ProductSize,
                      Provider, Client, CapitalFramework, ProductPackaging, ProductPresentation,
                      Maquiladora, WeighingScale, ExportingCompany, CustomsBroker, Pallet,
@@ -297,20 +297,6 @@ class ByProductSeasonKindForOrganizationFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(size_kind=self.value())
-        return queryset
-
-
-class ByProductMassVolumeKindForOrganizationFilter(admin.SimpleListFilter):
-    title = _('Mass volume Kind')
-    parameter_name = 'product_mass_volume_kind'
-
-    def lookups(self, request, model_admin):
-        product_mass_volume_kinds = ProductMassVolumeKind.objects.filter(product__organization=request.organization)
-        return [(product_mass_volume_kind.id, f"{product_mass_volume_kind.product.name}: {product_mass_volume_kind.name}") for product_mass_volume_kind in product_mass_volume_kinds]
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(product_mass_volume_kind=self.value())
         return queryset
 
 
