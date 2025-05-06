@@ -188,7 +188,10 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     def get_formset(self, request, obj=None, **kwargs):
         FormSet = super().get_formset(request, obj, **kwargs)
         class CustomFormSet(FormSet, CustomScheduleHarvestFormSet):
-            pass
+            def __init__(self2, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                for form in self2.forms:
+                    form.fields['weighing_scale'].required = True
         return CustomFormSet
 
     def get_fields(self, request, obj=None):
@@ -491,7 +494,10 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
     def get_formset(self, request, obj=None, **kwargs):
         FormSet = super().get_formset(request, obj, **kwargs)
         class CustomFormSet(FormSet, CustomScheduleHarvestFormSet):
-            pass
+            def __init__(self2, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                for form in self2.forms:
+                    form.fields['weighing_scale'].required = True
         return CustomFormSet
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

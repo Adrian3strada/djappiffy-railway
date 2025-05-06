@@ -110,6 +110,8 @@ class ScheduleHarvest(models.Model):
         WeighingScale,
         verbose_name=_("Weighing Scale"),
         on_delete=models.PROTECT,
+        null=True,
+        blank=True
     )
     meeting_point = models.CharField(
         max_length=255,
