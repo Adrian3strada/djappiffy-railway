@@ -10,9 +10,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": [
-      158
-    ]
+    "countries": 158
   }
 },
 {
@@ -26,9 +24,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 2,
-    "countries": [
-      158
-    ]
+    "countries": 158
   }
 },
 {
@@ -42,9 +38,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": [
-      234
-    ]
+    "countries": 234
   }
 },
 {
@@ -58,9 +52,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": [
-      38
-    ]
+    "countries": 38
   }
 },
 {
@@ -74,9 +66,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": [
-      49
-    ]
+    "countries": 49
   }
 },
 {
@@ -90,9 +80,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": [
-      211
-    ]
+    "countries": 211
   }
 },
 {
@@ -684,66 +672,6 @@
     "name": "Revuelto / Parejo",
     "is_enabled": true,
     "sort_order": 9
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 1,
-  "fields": {
-    "name": "ESTANDAR",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 2,
-  "fields": {
-    "name": "ENMALLADO",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 3,
-  "fields": {
-    "name": "ORGÁNICO",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 2
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 4,
-  "fields": {
-    "name": "ESTANDAR",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 5,
-  "fields": {
-    "name": "ENMALLADO",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 6,
-  "fields": {
-    "name": "ORGÁNICO",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 2
   }
 },
 {
