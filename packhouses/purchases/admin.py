@@ -1,9 +1,11 @@
 from django.contrib import admin
+from wagtail.admin.templatetags.wagtailadmin_tags import status
+
 from common.profiles.models import UserProfile  # (Si no se usa, se puede eliminar)
 from .models import (Requisition, RequisitionSupply, PurchaseOrder,
                      PurchaseOrderSupply, PurchaseOrderCharge, PurchaseOrderDeduction,
                      PurchaseOrderPayment, ServiceOrder, ServiceOrderCharge, ServiceOrderDeduction,
-                     ServiceOrderPayment
+                     ServiceOrderPayment, PurchaseMassPayment
                      )
 from packhouses.catalogs.models import Supply, Provider, Service
 from django.utils.translation import gettext_lazy as _
@@ -17,7 +19,7 @@ from common.base.mixins import (
 )
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import (RequisitionForm, PurchaseOrderForm, PurchaseOrderPaymentForm, RequisitionSupplyForm,
-                    ServiceOrderForm, ServiceOrderPaymentForm
+                    ServiceOrderForm, ServiceOrderPaymentForm, PurchaseMassPaymentForm
                     )
 from django.utils.html import format_html, format_html_join
 from django.urls import reverse
@@ -37,6 +39,7 @@ from django.db import transaction
 from django.contrib.messages import constants as message_constants
 from django.urls import path
 import datetime
+from .utils import create_related_payments_and_update_balances
 
 
 class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
@@ -1130,3 +1133,37 @@ class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.
             'js/admin/forms/packhouses/purchases/serviceorder_dynamic_service.js',
         )
 
+@admin.register(PurchaseMassPayment)
+class PurchaseMassPaymentAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.ModelAdmin):
+    """
+    Admin para gestionar pagos masivos de órdenes de compra.
+
+    Permite registrar pagos masivos y verificar su estado.
+    """
+    form = PurchaseMassPaymentForm
+    fields = ('category', 'provider', 'purchase_order', 'service_order', 'payment_kind',
+              'additional_inputs', 'bank', 'payment_date', 'amount', 'comments')
+    list_display = ('category','provider', 'amount', 'payment_date', 'status', 'created_by')
+    list_filter = ('category', 'status')
+    readonly_fields = ('status','created_by', 'created_at', 'canceled_by', 'status', 'cancellation_date')
+
+    def save_model(self, request, obj, form, change):
+        """
+        Guarda el objeto principal (sin relaciones M2M).
+        """
+        if not change:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
+    def save_related(self, request, form, formsets, change):
+        """
+        Se ejecuta después de guardar las relaciones M2M.
+        Aquí ya podemos crear los pagos individuales.
+        """
+        super().save_related(request, form, formsets, change)
+
+        if not change:
+            create_related_payments_and_update_balances(form.instance)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/purchases/purchase_mass_payments.js',)

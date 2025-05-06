@@ -2,12 +2,12 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .models import (Requisition, PurchaseOrder, PurchaseOrderPayment,RequisitionSupply, ServiceOrder,
-                    ServiceOrderPayment
+                    ServiceOrderPayment, PurchaseMassPayment
                      )
 from django.forms.models import ModelChoiceField
 import json
 from django.utils.safestring import mark_safe
-from packhouses.catalogs.models import Supply
+from packhouses.catalogs.models import Supply, Provider
 from django.db import models
 from decimal import Decimal
 import datetime
@@ -175,10 +175,6 @@ class RequisitionSupplyForm(forms.ModelForm):
             self.fields['unit_category'].choices = []
 
 
-from decimal import Decimal
-import datetime
-from django.core.exceptions import ValidationError
-
 class ServiceOrderForm(forms.ModelForm):
     class Meta:
         model = ServiceOrder
@@ -256,6 +252,7 @@ class ServiceOrderPaymentForm(forms.ModelForm):
             if instance.additional_inputs:
                 self.fields['additional_inputs'].initial = json.dumps(instance.additional_inputs)
 
+
         # Deshabilitar los controles relacionados (add, edit, delete) en ForeignKeys
         for field_name in ['payment_kind', 'bank']:
             if hasattr(self.fields[field_name].widget, 'can_add_related'):
@@ -272,6 +269,71 @@ class ServiceOrderPaymentForm(forms.ModelForm):
         payment_kind = cleaned_data.get('payment_kind')
         bank = cleaned_data.get('bank')
 
+        if payment_kind and getattr(payment_kind, 'requires_bank', False) and not bank:
+            self.add_error('bank', _("This field is required for the selected payment kind."))
+
+        return cleaned_data
+
+
+class PurchaseMassPaymentForm(forms.ModelForm):
+    class Meta:
+        model = PurchaseMassPayment
+        fields = ('category', 'provider', 'purchase_order', 'service_order', 'payment_kind',
+                  'additional_inputs', 'bank', 'payment_date', 'amount', 'comments')
+        widgets = {
+            'additional_inputs': forms.HiddenInput()
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = self.instance
+
+        # Modo solo lectura si ya existe
+        if instance and instance.pk:
+            for field in self.fields:
+                self.fields[field].disabled = True
+                self.fields[field].widget.attrs['class'] = self.fields[field].widget.attrs.get('class', '') + ' readonly-field'
+
+            if instance.additional_inputs:
+                self.fields['additional_inputs'].initial = json.dumps(instance.additional_inputs)
+
+        for field_name in ['payment_kind', 'bank']:
+            if hasattr(self.fields[field_name].widget, 'can_add_related'):
+                self.fields[field_name].widget.can_add_related = False
+                self.fields[field_name].widget.can_change_related = False
+                self.fields[field_name].widget.can_delete_related = False
+                self.fields[field_name].widget.can_view_related = False
+
+        self.fields['amount'].widget.attrs['readonly'] = True
+        self.fields['amount'].widget.attrs['style'] = 'background-color: #f5f5f5; cursor: not-allowed;'
+
+        self.fields['bank'].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        payment_kind = cleaned_data.get('payment_kind')
+        bank = cleaned_data.get('bank')
+        category = cleaned_data.get('category')
+        purchase_orders = cleaned_data.get('purchase_order')
+        service_orders = cleaned_data.get('service_order')
+
+        total_amount = Decimal('0.00')
+
+        # 🧮 Sumar balances según el tipo de orden
+        if category == 'purchase_order' and purchase_orders:
+            total_amount = sum([
+                order.balance_payable for order in purchase_orders if order.balance_payable > 0
+            ])
+        elif category == 'service_order' and service_orders:
+            total_amount = sum([
+                order.balance_payable for order in service_orders if order.balance_payable > 0
+            ])
+
+        # 👇 Reemplaza el valor manual con el calculado
+        cleaned_data['amount'] = total_amount
+
+        # 💥 Validación: si requiere banco y no se puso
         if payment_kind and getattr(payment_kind, 'requires_bank', False) and not bank:
             self.add_error('bank', _("This field is required for the selected payment kind."))
 

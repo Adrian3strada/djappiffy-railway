@@ -24,7 +24,7 @@ from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
 from django.db.models import Sum
 from decimal import Decimal, ROUND_HALF_UP
 from django.core.exceptions import ValidationError
-from .settings import PURCHASE_SERVICE_CATEGORY_CHOICES
+from .settings import PURCHASE_SERVICE_CATEGORY_CHOICES, PURCHASE_CATEGORY_CHOICES
 from packhouses.receiving.models import Batch
 from packhouses.catalogs.models import Service
 
@@ -275,7 +275,7 @@ class PurchaseOrder(models.Model):
         """
         Representación legible de la orden de compra, usando el folio y el proveedor.
         """
-        return f"{self.ooid} - {self.provider.name}"
+        return f"{self.ooid} - {self.provider.name} - ${self.balance_payable}"
 
     class Meta:
         verbose_name = _("Purchase Order")
@@ -657,7 +657,7 @@ class ServiceOrder(models.Model):
         Returns:
             str: Nombre del servicio y su costo.
         """
-        return f"{self.provider.name} - {self.service.name} - ${self.total_cost}"
+        return f"{self.provider.name} - {self.service.name} - ${self.balance_payable}"
 
 class ServiceOrderCharge(models.Model):
     service_order = models.ForeignKey(
@@ -781,3 +781,113 @@ class ServiceOrderPayment(models.Model):
     class Meta:
         verbose_name = _("Payment")
         verbose_name_plural = _("Payments")
+
+class PurchaseMassPayment(models.Model):
+    """
+    Representa un pago masivo realizado a proveedores por órdenes de compra.
+
+    Attributes:
+        payment_date (date): Fecha del pago.
+        amount (Decimal): Monto total del pago.
+        payment_kind (PaymentKind): Tipo de pago utilizado.
+        bank (Bank): Banco asociado al pago.
+        comments (str): Comentarios adicionales sobre el pago.
+        additional_inputs (JSONField): Campos adicionales para información extra.
+        status (str): Estado del pago ('open', 'closed', etc.).
+        created_by (User): Usuario que creó el registro.
+        created_at (datetime): Fecha y hora de creación del registro.
+    """
+    category = models.CharField(
+        max_length=40,
+        verbose_name=_("Category"),
+        choices=PURCHASE_CATEGORY_CHOICES,
+    )
+    provider = models.ForeignKey(
+        Provider,
+        verbose_name=_("Provider"),
+        on_delete=models.PROTECT
+    )
+    purchase_order = models.ManyToManyField(
+        PurchaseOrder,
+        verbose_name=_("Purchase Order"),
+        related_name="purchase_mass_payments",
+        blank=True
+    )
+    service_order = models.ManyToManyField(
+        ServiceOrder,
+        verbose_name=_("Service Order"),
+        related_name="purchase_mass_payments",
+        blank=True
+    )
+    payment_kind = models.ForeignKey(
+        PaymentKind,
+        verbose_name=_("Payment kind"),
+        on_delete=models.PROTECT
+    )
+    additional_inputs = models.JSONField(
+        verbose_name=_("Additional inputs"),
+        null=True, blank=True
+    )
+    payment_date = models.DateField(
+        verbose_name=_('Payment date'),
+        default=datetime.date.today
+    )
+    amount = models.DecimalField(
+        verbose_name=_("Amount"),
+        max_digits=12, decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+    bank = models.ForeignKey(
+        Bank,
+        verbose_name=_("Bank"),
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True
+    )
+    comments = models.CharField(
+        max_length=255,
+        verbose_name=_("Comments"),
+        null=True, blank=True
+    )
+    status = models.CharField(
+        max_length=255,
+        choices=STATUS_CHOICES,
+        default='closed',
+    )
+    created_by = models.ForeignKey(
+        User,
+        verbose_name=_("Created by"),
+        on_delete=models.PROTECT,
+        null=True, blank=True,
+        related_name="added_mass_payments"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Created at')
+    )
+    canceled_by = models.ForeignKey(
+        User,
+        verbose_name=_("Canceled by"),
+        on_delete=models.PROTECT,
+        null=True, blank=True,
+        related_name="canceled_mass_payments"
+    )
+    cancellation_date = models.DateTimeField(
+        verbose_name=_("Cancellation date"),
+        null=True, blank=True
+    )
+    organization = models.ForeignKey(
+        Organization,
+        verbose_name=_("Organization"),
+        on_delete=models.PROTECT
+    )
+
+    def __str__(self):
+        return f"{self.payment_date} - ${self.amount}"
+
+    class Meta:
+        verbose_name = _("Mass Payment")
+        verbose_name_plural = _("Mass Payments")
+        constraints = [
+            models.UniqueConstraint(fields=['payment_date', 'amount'], name='unique_payment_date_amount')
+        ]

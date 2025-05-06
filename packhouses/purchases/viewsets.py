@@ -1,10 +1,11 @@
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-from .serializers import PaymentKindAdditionalInputSerializer
+from .serializers import PaymentKindAdditionalInputSerializer, PurchaseOrderSerializer, ServiceOrderSerializer
 from packhouses.packhouse_settings.models import PaymentKindAdditionalInput
 from packhouses.packhouse_settings.models import PaymentKind
 from rest_framework.response import Response
+from .models import PurchaseOrder, ServiceOrder
 
 
 
@@ -38,4 +39,31 @@ class PaymentKindAdditionalInputViewSet(viewsets.ModelViewSet):
             'additional_inputs': serializer.data
         })
 
+class PurchaseOrderViewSet(viewsets.ModelViewSet):
+    serializer_class = PurchaseOrderSerializer
+    queryset = PurchaseOrder.objects.all()
+    filterset_fields = ['id', 'ooid', 'provider']
+    filter_backends = [DjangoFilterBackend]
+    pagination_class = None
 
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return PurchaseOrder.objects.filter(organization=self.request.organization)
+
+
+class ServiceOrderViewSet(viewsets.ModelViewSet):
+    serializer_class = ServiceOrderSerializer
+    queryset = ServiceOrder.objects.all()
+    filterset_fields = ['id', 'provider']
+    filter_backends = [DjangoFilterBackend]
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return ServiceOrder.objects.filter(organization=self.request.organization)
