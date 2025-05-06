@@ -37,13 +37,11 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     
-    countries = models.ForeignKey(
-        Country,
-        verbose_name=_('Country'),
-        on_delete=models.PROTECT,
-        null=True,  # Permite nulos por ahora
+    countries = models.ManyToManyField(
+    Country,
+        verbose_name=_('Countries'),
         blank=True
-    )
+    )   
 
     is_mixable = models.BooleanField(
         default=True,

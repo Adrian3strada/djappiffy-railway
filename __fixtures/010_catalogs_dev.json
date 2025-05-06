@@ -10,9 +10,9 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": [
+    "countries": 
       158
-    ]
+    
   }
 },
 {
@@ -26,9 +26,9 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 2,
-    "countries": [
+    "countries": 
       158
-    ]
+    
   }
 },
 {
@@ -42,9 +42,9 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": [
+    "countries": 
       234
-    ]
+    
   }
 },
 {
@@ -58,9 +58,9 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": [
+    "countries": 
       38
-    ]
+    
   }
 },
 {
@@ -74,9 +74,9 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": [
+    "countries": 
       49
-    ]
+    
   }
 },
 {
@@ -90,9 +90,9 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": [
+    "countries": 
       211
-    ]
+    
   }
 },
 {
@@ -686,66 +686,7 @@
     "sort_order": 9
   }
 },
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 1,
-  "fields": {
-    "name": "ESTANDAR",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 2,
-  "fields": {
-    "name": "ENMALLADO",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 3,
-  "fields": {
-    "name": "ORGÁNICO",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 2
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 4,
-  "fields": {
-    "name": "ESTANDAR",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 5,
-  "fields": {
-    "name": "ENMALLADO",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 6,
-  "fields": {
-    "name": "ORGÁNICO",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 2
-  }
-},
+
 {
   "model": "catalogs.productripeness",
   "pk": 1,

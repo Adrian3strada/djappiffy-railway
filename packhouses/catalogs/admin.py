@@ -106,14 +106,15 @@ class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     list_display = ('name', 'alias', 'get_countries', 'is_mixable', 'is_enabled')
     list_filter = (ByCountryForOrganizationMarketsFilter, 'is_mixable', 'is_enabled',)
     search_fields = ('name', 'alias')
-    fields = ('name', 'alias', 'countries', 'is_mixable',
+    fields = ('countries', 'name', 'alias', 'is_mixable',
               'label_language', 'address_label', 'is_enabled')
 
     def get_countries(self, obj):
         return obj.countries.name if obj.countries else "-"
 
 
-    get_countries.short_description = _('countries')
+    get_countries.short_description = _('Country')
+    get_countries.admin_order_field = 'countries__name'
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
@@ -1473,7 +1474,9 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
     def display_clients(self, obj):
         return ", ".join([client.name for client in obj.clients.all()])
+
     display_clients.short_description = 'Clients'
+    display_clients.admin_order_field = 'Clients'
 
     def country_standard_packaging_display(self, obj):
         if obj.country_standard_packaging:
@@ -1481,6 +1484,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return f"-"
     country_standard_packaging_display.short_description = _('Country standard packaging')
     country_standard_packaging_display.admin_order_field = 'name'
+    
 
     @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
