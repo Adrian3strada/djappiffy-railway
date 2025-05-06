@@ -119,8 +119,8 @@ def render_html_list(items):
 
 class DehydrationResource():
     def dehydrate_countries(self, obj):
-        return ", ".join(country.name for country in obj.countries.all()) if obj.countries.exists() else ""
-
+        return obj.countries.name if obj.countries else ""
+        
     def dehydrate_country(self, obj):
         return obj.country.name if obj.country else ""
 

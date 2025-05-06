@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
         field.style.color = "#555";
     }
 
-    disableField(totalWeighedSetsField);
+    disableField(totalWeighedSetsField);    
     disableField(packhouseWeightResultField);
     disableField(containersAssignedField);
     disableField(missingContainersField);

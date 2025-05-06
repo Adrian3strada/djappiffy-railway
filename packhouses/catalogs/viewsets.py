@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketSerializer, ProductMarketClassSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
-                          ProductPhenologyKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
+                          ProductPhenologyKindSerializer, ClientSerializer, ProductSizeSerializer,
                           MaquiladoraSerializer, PackagingSerializer, ProductPresentationSerializer,
                           SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
                           ProductPackagingSerializer, PalletSerializer, ProductPackagingPalletSerializer,
@@ -13,7 +13,7 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
 
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
-                     ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
+                     ProductHarvestSizeKind, ProductPhenologyKind, Client, Maquiladora, Provider,
                      Product, Packaging, ProductPresentation, ProductPackaging, Pallet, ProductPackagingPallet,
                      Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness, Service
                      )
@@ -44,19 +44,6 @@ class ProductPhenologyKindViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return ProductPhenologyKind.objects.filter(product__organization=self.request.organization)
-
-
-class ProductMassVolumeKindViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductMassVolumeKindSerializer
-    filterset_fields = ['product', 'is_enabled']
-    pagination_class = None
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            raise NotAuthenticated()
-
-        return ProductMassVolumeKind.objects.filter(product__organization=self.request.organization)
 
 
 class MarketViewSet(viewsets.ModelViewSet):
