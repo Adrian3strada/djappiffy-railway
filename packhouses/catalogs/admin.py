@@ -15,7 +15,7 @@ from .models import (
     PackagingComplementarySupply, ProductRipeness, ProductPackagingPresentation,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary,
     ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue, ProductFoodSafetyProcess,
-    ProductAdditionalValue
+    ProductDryMatterAcceptanceReport
 )
 
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
@@ -377,8 +377,8 @@ class ProductFoodSafetyProcessInline(admin.TabularInline):
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
 
-class ProductAdditionalValueInline(admin.TabularInline):
-    model = ProductAdditionalValue
+class ProductDryMatterAcceptanceReportInline(admin.TabularInline):
+    model = ProductDryMatterAcceptanceReport
     extra = 0
     verbose_name = _('Product Additional Value')
     verbose_name_plural = _('Product Additional Values')
@@ -437,7 +437,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                ProductMassVolumeKindInline, ProductRipenessInline,
                ProductPestInline, ProductDiseaseInline,
                ProductPhysicalDamageInline, ProductResidueInline,
-               ProductFoodSafetyProcessInline, ProductAdditionalValueInline
+               ProductFoodSafetyProcessInline, ProductDryMatterAcceptanceReportInline
                ]
 
     @uppercase_form_charfield('name')
@@ -1446,7 +1446,9 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_obj_id = request.resolver_match.kwargs.get("object_id")
         parent_obj = Packaging.objects.get(id=parent_obj_id) if parent_obj_id else None
-        packaging_complement_categories = ['packaging_complement', 'packaging_separator', 'packaging_labeling', 'packaging_storage']
+        # packaging_complement_categories = ['packaging_complement', 'packaging_separator', 'packaging_labeling', 'packaging_storage']
+        # se removieron algunas categorias por el issue #164
+        packaging_complement_categories = ['packaging_complement', 'packaging_storage']
 
         if db_field.name == "kind":
             kwargs["queryset"] = SupplyKind.objects.filter(category__in=packaging_complement_categories, is_enabled=True)
