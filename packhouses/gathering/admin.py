@@ -17,7 +17,7 @@ from packhouses.catalogs.filters import (StatesForOrganizationCountryFilter, ByC
                                          ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                                          ByCityForOrganizationClientsFilter,
                                          ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
-                                         ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
+                                         ByProductHarvestSizeKindForOrganizationFilter,
                                          ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
                                          ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
                                          ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter

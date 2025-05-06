@@ -49,7 +49,7 @@ def basic_report(request, json_data, model_name):
     company_address = f"{add}, {district_name}, {city_name}, {state_name}, {country_name}"
     columns_total = len(headers)
     date = datetime.now()
-    year = date.year
+    year = str(date.year)
     
     # orientation page
     if len(headers) < 10:

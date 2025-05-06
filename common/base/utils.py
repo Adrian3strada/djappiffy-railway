@@ -61,14 +61,14 @@ class SheetReportExportAdminMixin(ExportMixin):
 
         action = request.GET.get("export_type", "export-sheet")
         request.export_action_type = action
+        original_get = request.GET.copy()
+        clean_get = original_get.copy()
+        clean_get.pop('export_type', None)
 
-        query_params = request.GET.copy()
-
-        if 'export_type' in query_params:
-            del query_params['export_type']
-        request.GET = query_params
+        request.GET = clean_get
 
         queryset = self.get_export_queryset(request)
+        request.GET = original_get
         model_name = self.model._meta.verbose_name
 
         if action == "export-sheet":
@@ -107,10 +107,20 @@ class ExportResource(resources.ModelResource):
                     pass
         return fields
 
+def render_html_list(items):
+        if not items:
+            return ''
+        ul_style = "margin:0; padding:0; list-style-type: disc; list-style-position: inside; text-align:left;"
+        li_style = "margin:0; padding:0;"
+        return "<ul style='{}'>{}</ul>".format(
+            ul_style,
+            "".join([f"<li style='{li_style}'>{item}</li>" for item in items])
+        )
+
 class DehydrationResource():
     def dehydrate_countries(self, obj):
-        return ", ".join(country.name for country in obj.countries.all()) if obj.countries.exists() else ""
-
+        return obj.countries.name if obj.countries else ""
+        
     def dehydrate_country(self, obj):
         return obj.country.name if obj.country else ""
 
@@ -127,7 +137,14 @@ class DehydrationResource():
         return obj.market.name if obj.market else ""
 
     def dehydrate_markets(self, obj):
-        return ", ".join(market.name for market in obj.markets.all()) if obj.markets.exists() else ""
+        if not obj.markets.exists():
+            return ''
+        
+        if self.export_format == 'pdf':
+            return render_html_list([market.name for market in obj.markets.all()])
+        else:
+            return ", ".join(market.name for market in obj.markets.all())
+
         #return obj.market.name if obj.market else ""
 
     def dehydrate_market_class(self, obj):
@@ -226,6 +243,31 @@ class DehydrationResource():
 
     def dehydrate_is_mixable(self, obj):
         return "✅" if obj.is_mixable else "❌"
+    
+    def dehydrate_label_language(self, obj):
+        return obj.get_label_language_display()
+        
+    def dehydrate_country_standard_packaging(self, obj):
+        return obj.country_standard_packaging.name if obj.country_standard_packaging else ""
+    
+    def dehydrate_presentation_supply_kind(self, obj):
+        return obj.presentation_supply_kind.name if obj.presentation_supply_kind else ""
+    
+    def dehydrate_presentation_supply(self, obj):
+        return f"{obj.presentation_supply.name} ({obj.presentation_supply.capacity} {_('pieces')})" if obj.presentation_supply else ""
+    
+    def dehydrate_supply(self, obj):
+        return obj.supply.name if obj.supply else ""
+    
+    def dehydrate_packaging(self, obj):
+        return obj.packaging.name if obj.packaging else ""
+    
+    def dehydrate_product_presentation(self, obj):
+        return obj.product_presentation.name if obj.product_presentation else ""
+    
+    def dehydrate_measure_unit_category(self, obj):
+        return obj.get_measure_unit_category_display() if obj.measure_unit_category else ""
+
 
 default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization', 'description')
 

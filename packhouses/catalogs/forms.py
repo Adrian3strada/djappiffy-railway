@@ -29,24 +29,6 @@ class ProductSeasonKindInlineFormSet(BaseInlineFormSet):
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
 
 
-class ProductMassVolumeKindInlineFormSet(BaseInlineFormSet):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        for form in self.forms:
-            instance = form.instance
-
-            # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductSize.objects.all().exists():#filter(product_mass_volume_kind=instance).exists():
-                form.fields['name'].disabled = True
-                form.fields['name'].widget.attrs.update(
-                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
-                form.fields['DELETE'].initial = False
-                form.fields['DELETE'].disabled = True
-                form.fields['DELETE'].widget.attrs.update(
-                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
-
-
 class ProductVarietyInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

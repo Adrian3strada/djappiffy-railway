@@ -7,7 +7,21 @@ document.addEventListener("DOMContentLoaded", function() {
     const initialOperationalStatus = operationalStatusField.val();  
     const initialAvailableForProcessing = availableForProcessing.prop('checked');  
     const initialStatus = reviewStatusField.val();
-    
+
+    $(function() {
+        const select2Container = operationalStatusField.next('.select2-container')
+        const visibleSelection = select2Container.find('.select2-selection');
+      
+        operationalStatusField.on('select2:opening', e => e.preventDefault());
+      
+        visibleSelection.css({
+          'pointer-events': 'none',
+          'background-color':'#e9ecef',
+          'border': 'none',
+          'color': '#555'
+        });
+      });
+
     function disableAvailableForProcessing() {
         availableForProcessing.prop('disabled', true);
         availableForProcessing.prop('checked', false);
@@ -16,12 +30,10 @@ document.addEventListener("DOMContentLoaded", function() {
     if (initialStatus !== 'pending') {
         reviewStatusField.find('option[value="pending"]').remove();
         reviewStatusField.trigger('change.select2');
-        operationalStatusField.prop('disabled', true);
     }
     setTimeout(function() {
         const initialStatus = reviewStatusField.val();
         if (initialStatus === 'pending') {
-            operationalStatusField.prop('disabled', true);
             disableAvailableForProcessing();
         }
     }, 50);
@@ -43,7 +55,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (reviewStatus === 'rejected' || reviewStatus === 'quarantine') {
             availableForProcessing.prop('disabled', true).prop('checked', false);
             operationalStatusField.val('pending').trigger('change');
-            operationalStatusField.prop('disabled', true);
         }
     }
     function updateFieldsBasedOnOperationalStatus(){
