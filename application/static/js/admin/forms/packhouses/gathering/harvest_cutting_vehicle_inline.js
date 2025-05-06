@@ -1,6 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
   let providers = []; // Inicializar la variable global providers
 
+  function disableField(field) {
+    field.prop("readonly", true);
+    field.css({
+      "pointer-events": "none",
+      "background-color": "#e9ecef",
+      "border": "none",
+      "color": "#555"
+    });
+  }
+  
+  // 2) Al cargar la página, la aplicas a weight_expected
+  $(function() {
+    disableField($('#id_weight_expected'));
+  });
+
   // Función para obtener proveedores
   function fetchProviders() {
     return $.ajax({
@@ -35,6 +50,124 @@ document.addEventListener('DOMContentLoaded', () => {
     }).fail(error => console.error('Error al obtener vehículos:', error));
   }
 
+  // Función para realizar una solicitud AJAX y obtener la capacidad de los contenedores
+  function fetchContainerCapacity(containerId) {
+    return $.ajax({
+      url: `/rest/v1/catalogs/supply/`,
+      method: 'GET',
+      dataType: 'json',
+      data: {
+        id: containerId,    
+        is_enabled: true
+      }
+    }).fail(error => console.error('Error al obtener la capacidad de los contenedores:', error));
+  }
+
+  // Función para calcular el total del peso esperado por vehiculo
+  function calcVehicleTotal(vehicleEl) {
+    var sum = 0;
+    var promises = [];
+  
+    $(vehicleEl)
+      .find('tbody[data-inline-model$="scheduleharvestcontainervehicle"]:not(.djn-empty-form)')
+      .each(function() {
+        var $row = $(this);
+        // ignorar borrados
+        if ($row.find('input[name$="-DELETE"]').prop('checked')) return;
+  
+        var sel   = $row.find('select[name$="-harvest_container"]');
+        var qtyEl = $row.find('input[name$="-quantity"]');
+        if (!sel.length || !qtyEl.length || !sel.val()) return;
+  
+        var containerId = sel.val();
+        var qty = parseFloat(qtyEl.val()) || 0;
+        qty = qtyEl.val();
+
+        // *** Validación estricta: solo dígitos ***
+        if (!/^\d+$/.test(qty)) {
+          return promises.push($.Deferred()
+            .reject(`Invalid quantity "${qty}" in vehicle ${vehicleEl.id}`)
+            .promise());
+        }
+
+        qty = parseInt(qty, 10);
+  
+        
+        var p = fetchContainerCapacity(containerId).then(function(data) {
+          var arr = $.isArray(data) ? data : (data.results || []);
+          var cont = arr.find(item => String(item.id) === containerId);
+          var w = cont && cont.capacity != null ? cont.capacity : 1;
+          sum += w * qty;
+        }).fail(function(err) {
+          console.error('❌ Error fetching capacity for', containerId, err);
+          sum += 1 * qty; 
+        });
+        promises.push(p);
+      });
+  
+    return $.when.apply($, promises).then(function() {
+      return sum;
+    });
+  }
+  
+  // Función para calcular el total de peso esperado de todos los vehiculos
+  function recalcGlobalTotal() {
+    const groupEl = document.getElementById('scheduleharvestvehicle_set-group');
+    if (!groupEl) return;
+    calcVehicleTotal(groupEl).then(total => {
+      console.log(`🧮 Total weight FOR ALL VEHICLES: ${total.toFixed(2)}`);
+      $('#id_weight_expected').val(total.toFixed(2));
+    });
+  }
+  
+  // Función para inicializar los vehiculos para recalcular el peso total del vehículo ante cualquier cambio en sus contenedores.
+  function initVehicle(vehicleEl) {
+    $(document).on('input', 'input[name$="-quantity"]', function() {
+      this.value = this.value.replace(/\D/g, '');
+    });
+    if (vehicleEl._inited) return;
+    vehicleEl._inited = true;
+    const $veh = $(vehicleEl);
+  
+    // helper que recalc individual y luego global
+    function recalcAndLog() {
+      calcVehicleTotal(vehicleEl)
+        .then(total => {
+          console.log(
+            `🔢 Total weight for vehicle ${vehicleEl.id}: ${total.toFixed(2)}`
+          );
+        })
+        .always(() => {
+          recalcGlobalTotal();
+        });
+    }
+  
+    recalcAndLog();
+  
+    $veh.on('change input', 'select[name$="-harvest_container"], input[name$="-quantity"]', recalcAndLog);
+    $veh.on('click', '.djn-add-handler, .djn-remove-handler', () => setTimeout(recalcAndLog, 0));
+  
+    $veh.on('formset:added formset:removed', e => {
+      if (e.detail.formsetName.endsWith('scheduleharvestcontainervehicle_set')) {
+        recalcAndLog();
+      }
+    });
+  
+    const observer = new MutationObserver(muts => {
+      muts.forEach(mut => {
+        if (
+          (mut.type === 'attributes' && mut.target.matches('input[name$="-DELETE"]')) ||
+          (mut.type === 'childList' && Array.from(mut.removedNodes).some(
+            node => node.nodeType === 1 && $(node).find('a.inline-deletelink').length
+          ))
+        ) {
+          setTimeout(recalcAndLog, 0);
+        }
+      });
+    });
+    observer.observe(vehicleEl, { attributes: true, childList: true, subtree: true });
+  }
+  
   // Función para manejar el cambio de proveedor y actualizar el campo vehicle
   function handleProviderChange(providerField, vehicleField, selectedVehicle = null) {
     const providerId = providerField.val(); // Obtener el id del proveedor seleccionado
@@ -64,6 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const providerField = $(newForm).find('select[name$="-provider"]'); // Encontrar el campo proveedor
       const vehicleField = $(newForm).find('select[name$="-vehicle"]'); // Encontrar el campo vehicle
 
+      initVehicle(event.target);
+
       // Manejar el cambio de proveedor en el formulario agregado
       providerField.on('change', function() {
         handleProviderChange(providerField, vehicleField);
@@ -77,7 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Esperar a que los proveedores se obtengan antes de procesar los formularios
   fetchProviders().then(() => {
       // Manejar formularios existentes
-      $('div[id^="scheduleharvestvehicle_set-"]').each((index, form) => {
+      $('div[id^="scheduleharvestvehicle_set-"]:not([id*="-empty"])').each((index, form) => {
+        initVehicle(form);
         const providerField = $(form).find(`select[name$="${index-1}-provider"]`); // Encontrar el campo proveedor
         const vehicleField = $(form).find(`select[name$="${index-1}-vehicle"]`); // Encontrar el campo vehicle
         const selectedVehicle = vehicleField.val(); // Obtener el valor actualmente seleccionado en vehicle
