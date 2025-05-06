@@ -83,11 +83,11 @@ admin.site.unregister(Region)
 admin.site.unregister(SubRegion)
 admin.site.unregister(City)
 
-from cities_light.admin import CityAdmin
+from cities_light.admin import CityAdmin as CLCityAdmin
 
 
 # @admin.register(City)
-class CityAdmin(CityAdmin):
+class CityAdmin(CLCityAdmin):
     verbose_name = _('District')
     verbose_name_plural = _('Districts')
 
