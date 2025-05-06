@@ -4,11 +4,9 @@ from rest_framework import serializers
 from .models import (UserProfile, OrganizationProfile, ProducerProfile, ImporterProfile, PackhouseExporterProfile,
                      TradeExporterProfile)
 from organizations.models import Organization, OrganizationOwner, OrganizationUser
-from common.base.serializers import CountrySerializer
-# from django_countries import countries
-from drf_polymorphic.serializers import PolymorphicSerializer
+from rest_polymorphic.serializers import PolymorphicSerializer
 
-
+# register serializers for models
 
 
 class BaseOrganizationProfileSerializer(serializers.ModelSerializer):
