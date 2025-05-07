@@ -37,6 +37,14 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     
+    # Nueva FK obligatoria a Country
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.PROTECT,
+        verbose_name=_('Country'),
+        related_name='primary_markets'
+    )
+
     countries = models.ManyToManyField(Country, verbose_name=_('Countries'))
 
     is_mixable = models.BooleanField(
@@ -66,17 +74,6 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
         verbose_name=_('Organization'),
         on_delete=models.PROTECT
     )
-
-    class Meta:
-        verbose_name = _('Market')
-        verbose_name_plural = _('Markets')
-        ordering = ('organization', 'name')
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'organization'], name='market_unique_name_organization'),
-            models.UniqueConstraint(fields=['alias', 'organization'], name='market_unique_alias_organization')
-        ]
-
-
 
     class Meta:
         verbose_name = _('Market')
