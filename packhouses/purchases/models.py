@@ -459,6 +459,12 @@ class PurchaseOrderPayment(models.Model):
         verbose_name=_("Cancellation date"),
         null=True, blank=True
     )
+    mass_payment = models.ForeignKey(
+        "PurchaseMassPayment",
+        verbose_name=_("Mass payment"),
+        on_delete=models.PROTECT,
+        null=True, blank=True
+    )
 
     def __str__(self):
         return f"{self.payment_date} - ${self.amount}"
@@ -774,6 +780,12 @@ class ServiceOrderPayment(models.Model):
         verbose_name=_("Cancellation date"),
         null=True, blank=True
     )
+    mass_payment = models.ForeignKey(
+        "PurchaseMassPayment",
+        verbose_name=_("Mass payment"),
+        on_delete=models.PROTECT,
+        null=True, blank=True
+    )
 
     def __str__(self):
         return f"{self.payment_date} - ${self.amount}"
@@ -890,9 +902,26 @@ class PurchaseMassPayment(models.Model):
     def __str__(self):
         return f"{self.payment_date} - ${self.amount}"
 
+    def recalculate_amount(self):
+        """
+        Recalcula el monto total del Mass Payment sumando el balance de todas las órdenes relacionadas.
+        Si es de tipo 'purchase_order', suma los balances de esas órdenes.
+        Si es de tipo 'service_order', suma los balances de esas órdenes.
+        """
+        if self.purchase_order.exists():
+            # Si hay órdenes de compra, recalcula solo sobre ellas
+            new_amount = sum(po.balance_payable for po in self.purchase_order.all())
+        elif self.service_order.exists():
+            # Si hay órdenes de servicio, recalcula solo sobre ellas
+            new_amount = sum(so.balance_payable for so in self.service_order.all())
+        else:
+            # ⚠Si no hay ni una ni otra, el monto se va a cero
+            new_amount = Decimal('0.00')
+
+        # Actualizamos el monto en el Mass Payment
+        self.amount = new_amount
+        self.save(update_fields=["amount"])
+
     class Meta:
         verbose_name = _("Mass Payment")
         verbose_name_plural = _("Mass Payments")
-        constraints = [
-            models.UniqueConstraint(fields=['payment_date', 'amount'], name='unique_payment_date_amount')
-        ]

@@ -418,6 +418,7 @@ class PurchaseOrderPaymentInline(admin.StackedInline):
         'cancel_button',
         'payment_kind',
         'payment_date',
+        'mass_payment_link',
         'amount',
         'bank',
         'comments',
@@ -426,7 +427,7 @@ class PurchaseOrderPaymentInline(admin.StackedInline):
     )
     extra = 0
     can_delete = False
-    readonly_fields = ('cancel_button', 'payment_info')
+    readonly_fields = ('cancel_button', 'payment_info', 'mass_payment_link')
 
     def cancel_button(self, obj):
         """
@@ -496,6 +497,14 @@ class PurchaseOrderPaymentInline(admin.StackedInline):
             )
 
     payment_info.short_description = _("Payment info")
+
+    def mass_payment_link(self, obj):
+        if obj.mass_payment:
+            url = reverse('admin:purchases_purchasemasspayment_change', args=[obj.mass_payment.id])
+            return format_html('<a href="{}">{}</a>', url, f'Mass Payment {obj.mass_payment.id}')
+        return "-"
+
+    mass_payment_link.short_description = "Mass Payment"
 
     class Media:
         """
@@ -649,21 +658,50 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     def cancel_payment(self, request, payment_id, *args, **kwargs):
         """
         Lógica para cancelar un pago específico y recalcular el balance automáticamente.
+        Si el pago estaba asociado a un Mass Payment, se remueve de la relación y se recalcula el total.
         """
         try:
             payment = PurchaseOrderPayment.objects.get(id=payment_id)
+
+            # Marcar el pago como cancelado
             payment.status = "canceled"
             payment.cancellation_date = timezone.now()
             payment.canceled_by = request.user
             payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
+
+            # Recalcular el balance de la orden de compra
             payment.purchase_order.recalculate_balance(save=True)
-            self.message_user(request, _(f"Payment canceled successfully. New balance payable: ${payment.purchase_order.balance_payable:.2f}"), level=messages.SUCCESS)
+
+            # Si el pago pertenece a un Mass Payment, removerlo de la relación M2M
+            if payment.mass_payment:
+                mass_payment = payment.mass_payment
+
+                # Quitar del M2M del Mass Payment
+                mass_payment.purchase_order.remove(payment.purchase_order)
+
+                # Recalcular el monto total del Mass Payment
+                mass_payment.recalculate_amount()
+
+                # Si el Mass Payment quedó sin órdenes, poner el monto a $0.00
+                if not mass_payment.purchase_order.exists() and not mass_payment.service_order.exists():
+                    mass_payment.amount = Decimal('0.00')
+                    mass_payment.save(update_fields=["amount"])
+
+            # Mensaje de éxito
+            self.message_user(
+                request,
+                _(f"Payment canceled successfully. New balance payable: ${payment.purchase_order.balance_payable:.2f}"),
+                level=messages.SUCCESS
+            )
             purchase_order_id = payment.purchase_order.pk
+
         except PurchaseOrderPayment.DoesNotExist:
             self.message_user(request, _("Payment not found"), level=messages.ERROR)
             purchase_order_id = None
 
-        redirect_url = reverse('admin:purchases_purchaseorder_change', args=[purchase_order_id]) + "#payments-tab" if purchase_order_id else request.path + "#payments-tab"
+        # 🔄 Redirigir al tab de pagos
+        redirect_url = reverse('admin:purchases_purchaseorder_change', args=[
+            purchase_order_id]) + "#payments-tab" if purchase_order_id else request.path + "#payments-tab"
         return HttpResponseRedirect(redirect_url)
 
     def response_change(self, request, obj):
@@ -883,6 +921,7 @@ class ServiceOrderPaymentInline(admin.StackedInline):
         'cancel_button',
         'payment_kind',
         'payment_date',
+        'mass_payment_link',
         'amount',
         'bank',
         'comments',
@@ -891,7 +930,7 @@ class ServiceOrderPaymentInline(admin.StackedInline):
     )
     extra = 0
     can_delete = False
-    readonly_fields = ('cancel_button', 'payment_info')
+    readonly_fields = ('cancel_button', 'payment_info', 'mass_payment_link')
 
     def cancel_button(self, obj):
         if obj.pk and obj.status != "canceled":
@@ -950,6 +989,14 @@ class ServiceOrderPaymentInline(admin.StackedInline):
 
     payment_info.short_description = _("Payment info")
 
+    def mass_payment_link(self, obj):
+        if obj.mass_payment:
+            url = reverse('admin:purchases_purchasemasspayment_change', args=[obj.mass_payment.id])
+            return format_html('<a href="{}">{}</a>', url, f'Mass Payment {obj.mass_payment.id}')
+        return "-"
+
+    mass_payment_link.short_description = "Mass Payment"
+
     class Media:
         js = ('js/admin/forms/packhouses/purchases/service_orders_payments.js',)
 
@@ -982,22 +1029,52 @@ class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.
         return custom_urls + urls
 
     def cancel_service_payment(self, request, payment_id, *args, **kwargs):
-
+        """
+        Lógica para cancelar un pago específico y recalcular el balance automáticamente.
+        Si el pago estaba asociado a un Mass Payment, se remueve de la relación y se recalcula el total.
+        """
         try:
             payment = ServiceOrderPayment.objects.get(id=payment_id)
+
+            # Marcar el pago como cancelado
             payment.status = "canceled"
             payment.cancellation_date = timezone.now()
             payment.canceled_by = request.user
             payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
+
+            # Recalcular el balance de la orden de compra
             payment.service_order.recalculate_balance(save=True)
 
-            self.message_user(request, _(f"Payment canceled successfully. New balance payable: ${payment.service_order.balance_payable:.2f}"), level=messages.SUCCESS)
+            # Si el pago pertenece a un Mass Payment, removerlo de la relación M2M
+            if payment.mass_payment:
+                mass_payment = payment.mass_payment
+
+                # Quitar del M2M del Mass Payment
+                mass_payment.service_order.remove(payment.service_order)
+
+                # Recalcular el monto total del Mass Payment
+                mass_payment.recalculate_amount()
+
+                # Si el Mass Payment quedó sin órdenes, poner el monto a $0.00
+                if not mass_payment.service_order.exists():
+                    mass_payment.amount = Decimal('0.00')
+                    mass_payment.save(update_fields=["amount"])
+
+            # Mensaje de éxito
+            self.message_user(
+                request,
+                _(f"Payment canceled successfully. New balance payable: ${payment.service_order.balance_payable:.2f}"),
+                level=messages.SUCCESS
+            )
             service_order_id = payment.service_order.pk
+
         except ServiceOrderPayment.DoesNotExist:
             self.message_user(request, _("Payment not found"), level=messages.ERROR)
             service_order_id = None
 
-        redirect_url = reverse('admin:purchases_serviceorder_change', args=[service_order_id]) + "#payments-tab" if service_order_id else request.path + "#payments-tab"
+        # Redirigir al tab de pagos
+        redirect_url = reverse('admin:purchases_serviceorder_change', args=[
+            service_order_id]) + "#payments-tab" if service_order_id else request.path + "#payments-tab"
         return HttpResponseRedirect(redirect_url)
 
     def save_related(self, request, form, formsets, change):
