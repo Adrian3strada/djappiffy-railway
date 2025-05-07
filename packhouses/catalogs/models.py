@@ -37,7 +37,7 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
 
-    
+
     # Nueva FK obligatoria a Country
     country = models.ForeignKey(
         Country,
@@ -47,11 +47,6 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     )
 
     countries = models.ManyToManyField(Country, verbose_name=_('Countries'))
-
-    countries = models.ManyToManyField(
-        Country,
-        verbose_name=_('Country'),
-    )
 
     is_mixable = models.BooleanField(
         default=True,
