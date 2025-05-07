@@ -36,6 +36,16 @@ REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] += [
     'rest_framework.authentication.BasicAuthentication',
 ]
 
+REST_FRAMEWORK['DEFAULT_SCHEMA_CLASS'] = 'drf_spectacular.openapi.AutoSchema'
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your Project API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
+
 try:
     from .auth import *
 except ImportError:
@@ -44,7 +54,8 @@ except ImportError:
 
 DJANGO_STORAGE_BACKEND = os.getenv("DJANGO_STORAGE_BACKEND", "local")
 if DJANGO_STORAGE_BACKEND == "local":
-    logger.info("Using local storage")
+    # logger.info("Using local storage")
+    pass
 else:
     logger.info(f"Using Django Storages backend: {DJANGO_STORAGE_BACKEND}")
     try:

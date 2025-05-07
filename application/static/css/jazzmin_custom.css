@@ -1,72 +1,280 @@
 /* Cambiar el color de fondo de la barra lateral */
+@font-face {
+  font-family: 'Futura';
+  src: url('../fonts/futura.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
 
 .readonly-field {
-    background-color: #919191; /* Fondo gris claro para el campo deshabilitado */
-    color: #888888; /* Color de texto gris */
-    cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
-    pointer-events: none; /* Desactiva eventos de mouse, haciendo que parezca completamente deshabilitado */
-    opacity: 0.6; /* Opcional: hace que el campo se vea un poco translúcido */
+  background-color: #ececec !important; /* Fondo gris claro para el campo deshabilitado */
+  color: #848484 !important; /* Color de texto gris */
+  cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
+  pointer-events: none; /* Desactiva eventos de mouse, haciendo que parezca completamente deshabilitado */
+  opacity: 1; /* El campo es completamente opaco */
 }
 
 .select2-container.disabled-field .select2-selection {
-    background-color: #919191; /* Fondo gris claro para el campo deshabilitado */
-    color: #888888; /* Color de texto gris */
-    cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
-    pointer-events: none; /* Desactiva eventos de mouse, haciendo que parezca completamente deshabilitado */
-    opacity: 0.6; /* Opcional: hace que el campo se vea un poco translúcido */
+  background-color: #eee !important; /* Fondo gris claro para el campo deshabilitado */
+  color: #848484 !important;
+  cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
+  pointer-events: none; /* Desactiva eventos de mouse, haciendo que parezca completamente deshabilitado */
+  border: 1px solid #ced4da;
 }
 
+
 .disabled-field {
-  background-color: #c6c6c6 !important; /* Color de fondo para indicar que está deshabilitado */
-  color: #1c1c1c !important; /* Color de texto */
-  cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
-  pointer-events: none;
-  opacity: 0.6;
+  background-color: #dbdbdb !important; /* Color de fondo para indicar que está deshabilitado */
+  color: #888686 !important; /* Color de texto */
+  cursor: not-allowed !important; /* Cambia el puntero a 'no permitido' */
+  pointer-events: none !important;
+  opacity: 1;
+  user-select: none;
+}
+
+.disabled-field > span {
+  background-color: #dbdbdb !important; /* Color de fondo para indicar que está deshabilitado */
+  color: #888686 !important; /* Color de texto */
+  cursor: not-allowed !important; /* Cambia el puntero a 'no permitido' */
+  pointer-events: none !important;
+  opacity: 1;
   user-select: none;
 }
 
 
-
 #jazzy-actions .object-tools a[href*="/history/"] {
-    display: none;
+  display: none;
 }
 
 .layout-navbar-fixed .wrapper .sidebar-dark-warning .brand-link:not([class*="navbar"]) {
-	background-color: #0e1e3f !important;
+  background-color: #0e1e3f !important;
 }
 
 .main-sidebar {
-    background-color: #0e1e3f !important;
+  background-color: #0e1e3f !important;
 }
 
 /* Cambiar el color del texto de los enlaces de la barra lateral */
 .main-sidebar a {
-    color: #ffffff !important;
+  color: #ffffff !important;
 
 }
 
 /* Cambiar el color de los enlaces activos en la barra lateral */
 .main-sidebar .active a {
-    background-color: #0e1e3f !important;
-    color: #ffffff !important;
+  background-color: #0e1e3f !important;
+  color: #ffffff !important;
 }
 
 /* Estilo global para todos los botones de agregar inlines */
 .inline-group1 .add-row {
-    background-color: #bebebe; /* Cambia esto al color que desees */
-    color: #3884a5; /* Color del texto */
-    border: 1px solid transparent; /* Borde */
-    border-radius: 0.25rem; /* Bordes redondeados */
-    padding: 0.375rem 0.75rem; /* Espaciado interno */
-    text-align: center; /* Alineación del texto */
-    text-decoration: none; /* Sin subrayado */
-    display: inline-block; /* Mostrar como bloque en línea */
-    font-weight: 500; /* Peso del texto */
-    cursor: pointer; /* Cambia el cursor al pasar sobre él */
+  background-color: #bebebe; /* Cambia esto al color que desees */
+  color: #3884a5; /* Color del texto */
+  border: 1px solid transparent; /* Borde */
+  border-radius: 0.25rem; /* Bordes redondeados */
+  padding: 0.375rem 0.75rem; /* Espaciado interno */
+  text-align: center; /* Alineación del texto */
+  text-decoration: none; /* Sin subrayado */
+  display: inline-block; /* Mostrar como bloque en línea */
+  font-weight: 500; /* Peso del texto */
+  cursor: pointer; /* Cambia el cursor al pasar sobre él */
 }
 
 .inline-group1 .add-row:hover {
-    background-color: #0056b3; /* Color de fondo al pasar el mouse */
-    color: #fff; /* Color del texto al pasar el mouse */
-    text-decoration: none; /* Sin subrayado al pasar el mouse */
+  background-color: #0056b3; /* Color de fondo al pasar el mouse */
+  color: #fff; /* Color del texto al pasar el mouse */
+  text-decoration: none; /* Sin subrayado al pasar el mouse */
+}
+
+body.jazzmin-login-page {
+  background-color: #0e1f40 !important;
+}
+
+.login-logo > h1 > picture > img {
+  width: 250px !important;
+}
+
+.brand-link .brand-image {
+  opacity: 1 !important;
+}
+
+
+[class*=sidebar-dark-] .nav-treeview > .nav-item > .nav-link.active, [class*=sidebar-dark-] .nav-treeview > .nav-item > .nav-link.active:focus, [class*=sidebar-dark-] .nav-treeview > .nav-item > .nav-link.active:hover {
+  background-color: #eba907 !important;
+  color: #FFF;
+}
+
+[class*=sidebar-dark-] .nav-sidebar > .nav-item.menu-open > .nav-link, [class*=sidebar-dark-] .nav-sidebar > .nav-item:hover > .nav-link, [class*=sidebar-dark-] .nav-sidebar > .nav-item > .nav-link:focus {
+  background-color: #eba907 !important;
+  color: #fff;
+}
+
+#jazzy-logo > .brand-text {
+  color: #ffc107 !important;
+}
+
+footer.main-footer .float-right {
+  display: none !important;
+}
+
+.btn-success {
+  background-color: #4daf50 !important;
+  border-color: #4daf50 !important;
+}
+
+.btn-success:hover {
+  background-color: #338337 !important;
+  border-color: #338337 !important;
+}
+
+.btn-info {
+  background-color: #183670 !important;
+  border-color: #0e1f40 !important;
+}
+
+.btn-info:hover {
+  background-color: #0e1f40 !important;
+  border-color: #183670 !important;
+}
+
+.add-row > a.float-right {
+  margin-top: 15px;
+  color: #FFF !important;
+  background-color: #183670 !important;
+  border-color: #0e1f40 !important;
+}
+
+.add-row > a.float-right:hover {
+  background-color: #0e1f40 !important;
+  border-color: #0e1f40 !important;
+}
+
+.djn-add-item > .add-handler {
+  color: #FFF !important;
+  background-color: #183670 !important;
+  border-color: #0e1f40 !important;
+}
+
+.djn-add-item > .add-handler:hover {
+  background-color: #0e1f40 !important;
+}
+
+.accent-primary .nav-tabs .nav-link {
+  color: #0046ca !important;
+}
+
+.accent-primary .nav-tabs .nav-link:hover {
+  background-color: #e1e1e1;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #183670;
+  border-color: #183670;
+  color: #FFF !important;
+}
+
+.nav-tabs .nav-link.active:hover {
+  background-color: #183670;
+  border-color: #183670;
+  color: #FFF !important;
+}
+
+.nav-tabs {
+  border-bottom: solid 1px #d0c8c8 !important;
+}
+
+.add-row > td > .btn-default {
+  background-color: #183670 !important;
+  border-color: #183670 !important;
+  color: #FFF !important;
+}
+
+.add-row > td > .btn-default:hover {
+  background-color: #0e1f40 !important;
+}
+
+.accent-primary a:not(.dropdown-item):not(.btn-app):not(.nav-link):not(.brand-link):not(.page-link):not(.btn) {
+  color: #08509d;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+  background-color: #0e1e3f !important;
+  border: 1px solid #ffc107 !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+  color: #fff !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+  border-right: 1px solid #ffc107 !important;
+  color: #FFF !important;
+  margin-left: 0 !important;
+
+  &:hover {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    background-color: #eba907 !important;
+    color: #0e1e3f !important;
+  }
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+  padding-left: 7px !important;
+}
+
+.main-footer .float-right {
+  display: none !important;
+}
+
+.card-title {
+  padding-top: 15px;
+}
+
+table.djn-items {
+  background-color: #f4f4f4 !important;
+}
+
+.inline-related > fieldset.djn-fieldset {
+  background-color: #f4f4f4 !important;
+}
+
+body {
+  font-family: "Futura", serif;
+!important;
+}
+
+label:not(.form-check-label):not(.custom-file-label) {
+  font-weight: normal !important;
+}
+
+.storehouse-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
+.fade-in {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-in.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+select[disabled] + .select2 .select2-selection__rendered {
+  color: #848484 !important;
+}
+
+.canceled{
+  background: red;
+  color: #FFF;
+  padding: 5px;
+}
+
+.asteriskField{
+  color: #dc3545 !important;
 }

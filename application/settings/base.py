@@ -17,6 +17,7 @@ import dj_database_url
 from dotenv import load_dotenv
 import logging
 import datetime
+from django.utils.safestring import mark_safe
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +72,7 @@ INSTALLED_APPS = [
     'django_ckeditor_5',
     'adminsortable2',
     'polymorphic',
+    'nested_admin',
 
     # djappiffy apps
     "common",
@@ -88,8 +90,15 @@ INSTALLED_APPS = [
     "packhouses",
     "packhouses.packhouse_settings",
     "packhouses.catalogs",
-
+    "packhouses.sales",
+    "packhouses.gathering",
+    "packhouses.hrm",
+    "packhouses.purchases",
+    "packhouses.storehouse",
+    "packhouses.certifications",
+    "packhouses.receiving",
     "eudr.parcels",
+    "eudr.operators"
 
 ]
 
@@ -138,7 +147,7 @@ DATABASE_URL = os.getenv('DATABASE_URL', 'spatialite:///db.spatialite')
 DATABASES = {
     "default": dj_database_url.config(default=DATABASE_URL)
 }
-
+LOGIN_URL = '/dadmin/login/'
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -169,6 +178,11 @@ TIME_ZONE = "America/Mexico_City"
 USE_I18N = True
 
 USE_TZ = True
+
+USE_THOUSAND_SEPARATOR=True
+THOUSAND_SEPARATOR=','
+DECIMAL_SEPARATOR='.'
+NUMBER_GROUPING = (3, 2, 0)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -270,34 +284,35 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 JAZZMIN_SETTINGS = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)
-    "site_title": "djappiffy Admin",
+    "site_title": "Certiffy Admin",
 
     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_header": "djappiffy",
+    "site_header": "Certiffy",
 
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_brand": "djappiffy",
+    "site_brand": "CERTIFFY",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
-    # "site_logo": "img/logo-certiffy.png",
+    "site_logo": "img/favicon.png",
 
     # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
-    "login_logo": False,
+    "login_logo": "img/logo.png",
 
     # Logo to use for login form in dark themes (defaults to login_logo)
-    "login_logo_dark": False,
+    "login_logo_dark": "img/logo.png",
 
     # CSS classes that are applied to the logo above
-    "site_logo_classes": "img-circle",
+    "site_logo_classes": "menu-logo",
+    "login_logo_classes": "login-logo",
 
     # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
-    "site_icon": None,
+    "site_icon": "img/favicon.png",
 
     # Welcome text on the login screen
-    "welcome_sign": "Welcome to application",
+    "welcome_sign": " ",
 
     # Copyright on the footer
-    "copyright": "(2024) Tezil SA de CV",
+    "copyright": "- Tezil SA de CV",
 
     # List of model admins to search from the search bar, search bar omitted if excluded
     # If you want to use a single search field you dont need to use a list, you can use a simple string
@@ -305,6 +320,9 @@ JAZZMIN_SETTINGS = {
 
     # Field name on user model that contains avatar ImageField/URLField/Charfield or a callable that receives the user
     "user_avatar": None,
+
+    "nav_sidebar_submenu": True,  # Activa submenús colapsables
+    "nav_sidebar_toggle": True,
 
     ############
     # Top Menu #
@@ -317,7 +335,7 @@ JAZZMIN_SETTINGS = {
         {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
 
         # external url that opens in a new window (Permissions can be added)
-        {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
+        # {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
 
         # model admin to link to (Permissions checked against model)
         {"model": "users.User"},
@@ -332,7 +350,7 @@ JAZZMIN_SETTINGS = {
 
     # Additional links to include in the user menu on the top right ("app" url type is not allowed)
     "usermenu_links": [
-        {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
+        # {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
         {"model": "auth.user"}
     ],
 
@@ -344,7 +362,7 @@ JAZZMIN_SETTINGS = {
     "show_sidebar": True,
 
     # Whether to aut expand the menu
-    "navigation_expanded": True,
+    "navigation_expanded": False,
 
     # Hide these apps when generating side menu e.g (auth)
     "hide_apps": [],
@@ -353,11 +371,44 @@ JAZZMIN_SETTINGS = {
     "hide_models": [],
 
     # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
-    "order_with_respect_to": ["packhouse_settings", "catalogs", "catalogs.Market", "catalogs.MarketClass",
-                              "catalogs.Product", "catalogs.ProductHarvestKind", "catalogs.ProductVariety",
-                              "catalogs.ProductVarietySize", "catalogs.ProductProvider", "catalogs.ProductProducer",
-                              "catalogs.Client",
-                              "catalogs.Vehicle", "catalogs.Gatherer", "catalogs.Maquiladora", "catalogs.Orchard"],
+    "order_with_respect_to": [
+        "sales",
+        "gathering",
+        "receiving",
+        "packing",
+        "purchases",
+        "storehouse",
+        "catalogs",
+        "catalogs.Market",
+        "catalogs.Product",
+        "catalogs.ProductSize",
+        "catalogs.Supply",
+        "catalogs.Pallet",
+        "catalogs.Packaging",
+        "catalogs.ProductPresentation",
+        "catalogs.ProductPackaging",
+        "catalogs.Provider",
+        "catalogs.Client",
+        "catalogs.Vehicle",
+        "catalogs.Gatherer",
+        "catalogs.Maquiladora",
+        "catalogs.Orchard",
+        "catalogs.HarvestingCrew",
+        "catalogs.Crew",
+        "catalogs.Service",
+        "catalogs.WeighingScale",
+        "catalogs.ColdChamber",
+        "catalogs.ExportingCompany",
+        "catalogs.Transfer",
+        "catalogs.LocalTransporter",
+        "catalogs.BorderToDestinationTransporter",
+        "catalogs.CustomsBroker",
+        "catalogs.Vessel",
+        "catalogs.Airline",
+        "catalogs.InsuranceCompany",
+        "packhouse_settings",
+        "hrm",
+    ],
 
     # Custom links to append to app groups, keyed on app name
     "custom_links": {
@@ -375,10 +426,30 @@ JAZZMIN_SETTINGS = {
         "users": "fas fa-users-cog",
         "users.user": "fas fa-user",
         "users.Group": "fas fa-users",
+        "packhouse_settings": "fas fa-tools",
+        "catalogs": "fas fa-list",
+        "auth": "fas fa-users-cog",
+        "billing": "fas fa-credit-card",
+        "cities_light": "fas fa-map-marker-alt",
+        "wagtailimages": "fas fa-images",
+        "organizations": "fas fa-building",
+        "profiles": "fas fa-user",
+        "taggit": "fas fa-tags",
+        "base": "fas fa-database",
+        "export_catalogs": "fas fa-truck-moving",
+        "firebase_auth": "fas fa-fire",
+        "gathering": "fas fa-tractor",
+        "catalogs": "fas fa-dollar-sign",
+        "parcels": "fas fa-map-marked-alt",
+        "purchases": "fas fa-shopping-cart",
+        "hrm": "fas fa-clipboard",
+        "storehouse": "fas fa-warehouse",
+        "receiving": "fas fa-truck-ramp-box",
+
     },
     # Icons that are used when one is not manually specified
     "default_icon_parents": "fas fa-chevron-circle-right",
-    "default_icon_children": "fas fa-circle",
+    "default_icon_children": "fas fa-caret-right",
 
     #################
     # Related Modal #
@@ -391,11 +462,12 @@ JAZZMIN_SETTINGS = {
     #############
     # Relative paths to custom CSS/JS scripts (must be present in static files)
     "custom_css": 'css/jazzmin_custom.css',
-    "custom_js": None,
+    'custom_js': None,
+
     # Whether to link font from fonts.googleapis.com (use custom_css to supply font otherwise)
     "use_google_fonts_cdn": True,
     # Whether to show the UI customizer on the sidebar
-    "show_ui_builder": True,
+    "show_ui_builder": False,
 
     ###############
     # Change view #
@@ -412,6 +484,7 @@ JAZZMIN_SETTINGS = {
     # Add a language dropdown into the admin
     "language_chooser": True,
 
+    "change_form_format": "collapsible",
 }
 
 JAZZMIN_UI_TWEAKS = {
@@ -541,9 +614,10 @@ CKEDITOR_5_CONFIGS = {
 CITIES_LIGHT_TRANSLATION_LANGUAGES = ['es', 'en', 'fr', 'de', 'pt']
 CITIES_LIGHT_INCLUDE_CITY_TYPES = [
     'PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA4', 'PPLC',
-    'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT',
+    # 'PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA4', 'PPLC',
+    # 'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT',
 ]
-CITIES_LIGHT_CITY_SOURCES = ['https://download.geonames.org/export/dump/cities500.zip']
+CITIES_LIGHT_CITY_SOURCES = ['https://download.geonames.org/export/dump/cities1000.zip']
 
 EUDR_DATA_FEATURES_SRID = 4326
 
@@ -554,3 +628,9 @@ FIREBASE_AUTH_PROJECTS = ast.literal_eval(os.getenv("FIREBASE_AUTH_PROJECTS", "[
 
 EE_SERVICE_ACCOUNT_EMAIL = os.getenv("EE_SERVICE_ACCOUNT_EMAIL", "")
 EE_SERVICE_ACCOUNT_DATA = os.getenv("EE_SERVICE_ACCOUNT_DATA", "")
+
+
+
+
+
+

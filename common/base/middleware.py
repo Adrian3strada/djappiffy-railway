@@ -9,7 +9,7 @@ import re
 
 from organizations.models import Organization, OrganizationUser
 
-from common.profiles.models import OrganizationProfile
+from common.profiles.models import PackhouseExporterProfile, PackhouseExporterSetting
 
 
 class LanguageDetectionMiddleware:
@@ -50,31 +50,39 @@ class SubdomainDetectionMiddleware:
     def __call__(self, request):
         requested_hostname = self._get_request_hostname(request)
 
-        if re.match(r'^/dadmin/', request.path) and (not request.user.is_superuser):
+        if re.match(r'^/(dadmin|rest)/.+', request.path):
+            ### Ask for Settings
             try:
-                # Verificar si existe OrganizationProfile asociada al HOST
-                requested_organization_profile = OrganizationProfile.objects.get(
+                requested_settings = PackhouseExporterSetting.objects.get(
                     hostname=requested_hostname,
                 )
-                print("Requested organization profile: ", requested_organization_profile)
-                try:
-                    # Verificar si existe Organization asociada al OrganizationProfile
-                    requested_organization = Organization.objects.get(
-                        id=requested_organization_profile.organization_id,
-                    )
-                    print("Requested organization: ", requested_organization)
-                except Organization.DoesNotExist:
-                    print("Organization does not exist")
-                    raise Http404
-            except OrganizationProfile.DoesNotExist:
-                print("OrganizationProfile does not exist")
+            except PackhouseExporterSetting.DoesNotExist:
+                print("PackhouseExporterSetting does not exist")
+                raise Http404
+
+            ### Ask for PackhouseExporterProfile
+            try:
+                requested_organization_profile = requested_settings.profile
+            except PackhouseExporterProfile.DoesNotExist:
+                print("PackhouseExporterProfile does not exist")
+                raise Http404
+
+            ### Ask for Organization
+            try:
+                # Verificar si existe Organization asociada al PackhouseExporterProfile
+                requested_organization = Organization.objects.get(
+                    id=requested_organization_profile.organization_id,
+                )
+                request.session['organization_id'] = requested_organization.id
+                request.organization = requested_organization
+                request.organization_settings = requested_settings
+            except Organization.DoesNotExist:
                 raise Http404
 
             if request.user.is_authenticated:
                 if not self._is_user_allowed(request.user, requested_organization):
                     raise PermissionDenied
-            else:
-                redirect("/dadmin/")
+                # print("User is allowed")
 
         response = self.get_response(request)
 
@@ -83,14 +91,11 @@ class SubdomainDetectionMiddleware:
     def _get_request_hostname(self, request):
         """
         Extract URL hostname from request.
-
-            NOTE: host = hostname + port
+        NOTE: host = hostname + port
         """
+
         request_host = request.get_host()
         request_hostname = request_host.split(':')[0]
-        print("Request host: ", request_host)
-        print("Request hostname: ", request_hostname)
-
         return request_hostname
 
     def _is_user_in_organization(self, user, organization):

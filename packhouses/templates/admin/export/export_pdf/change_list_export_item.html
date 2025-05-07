@@ -1,0 +1,20 @@
+{% load i18n %}
+{% load admin_urls %}
+
+{% if has_export_permission %}
+<button id="export-pdf" class="btn btn-info" style="margin-right: 10px;">
+    <i class="fas fa-file-pdf"></i> {% translate "Export PDF" %}
+</button>
+{% endif %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var exportButton = document.getElementById("export-pdf");
+    if (exportButton) {
+        exportButton.addEventListener("click", function () {
+            var url = "{% url opts|admin_urlname:'export' %}{{ cl.get_query_string|safe }}";
+            window.open(url, '_blank');
+        });
+    }
+});
+</script>

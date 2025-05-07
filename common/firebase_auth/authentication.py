@@ -26,7 +26,7 @@ User = get_user_model()
 firebase_instances = {}
 
 for index, project in enumerate(api_settings.FIREBASE_AUTH_PROJECTS):
-    log.info(index, project)
+    # log.info(index, project)
     if index == 0:
         default_credentials = firebase_admin.credentials.Certificate(project['SERVICE_ACCOUNT'])
         firebase_admin.initialize_app(credential=default_credentials)

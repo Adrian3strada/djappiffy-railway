@@ -1,77 +1,45 @@
 from django.contrib import admin
-from .models import (Status, ProductSizeKind, MassVolumeKind, Bank, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
-                     PaymentKind, VehicleBrand, OrchardProductClassificationKind, OrchardCertificationVerifier,
-                     OrchardCertificationKind)
+from .models import (Status, Bank, VehicleOwnershipKind, VehicleKind, VehicleFuelKind,
+                     PaymentKind, VehicleBrand, AuthorityPackagingKind,
+                     OrchardCertificationVerifier,
+                     OrchardCertificationKind, PaymentKindAdditionalInput)
 from common.widgets import UppercaseTextInputWidget, UppercaseAlphanumericTextInputWidget
 from organizations.models import Organization
 from common.utils import is_instance_used
+from common.base.mixins import ByOrganizationAdminMixin
+from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
+from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
 
 # Register your models here.
 
 
 @admin.register(Status)
-class StatusAdmin(admin.ModelAdmin):
+class StatusAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    fields = ('name', 'is_enabled', 'order')
 
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj, exclude=[Organization]):
             readonly_fields.extend(['name', 'has_performance', 'organization'])
-        return readonly_fields
-
-
-@admin.register(ProductSizeKind)
-class ProductSizeKindAdmin(admin.ModelAdmin):
-    list_display = ('name', 'has_performance', 'is_enabled')
-    list_filter = ('has_performance', 'is_enabled',)
-    fields = ('name', 'has_performance', 'is_enabled', 'organization', 'order')
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
-        return form
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Organization]):
-            readonly_fields.extend(['name', 'has_performance', 'organization'])
-        return readonly_fields
-
-
-@admin.register(MassVolumeKind)
-class MassVolumeKindAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_enabled')
-    list_filter = ('is_enabled',)
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
-        return form
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Organization]):
-            readonly_fields.extend(['name', 'organization'])
         return readonly_fields
 
 
 @admin.register(Bank)
-class BankAdmin(admin.ModelAdmin):
+class BankAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    fields = ('name', 'is_enabled')
 
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -82,14 +50,14 @@ class BankAdmin(admin.ModelAdmin):
 
 
 @admin.register(VehicleOwnershipKind)
-class VehicleOwnershipAdmin(admin.ModelAdmin):
+class VehicleOwnershipAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    fields = ('name', 'is_enabled')
 
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -100,14 +68,14 @@ class VehicleOwnershipAdmin(admin.ModelAdmin):
 
 
 @admin.register(VehicleKind)
-class VehicleKindAdmin(admin.ModelAdmin):
+class VehicleKindAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    fields = ('name', 'is_enabled')
 
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -118,14 +86,14 @@ class VehicleKindAdmin(admin.ModelAdmin):
 
 
 @admin.register(VehicleFuelKind)
-class VehicleFuelAdmin(admin.ModelAdmin):
+class VehicleFuelAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    fields = ('name', 'is_enabled')
 
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -133,17 +101,29 @@ class VehicleFuelAdmin(admin.ModelAdmin):
         if obj and is_instance_used(obj, exclude=[Organization]):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
+
+
+class PaymentKindAdditionalInputInlineAdmin(admin.TabularInline):
+    model = PaymentKindAdditionalInput
+    extra = 0
+    fields = ('name','data_type', 'is_required', 'is_enabled',)
+
+    @uppercase_formset_charfield('name')
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        return formset
 
 
 @admin.register(PaymentKind)
-class PaymentKindAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_enabled')
-    list_filter = ('is_enabled',)
+class PaymentKindAdmin(ByOrganizationAdminMixin):
+    list_display = ('name', 'requires_bank', 'is_enabled')
+    list_filter = ('requires_bank', 'is_enabled',)
+    fields = ('name','requires_bank', 'is_enabled')
+    inlines = [PaymentKindAdditionalInputInlineAdmin, ]
 
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -151,17 +131,18 @@ class PaymentKindAdmin(admin.ModelAdmin):
         if obj and is_instance_used(obj, exclude=[Organization]):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
+
 
 
 @admin.register(VehicleBrand)
-class VehicleBrandAdmin(admin.ModelAdmin):
+class VehicleBrandAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    fields = ('name', 'is_enabled')
 
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -171,33 +152,28 @@ class VehicleBrandAdmin(admin.ModelAdmin):
         return readonly_fields
 
 
-@admin.register(OrchardProductClassificationKind)
-class OrchardProductClassificationKindAdmin(admin.ModelAdmin):
+@admin.register(AuthorityPackagingKind)
+class AuthorityPackagingKindAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    search_fields = ('name',)
+    fields = ('name', 'is_enabled')
 
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Organization]):
-            readonly_fields.extend(['name', 'organization'])
-        return readonly_fields
 
 
 @admin.register(OrchardCertificationVerifier)
-class OrchardCertificationVerifierAdmin(admin.ModelAdmin):
+class OrchardCertificationVerifierAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    fields = ('name', 'is_enabled')
 
+    @uppercase_form_charfield('name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -208,16 +184,15 @@ class OrchardCertificationVerifierAdmin(admin.ModelAdmin):
 
 
 @admin.register(OrchardCertificationKind)
-class OrchardCertificationKindAdmin(admin.ModelAdmin):
+class OrchardCertificationKindAdmin(ByOrganizationAdminMixin):
     list_display = ('name', 'is_enabled')
     list_filter = ('is_enabled',)
+    fields = ('name', 'verifiers', 'extra_code_name', 'is_enabled')
 
+    @uppercase_form_charfield('name')
+    @uppercase_alphanumeric_form_charfield('extra_code_name')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'name' in form.base_fields:
-            form.base_fields['name'].widget = UppercaseTextInputWidget()
-        if 'extra_code_name' in form.base_fields:
-            form.base_fields['extra_code_name'].widget = UppercaseAlphanumericTextInputWidget()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -225,3 +200,9 @@ class OrchardCertificationKindAdmin(admin.ModelAdmin):
         if obj and is_instance_used(obj, exclude=[Organization]):
             readonly_fields.extend(['name', 'organization'])
         return readonly_fields
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == 'verifiers':
+            kwargs['queryset'] = OrchardCertificationVerifier.objects.filter(organization=request.organization, is_enabled=True)
+
+        return super().formfield_for_manytomany(db_field, request, **kwargs)

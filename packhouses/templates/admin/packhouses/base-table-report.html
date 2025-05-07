@@ -1,0 +1,143 @@
+<!--Tabla básica para reportes generales/básicos-->
+{% extends "admin/packhouses/header-footer.html" %}
+{% load i18n %}
+
+{% block page_content %}
+    {% load static %}
+<style>
+  @font-face {
+    font-family: 'Futura';
+    src: url('../../../static/fonts/Futura.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  body {
+    font-family: 'Futura', sans-serif;
+  }
+
+/* Estilos para sección de información */
+.info_container, .div-table {
+    width: 100%;
+    text-align: left; 
+    font-size: 10px; 
+    margin-bottom: 0px;
+}
+
+.total_table {
+    width: 100%;
+    border-collapse: collapse;
+    border: none;
+}
+
+.total_table td {
+    min-height: 10px;
+    line-height: 10px;
+    border: none;
+    padding: 4px 6px; 
+}
+
+
+.info_row {
+    display: flex; 
+    justify-content: space-between; 
+    border-bottom: 1px solid #123782;     
+}
+
+/* Estilos para tabla general */
+.table_form {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 6px;
+    table-layout: auto; 
+    
+}
+
+.table_form th, 
+.table_form td {
+    border: 1px solid #000000;
+    text-align: left;
+    white-space: normal; 
+}
+
+.table_form th {
+    background-color: #ffc600;
+    color: #000000;
+    font-weight: bold;
+    text-align: center;
+}
+
+.table_form td {
+    word-wrap: break-word; 
+    max-width: 200px; 
+    text-align: left;
+    vertical-align: top;
+    padding-left: 4px;
+}
+
+tr {
+    page-break-inside: avoid; 
+}
+
+/* Estilos para tabla de totales */
+.total_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8px;
+    margin-top: 20px;
+}
+
+/* Estilos para celdas dentro de .total_table */
+.total_table td {
+    border: 1px solid #000000;
+    text-align: left;
+}
+
+</style>
+
+
+<div class="info_container">
+    {% for info in more_info %}
+    <div class="info_row">
+        <span>{{ info }}</span>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="div-table">
+    <table class="table_form">
+        <thead>
+            <tr>
+                {% for header in headers %}
+                <th> {{ header }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                {% for item in row %}
+                <td {% if item in "✅❌" %} style="text-align: center; padding-top: 3px;" {% endif %}>{{ item|safe }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            
+        </tbody>
+    </table>
+</div>
+
+<div class="div-total">
+    <table class="total_table">
+        <tbody>
+            {% for label, total in totals.items %}
+            <tr>
+                <td style="width: 25%;"><strong> {{ label }}</strong></td>
+                <td style="padding-left: 5px;">{{ total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+{% endblock page_content %}

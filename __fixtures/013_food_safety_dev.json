@@ -1,0 +1,1112 @@
+[
+    {
+        "model": "base.foodsafetyprocedure",
+        "pk": 1,
+        "fields": {
+            "name" : "Materia Seca",
+            "description" : "N Materia seca",
+            "name_model" : "DryMatter",
+            "overall_average": 1
+        }
+    },
+    {
+        "model": "base.foodsafetyprocedure",
+        "pk": 2,
+        "fields": {
+            "name" : "Inspección interna",
+            "description" : "N Inspecciones Internas",
+            "name_model" : "InternalInspection",
+            "overall_average": 1
+        }
+    },
+    {
+        "model": "base.foodsafetyprocedure",
+        "pk": 3,
+        "fields": {
+            "name" : "Vehicle",
+            "description" : "Vehicle",
+            "name_model" : "VehicleReview",
+            "overall_average": 0
+        }
+    },
+    {
+        "model": "base.foodsafetyprocedure",
+        "pk": 4,
+        "fields": {
+            "name" : "Muestras",
+            "description" : "N Muestras",
+            "name_model" : "SampleCollection",
+            "overall_average": 0
+        }
+    },
+    {
+        "model": "base.foodsafetyprocedure",
+        "pk": 5,
+        "fields": {
+            "name" : "Promedios",
+            "description" : "Promedios generales",
+            "name_model" : "Average",
+            "overall_average": 0
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 1,
+        "fields": {
+            "name": "Antracnosis",
+            "inside": 1,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 2,
+        "fields": {
+            "name": "Phytophthora",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 3,
+        "fields": {
+            "name": "Roya",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 4,
+        "fields": {
+            "name": "Cercosporiosis",
+            "inside": 1,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 5,
+        "fields": {
+            "name": "Mildu Polvoso",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 6,
+        "fields": {
+            "name": "Rosellinia",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 7,
+        "fields": {
+            "name": "Alternaria",
+            "inside": 1,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 8,
+        "fields": {
+            "name": "Gomosis",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 9,
+        "fields": {
+            "name": "Moho Azul",
+            "inside": 1,
+            "outside": 0,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 10,
+        "fields": {
+            "name": "Fumagina",
+            "inside": 1,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 11,
+        "fields": {
+            "name": "Fusariosis",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.disease",
+        "pk": 12,
+        "fields": {
+            "name": "Prudición de la raiz",
+            "inside": 0,
+            "outside": 1,
+            "is_enabled": 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 1,
+        "fields": {
+            "name" : "Trips",
+            "inside" : 1,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 2,
+        "fields": {
+            "name" : "Mosca de la fruta",
+            "inside" : 1,
+            "outside" : 0,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 3,
+        "fields": {
+            "name" : "Acaro cristalino",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 4,
+        "fields": {
+            "name" : "Acaro rojo",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 5,
+        "fields": {
+            "name" : "Barrenador del hueso",
+            "inside" : 1,
+            "outside" : 0,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 6,
+        "fields": {
+            "name" : "Barrenador de las ramas",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 7,
+        "fields": {
+            "name" : "Gorgojo de la raiz",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 8,
+        "fields": {
+            "name" : "Pulgon",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 9,
+        "fields": {
+            "name" : "Minador de citricos",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 10,
+        "fields": {
+            "name" : "Mosca blanca",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 11,
+        "fields": {
+            "name" : "Cochinilla algodonosa",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 12,
+        "fields": {
+            "name" : "Gorgojo de la flor",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 13,
+        "fields": {
+            "name" : "Cochinilla",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 14,
+        "fields": {
+            "name" : "Acaros",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 15,
+        "fields": {
+            "name" : "Gorgojos",
+            "inside" : 1,
+            "outside" : 0,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.pest",
+        "pk": 16,
+        "fields": {
+            "name" : "Termitas",
+            "inside" : 0,
+            "outside" : 1,
+            "is_enabled" : 1
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease" : 1,
+            "product_kind" : 8
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 2,
+        "fields": {
+            "disease" : 2,
+            "product_kind" : 8
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 3,
+        "fields": {
+            "disease" : 3,
+            "product_kind" : 8
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 4,
+        "fields": {
+            "disease" : 4,
+            "product_kind" : 8
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 5,
+        "fields": {
+            "disease" : 5,
+            "product_kind" : 8
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 6,
+        "fields": {
+            "disease" : 6,
+            "product_kind" : 8
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 7,
+        "fields": {
+            "disease" : 1,
+            "product_kind" : 9
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 8,
+        "fields": {
+            "disease" : 7,
+            "product_kind" : 9
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 9,
+        "fields": {
+            "disease" : 8,
+            "product_kind" : 9
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 10,
+        "fields": {
+            "disease" : 9,
+            "product_kind" : 9
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 1,
+        "fields": {
+            "disease" : 10,
+            "product_kind" : 9
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 12,
+        "fields": {
+            "disease" : 1,
+            "product_kind" : 10
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 13,
+        "fields": {
+            "disease" : 11,
+            "product_kind" : 10
+        }
+    },
+    {
+        "model": "base.diseaseproductkind",
+        "pk": 14,
+        "fields": {
+            "disease" : 5,
+            "product_kind" : 10
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 1,
+        "fields": {
+            "pest" : 1,
+            "product_kind" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 2,
+        "fields": {
+            "pest" : 2,
+            "product_kind" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 3,
+        "fields": {
+            "pest" : 3,
+            "product_kind" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 4,
+        "fields": {
+            "pest" : 4,
+            "product_kind" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 5,
+        "fields": {
+            "pest" : 5,
+            "product_kind" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 6,
+        "fields": {
+            "pest" : 6,
+            "product_kind" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 7,
+        "fields": {
+            "pest" : 7,
+            "product_kind" : 8
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 8,
+        "fields": {
+            "pest" : 1,
+            "product_kind" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 9,
+        "fields": {
+            "pest" : 2,
+            "product_kind" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 10,
+        "fields": {
+            "pest" : 8,
+            "product_kind" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 11,
+        "fields": {
+            "pest" : 9,
+            "product_kind" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 12,
+        "fields": {
+            "pest" : 10,
+            "product_kind" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 13,
+        "fields": {
+            "pest" : 11,
+            "product_kind" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 14,
+        "fields": {
+            "pest" : 12,
+            "product_kind" : 9
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 15,
+        "fields": {
+            "pest" : 2,
+            "product_kind" : 10
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 16,
+        "fields": {
+            "pest" : 13,
+            "product_kind" : 10
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 17,
+        "fields": {
+            "pest" : 14,
+            "product_kind" : 10
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 18,
+        "fields": {
+            "pest" : 15,
+            "product_kind" : 10
+        }
+    },
+    {
+        "model": "base.pestproductkind",
+        "pk": 19,
+        "fields": {
+            "pest" : 16,
+            "product_kind" : 10
+        }
+    },
+    {
+        "model": "catalogs.productdisease",
+        "pk": 2,
+        "fields": {
+            "name" : "La roy (Aguacate)",
+            "is_enabled" : 1,
+            "disease" : 3,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productdisease",
+        "pk": 3,
+        "fields": {
+            "name" : "Phy (Aguacate)",
+            "is_enabled" : 1,
+            "disease" : 2,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productdisease",
+        "pk": 4,
+        "fields": {
+            "name" : "Mildu (Aguacate)",
+            "is_enabled" : 1,
+            "disease" : 5,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productdisease",
+        "pk": 6,
+        "fields": {
+            "name" : "La roy (Remanente)",
+            "is_enabled" : 1,
+            "disease" : 3,
+            "product" : 7
+        }
+    },
+    {
+        "model": "catalogs.productdisease",
+        "pk": 7,
+        "fields": {
+            "name" : "Ant (Limon A)",
+            "is_enabled" : 1,
+            "disease" : 1,
+            "product" : 4
+        }
+    },
+    {
+        "model": "catalogs.productdisease",
+        "pk": 8,
+        "fields": {
+            "name" : "Azul (Limon A)",
+            "is_enabled" : 1,
+            "disease" : 9,
+            "product" : 4
+        }
+    },
+    {
+        "model": "catalogs.productdisease",
+        "pk": 9,
+        "fields": {
+            "name" : "Fumagina (Limon A)",
+            "is_enabled" : 1,
+            "disease" : 10,
+            "product" : 4
+        }
+    },
+    {
+        "model": "catalogs.productdisease",
+        "pk": 10,
+        "fields": {
+            "name" : "Ant (Aguacate 2)",
+            "is_enabled" : 1,
+            "disease" : 1,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productdisease",
+        "pk": 11,
+        "fields": {
+            "name" : "Phy (Aguacate 2)",
+            "is_enabled" : 1,
+            "disease" : 2,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productdisease",
+        "pk": 12,
+        "fields": {
+            "name" : "La roy (Aguacate 2)",
+            "is_enabled" : 1,
+            "disease" : 3,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productdisease",
+        "pk": 13,
+        "fields": {
+            "name" : "Cercos (Aguacate 2)",
+            "is_enabled" : 1,
+            "disease" : 4,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productdisease",
+        "pk": 14,
+        "fields": {
+            "name" : "Mildu (Aguacate 2)",
+            "is_enabled" : 1,
+            "disease" : 5,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productdisease",
+        "pk": 15,
+        "fields": {
+            "name" : "Ros (Aguacate 2)",
+            "is_enabled" : 1,
+            "disease" : 6,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 1,
+        "fields": {
+            "name" : "Trip (Aguacate)",
+            "is_enabled" : 1,
+            "pest" : 1,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 2,
+        "fields": {
+            "name" : "Mosca (Aguacate)",
+            "is_enabled" : 1,
+            "pest" : 2,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 3,
+        "fields": {
+            "name" : "Ba Hueso (Aguacate)",
+            "is_enabled" : 1,
+            "pest" : 5,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 4,
+        "fields": {
+            "name" : "Ba Ramas (Aguacate)",
+            "is_enabled" : 1,
+            "pest" : 6,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 5,
+        "fields": {
+            "name" : "Trip (Remanente)",
+            "is_enabled" : 1,
+            "pest" : 1,
+            "product" : 7
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 6,
+        "fields": {
+            "name" : "Ba Hueso (Remanente)",
+            "is_enabled" : 1,
+            "pest" : 5,
+            "product" : 7
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 7,
+        "fields": {
+            "name" : "Ba Ramas (Remanente)",
+            "is_enabled" : 1,
+            "pest" : 6,
+            "product" : 7
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 8,
+        "fields": {
+            "name" : "Trip (Limon A)",
+            "is_enabled" : 1,
+            "pest" : 1,
+            "product" : 4
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 9,
+        "fields": {
+            "name" : "Mosca (Limon A)",
+            "is_enabled" : 1,
+            "pest" : 2,
+            "product" : 4
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 10,
+        "fields": {
+            "name" : "Pulgon (Limon A)",
+            "is_enabled" : 1,
+            "pest" : 8,
+            "product" : 4
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 11,
+        "fields": {
+            "name" : "Trip (Aguacate 2)",
+            "is_enabled" : 1,
+            "pest" : 1,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 12,
+        "fields": {
+            "name" : "Mosca (Aguacate 2)",
+            "is_enabled" : 1,
+            "pest" : 2,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 13,
+        "fields": {
+            "name" : "Ba Hueso (Aguacate 2)",
+            "is_enabled" : 1,
+            "pest" : 5,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 14,
+        "fields": {
+            "name" : "Ba Ramas (Aguacate 2)",
+            "is_enabled" : 1,
+            "pest" : 6,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 15,
+        "fields": {
+            "name" : "Gorgojo (Aguacate 2)",
+            "is_enabled" : 1,
+            "pest" : 7,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 16,
+        "fields": {
+            "name" : "Cristalino (Aguacate 2)",
+            "is_enabled" : 1,
+            "pest" : 3,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productpest",
+        "pk": 17,
+        "fields": {
+            "name" : "Rojo (Aguacate 2)",
+            "is_enabled" : 1,
+            "pest" : 4,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productphysicaldamage",
+        "pk": 1,
+        "fields": {
+            "name" : "Cortes (Aguacate)",
+            "is_enabled" : 1,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productphysicaldamage",
+        "pk": 2,
+        "fields": {
+            "name" : "Golpeado (Aguacate)",
+            "is_enabled" : 1,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productphysicaldamage",
+        "pk": 3,
+        "fields": {
+            "name" : "Descorche (Aguacate)",
+            "is_enabled" : 1,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productphysicaldamage",
+        "pk": 4,
+        "fields": {
+            "name" : "Cortes (Remanente)",
+            "is_enabled" : 1,
+            "product" : 7
+        }
+    },
+    {
+        "model": "catalogs.productphysicaldamage",
+        "pk": 5,
+        "fields": {
+            "name" : "Cortes (Limon A)",
+            "is_enabled" : 1,
+            "product" : 4
+        }
+    },
+    {
+        "model": "catalogs.productphysicaldamage",
+        "pk": 6,
+        "fields": {
+            "name" : "Cortes (Aguacate 2)",
+            "is_enabled" : 1,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productphysicaldamage",
+        "pk": 7,
+        "fields": {
+            "name" : "Golpeado (Aguacate 2)",
+            "is_enabled" : 1,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productresidue",
+        "pk": 1,
+        "fields": {
+            "name" : "Cal (Aguacate)",
+            "is_enabled" : 1,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productresidue",
+        "pk": 2,
+        "fields": {
+            "name" : "Cobre (Aguacate)",
+            "is_enabled" : 1,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productresidue",
+        "pk": 3,
+        "fields": {
+            "name" : "Cal (Remanente)",
+            "is_enabled" : 1,
+            "product" : 7
+        }
+    },
+    {
+        "model": "catalogs.productresidue",
+        "pk": 4,
+        "fields": {
+            "name" : "Cal (Limon A)",
+            "is_enabled" : 1,
+            "product" : 4
+        }
+    },
+    {
+        "model": "catalogs.productresidue",
+        "pk": 5,
+        "fields": {
+            "name" : "Cal (Aguacate 2)",
+            "is_enabled" : 1,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productfoodsafetyprocess",
+        "pk": 1,
+        "fields": {
+            "is_enabled" : 1,
+            "procedure" : 1,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productfoodsafetyprocess",
+        "pk": 2,
+        "fields": {
+            "is_enabled" : 1,
+            "procedure" : 2,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productfoodsafetyprocess",
+        "pk": 3,
+        "fields": {
+            "is_enabled" : 1,
+            "procedure" : 3,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productfoodsafetyprocess",
+        "pk": 4,
+        "fields": {
+            "is_enabled" : 1,
+            "procedure" : 4,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productfoodsafetyprocess",
+        "pk": 5,
+        "fields": {
+            "is_enabled" : 1,
+            "procedure" : 5,
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productfoodsafetyprocess",
+        "pk": 6,
+        "fields": {
+            "is_enabled" : 1,
+            "procedure" : 3,
+            "product" : 7
+        }
+    },
+    {
+        "model": "catalogs.productfoodsafetyprocess",
+        "pk": 7,
+        "fields": {
+            "is_enabled" : 1,
+            "procedure" : 3,
+            "product" : 4
+        }
+    },
+    {
+        "model": "catalogs.productfoodsafetyprocess",
+        "pk": 8,
+        "fields": {
+            "is_enabled" : 1,
+            "procedure" : 4,
+            "product" : 4
+        }
+    },
+    {
+        "model": "catalogs.productfoodsafetyprocess",
+        "pk": 9,
+        "fields": {
+            "is_enabled" : 1,
+            "procedure" : 3,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productfoodsafetyprocess",
+        "pk": 10,
+        "fields": {
+            "is_enabled" : 1,
+            "procedure" : 4,
+            "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productdrymatteracceptancereport",
+        "pk": 1,
+        "fields": {
+            "acceptance_report" : 19,
+            "created_at": "2025-04-15T12:30:00Z",
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productdrymatteracceptancereport",
+        "pk": 2,
+        "fields": {
+            "acceptance_report" : 19,
+            "created_at": "2025-04-15T12:30:00Z",
+            "product" : 7
+        }
+    }
+]

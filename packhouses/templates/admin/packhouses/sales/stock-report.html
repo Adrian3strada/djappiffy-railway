@@ -1,0 +1,294 @@
+<!-- Reporte de Inventario para Ventas-->
+{% extends "admin/packhouses/header-footer.html" %}
+{% load i18n %}
+
+{% block page_content %}
+{% load static %}
+<style>
+.market-table, .summary-size-table, 
+.loose-boxes-table, .stock-kg-table, .info-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 4px;
+}
+
+.info-table th{
+    border: 1px solid #000;
+}
+.info-table td{
+    border: 1px solid #000;
+}
+.market-table th{
+    text-align: center;
+    background-color: #fff4cc;
+    vertical-align: middle;  
+    border: 1px solid #000000;  
+    min-height: 25px;
+    line-height: 25px;        
+    text-align: center;
+}
+.market-table td {
+    border: 1px solid #000;
+    text-align: left;
+    min-height: 20px; 
+    vertical-align: middle;
+    padding-left: 3px;
+}
+
+.summary-size-table th{
+    text-align: center;
+    background-color: #fff4cc;
+    vertical-align: middle;  
+    border: 1px solid #000000;  
+    min-height: 25px;
+    line-height: 25px;        
+    text-align: center;
+}
+.summary-size-table td {
+    border: 1px solid #000;
+    text-align: left;
+    min-height: 20px; 
+    vertical-align: middle;
+    padding-left: 3px;
+}
+
+.loose-boxes-table th{
+    text-align: center;
+    background-color: #fff4cc;
+    vertical-align: middle;  
+    border: 1px solid #000000;  
+    min-height: 25px;
+    line-height: 25px;        
+    text-align: center;
+}
+.loose-boxes-table td {
+    border: 1px solid #000;
+    text-align: left;
+    min-height: 20px; 
+    vertical-align: middle;
+    padding-left: 3px;
+}
+
+.stock-kg-table th{
+    text-align: center;
+    background-color: #fff4cc;
+    vertical-align: middle;  
+    border: 1px solid #000000;  
+    min-height: 25px;
+    line-height: 25px;        
+    text-align: center;
+}
+.stock-kg-table td {
+    word-wrap: break-word; 
+    border: 1px solid #000;
+    text-align: left;
+    min-height: 20px; 
+    vertical-align: middle;
+    padding-left: 3px;
+    white-space: nowrap; 
+}
+</style>
+  
+<div>
+    <table class="info-table">
+        <thead>
+            <tr>
+                <th>MARKET</th>
+                <th>IN PRODUCTION</th>
+                <th>CHAMBER 1</th>
+                <th>CHAMBER 2</th>
+                <th>CHAMBER 3</th>
+                <th>TRANSFER CHAMBER</th>
+                <th>TOTAL PALLET</th>
+                <th>TOAL BOXES</th>
+                <th>TOTAL KG</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for item in row %}
+                <td>{{ item }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>TOTAL</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div>
+    {% for market in markets_data %}
+        <table class="market-table">
+            <thead>
+                <tr>
+                    <th colspan="13" style="background-color: #ffc600;">Market: {{ market.name }}</th>  
+                </tr>
+                <tr>
+                    <th>{% translate "Chamber" %}</th>
+                    <th>{% translate "Position" %}</th>
+                    <th>{% translate "Status" %}</th>
+                    <th>{% translate "Pallet" %}</th>
+                    <th>{% translate "Lot" %}</th>
+                    <th>{% translate "Size-Box" %}</th>
+                    <th>{% translate "Class" %}</th>
+                    <th>{% translate "Market" %}</th>
+                    <th>{% translate "Boxes" %}</th>
+                    <th>{% translate "Box Type" %}</th>
+                    <th>{% translate "Freshness Date" %}</th>
+                    <th>{% translate "KG per Box" %}</th>
+                    <th>{% translate "Total KG" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in market.data %}
+                <tr>
+                    {% for item in row %}
+                    <td>{{ item }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="8" style="text-align: right;">{% translate "TOTAL:" %} </td>
+                    <td>{{total_box}}</td>
+                    <td colspan="3"></td>
+                    <td>{{total_kg}}</td>
+                </tr>
+            </tbody>
+        </table>
+{% empty %}
+    <p></p>
+{% endfor %}
+</div>
+
+<!-- Tabla para cajas sueltas-->
+{% if loose_boxes %} <!-- si hay datos para las cajas sueltas se mostrará -->
+<div>
+    <table class="loose-boxes-table">
+        <thead>
+            <tr>
+                <th colspan="6" style="background-color: #ffc600;">{% translate "LOOSE BOXES" %}</th>
+            </tr>
+            <tr>
+                <th>{% translate "LOT" %}</th>
+                <th>{% translate "MARKET" %}</th>
+                <th>{% translate "SIZE - CLASS" %}</th>
+                <th>{% translate "BOXES" %}</th>
+                <th>{% translate "BOX TYPE" %}</th>
+                <th>{% translate "KGs" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                {% for item in row %}
+                <td>{{ item }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="4" style="text-align: right;">{% translate "TOTAL:" %} </td>
+                <td>{{total_box}}</td>
+                <td>{{total_kg}}</td>
+            </tr>
+            
+        </tbody>
+    </table>
+</div>
+{% else %}
+    <p></p>
+{% endif %}
+
+<div>
+    <table class="summary-size-table">
+        <thead>
+            <tr>
+                <th colspan="6" style="background-color: #ffc600;">{% translate "Overall Summary by Size" %}</th>
+            </tr>
+            <tr>
+                <th>{% translate "MARKET" %}</th>
+                <th>{% translate "SIZE" %}</th>
+                <th>{% translate "CLASS" %}</th>
+                <th>{% translate "BOX TYPE" %}</th>
+                <th>{% translate "N° BOXES" %}</th>
+                <th>{% translate "TOTAL KG" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                {% for item in row %}
+                <td>{{ item }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="4" style="text-align: right;">{% translate "TOTAL:" %} </td>
+                <td>{{total_box}}</td>
+                <td>{{total_kg}}</td>
+            </tr>
+            
+        </tbody>
+    </table>
+</div>
+
+<div>
+{% if data_stock %}
+    <table class="stock-kg-table">
+        <thead>
+            <tr>
+                <th colspan="17" style="background-color: #ffc600;">{% translate "Current Stock in Kg of Fruit in Receiving Department" %}</th>
+            </tr>
+            <tr>
+                <th>{% translate "LOT" %}</th>
+                <th>{% translate "HARVEST" %}</th>
+                <th>{% translate "GATHERER" %}</th>
+                <th>{% translate "PROVIDER" %}</th>
+                <th>{% translate "PRODUCER" %}</th>
+                <th>{% translate "HUE" %}</th>
+                <th>{% translate "MARKET" %}</th>
+                <th>{% translate "CERTIFICATION" %}</th>
+                <th>{% translate "SETTLED PRICE" %}</th>
+                <th>{% translate "KG" %}</th>
+                <th style="width: 5%;">{% translate "CURRENT LOT BALANCE IN KG" %}</th>
+                <th>{% translate "HARVEST DATE" %}</th>
+                <th>{% translate "ENTRY DATE" %}</th>
+                <th>{% translate "HARVEST TYPE" %}</th>
+                <th>{% translate "STATUS" %}</th>
+                <th>{% translate "Dry Matter Average" %}</th>
+                <th>{% translate "Week" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+                <tr>
+                    {% for item in row %}
+                        <td>{{ item }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="9" style="text-align: right;">{% translate "TOTAL:" %} </td>
+                <td>{{total_box}}</td>
+                <td>{{total_kg}} 300</td>
+                <td colspan="6"></td>
+            </tr>
+            <tr>
+                <td colspan="17">{% translate "Note: Only lots that have not been completed are displayed" %}</td>
+            </tr>
+        </tbody>
+    </table>
+{% else %}
+    <p>&nbsp;</p>
+{% endif %}
+</div>
+
+{% endblock page_content %}

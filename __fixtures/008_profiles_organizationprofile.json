@@ -1,0 +1,210 @@
+[
+  {
+    "model": "profiles.organizationprofile",
+    "pk": 1,
+    "fields": {
+      "polymorphic_ctype": [
+        "profiles",
+        "packhouseexporterprofile"
+      ],
+      "name": "Tezil S.A. de C.V",
+      "organization": 1,
+      "country": 158,
+      "state": 2282,
+      "city": 25743,
+      "district": 87096,
+      "postal_code": "58280",
+      "neighborhood": "Nueva Chapultepec",
+      "address": "Juan B. Ceballos",
+      "external_number": "845",
+      "internal_number": null,
+      "legal_category": 1,
+      "tax_id": "TAXIDTEZIL",
+      "email": "tezil@localhost",
+      "phone_number": "+524438227028",
+      "url": null,
+      "logo": "",
+      "product_kinds": [
+        8
+      ]
+    }
+  },
+  {
+    "model": "profiles.organizationprofile",
+    "pk": 2,
+    "fields": {
+      "polymorphic_ctype": [
+        "profiles",
+        "packhouseexporterprofile"
+      ],
+      "name": "Red Field Packers, LLC",
+      "organization": 2,
+      "country": 234,
+      "state": 3626,
+      "city": 42973,
+      "district": 128608,
+      "postal_code": "64129",
+      "neighborhood": "Kansas City Neighborhood",
+      "address": "Arrowhead Drive",
+      "external_number": "1",
+      "internal_number": null,
+      "legal_category": 33,
+      "tax_id": "TAX_RFP",
+      "email": "red-field-packers@localhost",
+      "phone_number": "+1-816-920-4237",
+      "url": "http://www.chiefs.com",
+      "logo": "",
+      "product_kinds": [
+        8
+      ]
+    }
+  },
+  {
+    "model": "profiles.organizationprofile",
+    "pk": 3,
+    "fields": {
+      "polymorphic_ctype": [
+        "profiles",
+        "packhouseexporterprofile"
+      ],
+      "name": "Green Bay Packers, Inc.",
+      "organization": 3,
+      "country": 234,
+      "state": 3649,
+      "city": 44597,
+      "district": 138070,
+      "postal_code": "54304",
+      "neighborhood": "Green Bay Neighborhood",
+      "address": "Lombardi Avenue",
+      "external_number": "1265",
+      "internal_number": null,
+      "legal_category": 33,
+      "tax_id": "TAX_GBP",
+      "email": "green-bay-packers@localhost",
+      "phone_number": "+1 920-569-7500",
+      "url": "http://www.packers.com",
+      "logo": "",
+      "product_kinds": [
+        8
+      ]
+    }
+  },
+  {
+    "model": "profiles.organizationprofile",
+    "pk": 4,
+    "fields": {
+      "polymorphic_ctype": [
+        "profiles",
+        "packhouseexporterprofile"
+      ],
+      "name": "Blue Coast Packers, Ltd.",
+      "organization": 4,
+      "country": 234,
+      "state": 3650,
+      "city": 44697,
+      "district": 138933,
+      "postal_code": "90301",
+      "neighborhood": "Inglewood Neighborhood",
+      "address": "Stadium Drive",
+      "external_number": "1001",
+      "internal_number": null,
+      "legal_category": 33,
+      "tax_id": "TAX_BCP",
+      "email": "blue-coast-packers@localhost",
+      "phone_number": "+1 424-541-9100",
+      "url": null,
+      "logo": "",
+      "product_kinds": [
+        8
+      ]
+    }
+  },
+  {
+    "model": "profiles.packhouseexporterprofile",
+    "pk": 1,
+    "fields": {
+      "packhouse_number": "1",
+      "registry_number": "1",
+      "sanitary_registry": "1",
+      "chain_of_custody": "1"
+    }
+  },
+  {
+    "model": "profiles.packhouseexporterprofile",
+    "pk": 2,
+    "fields": {
+      "packhouse_number": "2",
+      "registry_number": "2",
+      "sanitary_registry": "2",
+      "chain_of_custody": "2"
+    }
+  },
+  {
+    "model": "profiles.packhouseexporterprofile",
+    "pk": 3,
+    "fields": {
+      "packhouse_number": "3",
+      "registry_number": "3",
+      "sanitary_registry": "3",
+      "chain_of_custody": "3"
+    }
+  },
+  {
+    "model": "profiles.packhouseexporterprofile",
+    "pk": 4,
+    "fields": {
+      "packhouse_number": "4",
+      "registry_number": "4",
+      "sanitary_registry": "4",
+      "chain_of_custody": "4"
+    }
+  },
+  {
+    "model": "profiles.packhouseexportersetting",
+    "pk": 1,
+    "fields": {
+      "profile": 1,
+      "is_enabled": true,
+      "hostname": "uno.dev.certiffy.net",
+      "product_kinds": [
+        8
+      ]
+    }
+  },
+  {
+    "model": "profiles.packhouseexportersetting",
+    "pk": 2,
+    "fields": {
+      "profile": 2,
+      "is_enabled": true,
+      "hostname": "dos.dev.certiffy.net",
+      "product_kinds": [
+        8
+      ]
+    }
+  },
+  {
+    "model": "profiles.packhouseexportersetting",
+    "pk": 3,
+    "fields": {
+      "profile": 3,
+      "is_enabled": true,
+      "hostname": "tres.dev.certiffy.net",
+      "product_kinds": [
+        8
+      ]
+    }
+  },
+  {
+    "model": "profiles.packhouseexportersetting",
+    "pk": 4,
+    "fields": {
+      "profile": 4,
+      "is_enabled": true,
+      "hostname": "cuatro.dev.certiffy.net",
+      "product_kinds": [
+        8
+      ]
+    }
+  }
+]

@@ -1,0 +1,253 @@
+<!-- Prefactura para remisiones del departamento de Ventas-->
+{% extends "admin/packhouses/header-footer.html" %}
+{% load i18n %}
+
+{% block page_content %}
+{% load static %}
+<style>
+  @font-face {
+    font-family: 'Futura';
+    src: url('../../../static/fonts/Futura.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  body {
+    font-family: 'Futura', sans-serif;
+  }
+
+.flexbox-info {
+    display: flex;
+    margin-bottom: 5px;
+}
+.flexbox-info > div {
+    width: 50%;
+    background: #fff;
+}
+.flexbox-info > div p {
+    margin-top: 0px;
+    padding-left: 5px;
+    border-bottom: 1px solid black;
+}
+
+.title{
+    display: flex;
+    background-color: #ffc600;
+    width: 100%;
+    height: 30px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 0px;
+    font-size: 10pt;
+}
+
+.title-2{
+    display: flex;
+    background-color: #ffc600;
+    width: 33%;
+    height: 35px;
+    padding-left: 2px;
+    border-left: 10px solid #123782;  
+    align-items: center;      
+}
+
+.details-table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.details-table th{
+    text-align: center;
+    background-color: #fff4cc;
+    vertical-align: middle;  
+    border: 1px solid #000000;  
+    min-height: 20px;
+    line-height: 20px;        
+    text-align: center;
+}
+.details-table td{
+    border: 1px solid #000;
+    padding-left: 5px;
+    min-height: 20px;
+    line-height: 20px; 
+}
+.cost-deduction-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 4px;
+}
+.cost-deduction-table th{
+    text-align: center;
+    background-color: #fff4cc;
+    vertical-align: middle;  
+    border: 1px solid #000000;  
+    min-height: 20px;
+    line-height: 20px;        
+    text-align: center;
+}
+.cost-deduction-table td{
+    border: 1px solid #000;
+    padding-left: 5px;
+    min-height: 20px;
+    line-height: 20px; 
+}
+
+/* Estilos para tabla de totales */
+.total_table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+/* Estilos para celdas dentro de .total_table */
+.total_table td {
+    border: 1px solid #000000;
+    text-align: left;
+    padding-left: 5px;
+    min-height: 20px;
+    line-height: 20px; 
+}
+</style>
+
+<div class="flexbox-info">
+    <div>
+        <p>{% translate "ORDER:" %} </p>
+        <p>{% translate "CLIENT:" %} </p>
+        <p>{% translate "TAX ID:" %} </p>
+    </div>
+    <div>
+        <p>{% translate "ADDRESS:" %} </p>
+        <p>{% translate "REGISTRATION DATE:" %} </p>
+        <p>{% translate "PAYMENT DATE:" %} </p>
+    </div>
+</div>
+
+<div>
+    <h3 class="title-2">{% translate "DETAILS" %}</h3>
+
+    <table class="details-table">
+        <thead>
+            <tr>
+                {% for header in headers %}
+                <th> {{ header }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                {% for item in row %}
+                <td>{{ item }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            
+        </tbody>
+    </table>
+
+    <div class="div-total"> <!-- adaptar acorde al manejo de totales (cantidad, kgs, precio) -->
+        <table class="total_table"> <!-- sugerencia si los subtotales se manejan en un ciclo-->
+            <tbody>
+                {% for label, total in totals.items %}
+                <tr>
+                    <td>{{ label }}: {{ total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <table class="total_table"> <!-- sugerencia si se maneja un subtotal fijo-->
+            <tbody>
+                <tr>
+                    <td>{% translate "TOTAL:" %} {{ total }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<div>
+    <h3 class="title-2">{% translate "COST" %}</h3>
+    <table class="cost-deduction-table">
+        <thead>
+            <tr>
+                <th>NAME</th>
+                <th style="width: 20%;">{% translate "TOTAL COST" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>{% translate "TOTAL EXPENSES" %}</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+    
+<div>
+    <h3 class="title-2">{% translate "DEDUCTIONS" %}</h3>
+    <table class="cost-deduction-table">
+        <thead>
+            <tr>
+                <th>{% translate "CONCEPT" %}</th>
+                <th style="width: 20%;">{% translate "AMOUNT" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>{% translate "TOTAL DEDUCTION" %}</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <table class="details-table" style="margin-top: 20px;">
+        <thead>
+            <tr>
+                <th>INVOICE SUBTOTAL</th>
+                <th>COST</th>
+                <th>DEDUCTIONS</th>
+                <th>TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top: 10px;">
+    <h2 class="title">{% translate "INVOICE OBSERVATIONS:" %} </h2>
+    <p style="border-bottom: 1px solid #000;">&nbsp;</p>
+</div>
+
+<div style="display: flex; justify-content: space-between; margin-top: 30px;">
+    <div style="width: 40%; display: flex; flex-direction: column; align-items: center;">
+        <p style="margin-top: 5px; text-align: center;">{% translate "PREPARED BY" %}</p>
+        <p style="border-bottom: 1px solid black; width: 80%; padding-bottom: 10px; text-align: center;"></p>
+        <p style="margin-top: 0px; text-align: center;">Nombre de quien elabora</p>
+    </div>
+    <div style="width: 40%; display: flex; flex-direction: column; align-items: center;">
+        <p style="margin-top: 5px; text-align: center;">{% translate "RECEIVED BY" %}</p>
+        <p style="border-bottom: 1px solid black; width: 80%; padding-bottom: 10px; text-align: center;"></p>
+        <p style="margin-top: 0px; text-align: center;">Nombre de quien recibe</p>
+    </div>
+</div>
+
+
+{% endblock page_content %}

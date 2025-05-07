@@ -1,0 +1,172 @@
+<!-- Estado de Cuenta para Ventas-->
+{% extends "admin/packhouses/header-footer.html" %}
+{% load i18n %}
+
+{% block page_content %}
+{% load static %}
+<style>
+  @font-face {
+    font-family: 'Futura';
+    src: url('../../../static/fonts/Futura.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  body {
+    font-family: 'Futura', sans-serif;
+  }
+
+/* Sección del título*/
+.title-container {
+    margin-top: 0px;
+}
+
+.title {
+    margin: 0;
+    padding: 10px 0;
+}
+
+.title{
+    display: flex;
+    background-color: #ffc600;
+    width: 100%;
+    height: 30px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 0px;
+    font-size: 10pt;
+}
+
+.flexbox-remision {
+    display: flex;
+    margin-bottom: 5px;
+}
+
+.flexbox-remision > div {
+    width: 50%;
+    background: #fff;
+}
+.flexbox-remision > div p {
+    border-bottom: 1px solid black;
+}
+.flexbox-general {
+    display: flex;
+    gap: 10px; 
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+.flexbox-general > div {
+    width: 50%;
+    padding-left: 10px;
+    background: #fff;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+.transaction-table{
+    margin-top: 5px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 4px;
+}
+
+.transaction-table th{
+    text-align: center;
+    background-color: #fff4cc;
+    vertical-align: middle;  
+    border: 1px solid #000000;  
+    min-height: 25px;
+    line-height: 25px;        
+    text-align: center;
+}
+.transaction-table td {
+    border: 1px solid #000;
+    text-align: left;
+    min-height: 20px; 
+    vertical-align: middle;
+    padding-left: 3px;
+}
+
+</style>
+
+{% if model_type == 1 %}
+<div class="title-container">
+    <h2 class="title">{% translate "NATIONAL BILLING:" %} 0</h2>
+</div>
+{% elif model_type == 2 %}
+<div class="title-container">
+    <h2 class="title">{% translate "EXPORTING BILLING:" %} 0</h2>
+</div>
+{% endif %}
+
+<div class="flexbox-remision">
+    <div>
+        <p>{% translate "CLIENT:" %} </p>
+        <p>{% translate "CLIENT TAX ID:" %} </p>
+        <p>{% translate "DETAILS:" %} </p>
+    </div>
+    <div>
+        <p>{% translate "DATE:" %} </p>
+        <p>&nbsp;</p>
+        <p>{% translate "STATUS:" %} </p>
+    </div>
+</div>
+
+<div>
+    <h2 class="title">{% translate "GENARAL SUMMARY" %}</h2>
+    <div class="flexbox-general">
+        <div>
+            <p>{% translate "FRUIT (+):" %} </p>
+            <p>{% translate "INTERNAL TRANSACTIONS:" %} </p>
+            <p>{% translate "WITHDRAWALS (+):" %}</p>
+            <p>{% translate "DEDUCTIONS (-):" %} </p>
+            <p>{% translate "TOTAL:" %} </p>
+        </div>
+        <div>
+            <p>{% translate "TOTAL:" %} </p>
+            <p>{% translate "DEPOSIT/CREDIT (-):" %} </p>
+            <p>{% translate "FEES (-):" %} </p>
+            <p>{% translate "REVERSAL / CANCELLATIONS" %}</p>
+            <p>{% translate "CURRENT BALANCE:" %}</p>
+        </div>
+    </div>
+</div>
+
+<div>
+    <h2 class="title">{% translate "TRANSACTION DETAILS" %}</h2>
+    <table class="transaction-table">
+        <thead>
+            <tr>
+                <th>{% translate "DATE" %}</th>
+                <th>{% translate "USER" %}</th>
+                <th>{% translate "NOTE" %}</th>
+                <th>{% translate "PAYMENT METHOD" %}</th>
+                <th>{% translate "STATUS" %}</th>
+                <th>{% translate "BALANCE" %}</th>
+                <th>{% translate "DEPOSIT" %}</th>
+                <th style="width: 15%;">{% translate "NEW BALANCE" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if data %}
+                {% for row in data %}
+                <tr>
+                    {% for item in row %}
+                    <td>{{ item }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td></td><td></td><td></td><td></td>
+                    <td></td><td></td><td></td><td></td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align: center;">{% translate "NO DATA AVAILABLE" %}</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock page_content %}

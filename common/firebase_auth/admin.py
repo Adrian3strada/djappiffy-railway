@@ -10,5 +10,5 @@ License: Apache 2.0
 from django.contrib import admin
 from .models import FirebaseUser, FirebaseUserProvider
 
-admin.site.register(FirebaseUser)
-admin.site.register(FirebaseUserProvider)
+# admin.site.register(FirebaseUser)
+# admin.site.register(FirebaseUserProvider)

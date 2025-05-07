@@ -1,0 +1,20 @@
+{% load i18n %}
+{% load admin_urls %}
+
+{% if has_export_permission %}
+<button id="export-sheet" class="btn btn-info" style="margin-right: 10px;">
+    <i class="fas fa-file-excel"></i> {% translate "Export Excel" %}
+</button>
+{% endif %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var exportButton = document.getElementById("export-sheet");
+    if (exportButton) {
+        exportButton.addEventListener("click", function () {
+            var baseUrl = "{% url opts|admin_urlname:'export' %}{{ cl.get_query_string|safe }}";
+            window.open(baseUrl, '_blank');
+        });
+    }
+});
+</script>

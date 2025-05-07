@@ -8,6 +8,9 @@
 db.spatialite
 */migrations/0*
 */*/migrations/0*
+application/settings/local.py
+__fixtures/000_cities_light_fixture.json
+__fixtures/010_catalogs_dev.json
 
 
 ### Emacs ###
@@ -106,6 +109,7 @@ atlassian-ide-plugin.xml
 
 # Cursive Clojure plugin
 .idea/replstate.xml
+.idea/*
 
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
