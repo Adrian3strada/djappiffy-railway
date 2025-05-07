@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateCapacityUnitCategoryField() {
     console.log("updateCapacityUnitCategoryField", categoryField.val());
-    const packagingContainerKinds = ['packaging_containment', 'packaging_separator', 'packaging_presentation'];
+    const packagingContainerKinds = ['packaging_containment', 'packaging_separator', 'packaging_presentation', 'harvest_container'];
     if (categoryField.val()) {
       if (packagingContainerKinds.includes(categoryField.val())) {
              capacityUnitCategoryField.closest('.form-group').fadeIn();

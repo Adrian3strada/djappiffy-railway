@@ -36,6 +36,7 @@ from common.base.models import FoodSafetyProcedure
 class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
+
     
     # Nueva FK obligatoria a Country
     country = models.ForeignKey(
@@ -47,28 +48,33 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
 
     countries = models.ManyToManyField(Country, verbose_name=_('Countries'))
 
+    countries = models.ManyToManyField(
+        Country,
+        verbose_name=_('Country'),
+    )
+
     is_mixable = models.BooleanField(
         default=True,
         verbose_name=_('Is mixable'),
         help_text=_('Conditional that does not allow mixing fruit with other markets')
     )
-    
+
     label_language = models.CharField(
         max_length=20,
         verbose_name=_('Label language'),
         choices=settings.LANGUAGES,
         default='es'
     )
-    
+
     address_label = CKEditor5Field(
         blank=True,
         null=True,
         verbose_name=_('Address of packaging house to show in label'),
         help_text=_('Leave blank to keep the default address defined in the organization')
     )
-    
+
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    
+
     organization = models.ForeignKey(
         Organization,
         verbose_name=_('Organization'),
@@ -219,7 +225,7 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     verbose_name=_('Standard size'),
     on_delete=models.PROTECT,
     null=True,
-    blank=True, 
+    blank=True,
 )
 
     name = models.CharField(max_length=160, verbose_name=_('Name'))
@@ -804,7 +810,7 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
     def clean(self):
         value = self.capacity
         if self.kind.category in ['packaging_containment', 'packaging_presentation',
-                                  'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel']:
+                                  'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel', 'harvest_container']:
             min_value = 1 if self.kind.capacity_unit_category in ['pieces'] else 0.01
             validation_error = _('Capacity must be at least 1 for this kind.') if self.kind.capacity_unit_category in [
                 'pieces'] else _('Capacity must be at least 0.01 for this kind.')

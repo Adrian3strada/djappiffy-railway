@@ -1137,7 +1137,7 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
         if db_field.name == "capacity":
             print("capacity")
-            packaging_containment_categories = ['packaging_containment', 'packaging_presentation', 'packaging_separator', 'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel']
+            packaging_containment_categories = ['packaging_containment', 'packaging_presentation', 'packaging_separator', 'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel', 'harvest_container']
             print("packaging_containment_categories", packaging_containment_categories)
             print("request", request)
             if request.POST:

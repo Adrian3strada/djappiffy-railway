@@ -1,9 +1,11 @@
 from django.contrib import admin
-from common.profiles.models import UserProfile  # (Si no se usa, se puede eliminar)
+from wagtail.admin.templatetags.wagtailadmin_tags import status
+
+from common.profiles.models import UserProfile
 from .models import (Requisition, RequisitionSupply, PurchaseOrder,
                      PurchaseOrderSupply, PurchaseOrderCharge, PurchaseOrderDeduction,
                      PurchaseOrderPayment, ServiceOrder, ServiceOrderCharge, ServiceOrderDeduction,
-                     ServiceOrderPayment
+                     ServiceOrderPayment, PurchaseMassPayment
                      )
 from packhouses.catalogs.models import Supply, Provider, Service
 from django.utils.translation import gettext_lazy as _
@@ -17,7 +19,7 @@ from common.base.mixins import (
 )
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import (RequisitionForm, PurchaseOrderForm, PurchaseOrderPaymentForm, RequisitionSupplyForm,
-                    ServiceOrderForm, ServiceOrderPaymentForm
+                    ServiceOrderForm, ServiceOrderPaymentForm, PurchaseMassPaymentForm
                     )
 from django.utils.html import format_html, format_html_join
 from django.urls import reverse
@@ -37,6 +39,10 @@ from django.db import transaction
 from django.contrib.messages import constants as message_constants
 from django.urls import path
 import datetime
+from .utils import create_related_payments_and_update_balances
+from packhouses.receiving.models import Batch, BatchStatusChange
+from django.db.models import OuterRef, Subquery, DateTimeField, ExpressionWrapper, Q, F
+from django.utils.timezone import now, timedelta
 
 
 class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
@@ -995,24 +1001,33 @@ class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.
         return HttpResponseRedirect(redirect_url)
 
     def save_related(self, request, form, formsets, change):
+        """
+        Guarda los formsets asociados a la orden de servicio y luego
+        recalcula total_cost y balance_payable con base en los objetos ya guardados.
+
+        Este method es responsable de asegurar que el balance no sea negativo
+        y de reflejar los valores contables correctos en la orden.
+        """
         super().save_related(request, form, formsets, change)
-        obj = form.instance
-        data = obj.simulate_balance()
 
+        # Obtenemos la instancia ya guardada
+        service_order = form.instance
+
+        # Calculamos el balance real basado en objetos ya persistidos
+        data = service_order.simulate_balance()
+
+        # Si el balance resulta negativo, lanzamos advertencia (pero no bloqueamos guardado)
         if data['balance'] < 0:
-            if not hasattr(request, '_balance_error_shown'):
-                request._balance_error_shown = True
-                self.message_user(
-                    request,
-                    _(f"The final balance would be negative (${data['balance']}). "
-                      f"Cost: ${data['base_cost']} + Tax: ${data['tax_amount']} + Charges: ${data['charges_total']} "
-                      f"- Deductions: ${data['deductions_total']} - Payments: ${data['payments_total']}."),
-                    level=messages.ERROR
-                )
-            return
+            raise ValidationError(
+                _(f"Cannot save the service order because the final balance would be negative (${data['balance']}). "
+                  f"Cost: ${data['base_cost']} + Tax: ${data['tax_amount']} + Charges: ${data['charges_total']} "
+                  f"- Deductions: ${data['deductions_total']} - Payments: ${data['payments_total']}.")
+            )
 
-        obj.balance_payable = data['balance']
-        obj.save(update_fields=['balance_payable'])
+        # Guardamos los valores contables definitivos en la orden de servicio
+        service_order.total_cost = data['total_cost']
+        service_order.balance_payable = data['balance']
+        service_order.save(update_fields=["total_cost", "balance_payable"])
 
     def response_change(self, request, obj):
         data = obj.simulate_balance()
@@ -1035,25 +1050,31 @@ class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.
         model = formset.model
         service_order = form.instance
 
+        # Verificamos que haya datos limpios del formset (evita errores en formularios vacíos)
         if not hasattr(formset, 'cleaned_data'):
             return
 
+        # Obtenemos instancias existentes de este model relacionadas a la orden de servicio
         existing_qs = {obj.pk: obj for obj in model.objects.filter(service_order=service_order)}
         to_delete = []
 
+        # Detectamos instancias marcadas para eliminación
         for form_data in formset.cleaned_data:
             if form_data.get('DELETE') and form_data.get('id'):
                 obj = form_data['id']
                 if obj.pk in existing_qs:
                     to_delete.append(existing_qs.pop(obj.pk))
 
+        # Nuevas instancias que vienen del formset pero aún no han sido guardadas
         new_instances = formset.save(commit=False)
 
         for instance in new_instances:
             existing_qs[instance.pk] = instance
 
+        # Lista completa de instancias que vamos a evaluar
         combined = list(existing_qs.values())
 
+        # Cálculo de componentes del balance
         total_cost = Decimal(service_order.cost or 0)
         total_charges = Decimal('0.00')
         total_deductions = Decimal('0.00')
@@ -1072,7 +1093,9 @@ class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.
         tax_amount = (total_cost * tax_decimal).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
         balance = total_cost + tax_amount + total_charges - total_deductions - total_payments
+        balance = balance.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
+        # Validación de integridad contable
         if balance < 0:
             if not hasattr(request, '_balance_error_shown'):
                 request._balance_error_shown = True
@@ -1085,9 +1108,11 @@ class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.
                 )
             return
 
+        # Eliminamos instancias marcadas para borrado
         for obj in to_delete:
             obj.delete()
 
+        # Guardamos nuevas instancias (asignando usuario si aplica)
         for instance in new_instances:
             if not instance.pk:
                 instance.created_by = request.user
@@ -1099,14 +1124,38 @@ class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.
         if db_field.name == "provider":
             kwargs["queryset"] = Provider.objects.filter(category="service_provider", is_enabled=True)
 
-        if db_field.name == "service":
-            provider_id = request.GET.get('provider') or request.POST.get('provider')
+        elif db_field.name == "batch":
+            now = timezone.now()
+            one_month_ago = now - timedelta(days=30)
 
+            # Filtramos los lotes por organización actual
+            org = getattr(request, 'organization', None)
+            if org:
+                batches = Batch.objects.filter(organization=org).select_related('organization')
+            else:
+                batches = Batch.objects.all()
+
+            def is_batch_valid(batch):
+                last_status = batch.last_operational_status_change()
+                if not last_status:
+                    return False  # Si no hay historial quiere decir que esta pendiente, entonces pasa
+                if last_status.new_status in ['canceled', 'pending']:
+                    return False
+                if last_status.new_status == 'finalized' and last_status.changed_at < one_month_ago:
+                    return False
+                return True
+
+            valid_batches = [b.pk for b in batches if is_batch_valid(b)]
+            kwargs["queryset"] = Batch.objects.filter(pk__in=valid_batches)
+
+        elif db_field.name == "service":
+            provider_id = request.GET.get('provider') or request.POST.get('provider')
             if provider_id:
                 kwargs["queryset"] = Service.objects.filter(service_provider_id=provider_id, is_enabled=True)
             else:
                 kwargs["queryset"] = Service.objects.none()
 
+            # Preseleccionar en modo edición
             if request.resolver_match and request.resolver_match.url_name.endswith('_change'):
                 obj_id = request.resolver_match.kwargs.get('object_id')
                 if obj_id:
@@ -1130,3 +1179,37 @@ class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.
             'js/admin/forms/packhouses/purchases/serviceorder_dynamic_service.js',
         )
 
+@admin.register(PurchaseMassPayment)
+class PurchaseMassPaymentAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.ModelAdmin):
+    """
+    Admin para gestionar pagos masivos de órdenes de compra.
+
+    Permite registrar pagos masivos y verificar su estado.
+    """
+    form = PurchaseMassPaymentForm
+    fields = ('category', 'provider', 'currency', 'purchase_order', 'service_order', 'payment_kind',
+              'additional_inputs', 'bank', 'payment_date', 'amount', 'comments')
+    list_display = ('category','provider', 'amount', 'currency', 'payment_date', 'status', 'created_by')
+    list_filter = ('category', 'status')
+    readonly_fields = ('status', 'created_by', 'created_at', 'canceled_by', 'cancellation_date')
+
+    def save_model(self, request, obj, form, change):
+        """
+        Guarda el objeto principal (sin relaciones M2M).
+        """
+        if not change:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
+    def save_related(self, request, form, formsets, change):
+        """
+        Se ejecuta después de guardar las relaciones M2M.
+        Aquí ya podemos crear los pagos individuales
+        """
+        super().save_related(request, form, formsets, change)
+
+        if not change:
+            create_related_payments_and_update_balances(form.instance)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/purchases/purchase_mass_payments.js',)
