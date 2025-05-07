@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
             availableForProcessing.prop('disabled', true).prop('checked', false);
             operationalStatusField.val('canceled').trigger('change');
         }
-        if (reviewStatus === 'quarantine' || reviewStatus === 'quarantine') {
+        if (reviewStatus === 'quarantine') {
             availableForProcessing.prop('disabled', true).prop('checked', false);
             operationalStatusField.val('pending').trigger('change');
         }
