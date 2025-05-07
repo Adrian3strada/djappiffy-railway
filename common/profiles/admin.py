@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (UserProfile, OrganizationProfile, ProducerProfile,
                      ImporterProfile, PackhouseExporterProfile,
-                     TradeExporterProfile, PackhouseExporterSetting)
+                     TradeExporterProfile, PackhouseExporterSetting, EudrOperatorProfile)
 from django.utils.translation import gettext_lazy as _
 from cities_light.models import Country, Region, SubRegion, City
 from organizations.models import Organization
@@ -190,4 +190,8 @@ class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
 
 @admin.register(TradeExporterProfile)
 class TradeExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
+    pass
+
+@admin.register(EudrOperatorProfile)
+class EudrOperatorProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
     pass
