@@ -10,9 +10,9 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": 
+    "countries": [
       158
-    
+    ]
   }
 },
 {
@@ -26,9 +26,9 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 2,
-    "countries": 
+    "countries": [
       158
-    
+    ]
   }
 },
 {
@@ -42,9 +42,9 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": 
+    "countries": [
       234
-    
+    ]
   }
 },
 {
@@ -58,9 +58,9 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": 
+    "countries": [
       38
-    
+    ]
   }
 },
 {
@@ -74,9 +74,9 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": 
+    "countries": [
       49
-    
+    ]
   }
 },
 {
@@ -90,9 +90,9 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
-    "countries": 
+    "countries": [
       211
-    
+    ]
   }
 },
 {
