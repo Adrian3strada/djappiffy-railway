@@ -110,10 +110,10 @@ class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
               'label_language', 'address_label', 'is_enabled')
 
     def get_countries(self, obj):
-        return obj.countries.name if obj.countries else "-"
+        return ", ".join([m.name for m in obj.countries.all()])
 
-
-    get_countries.short_description = _('countries')
+    get_countries.short_description = _('Countries')
+    get_countries.admin_order_field = 'countries__name'
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
@@ -133,7 +133,7 @@ class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             obj.address_label = None
         super().save_model(request, obj, form, change)
 
-
+    
 # /Markets
 
 
@@ -519,13 +519,13 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
                 market = Market.objects.get(id=market_id)
                 product = Product.objects.get(id=product_id)
                 queryset = ProductKindCountryStandardSize.objects.filter(standard__product_kind=product.kind,
-                                                                         standard__country=market.countries,
+                                                                         standard__country_id__in=[country.id for country in market.countries.all()],
                                                                          is_enabled=True)
                 kwargs["queryset"] = queryset
                 formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
                 formfield.required = queryset.exists()
                 standards = queryset.values_list('standard', flat=True).distinct()
-                if market.countries: 
+                if market.countries.all().count() > 1:
                     formfield.label_from_instance = lambda item: f"{item.standard.country.name}: {item.name}" + (
                         f"({item.standard.name})" if standards.count() > 1 else "")
                 else:
@@ -572,10 +572,10 @@ class ClientShipAddressInline(admin.StackedInline):
     @uppercase_formset_charfield('address')
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        formset.form.base_fields['country'].initial = obj.country if obj and obj.country else None
+        formset.form.base_fields['country'].initial = obj.country.all() if obj and obj.country.exists() else None
         return formset
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
         parent_object_id = request.resolver_match.kwargs.get("object_id")
         parent_obj = Client.objects.get(id=parent_object_id) if parent_object_id else None
         markets_countries = None
@@ -586,49 +586,48 @@ class ClientShipAddressInline(admin.StackedInline):
             market_id = parent_obj.market_id if parent_obj else None
         if market_id:
             market = Market.objects.filter(id=market_id).first()
-            if market and market.countries:
-                markets_countries = [market.countries.id]
+            if market and market.countries.exists():
+                markets_countries = market.countries.all()
             else:
                 markets_countries = []
 
-
         if db_field.name == "country":
             if markets_countries:
-                kwargs["queryset"] = Country.objects.filter(id__in=markets_countries)
+                kwargs["queryset"] = Country.objects.filter(id__in=[country.id for country in markets_countries])
             else:
                 kwargs["queryset"] = Country.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
 
         if db_field.name == "state":
             if markets_countries:
-                kwargs["queryset"] = Region.objects.filter(country_id__in=markets_countries)
+                kwargs["queryset"] = Region.objects.filter(country_id__in=[country.id for country in markets_countries])
             else:
                 kwargs["queryset"] = Region.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
 
         if db_field.name == "city":
             if markets_countries:
-                kwargs["queryset"] = SubRegion.objects.filter(country_id__in=markets_countries)
+                kwargs["queryset"] = SubRegion.objects.filter(country_id__in=[country.id for country in markets_countries])
             else:
                 kwargs["queryset"] = SubRegion.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
 
         if db_field.name == "district":
             if markets_countries:
-                kwargs["queryset"] = City.objects.filter(country_id__in=markets_countries)
+                kwargs["queryset"] = City.objects.filter(country_id__in=[country.id for country in markets_countries])
             else:
                 kwargs["queryset"] = City.objects.none()
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
 
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/client_shipping_address_inline.js',)
@@ -1551,16 +1550,11 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.required = True
             if organization and product_kind and market_id:
-        # Obtén el mercado
-                market = Market.objects.get(id=market_id)
+                market = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
         
-        # Accede al país asociado al mercado (sería un solo objeto 'Country')
-                market_country = market.countries
-        
-        # Ahora usa 'market_country' como un solo objeto, no un iterable
                 queryset = ProductKindCountryStandardPackaging.objects.filter(
                     standard__product_kind=product_kind,
-                    standard__country=market_country  # Compara con un solo objeto 'Country'
+                    standard__country__in=market_country  
                 )
         
                 kwargs["queryset"] = queryset

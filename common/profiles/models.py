@@ -107,6 +107,8 @@ class OrganizationProfile(PolymorphicModel):
         City,
         on_delete=models.PROTECT,
         verbose_name=_('District'),
+        blank=True,
+        null=True
     )
     postal_code = models.CharField(
         max_length=10,
@@ -170,7 +172,7 @@ class OrganizationProfile(PolymorphicModel):
     ### Products
     product_kinds = models.ManyToManyField(
         ProductKind,
-        blank=False,
+        blank=True,
         verbose_name=_('Product kinds'),
     )
 
@@ -235,3 +237,18 @@ class TradeExporterProfile(OrganizationProfile):
     class Meta:
         verbose_name = _('Trade exporter profile')
         verbose_name_plural = _('Trade exporter profiles')
+
+
+class EudrOperatorProfile(OrganizationProfile):
+
+    eori_number = models.CharField(
+        max_length=30,
+        blank=True,
+        null=True,
+        verbose_name=_("EORI number"),
+        help_text=_("Required for importers"),
+    )
+
+    class Meta: 
+        verbose_name = _('EUDR operator profile')
+        verbose_name_plural = _('EUDR operator profiles')

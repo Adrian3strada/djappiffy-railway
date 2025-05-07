@@ -2,8 +2,8 @@ from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from .models import StorehouseEntrySupply, AdjustmentInventory, InventoryTransaction
-from packhouses.purchases.models import PurchaseOrderSupply
+from .models import StorehouseEntrySupply, AdjustmentInventory, InventoryTransaction, StorehouseEntry
+from packhouses.purchases.models import PurchaseOrderSupply, PurchaseOrder
 from decimal import Decimal
 from django.db.models import DecimalField, Value, Sum, F, Subquery, OuterRef, Q
 from django.db.models.functions import Coalesce
@@ -46,8 +46,6 @@ class StorehouseEntrySupplyInlineFormSet(BaseInlineFormSet):
                 for form in self.forms:
                     if 'purchase_order_supply' in form.fields:
                         form.fields['purchase_order_supply'].queryset = qs
-
-
 
 class AdjustmentInventoryForm(forms.ModelForm):
     """
@@ -129,3 +127,26 @@ class AdjustmentInventoryForm(forms.ModelForm):
                 )
 
         return obj
+
+class StorehouseEntryForm(forms.ModelForm):
+    class Meta:
+        model = StorehouseEntry
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
+        # Personalizamos el queryset del campo purchase_order
+        if 'purchase_order' in self.fields:
+            qs = PurchaseOrder.objects.filter(status='ready')
+            if request and hasattr(request, 'organization'):
+                qs = qs.filter(organization=request.organization)
+
+            # Redefinimos el campo con label personalizado
+            self.fields['purchase_order'] = forms.ModelChoiceField(
+                queryset=qs,
+                label=_("Purchase Order"),
+                widget=self.fields['purchase_order'].widget
+            )
+            self.fields['purchase_order'].label_from_instance = lambda obj: f"{obj.ooid} - {obj.provider.name}"
