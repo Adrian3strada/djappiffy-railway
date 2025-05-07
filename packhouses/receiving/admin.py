@@ -379,12 +379,12 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     def has_add_permission(self, request):
         return False
 
-    # def get_readonly_fields(self, request, obj=None):
-    #     status = list(self.readonly_fields)
-    #     # Si ya está aceptado, hacer el campo status solo lectura
-    #     if obj and obj.status == 'accepted':
-    #         status.append('status')
-    #     return status
+    def get_readonly_fields(self, request, obj=None):
+        status = list(self.readonly_fields)
+        # Si ya está aceptado, hacer el campo status solo lectura
+        if obj and obj.status == 'accepted':
+            status.append('status')
+        return status
 
     def get_urls(self):
         urls = super().get_urls()
@@ -656,7 +656,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
 
             for origen in fuentes:
                 origen.merged_into = destino
-                origen.review_status = 'in_another_batch'
+                origen.review_status = 'accepted'
                 origen.operational_status = 'in_another_batch'
                 origen.is_available_for_processing = False
                 origen.save(update_fields=[
