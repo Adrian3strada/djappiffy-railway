@@ -925,7 +925,7 @@ class PurchaseMassPayment(models.Model):
             )
             new_amount = sum(payment.amount for payment in payments)
         else:
-            # ⚠ Si no hay ni una ni otra, el monto se va a cero
+            # Si no hay ni una ni otra, el monto se va a cero.
             new_amount = Decimal('0.00')
 
         # Actualizamos el monto en el Mass Payment
