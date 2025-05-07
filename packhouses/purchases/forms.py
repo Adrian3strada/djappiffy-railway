@@ -176,6 +176,10 @@ class RequisitionSupplyForm(forms.ModelForm):
 
 
 class ServiceOrderForm(forms.ModelForm):
+    """
+    Formulario para orden de servicio. Solo realiza validaciones de campos individuales
+    y no intenta calcular balance ni total_cost. Ese control lo realiza el admin.
+    """
     class Meta:
         model = ServiceOrder
         fields = '__all__'
@@ -206,11 +210,6 @@ class ServiceOrderForm(forms.ModelForm):
         elif instance.category == 'for_batch':
             instance.start_date = datetime.date.today()
             instance.end_date = datetime.date.today()
-
-        # Recalcula el total_cost y balance_payable basado en simulate_balance
-        balance_data = instance.simulate_balance()
-        instance.total_cost = balance_data['total_cost']
-        instance.balance_payable = balance_data['balance']
 
         if commit:
             instance.save()
@@ -297,6 +296,14 @@ class PurchaseMassPaymentForm(forms.ModelForm):
             if instance.additional_inputs:
                 self.fields['additional_inputs'].initial = json.dumps(instance.additional_inputs)
 
+            # Etiquetas condicionales en purchase_order
+            self.fields['purchase_order'].label_from_instance = lambda obj: (
+                f"Folio {obj.ooid} - ${obj.balance_payable}"
+                if obj.balance_payable > 0
+                else f"Folio {obj.ooid}"
+            )
+
+
         for field_name in ['payment_kind', 'bank']:
             if hasattr(self.fields[field_name].widget, 'can_add_related'):
                 self.fields[field_name].widget.can_add_related = False
@@ -320,7 +327,7 @@ class PurchaseMassPaymentForm(forms.ModelForm):
 
         total_amount = Decimal('0.00')
 
-        # 🧮 Sumar balances según el tipo de orden
+        #  Sumar balances según el tipo de orden
         if category == 'purchase_order' and purchase_orders:
             total_amount = sum([
                 order.balance_payable for order in purchase_orders if order.balance_payable > 0
@@ -330,10 +337,10 @@ class PurchaseMassPaymentForm(forms.ModelForm):
                 order.balance_payable for order in service_orders if order.balance_payable > 0
             ])
 
-        # 👇 Reemplaza el valor manual con el calculado
+        #  Reemplaza el valor manual con el calculado
         cleaned_data['amount'] = total_amount
 
-        # 💥 Validación: si requiere banco y no se puso
+        #  Validación: si requiere banco y no se puso
         if payment_kind and getattr(payment_kind, 'requires_bank', False) and not bank:
             self.add_error('bank', _("This field is required for the selected payment kind."))
 

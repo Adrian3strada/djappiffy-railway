@@ -275,7 +275,7 @@ class PurchaseOrder(models.Model):
         """
         Representación legible de la orden de compra, usando el folio y el proveedor.
         """
-        return f"{self.ooid} - {self.provider.name} - ${self.balance_payable}"
+        return f"{self.ooid} - {self.provider.name}"
 
     class Meta:
         verbose_name = _("Purchase Order")
@@ -805,6 +805,11 @@ class PurchaseMassPayment(models.Model):
     provider = models.ForeignKey(
         Provider,
         verbose_name=_("Provider"),
+        on_delete=models.PROTECT
+    )
+    currency = models.ForeignKey(
+        Currency,
+        verbose_name=_("Currency"),
         on_delete=models.PROTECT
     )
     purchase_order = models.ManyToManyField(

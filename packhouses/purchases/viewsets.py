@@ -41,8 +41,7 @@ class PaymentKindAdditionalInputViewSet(viewsets.ModelViewSet):
 
 class PurchaseOrderViewSet(viewsets.ModelViewSet):
     serializer_class = PurchaseOrderSerializer
-    queryset = PurchaseOrder.objects.all()
-    filterset_fields = ['id', 'ooid', 'provider']
+    filterset_fields = ['id', 'ooid', 'provider', 'currency', 'status']
     filter_backends = [DjangoFilterBackend]
     pagination_class = None
 
@@ -51,13 +50,26 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return PurchaseOrder.objects.filter(organization=self.request.organization)
+        qs = PurchaseOrder.objects.filter(
+            organization=self.request.organization,
+            balance_payable__gt=0
+        )
+
+        provider = self.request.query_params.get('provider')
+        currency = self.request.query_params.get('currency')
+
+        filters = {'status': 'closed'}
+        if provider:
+            filters['provider_id'] = provider
+        if currency:
+            filters['currency_id'] = currency
+
+        return qs.filter(**filters)
 
 
 class ServiceOrderViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceOrderSerializer
-    queryset = ServiceOrder.objects.all()
-    filterset_fields = ['id', 'provider']
+    filterset_fields = ['id', 'provider', 'currency']
     filter_backends = [DjangoFilterBackend]
     pagination_class = None
 
@@ -66,4 +78,18 @@ class ServiceOrderViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return ServiceOrder.objects.filter(organization=self.request.organization)
+        qs = ServiceOrder.objects.filter(
+            organization=self.request.organization,
+            balance_payable__gt=0
+        )
+
+        provider = self.request.query_params.get('provider')
+        currency = self.request.query_params.get('currency')
+
+        if provider:
+            qs = qs.filter(provider_id=provider)
+        if currency:
+            qs = qs.filter(currency_id=currency)
+
+        return qs
+

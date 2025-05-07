@@ -116,6 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const cat = select.val();
         const provider = form.find('select[name="provider"]');
         toggleOrderFields(form, cat);
+        form.find('select[name="provider"]').val(null).trigger('change');
 
         if (!provider.length) return;
 
@@ -136,16 +137,25 @@ document.addEventListener("DOMContentLoaded", function () {
         return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
     }
 
-    function handleProviderChange(providerField, form) {
-        const providerId = providerField.val();
+    function handleProviderAndCurrencyChange(form) {
+        const providerId = form.find('select[name="provider"]').val();
+        const currencyId = form.find('select[name="currency"]').val();
         const category = form.find('select[name="category"]').val();
         const purchase = form.find('select[name="purchase_order"]');
         const service = form.find('select[name="service_order"]');
 
-        if (!providerId || !category) return;
+        if (!providerId || !currencyId || !category) {
+            form.find('select[name="purchase_order"]').empty().val(null).trigger('change');
+            form.find('select[name="service_order"]').empty().val(null).trigger('change');
+            return;
+        }
+
+        // Limpiar selección actual antes de cargar nuevas opciones
+        purchase.val(null).trigger('change');
+        service.val(null).trigger('change');
 
         if (category === 'purchase_order') {
-            fetchOptions(`/rest/v1/purchases/purchase-order/?provider=${providerId}`).then(data => {
+            fetchOptions(`/rest/v1/purchases/purchase-order/?provider=${providerId}&currency=${currencyId}`).then(data => {
                 purchase.empty();
                 data.forEach(o => purchase.append(`<option value="${o.id}" data-balance="${o.balance_payable}">Folio ${o.ooid} - $${o.balance_payable}</option>`));
             });
@@ -153,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (category === 'service_order') {
-            fetchOptions(`/rest/v1/purchases/service-order/?provider=${providerId}`).then(data => {
+            fetchOptions(`/rest/v1/purchases/service-order/?provider=${providerId}&currency=${currencyId}`).then(data => {
                 service.empty();
                 data.forEach(o => {
                     const label = o.category === 'time_period'
@@ -167,7 +177,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function updateAmountField(form) {
-        // Solo calcular si NO estamos editando
         const isEditing = form.find('input[name="amount"]').data('original') === true;
         if (isEditing) return;
 
@@ -194,25 +203,34 @@ document.addEventListener("DOMContentLoaded", function () {
     $form.find('input[name="amount"]').data('original', $form.find('input[name="amount"]').val() !== "");
     const categoryField = $form.find('select[name="category"]');
     const providerField = $form.find('select[name="provider"]');
+    const currencyField = $form.find('select[name="currency"]');
     const paymentKindField = $form.find('select[name="payment_kind"]');
     const purchaseField = $form.find('select[name="purchase_order"]');
     const serviceField = $form.find('select[name="service_order"]');
 
     purchaseField.on('change', () => updateAmountField($form));
     serviceField.on('change', () => updateAmountField($form));
-
     paymentKindField.on('change', () => handlePaymentKindChange(paymentKindField, $form));
     categoryField.on('change', () => handleCategoryChange(categoryField, $form));
-    providerField.on('change', () => handleProviderChange(providerField, $form));
+    providerField.on('change', () => handleProviderAndCurrencyChange($form));
+    currencyField.on('change', () => handleProviderAndCurrencyChange($form));
 
     const hasPurchase = purchaseField.val() && purchaseField.val().length > 0;
     const hasService = serviceField.val() && serviceField.val().length > 0;
     const isEditing = hasPurchase || hasService;
 
+    // Si no hay categoría seleccionada al cargar, limpiamos el select de proveedores
+    if (!categoryField.val()) {
+        providerField.empty().append('<option value="">---------</option>');
+    }
+
     if (!isEditing) {
         categoryField.trigger('change');
-        providerField.trigger('change');
-    } else {
+        // Solo si ya hay categoría, entonces cargamos proveedores
+        if (categoryField.val()) {
+            providerField.trigger('change');
+        }
+    }else {
         toggleOrderFields($form, categoryField.val());
         updateAmountField($form);
     }

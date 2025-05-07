@@ -5,7 +5,7 @@ from common.base.mixins import (
 )
 from .models import StorehouseEntry, StorehouseEntrySupply, InventoryTransaction, AdjustmentInventory
 from packhouses.purchases.models import PurchaseOrderSupply
-from .forms import StorehouseEntrySupplyInlineFormSet,AdjustmentInventoryForm
+from .forms import StorehouseEntrySupplyInlineFormSet,AdjustmentInventoryForm, StorehouseEntryForm
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.contrib import messages
@@ -113,7 +113,7 @@ class StorehouseEntryAdmin(ByOrganizationAdminMixin):
     actualizando dinámicamente cantidades, precios y transacciones de inventario.
     También recalcula automáticamente el balance de la orden de compra al recibir insumos.
     """
-
+    form = StorehouseEntryForm
     inlines = [StorehouseEntrySupplyInline]
     list_display = ('purchase_order', 'created_at', 'user')
     fields = ('purchase_order',)
