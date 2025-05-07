@@ -261,4 +261,4 @@ def on_vehicle_change(sender, instance, **kwargs):
 @receiver(post_save, sender=ScheduleHarvestContainerVehicle)
 @receiver(post_delete, sender=ScheduleHarvestContainerVehicle)
 def on_container_change(sender, instance, **kwargs):
-    instance.harvest_cutting.harvest_cutting.recalc_weight_expected()
+    instance.harvest_cutting.recalc_weight_expected()
