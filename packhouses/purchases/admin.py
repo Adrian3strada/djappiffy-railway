@@ -661,42 +661,52 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
         Si el pago estaba asociado a un Mass Payment, se remueve de la relación y se recalcula el total.
         """
         try:
-            payment = PurchaseOrderPayment.objects.get(id=payment_id)
+            with transaction.atomic():
+                payment = PurchaseOrderPayment.objects.select_for_update().get(id=payment_id)
 
-            # Marcar el pago como cancelado
-            payment.status = "canceled"
-            payment.cancellation_date = timezone.now()
-            payment.canceled_by = request.user
-            payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
+                # Marcar el pago como cancelado
+                payment.status = "canceled"
+                payment.cancellation_date = timezone.now()
+                payment.canceled_by = request.user
+                payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
 
-            # Recalcular el balance de la orden de compra
-            payment.purchase_order.recalculate_balance(save=True)
+                # Recalcular el balance de la orden de compra
+                payment.purchase_order.recalculate_balance(save=True)
 
-            # Si el pago pertenece a un Mass Payment, removerlo de la relación M2M
-            if payment.mass_payment:
-                mass_payment = payment.mass_payment
+                # Si el pago pertenece a un Mass Payment, removerlo de la relación M2M
+                if payment.mass_payment:
+                    mass_payment = payment.mass_payment
 
-                # Quitar del M2M del Mass Payment
-                mass_payment.purchase_order.remove(payment.purchase_order)
+                    # Quitar del M2M del Mass Payment
+                    mass_payment.purchase_order.remove(payment.purchase_order)
 
-                # Recalcular el monto total del Mass Payment
-                mass_payment.recalculate_amount()
+                    # Recalcular el monto total del Mass Payment
+                    mass_payment.recalculate_amount()
 
-                # Si el Mass Payment quedó sin órdenes, poner el monto a $0.00
-                if not mass_payment.purchase_order.exists() and not mass_payment.service_order.exists():
-                    mass_payment.amount = Decimal('0.00')
-                    mass_payment.save(update_fields=["amount"])
+                    # Si el Mass Payment quedó sin órdenes, poner el monto a $0.00
+                    if not mass_payment.purchase_order.exists() and not mass_payment.service_order.exists():
+                        mass_payment.amount = Decimal('0.00')
+                        mass_payment.save(update_fields=["amount"])
 
-            # Mensaje de éxito
-            self.message_user(
-                request,
-                _(f"Payment canceled successfully. New balance payable: ${payment.purchase_order.balance_payable:.2f}"),
-                level=messages.SUCCESS
-            )
-            purchase_order_id = payment.purchase_order.pk
+                # Mensaje de éxito
+                self.message_user(
+                    request,
+                    _(f"Payment canceled successfully. New balance payable: ${payment.purchase_order.balance_payable:.2f}"),
+                    level=messages.SUCCESS
+                )
+                purchase_order_id = payment.purchase_order.pk
 
         except PurchaseOrderPayment.DoesNotExist:
             self.message_user(request, _("Payment not found"), level=messages.ERROR)
+            purchase_order_id = None
+        except Exception as e:
+            # En caso de error, se revierte la transacción completa
+            transaction.set_rollback(True)
+            self.message_user(
+                request,
+                _(f"An error occurred while canceling the payment: {str(e)}"),
+                level=messages.ERROR
+            )
             purchase_order_id = None
 
         # 🔄 Redirigir al tab de pagos
@@ -1075,42 +1085,49 @@ class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.
         Si el pago estaba asociado a un Mass Payment, se remueve de la relación y se recalcula el total.
         """
         try:
-            payment = ServiceOrderPayment.objects.get(id=payment_id)
+            with transaction.atomic():
+                payment = ServiceOrderPayment.objects.select_for_update().get(id=payment_id)
 
-            # Marcar el pago como cancelado
-            payment.status = "canceled"
-            payment.cancellation_date = timezone.now()
-            payment.canceled_by = request.user
-            payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
+                # Marcar el pago como cancelado
+                payment.status = "canceled"
+                payment.cancellation_date = timezone.now()
+                payment.canceled_by = request.user
+                payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
 
-            # Recalcular el balance de la orden de compra
-            payment.service_order.recalculate_balance(save=True)
+                # Recalcular el balance de la orden de compra
+                payment.service_order.recalculate_balance(save=True)
 
-            # Si el pago pertenece a un Mass Payment, removerlo de la relación M2M
-            if payment.mass_payment:
-                mass_payment = payment.mass_payment
+                # Si el pago pertenece a un Mass Payment, removerlo de la relación M2M
+                if payment.mass_payment:
+                    mass_payment = payment.mass_payment
 
-                # Quitar del M2M del Mass Payment
-                mass_payment.service_order.remove(payment.service_order)
+                    # Quitar del M2M del Mass Payment
+                    mass_payment.service_order.remove(payment.service_order)
 
-                # Recalcular el monto total del Mass Payment
-                mass_payment.recalculate_amount()
+                    # Recalcular el monto total del Mass Payment
+                    mass_payment.recalculate_amount()
 
-                # Si el Mass Payment quedó sin órdenes, poner el monto a $0.00
-                if not mass_payment.service_order.exists():
-                    mass_payment.amount = Decimal('0.00')
-                    mass_payment.save(update_fields=["amount"])
+                    # Si el Mass Payment quedó sin órdenes, poner el monto a $0.00
+                    if not mass_payment.service_order.exists():
+                        mass_payment.amount = Decimal('0.00')
+                        mass_payment.save(update_fields=["amount"])
 
-            # Mensaje de éxito
-            self.message_user(
-                request,
-                _(f"Payment canceled successfully. New balance payable: ${payment.service_order.balance_payable:.2f}"),
-                level=messages.SUCCESS
-            )
-            service_order_id = payment.service_order.pk
+                # Mensaje de éxito
+                self.message_user(
+                    request,
+                    _(f"Payment canceled successfully. New balance payable: ${payment.service_order.balance_payable:.2f}"),
+                    level=messages.SUCCESS
+                )
+                service_order_id = payment.service_order.pk
 
         except ServiceOrderPayment.DoesNotExist:
             self.message_user(request, _("Payment not found"), level=messages.ERROR)
+            service_order_id = None
+        except Exception as e:
+            # Si ocurre un error, se revierte la transacción completa
+            transaction.set_rollback(True)
+            self.message_user(request, _(f"An error occurred while canceling the payment: {str(e)}"),
+                              level=messages.ERROR)
             service_order_id = None
 
         # Redirigir al tab de pagos
