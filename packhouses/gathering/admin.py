@@ -242,6 +242,11 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
             form.base_fields['product'].widget.can_change_related = False
             form.base_fields['product'].widget.can_delete_related = False
             form.base_fields['product'].widget.can_view_related = False
+        if 'market' in form.base_fields:
+            form.base_fields['market'].widget.can_add_related = False
+            form.base_fields['market'].widget.can_change_related = False
+            form.base_fields['market'].widget.can_delete_related = False
+            form.base_fields['market'].widget.can_view_related = False
 
         return form
 

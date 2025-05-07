@@ -52,6 +52,31 @@ document.addEventListener("DOMContentLoaded", function() {
             updateGlobalTotals();
         });
     });
+    
+    const capacityCache = {};
+    // Función para realizar una solicitud AJAX y obtener la capacidad de los contenedores
+    function fetchContainerCapacity(containerId) {
+        if (capacityCache.hasOwnProperty(containerId)) {
+          return $.Deferred().resolve(capacityCache[containerId]).promise();
+        }
+        return $.ajax({
+          url: `/rest/v1/catalogs/supply/`,
+          method: 'GET',
+          dataType: 'json',
+          data: {
+            id: containerId,    
+            is_enabled: true
+          }
+        })
+        .then(data => {
+          capacityCache[containerId] = data;
+          return data;
+        })
+        .fail(error => {
+          console.error('Error al obtener la capacidad de los contenedores:', error);
+          throw error;
+        });
+      }
 
     // Funcion de actualización de missing_containers
     function updateMissingBoxes(containerForm) {
@@ -93,19 +118,51 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Totales globales
     function updateGlobalTotals() {
-        let gQty=0, gFull=0, gEmpty=0, gMiss=0;
+        let gQty = 0, gFull = 0, gEmpty = 0, gMiss = 0, sum = 0;
+        const promises = [];
+        
+        // Recorrer todos los vehiculos sin importar si no han sido marcado como llegaron para saber el peso esperado
         $(VEHICLE_FORM_SELECTOR).each((_, vf) => {
-            const $v = $(vf);
-            if ($v.find("input[name$='-has_arrived']").prop('checked')) {
-                $v.find(CONTAINER_FORM_SELECTOR).each((_, cf) => {
-                    const $c = $(cf);
-                    if ($c.find("input[name$='-DELETE']").prop('checked')) return;
-                    gQty += parseFloat($c.find("input[name$='-quantity']").val())||0;
-                    gFull += parseFloat($c.find("input[name$='-full_containers']").val())||0;
-                    gEmpty += parseFloat($c.find("input[name$='-empty_containers']").val())||0;
-                    gMiss += parseFloat($c.find("input[name$='-missing_containers']").val())||0;
+          const $v = $(vf);
+          $v.find(CONTAINER_FORM_SELECTOR).each((_, cf) => {
+            const $c = $(cf);
+            const Qty = parseInt($c.find("input[name$='-quantity']").val()) || 0;
+            const id  = $c.find("select[name$='-harvest_container']").val();
+            const p = fetchContainerCapacity(id).then(data => {
+                const arr  = $.isArray(data) ? data : (data.results||[]);
+                const cont = arr.find(item => String(item.id) === id);
+                const w    = cont && cont.capacity!=null ? cont.capacity : 1;
+                sum += w * Qty;
+                })
+                .fail(err => {
+                console.error('Error fetching capacity for', id, err);
+                sum += Qty; 
                 });
-            }
+        promises.push(p);
+        $.when.apply($, promises).then(function() {
+            const tr = Math.trunc(sum * 1000) / 1000;
+            const [i, d = ''] = tr.toString().split('.');
+            const val = i + '.' + (d + '000').slice(0, 3);
+            
+            $('input[id$="-weight_expected"]').each((_, input) => {
+                const $f = $(input);
+                $f.val(val);
+              });
+
+            });
+        });  
+
+          if (!$v.find("input[name$='-has_arrived']").prop("checked")) return;
+          $v.find(CONTAINER_FORM_SELECTOR).each((_, cf) => {
+            const $c = $(cf);
+            if ($c.find("input[name$='-DELETE']").prop("checked")) return;
+            const Qty = parseInt($c.find("input[name$='-quantity']").val()) || 0;
+            gQty   += Qty;
+            gFull  += parseFloat($c.find("input[name$='-full_containers']").val())  || 0;
+            gEmpty += parseFloat($c.find("input[name$='-empty_containers']").val()) || 0;
+            gMiss  += parseFloat($c.find("input[name$='-missing_containers']").val())|| 0;
+            
+          });
         });
         containersAssignedField.val(gQty);
         fullContainersField.val(gFull);
