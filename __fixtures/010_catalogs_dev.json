@@ -686,6 +686,7 @@
     "sort_order": 9
   }
 },
+
 {
   "model": "catalogs.productripeness",
   "pk": 1,
