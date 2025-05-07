@@ -1,10 +1,11 @@
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-from .serializers import PaymentKindAdditionalInputSerializer
+from .serializers import PaymentKindAdditionalInputSerializer, PurchaseOrderSerializer, ServiceOrderSerializer
 from packhouses.packhouse_settings.models import PaymentKindAdditionalInput
 from packhouses.packhouse_settings.models import PaymentKind
 from rest_framework.response import Response
+from .models import PurchaseOrder, ServiceOrder
 
 
 
@@ -38,4 +39,57 @@ class PaymentKindAdditionalInputViewSet(viewsets.ModelViewSet):
             'additional_inputs': serializer.data
         })
 
+class PurchaseOrderViewSet(viewsets.ModelViewSet):
+    serializer_class = PurchaseOrderSerializer
+    filterset_fields = ['id', 'ooid', 'provider', 'currency', 'status']
+    filter_backends = [DjangoFilterBackend]
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        qs = PurchaseOrder.objects.filter(
+            organization=self.request.organization,
+            balance_payable__gt=0
+        )
+
+        provider = self.request.query_params.get('provider')
+        currency = self.request.query_params.get('currency')
+
+        filters = {'status': 'closed'}
+        if provider:
+            filters['provider_id'] = provider
+        if currency:
+            filters['currency_id'] = currency
+
+        return qs.filter(**filters)
+
+
+class ServiceOrderViewSet(viewsets.ModelViewSet):
+    serializer_class = ServiceOrderSerializer
+    filterset_fields = ['id', 'provider', 'currency']
+    filter_backends = [DjangoFilterBackend]
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        qs = ServiceOrder.objects.filter(
+            organization=self.request.organization,
+            balance_payable__gt=0
+        )
+
+        provider = self.request.query_params.get('provider')
+        currency = self.request.query_params.get('currency')
+
+        if provider:
+            qs = qs.filter(provider_id=provider)
+        if currency:
+            qs = qs.filter(currency_id=currency)
+
+        return qs
 
