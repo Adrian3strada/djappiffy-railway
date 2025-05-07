@@ -1191,7 +1191,7 @@ class PurchaseMassPaymentAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin,
               'additional_inputs', 'bank', 'payment_date', 'amount', 'comments')
     list_display = ('category','provider', 'amount', 'currency', 'payment_date', 'status', 'created_by')
     list_filter = ('category', 'status')
-    readonly_fields = ('status','created_by', 'created_at', 'canceled_by', 'status', 'cancellation_date')
+    readonly_fields = ('status', 'created_by', 'created_at', 'canceled_by', 'cancellation_date')
 
     def save_model(self, request, obj, form, change):
         """
