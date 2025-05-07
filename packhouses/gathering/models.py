@@ -146,7 +146,18 @@ class ScheduleHarvest(models.Model):
         total = Decimal('0')
         for veh in self.scheduleharvestvehicle_set.all():
             for cont in veh.scheduleharvestcontainervehicle_set.all():
-                total += Decimal(cont.quantity) * Decimal(cont.harvest_container.capacity)
+                harvest_container = cont.harvest_container
+                if (
+                    harvest_container is not None and
+                    harvest_container.capacity is not None and
+                    cont.quantity is not None
+                ):
+                    try:
+                        quantity = Decimal(cont.quantity)
+                        capacity = Decimal(harvest_container.capacity)
+                        total += quantity * capacity
+                    except (ValueError, TypeError, ArithmeticError):
+                        continue
         total = total.quantize(Decimal('0.001'), rounding=ROUND_DOWN)
         self.weight_expected = float(total)
         self.save(update_fields=['weight_expected'])
@@ -261,4 +272,4 @@ def on_vehicle_change(sender, instance, **kwargs):
 @receiver(post_save, sender=ScheduleHarvestContainerVehicle)
 @receiver(post_delete, sender=ScheduleHarvestContainerVehicle)
 def on_container_change(sender, instance, **kwargs):
-    instance.harvest_cutting.recalc_weight_expected()
+    instance.harvest_cutting.harvest_cutting.recalc_weight_expected()

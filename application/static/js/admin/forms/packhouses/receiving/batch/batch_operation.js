@@ -40,7 +40,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function updateFieldsBasedOnReviewStatus() {
         const reviewStatus = reviewStatusField.val();
-        console.log('Valor actual de review_status:', reviewStatus);
 
         if (reviewStatus === 'accepted') {
             availableForProcessing.prop('disabled', false);
@@ -54,12 +53,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (reviewStatus === 'rejected' || reviewStatus === 'quarantine') {
             availableForProcessing.prop('disabled', true).prop('checked', false);
+            operationalStatusField.val('canceled').trigger('change');
+        }
+        if (reviewStatus === 'quarantine') {
+            availableForProcessing.prop('disabled', true).prop('checked', false);
             operationalStatusField.val('pending').trigger('change');
         }
     }
     function updateFieldsBasedOnOperationalStatus(){
         const operationalStatus = operationalStatusField.val()
-        console.log('Valor actual de operational status:', operationalStatus);
     }
     
     updateFieldsBasedOnReviewStatus();
