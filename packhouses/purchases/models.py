@@ -904,18 +904,28 @@ class PurchaseMassPayment(models.Model):
 
     def recalculate_amount(self):
         """
-        Recalcula el monto total del Mass Payment sumando el balance de todas las órdenes relacionadas.
-        Si es de tipo 'purchase_order', suma los balances de esas órdenes.
-        Si es de tipo 'service_order', suma los balances de esas órdenes.
+        Recalcula el monto total del Mass Payment sumando el monto de los pagos aplicados.
+        Si es de tipo 'purchase_order', suma los pagos realizados en esas órdenes.
+        Si es de tipo 'service_order', suma los pagos realizados en esas órdenes.
         """
         if self.purchase_order.exists():
-            # Si hay órdenes de compra, recalcula solo sobre ellas
-            new_amount = sum(po.balance_payable for po in self.purchase_order.all())
+            # Si hay órdenes de compra, suma los pagos asociados
+            payments = PurchaseOrderPayment.objects.filter(
+                purchase_order__in=self.purchase_order.all(),
+                status='closed',
+                mass_payment=self
+            )
+            new_amount = sum(payment.amount for payment in payments)
         elif self.service_order.exists():
-            # Si hay órdenes de servicio, recalcula solo sobre ellas
-            new_amount = sum(so.balance_payable for so in self.service_order.all())
+            # Si hay órdenes de servicio, suma los pagos asociados
+            payments = ServiceOrderPayment.objects.filter(
+                service_order__in=self.service_order.all(),
+                status='closed',
+                mass_payment=self
+            )
+            new_amount = sum(payment.amount for payment in payments)
         else:
-            # ⚠Si no hay ni una ni otra, el monto se va a cero
+            # Si no hay ni una ni otra, el monto se va a cero.
             new_amount = Decimal('0.00')
 
         # Actualizamos el monto en el Mass Payment
