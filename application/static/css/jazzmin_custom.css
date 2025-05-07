@@ -11,7 +11,7 @@
   color: #848484 !important; /* Color de texto gris */
   cursor: not-allowed; /* Cambia el puntero a 'no permitido' */
   pointer-events: none; /* Desactiva eventos de mouse, haciendo que parezca completamente deshabilitado */
-  opacity: 1; /* Opcional: hace que el campo se vea un poco translúcido */
+  opacity: 1; /* El campo es completamente opaco */
 }
 
 .select2-container.disabled-field .select2-selection {
