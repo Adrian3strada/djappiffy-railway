@@ -1204,7 +1204,7 @@ class PurchaseMassPaymentAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin,
     def save_related(self, request, form, formsets, change):
         """
         Se ejecuta después de guardar las relaciones M2M.
-        Aquí ya podemos crear los pagos individuales.
+        Aquí ya podemos crear los pagos individuales
         """
         super().save_related(request, form, formsets, change)
 
