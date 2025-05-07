@@ -62,6 +62,7 @@ urlpatterns = [
     path("", include("packhouses.storehouse.urls")),
     path("", include("eudr.parcels.urls")),
     path("", include("packhouses.receiving.urls")),
+    path("", include("eudr.operators.urls")),
 
     # Internationalization
     path("i18n/", include("django.conf.urls.i18n")),
