@@ -162,7 +162,7 @@ class SupplyKindAdmin(admin.ModelAdmin):
     def formfield_for_choice_field(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = SupplyKind.objects.get(id=object_id) if object_id else None
-        packaging_container_kinds = ['packaging_containment', 'packaging_separator', 'packaging_presentation']
+        packaging_container_kinds = ['packaging_containment', 'packaging_separator', 'packaging_presentation', 'harvest_container']
 
         if db_field.name == 'capacity_unit_category':
             if request.POST:

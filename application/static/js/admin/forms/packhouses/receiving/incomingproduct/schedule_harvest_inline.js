@@ -1,6 +1,22 @@
 
 document.addEventListener("DOMContentLoaded", function() {
   const API_BASE_URL = "/rest/v1";
+
+  function disableField(field) {
+    field.prop("readonly", true);
+    field.css({
+      "pointer-events": "none",
+      "background-color": "#e9ecef",
+      "border": "none",
+      "color": "#555"
+    });
+  }
+  
+  // Aplica a cualquier input de peso esperado
+  $('input[id$="-weight_expected"]').each((_, input) => {
+    disableField($(input));
+  });
+  
   function updateFieldOptions(field, options) {
     field.empty();
     if (!field.prop("multiple")) {
