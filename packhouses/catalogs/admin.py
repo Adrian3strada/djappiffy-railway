@@ -1554,7 +1554,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         
                 queryset = ProductKindCountryStandardPackaging.objects.filter(
                     standard__product_kind=product_kind,
-                    standard__country=market_country  
+                    standard__country__in=market_country  
                 )
         
                 kwargs["queryset"] = queryset
