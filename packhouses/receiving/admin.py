@@ -593,7 +593,10 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             f'Batch {obj.ooid}: '
             f'is_merged={obj.is_merged}, '
             f'is_parent={obj.is_parent}, '
-            f'children_oids=[{obj.children_oids}]'
+            f'children_oids=[{obj.children_oids}], '
+            f'children_oids=[{obj.parent_batch_oid}], '
+            f'children_total_weight_received=[{obj.children_total_weight_received}], '
+            f'children_total_weight={obj.children_total_current_weight} '
         )
         return ''
     
@@ -611,7 +614,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
 
         # Detectar si hay un lote padre en los lotes a unir
         is_parent = qs.filter(
-            merged_into__isnull=True,       
+            parent_batch__isnull=True,       
             merged_from__isnull=False
         ).distinct()
 
@@ -628,7 +631,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
 
         # Detectar si un lote esta unido a otro lote
         already = list(qs
-            .filter(merged_into__isnull=False)
+            .filter(parent_batch__isnull=False)
             .values_list('ooid', flat=True)
         )
         if already:
@@ -670,12 +673,12 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
                 )
                 sources = list(qs)
             for origin in sources:
-                origin.merged_into = destination
+                origin.parent_batch = destination
                 origin.review_status = 'accepted'
                 origin.operational_status = 'in_another_batch'
                 origin.is_available_for_processing = False
                 origin.save(update_fields=[
-                    'merged_into',
+                    'parent_batch',
                     'review_status',
                     'operational_status',
                     'is_available_for_processing',
@@ -708,7 +711,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         qs = queryset.select_related('incomingproduct__scheduleharvest')
 
         already = list(qs
-            .filter(merged_into__isnull=False)
+            .filter(parent_batch__isnull=False)
             .values_list('ooid', flat=True)
         )
         if already:
@@ -722,7 +725,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             )
             return
         possible_parents = queryset.filter(
-        merged_into__isnull=True, 
+        parent_batch__isnull=True, 
         merged_from__isnull=False 
         ).distinct()
 
@@ -748,7 +751,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         try:
             with transaction.atomic():
                 for batch in children_to_add:
-                    batch.merged_into = parent
+                    batch.parent_batch = parent
                     batch.review_status = 'accepted'
                     batch.operational_status = 'in_another_batch'
                     batch.save()
@@ -829,6 +832,9 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     get_scheduleharvest_product_provider.admin_order_field = 'incomingproduct__scheduleharvest__product_provider'
     
     def get_incomingproduct_packhouse_weight_result(self, obj):
+        if obj.is_parent:
+            total = obj.children_total_weight_received
+            return '{:,.3f}'.format(total) if total else ''
         incoming = getattr(obj, 'incomingproduct', None)
         if not incoming or incoming.packhouse_weight_result is None:
             return ''
@@ -837,6 +843,9 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     get_incomingproduct_packhouse_weight_result.admin_order_field = 'incomingproduct__packhouse_weight_result'
 
     def get_incomingproduct_current_kg_available(self, obj):
+        if obj.is_parent:
+            total = obj.children_total_current_weight
+            return '{:,.3f}'.format(total) if total else ''
         incoming = getattr(obj, 'incomingproduct', None)
         if not incoming or incoming.current_kg_available is None:
             return ''

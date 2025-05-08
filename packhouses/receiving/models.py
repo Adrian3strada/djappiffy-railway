@@ -20,7 +20,9 @@ class Batch(models.Model):
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
-    merged_into = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='merged_from', verbose_name=_('Merge into Batch'))
+    # 'parent_batch' apunta al lote padre al que este lote fue unido.
+    # Si es None, significa que el lote no ha sido unido a ningún otro.
+    parent_batch = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='merged_from', verbose_name=_('Parent Batch'))
 
     def __str__(self):
         try:
@@ -59,7 +61,7 @@ class Batch(models.Model):
 
     @classmethod
     def validate_merge_batches(cls, batches_queryset):
-        if batches_queryset.filter(merged_into__isnull=False).exists():
+        if batches_queryset.filter(parent_batch__isnull=False).exists():
             raise ValidationError(
                 _('You cannot merge batches that have already been merged into another batch.'),
                 code='invalid_merge'
@@ -86,7 +88,7 @@ class Batch(models.Model):
     
     @classmethod
     def validate_add_batches_to_existing_merge(cls, parent_batch, candidate_batches):
-        if parent_batch.merged_into is not None:
+        if parent_batch.parent_batch is not None:
             raise ValidationError(
                 _('The selected destination batch is already merged into another batch.'),
                 code='invalid_target'
@@ -121,7 +123,7 @@ class Batch(models.Model):
     
     @property
     def is_merged(self):
-        return self.merged_into is not None
+        return self.parent_batch is not None
 
     @property
     def is_parent(self):
@@ -136,9 +138,31 @@ class Batch(models.Model):
         return ", ".join(str(b.ooid) for b in self.children)
     
     @property
-    def merged_into_oid(self):
-        return self.merged_into.ooid if self.merged_into else ''
+    def parent_batch_oid(self):
+        return self.parent_batch.ooid if self.parent_batch else ''
     
+    @property
+    def children_total_weight_received(self):
+        total = 0
+        for child in self.children:
+            ip = getattr(child, 'incomingproduct', None)
+            if not ip:
+                continue
+            if ip.packhouse_weight_result:
+                total += ip.packhouse_weight_result
+        return total
+    
+    @property
+    def children_total_current_weight(self):
+        total = 0
+        for child in self.children:
+            ip = getattr(child, 'incomingproduct', None)
+            if not ip:
+                continue
+            if ip.current_kg_available:
+                total += ip.current_kg_available
+        return total
+
     def operational_status_history(self):
         return self.batchstatuschange_set.filter(field_name='operational_status')
 
