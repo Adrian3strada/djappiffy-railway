@@ -692,7 +692,7 @@ class ServiceOrder(models.Model):
         Returns:
             str: Nombre del servicio y su costo.
         """
-        return f"Folio {self.id} - {self.provider.name} - {self.service.name} - ${self.balance_payable}"
+        return f"Folio {self.ooid} - {self.provider.name} - {self.service.name} - ${self.balance_payable}"
 
 class ServiceOrderCharge(models.Model):
     service_order = models.ForeignKey(
