@@ -1,9 +1,9 @@
 from rest_framework import viewsets
 from .models import (UserProfile, OrganizationProfile, ProducerProfile, ImporterProfile, PackhouseExporterProfile,
-                     TradeExporterProfile)
+                     TradeExporterProfile, EudrOperatorProfile)
 from .serializers import (UserProfileSerializer, ProducerProfileSerializer,
                           ImporterProfileSerializer, PackhouseExporterProfileSerializer, TradeExporterProfileSerializer,
-                          OrganizationProfilePolymorphicSerializer)
+                          OrganizationProfilePolymorphicSerializer, EudrOperatorProfileSerializer)
 from .permissions import IsOrganizationMember
 from organizations.models import OrganizationUser
 from rest_framework.exceptions import NotAuthenticated
@@ -110,6 +110,23 @@ class TradeExporterProfileViewSet(BaseOrganizationProfileViewSet):
             raise NotAuthenticated()
 
         queryset = TradeExporterProfile.objects.all()
+
+        same = self.request.GET.get('same')
+        if same and hasattr(self.request, 'organization'):
+            queryset = queryset.filter(organization=self.request.organization)
+
+        return queryset
+    
+
+class EudrOperatorProfileViewSet(BaseOrganizationProfileViewSet):
+    serializer_class = EudrOperatorProfileSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = EudrOperatorProfile.objects.all()
 
         same = self.request.GET.get('same')
         if same and hasattr(self.request, 'organization'):
