@@ -84,6 +84,41 @@ class Batch(models.Model):
                 msg = _('All batches selected must have the same %(label)s.') % {'label': label}
                 raise ValidationError(msg, code='invalid_merge')
     
+    @classmethod
+    def validate_add_batches_to_existing_merge(cls, parent_batch, candidate_batches):
+        if parent_batch.merged_into is not None:
+            raise ValidationError(
+                _('The selected destination batch is already merged into another batch.'),
+                code='invalid_target'
+            )
+
+        if candidate_batches.exclude(review_status='accepted').exists():
+            raise ValidationError(
+                _('Only batches with a Review Status of “Accepted” can be merged.'),
+                code='invalid_status'
+            )
+
+        child_ids = list(parent_batch.children.values_list('pk', flat=True))
+        candidate_ids = list(candidate_batches.values_list('pk', flat=True))
+        combined_ids = child_ids + candidate_ids
+
+        all_batches = Batch.objects.filter(pk__in=combined_ids)
+
+        prefix = 'incomingproduct__scheduleharvest__'
+        checks = {
+            _('provider'): prefix + 'product_provider',
+            _('product'):  prefix + 'product',
+            _('variety'):  prefix + 'product_variety',
+            _('phenology'): prefix + 'product_phenologies',
+        }
+
+        for label, path in checks.items():
+            if all_batches.values_list(path, flat=True).distinct().count() != 1:
+                raise ValidationError(
+                    _('All batches to be merged must have the same %(label)s as the already merged ones.') % {'label': label},
+                    code='invalid_merge'
+                )
+    
     @property
     def is_merged(self):
         return self.merged_into is not None

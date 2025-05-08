@@ -584,7 +584,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     form = BatchForm
     inlines = [IncomingProductInline]
     list_per_page = 10
-    actions = ['action_merge_batches']
+    actions = ['action_merge_batches', 'action_merge_into_existing_batch']
     admin.site.disable_action('delete_selected')
 
     def property(self, obj):
@@ -609,7 +609,24 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
 
         qs = queryset.select_related('incomingproduct__scheduleharvest')
 
-        # 2.1) Detectar cuáles ya fueron fusionados
+        # Detectar si hay un lote padre en los lotes a unir
+        is_parent = qs.filter(
+            merged_into__isnull=True,       
+            merged_from__isnull=False
+        ).distinct()
+
+        if is_parent:
+            batch_labels = ', '.join(f'batch {o.ooid}' for o in is_parent)
+            self.message_user(
+                request,
+                _('The following batches cannot be merged into a new batch because they already contain other merged batches: %(list)s') % {
+                    'list': batch_labels
+                },
+                level=messages.ERROR
+            )
+            return
+
+        # Detectar si un lote esta unido a otro lote
         already = list(qs
             .filter(merged_into__isnull=False)
             .values_list('ooid', flat=True)
@@ -618,66 +635,134 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             batch_labels = ', '.join(f'batch {o}' for o in already)
             self.message_user(
                 request,
-                _('The following bathces have been already merged in another batch: %(list)s') % {
+                _('The following batches have been already merged in another batch: %(list)s') % {
                     'list': batch_labels
                 },
                 level=messages.ERROR
             )
             return
 
-        # 2.2) Validación DRY de provider/product/variety/phenology/status
+        # Validar provider/product/variety/phenology/status
         try:
             Batch.validate_merge_batches(qs)
         except ValidationError as e:
             self.message_user(request, e.message, level=messages.ERROR)
             return
 
-        # 2.3) Fusionar…
+        # Unir Lote
         with transaction.atomic():
-            padres = [b for b in qs if b.is_parent]
-            if len(padres) > 1:
+            parents = [b for b in qs if b.is_parent]
+            if len(parents) > 1:
                 self.message_user(
                     request,
-                    _('No se puede fusionar dos lotes que ya son padres entre sí.'),
+                    _('Cannot merge batches that already contain merged batches.'),
                     level=messages.ERROR
                 )
                 return
-
-            if padres:
-                destino = padres[0]
-                fuentes = [b for b in qs if b != destino]
+            if parents:
+                destination = parents[0]
+                sources = [b for b in qs if b != destination]
             else:
-                destino = Batch.objects.create(
+                destination = Batch.objects.create(
                     organization=queryset.first().organization,
                     review_status='accepted',
-                    operational_status='pending',
+                    operational_status='in_operation',
                 )
-                fuentes = list(qs)
-
-            for origen in fuentes:
-                origen.merged_into = destino
-                origen.review_status = 'accepted'
-                origen.operational_status = 'in_another_batch'
-                origen.is_available_for_processing = False
-                origen.save(update_fields=[
+                sources = list(qs)
+            for origin in sources:
+                origin.merged_into = destination
+                origin.review_status = 'accepted'
+                origin.operational_status = 'in_another_batch'
+                origin.is_available_for_processing = False
+                origin.save(update_fields=[
                     'merged_into',
                     'review_status',
                     'operational_status',
                     'is_available_for_processing',
                 ])
-
         url = reverse(
             'admin:%s_%s_change' % (
-                destino._meta.app_label,
-                destino._meta.model_name
+                destination._meta.app_label,
+                destination._meta.model_name
             ),
-            args=[destino.pk]
+            args=[destination.pk]
         )
-        msg = _('Lotes fusionados en lote %(ooid)s. Ver <a href="%(url)s">aquí</a>.') % {
-            'ooid': destino.ooid, 'url': url
-        }
+
+        msg = format_html(
+            _('Batches were successfully merged into <a href="{}">batch {}</a>.'),
+            url,
+            destination.ooid
+        )
+
         self.message_user(request, msg, level=messages.SUCCESS)
 
+    @admin.action(description='Add batches to an existing merged batch.')
+    def action_merge_into_existing_batch(self, request, queryset):
+        if queryset.count() < 2:
+            self.message_user(
+                request,
+                _('Select at least two batches to merge.'),
+                level=messages.WARNING
+            )
+            return
+        qs = queryset.select_related('incomingproduct__scheduleharvest')
+
+        already = list(qs
+            .filter(merged_into__isnull=False)
+            .values_list('ooid', flat=True)
+        )
+        if already:
+            batch_labels = ', '.join(f'batch {o}' for o in already)
+            self.message_user(
+                request,
+                _('The following batches have been already merged in another batch: %(list)s') % {
+                    'list': batch_labels
+                },
+                level=messages.ERROR
+            )
+            return
+        possible_parents = queryset.filter(
+        merged_into__isnull=True, 
+        merged_from__isnull=False 
+        ).distinct()
+
+        parent = possible_parents.first()
+        children_to_add = qs.exclude(pk=parent.pk)
+
+        if possible_parents.count() != 1:
+            self.message_user(
+                request,
+                _('Only one merged batch can be selected as destination, but multiple were found.'),
+                level=messages.ERROR
+            )
+            return
+        
+        # Validar los lotes por añadir con los que ya fueron unidos
+        try:
+            Batch.validate_add_batches_to_existing_merge(parent, children_to_add)
+        except ValidationError as e:
+            self.message_user(request, e.message, level=messages.ERROR)
+            return
+        
+        # Unir lotes al lote existente dentro de una transacción
+        try:
+            with transaction.atomic():
+                for batch in children_to_add:
+                    batch.merged_into = parent
+                    batch.review_status = 'accepted'
+                    batch.operational_status = 'in_another_batch'
+                    batch.save()
+        except Exception as e:
+            self.message_user(
+                request,
+                _('An error occurred while merging batches: %s') % str(e),
+                level=messages.ERROR
+            )
+            return
+        msg = _('Batches merged into Batch %(ooid)s.') % {
+            'ooid': parent.ooid
+        }
+        self.message_user(request, msg, level=messages.SUCCESS)
 
     def generate_actions_buttons(self, obj):
         pass 
