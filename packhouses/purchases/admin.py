@@ -523,10 +523,10 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     """
 
     form = PurchaseOrderForm
-    list_display = ('ooid', 'provider', 'balance_payable', 'currency', 'status', 'created_at', 'user', 'generate_actions_buttons')
-    fields = ('ooid', 'provider','payment_date', 'balance_payable', 'currency','tax', 'status', 'comments', 'save_and_send')
+    list_display = ('ooid', 'provider', 'total_cost', 'balance_payable', 'currency', 'status', 'created_at', 'user', 'generate_actions_buttons')
+    fields = ('ooid', 'provider','payment_date', 'currency','tax', 'status', 'total_cost', 'balance_payable', 'comments', 'save_and_send')
     list_filter = ('provider', 'currency', 'status')
-    readonly_fields = ('ooid', 'status', 'balance_payable', 'created_at', 'user')
+    readonly_fields = ('ooid', 'status', 'balance_payable', 'created_at', 'user', 'total_cost')
     inlines = [PurchaseOrderRequisitionSupplyInline, PurchaseOrderChargerInline, PurchaseOrderDeductionInline]
 
     def get_inline_instances(self, request, obj=None):
@@ -661,42 +661,52 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
         Si el pago estaba asociado a un Mass Payment, se remueve de la relación y se recalcula el total.
         """
         try:
-            payment = PurchaseOrderPayment.objects.get(id=payment_id)
+            with transaction.atomic():
+                payment = PurchaseOrderPayment.objects.select_for_update().get(id=payment_id)
 
-            # Marcar el pago como cancelado
-            payment.status = "canceled"
-            payment.cancellation_date = timezone.now()
-            payment.canceled_by = request.user
-            payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
+                # Marcar el pago como cancelado
+                payment.status = "canceled"
+                payment.cancellation_date = timezone.now()
+                payment.canceled_by = request.user
+                payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
 
-            # Recalcular el balance de la orden de compra
-            payment.purchase_order.recalculate_balance(save=True)
+                # Recalcular el balance de la orden de compra
+                payment.purchase_order.recalculate_balance(save=True)
 
-            # Si el pago pertenece a un Mass Payment, removerlo de la relación M2M
-            if payment.mass_payment:
-                mass_payment = payment.mass_payment
+                # Si el pago pertenece a un Mass Payment, removerlo de la relación M2M
+                if payment.mass_payment:
+                    mass_payment = payment.mass_payment
 
-                # Quitar del M2M del Mass Payment
-                mass_payment.purchase_order.remove(payment.purchase_order)
+                    # Quitar del M2M del Mass Payment
+                    mass_payment.purchase_order.remove(payment.purchase_order)
 
-                # Recalcular el monto total del Mass Payment
-                mass_payment.recalculate_amount()
+                    # Recalcular el monto total del Mass Payment
+                    mass_payment.recalculate_amount()
 
-                # Si el Mass Payment quedó sin órdenes, poner el monto a $0.00
-                if not mass_payment.purchase_order.exists() and not mass_payment.service_order.exists():
-                    mass_payment.amount = Decimal('0.00')
-                    mass_payment.save(update_fields=["amount"])
+                    # Si el Mass Payment quedó sin órdenes, poner el monto a $0.00
+                    if not mass_payment.purchase_order.exists() and not mass_payment.service_order.exists():
+                        mass_payment.amount = Decimal('0.00')
+                        mass_payment.save(update_fields=["amount"])
 
-            # Mensaje de éxito
-            self.message_user(
-                request,
-                _(f"Payment canceled successfully. New balance payable: ${payment.purchase_order.balance_payable:.2f}"),
-                level=messages.SUCCESS
-            )
-            purchase_order_id = payment.purchase_order.pk
+                # Mensaje de éxito
+                self.message_user(
+                    request,
+                    _(f"Payment canceled successfully. New balance payable: ${payment.purchase_order.balance_payable:.2f}"),
+                    level=messages.SUCCESS
+                )
+                purchase_order_id = payment.purchase_order.pk
 
         except PurchaseOrderPayment.DoesNotExist:
             self.message_user(request, _("Payment not found"), level=messages.ERROR)
+            purchase_order_id = None
+        except Exception as e:
+            # En caso de error, se revierte la transacción completa
+            transaction.set_rollback(True)
+            self.message_user(
+                request,
+                _(f"An error occurred while canceling the payment: {str(e)}"),
+                level=messages.ERROR
+            )
             purchase_order_id = None
 
         # 🔄 Redirigir al tab de pagos
@@ -753,14 +763,22 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
                 )
             return
 
+        # Actualizamos el balance y el total_cost
         purchase_order.balance_payable = balance_data['balance']
-        purchase_order.save(update_fields=['balance_payable'])
+        purchase_order.total_cost = balance_data['total_cost']
+        purchase_order.save(update_fields=['balance_payable', 'total_cost'])
 
     def save_formset(self, request, form, formset, change):
         """
         Valida balances antes de guardar cambios masivos de insumos, cargos, deducciones y pagos.
 
         Si el balance resultante sería negativo, cancela la operación y lanza advertencias.
+        También se actualiza el `total_cost` correctamente, incluyendo:
+        - Supplies
+        - Charges
+        - Taxes
+        - Deductions
+        - Pagos realizados (excepto los cancelados)
         """
         model = formset.model
         purchase_order = form.instance
@@ -768,6 +786,7 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
         if not hasattr(formset, 'cleaned_data'):
             return
 
+        # Se obtienen los objetos que ya existen en la base de datos
         existing_qs = {obj.pk: obj for obj in model.objects.filter(purchase_order=purchase_order)}
         to_delete = []
 
@@ -777,18 +796,35 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
                 if obj.pk in existing_qs:
                     to_delete.append(existing_qs.pop(obj.pk))
 
+        # Nuevas instancias (no están guardadas en la BD todavía)
         new_instances = formset.save(commit=False)
 
+        # Se actualiza el diccionario para manejar tanto existentes como nuevas
         for instance in new_instances:
             existing_qs[instance.pk] = instance
 
+        # Lista completa de objetos a evaluar (tanto guardados como nuevos)
         combined = list(existing_qs.values())
 
-        total_supplies = Decimal('0.00')
-        total_charges = Decimal('0.00')
-        total_deductions = Decimal('0.00')
-        total_payments = Decimal('0.00')
+        # --- Cálculo de componentes actuales en la BD ---
+        total_supplies = purchase_order.purchaseordersupply_set.aggregate(
+            total=models.Sum('total_price')
+        )['total'] or Decimal('0.00')
 
+        total_charges = purchase_order.purchaseordercharge_set.aggregate(
+            total=models.Sum('amount')
+        )['total'] or Decimal('0.00')
+
+        total_deductions = purchase_order.purchaseorderdeduction_set.aggregate(
+            total=models.Sum('amount')
+        )['total'] or Decimal('0.00')
+
+        total_payments = purchase_order.purchaseorderpayment_set.exclude(
+            status='canceled'
+        ).aggregate(total=models.Sum('amount'))['total'] or Decimal('0.00')
+
+        # Solo sumamos los objetos del formset si son NUEVOS o han cambiado,
+        # para evitar duplicidad con los ya guardados.
         for obj in combined:
             if isinstance(obj, PurchaseOrderSupply):
                 total_supplies += Decimal(obj.total_price or 0)
@@ -797,47 +833,53 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
             elif isinstance(obj, PurchaseOrderDeduction):
                 total_deductions += Decimal(obj.amount or 0)
             elif isinstance(obj, PurchaseOrderPayment) and obj.status != 'canceled':
-                total_payments += Decimal(obj.amount or 0)
+                if not obj.pk:  # Solo los que son nuevos (aún no tienen ID en la BD)
+                    total_payments += Decimal(obj.amount or 0)
 
-        other_data = purchase_order.simulate_balance()
-
-        supplies_total = total_supplies if model == PurchaseOrderSupply else other_data['supplies_total']
-        charges_total = total_charges if model == PurchaseOrderCharge else other_data['charges_total']
-        deductions_total = total_deductions if model == PurchaseOrderDeduction else other_data['deductions_total']
-        payments_total = total_payments if model == PurchaseOrderPayment else other_data['payments_total']
-
+        # Cálculo de los impuestos y el costo total
         tax_percent = Decimal(purchase_order.tax or 0)
         tax_decimal = tax_percent / Decimal('100.00')
-        tax_amount = (supplies_total * tax_decimal).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        tax_amount = (total_supplies * tax_decimal).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
-        balance = supplies_total + tax_amount + charges_total - deductions_total - payments_total
+        # Cálculo del total cost y balance
+        total_cost = total_supplies + tax_amount + total_charges - total_deductions
+        total_cost = total_cost.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        balance = total_cost - total_payments
         balance = balance.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
+        # Validación de integridad contable
         if balance < 0:
             if not hasattr(request, '_balance_error_shown'):
                 request._balance_error_shown = True
                 self.message_user(
                     request,
                     _(f"The final balance would be negative (${balance}) "
-                      f"Total cost of supplies: ${supplies_total} "
+                      f"Total cost of supplies: ${total_supplies} "
                       f"+ Taxes: ${tax_amount} "
-                      f"+ Charges: ${charges_total} "
-                      f"- Payments: ${payments_total} "
-                      f"- Deductions: ${deductions_total}")
-                    ,
+                      f"+ Charges: ${total_charges} "
+                      f"- Payments: ${total_payments} "
+                      f"- Deductions: ${total_deductions}"),
                     level=messages.ERROR
                 )
             return
 
+        # Eliminación de instancias marcadas para borrar
         for obj in to_delete:
             obj.delete()
 
+        # Guardado de nuevas instancias
         for instance in new_instances:
             if not instance.pk:
                 instance.created_by = request.user
             instance.save()
 
         formset.save_m2m()
+
+        # Actualización del modelo principal
+        purchase_order.total_cost = total_cost
+        purchase_order.balance_payable = balance
+        purchase_order.save(update_fields=['total_cost', 'balance_payable'])
 
     class Media:
         js = ('js/admin/forms/packhouses/purchases/purchase_orders.js',)
@@ -1004,16 +1046,25 @@ class ServiceOrderPaymentInline(admin.StackedInline):
 class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.ModelAdmin):
     form = ServiceOrderForm
     list_display = (
-        'service', 'provider', 'category', 'status', 'total_cost', 'balance_payable', 'currency', 'payment_date'
+        'ooid', 'provider', 'service', 'category', 'total_cost', 'balance_payable',
+        'currency', 'status', 'payment_date',
     )
     fields = (
-        'provider', 'service', 'category', 'start_date', 'end_date', 'batch',
-        'payment_date', 'cost', 'currency', 'tax', 'total_cost', 'balance_payable', 'status'
+        'ooid','provider', 'service', 'category', 'start_date', 'end_date', 'batch',
+        'payment_date', 'cost', 'currency', 'tax', 'total_cost', 'balance_payable', 'status', 'created_at', 'created_by',
     )
     list_filter = ('status', 'provider')
     search_fields = ('provider__name', 'service__name')
-    readonly_fields = ('status', 'balance_payable', 'total_cost')
+    readonly_fields = ('ooid','status', 'balance_payable', 'total_cost', 'created_at', 'created_by')
     inlines = [ServiceOrderChargeInline, ServiceOrderDeductionInline, ServiceOrderPaymentInline]
+
+    def get_readonly_fields(self, request, obj=None):
+        """
+        Si el objeto ya existe, se marcan todos los campos como readonly.
+        """
+        if obj:
+            return [field.name for field in self.model._meta.fields]
+        return super().get_readonly_fields(request, obj)
 
     def get_inline_instances(self, request, obj=None):
         inlines = super().get_inline_instances(request, obj)
@@ -1034,48 +1085,63 @@ class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.
         Si el pago estaba asociado a un Mass Payment, se remueve de la relación y se recalcula el total.
         """
         try:
-            payment = ServiceOrderPayment.objects.get(id=payment_id)
+            with transaction.atomic():
+                payment = ServiceOrderPayment.objects.select_for_update().get(id=payment_id)
 
-            # Marcar el pago como cancelado
-            payment.status = "canceled"
-            payment.cancellation_date = timezone.now()
-            payment.canceled_by = request.user
-            payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
+                # Marcar el pago como cancelado
+                payment.status = "canceled"
+                payment.cancellation_date = timezone.now()
+                payment.canceled_by = request.user
+                payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
 
-            # Recalcular el balance de la orden de compra
-            payment.service_order.recalculate_balance(save=True)
+                # Recalcular el balance de la orden de compra
+                payment.service_order.recalculate_balance(save=True)
 
-            # Si el pago pertenece a un Mass Payment, removerlo de la relación M2M
-            if payment.mass_payment:
-                mass_payment = payment.mass_payment
+                # Si el pago pertenece a un Mass Payment, removerlo de la relación M2M
+                if payment.mass_payment:
+                    mass_payment = payment.mass_payment
 
-                # Quitar del M2M del Mass Payment
-                mass_payment.service_order.remove(payment.service_order)
+                    # Quitar del M2M del Mass Payment
+                    mass_payment.service_order.remove(payment.service_order)
 
-                # Recalcular el monto total del Mass Payment
-                mass_payment.recalculate_amount()
+                    # Recalcular el monto total del Mass Payment
+                    mass_payment.recalculate_amount()
 
-                # Si el Mass Payment quedó sin órdenes, poner el monto a $0.00
-                if not mass_payment.service_order.exists():
-                    mass_payment.amount = Decimal('0.00')
-                    mass_payment.save(update_fields=["amount"])
+                    # Si el Mass Payment quedó sin órdenes, poner el monto a $0.00
+                    if not mass_payment.service_order.exists():
+                        mass_payment.amount = Decimal('0.00')
+                        mass_payment.save(update_fields=["amount"])
 
-            # Mensaje de éxito
-            self.message_user(
-                request,
-                _(f"Payment canceled successfully. New balance payable: ${payment.service_order.balance_payable:.2f}"),
-                level=messages.SUCCESS
-            )
-            service_order_id = payment.service_order.pk
+                # Mensaje de éxito
+                self.message_user(
+                    request,
+                    _(f"Payment canceled successfully. New balance payable: ${payment.service_order.balance_payable:.2f}"),
+                    level=messages.SUCCESS
+                )
+                service_order_id = payment.service_order.pk
 
         except ServiceOrderPayment.DoesNotExist:
             self.message_user(request, _("Payment not found"), level=messages.ERROR)
+            service_order_id = None
+        except Exception as e:
+            # Si ocurre un error, se revierte la transacción completa
+            transaction.set_rollback(True)
+            self.message_user(request, _(f"An error occurred while canceling the payment: {str(e)}"),
+                              level=messages.ERROR)
             service_order_id = None
 
         # Redirigir al tab de pagos
         redirect_url = reverse('admin:purchases_serviceorder_change', args=[
             service_order_id]) + "#payments-tab" if service_order_id else request.path + "#payments-tab"
         return HttpResponseRedirect(redirect_url)
+
+    def save_model(self, request, obj, form, change):
+        """
+        Guarda el objeto principal (sin relaciones M2M).
+        """
+        if not change:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
 
     def save_related(self, request, form, formsets, change):
         """
@@ -1264,11 +1330,11 @@ class PurchaseMassPaymentAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin,
     Permite registrar pagos masivos y verificar su estado.
     """
     form = PurchaseMassPaymentForm
-    fields = ('category', 'provider', 'currency', 'purchase_order', 'service_order', 'payment_kind',
+    fields = ('ooid','category', 'provider', 'currency', 'purchase_order', 'service_order', 'payment_kind',
               'additional_inputs', 'bank', 'payment_date', 'amount', 'comments')
-    list_display = ('category','provider', 'amount', 'currency', 'payment_date', 'status', 'created_by')
+    list_display = ('ooid','category','provider', 'amount', 'currency', 'payment_date', 'status', 'created_by')
     list_filter = ('category', 'status')
-    readonly_fields = ('status', 'created_by', 'created_at', 'canceled_by', 'cancellation_date')
+    readonly_fields = ('ooid','status', 'created_by', 'created_at', 'canceled_by', 'cancellation_date')
 
     def save_model(self, request, obj, form, change):
         """

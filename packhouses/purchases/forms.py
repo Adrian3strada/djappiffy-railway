@@ -296,13 +296,44 @@ class PurchaseMassPaymentForm(forms.ModelForm):
             if instance.additional_inputs:
                 self.fields['additional_inputs'].initial = json.dumps(instance.additional_inputs)
 
-            # Etiquetas condicionales en purchase_order
+        # Contexto de creación o edición
+        is_adding = not instance.pk
+
+        if is_adding:
+            # Si estamos creando el Mass Payment, mostramos el balance_payable
             self.fields['purchase_order'].label_from_instance = lambda obj: (
                 f"Folio {obj.ooid} - ${obj.balance_payable}"
                 if obj.balance_payable > 0
                 else f"Folio {obj.ooid}"
             )
+            self.fields['service_order'].label_from_instance = lambda obj: (
+                f"Folio {obj.id} - ${obj.balance_payable}"
+                if obj.balance_payable > 0
+                else f"Folio {obj.id}"
+            )
+        else:
+            # Si estamos editando, mostramos el monto pagado individualmente
+            def label_from_instance_edit_po(obj):
+                payment = PurchaseOrderPayment.objects.filter(
+                    purchase_order=obj,
+                    mass_payment=instance
+                ).first()
+                if payment:
+                    return f"Folio {obj.ooid} - ${payment.amount}"
+                return f"Folio {obj.ooid} - $0.00"
 
+            def label_from_instance_edit_so(obj):
+                payment = ServiceOrderPayment.objects.filter(
+                    service_order=obj,
+                    mass_payment=instance
+                ).first()
+                if payment:
+                    return f"Folio {obj.id} - ${payment.amount}"
+                return f"Folio {obj.id} - $0.00"
+
+            # Asignamos la lógica personalizada para mostrar el monto en los labels
+            self.fields['purchase_order'].label_from_instance = label_from_instance_edit_po
+            self.fields['service_order'].label_from_instance = label_from_instance_edit_so
 
         for field_name in ['payment_kind', 'bank']:
             if hasattr(self.fields[field_name].widget, 'can_add_related'):
