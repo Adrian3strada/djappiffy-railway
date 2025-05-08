@@ -10,6 +10,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 158,
     "countries": [
       158
     ]
@@ -26,6 +27,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 2,
+    "country": 158,
     "countries": [
       158
     ]
@@ -42,6 +44,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 234,
     "countries": [
       234
     ]
@@ -58,6 +61,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 38,
     "countries": [
       38
     ]
@@ -74,6 +78,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 49,
     "countries": [
       49
     ]
@@ -90,6 +95,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 211,
     "countries": [
       211
     ]
