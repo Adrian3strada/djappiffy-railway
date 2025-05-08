@@ -26,7 +26,7 @@ from common.profiles.models import UserProfile, PackhouseExporterProfile, Organi
 from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFormSet,
                     ProductSeasonKindInlineFormSet,
                     OrchardCertificationForm, HarvestingCrewForm, HarvestingPaymentSettingInlineFormSet,
-                    PackagingKindForm, ProviderForm)
+                    PackagingKindForm, ProviderForm, MarketForm)
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization
 from cities_light.models import Country, Region, SubRegion, City
@@ -103,10 +103,11 @@ class CityAdmin(CLCityAdmin):
 class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [MarketResource]
+    form = MarketForm
     list_display = ('name', 'alias', 'get_countries', 'is_mixable', 'is_enabled')
     list_filter = (ByCountryForOrganizationMarketsFilter, 'is_mixable', 'is_enabled',)
     search_fields = ('name', 'alias')
-    fields = ('name', 'alias', 'countries', 'is_mixable',
+    fields = ('country', 'countries','name', 'alias',  'is_mixable',
               'label_language', 'address_label', 'is_enabled')
 
     def get_countries(self, obj):
@@ -132,6 +133,9 @@ class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         if 'address_label' in form.cleaned_data and form.cleaned_data['address_label'] == '<p>&nbsp;</p>':
             obj.address_label = None
         super().save_model(request, obj, form, change)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/catalogs/countries.js',) 
 
     
 # /Markets
@@ -544,7 +548,6 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = ProductSize.objects.get(id=object_id) if object_id else None
-
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
 
@@ -1550,19 +1553,21 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.required = True
             if organization and product_kind and market_id:
-                market = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
-        
+                market = Market.objects.get(id=market_id)
+                country_ids = market.countries.all().values_list('id', flat=True)
+
                 queryset = ProductKindCountryStandardPackaging.objects.filter(
-                    standard__product_kind=product_kind,
-                    standard__country__in=market_country  
+                standard__product_kind=product_kind,
+                standard__country_id__in=country_ids,
                 )
-        
+
                 kwargs["queryset"] = queryset
                 formfield.required = queryset.exists()
             else:
                 kwargs["queryset"] = ProductKindCountryStandardPackaging.objects.none()
                 formfield.required = False
             return formfield
+
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

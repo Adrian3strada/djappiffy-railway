@@ -17,6 +17,7 @@ def create_related_payments_and_update_balances(mass_payment):
         "additional_inputs": mass_payment.additional_inputs,
         "status": "closed",
         "created_by": user,
+        "mass_payment": mass_payment
     }
 
     # Órdenes de compra
@@ -44,4 +45,5 @@ def create_related_payments_and_update_balances(mass_payment):
             **common_fields
         )
 
+        # Actualiza el balance a 0 si el pago lo cubre
         order.recalculate_balance(save=True)
