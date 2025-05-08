@@ -1,12 +1,12 @@
 from organizations.templatetags.org_tags import is_admin
 from rest_framework import serializers
-from rest_polymorphic.serializers import PolymorphicSerializer
+
 from .models import (UserProfile, OrganizationProfile, ProducerProfile, ImporterProfile, PackhouseExporterProfile,
                      TradeExporterProfile)
 from organizations.models import Organization, OrganizationOwner, OrganizationUser
-from common.base.serializers import CountrySerializer
-# from django_countries import countries
-#
+from rest_polymorphic.serializers import PolymorphicSerializer
+
+# register serializers for models
 
 
 class BaseOrganizationProfileSerializer(serializers.ModelSerializer):

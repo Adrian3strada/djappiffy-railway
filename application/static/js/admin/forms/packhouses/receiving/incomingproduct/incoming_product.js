@@ -18,10 +18,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const missingContainersField = $('#id_missing_containers');
     const averageContainersField = $('#id_average_per_container');
     const currentKgField = $('#id_current_kg_available');
-    const containerTare= $('input[name$="-container_tare"]');
-    const totalContainers= $('input[name$="-total_containers"]');
     const missingVehicleContainerField = $('input[name$="-missing_containers"]');
     const totaWeighedSetContainersField = $('#id_total_weighed_set_containers');
+    const statusField = $('#id_status');
+    const initialStatus = statusField.val();
 
     // deshabilitar edición en campos, pero permitir que los valores se envíen
     function disableField(field) {
@@ -40,13 +40,17 @@ document.addEventListener("DOMContentLoaded", function() {
     disableField(containersAssignedField);
     disableField(missingContainersField);
     disableField(averageContainersField);
-    disableField(containerTare);
-    disableField(totalContainers);
     disableField(fullContainersField);
     disableField(emptyContainersField);
     disableField(missingVehicleContainerField);
     disableField(totaWeighedSetContainersField);
+
     
+    if (initialStatus !== 'pending') {
+        statusField.find('option[value="pending"]').remove();
+        statusField.trigger('change.select2');
+    }
+
     // Función para actualizar missingBoxes
     function updateMissingContainers() {
         const boxesAssigned = parseFloat(containersAssignedField.val());

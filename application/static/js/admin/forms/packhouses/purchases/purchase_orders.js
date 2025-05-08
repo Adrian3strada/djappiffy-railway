@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Interceptar el clic en el botón de guardar
   const saveButton = document.querySelector('input[name="_save"]');
-  if (saveButton) {
+  if (saveButton &&   document.querySelector('.field-status > .readonly')?.textContent.trim() != 'Closed') {
         saveButton.addEventListener('click', function (e) {
             e.preventDefault();
 

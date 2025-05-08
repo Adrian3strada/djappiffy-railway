@@ -47,3 +47,18 @@ SUPPLY_CATEGORY_CHOICES = [
     ('other', _('Other')),
 ]
 
+SUPPLY_TRANSACTION_KIND_CHOICES = [
+    ('inbound', _('Inbound')),
+    ('outbound', _('Outbound')),
+]
+
+SUPPLY_TRANSACTION_CATEGORY_CHOICES = [
+    ('adjustment_inventory', _('Adjustment Inventory')),
+    ('selective_process', _('Selective Process')),
+    ('repackaging', _('Repackaging')),
+    ('purchase', _('Purchase')),
+    ('sale', _('Sale')),
+    ('transfer', _('Transfer')),
+    ('return', _('Return')),
+    ('other', _('Other')),
+]

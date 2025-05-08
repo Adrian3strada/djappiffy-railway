@@ -1,3 +1,5 @@
+from random import choices
+
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 from wagtail.models import Orderable
@@ -10,7 +12,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import FileExtensionValidator
 from common.mixins import CleanDocumentsMixin
 from django.utils.text import slugify
-from .utils import get_filtered_models
 from django.utils.functional import lazy
 import os
 
@@ -37,6 +38,22 @@ class ProductKind(models.Model):
         verbose_name_plural = _('Product Kinds')
         ordering = ['sort_order']
 
+class SupplyMeasureUnitCategory(models.Model):
+    name = models.CharField(max_length=100)
+    factor = models.FloatField(verbose_name=_('Factor'), validators=[MinValueValidator(0.01)], default=1.0)
+    unit_category = models.CharField(max_length=30, verbose_name=_('Unit category'), choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('Supply Measure Unit Category')
+        verbose_name_plural = _('Supply Measure Unit Categories')
+        ordering = ['name']
+        constraints = [
+            models.UniqueConstraint(fields=['name'], name='supplymeasureunitcategory_unique_name')
+        ]
 
 class SupplyKind(models.Model):
     category = models.CharField(max_length=40, verbose_name=_('Category'), choices=SUPPLY_CATEGORY_CHOICES)
@@ -45,10 +62,23 @@ class SupplyKind(models.Model):
                                               null=True, blank=False,
                                               help_text=_('Capacity unit to group supply kinds by his capacity'),
                                               choices=PRODUCT_MEASURE_UNIT_CATEGORY_CHOICES)
-    usage_discount_unit_category = models.CharField(max_length=30, verbose_name=_('Usage discount unit category'),
-                                                    help_text=_(
-                                                        'Usage unit kind to measure when supplies are consumed'),
-                                                    choices=SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES)
+    requested_unit_category = models.ManyToManyField(
+                                                SupplyMeasureUnitCategory,
+                                                verbose_name=_('Requested unit category'),
+                                                help_text=_('Type of unit of use to measure how inputs are requested from the supplier'),
+                                                related_name='supplykinds_requested',
+                                                related_query_name='supplykind_requested',
+                                            )
+
+    usage_discount_unit_category = models.ForeignKey(
+                                                SupplyMeasureUnitCategory,
+                                                verbose_name=_('Usage discount unit category'),
+                                                help_text=_('Usage unit kind to measure when supplies are consumed'),
+                                                on_delete=models.PROTECT,
+                                                related_name='supplykinds_usage_discount',
+                                                related_query_name='supplykind_usage_discount'
+                                            )
+
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
@@ -249,7 +279,7 @@ class CertificationFormat(CleanDocumentsMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     route = models.FileField(
         upload_to=certification_file_path,
-        validators=[FileExtensionValidator(allowed_extensions=['docx'])],
+        validators=[FileExtensionValidator(allowed_extensions=['docx', 'doc', 'pdf', 'xls', 'xlsx', 'xml'])],
         verbose_name=_('Document')
         )
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -305,9 +335,13 @@ class PestProductKind(models.Model):
         ordering = ['pest']
         verbose_name = _('Pest Product Kind')
         verbose_name_plural = _('Pests Product Kind')
+        constraints = [
+            models.UniqueConstraint(fields=['pest', 'product_kind'],
+                                    name='pestproductkind_unique_pest_product_kind'),
+        ]
 
     def __str__(self):
-        return f"{self.product_kind} - {self.pest}"
+        return f"{self.pest}"
 
 class DiseaseProductKind(models.Model):
     product_kind = models.ForeignKey(ProductKind, verbose_name=_('Product'), on_delete=models.PROTECT)
@@ -318,14 +352,18 @@ class DiseaseProductKind(models.Model):
         ordering = ['disease']
         verbose_name = _('Disease Product Kind')
         verbose_name_plural = _('Diseases Product Kind')
+        constraints = [
+            models.UniqueConstraint(fields=['disease', 'product_kind'],
+                                    name='diseaseproductkind_unique_disease_product_kind'),
+        ]
 
     def __str__(self):
-        return f"{self.product_kind} - {self.disease}"
+        return f"{self.disease}"
 
 class FoodSafetyProcedure(models.Model):
     name = models.CharField(max_length=255, unique=True, verbose_name=_('Name'))
     description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
-    model = models.CharField(max_length=255, unique=True, verbose_name=_('Model'), choices=get_filtered_models())
+    name_model = models.CharField(max_length=255, unique=True, verbose_name=_('Model'))
     overall_average = models.BooleanField(default=True, verbose_name=_('Overall Average'))
 
     class Meta:

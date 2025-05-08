@@ -4,21 +4,20 @@ from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketSerializer, ProductMarketClassSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
-                          ProductPhenologyKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
+                          ProductPhenologyKindSerializer, ClientSerializer, ProductSizeSerializer,
                           MaquiladoraSerializer, PackagingSerializer, ProductPresentationSerializer,
                           SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
                           ProductPackagingSerializer, PalletSerializer, ProductPackagingPalletSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
-                          OrchardCertificationSerializer, ProductRipenessSerializer, PurchaseOrderSupplySerializer,
+                          OrchardCertificationSerializer, ProductRipenessSerializer, ServiceSerializer
 
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
-                     ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
+                     ProductHarvestSizeKind, ProductPhenologyKind, Client, Maquiladora, Provider,
                      Product, Packaging, ProductPresentation, ProductPackaging, Pallet, ProductPackagingPallet,
-                     Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness,
+                     Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness, Service
                      )
 from django_filters.rest_framework import DjangoFilterBackend
-from packhouses.purchases.models import PurchaseOrderSupply
 
 
 class ProductHarvestSizeKindViewSet(viewsets.ModelViewSet):
@@ -45,19 +44,6 @@ class ProductPhenologyKindViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return ProductPhenologyKind.objects.filter(product__organization=self.request.organization)
-
-
-class ProductMassVolumeKindViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductMassVolumeKindSerializer
-    filterset_fields = ['product', 'is_enabled']
-    pagination_class = None
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            raise NotAuthenticated()
-
-        return ProductMassVolumeKind.objects.filter(product__organization=self.request.organization)
 
 
 class MarketViewSet(viewsets.ModelViewSet):
@@ -426,18 +412,17 @@ class ProductRipenessViewSet(viewsets.ModelViewSet):
 
         return ProductRipeness.objects.filter(product__organization=self.request.organization)
 
-class PurchaseOrderSupplyViewSet(viewsets.ModelViewSet):
-    serializer_class = PurchaseOrderSupplySerializer
-    filterset_fields = ['purchase_order']  # Filtra por purchase_order
-    pagination_class = None  # Desactiva la paginación
+
+class ServiceViewSet(viewsets.ModelViewSet):
+    serializer_class = ServiceSerializer
+    filterset_fields = ['service_provider', 'is_enabled']
+    pagination_class = None
 
     def get_queryset(self):
         user = self.request.user
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        # Filtra los PurchaseOrderSupply por purchase_order_id
-        purchase_order_id = self.request.query_params.get('purchase_order', None)
-        if purchase_order_id:
-            return PurchaseOrderSupply.objects.filter(purchase_order_id=purchase_order_id)
-        return PurchaseOrderSupply.objects.none()
+        return Service.objects.filter(organization=self.request.organization)
+
+

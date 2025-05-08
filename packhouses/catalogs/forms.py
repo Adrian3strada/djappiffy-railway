@@ -3,7 +3,7 @@ from .models import (
     Product, ProductSize, OrchardCertification, HarvestingCrew,
     ProductHarvestSizeKind,
     HarvestingPaymentSetting,
-    Packaging, Provider
+    Packaging, Provider, Market, Country
 )
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
@@ -20,24 +20,6 @@ class ProductSeasonKindInlineFormSet(BaseInlineFormSet):
 
             # Verifica si la instancia de ProductVariety está en uso
             if instance.pk and ProductSize.objects.all().exists(): #filter(product_season_kind=instance).exists():
-                form.fields['name'].disabled = True
-                form.fields['name'].widget.attrs.update(
-                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
-                form.fields['DELETE'].initial = False
-                form.fields['DELETE'].disabled = True
-                form.fields['DELETE'].widget.attrs.update(
-                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
-
-
-class ProductMassVolumeKindInlineFormSet(BaseInlineFormSet):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        for form in self.forms:
-            instance = form.instance
-
-            # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductSize.objects.all().exists():#filter(product_mass_volume_kind=instance).exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
@@ -183,4 +165,24 @@ class ProviderForm(forms.ModelForm):
 
         if category == 'harvesting_provider' and not vehicle_provider:
             self.add_error('vehicle_provider', _('This field is required when category is Harvesting Provider.'))
+
         return cleaned_data
+
+
+class MarketForm(forms.ModelForm):
+    class Meta:
+        model = Market
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Si hay un 'country' seleccionado, añádelo automáticamente a 'countries'
+        if self.instance and getattr(self.instance, 'country', None):
+            self.fields['country'].queryset = Country.objects.filter(id=self.instance.country.id)
+
+        # Si es un objeto nuevo, no se llena 'countries' automáticamente
+        elif not self.instance.pk:
+            self.fields['countries'].queryset = Country.objects.none()
+
+

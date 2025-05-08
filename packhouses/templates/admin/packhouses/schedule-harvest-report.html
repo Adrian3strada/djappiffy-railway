@@ -40,22 +40,30 @@
     width: 100%;
 }
 
-.info-row {
-    display: flex;
-    gap: 5px;
-    
-}
-
-.info-item {
-    flex: 1; 
-    border-bottom: 1px solid #000000; 
-    text-align: left;
-}
-
 .info-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: auto;
+    font-size: 8pt;
 }
+
+.info-table td {
+    border-bottom: 1px solid #000;
+    vertical-align: bottom;
+    text-align: left;
+}
+
+.label {
+    white-space: nowrap;
+    width: 1%;
+    text-align: left;
+}
+
+.value {
+    width: auto;
+}
+
+
 
 .transport-info-table{
     width: 100%;
@@ -129,42 +137,73 @@
 
 <div>
     <div class="info-container">
-        <div class="info-row">
-            <div class="info-item">{% translate "Harvest Date: " %}{{harvest.harvest_date}}</div>
-            <div class="info-item">{% translate "Provider:" %} {{harvest.product_provider}}</div>
-            <div class="info-item">{% translate "Category" %}: {{harvest.category}}</div>
-        </div>
+        <table class="info-table">
+            <tbody>
+                <tr>
+                    <td class="label">{% translate "Harvest Date:" %}</td>
+                    <td class="value">{{ harvest.harvest_date }}</td>
+                
+                    <td class="label">{% translate "Provider:" %}</td>
+                    <td class="value">{{ harvest.product_provider }}</td>
+                
+                    <td class="label">{% translate "Category:" %}</td>
+                    <td class="value">{{ harvest.get_category_display }}</td>
+                </tr>                
     
-        <div class="info-row">
-            {% if harvest.category == 'gathering' %}
-                <div class="info-item">{% translate "Gatherer:" %}{{ harvest.gatherer }}</div>
-            {% elif harvest.category == 'maquila' %}
-                <div class="info-item">{% translate "Maquiladora:" %} {{ harvest.maquiladora }}</div>
-            {% else %}
-                <div class="info-item">""</div>
-            {% endif %}
-            <div class="info-item">{% translate "Product:" %} {{harvest.product}}</div>
-            <div class="info-item">{% translate "Variety:" %} {{harvest.product_variety}}</div>
-        </div>
+                <tr>
+                    {% if harvest.category == 'gathering' %}
+                        <td class="label">{% translate "Gatherer:" %}</td>
+                        <td class="value">{{ harvest.gatherer }}</td>
+                    {% elif harvest.category == 'maquila' %}
+                        <td class="label">{% translate "Maquiladora:" %}</td>
+                        <td class="value">{{ harvest.maquiladora }}</td>
+                    {% else %}
+                        <td colspan="2"></td> 
+                    {% endif %}
     
-        <div class="info-row">
-            <div class="info-item">{% translate "Phenology:" %} {{harvest.product_phenologies}}</div>
-            <div class="info-item">{% translate "Harvest Size:" %} {{harvest.product_harvest_size_kind}}</div>
-            <div class="info-item">{% translate "Orchard:" %} {{harvest.orchard}}</div>
-        </div>
+                    <td class="label">{% translate "Product:" %}</td>
+                    <td>{{ harvest.product }}</td>
     
-        <div class="info-row">
-            <div class="info-item">{% translate "Market:" %} {{harvest.market}}</div>
-            <div class="info-item">{% translate "Expected Weight:" %} {{harvest.weight_expected}} KG</div>
-            <div class="info-item">{% translate "Weight Scale:" %} {{harvest.weighing_scale}}</div>
-        </div>
+                    <td class="label">{% translate "Variety:" %}</td>
+                    <td>{{ harvest.product_variety }}</td>
+                </tr>
     
-        <div class="info-row">
-            <div class="info-item">{% translate "Meeting Point:" %} {{harvest.meeting_point}}</div>
-            <div class="info-item"></div> 
-            <div class="info-item">{% translate "Status:" %} {{harvest.status}}</div>
-        </div>
+                <tr>
+                    <td class="label">{% translate "Phenology:" %}</td>
+                    <td class="value">{{ harvest.product_phenologies }}</td>
+    
+                    <td class="label">{% translate "Harvest Size:" %}</td>
+                    <td class="value">{{ harvest.product_harvest_size_kind }}</td>
+    
+                    <td class="label">{% translate "Orchard:" %}</td>
+                    <td class="value">{{ harvest.orchard }}</td>
+                </tr>
+    
+                <tr>
+                    <td class="label">{% translate "Market:" %}</td>
+                    <td class="value">{{ harvest.market }}</td>
+    
+                    <td class="label">{% translate "Expected Weight:" %}</td>
+                    <td class="value">{{ harvest.weight_expected }} KG</td>
+    
+                    <td class="label">{% translate "Weight Scale:" %}</td>
+                    <td class="value">{{ harvest.weighing_scale }}</td>
+                </tr>
+    
+                <tr>
+                    <td class="label">{% translate "Meeting Point:" %}</td>
+                    <td class="value">{{ harvest.meeting_point }}</td>
+    
+                    <td class="label"></td>
+                    <td class="value"></td>
+    
+                    <td class="label">{% translate "Status:" %}</td>
+                    <td class="value">{{ harvest.get_status_display }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
+    
 </div>
 
 <div>
@@ -207,12 +246,12 @@
                     {% if container_count > 0 %}
                         {% for container in containers %}
                             {% if forloop.first %}
-                                <td>{{ container.harvest_cutting_container.name }}</td>
+                                <td>{{ container.harvest_container }}</td>
                                 <td style="text-align: center;">{{ container.quantity }}</td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td>{{ container.harvest_cutting_container.name }}</td>
+                                <td>{{ container.harvest_container }}</td>
                                 <td style="text-align: center;">{{ container.quantity }}</td>
                             </tr>
                             {% endif %}
@@ -238,7 +277,7 @@
     <div class="data-space">
         <p><strong>{% translate "Product:" %}</strong>{{harvest.product}} </p>
         <p><strong>{% translate "Product Variety:" %} </strong>{{harvest.product_variety}}</p>
-        <p><strong>{% translate "Total of Boxes:" %} </strong>{{total_box}}</p>
+        <p><strong>{% translate "Total of Containers:" %} </strong>{{total_box}}</p>
         <p><strong>{% translate "Expected Weight:" %} </strong>{{harvest.weight_expected}} KG</p>
     </div>
 </div>

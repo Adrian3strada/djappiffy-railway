@@ -1,13 +1,12 @@
 from django.contrib import admin
 from .models import (UserProfile, OrganizationProfile, ProducerProfile,
                      ImporterProfile, PackhouseExporterProfile,
-                     TradeExporterProfile, PackhouseExporterSetting)
+                     TradeExporterProfile, PackhouseExporterSetting, EudrOperatorProfile)
 from django.utils.translation import gettext_lazy as _
 from cities_light.models import Country, Region, SubRegion, City
 from organizations.models import Organization
 from common.billing.models import LegalEntityCategory
 from common.base.models import ProductKind
-
 
 # Register your Admin classes here.
 
@@ -91,6 +90,7 @@ class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
         fields = list(super().get_fields(request, obj))
         if not request.user.is_superuser:
             fields.remove('product_kinds')
+            fields.remove('organization')
         return fields
 
     def get_form(self, request, obj=None, **kwargs):
@@ -179,7 +179,19 @@ class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
 
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+
+        if not request.user.is_superuser:
+            queryset = queryset.filter(organization=request.organization)  
+        
+        return queryset
+
 
 @admin.register(TradeExporterProfile)
 class TradeExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
+    pass
+
+@admin.register(EudrOperatorProfile)
+class EudrOperatorProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
     pass

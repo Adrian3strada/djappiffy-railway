@@ -16,7 +16,7 @@ from .utils import (vehicle_year_choices, vehicle_validate_year, get_type_choice
                     get_vehicle_category_choices, get_provider_categories_choices)
 from django.core.exceptions import ValidationError
 from common.base.models import (ProductKind, ProductKindCountryStandardSize, ProductKindCountryStandardPackaging, CapitalFramework,
-                                ProductKindCountryStandard, LegalEntityCategory, SupplyKind, Pest, Disease)
+                                ProductKindCountryStandard, LegalEntityCategory, SupplyKind, PestProductKind, DiseaseProductKind)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   AuthorityPackagingKind,
@@ -36,15 +36,45 @@ from common.base.models import FoodSafetyProcedure
 class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
+
+
+    # Nueva FK obligatoria a Country
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.PROTECT,
+        verbose_name=_('Country'),
+        related_name='primary_markets'
+    )
+
     countries = models.ManyToManyField(Country, verbose_name=_('Countries'))
-    is_mixable = models.BooleanField(default=True, verbose_name=_('Is mixable'),
-                                     help_text=_('Conditional that does not allow mixing fruit with other markets'))
-    label_language = models.CharField(max_length=20, verbose_name=_('Label language'), choices=settings.LANGUAGES,
-                                      default='es')
-    address_label = CKEditor5Field(blank=True, null=True, verbose_name=_('Address of packaging house to show in label'),
-                                   help_text=_('Leave blank to keep the default address defined in the organization'))
+
+    is_mixable = models.BooleanField(
+        default=True,
+        verbose_name=_('Is mixable'),
+        help_text=_('Conditional that does not allow mixing fruit with other markets')
+    )
+
+    label_language = models.CharField(
+        max_length=20,
+        verbose_name=_('Label language'),
+        choices=settings.LANGUAGES,
+        default='es'
+    )
+
+    address_label = CKEditor5Field(
+        blank=True,
+        null=True,
+        verbose_name=_('Address of packaging house to show in label'),
+        help_text=_('Leave blank to keep the default address defined in the organization')
+    )
+
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    organization = models.ForeignKey(
+        Organization,
+        verbose_name=_('Organization'),
+        on_delete=models.PROTECT
+    )
 
     class Meta:
         verbose_name = _('Market')
@@ -165,21 +195,6 @@ class ProductHarvestSizeKind(CleanProductMixin, models.Model):
         ]
 
 
-class ProductMassVolumeKind(CleanNameAndProductMixin, models.Model):
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
-    sort_order = models.PositiveIntegerField(default=0, verbose_name=_('Sort order'))
-
-    class Meta:
-        verbose_name = _('Product mass volume kind')
-        verbose_name_plural = _('Product mass volume kinds')
-        ordering = ('product', 'sort_order',)
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'product'], name='productmassvolumekind_unique_name_product'),
-        ]
-
-
 class ProductRipeness(CleanProductMixin, models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name=_('Name'))
@@ -200,8 +215,14 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Varieties'), blank=False)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     category = models.CharField(max_length=30, verbose_name=_('Category'), choices=PRODUCT_SIZE_CATEGORY_CHOICES)
-    standard_size = models.ForeignKey(ProductKindCountryStandardSize, verbose_name=_('Standard size'),
-                                      on_delete=models.PROTECT, null=True, blank=False)
+    standard_size = models.ForeignKey(
+    ProductKindCountryStandardSize,
+    verbose_name=_('Standard size'),
+    on_delete=models.PROTECT,
+    null=True,
+    blank=True,
+)
+
     name = models.CharField(max_length=160, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
     description = models.CharField(max_length=255, verbose_name=_('Description'), blank=True, null=True)
@@ -221,8 +242,8 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
 
 
 class ProductPest(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    pest = models.ForeignKey(Pest, verbose_name=_('Pest'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    pest = models.ForeignKey(PestProductKind, verbose_name=_('Pest'), on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -230,14 +251,15 @@ class ProductPest(models.Model):
         return f"{self.name}"
 
     class Meta:
+        ordering = ['name']
         constraints = [
             models.UniqueConstraint(fields=['product', 'pest', 'name'],
                                     name='unique_product_pest_name')
         ]
 
 class ProductDisease(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    disease = models.ForeignKey(Disease, verbose_name=_('Disease'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    disease = models.ForeignKey(DiseaseProductKind, verbose_name=_('Disease'), on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -245,13 +267,14 @@ class ProductDisease(models.Model):
         return f"{self.name}"
 
     class Meta:
+        ordering = ['name']
         constraints = [
             models.UniqueConstraint(fields=['product', 'disease', 'name'],
                                     name='unique_product_disease_name')
         ]
 
 class ProductPhysicalDamage(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -259,6 +282,7 @@ class ProductPhysicalDamage(models.Model):
         return f"{self.name}"
 
     class Meta:
+        ordering = ['name']
         verbose_name = _('Product physical damage')
         verbose_name_plural = _('Product physical damages')
         ordering = ('name', 'product')
@@ -268,7 +292,7 @@ class ProductPhysicalDamage(models.Model):
         ]
 
 class ProductResidue(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -276,6 +300,7 @@ class ProductResidue(models.Model):
         return f"{self.name}"
 
     class Meta:
+        ordering = ['name']
         verbose_name = _('Product residue')
         verbose_name_plural = _('Product Residues')
         ordering = ('name', 'product')
@@ -300,14 +325,24 @@ class ProductFoodSafetyProcess(models.Model):
                                     name='productfoodsafetyprocess_unique_procedure_product'),
         ]
 
-class ProductAdditionalValue(models.Model):
-    acceptance_report = models.IntegerField(verbose_name=_('Acceptance Report'))
+class ProductDryMatterAcceptanceReport(models.Model):
+    acceptance_report = models.IntegerField(verbose_name=_('Dry Matter Acceptance Report'), null=True, blank=True)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
+
+    def __str__(self):
+        return f"{self.acceptance_report}"
 
     class Meta:
+        ordering = ('-created_at',)
         verbose_name = _('Product Additional Value')
         verbose_name_plural = _('Product Additional Values')
+
+    def save_model(self, request, obj, form, change):
+        latest = ProductDryMatterAcceptanceReport.objects.order_by('-created_at').first()
+        if obj.pk != latest.pk:
+            return  # No guardar si no es el último
+        super().save_model(request, obj, form, change)
 
 # /Products
 
@@ -745,14 +780,14 @@ class HarvestingPaymentSetting(models.Model):
 class Supply(CleanNameAndOrganizationMixin, models.Model):
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    capacity = models.FloatField(verbose_name=_('Capacity'), validators=[MinValueValidator(0)],
+    capacity = models.FloatField(verbose_name=_('Capacity'), validators=[MinValueValidator(0.01)],
                                  null=True, blank=True,
                                  help_text=_('Capacity of the supply, based in the usage unit'))
 
     minimum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Minimum stock quantity'))
     maximum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Maximum stock quantity'))
-    usage_discount_quantity = models.PositiveIntegerField(verbose_name=_('Usage discount quantity'),
-                                                          validators=[MinValueValidator(1)],
+    usage_discount_quantity = models.FloatField(verbose_name=_('Usage discount quantity'),
+                                                          validators=[MinValueValidator(0.01)],
                                                           help_text=_(
                                                               'Amount of units to discount when a supply is consumed, based in the usage unit of the supply kind'))
     kg_tare = models.FloatField(default=0, verbose_name=_("Kg tare"), null=True, blank=True, )
@@ -764,13 +799,13 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
             capacity = int(self.capacity) if self.capacity % 1 == 0 else self.capacity
             unit = _(
                 'piece') if self.kind.capacity_unit_category == 'pieces' and capacity == 1 else self.kind.capacity_unit_category
-            return f"{self.name} ({capacity} {unit})"
-        return f"{self.name}"
+            return f"{self.kind.name}: {self.name} ({capacity} {unit})"
+        return f"{self.kind.name}: {self.name}"
 
     def clean(self):
         value = self.capacity
         if self.kind.category in ['packaging_containment', 'packaging_presentation',
-                                  'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel']:
+                                  'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel', 'harvest_container']:
             min_value = 1 if self.kind.capacity_unit_category in ['pieces'] else 0.01
             validation_error = _('Capacity must be at least 1 for this kind.') if self.kind.capacity_unit_category in [
                 'pieces'] else _('Capacity must be at least 0.01 for this kind.')
@@ -930,6 +965,7 @@ class Packaging(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    clients = models.ManyToManyField('Client', verbose_name=_('Clients'), blank=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
     def __str__(self):

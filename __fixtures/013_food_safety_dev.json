@@ -1,5 +1,55 @@
 [
     {
+        "model": "base.foodsafetyprocedure",
+        "pk": 1,
+        "fields": {
+            "name" : "Materia Seca",
+            "description" : "N Materia seca",
+            "name_model" : "DryMatter",
+            "overall_average": 1
+        }
+    },
+    {
+        "model": "base.foodsafetyprocedure",
+        "pk": 2,
+        "fields": {
+            "name" : "Inspección interna",
+            "description" : "N Inspecciones Internas",
+            "name_model" : "InternalInspection",
+            "overall_average": 1
+        }
+    },
+    {
+        "model": "base.foodsafetyprocedure",
+        "pk": 3,
+        "fields": {
+            "name" : "Vehicle",
+            "description" : "Vehicle",
+            "name_model" : "VehicleReview",
+            "overall_average": 0
+        }
+    },
+    {
+        "model": "base.foodsafetyprocedure",
+        "pk": 4,
+        "fields": {
+            "name" : "Muestras",
+            "description" : "N Muestras",
+            "name_model" : "SampleCollection",
+            "overall_average": 0
+        }
+    },
+    {
+        "model": "base.foodsafetyprocedure",
+        "pk": 5,
+        "fields": {
+            "name" : "Promedios",
+            "description" : "Promedios generales",
+            "name_model" : "Average",
+            "overall_average": 0
+        }
+    },
+    {
         "model": "base.disease",
         "pk": 1,
         "fields": {
@@ -277,56 +327,6 @@
             "inside" : 0,
             "outside" : 1,
             "is_enabled" : 1
-        }
-    },
-    {
-        "model": "base.foodsafetyprocedure",
-        "pk": 1,
-        "fields": {
-            "name" : "Materia Seca",
-            "description" : "N Materia seca",
-            "model" : "DryMatter",
-            "overall_average": 1
-        }
-    },
-    {
-        "model": "base.foodsafetyprocedure",
-        "pk": 2,
-        "fields": {
-            "name" : "Inspección interna",
-            "description" : "N Inspecciones Internas",
-            "model" : "InternalInspection",
-            "overall_average": 1
-        }
-    },
-    {
-        "model": "base.foodsafetyprocedure",
-        "pk": 3,
-        "fields": {
-            "name" : "Vehicle",
-            "description" : "Vehicle",
-            "model" : "VehicleReview",
-            "overall_average": 0
-        }
-    },
-    {
-        "model": "base.foodsafetyprocedure",
-        "pk": 4,
-        "fields": {
-            "name" : "Muestras",
-            "description" : "N Muestras",
-            "model" : "SampleCollection",
-            "overall_average": 0
-        }
-    },
-    {
-        "model": "base.foodsafetyprocedure",
-        "pk": 5,
-        "fields": {
-            "name" : "Promedios",
-            "description" : "Promedios generales",
-            "model" : "Average",
-            "overall_average": 0
         }
     },
     {
@@ -621,16 +621,6 @@
             "is_enabled" : 1,
             "disease" : 5,
             "product" : 1
-        }
-    },
-    {
-        "model": "catalogs.productdisease",
-        "pk": 5,
-        "fields": {
-            "name" : "Ant (Remanente)",
-            "is_enabled" : 1,
-            "disease" : 1,
-            "product" : 7
         }
     },
     {
@@ -1099,6 +1089,24 @@
             "is_enabled" : 1,
             "procedure" : 4,
             "product" : 2
+        }
+    },
+    {
+        "model": "catalogs.productdrymatteracceptancereport",
+        "pk": 1,
+        "fields": {
+            "acceptance_report" : 19,
+            "created_at": "2025-04-15T12:30:00Z",
+            "product" : 1
+        }
+    },
+    {
+        "model": "catalogs.productdrymatteracceptancereport",
+        "pk": 2,
+        "fields": {
+            "acceptance_report" : 19,
+            "created_at": "2025-04-15T12:30:00Z",
+            "product" : 7
         }
     }
 ]

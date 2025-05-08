@@ -7,6 +7,8 @@ from packhouses.catalogs.models import Supply
 from django.contrib.auth import get_user_model
 import datetime
 User = get_user_model()
+from decimal import Decimal
+from common.base.settings import SUPPLY_TRANSACTION_KIND_CHOICES, SUPPLY_TRANSACTION_CATEGORY_CHOICES
 
 
 class StorehouseEntry(models.Model):
@@ -86,23 +88,19 @@ class StorehouseEntrySupply(models.Model):
         if not self.expected_quantity:
             self.expected_quantity = self.purchase_order_supply.quantity
 
-        # Obtener la unidad base definida en SupplyKind (usage_discount_unit_category)
-        usage_unit = self.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category
+        factor = self.purchase_order_supply.requisition_supply.supply.kind.usage_discount_unit_category.factor
+        if not factor:
+            factor = 1
 
-        factor = 1
-        if usage_unit == "cm":
-            factor = 100   # De metros a centímetros (1 m = 100 cm)
-        elif usage_unit == "gr":
-            factor = 1000  # De kilogramos a gramos (1 kg = 1000 gr)
-        elif usage_unit == "ml":
-            factor = 1000  # De litros a mililitros (1 l = 1000 ml)
+        # Convertimos el factor (float) a Decimal
+        factor = Decimal(str(factor))
 
         self.converted_inventoried_quantity = self.inventoried_quantity * factor
 
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.purchase_order_supply.requisition_supply.supply.kind.name}: {self.purchase_order_supply.requisition_supply.supply}"
+        return f"#{self.storehouse_entry} - {self.purchase_order_supply.requisition_supply.supply}"
 
     class Meta:
         verbose_name = _("Storehouse Entry Supply")
@@ -110,3 +108,87 @@ class StorehouseEntrySupply(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['storehouse_entry', 'purchase_order_supply'], name='unique_storehouse_entry_supply')
         ]
+
+class InventoryTransaction(models.Model):
+    storehouse_entry_supply = models.ForeignKey(
+        StorehouseEntrySupply,
+        verbose_name=_("Inbound Supply"),
+        on_delete=models.CASCADE,
+        null=True, blank=True
+    )
+    supply = models.ForeignKey(
+        Supply,
+        verbose_name=_("Supply"),
+        on_delete=models.CASCADE
+    )
+    transaction_kind = models.CharField(
+        verbose_name=_("Transaction Kind"),
+        max_length=50,
+        choices=SUPPLY_TRANSACTION_KIND_CHOICES
+    )
+    transaction_category = models.CharField(
+        verbose_name=_("Transaction Category"),
+        max_length=50,
+        choices=SUPPLY_TRANSACTION_CATEGORY_CHOICES
+    )
+    quantity = models.DecimalField(
+        verbose_name=_("Quantity"),
+        max_digits=10, decimal_places=2,
+        validators=[MinValueValidator(0)]
+    )
+    created_at = models.DateTimeField(
+        verbose_name=_("Created at"),
+        auto_now_add=True,
+    )
+    created_by = models.ForeignKey(
+        User,
+        verbose_name=_("User"),
+        on_delete=models.PROTECT
+    )
+    organization = models.ForeignKey(
+        Organization,
+        verbose_name=_("Organization"),
+        on_delete=models.PROTECT
+    )
+
+    def __str__(self):
+        return f"{self.supply}: {self.quantity} units"
+
+# Modelo para simular entradas/salidas de inventario
+class AdjustmentInventory(models.Model):
+    transaction_kind = models.CharField(
+        verbose_name=_("Transaction Kind"),
+        max_length=50,
+        choices=SUPPLY_TRANSACTION_KIND_CHOICES
+    )
+    transaction_category = models.CharField(
+        verbose_name=_("Transaction Category"),
+        max_length=50,
+        choices=SUPPLY_TRANSACTION_CATEGORY_CHOICES
+    )
+    supply = models.ForeignKey(
+        Supply,
+        verbose_name=_("Supply"),
+        on_delete=models.PROTECT
+    )
+    quantity = models.DecimalField(
+        verbose_name=_("Quantity"),
+        max_digits=10, decimal_places=2,
+        validators=[MinValueValidator(0)]
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created at")
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_("Updated at")
+    )
+    organization = models.ForeignKey(
+        Organization,
+        verbose_name=_("Organization"),
+        on_delete=models.PROTECT
+    )
+
+    def __str__(self):
+        return f"{self.supply}: {self.quantity} in inventory"

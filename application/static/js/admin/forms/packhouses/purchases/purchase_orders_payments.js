@@ -77,14 +77,16 @@ document.addEventListener("DOMContentLoaded", function () {
         const hiddenField = formContainer.find(`input[name="${fullPrefix}-additional_inputs"]`);
         if (hiddenField.length && hiddenField.val()) {
             try {
-                storedInputs = JSON.parse(hiddenField.val());
+                storedInputs = JSON.parse(hiddenField.val()) || [];
             } catch (e) {
                 console.error("Error al parsear el JSON almacenado:", e);
             }
         }
 
-        if (data && data.length) {
-            data.forEach(function (inputData) {
+        if (data && data['additional_inputs'].length) {
+
+            data['additional_inputs'].forEach(function (inputData) {
+
                 let attrs = '';
                 if (inputData.data_type === 'int') {
                     inputData.data_type = 'number';
@@ -159,6 +161,9 @@ function handlePaymentkindChange(paymentkindField, formContainer) {
         fetchOptions(`/rest/v1/purchases/payment-additional-inputs/?payment_kind=${paymentkindId}&is_enabled=true`)
             .then(data => {
                 updateAdditionalInputs(data, additionalContainer, formContainer);
+                if (typeof data.requires_bank !== 'undefined') {
+                    toggleBankField(formContainer, data.requires_bank);
+                }
             })
             .catch(error => console.error('Error al obtener los inputs adicionales:', error));
     } else {
@@ -166,6 +171,18 @@ function handlePaymentkindChange(paymentkindField, formContainer) {
         updateHiddenField(formContainer);
     }
 }
+
+function toggleBankField(formContainer, shouldShow) {
+    const bankFieldWrapper = formContainer.find('[id$="-bank"]').closest('.form-row, .form-group');
+    if (shouldShow) {
+        bankFieldWrapper.show();
+        bankFieldWrapper.find('select').prop('required', true);
+    } else {
+        bankFieldWrapper.hide();
+        bankFieldWrapper.find('select').prop('required', false);
+    }
+}
+
 
 // Maneja los forms ya existentes en el DOM, excluyendo los management forms
 const existingForms = $('div[id^="purchaseorderpayment_set-"]').filter(function () {

@@ -30,9 +30,9 @@ from django.db.models import Q, F
 import datetime
 from common.settings import STATUS_CHOICES
 from packhouses.receiving.models import IncomingProduct
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-
+from decimal import Decimal, ROUND_DOWN
 
 # Create your models here.
 class ScheduleHarvest(models.Model):
@@ -110,6 +110,8 @@ class ScheduleHarvest(models.Model):
         WeighingScale,
         verbose_name=_("Weighing Scale"),
         on_delete=models.PROTECT,
+        null=True,
+        blank=True
     )
     meeting_point = models.CharField(
         max_length=255,
@@ -139,6 +141,26 @@ class ScheduleHarvest(models.Model):
                 else:
                     self.ooid = 1
         super().save(*args, **kwargs)
+
+    def recalc_weight_expected(self):
+        total = Decimal('0')
+        for veh in self.scheduleharvestvehicle_set.all():
+            for cont in veh.scheduleharvestcontainervehicle_set.all():
+                harvest_container = cont.harvest_container
+                if (
+                    harvest_container is not None and
+                    harvest_container.capacity is not None and
+                    cont.quantity is not None
+                ):
+                    try:
+                        quantity = Decimal(cont.quantity)
+                        capacity = Decimal(harvest_container.capacity)
+                        total += quantity * capacity
+                    except (ValueError, TypeError, ArithmeticError):
+                        continue
+        total = total.quantize(Decimal('0.001'), rounding=ROUND_DOWN)
+        self.weight_expected = float(total)
+        self.save(update_fields=['weight_expected'])
 
     class Meta:
         verbose_name = _('Schedule Harvest')
@@ -226,8 +248,8 @@ class ScheduleHarvestContainerVehicle(models.Model):
     full_containers = models.PositiveIntegerField(default=0, verbose_name=_('Full containments'))
     empty_containers = models.PositiveIntegerField(default=0,verbose_name=_('Empty containments'))
     missing_containers = models.IntegerField(default=0, verbose_name=_('Missing containments'))
-    created_by = models.CharField(max_length=20, blank=True, null=True) 
-    
+    created_at_model = models.CharField(max_length=20, blank=True, null=True) 
+
     def __str__(self):
         return ""
     
@@ -238,6 +260,16 @@ class ScheduleHarvestContainerVehicle(models.Model):
 
 @receiver(post_save, sender=ScheduleHarvestContainerVehicle)
 def set_created_from_app1(sender, instance, created, **kwargs):
-    if created and not instance.created_by: 
-        instance.created_by = 'gathering' 
+    if created and not instance.created_at_model: 
+        instance.created_at_model = 'gathering' 
         instance.save()
+
+@receiver(post_save, sender=ScheduleHarvestVehicle)
+@receiver(post_delete, sender=ScheduleHarvestVehicle)
+def on_vehicle_change(sender, instance, **kwargs):
+    instance.harvest_cutting.recalc_weight_expected()
+
+@receiver(post_save, sender=ScheduleHarvestContainerVehicle)
+@receiver(post_delete, sender=ScheduleHarvestContainerVehicle)
+def on_container_change(sender, instance, **kwargs):
+    instance.harvest_cutting.harvest_cutting.recalc_weight_expected()
