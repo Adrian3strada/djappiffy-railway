@@ -100,7 +100,7 @@ class Batch(models.Model):
                 code='invalid_status'
             )
 
-        child_ids = list(parent_batch.children.values_list('pk', flat=True))
+        child_ids = list(parent_batch.merged_from.values_list('pk', flat=True))
         candidate_ids = list(candidate_batches.values_list('pk', flat=True))
         combined_ids = child_ids + candidate_ids
 
