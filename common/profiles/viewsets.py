@@ -20,13 +20,14 @@ class BaseOrganizationProfileViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         products_data = self.request.data.pop('products', [])
-        del serializer.validated_data['products']
+        serializer.validated_data.pop('products', None)
         instance = serializer.save()
         instance.product_kinds.set(products_data)
 
+
     def perform_update(self, serializer):
         products_data = self.request.data.pop('products', [])
-        del serializer.validated_data['products']
+        serializer.validated_data.pop('products', None)
         instance = serializer.save()
         instance.product_kinds.set(products_data)
         if not self.request.user.is_superuser:
