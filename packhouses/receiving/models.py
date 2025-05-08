@@ -4,8 +4,8 @@ from django.utils.translation import gettext_lazy as _
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_approval_status_choices, get_processing_status_choices, get_batch_status_change
-from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, Provider, ProductFoodSafetyProcess, 
-                                        Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage, 
+from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, Provider, ProductFoodSafetyProcess,
+                                        Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage,
                                         ProductResidue, ProductDryMatterAcceptanceReport)
 from common.base.models import Pest
 from django.db.models import F
@@ -83,7 +83,7 @@ class Batch(models.Model):
             if batches_queryset.values_list(path, flat=True).distinct().count() != 1:
                 msg = _('All batches selected must have the same %(label)s.') % {'label': label}
                 raise ValidationError(msg, code='invalid_merge')
-    
+
     @property
     def is_merged(self):
         return self.merged_into is not None
@@ -99,11 +99,11 @@ class Batch(models.Model):
     @property
     def children_oids(self):
         return ", ".join(str(b.ooid) for b in self.children)
-    
+
     @property
     def merged_into_oid(self):
         return self.merged_into.ooid if self.merged_into else ''
-    
+
     def operational_status_history(self):
         return self.batchstatuschange_set.filter(field_name='operational_status')
 
@@ -115,7 +115,7 @@ class Batch(models.Model):
 
     def last_review_status_change(self):
         return self.review_status_history().order_by('-changed_at').first()
-    
+
     class Meta:
         verbose_name = _('Batch')
         verbose_name_plural = _('Batches')
@@ -141,7 +141,7 @@ class BatchStatusChange(models.Model):
         ]
         verbose_name = _('Batch Status Change')
         verbose_name_plural = _('Batch Status Changes')
-    
+
     def __str__(self):
         return (
             f"{self.new_status!r} {_('at')} {self.changed_at} — "
@@ -177,12 +177,13 @@ class IncomingProduct(models.Model):
         schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=self).first()
         if schedule_harvest:
             return f"{schedule_harvest.ooid} - {schedule_harvest.orchard}"
-    
+        return self.id
+
     def create_batch(self):
         if self.status == 'accepted' and not self.batch:
             with transaction.atomic():
                 new_batch = Batch.objects.create(
-                    review_status='accepted',        
+                    review_status='accepted',
                     operational_status='in_progress',
                     is_available_for_processing=False,
                     organization=self.organization
@@ -213,7 +214,7 @@ class WeighingSet(models.Model):
 
     def __str__(self):
         return f"{self.ooid}"
-    
+
     def save(self, *args, **kwargs):
         if not self.ooid:
             with transaction.atomic():
@@ -319,7 +320,7 @@ class VehicleReview(models.Model):
         verbose_name_plural = _('Vehicle Reviews')
         constraints = [
             models.UniqueConstraint(
-                fields=['food_safety','vehicle'], 
+                fields=['food_safety','vehicle'],
                 name='unique_food_safety_vehicle'),
         ]
 
@@ -394,7 +395,7 @@ class SamplePest(models.Model):
         verbose_name_plural = _('Sample Pests')
         constraints = [
             models.UniqueConstraint(
-                fields=['sample_collection','product_pest'], 
+                fields=['sample_collection','product_pest'],
                 name='unique_sample_collection_product_pest'),
         ]
 
@@ -419,7 +420,7 @@ class SampleDisease(models.Model):
         verbose_name_plural = _('Sample Diseases')
         constraints = [
             models.UniqueConstraint(
-                fields=['sample_collection','product_disease'], 
+                fields=['sample_collection','product_disease'],
                 name='unique_sample_collection_product_disease'),
         ]
 
@@ -443,7 +444,7 @@ class SamplePhysicalDamage(models.Model):
         verbose_name_plural = _('Sample Physical Damages')
         constraints = [
             models.UniqueConstraint(
-                fields=['sample_collection','product_physical_damage'], 
+                fields=['sample_collection','product_physical_damage'],
                 name='unique_sample_collection_product_physical_damage'),
         ]
 
@@ -467,10 +468,10 @@ class SampleResidue(models.Model):
         verbose_name_plural = _('Sample Residue')
         constraints = [
             models.UniqueConstraint(
-                fields=['sample_collection','product_residue'], 
+                fields=['sample_collection','product_residue'],
                 name='unique_sample_collection_product_residue'),
         ]
-        
+
     def save(self, *args, **kwargs):
         total_sample_weight = SampleWeight.objects.filter(sample_collection=self.sample_collection).count()
         self.percentage = (self.sample_residue / total_sample_weight)*100
