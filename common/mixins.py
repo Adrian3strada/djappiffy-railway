@@ -573,7 +573,7 @@ class CleanDocumentsMixin(models.Model):
                 if os.path.isfile(old_instance.route.path):
                     os.remove(old_instance.route.path)
         except self.__class__.DoesNotExist:
-            pass 
+            pass
 
         super().save(*args, **kwargs)
 
@@ -596,3 +596,17 @@ class OrganizationRoleMixin:
         if not org_user:
             return False
         return OrganizationOwner.objects.filter(organization=request.organization, organization_user_id=org_user).exists()
+
+class ReadOnlyIfCanceledMixin:
+    """
+    Hace todos los campos de solo lectura si el modelo está en un status='canceled'.
+    """
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['canceled']:
+            readonly_fields.extend([
+                field.name for field in self.model._meta.fields
+                if field.name not in readonly_fields
+            ])
+        return readonly_fields
