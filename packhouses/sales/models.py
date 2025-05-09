@@ -26,7 +26,7 @@ from .utils import incoterms_choices
 from common.base.models import Incoterm, LocalDelivery
 import datetime
 from .settings import ORDER_ITEMS_KIND_CHOICES, ORDER_ITEMS_PRICING_CHOICES
-
+from ..receiving.models import Batch
 
 
 class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
@@ -146,6 +146,20 @@ class OrderItemPackaging(models.Model):
     def __str__(self):
         return f"{self.pk}"
 
+    @property
+    def current_quantity(self):
+        processes = OrderItemPackagingProcess.objects.filter(packaging=self)
+        if processes:
+            return processes.aggregate(models.Sum('quantity'))['quantity__sum']
+        return 0
+
+    @property
+    def remaining_quantity(self):
+        if self.current_quantity > 0:
+            return self.quantity - self.current_quantity
+        else:
+            return self.quantity
+
     def clean(self):
         self.amount_price = 0
         if self.pricing_by == 'product_weight':
@@ -201,44 +215,18 @@ class OrderItemPallet(models.Model):
         verbose_name_plural = _('Order items by pallet')
 
 
-class OrderItemBak(models.Model):
-    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
-    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
-    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
-    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
-    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT, null=True, blank=False)
-    product_amount_per_packaging = models.PositiveIntegerField(verbose_name=_('Product amount per packaging'), validators=[MinValueValidator(1)], null=True, blank=False)
-    product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'),
-                                                 on_delete=models.PROTECT, null=True, blank=False)
-    product_packaging_quantity_per_pallet = models.PositiveIntegerField(
-        verbose_name=_('Product packaging quantity per pallet'),
-        validators=[MinValueValidator(1)], null=True, blank=False)
-    items_quantity = models.PositiveIntegerField(verbose_name=_('Items quantity'), validators=[MinValueValidator(1)])
-    unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
-    price = models.DecimalField(verbose_name=_('Price'), max_digits=13, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=True)
-    order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
+class OrderItemPackagingProcess(models.Model):
+    order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE, null=True, blank=True)
+    batch = models.ForeignKey(Batch, verbose_name=_('Batch'), on_delete=models.PROTECT)
+    packaging = models.ForeignKey(OrderItemPackaging, verbose_name=_('Order item packaging'), on_delete=models.CASCADE,
+                                  null=True, blank=True)
+    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
 
     def __str__(self):
-        if self.order and self.order.ooid:
-            return f"#{self.order.ooid} - {self.pk}"
         return f"{self.pk}"
 
-    def clean1(self):
-        if self.product_size.category in ['waste', 'biomass']:
-            self.price = self.unit_price * self.items_quantity
-
-        if self.product_size.category in ['mix']:
-            self.price = self.unit_price * self.product_amount_per_packaging * self.items_quantity
-
-        if self.product_size.category in ['size']:
-            print("self.product_packaging.category", self.product_packaging.category)
-            if self.product_packaging.category == 'packaging':
-                self.price = self.unit_price * self.product_amount_per_packaging * self.items_quantity
-            if self.product_packaging.category == 'presentation':
-                self.price = self.unit_price * self.product_packaging.product_presentations_per_packaging * self.quantity
-
-        super().clean()
-
     class Meta:
-        verbose_name = _('Order item bak')
-        verbose_name_plural = _('Order items bak')
+        verbose_name = _('Order item packaging process')
+        verbose_name_plural = _('Order item packaging process')
+
+

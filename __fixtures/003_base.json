@@ -494,7 +494,7 @@
         "name_fr": null,
         "name_de": null,
         "name_es": "CAJA DE CAMPO",
-        "capacity_unit_category": null,
+        "capacity_unit_category": "Kg",
         "usage_discount_unit_category": 1,
         "is_enabled": true,
         "requested_unit_category": [
