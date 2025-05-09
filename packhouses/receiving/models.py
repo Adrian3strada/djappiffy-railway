@@ -22,9 +22,9 @@ class Batch(models.Model):
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
-    # 'parent_batch' apunta al lote padre al que este lote fue unido.
+    # 'parent' apunta al lote padre al que este lote fue unido.
     # Si es None, significa que el lote no ha sido unido a ningún otro.
-    parent_batch = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='merged_from', verbose_name=_('Parent Batch'))
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='children', verbose_name=_('Parent'))
 
     def __str__(self):
         try:
@@ -70,7 +70,7 @@ class Batch(models.Model):
 
     @classmethod
     def validate_merge_batches(cls, batches_queryset):
-        if batches_queryset.filter(parent_batch__isnull=False).exists():
+        if batches_queryset.filter(parent__isnull=False).exists():
             raise ValidationError(
                 _('You cannot merge batches that have already been merged into another batch.'),
                 code='invalid_merge'
@@ -96,8 +96,8 @@ class Batch(models.Model):
                 raise ValidationError(msg, code='invalid_merge')
     
     @classmethod
-    def validate_add_batches_to_existing_merge(cls, parent_batch, candidate_batches):
-        if parent_batch.parent_batch is not None:
+    def validate_add_batches_to_existing_merge(cls, parent, candidate_batches):
+        if parent.parent is not None:
             raise ValidationError(
                 _('The selected destination batch is already merged into another batch.'),
                 code='invalid_target'
@@ -109,7 +109,7 @@ class Batch(models.Model):
                 code='invalid_status'
             )
 
-        child_ids = list(parent_batch.merged_from.values_list('pk', flat=True))
+        child_ids = list(parent.children.values_list('pk', flat=True))
         candidate_ids = list(candidate_batches.values_list('pk', flat=True))
         combined_ids = child_ids + candidate_ids
 
@@ -131,45 +131,34 @@ class Batch(models.Model):
                 )
     
     @property
-    def is_merged(self):
-        return self.parent_batch is not None
+    def is_child(self):
+        return self.parent is not None
 
     @property
     def is_parent(self):
-        return self.merged_from.exists()
+        return self.children.exists()
 
     @property
-    def children(self):
-        return self.merged_from.all()
+    def children_list(self):
+        return self.children.all()
 
     @property
-    def children_oids(self):
-        return ", ".join(str(b.ooid) for b in self.children)
+    def children_ooids(self):
+        return ", ".join(str(batch.ooid) for batch in self.children.all())
 
     @property
-    def parent_batch_oid(self):
-        return self.parent_batch.ooid if self.parent_batch else ''
+    def parent_ooid(self):
+        return self.parent.ooid if self.parent else ''
     
     @property
     def children_total_weight_received(self):
         total = 0
-        for child in self.children:
+        for child in self.children.all():
             ip = getattr(child, 'incomingproduct', None)
             if not ip:
                 continue
             if ip.packhouse_weight_result:
                 total += ip.packhouse_weight_result
-        return total
-    
-    @property
-    def children_total_current_weight(self):
-        total = 0
-        for child in self.children:
-            ip = getattr(child, 'incomingproduct', None)
-            if not ip:
-                continue
-            if ip.current_kg_available:
-                total += ip.current_kg_available
         return total
 
     def operational_status_history(self):
@@ -179,10 +168,10 @@ class Batch(models.Model):
         return self.batchstatuschange_set.filter(field_name='review_status')
 
     def last_operational_status_change(self):
-        return self.operational_status_history().order_by('-changed_at').first()
+        return self.operational_status_history().order_by('-created_at').first()
 
     def last_review_status_change(self):
-        return self.review_status_history().order_by('-changed_at').first()
+        return self.review_status_history().order_by('-created_at').first()
 
     class Meta:
         verbose_name = _('Batch')
@@ -221,23 +210,23 @@ class BatchWeightMovement(models.Model):
 
 class BatchStatusChange(models.Model):
     field_name = models.CharField(max_length=32, choices=get_batch_status_change, )
-    changed_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     old_status = models.CharField(max_length=25)
     new_status = models.CharField(max_length=25)
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, verbose_name=_('Batch'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'), )
 
     class Meta:
-        ordering = ['-changed_at']
+        ordering = ['-created_at']
         indexes = [
-            models.Index(fields=['batch', 'field_name', 'changed_at']),
+            models.Index(fields=['batch', 'field_name', 'created_at']),
         ]
         verbose_name = _('Batch Status Change')
         verbose_name_plural = _('Batch Status Changes')
 
     def __str__(self):
         return (
-            f"{self.new_status!r} {_('at')} {self.changed_at} — "
+            f"{self.new_status!r} {_('at')} {self.created_at} — "
             f"{self.get_field_name_display()} for {_('Batch')} {self.batch.pk} "
             f"(was {self.old_status!r})"
         )
@@ -256,7 +245,6 @@ class IncomingProduct(models.Model):
     phytosanitary_certificate = models.CharField(max_length=50, verbose_name=_('Phytosanitary Certificate'), null=True,
                                                  blank=True)
     kg_sample = models.FloatField(default=0, verbose_name=_("Kg for Sample"), validators=[MinValueValidator(0.01)])
-    current_kg_available = models.FloatField(default=0, verbose_name=_("Current Kg Available"), )
     containers_assigned = models.PositiveIntegerField(default=0, verbose_name=_('Containments Assigned'),
                                                       help_text=_('Containments assigned per harvest'))
     empty_containers = models.PositiveIntegerField(default=0, verbose_name=_('Empty Containments'),
@@ -277,12 +265,6 @@ class IncomingProduct(models.Model):
     def packhouse_result_weight(self):
         if self.public_weight_result:
             return self.public_weight_result
-        return 0
-
-    @property
-    def available_weight(self):
-        if self.current_kg_available:
-            return self.current_kg_available
         return 0
 
     def clean(self):

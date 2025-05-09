@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const emptyContainersField = $('#id_empty_containers');
     const missingContainersField = $('#id_missing_containers');
     const averageContainersField = $('#id_average_per_container');
-    const currentKgField = $('#id_current_kg_available');
     const missingVehicleContainerField = $('input[name$="-missing_containers"]');
     const totaWeighedSetContainersField = $('#id_total_weighed_set_containers');
     const statusField = $('#id_status');
@@ -34,7 +33,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    disableField(currentKgField);
     disableField(totalWeighingSetsField);
     disableField(packhouseWeightResultField);
     disableField(containersAssignedField);
@@ -73,12 +71,6 @@ document.addEventListener("DOMContentLoaded", function() {
         averageContainersField.val(averagePerBox);
     }
 
-    // Función para actualizar kilos disponibles
-    function updateCurrentKg() {
-        const packhouseWeightResult = parseFloat(packhouseWeightResultField.val());
-        currentKgField.val(packhouseWeightResult);
-    }
-
     fullContainersField.on('input', function() {
         updateMissingContainers();
         updateAveragePerContainers(); 
@@ -86,18 +78,15 @@ document.addEventListener("DOMContentLoaded", function() {
     emptyContainersField.on('input', updateMissingContainers);
     packhouseWeightResultField.on('input change', function() {
         updateAveragePerContainers();
-        updateCurrentKg();
     });
     
     updateMissingContainers();
     updateAveragePerContainers();
-    updateCurrentKg()
     
     document.querySelectorAll('input[name="_save"], input[name="_continue"]').forEach(button => {
         button.addEventListener('click', function(e) {
             updateMissingContainers();
             updateAveragePerContainers();
-            updateCurrentKg(); 
         });
     });
 
@@ -107,7 +96,6 @@ document.addEventListener("DOMContentLoaded", function() {
             button.addEventListener('click', function(e) {
                 updateMissingContainers();
                 updateAveragePerContainers();
-                updateCurrentKg();
                 
                 const publicWeight = parseFloat($('#id_public_weight_result').val().replace(',', '.')) || 0;
                 const packhouseWeight = parseFloat($('#id_packhouse_weight_result').val().replace(',', '.')) || 0;

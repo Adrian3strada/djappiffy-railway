@@ -354,7 +354,7 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
                     'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'status','generate_actions_buttons')
     fields = ('phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'total_weighed_sets',
               'packhouse_weight_result', 'mrl', 'kg_sample', 'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'total_weighed_set_containers',
-              'average_per_container', 'current_kg_available', 'comments', 'status')
+              'average_per_container', 'comments', 'status')
     list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                    ByCategoryForOrganizationIncomingProductFilter)
     search_fields = ('scheduleharvest__ooid',)
@@ -551,7 +551,7 @@ class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     model = IncomingProduct
     fields = ('status', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'total_weighed_sets',
               'packhouse_weight_result', 'mrl', 'kg_sample', 'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'total_weighed_set_containers',
-              'average_per_container', 'current_kg_available', 'comments')
+              'average_per_container', 'comments')
     readonly_fields = ('status',)
     extra = 0
     max_num = 0
@@ -592,12 +592,11 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         # Esto se ejecuta por cada fila al generar el changelist
         print(
             f'Batch {obj.ooid}: '
-            f'is_merged={obj.is_merged}, '
+            f'is_child={obj.is_child}, '
             f'is_parent={obj.is_parent}, '
-            f'children_oids=[{obj.children_oids}], '
-            f'children_oids=[{obj.parent_batch_oid}], '
+            f'children_oids=[{obj.children_ooids}], '
+            f'parent_ooid=[{obj.parent_ooid}], '
             f'children_total_weight_received=[{obj.children_total_weight_received}], '
-            f'children_total_weight={obj.children_total_current_weight} '
         )
         return ''
 
@@ -615,8 +614,8 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
 
         # Detectar si hay un lote padre en los lotes a unir
         is_parent = qs.filter(
-            parent_batch__isnull=True,       
-            merged_from__isnull=False
+            parent__isnull=True,       
+            children__isnull=False
         ).distinct()
 
         if is_parent:
@@ -632,7 +631,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
 
         # Detectar si un lote esta unido a otro lote
         already = list(qs
-            .filter(parent_batch__isnull=False)
+            .filter(parent__isnull=False)
             .values_list('ooid', flat=True)
         )
         if already:
@@ -674,12 +673,12 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
                 )
                 sources = list(qs)
             for origin in sources:
-                origin.parent_batch = destination
+                origin.parent = destination
                 origin.review_status = 'accepted'
                 origin.operational_status = 'in_another_batch'
                 origin.is_available_for_processing = False
                 origin.save(update_fields=[
-                    'parent_batch',
+                    'parent',
                     'review_status',
                     'operational_status',
                     'is_available_for_processing',
@@ -712,7 +711,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         qs = queryset.select_related('incomingproduct__scheduleharvest')
 
         already = list(qs
-            .filter(parent_batch__isnull=False)
+            .filter(parent__isnull=False)
             .values_list('ooid', flat=True)
         )
         if already:
@@ -726,8 +725,8 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             )
             return
         possible_parents = queryset.filter(
-        parent_batch__isnull=True, 
-        merged_from__isnull=False 
+        parent__isnull=True, 
+        children__isnull=False 
         ).distinct()
 
         parent = possible_parents.first()
@@ -752,7 +751,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         try:
             with transaction.atomic():
                 for batch in children_to_add:
-                    batch.parent_batch = parent
+                    batch.parent = parent
                     batch.review_status = 'accepted'
                     batch.operational_status = 'in_another_batch'
                     batch.save()
@@ -844,13 +843,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     get_incomingproduct_packhouse_weight_result.admin_order_field = 'incomingproduct__packhouse_weight_result'
 
     def get_incomingproduct_current_kg_available(self, obj):
-        if obj.is_parent:
-            total = obj.children_total_current_weight
-            return '{:,.3f}'.format(total) if total else ''
-        incoming = getattr(obj, 'incomingproduct', None)
-        if not incoming or incoming.current_kg_available is None:
-            return ''
-        return '{:,.3f}'.format(incoming.current_kg_available)
+        pass
     get_incomingproduct_current_kg_available.short_description = _('Available Load')
     get_incomingproduct_current_kg_available.admin_order_field = 'incomingproduct__current_kg_available'
 
