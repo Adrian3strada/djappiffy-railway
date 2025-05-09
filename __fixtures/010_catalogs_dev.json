@@ -2890,7 +2890,7 @@
   "fields": {
     "kind": 9,
     "name": "CAJA DE CAMPO DE 25",
-    "capacity": null,
+    "capacity": 25.0,
     "minimum_stock_quantity": 100,
     "maximum_stock_quantity": 20000,
     "usage_discount_quantity": 1,
@@ -2905,7 +2905,7 @@
   "fields": {
     "kind": 9,
     "name": "CAJA DE CAMPO DE 20",
-    "capacity": null,
+    "capacity": 20.0,
     "minimum_stock_quantity": 100,
     "maximum_stock_quantity": 20000,
     "usage_discount_quantity": 1,

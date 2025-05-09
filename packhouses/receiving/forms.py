@@ -56,12 +56,12 @@ class ContainerInlineForm(forms.ModelForm):
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        if not instance.created_at_model:  
-            instance.created_at_model = 'incoming_product'  
+        if not instance.created_at_model:
+            instance.created_at_model = 'incoming_product'
         if commit:
             instance.save()
         return instance
-    
+
 
 class BaseScheduleHarvestVehicleFormSet(BaseInlineFormSet):
     def clean(self):
@@ -79,13 +79,13 @@ class BaseScheduleHarvestVehicleFormSet(BaseInlineFormSet):
                 for form in self.forms
                 if form.cleaned_data and not form.cleaned_data.get('DELETE', False)
             ]
-            
+
             has_arrived_flags = [data.get('has_arrived', False) for data in valid_forms]
-            
+
             if not any(has_arrived_flags):
                 error_msg = mark_safe('<span style="color: red;">You must register at least one vehicle as having arrived for the Incoming Product.</span>')
                 raise ValidationError(error_msg)
-        
+
 
 class ScheduleHarvestVehicleForm(forms.ModelForm):
     stamp_vehicle_number = forms.CharField(label=_('Stamp Number'), required=True,)
@@ -93,7 +93,7 @@ class ScheduleHarvestVehicleForm(forms.ModelForm):
     class Meta:
         model = ScheduleHarvestVehicle
         fields = '__all__'
-    
+
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
@@ -115,18 +115,18 @@ class ScheduleHarvestVehicleForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         stamp_vehicle_number = cleaned_data.get('stamp_vehicle_number')
-        guide_number = cleaned_data.get('guide_number') 
+        guide_number = cleaned_data.get('guide_number')
 
         instance = self.instance
         has_arrived_initial = instance.has_arrived if instance and instance.pk else False
         has_arrived_final = cleaned_data.get('has_arrived', has_arrived_initial)
 
-        errors = {} 
+        errors = {}
         # Validación cuando cambia de False → True
         if not has_arrived_initial and has_arrived_final:
             if stamp_vehicle_number and instance and instance.stamp_number != stamp_vehicle_number:
                 errors['stamp_vehicle_number'] = _('The provided Stamp does not match the original.')
-            
+
             if not stamp_vehicle_number:
                 self.fields['stamp_vehicle_number'].required = True
                 errors['stamp_vehicle_number'] = _('Stamp Vehicle Number is required when the vehicle has arrived.')
@@ -173,39 +173,6 @@ class IncomingProductForm(forms.ModelForm):
                 raise ValidationError(_(f'Weighing Set {i + 1} is missing a harvesting crew.'))
 
         return cleaned_data
-
-    def save(self, commit=True):
-        # 1) Obtenemos la instancia sin guardar aún
-        obj = super().save(commit=False)
-
-        # 2) Leemos el estado previo si existe
-        previous_status = None
-        if obj.pk:
-            previous_status = (
-                IncomingProduct.objects
-                .values_list('status', flat=True)
-                .get(pk=obj.pk)
-            )
-
-        if commit:
-            obj.save()
-
-        if (
-            obj.status == 'accepted'
-            and previous_status != 'accepted'
-            and obj.batch_id is None
-        ):
-            with transaction.atomic():
-                new_batch = Batch.objects.create(
-                    review_status='pending',
-                    operational_status='pending',
-                    is_available_for_processing=False,
-                    organization=obj.organization
-                )
-                obj.batch = new_batch
-                obj.save(update_fields=['batch'])
-
-        return obj
 
 
 class BatchForm(forms.ModelForm):
