@@ -154,10 +154,10 @@ document.addEventListener('DOMContentLoaded', () => {
   
         if ($deleteContainer.prop('checked')) continue;
   
-        const contianerid = $c.find('select[name$="-harvest_container"]').val();
+        const containerId = $c.find('select[name$="-harvest_container"]').val();
         const quantity = parseFloat($c.find('input[name$="-quantity"]').val()) || 0;
-        if (contianerid) {
-          totalTare += quantity * await fetchContainerTare(contianerid);
+        if (containerId) {
+          totalTare += quantity * await fetchContainerTare(containerId);
           totalContainers += quantity;
         }
       }
