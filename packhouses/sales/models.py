@@ -148,7 +148,7 @@ class OrderItemPackaging(models.Model):
 
     @property
     def current_quantity(self):
-        processes = OrderItemPackagingProcess.objects.filter(order=self.order)
+        processes = OrderItemPackagingProcess.objects.filter(packaging=self)
         if processes:
             return processes.aggregate(models.Sum('quantity'))['quantity__sum']
         return 0
