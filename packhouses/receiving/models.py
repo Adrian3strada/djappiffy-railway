@@ -254,11 +254,11 @@ class IncomingProduct(models.Model):
                     organization=self.organization
                 )
                 self.batch = new_batch
+                super().save(update_fields=['batch'])
                 BatchWeightMovement.objects.create(
                     batch=new_batch,
                     weight=self.packhouse_weight_result
                 )
-                super().save(update_fields=['batch'])
 
     def __str__(self):
         # from packhouses.gathering.models import ScheduleHarvest
