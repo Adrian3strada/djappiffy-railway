@@ -8,7 +8,7 @@ from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, P
                                         Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage,
                                         ProductResidue, ProductDryMatterAcceptanceReport)
 from common.base.models import Pest
-from django.db.models import F
+from django.db.models import F, Sum
 from django.core.exceptions import ValidationError
 
 
@@ -44,6 +44,14 @@ class Batch(models.Model):
             )
 
         return f"{self.ooid} – {_('No IncomingProduct Asociated')}"
+
+    @property
+    def available_weight(self):
+        if self.batchweightmovement_set.exists():
+            return self.batchweightmovement_set.aggregate(
+                available_weight=Sum('weight')
+            )['available_weight']
+        return 0
 
     def save(self, *args, **kwargs):
         # solo asignamos si aún no tiene ooid
@@ -135,15 +143,22 @@ class BatchWeightMovement(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
 
     def __str__(self):
-        return f"{self.batch} {self.created_at} - {self.weight}"
+        return f"{self.batch} {self.created_at} :: {self.weight}"
 
     class Meta:
         ordering = ['-created_at']
         verbose_name = _('Batch Weight Movement')
         verbose_name_plural = _('Batch Weight Movements')
 
-    def __str__(self):
-        return f"{self.batch} - {self.weight}"
+    def clean(self):
+        if self.weight < 0 and self.batch.available_weight + self.weight < 0:
+            raise ValidationError(
+                _('This movement would result in a negative weight for the batch.'),
+            )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class BatchStatusChange(models.Model):
