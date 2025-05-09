@@ -43,6 +43,10 @@ from .utils import create_related_payments_and_update_balances
 from packhouses.receiving.models import Batch, BatchStatusChange
 from django.db.models import OuterRef, Subquery, DateTimeField, ExpressionWrapper, Q, F
 from django.utils.timezone import now, timedelta
+from django.http import JsonResponse
+from .views import CancelMassPaymentView
+from common.mixins import ReadOnlyIfCanceledMixin
+
 
 
 class RequisitionSupplyInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
@@ -312,7 +316,7 @@ class PurchaseOrderRequisitionSupplyInline(admin.StackedInline):
         js = ('js/admin/forms/packhouses/purchases/purchase_orders_supply.js',)
 
 
-class PurchaseOrderChargerInline(admin.StackedInline):
+class PurchaseOrderChargerInline(ReadOnlyIfCanceledMixin, admin.StackedInline):
     """
     Inline del admin para agregar cargos adicionales (charges) a una Orden de Compra.
 
@@ -336,19 +340,6 @@ class PurchaseOrderChargerInline(admin.StackedInline):
                 return None
         return None
 
-    def get_readonly_fields(self, request, obj=None):
-        """
-        Hace todos los campos de solo lectura si la orden está cancelada.
-        """
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        parent_obj = self._get_parent_obj(request)
-        if parent_obj and parent_obj.status in ['canceled']:
-            readonly_fields.extend([
-                field.name for field in self.model._meta.fields
-                if field.name not in readonly_fields
-            ])
-        return readonly_fields
-
     def has_delete_permission(self, request, obj=None):
         """
         Impide eliminar cargos si la orden está cancelada.
@@ -358,7 +349,7 @@ class PurchaseOrderChargerInline(admin.StackedInline):
             return False
         return super().has_delete_permission(request, obj)
 
-class PurchaseOrderDeductionInline(admin.StackedInline):
+class PurchaseOrderDeductionInline(ReadOnlyIfCanceledMixin,admin.StackedInline):
     """
     Inline del admin para agregar deducciones (descuentos) a una Orden de Compra.
 
@@ -381,19 +372,6 @@ class PurchaseOrderDeductionInline(admin.StackedInline):
             except PurchaseOrder.DoesNotExist:
                 return None
         return None
-
-    def get_readonly_fields(self, request, obj=None):
-        """
-        Hace todos los campos de solo lectura si la orden está cancelada.
-        """
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        parent_obj = self._get_parent_obj(request)
-        if parent_obj and parent_obj.status in ['canceled']:
-            readonly_fields.extend([
-                field.name for field in self.model._meta.fields
-                if field.name not in readonly_fields
-            ])
-        return readonly_fields
 
     def has_delete_permission(self, request, obj=None):
         """
@@ -501,7 +479,7 @@ class PurchaseOrderPaymentInline(admin.StackedInline):
     def mass_payment_link(self, obj):
         if obj.mass_payment:
             url = reverse('admin:purchases_purchasemasspayment_change', args=[obj.mass_payment.id])
-            return format_html('<a href="{}">{}</a>', url, f'Mass Payment {obj.mass_payment.id}')
+            return format_html('<a href="{}">{}</a>', url, f'Mass Payment {obj.mass_payment.ooid}')
         return "-"
 
     mass_payment_link.short_description = "Mass Payment"
@@ -884,7 +862,7 @@ class PurchaseOrderAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     class Media:
         js = ('js/admin/forms/packhouses/purchases/purchase_orders.js',)
 
-class ServiceOrderChargeInline(admin.StackedInline):
+class ServiceOrderChargeInline(ReadOnlyIfCanceledMixin, admin.StackedInline):
     """
     Inline del admin para agregar cargos adicionales a una orden de servicio.
     """
@@ -902,23 +880,13 @@ class ServiceOrderChargeInline(admin.StackedInline):
                 return None
         return None
 
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        parent_obj = self._get_parent_obj(request)
-        if parent_obj and parent_obj.status in ['canceled']:
-            readonly_fields.extend([
-                field.name for field in self.model._meta.fields
-                if field.name not in readonly_fields
-            ])
-        return readonly_fields
-
     def has_delete_permission(self, request, obj=None):
         parent_obj = self._get_parent_obj(request)
         if parent_obj and parent_obj.status in ['canceled']:
             return False
         return super().has_delete_permission(request, obj)
 
-class ServiceOrderDeductionInline(admin.StackedInline):
+class ServiceOrderDeductionInline(ReadOnlyIfCanceledMixin, admin.StackedInline):
     """
     Inline del admin para agregar deducciones a una orden de servicio.
     """
@@ -935,16 +903,6 @@ class ServiceOrderDeductionInline(admin.StackedInline):
             except ServiceOrder.DoesNotExist:
                 return None
         return None
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        parent_obj = self._get_parent_obj(request)
-        if parent_obj and parent_obj.status in ['canceled']:
-            readonly_fields.extend([
-                field.name for field in self.model._meta.fields
-                if field.name not in readonly_fields
-            ])
-        return readonly_fields
 
     def has_delete_permission(self, request, obj=None):
         parent_obj = self._get_parent_obj(request)
@@ -1034,7 +992,7 @@ class ServiceOrderPaymentInline(admin.StackedInline):
     def mass_payment_link(self, obj):
         if obj.mass_payment:
             url = reverse('admin:purchases_purchasemasspayment_change', args=[obj.mass_payment.id])
-            return format_html('<a href="{}">{}</a>', url, f'Mass Payment {obj.mass_payment.id}')
+            return format_html('<a href="{}">{}</a>', url, f'Mass Payment {obj.mass_payment.ooid}')
         return "-"
 
     mass_payment_link.short_description = "Mass Payment"
@@ -1327,14 +1285,16 @@ class PurchaseMassPaymentAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin,
     """
     Admin para gestionar pagos masivos de órdenes de compra.
 
-    Permite registrar pagos masivos y verificar su estado.
+    Permite registrar pagos masivos, verificar su estado y realizar acciones como
+    imprimir reporte y cancelar el pago masivo.
     """
     form = PurchaseMassPaymentForm
-    fields = ('ooid','category', 'provider', 'currency', 'purchase_order', 'service_order', 'payment_kind',
+    fields = ('cancel_status','ooid', 'category', 'provider', 'currency', 'purchase_order', 'service_order', 'payment_kind',
               'additional_inputs', 'bank', 'payment_date', 'amount', 'comments')
-    list_display = ('ooid','category','provider', 'amount', 'currency', 'payment_date', 'status', 'created_by')
+    list_display = (
+    'ooid', 'category', 'provider', 'amount', 'currency', 'payment_date', 'status', 'created_by', 'generate_actions_buttons')
     list_filter = ('category', 'status')
-    readonly_fields = ('ooid','status', 'created_by', 'created_at', 'canceled_by', 'cancellation_date')
+    readonly_fields = ('ooid', 'status', 'created_by', 'created_at', 'canceled_by', 'cancellation_date', 'cancel_status')
 
     def save_model(self, request, obj, form, change):
         """
@@ -1347,12 +1307,110 @@ class PurchaseMassPaymentAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin,
     def save_related(self, request, form, formsets, change):
         """
         Se ejecuta después de guardar las relaciones M2M.
-        Aquí ya podemos crear los pagos individuales
+        Aquí ya podemos crear los pagos individuales.
         """
         super().save_related(request, form, formsets, change)
 
         if not change:
             create_related_payments_and_update_balances(form.instance)
+
+    def generate_actions_buttons(self, obj):
+        """
+        Genera los botones de "Imprimir Reporte" y "Cancelar Pago".
+        """
+        #mass_payment_pdf = reverse('mass_payment_pdf', args=[obj.pk])
+        mass_payment_pdf = '#'
+        tooltip_mass_payment_pdf = _('Generate Mass Payment PDF')
+        cancel_button_text = _('No')
+
+        # Botón de Imprimir Reporte
+        print_button = format_html(
+            '''<a class="button" href="{}" target="_blank" data-toggle="tooltip" title="{}">
+                <i class="fa-solid fa-print"></i>
+            </a>''',
+            mass_payment_pdf, tooltip_mass_payment_pdf
+        )
+
+        tooltip_cancel_masspayment = _('Cancel Mass Payment')
+        cancel_url = reverse('set_masspayment_cancel', args=[obj.pk])
+        confirm_cancel_text = _('Are you sure you want to cancel this mass payment?')
+        confirm_button_text = _('Yes, cancel')
+
+        # Botón de Cancelar Pago (solo si no está cancelado)
+        set_masspayment_cancel_button = ''
+        if obj.status != 'canceled':
+            set_masspayment_cancel_button = format_html(
+                '''
+                <a class="button btn-cancel-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
+                   data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:red;">
+                    <i class="fa-solid fa-ban"></i>
+                </a>
+                ''',
+                tooltip_cancel_masspayment, cancel_url, confirm_cancel_text, confirm_button_text, cancel_button_text
+            )
+
+
+
+        return format_html('{}{}', print_button, set_masspayment_cancel_button)
+
+    generate_actions_buttons.short_description = _("Actions")
+    generate_actions_buttons.allow_tags = True
+
+    def get_urls(self):
+        """
+        Agrega las URLs personalizadas para cancelar e imprimir.
+        """
+        urls = super().get_urls()
+        custom_urls = [
+            path('cancel-mass-payment/<int:pk>/', self.admin_site.admin_view(CancelMassPaymentView.as_view()),
+                 name='set_masspayment_cancel'),
+        ]
+        return custom_urls + urls
+
+    def print_mass_payment(self, request, pk, *args, **kwargs):
+        """
+        Lógica para generar el reporte del Mass Payment.
+        """
+        # TODO: lógica para generar el reporte.
+        self.message_user(request, f"Report generation for Mass Payment {pk} is not implemented yet.",
+                          level=messages.INFO)
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    def cancel_status(self, obj):
+        """
+        Genera un link dinámico para cancelar el Mass Payment si no está cancelado.
+        Si está cancelado, muestra un mensaje visual.
+        """
+        if not obj.pk:
+            return ""
+
+        if obj.status == "canceled":
+            # Si está cancelado, muestra el texto de cancelado
+            return format_html('<span class="canceled">{}</span>', _('Payment canceled'))
+        else:
+            # Si no está cancelado, genera el enlace
+            url = reverse('set_masspayment_cancel', args=[obj.pk])
+            title = _("Are you sure you want to cancel this mass payment?")
+            confirm_text = _("Yes, cancel")
+            cancel_text = _("No")
+            button_label = _("Cancel Mass Payment")
+
+            return format_html(
+                '''
+                <a class="button btn-cancel-confirm" href="javascript:void(0);" data-toggle="tooltip"
+                   title="{0}" data-url="{1}" data-message="{2}" data-confirm="{3}" data-cancel="{4}">
+                    {5}
+                </a>
+                ''',
+                title,
+                url,
+                title,
+                confirm_text,
+                cancel_text,
+                button_label
+            )
+
+    cancel_status.short_description = ""
 
     class Media:
         js = ('js/admin/forms/packhouses/purchases/purchase_mass_payments.js',)
