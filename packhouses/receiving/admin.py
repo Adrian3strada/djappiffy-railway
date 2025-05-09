@@ -345,7 +345,9 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     class Media:
         js = ('js/admin/forms/packhouses/receiving/incomingproduct/weighing_set_inline.js',)
 
+
 # Reciba
+
 @admin.register(IncomingProduct)
 class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard',

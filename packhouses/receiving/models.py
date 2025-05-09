@@ -8,6 +8,7 @@ from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, P
                                         Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage,
                                         ProductResidue, ProductDryMatterAcceptanceReport)
 from common.base.models import Pest
+from packhouses.gathering.models import ScheduleHarvest
 from django.db.models import F
 from django.core.exceptions import ValidationError
 
@@ -15,12 +16,15 @@ from django.core.exceptions import ValidationError
 # Create your models here.
 class Batch(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_('Batch Number'), null=True, blank=True, unique=True)
-    review_status = models.CharField(max_length=25, verbose_name=_('Review Status'), choices=get_approval_status_choices(), default='pending', blank=True)
-    operational_status = models.CharField(max_length=25, choices=get_processing_status_choices(),  default='pending', verbose_name=_('Operational Status'), blank=True)
+    review_status = models.CharField(max_length=25, verbose_name=_('Review Status'),
+                                     choices=get_approval_status_choices(), default='pending', blank=True)
+    operational_status = models.CharField(max_length=25, choices=get_processing_status_choices(), default='pending',
+                                          verbose_name=_('Operational Status'), blank=True)
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
-    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
-    merged_into = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='merged_from', verbose_name=_('Merge into Batch'))
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'), )
+    merged_into = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL,
+                                    related_name='merged_from', verbose_name=_('Merge into Batch'))
 
     def __str__(self):
         try:
@@ -49,10 +53,10 @@ class Batch(models.Model):
                 # bloqueamos las filas de Batch de esta organización…
                 last = (
                     Batch.objects
-                        .select_for_update()
-                        .filter(organization=self.organization)
-                        .order_by('-ooid')
-                        .first()
+                    .select_for_update()
+                    .filter(organization=self.organization)
+                    .order_by('-ooid')
+                    .first()
                 )
                 self.ooid = (last.ooid + 1) if last else 1
         super().save(*args, **kwargs)
@@ -74,8 +78,8 @@ class Batch(models.Model):
         prefix = 'incomingproduct__scheduleharvest__'
         checks = {
             _('provider'): prefix + 'product_provider',
-            _('product'):  prefix + 'product',
-            _('variety'):  prefix + 'product_variety',
+            _('product'): prefix + 'product',
+            _('variety'): prefix + 'product_variety',
             _('phenology'): prefix + 'product_phenologies',
         }
 
@@ -121,10 +125,10 @@ class Batch(models.Model):
         verbose_name_plural = _('Batches')
         constraints = [
             models.UniqueConstraint(
-                    fields=['organization','ooid'],
-                    name='unique_batch_ooid_per_org'
-                )
-            ]
+                fields=['organization', 'ooid'],
+                name='unique_batch_ooid_per_org'
+            )
+        ]
 
 
 class BatchWeightMovement(models.Model):
@@ -145,12 +149,12 @@ class BatchWeightMovement(models.Model):
 
 
 class BatchStatusChange(models.Model):
-    field_name = models.CharField(max_length=32,choices=get_batch_status_change,)
+    field_name = models.CharField(max_length=32, choices=get_batch_status_change, )
     changed_at = models.DateTimeField(auto_now_add=True)
-    old_status  = models.CharField(max_length=25)
-    new_status  = models.CharField(max_length=25)
+    old_status = models.CharField(max_length=25)
+    new_status = models.CharField(max_length=25)
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, verbose_name=_('Batch'))
-    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'), )
 
     class Meta:
         ordering = ['-changed_at']
@@ -163,28 +167,37 @@ class BatchStatusChange(models.Model):
     def __str__(self):
         return (
             f"{self.new_status!r} {_('at')} {self.changed_at} — "
-            f"{self.get_field_name_display()} for {_( 'Batch')} {self.batch.pk} "
+            f"{self.get_field_name_display()} for {_('Batch')} {self.batch.pk} "
             f"(was {self.old_status!r})"
         )
 
 
 class IncomingProduct(models.Model):
-    status = models.CharField(max_length=20, verbose_name=_('Status'), choices=get_approval_status_choices(), default='pending')
-    public_weighing_scale = models.ForeignKey(WeighingScale, verbose_name=_("Public Weighing Scale"), on_delete=models.PROTECT, null=True, blank=False)
-    public_weight_result = models.FloatField(default=0, verbose_name=_("Public Weight Result"),)
-    packhouse_weight_result = models.FloatField(default=0, verbose_name=_("Packhouse Weight Result"),)
-    weighing_record_number = models.CharField(max_length=30, verbose_name=_('Weighing Record Number'),)
+    status = models.CharField(max_length=20, verbose_name=_('Status'), choices=get_approval_status_choices(),
+                              default='pending')
+    public_weighing_scale = models.ForeignKey(WeighingScale, verbose_name=_("Public Weighing Scale"),
+                                              on_delete=models.PROTECT, null=True, blank=False)
+    public_weight_result = models.FloatField(default=0, verbose_name=_("Public Weight Result"), )
+    packhouse_weight_result = models.FloatField(default=0, verbose_name=_("Packhouse Weight Result"), )
+    weighing_record_number = models.CharField(max_length=30, verbose_name=_('Weighing Record Number'), )
     total_weighed_sets = models.PositiveIntegerField(default=0, verbose_name=_('Total Weighed Sets'))
     mrl = models.FloatField(default=0, verbose_name=_('Maximum Residue Limit'), null=True, blank=True)
-    phytosanitary_certificate = models.CharField(max_length=50, verbose_name=_('Phytosanitary Certificate'), null=True, blank=True)
+    phytosanitary_certificate = models.CharField(max_length=50, verbose_name=_('Phytosanitary Certificate'), null=True,
+                                                 blank=True)
     kg_sample = models.FloatField(default=0, verbose_name=_("Kg for Sample"), validators=[MinValueValidator(0.01)])
-    current_kg_available = models.FloatField(default=0, verbose_name=_("Current Kg Available"),)
-    containers_assigned = models.PositiveIntegerField(default=0, verbose_name=_('Containments Assigned'), help_text=_('Containments assigned per harvest'))
-    empty_containers = models.PositiveIntegerField(default=0, verbose_name=_('Empty Containments'), help_text=_('Empty containments per harvest'))
-    total_weighed_set_containers = models.PositiveIntegerField(default=0, verbose_name=_('Total Weighed Set Containments'))
-    full_containers_per_harvest = models.PositiveIntegerField(default=0, verbose_name=_('Full Containments per Harvest'),)
-    missing_containers = models.IntegerField(default=0, verbose_name=_('Missing Containments'), help_text=_('Missing containments per harvest'))
-    average_per_container = models.FloatField(default=0, verbose_name=_("Average per Container"), help_text=_('Based on packhouse weight result and weighed set containments'))
+    current_kg_available = models.FloatField(default=0, verbose_name=_("Current Kg Available"), )
+    containers_assigned = models.PositiveIntegerField(default=0, verbose_name=_('Containments Assigned'),
+                                                      help_text=_('Containments assigned per harvest'))
+    empty_containers = models.PositiveIntegerField(default=0, verbose_name=_('Empty Containments'),
+                                                   help_text=_('Empty containments per harvest'))
+    total_weighed_set_containers = models.PositiveIntegerField(default=0,
+                                                               verbose_name=_('Total Weighed Set Containments'))
+    full_containers_per_harvest = models.PositiveIntegerField(default=0,
+                                                              verbose_name=_('Full Containments per Harvest'), )
+    missing_containers = models.IntegerField(default=0, verbose_name=_('Missing Containments'),
+                                             help_text=_('Missing containments per harvest'))
+    average_per_container = models.FloatField(default=0, verbose_name=_("Average per Container"), help_text=_(
+        'Based on packhouse weight result and weighed set containments'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'))
     batch = models.OneToOneField(Batch, on_delete=models.PROTECT, verbose_name=_('Batch'), null=True, blank=True)
     comments = models.TextField(verbose_name=_("Comments"), blank=True, null=True)
@@ -201,9 +214,36 @@ class IncomingProduct(models.Model):
             return self.current_kg_available
         return 0
 
-    def __str__(self):
-        from packhouses.gathering.models import ScheduleHarvest
+    def clean(self):
+        if self.pk:
+            initial_status = IncomingProduct.objects.get(pk=self.pk).status
+            if initial_status == 'accepted' and self.status != 'accepted':
+                raise ValidationError("Once accepted, the status cannot be changed.")
 
+        if self.status == "accepted" and not self.weighingset_set.exists():
+            raise ValidationError("At least one Weighing Set must be registered for the Incoming Product.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+
+        previous_status = 'pending'
+        if self.pk:
+            previous_status = IncomingProduct.objects.get(pk=self.pk).status
+
+        super().save(*args, **kwargs)
+
+        if self.status == 'accepted' and previous_status != 'accepted' and self.batch_id is None:
+            with transaction.atomic():
+                new_batch = Batch.objects.create(
+                    review_status='pending',
+                    operational_status='pending',
+                    is_available_for_processing=False,
+                    organization=self.organization
+                )
+                self.batch = new_batch
+                super().save(update_fields=['batch'])
+
+    def __str__(self):
         schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=self).first()
         if schedule_harvest:
             return f"{schedule_harvest.ooid} - {schedule_harvest.orchard}"
@@ -221,14 +261,14 @@ class IncomingProduct(models.Model):
 
 
 class WeighingSet(models.Model):
-    ooid = models.PositiveIntegerField(verbose_name=_("ID"),null=True, blank=True)
-    provider = models.ForeignKey(Provider, verbose_name=_('Harvesting Crew Provider'),on_delete=models.CASCADE,)
-    harvesting_crew = models.ForeignKey(HarvestingCrew, verbose_name=_("Harvesting Crew"), on_delete=models.CASCADE,)
-    gross_weight = models.FloatField(default=0.0, verbose_name=_("Gross Weight"),)
+    ooid = models.PositiveIntegerField(verbose_name=_("ID"), null=True, blank=True)
+    provider = models.ForeignKey(Provider, verbose_name=_('Harvesting Crew Provider'), on_delete=models.CASCADE, )
+    harvesting_crew = models.ForeignKey(HarvestingCrew, verbose_name=_("Harvesting Crew"), on_delete=models.CASCADE, )
+    gross_weight = models.FloatField(default=0.0, verbose_name=_("Gross Weight"), )
     total_containers = models.PositiveIntegerField(default=0, verbose_name=_('Total Containments'))
-    container_tare = models.FloatField(default=0.0, verbose_name=_("Container Tare"),)
-    platform_tare = models.FloatField(default=0.0, verbose_name=_("Platform Tare"),)
-    net_weight = models.FloatField(default=0.0, verbose_name=_("Net Weight"),)
+    container_tare = models.FloatField(default=0.0, verbose_name=_("Container Tare"), )
+    platform_tare = models.FloatField(default=0.0, verbose_name=_("Platform Tare"), )
+    net_weight = models.FloatField(default=0.0, verbose_name=_("Net Weight"), )
     incoming_product = models.ForeignKey(IncomingProduct, verbose_name=_('Incoming Product'), on_delete=models.PROTECT)
 
     def __str__(self):
@@ -269,9 +309,13 @@ class WeighingSet(models.Model):
 
 
 class WeighingSetContainer(models.Model):
-    harvest_container = models.ForeignKey(Supply,on_delete=models.CASCADE, limit_choices_to={'kind__category': 'harvest_container'}, verbose_name=_('Harvest Containments'))
+    harvest_container = models.ForeignKey(Supply, on_delete=models.CASCADE,
+                                          limit_choices_to={'kind__category': 'harvest_container'},
+                                          verbose_name=_('Harvest Containments'))
     quantity = models.PositiveIntegerField(default=0, verbose_name=_('Quantity'))
-    weighing_set = models.ForeignKey(WeighingSet, verbose_name=_('Incoming Product'), on_delete=models.CASCADE, null=True, blank=True)
+    weighing_set = models.ForeignKey(WeighingSet, verbose_name=_('Incoming Product'), on_delete=models.CASCADE,
+                                     null=True, blank=True)
+
     class Meta:
         verbose_name = _('Weighing Set Containment')
         verbose_name_plural = _('Weighing Sets Containments')
@@ -279,7 +323,7 @@ class WeighingSetContainer(models.Model):
 
 class FoodSafety(models.Model):
     batch = models.OneToOneField(Batch, verbose_name=_('Batch'), on_delete=models.CASCADE)
-    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'), )
 
     def __str__(self):
         return f"{self.batch}"
@@ -304,6 +348,7 @@ class DryMatter(models.Model):
         verbose_name = _('Dry Matter')
         verbose_name_plural = _('Dry Matters')
 
+
 class InternalInspection(models.Model):
     internal_temperature = models.DecimalField(max_digits=10, decimal_places=2)
     product_pest = models.ManyToManyField(ProductPest, verbose_name=_('Pests'), blank=True)
@@ -316,10 +361,14 @@ class InternalInspection(models.Model):
         verbose_name = _('Internal Inspection')
         verbose_name_plural = _('Internal Inspections')
 
+
 class Average(models.Model):
-    average_dry_matter = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_('Average Dry Matter'))
-    average_internal_temperature = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_('Average Internal Temperature'))
-    acceptance_report = models.ForeignKey(ProductDryMatterAcceptanceReport, verbose_name=_('Acceptance Report'), on_delete=models.CASCADE, null=True)
+    average_dry_matter = models.DecimalField(default=0, max_digits=10, decimal_places=2,
+                                             verbose_name=_('Average Dry Matter'))
+    average_internal_temperature = models.DecimalField(default=0, max_digits=10, decimal_places=2,
+                                                       verbose_name=_('Average Internal Temperature'))
+    acceptance_report = models.ForeignKey(ProductDryMatterAcceptanceReport, verbose_name=_('Acceptance Report'),
+                                          on_delete=models.CASCADE, null=True)
     food_safety = models.ForeignKey(FoodSafety, verbose_name=_('Food Safety'), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -328,6 +377,7 @@ class Average(models.Model):
     class Meta:
         verbose_name = _('Average')
         verbose_name_plural = _('Averages')
+
 
 class VehicleReview(models.Model):
     vehicle = models.ForeignKey('gathering.ScheduleHarvestVehicle', verbose_name=_('Vehicle'), on_delete=models.CASCADE)
@@ -341,9 +391,10 @@ class VehicleReview(models.Model):
         verbose_name_plural = _('Vehicle Reviews')
         constraints = [
             models.UniqueConstraint(
-                fields=['food_safety','vehicle'],
+                fields=['food_safety', 'vehicle'],
                 name='unique_food_safety_vehicle'),
         ]
+
 
 class VehicleInspection(models.Model):
     sealed = models.BooleanField(default=False, verbose_name=_('The vehicle is sealed'))
@@ -361,6 +412,7 @@ class VehicleInspection(models.Model):
         verbose_name = _('Vehicle Inspection')
         verbose_name_plural = _('Vehicle Inspections')
 
+
 class VehicleCondition(models.Model):
     is_clean = models.BooleanField(default=False, verbose_name=_('It is clean'))
     good_condition = models.BooleanField(default=False, verbose_name=_('Good condition'))
@@ -375,6 +427,7 @@ class VehicleCondition(models.Model):
 
     def __str__(self):
         return f""
+
 
 class SampleCollection(models.Model):
     whole = models.BooleanField(default=False, verbose_name=_('Whole'))
@@ -391,9 +444,11 @@ class SampleCollection(models.Model):
         verbose_name = _('Sample Collection')
         verbose_name_plural = _('Sample Collections')
 
+
 class SampleWeight(models.Model):
     weight = models.DecimalField(max_digits=10, decimal_places=2)
-    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'),
+                                          on_delete=models.CASCADE)
 
     def __str__(self):
         return f""
@@ -402,11 +457,14 @@ class SampleWeight(models.Model):
         verbose_name = _('Sample Weight')
         verbose_name_plural = _('Sample Weights')
 
+
 class SamplePest(models.Model):
     sample_pest = models.IntegerField(verbose_name=_('Samples With Pests'))
     product_pest = models.ForeignKey(ProductPest, verbose_name=_('Pest'), on_delete=models.CASCADE)
-    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True, blank=True)
-    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True,
+                                     blank=True)
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'),
+                                          on_delete=models.CASCADE)
 
     def __str__(self):
         return f""
@@ -416,13 +474,13 @@ class SamplePest(models.Model):
         verbose_name_plural = _('Sample Pests')
         constraints = [
             models.UniqueConstraint(
-                fields=['sample_collection','product_pest'],
+                fields=['sample_collection', 'product_pest'],
                 name='unique_sample_collection_product_pest'),
         ]
 
     def save(self, *args, **kwargs):
         total_sample_weight = SampleWeight.objects.filter(sample_collection=self.sample_collection).count()
-        self.percentage = (self.sample_pest / total_sample_weight)*100
+        self.percentage = (self.sample_pest / total_sample_weight) * 100
 
         super().save(*args, **kwargs)
 
@@ -430,8 +488,10 @@ class SamplePest(models.Model):
 class SampleDisease(models.Model):
     sample_disease = models.IntegerField(verbose_name=_('Samples With Diseases'))
     product_disease = models.ForeignKey(ProductDisease, verbose_name=_('Disease'), on_delete=models.CASCADE)
-    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True, blank=True)
-    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True,
+                                     blank=True)
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'),
+                                          on_delete=models.CASCADE)
 
     def __str__(self):
         return f""
@@ -441,21 +501,25 @@ class SampleDisease(models.Model):
         verbose_name_plural = _('Sample Diseases')
         constraints = [
             models.UniqueConstraint(
-                fields=['sample_collection','product_disease'],
+                fields=['sample_collection', 'product_disease'],
                 name='unique_sample_collection_product_disease'),
         ]
 
     def save(self, *args, **kwargs):
         total_sample_weight = SampleWeight.objects.filter(sample_collection=self.sample_collection).count()
-        self.percentage = (self.sample_disease / total_sample_weight)*100
+        self.percentage = (self.sample_disease / total_sample_weight) * 100
 
         super().save(*args, **kwargs)
 
+
 class SamplePhysicalDamage(models.Model):
     sample_physical_damage = models.IntegerField(verbose_name=_('Samples With Physical Damage'))
-    product_physical_damage = models.ForeignKey(ProductPhysicalDamage, verbose_name=_('Physical Damage'), on_delete=models.CASCADE)
-    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True, blank=True)
-    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
+    product_physical_damage = models.ForeignKey(ProductPhysicalDamage, verbose_name=_('Physical Damage'),
+                                                on_delete=models.CASCADE)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True,
+                                     blank=True)
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'),
+                                          on_delete=models.CASCADE)
 
     def __str__(self):
         return f""
@@ -465,21 +529,24 @@ class SamplePhysicalDamage(models.Model):
         verbose_name_plural = _('Sample Physical Damages')
         constraints = [
             models.UniqueConstraint(
-                fields=['sample_collection','product_physical_damage'],
+                fields=['sample_collection', 'product_physical_damage'],
                 name='unique_sample_collection_product_physical_damage'),
         ]
 
     def save(self, *args, **kwargs):
         total_sample_weight = SampleWeight.objects.filter(sample_collection=self.sample_collection).count()
-        self.percentage = (self.sample_physical_damage / total_sample_weight)*100
+        self.percentage = (self.sample_physical_damage / total_sample_weight) * 100
 
         super().save(*args, **kwargs)
+
 
 class SampleResidue(models.Model):
     sample_residue = models.IntegerField(verbose_name=_('Samples With Residue'))
     product_residue = models.ForeignKey(ProductResidue, verbose_name=_('Residue'), on_delete=models.CASCADE)
-    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True, blank=True)
-    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'), on_delete=models.CASCADE)
+    percentage = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Percentage'), null=True,
+                                     blank=True)
+    sample_collection = models.ForeignKey(SampleCollection, verbose_name=_('Sample Collection'),
+                                          on_delete=models.CASCADE)
 
     def __str__(self):
         return f""
@@ -489,12 +556,12 @@ class SampleResidue(models.Model):
         verbose_name_plural = _('Sample Residue')
         constraints = [
             models.UniqueConstraint(
-                fields=['sample_collection','product_residue'],
+                fields=['sample_collection', 'product_residue'],
                 name='unique_sample_collection_product_residue'),
         ]
 
     def save(self, *args, **kwargs):
         total_sample_weight = SampleWeight.objects.filter(sample_collection=self.sample_collection).count()
-        self.percentage = (self.sample_residue / total_sample_weight)*100
+        self.percentage = (self.sample_residue / total_sample_weight) * 100
 
         super().save(*args, **kwargs)
