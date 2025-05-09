@@ -764,7 +764,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
 
 
 # Inocuidad
-class DryMatterInline(NestedTabularInline):
+class DryMatterInline(nested_admin.NestedTabularInline):
     model = DryMatter
     extra = 0
     fields = ['product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter']
@@ -772,7 +772,7 @@ class DryMatterInline(NestedTabularInline):
     class Media:
         js = ('js/admin/forms/packhouses/receiving/food_safety/average.js',)
 
-class InternalInspectionInline(NestedTabularInline):
+class InternalInspectionInline(nested_admin.NestedTabularInline):
     model = InternalInspection
     extra = 0
     fields = ['internal_temperature', 'product_pest']
