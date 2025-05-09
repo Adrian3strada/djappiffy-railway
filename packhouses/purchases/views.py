@@ -16,6 +16,11 @@ from django.urls import reverse
 from django.http import HttpResponseForbidden
 from django.http import JsonResponse
 from packhouses.storehouse.models import StorehouseEntrySupply
+from django.views import View
+from django.db import transaction
+from django.utils import timezone
+from .models import PurchaseMassPayment, PurchaseOrderPayment, ServiceOrderPayment
+from .utils import get_name
 
 def requisition_pdf(request, requisition_id):
     # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
@@ -35,13 +40,6 @@ def requisition_pdf(request, requisition_id):
         organization = request.organization.organizationprofile.name
         add =  request.organization.organizationprofile.address
         organization_profile = request.organization.organizationprofile
-        def get_name(model, obj_id, default):
-            if obj_id:
-                try:
-                    return model.objects.get(id=obj_id).name
-                except model.DoesNotExist:
-                    return f"{default} does not exist"
-            return f"{default} not specified"
 
         # Obtener los nombres de las regiones
         city_name = get_name(SubRegion, organization_profile.city_id, "City")
@@ -142,14 +140,6 @@ def purchase_order_supply_pdf(request, purchase_order_supply_id):
         organization = request.organization.organizationprofile.name
         add = request.organization.organizationprofile.address
         organization_profile = request.organization.organizationprofile
-
-        def get_name(model, obj_id, default):
-            if obj_id:
-                try:
-                    return model.objects.get(id=obj_id).name
-                except model.DoesNotExist:
-                    return f"{default} does not exist"
-            return f"{default} not specified"
 
         # Obtener los nombres de las regiones
         city_name = get_name(SubRegion, organization_profile.city_id, "City")
@@ -350,3 +340,64 @@ def set_purchase_order_supply_payment(request, purchase_order_supply_id):
         'title': title_message,
         'button': button_text
     })
+
+class CancelMassPaymentView(View):
+    """
+    Vista para cancelar un Mass Payment y sus pagos asociados de manera atómica.
+    """
+    def post(self, request, pk, *args, **kwargs):
+        try:
+            with transaction.atomic():
+                # Bloqueo optimista
+                mass_payment = PurchaseMassPayment.objects.select_for_update().get(pk=pk)
+
+                if mass_payment.status == "canceled":
+                    return JsonResponse({
+                        "success": False,
+                        "message": _("This Mass Payment is already canceled.")
+                    }, status=400)
+
+                # Cancelar todos los PurchaseOrderPayment asociados
+                purchase_payments = PurchaseOrderPayment.objects.filter(mass_payment=mass_payment)
+                for payment in purchase_payments:
+                    payment.status = "canceled"
+                    payment.cancellation_date = timezone.now()
+                    payment.canceled_by = request.user
+                    payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
+
+                    # Recalcular el balance de la orden de compra
+                    payment.purchase_order.recalculate_balance(save=True)
+
+                # Cancelar todos los ServiceOrderPayment asociados
+                service_payments = ServiceOrderPayment.objects.filter(mass_payment=mass_payment)
+                for payment in service_payments:
+                    payment.status = "canceled"
+                    payment.cancellation_date = timezone.now()
+                    payment.canceled_by = request.user
+                    payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
+
+                    # Recalcular el balance de la orden de servicio
+                    payment.service_order.recalculate_balance(save=True)
+
+                # Actualizamos el estado del Mass Payment a cancelado
+                mass_payment.status = "canceled"
+                mass_payment.cancellation_date = timezone.now()
+                mass_payment.canceled_by = request.user
+                mass_payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
+
+            # Retornar un JSON de éxito
+            return JsonResponse({
+                "success": True,
+                "message": _("Mass Payment and its related payments were canceled successfully.")
+            })
+
+        except PurchaseMassPayment.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": _("Mass Payment not found")
+            }, status=404)
+        except Exception as e:
+            return JsonResponse({
+                "success": False,
+                "message": f"Error: {str(e)}"
+            }, status=500)

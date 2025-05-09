@@ -47,3 +47,12 @@ def create_related_payments_and_update_balances(mass_payment):
 
         # Actualiza el balance a 0 si el pago lo cubre
         order.recalculate_balance(save=True)
+
+
+def get_name(model, obj_id, default="Not specified"):
+    if obj_id:
+        try:
+            return model.objects.get(id=obj_id).name
+        except model.DoesNotExist:
+            return f"{default} does not exist"
+    return f"{default} not specified"

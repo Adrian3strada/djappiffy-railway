@@ -176,6 +176,12 @@ class PurchaseOrder(models.Model):
         choices=STATUS_CHOICES,
         default='open',
     )
+    total_cost = models.DecimalField(
+        verbose_name=_("Total cost (with tax)"),
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
     balance_payable = models.DecimalField(
         max_digits=12, decimal_places=2,
         default=0,
@@ -234,7 +240,11 @@ class PurchaseOrder(models.Model):
             total=models.Sum('amount')
         )['total'] or Decimal('0.00')
 
-        balance = supplies_total + tax_amount + charges_total - deductions_total - payments_total
+        # Cálculo del costo total
+        total_cost = supplies_total + tax_amount + charges_total - deductions_total
+        total_cost = total_cost.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        balance = total_cost - payments_total
         balance = balance.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
         return {
@@ -244,14 +254,15 @@ class PurchaseOrder(models.Model):
             'charges_total': charges_total,
             'deductions_total': deductions_total,
             'payments_total': payments_total,
+            'total_cost': total_cost
         }
 
     def recalculate_balance(self, save=False, raise_exception=False):
         """
-        Recalcula el balance real de la orden de compra.
+        Recalcula el balance real de la orden de compra y el costo total.
 
         Args:
-            save (bool): Si es True, guarda el nuevo balance_payable en la base de datos.
+            save (bool): Si es True, guarda el nuevo balance_payable y el total_cost en la base de datos.
             raise_exception (bool): Si es True y el balance resulta negativo, lanza ValidationError.
 
         Returns:
@@ -267,7 +278,8 @@ class PurchaseOrder(models.Model):
 
         if save:
             self.balance_payable = data['balance']
-            self.save(update_fields=['balance_payable'])
+            self.total_cost = data['total_cost']
+            self.save(update_fields=['balance_payable', 'total_cost'])
 
         return data
 
@@ -462,7 +474,7 @@ class PurchaseOrderPayment(models.Model):
     mass_payment = models.ForeignKey(
         "PurchaseMassPayment",
         verbose_name=_("Mass payment"),
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True, blank=True
     )
 
@@ -495,7 +507,10 @@ class ServiceOrder(models.Model):
         balance_payable (Decimal): Saldo pendiente de pago.
         organization (Organization): Organización a la que pertenece la orden.
     """
-
+    ooid = models.PositiveIntegerField(
+        verbose_name=_("Folio"),
+        null=True, blank=True, unique=True
+    )
     category = models.CharField(
         max_length=255,
         verbose_name=_("Category"),
@@ -658,12 +673,26 @@ class ServiceOrder(models.Model):
             )
         ]
 
+    def save(self, *args, **kwargs):
+        """
+        Guarda la orden de servicio, asegurando la asignación de un folio único incremental (ooid)
+        de manera transaccional por organización.
+        """
+        if not self.ooid:
+            with transaction.atomic():
+                last_order = ServiceOrder.objects.select_for_update().filter(
+                    organization=self.organization
+                ).order_by('-ooid').first()
+                self.ooid = (last_order.ooid + 1) if last_order and last_order.ooid is not None else 1
+
+        super().save(*args, **kwargs)
+
     def __str__(self) -> str:
         """
         Returns:
             str: Nombre del servicio y su costo.
         """
-        return f"{self.provider.name} - {self.service.name} - ${self.balance_payable}"
+        return f"Folio {self.ooid} - {self.provider.name} - {self.service.name} - ${self.balance_payable}"
 
 class ServiceOrderCharge(models.Model):
     service_order = models.ForeignKey(
@@ -783,7 +812,7 @@ class ServiceOrderPayment(models.Model):
     mass_payment = models.ForeignKey(
         "PurchaseMassPayment",
         verbose_name=_("Mass payment"),
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True, blank=True
     )
 
@@ -809,6 +838,10 @@ class PurchaseMassPayment(models.Model):
         created_by (User): Usuario que creó el registro.
         created_at (datetime): Fecha y hora de creación del registro.
     """
+    ooid = models.PositiveIntegerField(
+        verbose_name=_("Folio"),
+        null=True, blank=True, unique=True
+    )
     category = models.CharField(
         max_length=40,
         verbose_name=_("Category"),
@@ -931,6 +964,20 @@ class PurchaseMassPayment(models.Model):
         # Actualizamos el monto en el Mass Payment
         self.amount = new_amount
         self.save(update_fields=["amount"])
+
+    def save(self, *args, **kwargs):
+        """
+        Guarda la orden de servicio, asegurando la asignación de un folio único incremental (ooid)
+        de manera transaccional por organización.
+        """
+        if not self.ooid:
+            with transaction.atomic():
+                last_order = PurchaseMassPayment.objects.select_for_update().filter(
+                    organization=self.organization
+                ).order_by('-ooid').first()
+                self.ooid = (last_order.ooid + 1) if last_order and last_order.ooid is not None else 1
+
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _("Mass Payment")

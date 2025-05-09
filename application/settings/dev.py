@@ -67,6 +67,8 @@ else:
         RUN = False
         raise ImportError("No storages configuration file found")
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS=int(os.getenv("DATA_UPLOAD_MAX_NUMBER_FIELDS", 10000))
+
 try:
     from .local import *
 except ImportError:
