@@ -8,7 +8,6 @@ from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, P
                                         Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage,
                                         ProductResidue, ProductDryMatterAcceptanceReport)
 from common.base.models import Pest
-from packhouses.gathering.models import ScheduleHarvest
 from django.db.models import F
 from django.core.exceptions import ValidationError
 
@@ -53,7 +52,6 @@ class Batch(models.Model):
                 # bloqueamos las filas de Batch de esta organización…
                 last = (
                     Batch.objects
-                    .select_for_update()
                     .filter(organization=self.organization)
                     .order_by('-ooid')
                     .first()
@@ -241,10 +239,17 @@ class IncomingProduct(models.Model):
                     organization=self.organization
                 )
                 self.batch = new_batch
+                BatchWeightMovement.objects.create(
+                    batch=new_batch,
+                    weight=self.packhouse_weight_result
+                )
                 super().save(update_fields=['batch'])
 
     def __str__(self):
-        schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=self).first()
+        # from packhouses.gathering.models import ScheduleHarvest
+        # schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=self).first()
+        # TODO: Jaqueline: Validar que este cambio funciona bien, si si, eliminar estos tres comentarios
+        schedule_harvest = self.scheduleharvest
         if schedule_harvest:
             return f"{schedule_harvest.ooid} - {schedule_harvest.orchard}"
         return self.id

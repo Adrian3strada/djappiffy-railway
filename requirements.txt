@@ -55,6 +55,7 @@ django-weasyprint
 django-import-export
 setuptools
 qrcode
+aiosmtpd
 
 geopandas
 numpy
