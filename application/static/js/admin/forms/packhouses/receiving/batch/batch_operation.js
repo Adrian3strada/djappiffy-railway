@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
             operationalStatusField.val('pending').trigger('change');
         }
 
-        if (reviewStatus === 'rejected' || reviewStatus === 'quarantine') {
+        if (reviewStatus === 'rejected') {
             availableForProcessing.prop('disabled', true).prop('checked', false);
             operationalStatusField.val('canceled').trigger('change');
         }
