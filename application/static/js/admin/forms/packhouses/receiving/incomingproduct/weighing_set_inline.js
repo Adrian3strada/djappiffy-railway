@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
      *  - Calculating tare, net weight, and packhouse total
      *  for inline and nested WeighingSet forms in IncomingProduct/Batch.
      */
-    const DEL_SEL = 'input[name^="incomingproduct_set-0-weighingset_set-"][name$="-DELETE"]';
-    const CNT_SEL = 'div[id^="incomingproduct_set-0-weighingset_set-"]';
+    const DELETE_WEIGHINGSET_SELECTOR = 'input[name^="incomingproduct_set-0-weighingset_set-"][name$="-DELETE"]';
+    const CONTAINER_FORMSET_SELECTOR= 'div[id^="incomingproduct_set-0-weighingset_set-"]';
     const TOTAL_ID = 'id_incomingproduct_set-0-total_weighed_sets';
     const observed = new WeakSet();
   
@@ -19,41 +19,41 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   
     function recalcWeighingSets() {
-      const allSets = Array.from(document.querySelectorAll(CNT_SEL))
+      const allSets = Array.from(document.querySelectorAll(CONTAINER_FORMSET_SELECTOR))
         .filter(el => /^\d+$/.test(el.id.split('-').pop())); // exclude "-empty"
   
       const activeCount = allSets.reduce((sum, el) => {
-        const cb = el.querySelector(DEL_SEL);
-        return sum + ((cb && cb.checked) ? 0 : 1);
+        const deleteCheckbox = el.querySelector(DELETE_WEIGHINGSET_SELECTOR);
+        return sum + ((deleteCheckbox && deleteCheckbox.checked) ? 0 : 1);
       }, 0);
   
-      const fld = document.getElementById(TOTAL_ID);
-      if (fld) {
-        fld.value = activeCount;
-        fld.dispatchEvent(new Event('change', { bubbles: true }));
+      const totalField = document.getElementById(TOTAL_ID);
+      if (totalField) {
+        totalField.value = activeCount;
+        totalField.dispatchEvent(new Event('change', { bubbles: true }));
       }
     }
   
-    function observeCheckbox(cb) {
-      if (observed.has(cb)) return;
-      const mo = new MutationObserver(muts => {
+    function observeCheckbox(deleteCheckbox) {
+      if (observed.has(deleteCheckbox)) return;
+      const mutation_observer = new MutationObserver(muts => {
         muts.forEach(m => {
           if (m.attributeName === 'checked') debounce(recalcWeighingSets)();
         });
       });
-      mo.observe(cb, { attributes: true });
-      observed.add(cb);
+      mutation_observer.observe(deleteCheckbox, { attributes: true });
+      observed.add(deleteCheckbox);
     }
   
     // init count
     recalcWeighingSets();
-    document.querySelectorAll(DEL_SEL).forEach(observeCheckbox);
+    document.querySelectorAll(DELETE_WEIGHINGSET_SELECTOR).forEach(observeCheckbox);
     document.addEventListener('change', e => {
-      if (e.target.matches(DEL_SEL)) debounce(recalcWeighingSets)();
+      if (e.target.matches(DELETE_WEIGHINGSET_SELECTOR)) debounce(recalcWeighingSets)();
     });
     document.addEventListener('formset:added', e => {
       if (e.detail.formsetName.includes('weighingset_set')) {
-        const cb = e.target.querySelector(DEL_SEL);
+        const cb = e.target.querySelector(DELETE_WEIGHINGSET_SELECTOR);
         if (cb) observeCheckbox(cb);
         recalcWeighingSets();
       }
@@ -106,10 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
       $field.val(selected);
     }
   
-    function handleProviderChange($prov, $crew, selectedCrew = null) {
-      const provId = $prov.val();
-      if (provId) {
-        fetchOptions(`/rest/v1/catalogs/harvesting-crew/?provider=${provId}`)
+    function handleProviderChange($provider, $crew, selectedCrew = null) {
+      const providerId = $provider.val();
+      if (providerId) {
+        fetchOptions(`/rest/v1/catalogs/harvesting-crew/?provider=${providerId}`)
           .then(crews => updateFieldOptions($crew, crews, selectedCrew));
       } else {
         updateFieldOptions($crew, [], null);
@@ -141,24 +141,24 @@ document.addEventListener('DOMContentLoaded', () => {
   
       for (let i = 0; i < $containers.length; i++) {
         const $c = $($containers[i]);
-        const $delC = $c.find('input[name$="-DELETE"]');
-          const delElem = $delC.get(0);
+        const $deleteContainer = $c.find('input[name$="-DELETE"]');
+          const delElem = $deleteContainer.get(0);
   
-          if (delElem && !$delC.data('obs')) {
-          const mo = new MutationObserver(muts => {
+          if (delElem && !$deleteContainer.data('obs')) {
+          const mutation_observer = new MutationObserver(muts => {
               muts.forEach(m => m.attributeName === 'checked' && calculateWeighingSetTare($form));
           });
-          mo.observe(delElem, { attributes: true });
-          $delC.data('obs', true);
+          mutation_observer.observe(delElem, { attributes: true });
+          $deleteContainer.data('obs', true);
           }
   
-        if ($delC.prop('checked')) continue;
+        if ($deleteContainer.prop('checked')) continue;
   
-        const cid = $c.find('select[name$="-harvest_container"]').val();
-        const qty = parseFloat($c.find('input[name$="-quantity"]').val()) || 0;
-        if (cid) {
-          totalTare += qty * await fetchContainerTare(cid);
-          totalContainers += qty;
+        const contianerid = $c.find('select[name$="-harvest_container"]').val();
+        const quantity = parseFloat($c.find('input[name$="-quantity"]').val()) || 0;
+        if (contianerid) {
+          totalTare += quantity * await fetchContainerTare(contianerid);
+          totalContainers += quantity;
         }
       }
   
@@ -185,16 +185,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const updatePackhouseWeight = () => {
       let total = 0, prefix = null;
       $(WEIGHING_SET_FORM_SELECTOR).each(function() {
-        const $ws = $(this);
+        const $weighing_set = $(this);
         if (!prefix) {
           const m = this.id.match(/^(.*)-weighingset_set-\d+$/);
           if (m) prefix = m[1];
         }
-        const $del = $ws.find('input[name$="-DELETE"]').filter(function() {
+        const $del = $weighing_set.find('input[name$="-DELETE"]').filter(function() {
           return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
         });
         if ($del.prop('checked')) return;
-        total += parseFloat($ws.find('input[name$="-net_weight"]').val()) || 0;
+        total += parseFloat($weighing_set.find('input[name$="-net_weight"]').val()) || 0;
       });
       const truncated = Math.trunc(total * 1000) / 1000;
       if ($packhouseField.length) {
@@ -208,12 +208,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateTotalFullContainers = () => {
       let total = 0;
       $(WEIGHING_SET_FORM_SELECTOR).each(function() {
-        const $ws = $(this);
-        const $del = $ws.find('input[name$="-DELETE"]').filter(function() {
+        const $weighing_set = $(this);
+        const $del = $weighing_set.find('input[name$="-DELETE"]').filter(function() {
           return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
         });
         if ($del.prop('checked')) return;
-        $ws.find(CONTAINER_FORM_SELECTOR).each(function() {
+        $weighing_set.find(CONTAINER_FORM_SELECTOR).each(function() {
           const $c = $(this);
           if (!$c.find('input[name$="-DELETE"]').prop('checked')) {
             total += parseFloat($c.find('input[name$="-quantity"]').val()) || 0;
@@ -225,46 +225,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const debouncedUpdateTotalContainers = debounce(updateTotalFullContainers, 300);
   
     function initializeWeighingSet(form) {
-      const $ws = $(form);
-      const $prov = $ws.find('select[name$="-provider"]');
-      const $crew = $ws.find('select[name$="-harvesting_crew"]');
+      const $weighing_set = $(form);
+      const $provider = $weighing_set.find('select[name$="-provider"]');
+      const $crew = $weighing_set.find('select[name$="-harvesting_crew"]');
       const selCrew = $crew.val();
   
-      if ($prov.val()) handleProviderChange($prov, $crew, selCrew);
+      if ($provider.val()) handleProviderChange($provider, $crew, selCrew);
       else updateFieldOptions($crew, [], null);
-      $prov.on('change', () => handleProviderChange($prov, $crew, $crew.val()));
+      $provider.on('change', () => handleProviderChange($provider, $crew, $crew.val()));
   
       // observe delete on weighing set
-      const $delSet = $ws.find('input[name$="-DELETE"]').filter(function() {
+      const $delSet = $weighing_set.find('input[name$="-DELETE"]').filter(function() {
         return $(this).closest(CONTAINER_FORM_SELECTOR).length === 0;
       });
       if ($delSet.length) {
-        const mo = new MutationObserver(muts => muts.forEach(m => {
+        const mutation_observer = new MutationObserver(muts => muts.forEach(m => {
           if (m.attributeName==='checked') {
             debouncedUpdatePackhouse();
             updateWeighedSetCount();
           }
         }));
-        mo.observe($delSet[0], { attributes: true });
+        mutation_observer.observe($delSet[0], { attributes: true });
       }
   
       // observe container removal
-      if (!$ws.data('childObs')) {
+      if (!$weighing_set.data('childObs')) {
         const childObs = new MutationObserver(muts => muts.forEach(m => {
           m.removedNodes && m.removedNodes.forEach(node => {
-            if ($(node).is(CONTAINER_FORM_SELECTOR)) calculateWeighingSetTare($ws);
+            if ($(node).is(CONTAINER_FORM_SELECTOR)) calculateWeighingSetTare($weighing_set);
           });
         }));
         childObs.observe(form, { childList: true, subtree: true });
-        $ws.data('childObs', true);
+        $weighing_set.data('childObs', true);
       }
   
-      const debTare = debounce(() => calculateWeighingSetTare($ws), 300);
-      $ws.off('input').on('input', 'input[name$="-gross_weight"], input[name$="-platform_tare"], input[name$="-quantity"]', debTare);
-      $ws.off('change').on('change', 'select[name$="-harvest_container"]', debTare);
+      const debTare = debounce(() => calculateWeighingSetTare($weighing_set), 300);
+      $weighing_set.off('input').on('input', 'input[name$="-gross_weight"], input[name$="-platform_tare"], input[name$="-quantity"]', debTare);
+      $weighing_set.off('change').on('change', 'select[name$="-harvest_container"]', debTare);
   
       // initial calc
-      calculateWeighingSetTare($ws);
+      calculateWeighingSetTare($weighing_set);
       updateWeighedSetCount();
     }
   
@@ -276,8 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = e.detail.formsetName;
       if (name.endsWith('weighingset_set')) initializeWeighingSet(e.target);
       if (name.endsWith('weighingsetcontainer_set')) {
-        const $ws = $(e.target).closest(WEIGHING_SET_FORM_SELECTOR);
-        debounce(() => calculateWeighingSetTare($ws), 300)();
+        const $weighing_set = $(e.target).closest(WEIGHING_SET_FORM_SELECTOR);
+        debounce(() => calculateWeighingSetTare($weighing_set), 300)();
       }
       updateWeighedSetCount();
       debouncedUpdateTotalContainers();
@@ -291,19 +291,19 @@ document.addEventListener('DOMContentLoaded', () => {
   
     // delete‑link buttons
     $(document).on('click', '.deletelink', function() {
-      const $ws = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
+      const $weighing_set = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
       setTimeout(() => {
-        calculateWeighingSetTare($ws);
+        calculateWeighingSetTare($weighing_set);
         updateWeighedSetCount();
       }, 100);
     });
     $(document).on('click', `${CONTAINER_FORM_SELECTOR} .deletelink`, function() {
-      const $ws = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
-      setTimeout(() => calculateWeighingSetTare($ws), 100);
+      const $weighing_set = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
+      setTimeout(() => calculateWeighingSetTare($weighing_set), 100);
     });
     $(document).on('change', `${CONTAINER_FORM_SELECTOR} input[name$="-DELETE"]`, function() {
-      const $ws = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
-      calculateWeighingSetTare($ws);
+      const $weighing_set = $(this).closest(WEIGHING_SET_FORM_SELECTOR);
+      calculateWeighingSetTare($weighing_set);
     });
   
     // disable computed fields
