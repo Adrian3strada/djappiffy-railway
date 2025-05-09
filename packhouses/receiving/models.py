@@ -126,6 +126,24 @@ class Batch(models.Model):
                 )
             ]
 
+
+class BatchWeightMovement(models.Model):
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, verbose_name=_('Batch'))
+    weight = models.FloatField(default=0, verbose_name=_('Weight'))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
+
+    def __str__(self):
+        return f"{self.batch} {self.created_at} - {self.weight}"
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = _('Batch Weight Movement')
+        verbose_name_plural = _('Batch Weight Movements')
+
+    def __str__(self):
+        return f"{self.batch} - {self.weight}"
+
+
 class BatchStatusChange(models.Model):
     field_name = models.CharField(max_length=32,choices=get_batch_status_change,)
     changed_at = models.DateTimeField(auto_now_add=True)
@@ -159,7 +177,7 @@ class IncomingProduct(models.Model):
     total_weighed_sets = models.PositiveIntegerField(default=0, verbose_name=_('Total Weighed Sets'))
     mrl = models.FloatField(default=0, verbose_name=_('Maximum Residue Limit'), null=True, blank=True)
     phytosanitary_certificate = models.CharField(max_length=50, verbose_name=_('Phytosanitary Certificate'), null=True, blank=True)
-    kg_sample = models.FloatField(default=0, verbose_name=_("Kg for Sample"), validators=[MinValueValidator(0.00)])
+    kg_sample = models.FloatField(default=0, verbose_name=_("Kg for Sample"), validators=[MinValueValidator(0.01)])
     current_kg_available = models.FloatField(default=0, verbose_name=_("Current Kg Available"),)
     containers_assigned = models.PositiveIntegerField(default=0, verbose_name=_('Containments Assigned'), help_text=_('Containments assigned per harvest'))
     empty_containers = models.PositiveIntegerField(default=0, verbose_name=_('Empty Containments'), help_text=_('Empty containments per harvest'))
@@ -191,18 +209,6 @@ class IncomingProduct(models.Model):
             return f"{schedule_harvest.ooid} - {schedule_harvest.orchard}"
         return self.id
 
-    def create_batch(self):
-        if self.status == 'accepted' and not self.batch:
-            with transaction.atomic():
-                new_batch = Batch.objects.create(
-                    review_status='accepted',
-                    operational_status='in_progress',
-                    is_available_for_processing=False,
-                    organization=self.organization
-                )
-                self.batch = new_batch
-                self.save(update_fields=["batch"])
-
     class Meta:
         verbose_name = _('Incoming Product')
         verbose_name_plural = _('Incoming Product')
@@ -212,6 +218,7 @@ class IncomingProduct(models.Model):
                 name='unique_incoming_product_harvest'
             )
         ]"""
+
 
 class WeighingSet(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_("ID"),null=True, blank=True)
@@ -269,6 +276,7 @@ class WeighingSetContainer(models.Model):
         verbose_name = _('Weighing Set Containment')
         verbose_name_plural = _('Weighing Sets Containments')
 
+
 class FoodSafety(models.Model):
     batch = models.OneToOneField(Batch, verbose_name=_('Batch'), on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
@@ -279,6 +287,7 @@ class FoodSafety(models.Model):
     class Meta:
         verbose_name = _('Food Safety')
         verbose_name_plural = _('Food Safeties')
+
 
 class DryMatter(models.Model):
     product_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)

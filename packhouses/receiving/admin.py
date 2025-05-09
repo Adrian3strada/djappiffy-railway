@@ -22,11 +22,10 @@ from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderF
 from .utils import update_weighing_set_numbers,  CustomScheduleHarvestFormSet
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
-import nested_admin
 from django.urls import reverse
 from django.utils.html import format_html
 from django.urls import path, reverse
-from nested_admin import NestedStackedInline, NestedTabularInline
+import nested_admin
 from common.base.models import Pest
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.db.models import Q
@@ -499,7 +498,7 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
                 for form in self2.forms:
                     form.fields['weighing_scale'].required = True
         return CustomFormSet
-    
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name in ("product_phenologies", "product_harvest_size_kind", "orchard"):
             obj_id = request.resolver_match.kwargs.get("object_id")
@@ -556,7 +555,7 @@ class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     max_num = 0
     show_change_link = True
     custom_title = _("Incoming Product Information")
-    inlines = [WeighingSetInline, ScheduleHarvestInlineForBatch] 
+    inlines = [WeighingSetInline, ScheduleHarvestInlineForBatch]
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -569,15 +568,15 @@ class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline)
             for attr in ('can_add_related', 'can_change_related', 'can_delete_related', 'can_view_related'):
                 setattr(widget, attr, False)
         return formset
-    
+
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
         update_weighing_set_numbers(form.instance)
 
 @admin.register(Batch)
 class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
-    list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product', 'get_scheduleharvest_product_provider',  'get_scheduleharvest_orchard', 
-                    'get_incomingproduct_packhouse_weight_result', 'get_incomingproduct_current_kg_available', 'get_scheduleharvest_harvest_date', 'created_at', 
+    list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product', 'get_scheduleharvest_product_provider',  'get_scheduleharvest_orchard',
+                    'get_incomingproduct_packhouse_weight_result', 'get_incomingproduct_current_kg_available', 'get_scheduleharvest_harvest_date', 'created_at',
                     'display_review_status', 'display_available_for_processing', 'operational_status', 'generate_actions_buttons', 'property')
     fields = ['ooid', 'review_status', 'operational_status', 'is_available_for_processing']
     readonly_fields = ['ooid',]
@@ -596,7 +595,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             f'children_oids=[{obj.children_oids}]'
         )
         return ''
-    
+
     @admin.action(description='Merge batches into a new batch.')
     def action_merge_batches(self, request, queryset):
         if queryset.count() < 2:
@@ -680,7 +679,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
 
 
     def generate_actions_buttons(self, obj):
-        pass 
+        pass
     generate_actions_buttons.short_description = _('Actions')
     generate_actions_buttons.allow_tags = True
 
@@ -742,7 +741,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         return sh.product_provider if sh and sh.product_provider else None
     get_scheduleharvest_product_provider.short_description = _('Product Provider')
     get_scheduleharvest_product_provider.admin_order_field = 'incomingproduct__scheduleharvest__product_provider'
-    
+
     def get_incomingproduct_packhouse_weight_result(self, obj):
         incoming = getattr(obj, 'incomingproduct', None)
         if not incoming or incoming.packhouse_weight_result is None:
@@ -945,7 +944,7 @@ class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInl
 
     class Media:
         js = (
-            'js/admin/forms/packhouses/receiving/food_safety/select_sample.js', 
+            'js/admin/forms/packhouses/receiving/food_safety/select_sample.js',
             'js/admin/forms/packhouses/receiving/food_safety/percentage.js',
             )
 
