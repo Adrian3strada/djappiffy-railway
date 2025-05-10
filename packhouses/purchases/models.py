@@ -27,7 +27,7 @@ from django.core.exceptions import ValidationError
 from .settings import PURCHASE_SERVICE_CATEGORY_CHOICES, PURCHASE_CATEGORY_CHOICES
 from packhouses.receiving.models import Batch
 from packhouses.catalogs.models import Service
-
+from common.utils import validate_file_extension
 
 # Create your models here.
 class Requisition(models.Model):
@@ -409,6 +409,7 @@ class PurchaseOrderDeduction(models.Model):
         ]
 
 class PurchaseOrderPayment(models.Model):
+
     purchase_order = models.ForeignKey(
         PurchaseOrder,
         verbose_name=_("Purchase Order"),
@@ -476,6 +477,13 @@ class PurchaseOrderPayment(models.Model):
         verbose_name=_("Mass payment"),
         on_delete=models.CASCADE,
         null=True, blank=True
+    )
+    proof_of_payment = models.FileField(
+        verbose_name=_("Proof of Payment"),
+        upload_to='purchases/payments/proofs/',
+        validators=[validate_file_extension],
+        null=True,
+        blank=True
     )
 
     def __str__(self):
@@ -815,6 +823,13 @@ class ServiceOrderPayment(models.Model):
         on_delete=models.CASCADE,
         null=True, blank=True
     )
+    proof_of_payment = models.FileField(
+        verbose_name=_("Proof of Payment"),
+        upload_to='purchases/payments/proofs/',
+        validators=[validate_file_extension],
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return f"{self.payment_date} - ${self.amount}"
@@ -925,6 +940,13 @@ class PurchaseMassPayment(models.Model):
     cancellation_date = models.DateTimeField(
         verbose_name=_("Cancellation date"),
         null=True, blank=True
+    )
+    proof_of_payment = models.FileField(
+        verbose_name=_("Proof of Payment"),
+        upload_to='purchases/payments/proofs/',
+        validators=[validate_file_extension],
+        null=True,
+        blank=True
     )
     organization = models.ForeignKey(
         Organization,
