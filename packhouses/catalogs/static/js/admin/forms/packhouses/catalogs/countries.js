@@ -1,29 +1,61 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const countrySelect = document.getElementById('id_country');
-    const countriesSelect = document.getElementById('id_countries');
+    const countryField = $('#id_country');      
+    const countriesField = $('#id_countries');  
+    const nameField = $('#id_name');            
+    const aliasField = $('#id_alias');        
 
-    if (!countrySelect || !countriesSelect) return; // Evita errores si los elementos no existen
-
-    function syncCountryToCountries() {
-        const selectedCountryValue = countrySelect.value;
-
-        // Deselecciona todas las opciones de countries
-        for (const option of countriesSelect.options) {
-            option.selected = false;
-        }
-
-        // Selecciona la opción en countries que coincida con country
-        for (const option of countriesSelect.options) {
-            if (option.value === selectedCountryValue) {
-                option.selected = true;
-                break;
-            }
-        }
+    if (!countryField.length) {
+        return;
     }
 
-    // Sincroniza cuando se cambia el país
-    countrySelect.addEventListener('change', syncCountryToCountries);
+    countryField.select2({
+        placeholder: "Selecciona un país",
+        allowClear: true,
+        width: '100%'  
+    });
 
-    // También sincroniza al cargar la página
-    syncCountryToCountries();
+    countryField.on('change', function () {
+        const countryId = this.value;
+
+        if (!countryId) {
+            return;
+        }
+
+        fetch(`/rest/v1/cities/countries/${countryId}/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error();
+                }
+                return response.json();
+            })
+            .then(data => {
+                const validId = $('#id_countries option').map((_, opt) => opt.value).get()[0];
+
+                if (!validId) {
+                    return;
+                }
+
+                if (countriesField.length) {
+                    countriesField.empty(); 
+
+                    const newOption = new Option(data.name, countryId, true, true);
+                    countriesField.append(newOption);
+                    countriesField.trigger('change');
+
+                    if (countriesField.data('select2')) {
+                        countriesField.select2('destroy').select2();
+                    }
+                }
+
+                if (nameField.length) {
+                    nameField.val(data.name || '');
+                }
+
+                if (aliasField.length) {
+                    aliasField.val(data.code3 || '');
+                }
+            })
+            .catch(() => {});
+    });
 });
+
