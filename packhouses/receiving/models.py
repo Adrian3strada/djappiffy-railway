@@ -22,8 +22,6 @@ class Batch(models.Model):
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
-    # 'parent' apunta al lote padre al que este lote fue unido.
-    # Si es None, significa que el lote no ha sido unido a ningún otro.
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='children', verbose_name=_('Parent'))
 
     def __str__(self):
@@ -47,18 +45,23 @@ class Batch(models.Model):
         return f"{self.ooid} – {_('No IncomingProduct Asociated')}"
 
     @property
-    def available_weight(self):
+    def batch_weight(self):
         if self.batchweightmovement_set.exists():
             return self.batchweightmovement_set.aggregate(
-                available_weight=Sum('weight')
-            )['available_weight']
+                batch_weight=Sum('weight')
+            )['batch_weight']
         return 0
 
+    @property
+    def available_weight(self):
+        total_weight = self.batch_weight
+        if self.is_parent:
+            total_weight += sum(child.batch_weight for child in self.children.all())
+        return total_weight
+
     def save(self, *args, **kwargs):
-        # solo asignamos si aún no tiene ooid
         if self.ooid is None:
             with transaction.atomic():
-                # bloqueamos las filas de Batch de esta organización…
                 last = (
                     Batch.objects
                     .filter(organization=self.organization)
@@ -209,7 +212,7 @@ class BatchWeightMovement(models.Model):
         verbose_name_plural = _('Batch Weight Movements')
 
     def clean(self):
-        if self.weight < 0 and self.batch.available_weight + self.weight < 0:
+        if self.weight < 0 and self.batch.batch_weight + self.weight < 0:
             raise ValidationError(
                 _('This movement would result in a negative weight for the batch.'),
             )
