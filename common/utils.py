@@ -41,6 +41,10 @@ def validate_file_extension(value, allowed_extensions=None):
     if allowed_extensions is None:
         allowed_extensions = ['.pdf', '.jpg', '.jpeg', '.png', '.heic']
 
+    if '.' not in value.name:
+        raise ValidationError(
+            _('The file does not have a valid extension. Please provide a file with one of the following extensions: '
+              f'{", ".join(allowed_extensions)}.'))
     ext = value.name.split('.')[-1].lower()
     if f'.{ext}' not in allowed_extensions:
         raise ValidationError(
