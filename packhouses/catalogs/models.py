@@ -42,8 +42,8 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
         on_delete=models.PROTECT,
         verbose_name=_('Country'),
         related_name='market_country'
-        null = True,
-        blanck = True
+        null = False,
+        blanck = False
     )
 
     countries = models.ManyToManyField(Country, verbose_name=_('Countries'))
