@@ -37,13 +37,13 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
 
-
-    # Nueva FK obligatoria a Country
     country = models.ForeignKey(
         Country,
         on_delete=models.PROTECT,
         verbose_name=_('Country'),
-        related_name='primary_markets'
+        related_name='market_country'
+        null = True,
+        blanck = True
     )
 
     countries = models.ManyToManyField(Country, verbose_name=_('Countries'))
