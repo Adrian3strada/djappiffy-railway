@@ -3,7 +3,7 @@ from .models import (
     Product, ProductSize, OrchardCertification, HarvestingCrew,
     ProductHarvestSizeKind,
     HarvestingPaymentSetting,
-    Packaging, Provider, Market, Country
+    Packaging, Provider
 )
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
@@ -169,20 +169,5 @@ class ProviderForm(forms.ModelForm):
         return cleaned_data
 
 
-class MarketForm(forms.ModelForm):
-    class Meta:
-        model = Market
-        fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-        # Si hay un 'country' seleccionado, añádelo automáticamente a 'countries'
-        if self.instance and getattr(self.instance, 'country', None):
-            self.fields['country'].queryset = Country.objects.filter(id=self.instance.country.id)
-
-        # Si es un objeto nuevo, no se llena 'countries' automáticamente
-        elif not self.instance.pk:
-            self.fields['countries'].queryset = Country.objects.none()
 
 
