@@ -588,12 +588,10 @@ class ClientShipAddressInline(admin.StackedInline):
         else:
             market_id = parent_obj.market_id if parent_obj else None
         if market_id:
-            market = Market.objects.filter(id=market_id).first()
-            if market and market.countries.exists():
-                markets_countries = market.countries.all()
-            else:
-                markets_countries = []
-
+            try:
+                markets_countries = list(Market.objects.get(id=market_id).countries.all().values_list('id', flat=True))
+            except Market.DoesNotExist:
+                markets_countries = None
         if db_field.name == "country":
             if markets_countries:
                 kwargs["queryset"] = Country.objects.filter(id__in=[country.id for country in markets_countries])
@@ -712,11 +710,12 @@ class ClientAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             market_id = obj.market_id if obj else None
 
             if market_id:
-                market = Market.objects.filter(id=market_id).first()
-                if market and market.countries:
-                    kwargs["queryset"] = Country.objects.filter(id=market.country.id)
-                else:
-                    kwargs["queryset"] = Country.objects.none()
+                try:
+                    countries = list(Market.objects.get(id=market_id).countries.all().values_list('id', flat=True))
+                except Market.DoesNotExist:
+                    countries = []
+                kwargs["queryset"] = Country.objects.filter(id__in=countries)
+               
             else:
                 kwargs["queryset"] = Country.objects.none()
 
@@ -1553,14 +1552,10 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.required = True
             if organization and product_kind and market_id:
-                market = Market.objects.get(id=market_id)
-                country_ids = market.countries.all().values_list('id', flat=True)
-
-                queryset = ProductKindCountryStandardPackaging.objects.filter(
-                standard__product_kind=product_kind,
-                standard__country_id__in=country_ids,
-                )
-
+                market_countries = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
+                queryset = ProductKindCountryStandardPackaging.objects.filter(standard__product_kind=product_kind, 
+                standard__country__in=market_countries)
+               
                 kwargs["queryset"] = queryset
                 formfield.required = queryset.exists()
             else:
