@@ -708,7 +708,10 @@ class ClientAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             market_id = obj.market_id if obj else None
 
             if market_id:
-                countries = list(Market.objects.get(id=market_id).countries.all().values_list('id', flat=True))
+                try:
+                    countries = list(Market.objects.get(id=market_id).countries.all().values_list('id', flat=True))
+                except Market.DoesNotExist:
+                    countries = []
                 kwargs["queryset"] = Country.objects.filter(id__in=countries)
                
             else:
