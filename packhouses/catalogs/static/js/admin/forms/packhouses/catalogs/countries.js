@@ -55,7 +55,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     aliasField.val(data.code3 || '');
                 }
             })
-            .catch(() => {});
+            .catch((error) => {
+                console.error('Error fetching country data:', error);
+            });
     });
 });
 
