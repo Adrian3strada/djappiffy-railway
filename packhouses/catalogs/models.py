@@ -43,7 +43,7 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
         verbose_name=_('Country'),
         related_name='market_country'
         null = False,
-        blanck = False
+        blank = False
     )
 
     countries = models.ManyToManyField(Country, verbose_name=_('Countries'))
