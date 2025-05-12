@@ -29,12 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(data => {
-                const validId = $('#id_countries option').map((_, opt) => opt.value).get()[0];
-
-                if (!validId) {
-                    return;
-                }
-
                 if (countriesField.length) {
                     countriesField.empty(); 
 
