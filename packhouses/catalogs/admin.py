@@ -588,8 +588,10 @@ class ClientShipAddressInline(admin.StackedInline):
         else:
             market_id = parent_obj.market_id if parent_obj else None
         if market_id:
-            markets_countries = list(Market.objects.get(id=market_id).countries.all().values_list('id', flat=True))
-
+            try:
+                markets_countries = list(Market.objects.get(id=market_id).countries.all().values_list('id', flat=True))
+            except Market.DoesNotExist:
+                markets_countries = None
         if db_field.name == "country":
             if markets_countries:
                 kwargs["queryset"] = Country.objects.filter(id__in=[country.id for country in markets_countries])
