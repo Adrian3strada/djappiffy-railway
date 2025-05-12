@@ -11,6 +11,7 @@ from packhouses.catalogs.models import Supply, Provider
 from django.db import models
 from decimal import Decimal
 import datetime
+from common.widgets import CustomFileDisplayWidget
 
 
 class RequisitionForm(forms.ModelForm):
@@ -88,25 +89,26 @@ class PurchaseOrderForm(forms.ModelForm):
         return cleaned_data
 
 
-
 class PurchaseOrderPaymentForm(forms.ModelForm):
     class Meta:
         model = PurchaseOrderPayment
-        fields = ('payment_date', 'payment_kind', 'amount', 'bank', 'comments', 'additional_inputs')
+        fields = ('payment_date', 'payment_kind', 'amount', 'bank', 'proof_of_payment', 'comments', 'additional_inputs')
         widgets = {
-            'additional_inputs': forms.HiddenInput()
+            'additional_inputs': forms.HiddenInput(),
+            'proof_of_payment': CustomFileDisplayWidget()
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         instance = self.instance
 
-        # Si está en modo lectura
+        # Si el pago ya está registrado, todos los campos se deshabilitan
         if instance and instance.pk:
+
             for field in self.fields:
                 self.fields[field].disabled = True
-                self.fields[field].widget.attrs['class'] = self.fields[field].widget.attrs.get('class', '') + ' readonly-field'
+                self.fields[field].widget.attrs['class'] = self.fields[field].widget.attrs.get('class',
+                                                                                               '') + ' readonly-field'
 
             if 'payment_date' in self.fields:
                 self.fields['payment_date'].widget = forms.TextInput(attrs={
@@ -117,7 +119,7 @@ class PurchaseOrderPaymentForm(forms.ModelForm):
             if instance.additional_inputs:
                 self.fields['additional_inputs'].initial = json.dumps(instance.additional_inputs)
 
-        # Quitar controles relacionados para evitar botones "Agregar nuevo"
+        # Deshabilitar los controles relacionados (add, edit, delete) en ForeignKeys
         for field_name in ['payment_kind', 'bank']:
             if hasattr(self.fields[field_name].widget, 'can_add_related'):
                 self.fields[field_name].widget.can_add_related = False
@@ -125,7 +127,7 @@ class PurchaseOrderPaymentForm(forms.ModelForm):
                 self.fields[field_name].widget.can_delete_related = False
                 self.fields[field_name].widget.can_view_related = False
 
-        # Marcamos el campo bank como no requerido de entrada
+        # Asegurarse de que `bank` no sea obligatorio por defecto
         self.fields['bank'].required = False
 
     def clean(self):
@@ -133,7 +135,7 @@ class PurchaseOrderPaymentForm(forms.ModelForm):
         payment_kind = cleaned_data.get('payment_kind')
         bank = cleaned_data.get('bank')
 
-        if payment_kind and payment_kind.requires_bank and not bank:
+        if payment_kind and getattr(payment_kind, 'requires_bank', False) and not bank:
             self.add_error('bank', _("This field is required for the selected payment kind."))
 
         return cleaned_data
@@ -229,7 +231,8 @@ class ServiceOrderPaymentForm(forms.ModelForm):
             'additional_inputs',
         )
         widgets = {
-            'additional_inputs': forms.HiddenInput()
+            'additional_inputs': forms.HiddenInput(),
+            'proof_of_payment': CustomFileDisplayWidget()
         }
 
     def __init__(self, *args, **kwargs):
@@ -238,6 +241,7 @@ class ServiceOrderPaymentForm(forms.ModelForm):
 
         # Si el pago ya está registrado, todos los campos se deshabilitan
         if instance and instance.pk:
+
             for field in self.fields:
                 self.fields[field].disabled = True
                 self.fields[field].widget.attrs['class'] = self.fields[field].widget.attrs.get('class', '') + ' readonly-field'
@@ -280,7 +284,8 @@ class PurchaseMassPaymentForm(forms.ModelForm):
         fields = ('category', 'provider', 'purchase_order', 'service_order', 'payment_kind',
                   'additional_inputs', 'bank', 'payment_date', 'amount', 'comments')
         widgets = {
-            'additional_inputs': forms.HiddenInput()
+            'additional_inputs': forms.HiddenInput(),
+            'proof_of_payment': CustomFileDisplayWidget()
         }
 
     def __init__(self, *args, **kwargs):
