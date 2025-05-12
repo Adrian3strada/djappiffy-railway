@@ -135,9 +135,9 @@ class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         super().save_model(request, obj, form, change)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/countries.js',) 
+        js = ('js/admin/forms/packhouses/catalogs/countries.js',)
 
-    
+
 # /Markets
 
 
@@ -1525,7 +1525,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         product_kind = ProductKind.objects.get(id=Product.objects.get(id=product_id).kind_id) if product_id else None
 
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-        
+
         supply_queryfilter = {'organization': organization, 'kind': packaging_supply_kind, 'is_enabled': True}
 
         if db_field.name == "market":
@@ -1573,7 +1573,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
     class Media:
         js = ('js/admin/forms/packaging.js',)
-        
+
 
 
 class ProductPackagingPresentationInline(admin.TabularInline):
@@ -1739,7 +1739,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
             formfield.required = True
             if category == 'single' and request.POST:
                 formfield.required = False
-            return formfield 
+            return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -1823,10 +1823,10 @@ class PalletComplementarySupplyInLine(admin.TabularInline):
 class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PalletResource]
-    list_display = ('name', 'alias', 'market', 'product', 'supply', 'is_enabled')
-    list_filter = (ByMarketForOrganizationPalletFilter, ByProductForOrganizationProductPackagingPalletFilter,
+    list_display = ('name', 'alias', 'product', 'supply', 'is_enabled')
+    list_filter = (ByProductForOrganizationProductPackagingPalletFilter,
                    BySupplyForOrganizationPalletFilter, 'is_enabled')
-    fields = ('market', 'product', 'supply', 'name', 'alias', 'is_enabled')
+    fields = ('product', 'supply', 'name', 'alias', 'is_enabled')
     search_fields = ('name', 'alias')
     inlines = [PalletComplementarySupplyInLine]
 
@@ -1834,11 +1834,6 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     @uppercase_alphanumeric_form_charfield('alias')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'market' in form.base_fields:
-            form.base_fields['market'].widget.can_add_related = False
-            form.base_fields['market'].widget.can_change_related = False
-            form.base_fields['market'].widget.can_delete_related = False
-            form.base_fields['market'].widget.can_view_related = True
         if 'product' in form.base_fields:
             form.base_fields['product'].widget.can_add_related = False
             form.base_fields['product'].widget.can_change_related = False
@@ -1854,7 +1849,7 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj, exclude=[Market, Product, Supply, Organization, PalletComplementarySupply]):
-            readonly_fields.extend(['market', 'product', 'name', 'alias', 'supply'])
+            readonly_fields.extend(['product', 'name', 'alias', 'supply'])
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -1863,12 +1858,6 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-
-        if db_field.name == "market":
-            if organization:
-                kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
-            else:
-                kwargs["queryset"] = Market.objects.none()
 
         if db_field.name == "product":
             if organization:

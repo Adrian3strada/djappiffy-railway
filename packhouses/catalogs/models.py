@@ -861,7 +861,7 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 
 
 class Pallet(models.Model):
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    # market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT,
                                limit_choices_to={'kind__category': 'packaging_pallet'})
@@ -876,10 +876,10 @@ class Pallet(models.Model):
     class Meta:
         verbose_name = _('Pallet')
         verbose_name_plural = _('Pallets')
-        ordering = ('name', 'market', 'product', 'supply', 'organization')
+        ordering = ('name', 'product', 'supply', 'organization')
         constraints = [
-            models.UniqueConstraint(fields=['market', 'product', 'supply', 'organization'],
-                                    name='pallet_configuration_unique_market_product_supply_organization'),
+            models.UniqueConstraint(fields=['product', 'supply', 'organization'],
+                                    name='pallet_configuration_unique_product_supply_organization'),
             models.UniqueConstraint(fields=['name', 'organization'],
                                     name='pallet_configuration_unique_name_organization'),
             models.UniqueConstraint(fields=['alias', 'organization'],
