@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function() {
     } else if (fieldName.endsWith("-orchard_certification")) {
       const now = new Date();
       options.forEach(option => {
-        let optionText = `${option.verifier_name} - #${option.certification_number}`;
+        let optionText = `${option.certification_kind_name} - #${option.certification_number}`;
         const isDisabled = now > new Date(option.expiration_date);
         if (isDisabled) {
           optionText += ` - ${option.expired_text}`;

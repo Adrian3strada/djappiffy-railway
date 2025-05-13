@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }else if(field===orchardCertificationField){
       var fechaActual = new Date();
       options.forEach((option) => {
-          var optionText = option.verifier_name + ' - #' + option.certification_number;
+          var optionText = option.certification_kind_name + ' - #' + option.certification_number;
           var isDisabled = false;
 
           if (fechaActual > new Date(option.expiration_date)) {

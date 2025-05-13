@@ -253,7 +253,6 @@ class Batch(models.Model):
 
     @property
     def parent_batch_ooid(self):
-    def parent_batch_ooid(self):
         return self.parent.ooid if self.parent else ''
 
     @property

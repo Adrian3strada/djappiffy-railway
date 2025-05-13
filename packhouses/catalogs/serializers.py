@@ -166,15 +166,12 @@ class MaquiladoraSerializer(serializers.ModelSerializer):
 from rest_framework import serializers
 
 class OrchardCertificationSerializer(serializers.ModelSerializer):
-    certification_name = serializers.SerializerMethodField()
     expired_text = serializers.SerializerMethodField()
+    certification_kind_name = serializers.CharField(source='certification_kind.name', read_only=True)
 
     class Meta:
         model = OrchardCertification
         fields = '__all__'
-
-    def get_certification_name(self, obj):
-        return obj.certification_kind
 
     def get_expired_text(self, obj):
         return _('Expired')
