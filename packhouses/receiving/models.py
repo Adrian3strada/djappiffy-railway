@@ -6,7 +6,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_approval_status_choices, get_processing_status_choices, get_batch_status_change
 from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, Provider, ProductFoodSafetyProcess,
                                         Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage,
-                                        ProductResidue, ProductDryMatterAcceptanceReport)
+                                        ProductResidue, ProductDryMatterAcceptanceReport, Market)
 from common.base.models import Pest
 from django.db.models import F, Sum
 from django.core.exceptions import ValidationError
@@ -20,7 +20,7 @@ class Batch(models.Model):
     operational_status = models.CharField(max_length=25, choices=get_processing_status_choices(), default='pending',
                                           verbose_name=_('Operational Status'), blank=True)
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Entry Date'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
     # 'parent' apunta al lote padre al que este lote fue unido.
     # Si es None, significa que el lote no ha sido unido a ningún otro.
@@ -53,6 +53,12 @@ class Batch(models.Model):
                 available_weight=Sum('weight')
             )['available_weight']
         return 0
+    
+    @property
+    def children_available_weight(self):
+        return self.children.aggregate(
+            total=Sum('batchweightmovement__weight')
+        )['total'] or 0
 
     def save(self, *args, **kwargs):
         # solo asignamos si aún no tiene ooid
@@ -70,18 +76,28 @@ class Batch(models.Model):
 
     @classmethod
     def validate_merge_batches(cls, batches_queryset):
+        # Validar que los lotes seleccionados no sean hijos
         if batches_queryset.filter(parent__isnull=False).exists():
             raise ValidationError(
                 _('You cannot merge batches that have already been merged into another batch.'),
                 code='invalid_merge'
             )
 
+        # Validar que ningun lote seleccionado sea padre
+        if batches_queryset.filter(parent__isnull=True, children__isnull=False).exists():
+            raise ValidationError(
+                _('You cannot merge batches that already contain other merged batches.'),
+                code='invalid_merge'
+            )
+
+        # Validar que los lotes seleccionados tenga en su review_status "accepted"
         if batches_queryset.exclude(review_status='accepted').exists():
             raise ValidationError(
                 _('Only batches with a Review Status of “Accepted” can be merged.'),
                 code='invalid_status'
             )
 
+        # Verificar que los lotes sean del mismo proveedor, producto, variedad, fenología
         prefix = 'incomingproduct__scheduleharvest__'
         checks = {
             _('provider'): prefix + 'product_provider',
@@ -94,27 +110,49 @@ class Batch(models.Model):
             if batches_queryset.values_list(path, flat=True).distinct().count() != 1:
                 msg = _('All batches selected must have the same %(label)s.') % {'label': label}
                 raise ValidationError(msg, code='invalid_merge')
-    
+
+        # Verificar que los lotes a unir, sus mercados permitan mezclarse
+        market_ids = batches_queryset.values_list('incomingproduct__scheduleharvest__market', flat=True).distinct()
+        markets = Market.objects.filter(pk__in=market_ids)
+        non_mixable_markets = markets.filter(is_mixable=False)
+        
+        if markets.count() > 1 and non_mixable_markets.exists():
+            raise ValidationError(
+                _('Cannot merge batches: non-mixable markets cannot be mixed with others.'),
+                code='invalid_market_mix'
+            )
+
+
     @classmethod
     def validate_add_batches_to_existing_merge(cls, parent, candidate_batches):
+        # Verificar que el lote padre no sea hijo
         if parent.parent is not None:
             raise ValidationError(
                 _('The selected destination batch is already merged into another batch.'),
                 code='invalid_target'
             )
-
+        # Verificar que los lotes seleccionados no sean hijos de otro lote que no sea el lote padre que se seleccione 
+        already_merged = candidate_batches.filter(parent__isnull=False)
+        if already_merged.exists():
+            oids = ", ".join(f'batch {o}' for o in already_merged.values_list("ooid", flat=True))
+            raise ValidationError(
+                _('The following batches are already part of another merged batch: %s') % oids,
+                code='invalid_merge'
+            )
+        # Validar que los lotes seleccionados tenga en su review_status "accepted"
         if candidate_batches.exclude(review_status='accepted').exists():
             raise ValidationError(
                 _('Only batches with a Review Status of “Accepted” can be merged.'),
                 code='invalid_status'
             )
-
+        # Se añaden los lotes seleccionados a los hijos actuales del lote padre
         child_ids = list(parent.children.values_list('pk', flat=True))
         candidate_ids = list(candidate_batches.values_list('pk', flat=True))
         combined_ids = child_ids + candidate_ids
 
         all_batches = Batch.objects.filter(pk__in=combined_ids)
 
+        # Verificar que los lotes sean del mismo proveedor, producto, variedad, fenología
         prefix = 'incomingproduct__scheduleharvest__'
         checks = {
             _('provider'): prefix + 'product_provider',
@@ -129,7 +167,37 @@ class Batch(models.Model):
                     _('All batches to be merged must have the same %(label)s as the already merged ones.') % {'label': label},
                     code='invalid_merge'
                 )
-    
+        
+        # Verificar que los lotes a unir, sus mercados permitan mezclarse
+        market_ids = all_batches.values_list(
+            'incomingproduct__scheduleharvest__market', flat=True
+        ).distinct()
+        markets = Market.objects.filter(pk__in=market_ids)
+
+        print("🟡 Todos los mercados en la fusión (padre + nuevos):", list(markets.values_list('id', 'name', 'is_mixable')))
+
+        # 2. Identificar los no mezclables
+        non_mixable = markets.filter(is_mixable=False)
+
+        # 3. Si hay más de un mercado total Y al menos un mercado no mezclable, hay que verificar si son del mismo
+        if non_mixable.exists() and market_ids.count() > 1:
+            # ¿Hay más de un mercado no mezclable involucrado?
+            non_mixable_ids = list(non_mixable.values_list('id', flat=True))
+            print("🔴 Mercados no mezclables detectados:", non_mixable_ids)
+
+            if len(non_mixable_ids) > 1:
+                raise ValidationError(
+                    _('Cannot add batches: more than one non-mixable market is involved.'),
+                    code='invalid_market_mix'
+                )
+
+            # También inválido si hay mezcla de ese mercado no mezclable con otros mezclables
+            if markets.count() > 1:
+                raise ValidationError(
+                    _('Cannot add batches: non-mixable market cannot be mixed with others.'),
+                    code='invalid_market_mix'
+                )
+            
     @property
     def is_child(self):
         return self.parent is not None
@@ -272,9 +340,10 @@ class IncomingProduct(models.Model):
             initial_status = IncomingProduct.objects.get(pk=self.pk).status
             if initial_status == 'accepted' and self.status != 'accepted':
                 raise ValidationError("Once accepted, the status cannot be changed.")
-
-        if self.status == "accepted" and not self.weighingset_set.exists():
-            raise ValidationError("At least one Weighing Set must be registered for the Incoming Product.")
+            
+        # Comentado porque model.clean() corre antes de validar/guardar inlines y weighingset_set siempre esta vacío al crear por primera vez
+        # if self.status == "accepted" and not self.weighingset_set.exists():
+        #     raise ValidationError("At least one Weighing Set must be registered for the Incoming Product.")
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -301,9 +370,6 @@ class IncomingProduct(models.Model):
                 super().save(update_fields=['batch'])
 
     def __str__(self):
-        # from packhouses.gathering.models import ScheduleHarvest
-        # schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=self).first()
-        # TODO: Jaqueline: Validar que este cambio funciona bien, si si, eliminar estos tres comentarios
         schedule_harvest = self.scheduleharvest
         if schedule_harvest:
             return f"{schedule_harvest.ooid} - {schedule_harvest.orchard}"
@@ -312,12 +378,6 @@ class IncomingProduct(models.Model):
     class Meta:
         verbose_name = _('Incoming Product')
         verbose_name_plural = _('Incoming Product')
-        """constraints = [
-            models.UniqueConstraint(
-                fields=['harvest', 'organization'],
-                name='unique_incoming_product_harvest'
-            )
-        ]"""
 
 
 class WeighingSet(models.Model):

@@ -16,7 +16,8 @@ from .models import (IncomingProduct, WeighingSet, WeighingSetContainer,
 from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLinksMixin)
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInlineMixin
-from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet, BatchForm,)
+from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet, 
+                    BatchForm,)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                       ByCategoryForOrganizationIncomingProductFilter)
 from .utils import update_weighing_set_numbers,  CustomScheduleHarvestFormSet
@@ -32,6 +33,7 @@ from django.db.models import Q
 from django import forms
 from django.db import transaction
 from django.core.exceptions import ValidationError
+from django.utils.formats import date_format
 # from django import forms
 
 # Inlines para datos del corte
@@ -577,14 +579,15 @@ class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline)
 
 @admin.register(Batch)
 class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
-    list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product', 'get_scheduleharvest_product_provider',  'get_scheduleharvest_orchard',
-                    'get_incomingproduct_packhouse_weight_result', 'get_incomingproduct_current_kg_available', 'get_scheduleharvest_harvest_date', 'created_at',
+    list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'get_scheduleharvest_product_variety', 
+                    'get_scheduleharvest_product_phenology', 'get_scheduleharvest_orchards', 'get_incomingproduct_packhouse_weight_result', 
+                    'get_batch_available_weight', 'get_scheduleharvest_harvest_date', 'display_created_at',
                     'display_review_status', 'display_available_for_processing', 'operational_status', 'generate_actions_buttons', 'property')
     fields = ['ooid', 'review_status', 'operational_status', 'is_available_for_processing']
     readonly_fields = ['ooid',]
     form = BatchForm
     inlines = [IncomingProductInline]
-    list_per_page = 10
+    list_per_page = 20
     actions = ['action_merge_batches', 'action_merge_into_existing_batch']
     admin.site.disable_action('delete_selected')
 
@@ -597,6 +600,8 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             f'children_oids=[{obj.children_ooids}], '
             f'parent_ooid=[{obj.parent_ooid}], '
             f'children_total_weight_received=[{obj.children_total_weight_received}], '
+            f'batch_current_weight=[{obj.available_weight}], '
+            f'children_current_weight=[{obj.children_available_weight}], '
         )
         return ''
 
@@ -611,39 +616,6 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             return
 
         qs = queryset.select_related('incomingproduct__scheduleharvest')
-
-        # Detectar si hay un lote padre en los lotes a unir
-        is_parent = qs.filter(
-            parent__isnull=True,       
-            children__isnull=False
-        ).distinct()
-
-        if is_parent:
-            batch_labels = ', '.join(f'batch {o.ooid}' for o in is_parent)
-            self.message_user(
-                request,
-                _('The following batches cannot be merged into a new batch because they already contain other merged batches: %(list)s') % {
-                    'list': batch_labels
-                },
-                level=messages.ERROR
-            )
-            return
-
-        # Detectar si un lote esta unido a otro lote
-        already = list(qs
-            .filter(parent__isnull=False)
-            .values_list('ooid', flat=True)
-        )
-        if already:
-            batch_labels = ', '.join(f'batch {o}' for o in already)
-            self.message_user(
-                request,
-                _('The following batches have been already merged in another batch: %(list)s') % {
-                    'list': batch_labels
-                },
-                level=messages.ERROR
-            )
-            return
 
         # Validar provider/product/variety/phenology/status
         try:
@@ -710,27 +682,10 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             return
         qs = queryset.select_related('incomingproduct__scheduleharvest')
 
-        already = list(qs
-            .filter(parent__isnull=False)
-            .values_list('ooid', flat=True)
-        )
-        if already:
-            batch_labels = ', '.join(f'batch {o}' for o in already)
-            self.message_user(
-                request,
-                _('The following batches have been already merged in another batch: %(list)s') % {
-                    'list': batch_labels
-                },
-                level=messages.ERROR
-            )
-            return
         possible_parents = queryset.filter(
-        parent__isnull=True, 
-        children__isnull=False 
+            parent__isnull=True, 
+            children__isnull=False 
         ).distinct()
-
-        parent = possible_parents.first()
-        children_to_add = qs.exclude(pk=parent.pk)
 
         if possible_parents.count() != 1:
             self.message_user(
@@ -739,6 +694,9 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
                 level=messages.ERROR
             )
             return
+        
+        parent = possible_parents.first()
+        children_to_add = qs.exclude(pk=parent.pk)
         
         # Validar los lotes por añadir con los que ya fueron unidos
         try:
@@ -762,16 +720,25 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
                 level=messages.ERROR
             )
             return
-        msg = _('Batches merged into Batch %(ooid)s.') % {
-            'ooid': parent.ooid
-        }
+       
+        url = reverse(
+            'admin:%s_%s_change' % (
+                parent._meta.app_label,
+                parent._meta.model_name
+            ),
+            args=[parent.pk]
+        )
+        msg = format_html(
+            _('Batches were successfully merged into <a href="{}">batch {}</a>.'),
+            url,
+            parent.ooid)
         self.message_user(request, msg, level=messages.SUCCESS)
 
     def generate_actions_buttons(self, obj):
         pass
     generate_actions_buttons.short_description = _('Actions')
     generate_actions_buttons.allow_tags = True
-
+    
     def display_review_status(self, obj):
         if obj.operational_status == 'in_another_batch':
             return ''
@@ -787,47 +754,102 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     display_available_for_processing.admin_order_field = 'is_available_for_processing'
 
     def get_scheduleharvest_ooid(self, obj):
-        incoming = getattr(obj, 'incomingproduct', None)
-        if not incoming:
-            return None
-        sh = getattr(incoming, 'scheduleharvest', None)
-        return sh.ooid if sh and sh.ooid is not None else None
+        batches = (
+            obj.children.select_related('incomingproduct__scheduleharvest')
+            if obj.is_parent else
+            [obj])
+        ooids = {
+            str(sh.ooid)
+            for b in batches
+            if (incoming := getattr(b, 'incomingproduct', None))
+            and (sh := getattr(incoming, 'scheduleharvest', None))
+            and sh.ooid is not None
+        }
+        return ", ".join(sorted(ooids))
     get_scheduleharvest_ooid.short_description = _('Harvest')
     get_scheduleharvest_ooid.admin_order_field = 'incomingproduct__scheduleharvest__ooid'
 
     def get_scheduleharvest_harvest_date(self, obj):
-        incoming = getattr(obj, 'incomingproduct', None)
-        if not incoming:
-            return None
-        sh = getattr(incoming, 'scheduleharvest', None)
-        return sh.harvest_date if sh and sh.harvest_date else None
+        if obj.is_parent:
+            fechas = obj.children.filter(
+                incomingproduct__scheduleharvest__harvest_date__isnull=False
+            ).values_list(
+                'incomingproduct__scheduleharvest__harvest_date', flat=True
+            )
+            unique_dates = sorted({f for f in fechas})
+            if not unique_dates:
+                date_str = ''
+            else:
+                salida = [
+                    date_format(f, format='DATE_FORMAT', use_l10n=True)
+                    for f in unique_dates
+                ]
+                date_str = salida[0] if len(salida) == 1 else ", ".join(salida)
+        else:
+            incoming = getattr(obj, 'incomingproduct', None)
+            sh = getattr(incoming, 'scheduleharvest', None) if incoming else None
+            if sh and sh.harvest_date:
+                date_str = date_format(sh.harvest_date,
+                                       format='DATE_FORMAT',
+                                       use_l10n=True)
+            else:
+                date_str = ''
+
+        # 2) Devuelve siempre envuelto en un span de ancho mínimo
+        return format_html(
+            '<span style="display:inline-block; min-width:80px;">{}</span>',
+            date_str
+        )
+
     get_scheduleharvest_harvest_date.short_description = _("Schedule Harvest Date")
     get_scheduleharvest_harvest_date.admin_order_field = 'incomingproduct__scheduleharvest__harvest_date'
 
     def get_scheduleharvest_product(self, obj):
-        incoming = getattr(obj, 'incomingproduct', None)
-        if not incoming:
-            return None
-        sh = getattr(incoming, 'scheduleharvest', None)
-        return sh.product if sh and sh.product else None
+        batches = (
+        obj.children.select_related('incomingproduct__scheduleharvest__product')
+        if obj.is_parent else
+        [obj])
+        products = {
+            str(sh.product)
+            for b in batches
+            if (incoming := getattr(b, 'incomingproduct', None))
+            and (sh := getattr(incoming, 'scheduleharvest', None))
+            and sh.product
+        }
+        return next(iter(products), '')
     get_scheduleharvest_product.short_description = _('Product')
     get_scheduleharvest_product.admin_order_field = 'incomingproduct__scheduleharvest__product'
 
-    def get_scheduleharvest_orchard(self, obj):
-        incoming = getattr(obj, 'incomingproduct', None)
-        if not incoming:
-            return None
-        sh = getattr(incoming, 'scheduleharvest', None)
-        return sh.orchard if sh and sh.orchard else None
-    get_scheduleharvest_orchard.short_description = _('Orchard')
-    get_scheduleharvest_orchard.admin_order_field = 'incomingproduct__scheduleharvest__orchard'
+    def get_scheduleharvest_orchards(self, obj):
+        batches = (
+            obj.children.select_related('incomingproduct__scheduleharvest__orchard')
+            if obj.is_parent else
+            [obj]
+        )
+        names = {
+            str(orch)
+            for b in batches
+            if (incoming := getattr(b, 'incomingproduct', None))
+            and (sh := getattr(incoming, 'scheduleharvest', None))
+            and (orch := sh.orchard)
+        }
+        return ", ".join(sorted(names))
+    get_scheduleharvest_orchards.short_description = _('Orchards')
+    get_scheduleharvest_orchards.admin_order_field = 'incomingproduct__scheduleharvest__orchard'
 
     def get_scheduleharvest_product_provider(self, obj):
-        incoming = getattr(obj, 'incomingproduct', None)
-        if not incoming:
-            return None
-        sh = getattr(incoming, 'scheduleharvest', None)
-        return sh.product_provider if sh and sh.product_provider else None
+        batches = (
+        obj.children.select_related('incomingproduct__scheduleharvest__product_provider')
+        if obj.is_parent else
+        [obj])
+        product_provider = {
+            str(sh.product_provider)
+            for b in batches
+            if (incoming := getattr(b, 'incomingproduct', None))
+            and (sh := getattr(incoming, 'scheduleharvest', None))
+            and sh.product_provider
+        }
+        return next(iter(product_provider), '')
     get_scheduleharvest_product_provider.short_description = _('Product Provider')
     get_scheduleharvest_product_provider.admin_order_field = 'incomingproduct__scheduleharvest__product_provider'
 
@@ -842,10 +864,51 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     get_incomingproduct_packhouse_weight_result.short_description = _('Total Received')
     get_incomingproduct_packhouse_weight_result.admin_order_field = 'incomingproduct__packhouse_weight_result'
 
-    def get_incomingproduct_current_kg_available(self, obj):
-        pass
-    get_incomingproduct_current_kg_available.short_description = _('Available Load')
-    get_incomingproduct_current_kg_available.admin_order_field = 'incomingproduct__current_kg_available'
+    def get_batch_available_weight(self, obj):
+        total = obj.children_available_weight if obj.is_parent else obj.available_weight
+        return '{:,.3f}'.format(total) if total else ''
+    get_batch_available_weight.short_description = _('Available Weight')
+
+    def get_scheduleharvest_product_variety(self, obj):
+        batches = (
+        obj.children.select_related('incomingproduct__scheduleharvest__product_variety')
+        if obj.is_parent else
+        [obj])
+        products = {
+            str(sh.product_variety)
+            for b in batches
+            if (incoming := getattr(b, 'incomingproduct', None))
+            and (sh := getattr(incoming, 'scheduleharvest', None))
+            and sh.product_variety
+        }
+        return next(iter(products), '')
+    get_scheduleharvest_product_variety.short_description = _('Product Variety')
+    get_scheduleharvest_product_variety.admin_order_field = 'incomingproduct__scheduleharvest__product'
+
+    def get_scheduleharvest_product_phenology(self, obj):
+        batches = (
+        obj.children.select_related('incomingproduct__scheduleharvest__product_phenologies')
+        if obj.is_parent else
+        [obj])
+        products = {
+            str(sh.product_phenologies)
+            for b in batches
+            if (incoming := getattr(b, 'incomingproduct', None))
+            and (sh := getattr(incoming, 'scheduleharvest', None))
+            and sh.product_phenologies
+        }
+        return next(iter(products), '')
+    get_scheduleharvest_product_phenology.short_description = _('Product Phenology')
+    get_scheduleharvest_product_phenology.admin_order_field = 'incomingproduct__scheduleharvest__product'
+
+    def display_created_at(self, obj):
+        s = date_format(obj.created_at, format='DATETIME_FORMAT', use_l10n=True)
+        return format_html(
+            '<span style="display:inline-block; min-width:80px;">{}</span>',
+            s
+        )
+    display_created_at.short_description = _("Entry Date")
+    display_created_at.admin_order_field = 'created_at'
 
     class Media:
         js = ('js/admin/forms/packhouses/receiving/batch/incoming_product_for_batch.js',

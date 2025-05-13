@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
       field.style.border = 'none';
       field.style.color = '#555';
     };
+
   
     const fetchContainerTare = async id => {
       if (!id) return 0;
@@ -308,6 +309,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
     // disable computed fields
     $('input[name$="-total_containers"], input[name$="-container_tare"]').each(function() {
+      disableField(this);
+    });
+    $('input[name$="-total_containers"], input[name$="-net_weight"]').each(function() {
       disableField(this);
     });
     document.addEventListener('formset:added', e => {
