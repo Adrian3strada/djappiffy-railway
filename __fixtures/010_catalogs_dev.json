@@ -2918,7 +2918,6 @@
   "model": "catalogs.pallet",
   "pk": 1,
   "fields": {
-    "market": 1,
     "product": 1,
     "supply": 22,
     "name": "AGUACATE MX MADERA 14",
@@ -2931,37 +2930,10 @@
   "model": "catalogs.pallet",
   "pk": 2,
   "fields": {
-    "market": 1,
     "product": 1,
     "supply": 23,
     "name": "AGUACATE MX PLASTICO 14",
     "alias": "AAP14",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.pallet",
-  "pk": 3,
-  "fields": {
-    "market": 3,
-    "product": 1,
-    "supply": 23,
-    "name": "AGUACATE US PLASTICO 11",
-    "alias": "AGUSP11",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.pallet",
-  "pk": 4,
-  "fields": {
-    "market": 3,
-    "product": 1,
-    "supply": 22,
-    "name": "AGUACATE US MADERA 14",
-    "alias": "AGUSM14",
     "is_enabled": true,
     "organization": 1
   }
