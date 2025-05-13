@@ -5,12 +5,12 @@
   "fields": {
     "name": "MEXICO",
     "alias": "MEX",
-    "country": 158,
     "is_mixable": true,
     "label_language": "es",
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 158,
     "countries": [
       158
     ]
@@ -22,12 +22,12 @@
   "fields": {
     "name": "MEXICO 2",
     "alias": "MX2",
-    "country": 158,
     "is_mixable": true,
     "label_language": "es",
     "address_label": null,
     "is_enabled": true,
     "organization": 2,
+    "country": 158,
     "countries": [
       158
     ]
@@ -39,12 +39,12 @@
   "fields": {
     "name": "ESTADOS UNIDOS",
     "alias": "USA",
-    "country": 158,
     "is_mixable": false,
     "label_language": "en",
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 234,
     "countries": [
       234
     ]
@@ -56,12 +56,12 @@
   "fields": {
     "name": "CANADA",
     "alias": "CAN",
-    "country": 158,
     "is_mixable": true,
     "label_language": "en",
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 38,
     "countries": [
       38
     ]
@@ -73,12 +73,12 @@
   "fields": {
     "name": "COLOMBIA",
     "alias": "COL",
-    "country": 158,
     "is_mixable": true,
     "label_language": "es",
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 49,
     "countries": [
       49
     ]
@@ -90,63 +90,14 @@
   "fields": {
     "name": "EL SALVADOR",
     "alias": "SLV",
-    "country": 158,
     "is_mixable": true,
     "label_language": "es",
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 211,
     "countries": [
       211
-    ]
-  }
-},
-{
-  "model": "catalogs.market",
-  "pk": 7,
-  "fields": {
-    "name": "NACIONAL",
-    "alias": "NACIONAL",
-    "country": 158,
-    "is_mixable": true,
-    "label_language": "es",
-    "address_label": null,
-    "is_enabled": true,
-    "organization": 4,
-    "countries": []
-  }
-},
-{
-  "model": "catalogs.market",
-  "pk": 8,
-  "fields": {
-    "name": "JAPON",
-    "alias": "JAPON",
-    "country": 114,
-    "is_mixable": false,
-    "label_language": "es",
-    "address_label": null,
-    "is_enabled": true,
-    "organization": 1,
-    "countries": [
-      114
-    ]
-  }
-},
-{
-  "model": "catalogs.market",
-  "pk": 9,
-  "fields": {
-    "name": "UNITED ARAB EMIRATES",
-    "alias": "ARE",
-    "country": 2,
-    "is_mixable": true,
-    "label_language": "es",
-    "address_label": null,
-    "is_enabled": true,
-    "organization": 1,
-    "countries": [
-      2
     ]
   }
 },
@@ -197,16 +148,57 @@
 },
 {
   "model": "catalogs.product",
-  "pk": 8,
+  "pk": 4,
+  "fields": {
+    "kind": 9,
+    "name": "LIMÓN AMARILLO",
+    "description": null,
+    "measure_unit_category": "Kg",
+    "is_enabled": false,
+    "organization": 1,
+    "markets": [
+      1
+    ]
+  }
+},
+{
+  "model": "catalogs.product",
+  "pk": 5,
   "fields": {
     "kind": 8,
-    "name": "CURO",
-    "description": "aguacate",
+    "name": "VERDE",
+    "description": null,
+    "measure_unit_category": "L",
+    "is_enabled": true,
+    "organization": 1,
+    "markets": []
+  }
+},
+{
+  "model": "catalogs.product",
+  "pk": 6,
+  "fields": {
+    "kind": 8,
+    "name": "UNO",
+    "description": null,
+    "measure_unit_category": "g",
+    "is_enabled": true,
+    "organization": 1,
+    "markets": []
+  }
+},
+{
+  "model": "catalogs.product",
+  "pk": 7,
+  "fields": {
+    "kind": 8,
+    "name": "AGUACATE REMANENTE",
+    "description": null,
     "measure_unit_category": "Kg",
     "is_enabled": true,
     "organization": 1,
     "markets": [
-      5
+      1
     ]
   }
 },
@@ -291,36 +283,6 @@
   }
 },
 {
-  "model": "catalogs.productphenologykind",
-  "pk": 9,
-  "fields": {
-    "name": "BUENO",
-    "is_enabled": true,
-    "product": 8,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productphenologykind",
-  "pk": 10,
-  "fields": {
-    "name": "APENAS",
-    "is_enabled": true,
-    "product": 8,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productphenologykind",
-  "pk": 11,
-  "fields": {
-    "name": "REBUENO",
-    "is_enabled": true,
-    "product": 8,
-    "sort_order": 0
-  }
-},
-{
   "model": "catalogs.productmarketmeasureunitmanagementcost",
   "pk": 1,
   "fields": {
@@ -352,11 +314,21 @@
 },
 {
   "model": "catalogs.productmarketmeasureunitmanagementcost",
-  "pk": 6,
+  "pk": 4,
   "fields": {
-    "product": 8,
-    "market": 5,
-    "measure_unit_management_cost": "5",
+    "product": 4,
+    "market": 4,
+    "measure_unit_management_cost": "40",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketmeasureunitmanagementcost",
+  "pk": 5,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "measure_unit_management_cost": "10",
     "is_enabled": true
   }
 },
@@ -422,31 +394,51 @@
 },
 {
   "model": "catalogs.productmarketclass",
-  "pk": 12,
+  "pk": 7,
   "fields": {
-    "product": 8,
-    "market": 5,
-    "name": "SELECTA",
+    "product": 7,
+    "market": 1,
+    "name": "MATERIA ORGANICA",
     "is_enabled": true
   }
 },
 {
   "model": "catalogs.productmarketclass",
-  "pk": 13,
+  "pk": 8,
   "fields": {
-    "product": 8,
-    "market": 5,
-    "name": "VARIOS",
+    "product": 7,
+    "market": 1,
+    "name": "REVUELTO",
     "is_enabled": true
   }
 },
 {
   "model": "catalogs.productmarketclass",
-  "pk": 14,
+  "pk": 9,
   "fields": {
-    "product": 8,
-    "market": 5,
-    "name": "REVUELTA",
+    "product": 7,
+    "market": 1,
+    "name": "DESECHO",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 10,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "name": "BORONA",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 11,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "name": "CANICA",
     "is_enabled": true
   }
 },
@@ -529,13 +521,35 @@
 },
 {
   "model": "catalogs.productvariety",
-  "pk": 15,
+  "pk": 8,
+  "fields": {
+    "name": "A1",
+    "alias": "A1",
+    "description": null,
+    "is_enabled": true,
+    "product": 4
+  }
+},
+{
+  "model": "catalogs.productvariety",
+  "pk": 11,
   "fields": {
     "name": "HASS",
-    "alias": "HASS",
-    "description": "hass",
+    "alias": "HA",
+    "description": null,
     "is_enabled": true,
-    "product": 8
+    "product": 7
+  }
+},
+{
+  "model": "catalogs.productvariety",
+  "pk": 14,
+  "fields": {
+    "name": "MENDEZ",
+    "alias": "MD",
+    "description": null,
+    "is_enabled": true,
+    "product": 7
   }
 },
 {
@@ -678,16 +692,7 @@
     "sort_order": 9
   }
 },
-{
-  "model": "catalogs.productharvestsizekind",
-  "pk": 16,
-  "fields": {
-    "product": 8,
-    "name": "210 g +",
-    "is_enabled": true,
-    "sort_order": 0
-  }
-},
+
 {
   "model": "catalogs.productripeness",
   "pk": 1,
@@ -1039,360 +1044,6 @@
   }
 },
 {
-  "model": "catalogs.productsize",
-  "pk": 18,
-  "fields": {
-    "product": 1,
-    "market": 4,
-    "category": "size",
-    "standard_size": 19,
-    "name": "32C",
-    "alias": "32C",
-    "description": null,
-    "is_enabled": true,
-    "sort_order": 18,
-    "varieties": [
-      1,
-      2
-    ]
-  }
-},
-{
-  "model": "catalogs.productpest",
-  "pk": 1,
-  "fields": {
-    "product": 1,
-    "pest": 1,
-    "name": "Trip (Aguacate)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productpest",
-  "pk": 2,
-  "fields": {
-    "product": 1,
-    "pest": 2,
-    "name": "Mosca (Aguacate)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productpest",
-  "pk": 3,
-  "fields": {
-    "product": 1,
-    "pest": 5,
-    "name": "Ba Hueso (Aguacate)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productpest",
-  "pk": 4,
-  "fields": {
-    "product": 1,
-    "pest": 6,
-    "name": "Ba Ramas (Aguacate)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productpest",
-  "pk": 11,
-  "fields": {
-    "product": 2,
-    "pest": 1,
-    "name": "Trip (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productpest",
-  "pk": 12,
-  "fields": {
-    "product": 2,
-    "pest": 2,
-    "name": "Mosca (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productpest",
-  "pk": 13,
-  "fields": {
-    "product": 2,
-    "pest": 5,
-    "name": "Ba Hueso (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productpest",
-  "pk": 14,
-  "fields": {
-    "product": 2,
-    "pest": 6,
-    "name": "Ba Ramas (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productpest",
-  "pk": 15,
-  "fields": {
-    "product": 2,
-    "pest": 7,
-    "name": "Gorgojo (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productpest",
-  "pk": 16,
-  "fields": {
-    "product": 2,
-    "pest": 3,
-    "name": "Cristalino (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productpest",
-  "pk": 17,
-  "fields": {
-    "product": 2,
-    "pest": 4,
-    "name": "Rojo (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productdisease",
-  "pk": 2,
-  "fields": {
-    "product": 1,
-    "disease": 3,
-    "name": "La roy (Aguacate)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productdisease",
-  "pk": 3,
-  "fields": {
-    "product": 1,
-    "disease": 2,
-    "name": "Phy (Aguacate)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productdisease",
-  "pk": 4,
-  "fields": {
-    "product": 1,
-    "disease": 5,
-    "name": "Mildu (Aguacate)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productdisease",
-  "pk": 10,
-  "fields": {
-    "product": 2,
-    "disease": 1,
-    "name": "Ant (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productdisease",
-  "pk": 11,
-  "fields": {
-    "product": 2,
-    "disease": 2,
-    "name": "Phy (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productdisease",
-  "pk": 12,
-  "fields": {
-    "product": 2,
-    "disease": 3,
-    "name": "La roy (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productdisease",
-  "pk": 13,
-  "fields": {
-    "product": 2,
-    "disease": 4,
-    "name": "Cercos (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productdisease",
-  "pk": 14,
-  "fields": {
-    "product": 2,
-    "disease": 5,
-    "name": "Mildu (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productdisease",
-  "pk": 15,
-  "fields": {
-    "product": 2,
-    "disease": 6,
-    "name": "Ros (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productphysicaldamage",
-  "pk": 1,
-  "fields": {
-    "product": 1,
-    "name": "Cortes (Aguacate)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productphysicaldamage",
-  "pk": 2,
-  "fields": {
-    "product": 1,
-    "name": "Golpeado (Aguacate)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productphysicaldamage",
-  "pk": 3,
-  "fields": {
-    "product": 1,
-    "name": "Descorche (Aguacate)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productphysicaldamage",
-  "pk": 6,
-  "fields": {
-    "product": 2,
-    "name": "Cortes (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productphysicaldamage",
-  "pk": 7,
-  "fields": {
-    "product": 2,
-    "name": "Golpeado (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productresidue",
-  "pk": 1,
-  "fields": {
-    "product": 1,
-    "name": "Cal (Aguacate)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productresidue",
-  "pk": 2,
-  "fields": {
-    "product": 1,
-    "name": "Cobre (Aguacate)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productresidue",
-  "pk": 5,
-  "fields": {
-    "product": 2,
-    "name": "Cal (Aguacate 2)",
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productfoodsafetyprocess",
-  "pk": 1,
-  "fields": {
-    "procedure": 1,
-    "product": 1,
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productfoodsafetyprocess",
-  "pk": 2,
-  "fields": {
-    "procedure": 2,
-    "product": 1,
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productfoodsafetyprocess",
-  "pk": 3,
-  "fields": {
-    "procedure": 3,
-    "product": 1,
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productfoodsafetyprocess",
-  "pk": 4,
-  "fields": {
-    "procedure": 4,
-    "product": 1,
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productfoodsafetyprocess",
-  "pk": 5,
-  "fields": {
-    "procedure": 5,
-    "product": 1,
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productfoodsafetyprocess",
-  "pk": 9,
-  "fields": {
-    "procedure": 3,
-    "product": 2,
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.productfoodsafetyprocess",
-  "pk": 10,
-  "fields": {
-    "procedure": 4,
-    "product": 2,
-    "is_enabled": true
-  }
-},
-{
   "model": "catalogs.vehicle",
   "pk": 1,
   "fields": {
@@ -1526,48 +1177,10 @@
   }
 },
 {
-  "model": "catalogs.vehicle",
-  "pk": 8,
-  "fields": {
-    "name": "MITSU L200",
-    "category": "packhouse",
-    "kind": 1,
-    "brand": 6,
-    "model": "2026",
-    "license_plate": "LB-323-RLS",
-    "serial_number": "131K1HJ",
-    "color": "ROJA",
-    "ownership": 1,
-    "fuel": 2,
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.vehicle",
-  "pk": 9,
-  "fields": {
-    "name": "FORD F-250",
-    "category": "packhouse",
-    "kind": 1,
-    "brand": 5,
-    "model": "1998",
-    "license_plate": "MC-431-RL",
-    "serial_number": "131K344423",
-    "color": "NEGRO",
-    "ownership": 1,
-    "fuel": 1,
-    "comments": "LA MALEDUCADA",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
   "model": "catalogs.provider",
   "pk": 1,
   "fields": {
-    "name": "JUANITO OLMEDO RAMIREZ",
+    "name": "JUANITO",
     "category": "service_provider",
     "provider_provider": null,
     "country": 158,
@@ -1583,7 +1196,7 @@
     "email": "aaaa@gmail.com",
     "phone_number": "1",
     "comments": null,
-    "is_enabled": true,
+    "is_enabled": false,
     "organization": 1,
     "vehicle_provider": []
   }
@@ -1592,7 +1205,7 @@
   "model": "catalogs.provider",
   "pk": 2,
   "fields": {
-    "name": "JUANITO PEREZ HERNANDEZ",
+    "name": "JUANITO",
     "category": "product_producer",
     "provider_provider": null,
     "country": 158,
@@ -1822,333 +1435,6 @@
       4,
       5
     ]
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 11,
-  "fields": {
-    "name": "AGROPRODUCTORES",
-    "category": "product_producer",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25692,
-    "district": 88185,
-    "postal_code": "54923",
-    "neighborhood": "ARROYO COLORADO",
-    "address": "SANT LOUIS CENTER",
-    "external_number": "12",
-    "internal_number": null,
-    "tax_id": "140X223A",
-    "email": "jrhfjk@gmail.com",
-    "phone_number": "34323232",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 12,
-  "fields": {
-    "name": "JAIME ROSALES MEJIA",
-    "category": "product_producer",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25738,
-    "district": 86279,
-    "postal_code": "65063",
-    "neighborhood": "COPITERO",
-    "address": "EL SOBRADO S/N PASEO GUADALUPE",
-    "external_number": "12",
-    "internal_number": "13",
-    "tax_id": "0130X0XX02",
-    "email": "jimiross@gmail.com",
-    "phone_number": "34323232",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 13,
-  "fields": {
-    "name": "KARLA LIZETH ESCUDERO",
-    "category": "product_producer",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25762,
-    "district": 86888,
-    "postal_code": "412313",
-    "neighborhood": "SINASIGNACIÓN",
-    "address": "EL VALLE DE ROSALES",
-    "external_number": "194",
-    "internal_number": null,
-    "tax_id": "0130X01QW",
-    "email": "karli@frutzi.com",
-    "phone_number": "4431998792",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 14,
-  "fields": {
-    "name": "CORTES DEL VALLE",
-    "category": "harvesting_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2283,
-    "city": 25614,
-    "district": 86522,
-    "postal_code": "54023",
-    "neighborhood": "SA",
-    "address": "LOS OLIVOS, VILLAS DEL ORIENTE",
-    "external_number": "245",
-    "internal_number": null,
-    "tax_id": "X0126541",
-    "email": "cutingtown@gmail.com",
-    "phone_number": "2244320922",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": [
-      3
-    ]
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 15,
-  "fields": {
-    "name": "SERVINSUMOS DEL CENTRO",
-    "category": "supply_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2287,
-    "city": 27031,
-    "district": 86812,
-    "postal_code": "05943",
-    "neighborhood": "TAMANGUIO",
-    "address": "TAMANGUIO LOUIS CENTER",
-    "external_number": "245",
-    "internal_number": null,
-    "tax_id": "PEGD89233",
-    "email": "servinsumich@gmail.com",
-    "phone_number": "4431998792",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 16,
-  "fields": {
-    "name": "COMERCIALIZADORA SANTA GERTRUDIS",
-    "category": "product_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2262,
-    "city": 26924,
-    "district": 84862,
-    "postal_code": "15943",
-    "neighborhood": "VALLE DE GUADALUPE",
-    "address": "VALLE DE GUADALUPE",
-    "external_number": "232",
-    "internal_number": null,
-    "tax_id": "0130X0412",
-    "email": "comercialsantrudi@gmail.com",
-    "phone_number": "4431997612",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 17,
-  "fields": {
-    "name": "VIAJES DE OCCIDENTE S.A. DE C.V.",
-    "category": "service_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2272,
-    "city": 25477,
-    "district": 83708,
-    "postal_code": "12311",
-    "neighborhood": "ARROYO COLORADO",
-    "address": "VALLE DE SAN DIEGO",
-    "external_number": "194",
-    "internal_number": null,
-    "tax_id": "0130X0092",
-    "email": "viajesoccidente@gmail.com",
-    "phone_number": "34323232",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 18,
-  "fields": {
-    "name": "MANTENIMIENTO PEÑA",
-    "category": "service_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2285,
-    "city": 25296,
-    "district": 87618,
-    "postal_code": "52313",
-    "neighborhood": "EL PASO DE GOMEZ",
-    "address": "EL PASO DE GOMEZ-II",
-    "external_number": "123",
-    "internal_number": null,
-    "tax_id": "PLND89233GTRS",
-    "email": "penamantenances@gmail.com",
-    "phone_number": "4431998792",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 19,
-  "fields": {
-    "name": "COMISIÓN FEDERAL DE ELECTRICIDAD",
-    "category": "service_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2282,
-    "city": 25742,
-    "district": 87096,
-    "postal_code": "58050",
-    "neighborhood": "CAMELINAS",
-    "address": "AVENIDA CAMELINAS",
-    "external_number": "33",
-    "internal_number": null,
-    "tax_id": "X01265CFE",
-    "email": "cfe@gmail.com",
-    "phone_number": "4431998792",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 20,
-  "fields": {
-    "name": "GASOLINERAS DEL VALLE",
-    "category": "service_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2269,
-    "city": 25891,
-    "district": 87098,
-    "postal_code": "93211",
-    "neighborhood": "PESQUERIA",
-    "address": "PESQUERIA DE JUAREZ",
-    "external_number": "12",
-    "internal_number": "1",
-    "tax_id": "GAV123KD13",
-    "email": "gasdelvalle@gmail.com",
-    "phone_number": "34323232",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 21,
-  "fields": {
-    "name": "MEGACABLE S.A. DE C.V.",
-    "category": "service_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2274,
-    "city": 25091,
-    "district": 81891,
-    "postal_code": "08900",
-    "neighborhood": "ESMERALDA",
-    "address": "CAMINO ROJO, LA ESMERALDA",
-    "external_number": "343",
-    "internal_number": null,
-    "tax_id": "MEG950913D",
-    "email": "megacable@gmail.com",
-    "phone_number": "224320922",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 22,
-  "fields": {
-    "name": "TRANSPORTISTAS UNIDOS DEL NORTE",
-    "category": "service_provider",
-    "provider_provider": null,
-    "country": 158,
-    "state": 2279,
-    "city": 26083,
-    "district": 88062,
-    "postal_code": "96943",
-    "neighborhood": "GUASAVE",
-    "address": "GUASAVE CENTRO",
-    "external_number": "1212",
-    "internal_number": null,
-    "tax_id": "12TR11",
-    "email": "transportes_norte@gmail.com",
-    "phone_number": "2244320922",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
-  }
-},
-{
-  "model": "catalogs.provider",
-  "pk": 23,
-  "fields": {
-    "name": "TRANSPORT SERVICE SMITH",
-    "category": "service_provider",
-    "provider_provider": null,
-    "country": 234,
-    "state": 3632,
-    "city": 43506,
-    "district": 130982,
-    "postal_code": "02312",
-    "neighborhood": "DALLAS",
-    "address": "DALLAS",
-    "external_number": "12141",
-    "internal_number": null,
-    "tax_id": "13X0Q9SA",
-    "email": "smithservice@bmail.com",
-    "phone_number": "2244320922",
-    "comments": null,
-    "is_enabled": true,
-    "organization": 1,
-    "vehicle_provider": []
   }
 },
 {
@@ -2674,78 +1960,6 @@
   }
 },
 {
-  "model": "catalogs.gatherer",
-  "pk": 2,
-  "fields": {
-    "name": "GUSTAVO ROSALES ORTIZ",
-    "zone": "BAJIO",
-    "tax_registry_code": "ocm4509qwoe",
-    "population_registry_code": "AYAQ900122SPRLM",
-    "social_number_code": "1211333",
-    "state": 2275,
-    "city": 25033,
-    "district": 84222,
-    "postal_code": "54023",
-    "neighborhood": "ITZICUARO",
-    "address": "EL SOBRADO S/N PASEO GUADALUPE",
-    "external_number": "245",
-    "internal_number": null,
-    "email": "gusros@gmail.com",
-    "phone_number": "4431997654",
-    "vehicle": 7,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.gatherer",
-  "pk": 3,
-  "fields": {
-    "name": "MIGUEL TELLEZ SOTELO",
-    "zone": "CENTRO",
-    "tax_registry_code": "MTM4509QWOEQW",
-    "population_registry_code": "MMTQ900122SPRLMN2",
-    "social_number_code": "6520",
-    "state": 2273,
-    "city": 25421,
-    "district": 88585,
-    "postal_code": "65063",
-    "neighborhood": "COYUQUILLA",
-    "address": "SANT LOUIS CENTER",
-    "external_number": "765",
-    "internal_number": null,
-    "email": "miguelon@gmail.com",
-    "phone_number": "4431997654",
-    "vehicle": 7,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.gatherer",
-  "pk": 4,
-  "fields": {
-    "name": "RAYMUNDO GOMEZ CARRILLO",
-    "zone": "SUR",
-    "tax_registry_code": "rac4509qwoe",
-    "population_registry_code": "RLMN2",
-    "social_number_code": "121",
-    "state": 2285,
-    "city": 25293,
-    "district": 87601,
-    "postal_code": "54023",
-    "neighborhood": "NA",
-    "address": "ANGACAMP PASO DEL GUA",
-    "external_number": "321",
-    "internal_number": null,
-    "email": "rayitojr@gmail.com",
-    "phone_number": "277320922",
-    "vehicle": 3,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
   "model": "catalogs.maquiladora",
   "pk": 1,
   "fields": {
@@ -2860,111 +2074,6 @@
   }
 },
 {
-  "model": "catalogs.orchard",
-  "pk": 3,
-  "fields": {
-    "name": "EL PINABETE 7",
-    "code": "HUE0816001560",
-    "category": "conventional",
-    "producer": 2,
-    "safety_authority_registration_date": "2009-06-08",
-    "state": 2282,
-    "city": 25742,
-    "district": 86544,
-    "ha": 12.0,
-    "sanitary_certificate": "51933",
-    "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
-  }
-},
-{
-  "model": "catalogs.orchard",
-  "pk": 4,
-  "fields": {
-    "name": "EL COLORIN",
-    "code": "HUE081600142",
-    "category": "conventional",
-    "producer": 11,
-    "safety_authority_registration_date": "2009-06-08",
-    "state": 2282,
-    "city": 25690,
-    "district": 88189,
-    "ha": 1.4,
-    "sanitary_certificate": "52345",
-    "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
-  }
-},
-{
-  "model": "catalogs.orchard",
-  "pk": 5,
-  "fields": {
-    "name": "LOS LAURELES",
-    "code": "HUE0816031560",
-    "category": "conventional",
-    "producer": 12,
-    "safety_authority_registration_date": "2009-06-08",
-    "state": 2282,
-    "city": 25800,
-    "district": 89562,
-    "ha": 12.0,
-    "sanitary_certificate": "01976",
-    "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
-  }
-},
-{
-  "model": "catalogs.orchard",
-  "pk": 6,
-  "fields": {
-    "name": "ROSA DE CASTILLA",
-    "code": "HUE0816021456",
-    "category": "conventional",
-    "producer": 12,
-    "safety_authority_registration_date": "2002-01-08",
-    "state": 2282,
-    "city": 25772,
-    "district": 87838,
-    "ha": 32.0,
-    "sanitary_certificate": "1211",
-    "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
-  }
-},
-{
-  "model": "catalogs.orchard",
-  "pk": 7,
-  "fields": {
-    "name": "LAS JUNTAS",
-    "code": "HUE0816113560",
-    "category": "conventional",
-    "producer": 2,
-    "safety_authority_registration_date": "2002-01-08",
-    "state": 2286,
-    "city": 27070,
-    "district": 87115,
-    "ha": 0.98,
-    "sanitary_certificate": "51933",
-    "is_enabled": true,
-    "organization": 1,
-    "product": [
-      1
-    ]
-  }
-},
-{
   "model": "catalogs.orchardcertification",
   "pk": 1,
   "fields": {
@@ -3068,33 +2177,6 @@
   "fields": {
     "name": "OMAR BELTRÁN",
     "provider": 10,
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.crewchief",
-  "pk": 10,
-  "fields": {
-    "name": "ROMUALDO GUTIERREZ",
-    "provider": 14,
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.crewchief",
-  "pk": 11,
-  "fields": {
-    "name": "ARNOLDO RINCON",
-    "provider": 14,
-    "is_enabled": true
-  }
-},
-{
-  "model": "catalogs.crewchief",
-  "pk": 12,
-  "fields": {
-    "name": "DARNEL GUTIERREZ",
-    "provider": 14,
     "is_enabled": true
   }
 },
@@ -3361,7 +2443,7 @@
     "capacity": 4.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3376,7 +2458,7 @@
     "capacity": 6.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3391,7 +2473,7 @@
     "capacity": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3406,7 +2488,7 @@
     "capacity": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 100,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": false,
     "organization": 1
@@ -3421,7 +2503,7 @@
     "capacity": 11.3,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 500,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3436,7 +2518,7 @@
     "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 3000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3451,7 +2533,7 @@
     "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 500,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3466,7 +2548,7 @@
     "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3481,7 +2563,7 @@
     "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3496,7 +2578,7 @@
     "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3511,7 +2593,7 @@
     "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3526,7 +2608,7 @@
     "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3541,7 +2623,7 @@
     "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3556,7 +2638,7 @@
     "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3571,7 +2653,7 @@
     "capacity": 0.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3586,7 +2668,7 @@
     "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 4000,
-    "usage_discount_quantity": 4.0,
+    "usage_discount_quantity": 4,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3601,7 +2683,7 @@
     "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 4000,
-    "usage_discount_quantity": 4.0,
+    "usage_discount_quantity": 4,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3616,7 +2698,7 @@
     "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 2500,
-    "usage_discount_quantity": 18.0,
+    "usage_discount_quantity": 18,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3631,7 +2713,7 @@
     "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 2500,
-    "usage_discount_quantity": 18.0,
+    "usage_discount_quantity": 18,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3646,7 +2728,7 @@
     "capacity": 8.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 15000,
-    "usage_discount_quantity": 16.0,
+    "usage_discount_quantity": 16,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3661,7 +2743,7 @@
     "capacity": 6.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 15000,
-    "usage_discount_quantity": 18.0,
+    "usage_discount_quantity": 18,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3676,7 +2758,7 @@
     "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 150,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3691,7 +2773,7 @@
     "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 150,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3706,7 +2788,7 @@
     "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3721,7 +2803,7 @@
     "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3736,7 +2818,7 @@
     "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3751,7 +2833,7 @@
     "capacity": 0.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3766,7 +2848,7 @@
     "capacity": 1.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 5000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3781,7 +2863,7 @@
     "capacity": 10.0,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 1000000000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3796,7 +2878,7 @@
     "capacity": null,
     "minimum_stock_quantity": 0,
     "maximum_stock_quantity": 12000000,
-    "usage_discount_quantity": 3.0,
+    "usage_discount_quantity": 3,
     "kg_tare": 0.0,
     "is_enabled": true,
     "organization": 1
@@ -3808,10 +2890,10 @@
   "fields": {
     "kind": 9,
     "name": "CAJA DE CAMPO DE 25",
-    "capacity": null,
+    "capacity": 25.0,
     "minimum_stock_quantity": 100,
     "maximum_stock_quantity": 20000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.5,
     "is_enabled": true,
     "organization": 1
@@ -3823,171 +2905,11 @@
   "fields": {
     "kind": 9,
     "name": "CAJA DE CAMPO DE 20",
-    "capacity": null,
+    "capacity": 20.0,
     "minimum_stock_quantity": 100,
     "maximum_stock_quantity": 20000,
-    "usage_discount_quantity": 1.0,
+    "usage_discount_quantity": 1,
     "kg_tare": 0.3,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.supply",
-  "pk": 33,
-  "fields": {
-    "kind": 1,
-    "name": "SAN TADEO",
-    "capacity": 11.3,
-    "minimum_stock_quantity": 4000,
-    "maximum_stock_quantity": 20000,
-    "usage_discount_quantity": 1.0,
-    "kg_tare": 0.2,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.supply",
-  "pk": 34,
-  "fields": {
-    "kind": 3,
-    "name": "TARIMA CHEP",
-    "capacity": null,
-    "minimum_stock_quantity": 100,
-    "maximum_stock_quantity": 1000,
-    "usage_discount_quantity": 1.0,
-    "kg_tare": 0.0,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.supply",
-  "pk": 35,
-  "fields": {
-    "kind": 3,
-    "name": "TARIMA NACIONAL",
-    "capacity": null,
-    "minimum_stock_quantity": 100,
-    "maximum_stock_quantity": 1000,
-    "usage_discount_quantity": 1.0,
-    "kg_tare": 0.0,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.supply",
-  "pk": 36,
-  "fields": {
-    "kind": 3,
-    "name": "TARIMA EXPORTACION",
-    "capacity": null,
-    "minimum_stock_quantity": 100,
-    "maximum_stock_quantity": 1000,
-    "usage_discount_quantity": 1.0,
-    "kg_tare": 0.0,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.supply",
-  "pk": 37,
-  "fields": {
-    "kind": 10,
-    "name": "MALLA ANTIAFIDOS",
-    "capacity": null,
-    "minimum_stock_quantity": 100,
-    "maximum_stock_quantity": 1000,
-    "usage_discount_quantity": 1.0,
-    "kg_tare": 0.0,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.supply",
-  "pk": 38,
-  "fields": {
-    "kind": 1,
-    "name": "CAJA DON TOMAS 11.3 KG",
-    "capacity": 11.3,
-    "minimum_stock_quantity": 100,
-    "maximum_stock_quantity": 10000,
-    "usage_discount_quantity": 1.0,
-    "kg_tare": 0.0,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.service",
-  "pk": 1,
-  "fields": {
-    "name": "FLETES",
-    "service_provider": 17,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.service",
-  "pk": 2,
-  "fields": {
-    "name": "INTERNET",
-    "service_provider": 21,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.service",
-  "pk": 3,
-  "fields": {
-    "name": "SERVICIOS ELECTRICOS",
-    "service_provider": 19,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.service",
-  "pk": 4,
-  "fields": {
-    "name": "COMPRA DE GASOLLINA",
-    "service_provider": 20,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.service",
-  "pk": 5,
-  "fields": {
-    "name": "SERVICIOS DE MANTENIMIENTO A SELECCIONADORA",
-    "service_provider": 18,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.service",
-  "pk": 6,
-  "fields": {
-    "name": "MANTENIMIENTO A ENMALLADORA",
-    "service_provider": 18,
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.service",
-  "pk": 7,
-  "fields": {
-    "name": "MANTENIMIENTO A ARMADORA DE CAJAS",
-    "service_provider": 18,
     "is_enabled": true,
     "organization": 1
   }
@@ -4012,30 +2934,6 @@
     "supply": 23,
     "name": "AGUACATE MX PLASTICO 14",
     "alias": "AAP14",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.pallet",
-  "pk": 5,
-  "fields": {
-    "product": 1,
-    "supply": 34,
-    "name": "EXPORTACIÓN 11.3",
-    "alias": "EXPORTACIN113",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.pallet",
-  "pk": 6,
-  "fields": {
-    "product": 1,
-    "supply": 35,
-    "name": "NACIONAL 20 KG",
-    "alias": "NACIONAL20KG",
     "is_enabled": true,
     "organization": 1
   }
@@ -4078,36 +2976,6 @@
     "kind": 8,
     "supply": 19,
     "quantity": 1
-  }
-},
-{
-  "model": "catalogs.palletcomplementarysupply",
-  "pk": 5,
-  "fields": {
-    "pallet": 5,
-    "kind": 4,
-    "supply": 17,
-    "quantity": 4
-  }
-},
-{
-  "model": "catalogs.palletcomplementarysupply",
-  "pk": 6,
-  "fields": {
-    "pallet": 5,
-    "kind": 8,
-    "supply": 19,
-    "quantity": 27
-  }
-},
-{
-  "model": "catalogs.palletcomplementarysupply",
-  "pk": 7,
-  "fields": {
-    "pallet": 6,
-    "kind": 8,
-    "supply": 18,
-    "quantity": 27
   }
 },
 {
@@ -4177,8 +3045,7 @@
     "name": "CAJA CARTÓN 11.3 KG PARA 70'S",
     "packaging_supply": 5,
     "is_enabled": true,
-    "organization": 1,
-    "clients": []
+    "organization": 1
   }
 },
 {
@@ -4192,8 +3059,7 @@
     "name": "CAJA CARTÓN 11.3 (AGMX)",
     "packaging_supply": 3,
     "is_enabled": true,
-    "organization": 1,
-    "clients": []
+    "organization": 1
   }
 },
 {
@@ -4207,8 +3073,7 @@
     "name": "CAJA CARTON DE 11.3",
     "packaging_supply": 3,
     "is_enabled": true,
-    "organization": 1,
-    "clients": []
+    "organization": 1
   }
 },
 {
@@ -4222,8 +3087,7 @@
     "name": "CAJA CARTÓN 10 (AGMX)",
     "packaging_supply": 29,
     "is_enabled": true,
-    "organization": 1,
-    "clients": []
+    "organization": 1
   }
 },
 {
@@ -4429,6 +3293,36 @@
     "product_packaging": 3,
     "pallet": 2,
     "product_packaging_quantity": 88,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productpackagingpallet",
+  "pk": 7,
+  "fields": {
+    "product_packaging": 4,
+    "pallet": 1,
+    "product_packaging_quantity": 80,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productpackagingpallet",
+  "pk": 8,
+  "fields": {
+    "product_packaging": 4,
+    "pallet": 2,
+    "product_packaging_quantity": 80,
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productpackagingpallet",
+  "pk": 9,
+  "fields": {
+    "product_packaging": 2,
+    "pallet": 2,
+    "product_packaging_quantity": 90,
     "is_enabled": true
   }
 },
