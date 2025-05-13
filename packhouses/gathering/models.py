@@ -92,7 +92,7 @@ class ScheduleHarvest(models.Model):
         verbose_name=_("Orchard"),
         on_delete=models.PROTECT,
     )
-    orchard_certification = models.ManyToManyField(
+    orchard_certifications = models.ManyToManyField(
         OrchardCertification,
         verbose_name=_("Orchard Certification"),
         blank=True

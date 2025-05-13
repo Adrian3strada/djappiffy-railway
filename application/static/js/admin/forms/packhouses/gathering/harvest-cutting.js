@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const initialHarvestSizeValue = harvestSizeField.val();
   const orchardField = $("#id_orchard");
   const initialOrchardSizeValue = orchardField.val();
-  const orchardCertificationField = $("#id_orchard_certification");
+  const orchardCertificationField = $("#id_orchard_certifications");
   const initialOrchardCertificationValue = orchardCertificationField.val();
   const API_BASE_URL = "/rest/v1";
 

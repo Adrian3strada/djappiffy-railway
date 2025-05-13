@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function() {
       options.forEach(option =>
         field.append(new Option(`${option.code} - ${option.name}`, option.id))
       );
-    } else if (fieldName.endsWith("-orchard_certification")) {
+    } else if (fieldName.endsWith("-orchard_certifications")) {
       const now = new Date();
       options.forEach(option => {
         let optionText = `${option.certification_kind_name} - #${option.certification_number}`;
@@ -83,10 +83,10 @@ document.addEventListener("DOMContentLoaded", function() {
   $('select[name$="-orchard"]').each(function () {
     const $orchardField = $(this);
 
-    // Obtener el campo orchard_certification con el mismo índice
+    // Obtener el campo orchard_certifications con el mismo índice
     const nameAttr = $orchardField.attr("name");  // ej: incomingproduct_set-0-scheduleharvest_set-0-orchard
     const baseName = nameAttr.replace("-orchard", "");
-    const $orchardCertificationField = $(`select[name='${baseName}-orchard_certification']`);
+    const $orchardCertificationField = $(`select[name='${baseName}-orchard_certifications']`);
 
     if ($orchardCertificationField.length) {
       setupCertificationUpdater($orchardField, $orchardCertificationField);
