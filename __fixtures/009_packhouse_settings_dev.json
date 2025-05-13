@@ -139,6 +139,7 @@
   "pk": 1,
   "fields": {
     "name": "EFECTIVO",
+    "requires_bank": false,
     "is_enabled": true,
     "organization": 1
   }
@@ -148,6 +149,7 @@
   "pk": 2,
   "fields": {
     "name": "TRANSFERENCIA BANCARIA",
+    "requires_bank": false,
     "is_enabled": true,
     "organization": 1
   }
@@ -157,6 +159,7 @@
   "pk": 3,
   "fields": {
     "name": "BITCOIN",
+    "requires_bank": false,
     "is_enabled": true,
     "organization": 1
   }
@@ -202,6 +205,15 @@
   "pk": 5,
   "fields": {
     "name": "FORD",
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "packhouse_settings.vehiclebrand",
+  "pk": 6,
+  "fields": {
+    "name": "MITSUBISHI",
     "is_enabled": true,
     "organization": 1
   }

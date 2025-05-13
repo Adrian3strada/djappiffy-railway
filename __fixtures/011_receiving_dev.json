@@ -1,37 +1,73 @@
-
 [
 {
-    "model": "receiving.batch",
-    "pk": 1,
-    "fields": {
-        "ooid" : 1,
-        "created_at": "2025-03-24T17:30:45.174Z",
-        "organization" : 1
-        
-    }
+  "model": "receiving.batch",
+  "pk": 1,
+  "fields": {
+    "ooid": 1,
+    "review_status": "pending",
+    "operational_status": "pending",
+    "is_available_for_processing": false,
+    "created_at": "2025-03-24T17:30:45.174Z",
+    "organization": 1,
+    "parent_batch": null
+  }
 },
 {
-    "model": "receiving.batch",
-    "pk": 2,
-    "fields": {
-        "ooid" : 2,
-        "created_at": "2025-03-24T17:30:45.174Z",
-        "organization" : 1
-    }
+  "model": "receiving.batch",
+  "pk": 2,
+  "fields": {
+    "ooid": 2,
+    "review_status": "pending",
+    "operational_status": "pending",
+    "is_available_for_processing": false,
+    "created_at": "2025-03-24T17:30:45.174Z",
+    "organization": 1,
+    "parent_batch": null
+  }
 },
 {
-    "model": "receiving.batch",
-    "pk": 3,
-    "fields": {
-        "ooid" : 3,
-        "created_at": "2025-03-24T17:30:45.174Z",
-        "organization" : 1
-    }
+  "model": "receiving.batch",
+  "pk": 3,
+  "fields": {
+    "ooid": 3,
+    "review_status": "pending",
+    "operational_status": "pending",
+    "is_available_for_processing": false,
+    "created_at": "2025-03-24T17:30:45.174Z",
+    "organization": 1,
+    "parent_batch": null
+  }
 },
 {
-    "model": "receiving.incomingproduct",
-    "pk": 1,
-    "fields": {
+  "model": "receiving.batch",
+  "pk": 4,
+  "fields": {
+    "ooid": 4,
+    "review_status": "pending",
+    "operational_status": "pending",
+    "is_available_for_processing": false,
+    "created_at": "2025-05-08T18:57:52.131Z",
+    "organization": 1,
+    "parent_batch": null
+  }
+},
+{
+  "model": "receiving.batch",
+  "pk": 5,
+  "fields": {
+    "ooid": 5,
+    "review_status": "pending",
+    "operational_status": "pending",
+    "is_available_for_processing": false,
+    "created_at": "2025-05-08T21:50:51.937Z",
+    "organization": 1,
+    "parent_batch": null
+  }
+},
+{
+  "model": "receiving.incomingproduct",
+  "pk": 1,
+  "fields": {
     "status": "accepted",
     "public_weighing_scale": 2,
     "public_weight_result": 4500.0,
@@ -49,14 +85,14 @@
     "missing_containers": 12,
     "average_per_container": 23.788,
     "organization": 1,
-    "comments": "",
-    "batch": 1
-    }
+    "batch": 1,
+    "comments": ""
+  }
 },
 {
-    "model": "receiving.incomingproduct",
-    "pk": 2,
-    "fields": {
+  "model": "receiving.incomingproduct",
+  "pk": 2,
+  "fields": {
     "status": "accepted",
     "public_weighing_scale": 2,
     "public_weight_result": 3300.0,
@@ -74,14 +110,14 @@
     "missing_containers": 10,
     "average_per_container": 32.54,
     "organization": 1,
-    "comments": "",
-    "batch": 2
-    }
+    "batch": 2,
+    "comments": ""
+  }
 },
 {
-    "model": "receiving.incomingproduct",
-    "pk": 3,
-    "fields": {
+  "model": "receiving.incomingproduct",
+  "pk": 3,
+  "fields": {
     "status": "accepted",
     "public_weighing_scale": 3,
     "public_weight_result": 3800.0,
@@ -99,14 +135,14 @@
     "missing_containers": 1,
     "average_per_container": 25.48,
     "organization": 1,
-    "comments": "",
-    "batch": 3
-    }
+    "batch": 3,
+    "comments": ""
+  }
 },
 {
-    "model": "receiving.incomingproduct",
-    "pk": 4,
-    "fields": {
+  "model": "receiving.incomingproduct",
+  "pk": 4,
+  "fields": {
     "status": "pending",
     "public_weighing_scale": null,
     "public_weight_result": 0.0,
@@ -124,14 +160,15 @@
     "missing_containers": 0,
     "average_per_container": 0.0,
     "organization": 1,
+    "batch": null,
     "comments": null
-    }
+  }
 },
 {
-    "model": "receiving.incomingproduct",
-    "pk": 5,
-    "fields": {
-    "status": "pending",
+  "model": "receiving.incomingproduct",
+  "pk": 5,
+  "fields": {
+    "status": "rejected",
     "public_weighing_scale": 3,
     "public_weight_result": 2600.0,
     "packhouse_weight_result": 1972.0,
@@ -148,13 +185,64 @@
     "missing_containers": 0,
     "average_per_container": 24.65,
     "organization": 1,
+    "batch": null,
     "comments": ""
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 1,
-    "fields": {
+  "model": "receiving.incomingproduct",
+  "pk": 6,
+  "fields": {
+    "status": "accepted",
+    "public_weighing_scale": 2,
+    "public_weight_result": 7800.0,
+    "packhouse_weight_result": 0.0,
+    "weighing_record_number": "122",
+    "total_weighed_sets": 0,
+    "mrl": 0.0,
+    "phytosanitary_certificate": "1213",
+    "kg_sample": 5.0,
+    "current_kg_available": 0.0,
+    "containers_assigned": 300,
+    "empty_containers": 0,
+    "total_weighed_set_containers": 0,
+    "full_containers_per_harvest": 0,
+    "missing_containers": 300,
+    "average_per_container": 0.0,
+    "organization": 1,
+    "batch": 4,
+    "comments": ""
+  }
+},
+{
+  "model": "receiving.incomingproduct",
+  "pk": 7,
+  "fields": {
+    "status": "accepted",
+    "public_weighing_scale": 1,
+    "public_weight_result": 7800.0,
+    "packhouse_weight_result": 0.0,
+    "weighing_record_number": "332",
+    "total_weighed_sets": 0,
+    "mrl": 0.0,
+    "phytosanitary_certificate": "2",
+    "kg_sample": 5.0,
+    "current_kg_available": 0.0,
+    "containers_assigned": 300,
+    "empty_containers": 0,
+    "total_weighed_set_containers": 0,
+    "full_containers_per_harvest": 0,
+    "missing_containers": 300,
+    "average_per_container": 0.0,
+    "organization": 1,
+    "batch": 5,
+    "comments": "This batch is accepted for Juanito"
+  }
+},
+{
+  "model": "receiving.weighingset",
+  "pk": 1,
+  "fields": {
     "ooid": 1,
     "provider": 6,
     "harvesting_crew": 1,
@@ -164,12 +252,12 @@
     "platform_tare": 2.0,
     "net_weight": 886.0,
     "incoming_product": 1
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 2,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 2,
+  "fields": {
     "ooid": 2,
     "provider": 6,
     "harvesting_crew": 1,
@@ -179,12 +267,12 @@
     "platform_tare": 3.0,
     "net_weight": 977.0,
     "incoming_product": 1
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 3,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 3,
+  "fields": {
     "ooid": 3,
     "provider": 6,
     "harvesting_crew": 1,
@@ -194,12 +282,12 @@
     "platform_tare": 4.0,
     "net_weight": 801.0,
     "incoming_product": 1
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 4,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 4,
+  "fields": {
     "ooid": 4,
     "provider": 6,
     "harvesting_crew": 1,
@@ -209,12 +297,12 @@
     "platform_tare": 1.0,
     "net_weight": 740.0,
     "incoming_product": 1
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 5,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 5,
+  "fields": {
     "ooid": 5,
     "provider": 6,
     "harvesting_crew": 1,
@@ -224,12 +312,12 @@
     "platform_tare": 1.8,
     "net_weight": 1068.2,
     "incoming_product": 1
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 6,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 6,
+  "fields": {
     "ooid": 1,
     "provider": 9,
     "harvesting_crew": 5,
@@ -239,12 +327,12 @@
     "platform_tare": 2.0,
     "net_weight": 883.0,
     "incoming_product": 2
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 7,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 7,
+  "fields": {
     "ooid": 2,
     "provider": 9,
     "harvesting_crew": 5,
@@ -254,12 +342,12 @@
     "platform_tare": 1.0,
     "net_weight": 1184.0,
     "incoming_product": 2
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 8,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 8,
+  "fields": {
     "ooid": 3,
     "provider": 9,
     "harvesting_crew": 5,
@@ -269,12 +357,12 @@
     "platform_tare": 1.0,
     "net_weight": 1187.0,
     "incoming_product": 2
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 9,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 9,
+  "fields": {
     "ooid": 1,
     "provider": 9,
     "harvesting_crew": 6,
@@ -284,12 +372,12 @@
     "platform_tare": 1.0,
     "net_weight": 1274.0,
     "incoming_product": 3
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 10,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 10,
+  "fields": {
     "ooid": 1,
     "provider": 9,
     "harvesting_crew": 5,
@@ -299,12 +387,12 @@
     "platform_tare": 2.0,
     "net_weight": 992.0,
     "incoming_product": 5
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 11,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 11,
+  "fields": {
     "ooid": 2,
     "provider": 6,
     "harvesting_crew": 1,
@@ -314,105 +402,144 @@
     "platform_tare": 2.0,
     "net_weight": 980.0,
     "incoming_product": 5
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 1,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 12,
+  "fields": {
+    "ooid": 1,
+    "provider": 10,
+    "harvesting_crew": 1,
+    "gross_weight": 7900.0,
+    "total_containers": 10,
+    "container_tare": 20.0,
+    "platform_tare": 30.0,
+    "net_weight": 7840.0,
+    "incoming_product": 6
+  }
+},
+{
+  "model": "receiving.weighingset",
+  "pk": 13,
+  "fields": {
+    "ooid": 1,
+    "provider": 10,
+    "harvesting_crew": 1,
+    "gross_weight": 799.0,
+    "total_containers": 0,
+    "container_tare": 0.0,
+    "platform_tare": 0.0,
+    "net_weight": 0.0,
+    "incoming_product": 7
+  }
+},
+{
+  "model": "receiving.weighingsetcontainer",
+  "pk": 1,
+  "fields": {
     "harvest_container": 32,
     "quantity": 40,
     "weighing_set": 1
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 2,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 2,
+  "fields": {
     "harvest_container": 31,
     "quantity": 40,
     "weighing_set": 2
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 3,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 3,
+  "fields": {
     "harvest_container": 31,
     "quantity": 30,
     "weighing_set": 3
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 4,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 4,
+  "fields": {
     "harvest_container": 31,
     "quantity": 18,
     "weighing_set": 4
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 5,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 5,
+  "fields": {
     "harvest_container": 31,
     "quantity": 60,
     "weighing_set": 5
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 6,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 6,
+  "fields": {
     "harvest_container": 31,
     "quantity": 30,
     "weighing_set": 6
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 7,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 7,
+  "fields": {
     "harvest_container": 31,
     "quantity": 30,
     "weighing_set": 7
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 8,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 8,
+  "fields": {
     "harvest_container": 32,
     "quantity": 40,
     "weighing_set": 8
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 9,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 9,
+  "fields": {
     "harvest_container": 31,
     "quantity": 50,
     "weighing_set": 9
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 10,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 10,
+  "fields": {
     "harvest_container": 32,
     "quantity": 20,
     "weighing_set": 10
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 11,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 11,
+  "fields": {
     "harvest_container": 32,
     "quantity": 60,
     "weighing_set": 11
-    }
+  }
+},
+{
+  "model": "receiving.weighingsetcontainer",
+  "pk": 12,
+  "fields": {
+    "harvest_container": 31,
+    "quantity": 300,
+    "weighing_set": 12
+  }
 }
 ]
