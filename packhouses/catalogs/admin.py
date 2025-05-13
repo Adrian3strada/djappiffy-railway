@@ -120,7 +120,7 @@ class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['address_label'].widget = CKEditor5Widget()
-        form.base_fields['countries'].queryset = Country.objects.all() 
+        form.base_fields['countries'].queryset = Country.objects.all()
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -471,8 +471,8 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
 @admin.register(ProductSize)
 class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
-    report_function = staticmethod(basic_report)
-    resource_classes = [ProductSizeResource]
+    # report_function = staticmethod(basic_report)
+    # resource_classes = [ProductSizeResource]
     list_display = (
         'name', 'alias', 'product', 'get_varieties', 'market', 'category', 'is_enabled', 'sort_order')
     list_filter = (
@@ -715,7 +715,7 @@ class ClientAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                 except Market.DoesNotExist:
                     countries = []
                 kwargs["queryset"] = Country.objects.filter(id__in=countries)
-               
+
             else:
                 kwargs["queryset"] = Country.objects.none()
 
@@ -1553,9 +1553,9 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             formfield.required = True
             if organization and product_kind and market_id:
                 market_countries = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
-                queryset = ProductKindCountryStandardPackaging.objects.filter(standard__product_kind=product_kind, 
+                queryset = ProductKindCountryStandardPackaging.objects.filter(standard__product_kind=product_kind,
                 standard__country__in=market_countries)
-               
+
                 kwargs["queryset"] = queryset
                 formfield.required = queryset.exists()
             else:

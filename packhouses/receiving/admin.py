@@ -615,7 +615,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
 
         # Detectar si hay un lote padre en los lotes a unir
         is_parent = qs.filter(
-            parent_batch__isnull=True,       
+            parent_batch__isnull=True,
             merged_from__isnull=False
         ).distinct()
 
@@ -674,7 +674,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
                 )
                 sources = list(qs)
             for origin in sources:
-                origin.parent_batch = destination
+                origin.parent = destination
                 origin.review_status = 'accepted'
                 origin.operational_status = 'in_another_batch'
                 origin.is_available_for_processing = False
@@ -726,8 +726,8 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             )
             return
         possible_parents = queryset.filter(
-        parent_batch__isnull=True, 
-        merged_from__isnull=False 
+        parent_batch__isnull=True,
+        merged_from__isnull=False
         ).distinct()
 
         parent = possible_parents.first()
@@ -740,19 +740,19 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
                 level=messages.ERROR
             )
             return
-        
+
         # Validar los lotes por añadir con los que ya fueron unidos
         try:
             Batch.validate_add_batches_to_existing_merge(parent, children_to_add)
         except ValidationError as e:
             self.message_user(request, e.message, level=messages.ERROR)
             return
-        
+
         # Unir lotes al lote existente dentro de una transacción
         try:
             with transaction.atomic():
                 for batch in children_to_add:
-                    batch.parent_batch = parent
+                    batch.parent = parent
                     batch.review_status = 'accepted'
                     batch.operational_status = 'in_another_batch'
                     batch.save()

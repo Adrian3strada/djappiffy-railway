@@ -24,7 +24,6 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   OrchardCertificationKind)
 from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES, PRODUCT_PACKAGING_CATEGORY_CHOICES,
                        PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES, PRODUCT_SIZE_CATEGORY_CHOICES)
-from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
 from common.base.models import FoodSafetyProcedure
 
 
@@ -41,7 +40,7 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
         Country,
         on_delete=models.PROTECT,
         verbose_name=_('Country'),
-        related_name='market_country'
+        related_name='market_country',
         null = False,
         blank = False
     )
@@ -282,7 +281,6 @@ class ProductPhysicalDamage(models.Model):
         return f"{self.name}"
 
     class Meta:
-        ordering = ['name']
         verbose_name = _('Product physical damage')
         verbose_name_plural = _('Product physical damages')
         ordering = ('name', 'product')
@@ -300,7 +298,6 @@ class ProductResidue(models.Model):
         return f"{self.name}"
 
     class Meta:
-        ordering = ['name']
         verbose_name = _('Product residue')
         verbose_name_plural = _('Product Residues')
         ordering = ('name', 'product')
