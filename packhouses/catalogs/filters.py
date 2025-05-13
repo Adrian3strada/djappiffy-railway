@@ -221,7 +221,7 @@ class ByMarketForOrganizationFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value():
-            return queryset.filter(markets__id=self.value())
+            return queryset.filter(market__id=self.value())
         return queryset
 
 

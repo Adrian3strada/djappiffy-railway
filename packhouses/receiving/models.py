@@ -47,11 +47,11 @@ class Batch(models.Model):
         return f"{self.ooid} – {_('No IncomingProduct Asociated')}"
 
     @property
-    def available_weight(self):
+    def batch_weight(self):
         if self.batchweightmovement_set.exists():
             return self.batchweightmovement_set.aggregate(
-                available_weight=Sum('weight')
-            )['available_weight']
+                batch_weight=Sum('weight')
+            )['batch_weight']
         return 0
     
     @property
@@ -60,11 +60,23 @@ class Batch(models.Model):
             total=Sum('batchweightmovement__weight')
         )['total'] or 0
 
+    @property
+    def available_weight(self):
+        total_weight = self.batch_weight
+        if self.is_parent:
+            total_weight += sum(child.batch_weight for child in self.children.all())
+        return total_weight
+
+    @property
+    def available_weight(self):
+        total_weight = self.batch_weight
+        if self.is_parent:
+            total_weight += sum(child.batch_weight for child in self.children.all())
+        return total_weight
+
     def save(self, *args, **kwargs):
-        # solo asignamos si aún no tiene ooid
         if self.ooid is None:
             with transaction.atomic():
-                # bloqueamos las filas de Batch de esta organización…
                 last = (
                     Batch.objects
                     .filter(organization=self.organization)
@@ -205,6 +217,7 @@ class Batch(models.Model):
     @property
     def is_parent(self):
         return self.children.exists()
+        return self.children.exists()
 
     @property
     def children_list(self):
@@ -215,9 +228,9 @@ class Batch(models.Model):
         return ", ".join(str(batch.ooid) for batch in self.children.all())
 
     @property
-    def parent_ooid(self):
+    def parent_batch_oid(self):
         return self.parent.ooid if self.parent else ''
-    
+
     @property
     def children_total_weight_received(self):
         total = 0
@@ -227,6 +240,17 @@ class Batch(models.Model):
                 continue
             if ip.packhouse_weight_result:
                 total += ip.packhouse_weight_result
+        return total
+
+    @property
+    def children_total_current_weight(self):
+        total = 0
+        for child in self.children:
+            ip = getattr(child, 'incomingproduct', None)
+            if not ip:
+                continue
+            if ip.current_kg_available:
+                total += ip.current_kg_available
         return total
 
     def operational_status_history(self):
@@ -266,7 +290,7 @@ class BatchWeightMovement(models.Model):
         verbose_name_plural = _('Batch Weight Movements')
 
     def clean(self):
-        if self.weight < 0 and self.batch.available_weight + self.weight < 0:
+        if self.weight < 0 and self.batch.batch_weight + self.weight < 0:
             raise ValidationError(
                 _('This movement would result in a negative weight for the batch.'),
             )
@@ -363,11 +387,11 @@ class IncomingProduct(models.Model):
                     organization=self.organization
                 )
                 self.batch = new_batch
+                super().save(update_fields=['batch'])
                 BatchWeightMovement.objects.create(
                     batch=new_batch,
                     weight=self.packhouse_weight_result
                 )
-                super().save(update_fields=['batch'])
 
     def __str__(self):
         schedule_harvest = self.scheduleharvest

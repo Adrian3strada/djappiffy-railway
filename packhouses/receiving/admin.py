@@ -617,6 +617,39 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
 
         qs = queryset.select_related('incomingproduct__scheduleharvest')
 
+        # Detectar si hay un lote padre en los lotes a unir
+        is_parent = qs.filter(
+            parent_batch__isnull=True,       
+            merged_from__isnull=False
+        ).distinct()
+
+        if is_parent:
+            batch_labels = ', '.join(f'batch {o.ooid}' for o in is_parent)
+            self.message_user(
+                request,
+                _('The following batches cannot be merged into a new batch because they already contain other merged batches: %(list)s') % {
+                    'list': batch_labels
+                },
+                level=messages.ERROR
+            )
+            return
+
+        # Detectar si un lote esta unido a otro lote
+        already = list(qs
+            .filter(parent_batch__isnull=False)
+            .values_list('ooid', flat=True)
+        )
+        if already:
+            batch_labels = ', '.join(f'batch {o}' for o in already)
+            self.message_user(
+                request,
+                _('The following batches have been already merged in another batch: %(list)s') % {
+                    'list': batch_labels
+                },
+                level=messages.ERROR
+            )
+            return
+
         # Validar provider/product/variety/phenology/status
         try:
             Batch.validate_merge_batches(qs)
@@ -645,6 +678,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
                 )
                 sources = list(qs)
             for origin in sources:
+                origin.parent = destination
                 origin.parent = destination
                 origin.review_status = 'accepted'
                 origin.operational_status = 'in_another_batch'
@@ -704,11 +738,12 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         except ValidationError as e:
             self.message_user(request, e.message, level=messages.ERROR)
             return
-        
+
         # Unir lotes al lote existente dentro de una transacción
         try:
             with transaction.atomic():
                 for batch in children_to_add:
+                    batch.parent = parent
                     batch.parent = parent
                     batch.review_status = 'accepted'
                     batch.operational_status = 'in_another_batch'

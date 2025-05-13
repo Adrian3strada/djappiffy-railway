@@ -6,9 +6,7 @@
     "created": "2024-10-14T19:10:00Z",
     "modified": "2024-12-12T03:47:43.857Z",
     "is_admin": true,
-    "user": [
-      "01.tezil.01.owner@localhost"
-    ],
+    "user": "01.tezil.01.owner",
     "organization": 1
   }
 },
@@ -19,9 +17,7 @@
     "created": "2024-10-14T19:11:00Z",
     "modified": "2024-12-12T03:48:34.249Z",
     "is_admin": false,
-    "user": [
-      "01.tezil.02.worker@localhost"
-    ],
+    "user": "01.tezil.02.worker",
     "organization": 1
   }
 },
@@ -32,9 +28,7 @@
     "created": "2024-10-14T20:10:00Z",
     "modified": "2024-12-12T03:49:12.786Z",
     "is_admin": true,
-    "user": [
-      "02.red.01.owner@localhost"
-    ],
+    "user": "02.red.01.owner",
     "organization": 2
   }
 },
@@ -45,9 +39,7 @@
     "created": "2024-10-14T20:11:00Z",
     "modified": "2024-12-12T03:49:26.667Z",
     "is_admin": false,
-    "user": [
-      "02.red.02.worker@localhost"
-    ],
+    "user": "02.red.02.worker",
     "organization": 2
   }
 },
@@ -58,9 +50,7 @@
     "created": "2024-10-14T21:10:00Z",
     "modified": "2024-12-12T03:50:17.979Z",
     "is_admin": true,
-    "user": [
-      "03.green.01.owner@localhost"
-    ],
+    "user": "03.green.01.owner",
     "organization": 3
   }
 },
@@ -71,9 +61,7 @@
     "created": "2024-10-14T21:11:00Z",
     "modified": "2024-12-12T03:50:52.473Z",
     "is_admin": false,
-    "user": [
-      "03.green.02.worker@localhost"
-    ],
+    "user": "03.green.02.worker",
     "organization": 3
   }
 },
@@ -84,9 +72,7 @@
     "created": "2024-10-14T22:10:00Z",
     "modified": "2024-12-12T03:51:12.325Z",
     "is_admin": true,
-    "user": [
-      "04.blue.01.owner@localhost"
-    ],
+    "user": "04.blue.01.owner",
     "organization": 4
   }
 },
@@ -97,10 +83,19 @@
     "created": "2024-10-14T22:11:00Z",
     "modified": "2024-12-12T03:51:30.114Z",
     "is_admin": false,
-    "user": [
-      "04.blue.02.worker@localhost"
-    ],
+    "user": "04.blue.02.worker",
     "organization": 4
+  }
+},
+{
+  "model": "organizations.organizationuser",
+  "pk": 9,
+  "fields": {
+    "created": "2025-05-08T23:24:35.607Z",
+    "modified": "2025-05-08T23:24:35.608Z",
+    "is_admin": true,
+    "user": "F86xJOQzJCWBgaA0N2zSwPmXzXr2",
+    "organization": 8
   }
 }
 ]
