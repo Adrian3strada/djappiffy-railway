@@ -186,16 +186,12 @@ class Batch(models.Model):
         ).distinct()
         markets = Market.objects.filter(pk__in=market_ids)
 
-        print("🟡 Todos los mercados en la fusión (padre + nuevos):", list(markets.values_list('id', 'name', 'is_mixable')))
-
         # 2. Identificar los no mezclables
         non_mixable = markets.filter(is_mixable=False)
 
         # 3. Si hay más de un mercado total Y al menos un mercado no mezclable, hay que verificar si son del mismo
         if non_mixable.exists() and market_ids.count() > 1:
-            # ¿Hay más de un mercado no mezclable involucrado?
             non_mixable_ids = list(non_mixable.values_list('id', flat=True))
-            print("🔴 Mercados no mezclables detectados:", non_mixable_ids)
 
             if len(non_mixable_ids) > 1:
                 raise ValidationError(
@@ -228,7 +224,7 @@ class Batch(models.Model):
         return ", ".join(str(batch.ooid) for batch in self.children.all())
 
     @property
-    def parent_batch_oid(self):
+    def parent_batch_ooid(self):
         return self.parent.ooid if self.parent else ''
 
     @property
@@ -240,17 +236,6 @@ class Batch(models.Model):
                 continue
             if ip.packhouse_weight_result:
                 total += ip.packhouse_weight_result
-        return total
-
-    @property
-    def children_total_current_weight(self):
-        total = 0
-        for child in self.children:
-            ip = getattr(child, 'incomingproduct', None)
-            if not ip:
-                continue
-            if ip.current_kg_available:
-                total += ip.current_kg_available
         return total
 
     def operational_status_history(self):

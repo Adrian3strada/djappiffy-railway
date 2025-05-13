@@ -673,7 +673,7 @@ class OrchardCertification(models.Model):
     orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.orchard.name}: {self.certification_kind.name}"
+        return f"{self.certification_kind.name} - {self.certification_number}"
 
     class Meta:
         verbose_name = _('Orchard certification')

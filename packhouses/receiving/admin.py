@@ -598,7 +598,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             f'is_child={obj.is_child}, '
             f'is_parent={obj.is_parent}, '
             f'children_oids=[{obj.children_ooids}], '
-            f'parent_ooid=[{obj.parent_ooid}], '
+            f'parent_ooid=[{obj.parent_batch_ooid}], '
             f'children_total_weight_received=[{obj.children_total_weight_received}], '
             f'batch_current_weight=[{obj.available_weight}], '
             f'children_current_weight=[{obj.children_available_weight}], '
@@ -616,39 +616,6 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             return
 
         qs = queryset.select_related('incomingproduct__scheduleharvest')
-
-        # Detectar si hay un lote padre en los lotes a unir
-        is_parent = qs.filter(
-            parent_batch__isnull=True,       
-            merged_from__isnull=False
-        ).distinct()
-
-        if is_parent:
-            batch_labels = ', '.join(f'batch {o.ooid}' for o in is_parent)
-            self.message_user(
-                request,
-                _('The following batches cannot be merged into a new batch because they already contain other merged batches: %(list)s') % {
-                    'list': batch_labels
-                },
-                level=messages.ERROR
-            )
-            return
-
-        # Detectar si un lote esta unido a otro lote
-        already = list(qs
-            .filter(parent_batch__isnull=False)
-            .values_list('ooid', flat=True)
-        )
-        if already:
-            batch_labels = ', '.join(f'batch {o}' for o in already)
-            self.message_user(
-                request,
-                _('The following batches have been already merged in another batch: %(list)s') % {
-                    'list': batch_labels
-                },
-                level=messages.ERROR
-            )
-            return
 
         # Validar provider/product/variety/phenology/status
         try:
