@@ -59,6 +59,34 @@ class Batch(models.Model):
             total_weight += sum(child.batch_weight for child in self.children.all())
         return total_weight
 
+    @property
+    def yield_available_weight(self):
+        return self.available_weight
+
+    @property
+    def yield_provider(self):
+        return self.incomingproduct.scheduleharvest.product_provider
+
+    @property
+    def yield_gatherer(self):
+        return self.incomingproduct.scheduleharvest.gatherer
+
+    @property
+    def yield_orchard(self):
+        return self.incomingproduct.scheduleharvest.orchard
+
+    @property
+    def yield_registry_code(self):
+        return self.incomingproduct.scheduleharvest.orchard.code
+
+    @property
+    def yield_producer(self):
+        return self.incomingproduct.scheduleharvest.orchard.producer
+
+
+
+
+
     def save(self, *args, **kwargs):
         if self.ooid is None:
             with transaction.atomic():
@@ -146,11 +174,11 @@ class Batch(models.Model):
         return self.children.all()
 
     @property
-    def children_oids(self):
-        return ", ".join(str(b.ooid) for b in self.children)
+    def children_ooids(self):
+        return ", ".join(str(b.ooid) for b in self.children.all())
 
     @property
-    def parent_batch_oid(self):
+    def parent_batch_ooid(self):
         return self.parent.ooid if self.parent else ''
 
     @property
