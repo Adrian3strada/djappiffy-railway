@@ -64,11 +64,11 @@ class Batch(models.Model):
         return self.available_weight
 
     @property
-    def yield_provider(self):
+    def yield_harvest_provider(self):
         return self.incomingproduct.scheduleharvest.product_provider
 
     @property
-    def yield_gatherer(self):
+    def yield_harvest_gatherer(self):
         return self.incomingproduct.scheduleharvest.gatherer
 
     @property
@@ -76,11 +76,11 @@ class Batch(models.Model):
         return self.incomingproduct.scheduleharvest.orchard
 
     @property
-    def yield_registry_code(self):
+    def yield_orchard_registry_code(self):
         return self.incomingproduct.scheduleharvest.orchard.code
 
     @property
-    def yield_producer(self):
+    def yield_orchard_producer(self):
         return self.incomingproduct.scheduleharvest.orchard.producer
 
 
