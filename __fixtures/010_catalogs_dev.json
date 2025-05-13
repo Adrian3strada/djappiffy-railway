@@ -3301,7 +3301,7 @@
   "pk": 7,
   "fields": {
     "product_packaging": 4,
-    "pallet": 4,
+    "pallet": 1,
     "product_packaging_quantity": 80,
     "is_enabled": true
   }
@@ -3311,7 +3311,7 @@
   "pk": 8,
   "fields": {
     "product_packaging": 4,
-    "pallet": 3,
+    "pallet": 2,
     "product_packaging_quantity": 80,
     "is_enabled": true
   }
@@ -3321,7 +3321,7 @@
   "pk": 9,
   "fields": {
     "product_packaging": 2,
-    "pallet": 4,
+    "pallet": 2,
     "product_packaging_quantity": 90,
     "is_enabled": true
   }
