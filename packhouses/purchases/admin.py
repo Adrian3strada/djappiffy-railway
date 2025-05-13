@@ -21,7 +21,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from .forms import (RequisitionForm, PurchaseOrderForm, PurchaseOrderPaymentForm, RequisitionSupplyForm,
                     ServiceOrderForm, ServiceOrderPaymentForm, PurchaseMassPaymentForm
                     )
-from django.utils.html import format_html, format_html_join
+from django.utils.html import format_html, format_html_join, mark_safe
 from django.urls import reverse
 import nested_admin
 from common.forms import SelectWidgetWithData
@@ -395,17 +395,41 @@ class PurchaseOrderPaymentInline(admin.StackedInline):
     fields = (
         'cancel_button',
         'payment_kind',
-        'payment_date',
-        'mass_payment_link',
-        'amount',
         'bank',
-        'comments',
         'additional_inputs',
+        'amount',
+        'payment_date',
+        'proof_of_payment',
+        'mass_payment_link',
+        'comments',
         'payment_info',
     )
     extra = 0
     can_delete = False
-    readonly_fields = ('cancel_button', 'payment_info', 'mass_payment_link')
+    readonly_fields = ('cancel_button',
+                       'payment_info',
+                       'mass_payment_link')
+
+    def get_formset(self, request, obj=None, **kwargs):
+        """
+        Sobreescribe el metodo para eliminar el campo 'proof_of_payment' en modo edición.
+        """
+        formset = super().get_formset(request, obj, **kwargs)
+
+        # Sobreescribimos el metodo `__init__` del formset de manera correcta
+        original_init = formset.__init__
+
+        def formset_init(instance_self, *args, **kargs):
+            original_init(instance_self, *args, **kargs)
+
+            # Recorremos los formularios para identificar si ya tienen un ID (es decir, ya existen en la DB)
+            for form in instance_self.forms:
+                if form.instance.pk:  # Si el objeto ya existe (tiene ID en la BD)
+                    if 'proof_of_payment' in form.fields:
+                        form.fields['proof_of_payment'].widget.attrs['disabled'] = True
+
+        formset.__init__ = formset_init
+        return formset
 
     def cancel_button(self, obj):
         """
@@ -483,6 +507,7 @@ class PurchaseOrderPaymentInline(admin.StackedInline):
         return "-"
 
     mass_payment_link.short_description = "Mass Payment"
+
 
     class Media:
         """
@@ -920,17 +945,39 @@ class ServiceOrderPaymentInline(admin.StackedInline):
     fields = (
         'cancel_button',
         'payment_kind',
-        'payment_date',
-        'mass_payment_link',
-        'amount',
         'bank',
-        'comments',
         'additional_inputs',
+        'amount',
+        'payment_date',
+        'proof_of_payment',
+        'mass_payment_link',
+        'comments',
         'payment_info',
     )
     extra = 0
     can_delete = False
     readonly_fields = ('cancel_button', 'payment_info', 'mass_payment_link')
+
+    def get_formset(self, request, obj=None, **kwargs):
+        """
+        Sobreescribe el metodo para eliminar el campo 'proof_of_payment' en modo edición.
+        """
+        formset = super().get_formset(request, obj, **kwargs)
+
+        # Sobreescribimos el metodo `__init__` del formset de manera correcta
+        original_init = formset.__init__
+
+        def formset_init(instance_self, *args, **kargs):
+            original_init(instance_self, *args, **kargs)
+
+            # Recorremos los formularios para identificar si ya tienen un ID (es decir, ya existen en la DB)
+            for form in instance_self.forms:
+                if form.instance.pk:  # Si el objeto ya existe (tiene ID en la BD)
+                    if 'proof_of_payment' in form.fields:
+                        form.fields['proof_of_payment'].widget.attrs['disabled'] = True
+
+        formset.__init__ = formset_init
+        return formset
 
     def cancel_button(self, obj):
         if obj.pk and obj.status != "canceled":
@@ -1290,7 +1337,7 @@ class PurchaseMassPaymentAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin,
     """
     form = PurchaseMassPaymentForm
     fields = ('cancel_status','ooid', 'category', 'provider', 'currency', 'purchase_order', 'service_order', 'payment_kind',
-              'additional_inputs', 'bank', 'payment_date', 'amount', 'comments')
+              'bank', 'additional_inputs', 'amount', 'payment_date', 'proof_of_payment', 'comments')
     list_display = (
     'ooid', 'category', 'provider', 'amount', 'currency', 'payment_date', 'status', 'created_by', 'generate_actions_buttons')
     list_filter = ('category', 'status')

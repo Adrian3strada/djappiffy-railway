@@ -24,7 +24,6 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   OrchardCertificationKind)
 from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES, PRODUCT_PACKAGING_CATEGORY_CHOICES,
                        PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES, PRODUCT_SIZE_CATEGORY_CHOICES)
-from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
 from common.base.models import FoodSafetyProcedure
 
 
@@ -37,13 +36,13 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
 
-
-    # Nueva FK obligatoria a Country
     country = models.ForeignKey(
         Country,
         on_delete=models.PROTECT,
         verbose_name=_('Country'),
-        related_name='primary_markets'
+        related_name='market_country',
+        null = False,
+        blank = False
     )
 
     countries = models.ManyToManyField(Country, verbose_name=_('Countries'))
@@ -282,7 +281,6 @@ class ProductPhysicalDamage(models.Model):
         return f"{self.name}"
 
     class Meta:
-        ordering = ['name']
         verbose_name = _('Product physical damage')
         verbose_name_plural = _('Product physical damages')
         ordering = ('name', 'product')
@@ -300,7 +298,6 @@ class ProductResidue(models.Model):
         return f"{self.name}"
 
     class Meta:
-        ordering = ['name']
         verbose_name = _('Product residue')
         verbose_name_plural = _('Product Residues')
         ordering = ('name', 'product')
@@ -861,7 +858,7 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 
 
 class Pallet(models.Model):
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    # market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT,
                                limit_choices_to={'kind__category': 'packaging_pallet'})
@@ -876,10 +873,10 @@ class Pallet(models.Model):
     class Meta:
         verbose_name = _('Pallet')
         verbose_name_plural = _('Pallets')
-        ordering = ('name', 'market', 'product', 'supply', 'organization')
+        ordering = ('name', 'product', 'supply', 'organization')
         constraints = [
-            models.UniqueConstraint(fields=['market', 'product', 'supply', 'organization'],
-                                    name='pallet_configuration_unique_market_product_supply_organization'),
+            models.UniqueConstraint(fields=['product', 'supply', 'organization'],
+                                    name='pallet_configuration_unique_product_supply_organization'),
             models.UniqueConstraint(fields=['name', 'organization'],
                                     name='pallet_configuration_unique_name_organization'),
             models.UniqueConstraint(fields=['alias', 'organization'],

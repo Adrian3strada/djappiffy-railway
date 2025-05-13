@@ -5,10 +5,13 @@ def create_related_payments_and_update_balances(mass_payment):
     Genera los pagos individuales (purchase o service) a partir de un pago masivo,
     y actualiza el balance de cada orden a 0 si el pago cubre el total pendiente.
 
+    Además, se asigna el `proof_of_payment` del Mass Payment a cada pago individual.
+
     Args:
         mass_payment (PurchaseMassPayment): Objeto con info del pago masivo.
     """
     user = mass_payment.created_by
+    proof_of_payment = mass_payment.proof_of_payment
     common_fields = {
         "payment_date": mass_payment.payment_date,
         "payment_kind": mass_payment.payment_kind,
@@ -17,7 +20,8 @@ def create_related_payments_and_update_balances(mass_payment):
         "additional_inputs": mass_payment.additional_inputs,
         "status": "closed",
         "created_by": user,
-        "mass_payment": mass_payment
+        "mass_payment": mass_payment,
+        "proof_of_payment": proof_of_payment
     }
 
     # Órdenes de compra
@@ -47,6 +51,7 @@ def create_related_payments_and_update_balances(mass_payment):
 
         # Actualiza el balance a 0 si el pago lo cubre
         order.recalculate_balance(save=True)
+
 
 
 def get_name(model, obj_id, default="Not specified"):

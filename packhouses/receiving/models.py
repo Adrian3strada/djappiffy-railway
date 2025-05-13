@@ -21,9 +21,8 @@ class Batch(models.Model):
                                           verbose_name=_('Operational Status'), blank=True)
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
-    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'), )
-    merged_into = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL,
-                                    related_name='merged_from', verbose_name=_('Merge into Batch'))
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='children', verbose_name=_('Parent'))
 
     def __str__(self):
         try:
@@ -46,18 +45,51 @@ class Batch(models.Model):
         return f"{self.ooid} – {_('No IncomingProduct Asociated')}"
 
     @property
-    def available_weight(self):
+    def batch_weight(self):
         if self.batchweightmovement_set.exists():
             return self.batchweightmovement_set.aggregate(
-                available_weight=Sum('weight')
-            )['available_weight']
+                batch_weight=Sum('weight')
+            )['batch_weight']
         return 0
 
+    @property
+    def available_weight(self):
+        total_weight = self.batch_weight
+        if self.is_parent:
+            total_weight += sum(child.batch_weight for child in self.children.all())
+        return total_weight
+
+    @property
+    def yield_available_weight(self):
+        return self.available_weight
+
+    @property
+    def yield_provider(self):
+        return self.incomingproduct.scheduleharvest.product_provider
+
+    @property
+    def yield_gatherer(self):
+        return self.incomingproduct.scheduleharvest.gatherer
+
+    @property
+    def yield_orchard(self):
+        return self.incomingproduct.scheduleharvest.orchard
+
+    @property
+    def yield_registry_code(self):
+        return self.incomingproduct.scheduleharvest.orchard.code
+
+    @property
+    def yield_producer(self):
+        return self.incomingproduct.scheduleharvest.orchard.producer
+
+
+
+
+
     def save(self, *args, **kwargs):
-        # solo asignamos si aún no tiene ooid
         if self.ooid is None:
             with transaction.atomic():
-                # bloqueamos las filas de Batch de esta organización…
                 last = (
                     Batch.objects
                     .filter(organization=self.organization)
@@ -69,7 +101,7 @@ class Batch(models.Model):
 
     @classmethod
     def validate_merge_batches(cls, batches_queryset):
-        if batches_queryset.filter(merged_into__isnull=False).exists():
+        if batches_queryset.filter(parent_batch__isnull=False).exists():
             raise ValidationError(
                 _('You cannot merge batches that have already been merged into another batch.'),
                 code='invalid_merge'
@@ -94,25 +126,82 @@ class Batch(models.Model):
                 msg = _('All batches selected must have the same %(label)s.') % {'label': label}
                 raise ValidationError(msg, code='invalid_merge')
 
+    @classmethod
+    def validate_add_batches_to_existing_merge(cls, parent_batch, candidate_batches):
+        if parent_batch.parent is not None:
+            raise ValidationError(
+                _('The selected destination batch is already merged into another batch.'),
+                code='invalid_target'
+            )
+
+        if candidate_batches.exclude(review_status='accepted').exists():
+            raise ValidationError(
+                _('Only batches with a Review Status of “Accepted” can be merged.'),
+                code='invalid_status'
+            )
+
+        child_ids = list(parent_batch.children.values_list('pk', flat=True))
+        candidate_ids = list(candidate_batches.values_list('pk', flat=True))
+        combined_ids = child_ids + candidate_ids
+
+        all_batches = Batch.objects.filter(pk__in=combined_ids)
+
+        prefix = 'incomingproduct__scheduleharvest__'
+        checks = {
+            _('provider'): prefix + 'product_provider',
+            _('product'):  prefix + 'product',
+            _('variety'):  prefix + 'product_variety',
+            _('phenology'): prefix + 'product_phenologies',
+        }
+
+        for label, path in checks.items():
+            if all_batches.values_list(path, flat=True).distinct().count() != 1:
+                raise ValidationError(
+                    _('All batches to be merged must have the same %(label)s as the already merged ones.') % {'label': label},
+                    code='invalid_merge'
+                )
+
     @property
     def is_merged(self):
-        return self.merged_into is not None
+        return self.parent is not None
 
     @property
     def is_parent(self):
-        return self.merged_from.exists()
+        return self.children.exists()
 
     @property
     def children(self):
-        return self.merged_from.all()
+        return self.children.all()
 
     @property
-    def children_oids(self):
-        return ", ".join(str(b.ooid) for b in self.children)
+    def children_ooids(self):
+        return ", ".join(str(b.ooid) for b in self.children.all())
 
     @property
-    def merged_into_oid(self):
-        return self.merged_into.ooid if self.merged_into else ''
+    def parent_batch_ooid(self):
+        return self.parent.ooid if self.parent else ''
+
+    @property
+    def children_total_weight_received(self):
+        total = 0
+        for child in self.children:
+            ip = getattr(child, 'incomingproduct', None)
+            if not ip:
+                continue
+            if ip.packhouse_weight_result:
+                total += ip.packhouse_weight_result
+        return total
+
+    @property
+    def children_total_current_weight(self):
+        total = 0
+        for child in self.children:
+            ip = getattr(child, 'incomingproduct', None)
+            if not ip:
+                continue
+            if ip.current_kg_available:
+                total += ip.current_kg_available
+        return total
 
     def operational_status_history(self):
         return self.batchstatuschange_set.filter(field_name='operational_status')
@@ -151,7 +240,7 @@ class BatchWeightMovement(models.Model):
         verbose_name_plural = _('Batch Weight Movements')
 
     def clean(self):
-        if self.weight < 0 and self.batch.available_weight + self.weight < 0:
+        if self.weight < 0 and self.batch.batch_weight + self.weight < 0:
             raise ValidationError(
                 _('This movement would result in a negative weight for the batch.'),
             )
@@ -254,11 +343,11 @@ class IncomingProduct(models.Model):
                     organization=self.organization
                 )
                 self.batch = new_batch
+                super().save(update_fields=['batch'])
                 BatchWeightMovement.objects.create(
                     batch=new_batch,
                     weight=self.packhouse_weight_result
                 )
-                super().save(update_fields=['batch'])
 
     def __str__(self):
         # from packhouses.gathering.models import ScheduleHarvest
