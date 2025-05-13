@@ -594,10 +594,8 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             f'Batch {obj.ooid}: '
             f'is_merged={obj.is_merged}, '
             f'is_parent={obj.is_parent}, '
-            f'children_oids=[{obj.children_oids}], '
-            f'children_oids=[{obj.parent_batch_oid}], '
-            f'children_total_weight_received=[{obj.children_total_weight_received}], '
-            f'children_total_weight={obj.children_total_current_weight} '
+            f'children_oids=[{obj.children_ooids}], '
+            f'children_oids=[{obj.parent_batch_ooid}], '
         )
         return ''
 
