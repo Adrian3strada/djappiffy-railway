@@ -6,7 +6,9 @@ from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
 from django.utils.safestring import mark_safe
 from django.db import transaction
+from common.settings import STATUS_CHOICES
 
+# Forms
 class ContainerInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -145,6 +147,16 @@ class IncomingProductForm(forms.ModelForm):
         model = IncomingProduct
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        status = self.initial.get('status') or self.instance.status
+        # Oculta los estados no seleccionables para el usuario
+        if 'status' in self.fields:
+            self.fields['status'].choices = [
+                (value, label) for value, label in self.fields['status'].choices
+                if value != 'closed' or value == status
+            ]
+
     def clean(self):
         cleaned_data = super().clean() or {}
 
@@ -180,8 +192,33 @@ class BatchForm(forms.ModelForm):
         model = Batch
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        status = self.initial.get('status') or self.instance.status
+        # Oculta los estados no seleccionables para el usuario
+        self.fields['status'].choices = [
+            (value, label) for value, label in self.fields['status'].choices
+            if value != 'closed' or value == status
+        ]
+
     def clean(self):
         cleaned = super().clean()
+
+        status = cleaned.get('status')
+        quarantine = cleaned.get('is_quarantined')
+        available = cleaned.get('is_available_for_processing')
+
+        # No permitir cambiar de estado una vez cerrado el lote
+        if self.instance.pk and self.instance.status == 'closed' and status != 'closed':
+            self.add_error('status', _('Cannot change status once closed.'))
+            cleaned['status'] = 'closed'  # restaurar el valor real
+
+        # No permitir cambiar valores de campos booleanos cuando este cancelado o rechazado el lote
+        if status in ['closed', 'canceled'] and self.instance.pk:
+            if quarantine != self.instance.is_quarantined:
+                self.add_error('is_quarantined', _('Cannot change this field when status is closed or canceled.'))
+            if available != self.instance.is_available_for_processing:
+                self.add_error('is_available_for_processing', _('Cannot change this field when status is closed or canceled.'))
 
         # Recorre cada IncomingProduct y comprueba que tenga al menos un WeighingSet no marcado para borrar
         for i in range(int(self.data.get('incomingproduct_set-TOTAL_FORMS', 0))):

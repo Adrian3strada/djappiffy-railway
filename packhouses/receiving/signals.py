@@ -125,14 +125,11 @@ def batch_status_changes(sender, instance, **kwargs):
     org  = instance.organization
     
     # Registra cambios en operational_status y review_status
-    for field in ('operational_status', 'review_status'):
-        old = getattr(prev, field)
-        new = getattr(instance, field)
-        if old != new:
-            BatchStatusChange.objects.create(
-                batch        = instance,
-                organization = org,
-                field_name   = field,
-                old_status    = old,
-                new_status    = new,
-            )
+    if prev.status != instance.status:
+        BatchStatusChange.objects.create(
+            batch        = instance,
+            organization = org,
+            field_name   = 'status',
+            old_status   = prev.status,
+            new_status   = instance.status,
+        )

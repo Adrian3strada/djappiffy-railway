@@ -18,6 +18,13 @@ document.addEventListener("DOMContentLoaded", function () {
         '[name$="-missing_containers"]'
     );
 
+    document.querySelectorAll("td.original").forEach(row => {
+        row.style.display = "none"; 
+    });
+    document.querySelectorAll("th.original").forEach(row => {
+        row.style.display = "none";  
+    });
+
     // Deshabilitar campos calculados
     function disableField(field) {
         if (!field) return;

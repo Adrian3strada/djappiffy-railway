@@ -582,28 +582,14 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'get_scheduleharvest_product_variety', 
                     'get_scheduleharvest_product_phenology', 'get_scheduleharvest_orchards', 'get_incomingproduct_packhouse_weight_result', 
                     'get_batch_available_weight', 'get_scheduleharvest_harvest_date', 'display_created_at',
-                    'display_review_status', 'display_available_for_processing', 'operational_status', 'generate_actions_buttons', 'property')
-    fields = ['ooid', 'review_status', 'operational_status', 'is_quarantined', 'is_available_for_processing']
+                    'status', 'is_quarantined', 'display_available_for_processing', 'generate_actions_buttons')
+    fields = ['ooid', 'status', 'is_quarantined', 'is_available_for_processing']
     readonly_fields = ['ooid',]
     form = BatchForm
     inlines = [IncomingProductInline]
     list_per_page = 20
     actions = ['action_merge_batches', 'action_merge_into_existing_batch']
     admin.site.disable_action('delete_selected')
-
-    def property(self, obj):
-        # Esto se ejecuta por cada fila al generar el changelist
-        print(
-            f'Batch {obj.ooid}: '
-            f'is_child={obj.is_child}, '
-            f'is_parent={obj.is_parent}, '
-            f'children_oids=[{obj.children_ooids}], '
-            f'parent_ooid=[{obj.parent_batch_ooid}], '
-            f'children_total_weight_received=[{obj.children_total_weight_received}], '
-            f'batch_current_weight=[{obj.available_weight}], '
-            f'children_current_weight=[{obj.children_available_weight}], '
-        )
-        return ''
 
     @admin.action(description='Merge batches into a new batch.')
     def action_merge_batches(self, request, queryset):
@@ -640,20 +626,16 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             else:
                 destination = Batch.objects.create(
                     organization=queryset.first().organization,
-                    review_status='ready',
-                    operational_status='in_operation',
+                    status='ready',
                 )
                 sources = list(qs)
             for origin in sources:
                 origin.parent = destination
-                origin.parent = destination
-                origin.review_status = 'ready'
-                origin.operational_status = 'in_another_batch'
+                origin.status = 'ready'
                 origin.is_available_for_processing = False
                 origin.save(update_fields=[
                     'parent',
-                    'review_status',
-                    'operational_status',
+                    'status',
                     'is_available_for_processing',
                 ])
         url = reverse(
@@ -712,8 +694,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
                 for batch in children_to_add:
                     batch.parent = parent
                     batch.parent = parent
-                    batch.review_status = 'ready'
-                    batch.operational_status = 'in_another_batch'
+                    batch.status = 'ready'
                     batch.save()
         except Exception as e:
             self.message_user(
@@ -741,15 +722,9 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     generate_actions_buttons.short_description = _('Actions')
     generate_actions_buttons.allow_tags = True
     
-    def display_review_status(self, obj):
-        if obj.operational_status == 'in_another_batch':
-            return ''
-        return obj.get_review_status_display()
-    display_review_status.admin_order_field = 'review_status'
-    display_review_status.short_description = _('Review Status')
 
     def display_available_for_processing(self, obj):
-        if obj.operational_status == 'in_another_batch':
+        if obj.is_child:
             return ''
         return _boolean_icon(obj.is_available_for_processing)
     display_available_for_processing.short_description = _('Available for Processing')

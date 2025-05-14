@@ -3,7 +3,7 @@ from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
-from .utils import get_approval_status_choices, get_processing_status_choices, get_batch_status_change
+from .utils import get_processing_status_choices, get_batch_status_change
 from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, Provider, ProductFoodSafetyProcess,
                                         Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage,
                                         ProductResidue, ProductDryMatterAcceptanceReport, Market)
@@ -16,10 +16,8 @@ from common.settings import STATUS_CHOICES
 # Create your models here.
 class Batch(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_('Batch Number'), null=True, blank=True, unique=True)
-    review_status = models.CharField(max_length=25, verbose_name=_('Review Status'),
+    status = models.CharField(max_length=25, verbose_name=_('Status'),
                                      choices=STATUS_CHOICES, default='open', blank=True)
-    operational_status = models.CharField(max_length=25, choices=get_processing_status_choices(), default='pending',
-                                          verbose_name=_('Operational Status'), blank=True)
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
     is_quarantined = models.BooleanField(default=False, verbose_name=_('In quarantine'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Entry Date'))
@@ -29,24 +27,17 @@ class Batch(models.Model):
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='children', verbose_name=_('Parent'))
 
     def __str__(self):
-        try:
-            incoming = self.incomingproduct
-        except IncomingProduct.DoesNotExist:
-            incoming = None
+        incoming = getattr(self, 'incomingproduct', None)
 
         if incoming:
             sh = getattr(incoming, 'scheduleharvest', None)
-            harvest_info = (
-                f"{_('Schedule Harvest Number')}: {sh.ooid}"
-                if sh else
-                _('No Harvest')
-            )
-            return (
-                f"{self.ooid} – {_('Incoming Product')} "
-                f"id: {incoming.id} – {harvest_info}"
-            )
+            harvest = f"{_('Schedule Harvest Number')}: {sh.ooid}" if sh else _('No Harvest')
+            return f"Batch {self.ooid} – {_('Incoming Product')} ID: {incoming.id} – {harvest}"
 
-        return f"{self.ooid} – {_('No IncomingProduct Asociated')}"
+        if hasattr(self, 'children') and self.children.exists():
+            return f"{self.ooid} – {_('Parent Batch')}"
+
+        return f"{self.ooid} – {_('No Incoming Product Associated')}"
 
     @property
     def batch_weight(self):
@@ -61,13 +52,6 @@ class Batch(models.Model):
         return self.children.aggregate(
             total=Sum('batchweightmovement__weight')
         )['total'] or 0
-
-    @property
-    def available_weight(self):
-        total_weight = self.batch_weight
-        if self.is_parent:
-            total_weight += sum(child.batch_weight for child in self.children.all())
-        return total_weight
 
     @property
     def available_weight(self):
@@ -100,10 +84,47 @@ class Batch(models.Model):
     def yield_producer(self):
         return self.incomingproduct.scheduleharvest.orchard.producer
 
+    # @property para lotes padres e hijos
+    @property
+    def is_child(self):
+        return self.parent is not None
 
+    @property
+    def is_parent(self):
+        return self.children.exists()
 
+    @property
+    def children_list(self):
+        return self.children.all()
 
+    @property
+    def children_ooids(self):
+        return ", ".join(str(batch.ooid) for batch in self.children.all())
 
+    @property
+    def parent_batch_ooid(self):
+        return self.parent.ooid if self.parent else ''
+
+    @property
+    def children_total_weight_received(self):
+        total = 0
+        for child in self.children.all():
+            ip = getattr(child, 'incomingproduct', None)
+            if not ip:
+                continue
+            if ip.packhouse_weight_result:
+                total += ip.packhouse_weight_result
+        return total
+
+    def clean(self):
+        # Bloquear edición de campos booleanos cuando el lote este cerrado o cancelado/rechazado
+        if self.status in ['closed', 'canceled'] and self.pk:
+            prev = Batch.objects.get(pk=self.pk)
+            if self.is_available_for_processing != prev.is_available_for_processing:
+                raise ValidationError({'is_available_for_processing': _('Cannot be changed when status is closed or canceled.')})
+            if self.is_quarantined != prev.is_quarantined:
+                raise ValidationError({'is_quarantined': _('Cannot be changed when status is closed or canceled.')})
+        
     def save(self, *args, **kwargs):
         if self.ooid is None:
             with transaction.atomic():
@@ -116,6 +137,14 @@ class Batch(models.Model):
                 self.ooid = (last.ooid + 1) if last else 1
         super().save(*args, **kwargs)
 
+    # Métodos para historial de status del lote
+    def status_history(self):
+        return self.batchstatuschange_set.filter(field_name='status')
+
+    def last_status_change(self):
+        return self.status_history().order_by('-created_at').first()
+
+    # Unitr lotes para crear un padre
     @classmethod
     def validate_merge_batches(cls, batches_queryset):
         # Validar que los lotes seleccionados no sean hijos
@@ -132,8 +161,8 @@ class Batch(models.Model):
                 code='invalid_merge'
             )
 
-        # Validar que los lotes seleccionados tenga en su review_status "ready"
-        if batches_queryset.exclude(review_status='ready').exists():
+        # Validar que los lotes seleccionados tenga en su status "ready"
+        if batches_queryset.exclude(status='ready').exists():
             raise ValidationError(
                 _('Only batches with a Review Status of “Ready” can be merged.'),
                 code='invalid_status'
@@ -164,7 +193,7 @@ class Batch(models.Model):
                 code='invalid_market_mix'
             )
 
-
+    # Unir un lote (no hijo) a un lote padre
     @classmethod
     def validate_add_batches_to_existing_merge(cls, parent, candidate_batches):
         # Verificar que el lote padre no sea hijo
@@ -181,8 +210,8 @@ class Batch(models.Model):
                 _('The following batches are already part of another merged batch: %s') % oids,
                 code='invalid_merge'
             )
-        # Validar que los lotes seleccionados tenga en su review_status "ready"
-        if candidate_batches.exclude(review_status='ready').exists():
+        # Validar que los lotes seleccionados tenga en su status "ready"
+        if candidate_batches.exclude(status='ready').exists():
             raise ValidationError(
                 _('Only batches with a Review Status of “Ready” can be merged.'),
                 code='invalid_status'
@@ -235,50 +264,6 @@ class Batch(models.Model):
                     _('Cannot add batches: non-mixable market cannot be mixed with others.'),
                     code='invalid_market_mix'
                 )
-            
-    @property
-    def is_child(self):
-        return self.parent is not None
-
-    @property
-    def is_parent(self):
-        return self.children.exists()
-        return self.children.exists()
-
-    @property
-    def children_list(self):
-        return self.children.all()
-
-    @property
-    def children_ooids(self):
-        return ", ".join(str(batch.ooid) for batch in self.children.all())
-
-    @property
-    def parent_batch_ooid(self):
-        return self.parent.ooid if self.parent else ''
-
-    @property
-    def children_total_weight_received(self):
-        total = 0
-        for child in self.children.all():
-            ip = getattr(child, 'incomingproduct', None)
-            if not ip:
-                continue
-            if ip.packhouse_weight_result:
-                total += ip.packhouse_weight_result
-        return total
-
-    def operational_status_history(self):
-        return self.batchstatuschange_set.filter(field_name='operational_status')
-
-    def review_status_history(self):
-        return self.batchstatuschange_set.filter(field_name='review_status')
-
-    def last_operational_status_change(self):
-        return self.operational_status_history().order_by('-created_at').first()
-
-    def last_review_status_change(self):
-        return self.review_status_history().order_by('-created_at').first()
 
     class Meta:
         verbose_name = _('Batch')
@@ -397,8 +382,7 @@ class IncomingProduct(models.Model):
         if self.status == 'ready' and previous_status != 'ready' and self.batch_id is None:
             with transaction.atomic():
                 new_batch = Batch.objects.create(
-                    review_status='open',
-                    operational_status='open',
+                    status='open',
                     is_available_for_processing=False,
                     organization=self.organization
                 )

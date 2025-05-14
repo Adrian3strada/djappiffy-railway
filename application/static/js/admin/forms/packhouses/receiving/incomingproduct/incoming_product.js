@@ -44,8 +44,8 @@ document.addEventListener("DOMContentLoaded", function() {
     disableField(totaWeighedSetContainersField);
 
     
-    if (initialStatus !== 'open') {
-        statusField.find('option[value="open"]').remove();
+    if (initialStatus !== 'closed') {
+        statusField.find('option[value="closed"]').remove();
         statusField.trigger('change.select2');
     }
 
