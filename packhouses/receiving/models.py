@@ -10,16 +10,18 @@ from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, P
 from common.base.models import Pest
 from django.db.models import F, Sum
 from django.core.exceptions import ValidationError
+from common.settings import STATUS_CHOICES
 
 
 # Create your models here.
 class Batch(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_('Batch Number'), null=True, blank=True, unique=True)
     review_status = models.CharField(max_length=25, verbose_name=_('Review Status'),
-                                     choices=get_approval_status_choices(), default='pending', blank=True)
+                                     choices=STATUS_CHOICES, default='open', blank=True)
     operational_status = models.CharField(max_length=25, choices=get_processing_status_choices(), default='pending',
                                           verbose_name=_('Operational Status'), blank=True)
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
+    is_quarantined = models.BooleanField(default=False, verbose_name=_('In quarantine'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Entry Date'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
     # 'parent' apunta al lote padre al que este lote fue unido.
@@ -130,10 +132,10 @@ class Batch(models.Model):
                 code='invalid_merge'
             )
 
-        # Validar que los lotes seleccionados tenga en su review_status "accepted"
-        if batches_queryset.exclude(review_status='accepted').exists():
+        # Validar que los lotes seleccionados tenga en su review_status "ready"
+        if batches_queryset.exclude(review_status='ready').exists():
             raise ValidationError(
-                _('Only batches with a Review Status of “Accepted” can be merged.'),
+                _('Only batches with a Review Status of “Ready” can be merged.'),
                 code='invalid_status'
             )
 
@@ -179,10 +181,10 @@ class Batch(models.Model):
                 _('The following batches are already part of another merged batch: %s') % oids,
                 code='invalid_merge'
             )
-        # Validar que los lotes seleccionados tenga en su review_status "accepted"
-        if candidate_batches.exclude(review_status='accepted').exists():
+        # Validar que los lotes seleccionados tenga en su review_status "ready"
+        if candidate_batches.exclude(review_status='ready').exists():
             raise ValidationError(
-                _('Only batches with a Review Status of “Accepted” can be merged.'),
+                _('Only batches with a Review Status of “Ready” can be merged.'),
                 code='invalid_status'
             )
         # Se añaden los lotes seleccionados a los hijos actuales del lote padre
@@ -338,8 +340,8 @@ class BatchStatusChange(models.Model):
 
 
 class IncomingProduct(models.Model):
-    status = models.CharField(max_length=20, verbose_name=_('Status'), choices=get_approval_status_choices(),
-                              default='pending')
+    status = models.CharField(max_length=20, verbose_name=_('Status'), choices=STATUS_CHOICES,
+                              default='open')
     public_weighing_scale = models.ForeignKey(WeighingScale, verbose_name=_("Public Weighing Scale"),
                                               on_delete=models.PROTECT, null=True, blank=False)
     public_weight_result = models.FloatField(default=0, verbose_name=_("Public Weight Result"), )
@@ -362,6 +364,7 @@ class IncomingProduct(models.Model):
                                              help_text=_('Missing containments per harvest'))
     average_per_container = models.FloatField(default=0, verbose_name=_("Average per Container"), help_text=_(
         'Based on packhouse weight result and weighed set containments'))
+    is_quarantined = models.BooleanField(default=False, verbose_name=_('In quarantine'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'))
     batch = models.OneToOneField(Batch, on_delete=models.PROTECT, verbose_name=_('Batch'), null=True, blank=True)
     comments = models.TextField(verbose_name=_("Comments"), blank=True, null=True)
@@ -375,27 +378,27 @@ class IncomingProduct(models.Model):
     def clean(self):
         if self.pk:
             initial_status = IncomingProduct.objects.get(pk=self.pk).status
-            if initial_status == 'accepted' and self.status != 'accepted':
-                raise ValidationError("Once accepted, the status cannot be changed.")
+            if initial_status == 'ready' and self.status != 'ready':
+                raise ValidationError("Once it is 'Ready', the status cannot be changed.")
             
         # Comentado porque model.clean() corre antes de validar/guardar inlines y weighingset_set siempre esta vacío al crear por primera vez
-        # if self.status == "accepted" and not self.weighingset_set.exists():
+        # if self.status == "ready" and not self.weighingset_set.exists():
         #     raise ValidationError("At least one Weighing Set must be registered for the Incoming Product.")
 
     def save(self, *args, **kwargs):
         self.clean()
 
-        previous_status = 'pending'
+        previous_status = 'open'
         if self.pk:
             previous_status = IncomingProduct.objects.get(pk=self.pk).status
 
         super().save(*args, **kwargs)
 
-        if self.status == 'accepted' and previous_status != 'accepted' and self.batch_id is None:
+        if self.status == 'ready' and previous_status != 'ready' and self.batch_id is None:
             with transaction.atomic():
                 new_batch = Batch.objects.create(
-                    review_status='pending',
-                    operational_status='pending',
+                    review_status='open',
+                    operational_status='open',
                     is_available_for_processing=False,
                     organization=self.organization
                 )

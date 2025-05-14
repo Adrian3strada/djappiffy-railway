@@ -73,7 +73,7 @@ class BaseScheduleHarvestVehicleFormSet(BaseInlineFormSet):
         else:
             incoming_status = self.data.get('status')
 
-        if incoming_status == "accepted":
+        if incoming_status == "ready":
             valid_forms = [
                 form.cleaned_data
                 for form in self.forms
@@ -153,8 +153,8 @@ class IncomingProductForm(forms.ModelForm):
         # Status final enviado por el form
         final_status = cleaned_data.get('status', initial_status)
 
-        if initial_status == 'accepted' and final_status != 'accepted':
-            raise ValidationError(_("Once accepted, the status cannot be changed."))
+        if initial_status == 'ready' and final_status != 'ready':
+            raise ValidationError(_("Once it is ready, the status cannot be changed."))
 
         # Validación de los WeighingSets (igual que antes)…
         total = int(self.data.get('weighingset_set-TOTAL_FORMS', 0))
@@ -162,7 +162,7 @@ class IncomingProductForm(forms.ModelForm):
             1 for i in range(total)
             if self.data.get(f'weighingset_set-{i}-DELETE', 'off') != 'on'
         )
-        if remaining < 1 and final_status == "accepted":
+        if remaining < 1 and final_status == "ready":
             raise ValidationError(_("At least one Weighing Set must be registered for the Incoming Product."))
 
         for i in range(remaining):

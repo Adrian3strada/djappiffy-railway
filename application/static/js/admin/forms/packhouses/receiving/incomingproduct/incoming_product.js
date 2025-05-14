@@ -44,8 +44,8 @@ document.addEventListener("DOMContentLoaded", function() {
     disableField(totaWeighedSetContainersField);
 
     
-    if (initialStatus !== 'pending') {
-        statusField.find('option[value="pending"]').remove();
+    if (initialStatus !== 'open') {
+        statusField.find('option[value="open"]').remove();
         statusField.trigger('change.select2');
     }
 
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const status = $('#id_status').val();
                 console.log("El status: ", status)
 
-                if (publicWeight > packhouseWeight && diff >= threshold && status === "accepted") {
+                if (publicWeight > packhouseWeight && diff >= threshold && status === "ready") {
                     e.preventDefault();
                     const diffPerc = (diff / publicWeight) * 100; 
                     Swal.fire({

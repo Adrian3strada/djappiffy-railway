@@ -32,7 +32,7 @@
     "model": "receiving.incomingproduct",
     "pk": 1,
     "fields": {
-    "status": "accepted",
+    "status": "ready",
     "public_weighing_scale": 2,
     "public_weight_result": 4500.0,
     "packhouse_weight_result": 4472.2,
@@ -56,7 +56,7 @@
     "model": "receiving.incomingproduct",
     "pk": 2,
     "fields": {
-    "status": "accepted",
+    "status": "ready",
     "public_weighing_scale": 2,
     "public_weight_result": 3300.0,
     "packhouse_weight_result": 3254.0,
@@ -80,7 +80,7 @@
     "model": "receiving.incomingproduct",
     "pk": 3,
     "fields": {
-    "status": "accepted",
+    "status": "ready",
     "public_weighing_scale": 3,
     "public_weight_result": 3800.0,
     "packhouse_weight_result": 1274.0,
@@ -104,7 +104,7 @@
     "model": "receiving.incomingproduct",
     "pk": 4,
     "fields": {
-    "status": "pending",
+    "status": "open",
     "public_weighing_scale": null,
     "public_weight_result": 0.0,
     "packhouse_weight_result": 0.0,
@@ -127,7 +127,7 @@
     "model": "receiving.incomingproduct",
     "pk": 5,
     "fields": {
-    "status": "pending",
+    "status": "open",
     "public_weighing_scale": 3,
     "public_weight_result": 2600.0,
     "packhouse_weight_result": 1972.0,

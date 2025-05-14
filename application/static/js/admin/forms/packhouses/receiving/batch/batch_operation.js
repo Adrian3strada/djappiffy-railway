@@ -27,13 +27,13 @@ document.addEventListener("DOMContentLoaded", function() {
         availableForProcessing.prop('checked', false);
     }
     
-    if (initialStatus !== 'pending') {
-        reviewStatusField.find('option[value="pending"]').remove();
+    if (initialStatus !== 'open') {
+        reviewStatusField.find('option[value="open"]').remove();
         reviewStatusField.trigger('change.select2');
     }
     setTimeout(function() {
         const initialStatus = reviewStatusField.val();
-        if (initialStatus === 'pending') {
+        if (initialStatus === 'open') {
             disableAvailableForProcessing();
         }
     }, 50);
@@ -41,23 +41,19 @@ document.addEventListener("DOMContentLoaded", function() {
     function updateFieldsBasedOnReviewStatus() {
         const reviewStatus = reviewStatusField.val();
 
-        if (reviewStatus === 'accepted') {
+        if (reviewStatus === 'ready') {
             availableForProcessing.prop('disabled', false);
             operationalStatusField.val('in_operation').trigger('change');
         }
         
-        if (reviewStatus === 'pending') {
+        if (reviewStatus === 'open') {
             availableForProcessing.prop('disabled', false);
-            operationalStatusField.val('pending').trigger('change');
+            operationalStatusField.val('open').trigger('change');
         }
 
         if (reviewStatus === 'rejected') {
             availableForProcessing.prop('disabled', true).prop('checked', false);
             operationalStatusField.val('canceled').trigger('change');
-        }
-        if (reviewStatus === 'quarantine') {
-            availableForProcessing.prop('disabled', true).prop('checked', false);
-            operationalStatusField.val('pending').trigger('change');
         }
     }
     function updateFieldsBasedOnOperationalStatus(){

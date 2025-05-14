@@ -356,7 +356,7 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
                     'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'status','generate_actions_buttons')
     fields = ('phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'total_weighed_sets',
               'packhouse_weight_result', 'mrl', 'kg_sample', 'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'total_weighed_set_containers',
-              'average_per_container', 'comments', 'status')
+              'average_per_container', 'comments', 'is_quarantined', 'status')
     list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                    ByCategoryForOrganizationIncomingProductFilter)
     search_fields = ('scheduleharvest__ooid',)
@@ -364,9 +364,9 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     form = IncomingProductForm
     actions = None
 
-    # Filtrar en el Admin solo los cortes que su status sea distinto a "accepted"
+    # Filtrar en el Admin solo los cortes que su status sea distinto a "ready"
     # def get_queryset(self, request):
-    #    return super().get_queryset(request).exclude(status="accepted")
+    #    return super().get_queryset(request).exclude(status="ready")
 
     @uppercase_form_charfield('weighing_record_number')
     @uppercase_form_charfield('phytosanitary_certificate')
@@ -385,7 +385,7 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     def get_readonly_fields(self, request, obj=None):
         status = list(self.readonly_fields)
         # Si ya está aceptado, hacer el campo status solo lectura
-        if obj and obj.status == 'accepted':
+        if obj and obj.status == 'ready':
             status.append('status')
         return status
 
@@ -551,9 +551,9 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
 
 class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = IncomingProduct
-    fields = ('status', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'total_weighed_sets',
+    fields = ('phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'total_weighed_sets',
               'packhouse_weight_result', 'mrl', 'kg_sample', 'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'total_weighed_set_containers',
-              'average_per_container', 'comments')
+              'average_per_container', 'comments', 'is_quarantined', 'status')
     readonly_fields = ('status',)
     extra = 0
     max_num = 0
@@ -583,7 +583,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
                     'get_scheduleharvest_product_phenology', 'get_scheduleharvest_orchards', 'get_incomingproduct_packhouse_weight_result', 
                     'get_batch_available_weight', 'get_scheduleharvest_harvest_date', 'display_created_at',
                     'display_review_status', 'display_available_for_processing', 'operational_status', 'generate_actions_buttons', 'property')
-    fields = ['ooid', 'review_status', 'operational_status', 'is_available_for_processing']
+    fields = ['ooid', 'review_status', 'operational_status', 'is_quarantined', 'is_available_for_processing']
     readonly_fields = ['ooid',]
     form = BatchForm
     inlines = [IncomingProductInline]
@@ -640,14 +640,14 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             else:
                 destination = Batch.objects.create(
                     organization=queryset.first().organization,
-                    review_status='accepted',
+                    review_status='ready',
                     operational_status='in_operation',
                 )
                 sources = list(qs)
             for origin in sources:
                 origin.parent = destination
                 origin.parent = destination
-                origin.review_status = 'accepted'
+                origin.review_status = 'ready'
                 origin.operational_status = 'in_another_batch'
                 origin.is_available_for_processing = False
                 origin.save(update_fields=[
@@ -712,7 +712,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
                 for batch in children_to_add:
                     batch.parent = parent
                     batch.parent = parent
-                    batch.review_status = 'accepted'
+                    batch.review_status = 'ready'
                     batch.operational_status = 'in_another_batch'
                     batch.save()
         except Exception as e:

@@ -23,7 +23,7 @@
     "created_at": "2025-03-24T17:30:45.174Z",
     "organization": 1,
     "incoming_product": 1,
-    "orchard_certification": [
+    "orchard_certifications": [
       1
     ]
   }
@@ -52,7 +52,7 @@
     "created_at": "2025-04-12T15:41:50.413Z",
     "organization": 1,
     "incoming_product": 2,
-    "orchard_certification": [
+    "orchard_certifications": [
       1
     ]
   }
@@ -81,7 +81,7 @@
     "created_at": "2025-04-12T15:43:29.809Z",
     "organization": 1,
     "incoming_product": 3,
-    "orchard_certification": [
+    "orchard_certifications": [
       1
     ]
   }
@@ -110,7 +110,7 @@
     "created_at": "2025-04-12T15:45:52.667Z",
     "organization": 1,
     "incoming_product": 4,
-    "orchard_certification": [
+    "orchard_certifications": [
       1
     ]
   }
@@ -139,7 +139,7 @@
     "created_at": "2025-04-12T15:48:28.844Z",
     "organization": 1,
     "incoming_product": 5,
-    "orchard_certification": [
+    "orchard_certifications": [
       2
     ]
   }
@@ -168,7 +168,7 @@
     "created_at": "2025-05-02T22:04:42.349Z",
     "organization": 1,
     "incoming_product": 6,
-    "orchard_certification": [
+    "orchard_certifications": [
       1
     ]
   }
@@ -197,7 +197,7 @@
     "created_at": "2025-05-06T17:11:10.348Z",
     "organization": 1,
     "incoming_product": 7,
-    "orchard_certification": [
+    "orchard_certifications": [
       1
     ]
   }
@@ -210,13 +210,13 @@
     "harvest_date": "2025-05-08",
     "product_provider": null,
     "category": "gathering",
-    "gatherer": 4,
+    "gatherer": 1,
     "maquiladora": null,
     "product": 1,
     "product_variety": 1,
     "product_phenologies": 1,
     "product_harvest_size_kind": 1,
-    "orchard": 3,
+    "orchard": 2,
     "market": 4,
     "weight_expected": 0.0,
     "weighing_scale": 2,
@@ -226,7 +226,7 @@
     "created_at": "2025-05-08T23:31:16.104Z",
     "organization": 1,
     "incoming_product": null,
-    "orchard_certification": []
+    "orchard_certifications": []
   }
 },
 {
