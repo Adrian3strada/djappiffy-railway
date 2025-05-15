@@ -83,9 +83,9 @@ class Batch(models.Model):
     def yield_orchard_producer(self):
         return self.incomingproduct.scheduleharvest.orchard.producer
 
-
-
-
+    @property
+    def yield_orchard_producer_registry_code(self):
+        return self.incomingproduct.scheduleharvest.orchard.producer.code
 
     def save(self, *args, **kwargs):
         if self.ooid is None:
