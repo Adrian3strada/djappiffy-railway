@@ -1,11 +1,14 @@
 from django.dispatch import receiver
-from django.db.models.signals import post_save, post_delete, pre_save
-from .models import DryMatter, InternalInspection, Average, FoodSafety, SampleCollection, SampleWeight, IncomingProduct, Batch, BatchStatusChange
+from django.db.models.signals import post_save, post_delete, pre_save, pre_delete
+from .models import (DryMatter, InternalInspection, Average, FoodSafety, SampleCollection, SampleWeight, 
+                     IncomingProduct, Batch, BatchStatusChange, WeighingSetContainer, WeighingSet)
 from packhouses.gathering.models import ScheduleHarvest
 from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductDryMatterAcceptanceReport
 from common.base.models import FoodSafetyProcedure
 from django.db.models import Avg
 from decimal import Decimal
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 @receiver(post_save, sender=DryMatter)
 def add_avg_dry_matter(sender, instance, **kwargs):
@@ -124,7 +127,7 @@ def batch_status_changes(sender, instance, **kwargs):
         return
     org  = instance.organization
     
-    # Registra cambios en operational_status y review_status
+    # Registra cambios en el estado del lote
     if prev.status != instance.status:
         BatchStatusChange.objects.create(
             batch        = instance,
@@ -133,3 +136,46 @@ def batch_status_changes(sender, instance, **kwargs):
             old_status   = prev.status,
             new_status   = instance.status,
         )
+
+# Calculo de peso neto de pesadas (WeighingSet)
+@receiver([post_save, post_delete], sender=WeighingSetContainer)
+def update_weighing_set_totals(sender, instance, **kwargs):
+    parent = instance.weighing_set
+
+    if not parent or not parent.pk:
+        return
+    
+    if parent.protected:
+        return
+    
+    parent.refresh_from_db(fields=["gross_weight", "platform_tare"])
+
+    containers = parent.weighingsetcontainer_set.all()
+    parent.container_tare = sum(c.quantity * c.harvest_container.kg_tare for c in containers)
+    parent.total_containers = sum(c.quantity for c in containers)
+
+    gross = parent.gross_weight or 0
+    tare = parent.container_tare or 0
+    platform = parent.platform_tare or 0
+
+    parent.net_weight = gross - tare - platform
+    parent.save(update_fields=["container_tare", "total_containers", "net_weight"])
+
+
+@receiver(post_save, sender=WeighingSet)
+def protect_previous_weighings(sender, instance, created, **kwargs):
+    print(f"DEBUG: protect_previous_weighings iniciado para WeighingSet con PK: {instance.pk}, created={created}")
+    
+    if not created:
+        previous = WeighingSet.objects.filter(
+            incoming_product=instance.incoming_product
+        ).exclude(pk=instance.pk)
+        count = previous.count()
+        print(f"DEBUG: Se encontraron {count} instancia(s) anteriores a proteger para IncomingProduct con PK: {instance.incoming_product.pk}")
+        previous.update(protected=True)
+    
+    # Asegurar que la nueva quede como no protegida
+    if instance.protected:
+        print(f"DEBUG: Actualizando la instancia (PK: {instance.pk}) para que no esté protegida.")
+        instance.protected = False
+        instance.save(update_fields=["protected"])

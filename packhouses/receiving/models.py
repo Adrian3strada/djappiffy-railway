@@ -280,6 +280,7 @@ class BatchWeightMovement(models.Model):
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, verbose_name=_('Batch'))
     weight = models.FloatField(default=0, verbose_name=_('Weight'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
+    source = models.JSONField(default=dict, blank=True, verbose_name=_("Source Information"))
 
     def __str__(self):
         return f"{self.batch} {self.created_at} :: {self.weight}"
@@ -413,44 +414,39 @@ class WeighingSet(models.Model):
     container_tare = models.FloatField(default=0.0, verbose_name=_("Container Tare"), )
     platform_tare = models.FloatField(default=0.0, verbose_name=_("Platform Tare"), )
     net_weight = models.FloatField(default=0.0, verbose_name=_("Net Weight"), )
+    protected = models.BooleanField(default=False, verbose_name=_("Protected"))
     incoming_product = models.ForeignKey(IncomingProduct, verbose_name=_('Incoming Product'), on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.ooid}"
 
-    def save(self, *args, **kwargs):
-        if not self.ooid:
-            with transaction.atomic():
-                last_ws = (
-                    WeighingSet.objects
-                    .select_for_update()
-                    .filter(incoming_product=self.incoming_product)
-                    .order_by('-ooid')
-                    .first()
-                )
-                self.ooid = (last_ws.ooid + 1) if last_ws else 1
-
-        super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):        
+        with transaction.atomic():
+            type(self).objects.filter(incoming_product=self.incoming_product).update(protected=True)
+            self.protected = False
+            # Asignar un ooid incremental
+            last_record = (
+                type(self).objects
+                .filter(incoming_product=self.incoming_product)
+                .select_for_update()
+                .order_by('-ooid')
+                .first()
+            )
+            self.ooid = (last_record.ooid + 1) if last_record else 1
+            super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        # Captura el incoming_product y el ooid antes de borrar
-        inc = self.incoming_product
+        if self.protected:
+            raise ValidationError(_("Only the latest (unprotected) weighing set can be deleted; older sets remain locked."))
+        incoming_product_temp = self.incoming_product
         deleted_ooid = self.ooid
+
         with transaction.atomic():
             super().delete(*args, **kwargs)
-            # Decrementa en 1 todos los ooid > eliminado para reacomodar
-            WeighingSet.objects.filter(
-                incoming_product=inc,
+            updated_count = type(self).objects.filter(
+                incoming_product=incoming_product_temp,
                 ooid__gt=deleted_ooid
             ).update(ooid=F('ooid') - 1)
-
-    class Meta:
-        verbose_name = _('Weighing Set')
-        verbose_name_plural = _('Weighing Sets')
-        constraints = [
-            models.UniqueConstraint(fields=['incoming_product', 'ooid'], name='weighing_unique_incomingproduct')
-        ]
-
 
 class WeighingSetContainer(models.Model):
     harvest_container = models.ForeignKey(Supply, on_delete=models.CASCADE,

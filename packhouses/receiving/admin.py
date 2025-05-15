@@ -17,7 +17,7 @@ from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLi
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInlineMixin
 from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet, 
-                    BatchForm,)
+                    BatchForm, WeighingSetForm, WeighingSetInlineFormSet, SafeWeighingSetContainerForm, SafeWeighingSetContainerInlineFormSet)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                       ByCategoryForOrganizationIncomingProductFilter)
 from .utils import update_weighing_set_numbers,  CustomScheduleHarvestFormSet
@@ -300,7 +300,24 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     inlines = [WeighingSetContainerInline]
     fields = ('ooid', 'provider', 'harvesting_crew', 'gross_weight', 'total_containers', 'container_tare', 'platform_tare', 'net_weight')
     extra = 0
+    form = WeighingSetForm
+    formset = WeighingSetInlineFormSet
 
+    
+    def get_readonly_fields(self, request, obj=None):
+        # Si el objeto principal ya existe, se muestra todo como solo lectura.
+        if obj:
+            return self.fields
+        return super().get_readonly_fields(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        if obj:
+            return False
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        return True
+    
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         form = formset.form
@@ -344,8 +361,8 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
             )
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/incomingproduct/weighing_set_inline.js',)
+    # class Media:
+    #     js = ('js/admin/forms/packhouses/receiving/incomingproduct/weighing_set_inline.js',)
 
 
 # Reciba
