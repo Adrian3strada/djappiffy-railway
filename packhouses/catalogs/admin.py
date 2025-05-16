@@ -1171,7 +1171,6 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         js = ('js/admin/forms/supply.js',)
 
 
-
 class CrewChiefInline(admin.TabularInline):
     model = CrewChief
     extra = 0
