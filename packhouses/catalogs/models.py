@@ -685,8 +685,9 @@ class OrchardCertification(models.Model):
 
 class OrchardGeoLocation(models.Model):
     orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.CASCADE)
-    mode = models.CharField(max_length=20, choices=(('draw', _('Draw')), ('upload', _('Upload'))), verbose_name=_('Mode'))
-    file = models.FileField(upload_to='orchard_geolocation/', verbose_name=_('File'))
+    mode = models.CharField(max_length=20, choices=(('upload', _('Upload')), ('draw', _('Draw')), ('coordinates', _('Write coordinates'))), verbose_name=_('Mode'))
+    file = models.FileField(upload_to='orchard_geolocation/', verbose_name=_('File'), null=True, blank=False)
+    coordinates = models.JSONField(verbose_name=_('Coordinates'), null=True, blank=False)
     geom = models.MultiPolygonField(srid=4326, verbose_name=_('Orchard geolocation'))
 
     def __str__(self):

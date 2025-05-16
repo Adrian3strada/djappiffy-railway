@@ -9,6 +9,15 @@ from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from common.utils import is_instance_used
+from django.contrib.gis.forms import OSMWidget
+
+from django.contrib.gis import forms as gis_forms
+# Register your forms here.
+
+
+class OLGoogleMapsSatelliteWidget(OSMWidget):
+    template_name = "gis/ol-googlemaps-satellite.html"
+    # map_srid = 4326
 
 
 class ProductSeasonKindInlineFormSet(BaseInlineFormSet):
@@ -19,7 +28,7 @@ class ProductSeasonKindInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductSize.objects.all().exists(): #filter(product_season_kind=instance).exists():
+            if instance.pk and ProductSize.objects.all().exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
