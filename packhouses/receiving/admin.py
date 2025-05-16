@@ -17,7 +17,7 @@ from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLi
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInlineMixin
 from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet, 
-                    BatchForm, WeighingSetForm, WeighingSetInlineFormSet, SafeWeighingSetContainerForm, SafeWeighingSetContainerInlineFormSet)
+                    BatchForm, WeighingSetForm, WeighingSetInlineFormSet,)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                       ByCategoryForOrganizationIncomingProductFilter)
 from .utils import update_weighing_set_numbers,  CustomScheduleHarvestFormSet
@@ -596,10 +596,10 @@ class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline)
 
 @admin.register(Batch)
 class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
-    list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'get_scheduleharvest_product_variety', 
-                    'get_scheduleharvest_product_phenology', 'get_scheduleharvest_orchards', 'get_incomingproduct_packhouse_weight_result', 
-                    'get_batch_available_weight', 'get_scheduleharvest_harvest_date', 'display_created_at',
-                    'status', 'is_quarantined', 'display_available_for_processing', 'generate_actions_buttons')
+    list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 
+                    'get_scheduleharvest_product_variety', 'get_scheduleharvest_product_phenology', 'get_scheduleharvest_orchards',
+                    'get_scheduleharvest_harvest_date', 'display_created_at',  'weight_received_display', 'get_batch_available_weight', 
+                    'status', 'is_quarantined', 'display_available_for_processing', 'generate_actions_buttons',)
     fields = ['ooid', 'status', 'is_quarantined', 'is_available_for_processing']
     readonly_fields = ['ooid',]
     form = BatchForm
@@ -847,19 +847,12 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     get_scheduleharvest_product_provider.short_description = _('Product Provider')
     get_scheduleharvest_product_provider.admin_order_field = 'incomingproduct__scheduleharvest__product_provider'
 
-    def get_incomingproduct_packhouse_weight_result(self, obj):
-        if obj.is_parent:
-            total = obj.children_total_weight_received
-            return '{:,.3f}'.format(total) if total else ''
-        incoming = getattr(obj, 'incomingproduct', None)
-        if not incoming or incoming.packhouse_weight_result is None:
-            return ''
-        return '{:,.3f}'.format(incoming.packhouse_weight_result)
-    get_incomingproduct_packhouse_weight_result.short_description = _('Total Received')
-    get_incomingproduct_packhouse_weight_result.admin_order_field = 'incomingproduct__packhouse_weight_result'
+    def weight_received_display(self, obj):
+        return f"{obj.weight_received:.3f}" if obj.weight_received else ""
+    weight_received_display.short_description = _('Weight Received')
 
     def get_batch_available_weight(self, obj):
-        total = obj.children_available_weight if obj.is_parent else obj.available_weight
+        total = obj.available_weight
         return '{:,.3f}'.format(total) if total else ''
     get_batch_available_weight.short_description = _('Available Weight')
 

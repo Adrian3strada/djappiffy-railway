@@ -46,12 +46,14 @@ class Batch(models.Model):
                 batch_weight=Sum('weight')
             )['batch_weight']
         return 0
-    
+
     @property
-    def children_available_weight(self):
-        return self.children.aggregate(
-            total=Sum('batchweightmovement__weight')
-        )['total'] or 0
+    def weight_received(self):
+        qs = self.batchweightmovement_set.filter(source__model__icontains='weighingset')
+        total_weight = qs.aggregate(batch_weight=Sum('weight'))['batch_weight'] or 0
+        if self.is_parent:
+            total_weight += sum(child.batch_weight for child in self.children.all())
+        return total_weight
 
     @property
     def available_weight(self):
@@ -59,7 +61,7 @@ class Batch(models.Model):
         if self.is_parent:
             total_weight += sum(child.batch_weight for child in self.children.all())
         return total_weight
-
+    
     @property
     def yield_available_weight(self):
         return self.available_weight

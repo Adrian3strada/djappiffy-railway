@@ -1,7 +1,7 @@
 from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete, pre_save, pre_delete
 from .models import (DryMatter, InternalInspection, Average, FoodSafety, SampleCollection, SampleWeight, 
-                     IncomingProduct, Batch, BatchStatusChange, WeighingSetContainer, WeighingSet)
+                     IncomingProduct, Batch, BatchStatusChange, WeighingSetContainer, WeighingSet, BatchWeightMovement)
 from packhouses.gathering.models import ScheduleHarvest
 from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductDryMatterAcceptanceReport
 from common.base.models import FoodSafetyProcedure
@@ -161,21 +161,39 @@ def update_weighing_set_totals(sender, instance, **kwargs):
     parent.net_weight = gross - tare - platform
     parent.save(update_fields=["container_tare", "total_containers", "net_weight"])
 
-
 @receiver(post_save, sender=WeighingSet)
-def protect_previous_weighings(sender, instance, created, **kwargs):
-    print(f"DEBUG: protect_previous_weighings iniciado para WeighingSet con PK: {instance.pk}, created={created}")
-    
-    if not created:
+def handle_weighing_set_post_save(sender, instance, created, **kwargs):
+    # Proteger pesadas anteriores
+    if created:
         previous = WeighingSet.objects.filter(
             incoming_product=instance.incoming_product
         ).exclude(pk=instance.pk)
-        count = previous.count()
-        print(f"DEBUG: Se encontraron {count} instancia(s) anteriores a proteger para IncomingProduct con PK: {instance.incoming_product.pk}")
         previous.update(protected=True)
-    
-    # Asegurar que la nueva quede como no protegida
+    # Verificar que la pesada nueva se guarde como protected=False
     if instance.protected:
-        print(f"DEBUG: Actualizando la instancia (PK: {instance.pk}) para que no esté protegida.")
         instance.protected = False
         instance.save(update_fields=["protected"])
+
+    # Registrar movimiento de peso si existe net_weight y un batch relacionado
+    if instance.net_weight > 0 and hasattr(instance.incoming_product, 'batch'):
+        batch = instance.incoming_product.batch
+        source_data = {
+            "model": instance.__class__.__name__,
+            "id": instance.pk,
+            "gross_weight": instance.gross_weight,
+            "container_tare": instance.container_tare,
+            "platform_tare": instance.platform_tare,
+        }
+        # Verifica si ya existe movimiento para evitar duplicados
+        already_exists = BatchWeightMovement.objects.filter(
+            batch=batch,
+            source__model= instance.__class__.__name__,
+            source__id=instance.pk
+        ).exists()
+
+        if not already_exists:
+            BatchWeightMovement.objects.create(
+                batch=batch,
+                weight=instance.net_weight,
+                source=source_data
+            )
