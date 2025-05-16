@@ -314,9 +314,6 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
         if obj:
             return False
         return True
-
-    def has_delete_permission(self, request, obj=None):
-        return True
     
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)

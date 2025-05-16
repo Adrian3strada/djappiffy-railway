@@ -107,17 +107,6 @@ class Batch(models.Model):
     def parent_batch_ooid(self):
         return self.parent.ooid if self.parent else ''
 
-    @property
-    def children_total_weight_received(self):
-        total = 0
-        for child in self.children.all():
-            ip = getattr(child, 'incomingproduct', None)
-            if not ip:
-                continue
-            if ip.packhouse_weight_result:
-                total += ip.packhouse_weight_result
-        return total
-
     def clean(self):
         # Bloquear edición de campos booleanos cuando el lote este cerrado o cancelado/rechazado
         if self.status in ['closed', 'canceled'] and self.pk:
@@ -277,7 +266,6 @@ class Batch(models.Model):
             )
         ]
 
-
 class BatchWeightMovement(models.Model):
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, verbose_name=_('Batch'))
     weight = models.FloatField(default=0, verbose_name=_('Weight'))
@@ -391,10 +379,27 @@ class IncomingProduct(models.Model):
                 )
                 self.batch = new_batch
                 super().save(update_fields=['batch'])
-                BatchWeightMovement.objects.create(
-                    batch=new_batch,
-                    weight=self.packhouse_weight_result
-                )
+                
+                existing_weighing_sets = self.weighingset_set.all()
+                for weighing_set in existing_weighing_sets:
+                    exists = BatchWeightMovement.objects.filter(
+                        batch=new_batch,
+                        source__model=weighing_set.__class__.__name__,
+                        source__id=weighing_set.pk
+                    ).exists()
+                    print("que tiene exists(): ", exists)
+                    if not exists:
+                        BatchWeightMovement.objects.create(
+                            batch=new_batch,
+                            weight=weighing_set.net_weight or 0,
+                            source={
+                                "model": weighing_set.__class__.__name__,
+                                "id": weighing_set.pk,
+                                "gross_weight": weighing_set.gross_weight,
+                                "container_tare": weighing_set.container_tare,
+                                "platform_tare": weighing_set.platform_tare
+                            }
+                        )
 
     def __str__(self):
         schedule_harvest = self.scheduleharvest

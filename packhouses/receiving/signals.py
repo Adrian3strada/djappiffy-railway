@@ -140,7 +140,10 @@ def batch_status_changes(sender, instance, **kwargs):
 # Calculo de peso neto de pesadas (WeighingSet)
 @receiver([post_save, post_delete], sender=WeighingSetContainer)
 def update_weighing_set_totals(sender, instance, **kwargs):
-    parent = instance.weighing_set
+    try:
+        parent = instance.weighing_set
+    except WeighingSet.DoesNotExist:
+        parent = None
 
     if not parent or not parent.pk:
         return
@@ -175,7 +178,7 @@ def handle_weighing_set_post_save(sender, instance, created, **kwargs):
         instance.save(update_fields=["protected"])
 
     # Registrar movimiento de peso si existe net_weight y un batch relacionado
-    if instance.net_weight > 0 and hasattr(instance.incoming_product, 'batch'):
+    if instance.net_weight > 0 and instance.incoming_product.batch is not None:
         batch = instance.incoming_product.batch
         source_data = {
             "model": instance.__class__.__name__,
@@ -197,3 +200,22 @@ def handle_weighing_set_post_save(sender, instance, created, **kwargs):
                 weight=instance.net_weight,
                 source=source_data
             )
+
+@receiver(post_delete, sender=WeighingSet)
+def handle_post_delete_weighing_set(sender, instance, **kwargs):
+    # Registrar eliminación de pesada solo si tiene un batch relacionado
+    if instance.incoming_product.batch:
+        batch = instance.incoming_product.batch
+        source_data = {
+            "model": instance.__class__.__name__,
+            "id": instance.pk,
+            "gross_weight": instance.gross_weight,
+            "container_tare": instance.container_tare,
+            "platform_tare": instance.platform_tare,
+        }
+        BatchWeightMovement.objects.create(
+                batch=batch,
+                weight= -instance.net_weight,
+                source=source_data
+            )
+

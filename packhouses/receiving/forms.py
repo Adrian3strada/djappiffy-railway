@@ -167,7 +167,7 @@ class IncomingProductForm(forms.ModelForm):
 
         if initial_status == 'ready' and final_status != 'ready':
             raise ValidationError(_("Once it is ready, the status cannot be changed."))
-"""
+
         # Validación de los WeighingSets (igual que antes)…
         total = int(self.data.get('weighingset_set-TOTAL_FORMS', 0))
         remaining = sum(
@@ -185,7 +185,7 @@ class IncomingProductForm(forms.ModelForm):
                 raise ValidationError(_(f'Weighing Set {i + 1} is missing a harvesting crew.'))
 
         return cleaned_data
-"""
+
 
 
 class BatchForm(forms.ModelForm):
@@ -220,7 +220,7 @@ class BatchForm(forms.ModelForm):
                 self.add_error('is_quarantined', _('Cannot change this field when status is closed or canceled.'))
             if available != self.instance.is_available_for_processing:
                 self.add_error('is_available_for_processing', _('Cannot change this field when status is closed or canceled.'))
-"""
+
         # Recorre cada IncomingProduct y comprueba que tenga al menos un WeighingSet no marcado para borrar
         for i in range(int(self.data.get('incomingproduct_set-TOTAL_FORMS', 0))):
             ws_prefix = f'incomingproduct_set-{i}-weighingset_set'
@@ -237,7 +237,7 @@ class BatchForm(forms.ModelForm):
                     _('At least one Weighing Set must be registered.')
                 )
         return cleaned
-"""
+
 
 class WeighingSetForm(forms.ModelForm):
     class Meta:
