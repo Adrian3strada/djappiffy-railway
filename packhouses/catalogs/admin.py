@@ -3,7 +3,7 @@ from common.billing.models import LegalEntityCategory
 from .models import (
     Market, Product, ProductMarketClass, ProductVariety, ProductSize,
     ProductHarvestSizeKind, ProductMarketMeasureUnitManagementCost,
-    ProductPhenologyKind,
+    ProductPhenologyKind, OrchardGeoLocation,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, ProductKindCountryStandardPackaging,
@@ -1001,6 +1001,13 @@ class OrchardCertificationInline(admin.StackedInline):
         js = ('js/admin/forms/packhouses/catalogs/orchard_certification_inline.js',)
 
 
+class OrchardGeoLocationInline(admin.StackedInline):
+    model = OrchardGeoLocation
+    extra = 0
+    max_num = 1
+    can_delete = False
+
+
 @admin.register(Orchard)
 class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
@@ -1011,7 +1018,7 @@ class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     fields = ('name', 'code', 'category', 'product', 'producer', 'safety_authority_registration_date', 'state', 'city',
               'district', 'ha',
               'sanitary_certificate', 'is_enabled')
-    inlines = [OrchardCertificationInline]
+    inlines = [OrchardCertificationInline, OrchardGeoLocationInline]
 
     def get_category(self, obj):
         return obj.get_category_display()
