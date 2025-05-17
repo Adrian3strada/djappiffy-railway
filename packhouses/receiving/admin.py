@@ -336,9 +336,8 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
         # Campos readonly para objetos existentes
         if obj and obj.pk:
             readonly_fields.append('ooid')
-
-
         return readonly_fields
+    
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = None
         if hasattr(request, 'organization'):
@@ -363,14 +362,14 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
 
 
 # Reciba
-
 @admin.register(IncomingProduct)
 class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard',
                     'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'status','generate_actions_buttons')
-    fields = ('phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'total_weighed_sets',
-              'packhouse_weight_result', 'mrl', 'kg_sample', 'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'total_weighed_set_containers',
-              'average_per_container', 'comments', 'is_quarantined', 'status')
+    fields = ('mrl', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result',
+              'total_weighed_sets', 'packhouse_weight_result', 'total_weighed_set_containers', 'average_per_container', 
+              'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'kg_sample',
+              'comments', 'is_quarantined','status')
     list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                    ByCategoryForOrganizationIncomingProductFilter)
     search_fields = ('scheduleharvest__ooid',)
@@ -565,9 +564,10 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
 
 class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = IncomingProduct
-    fields = ('phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'total_weighed_sets',
-              'packhouse_weight_result', 'mrl', 'kg_sample', 'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'total_weighed_set_containers',
-              'average_per_container', 'comments', 'is_quarantined', 'status')
+    fields = ('mrl', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result',
+              'total_weighed_sets', 'packhouse_weight_result', 'total_weighed_set_containers', 'average_per_container', 
+              'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'kg_sample',
+              'comments', 'is_quarantined','status')
     readonly_fields = ('status',)
     extra = 0
     max_num = 0

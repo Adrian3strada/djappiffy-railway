@@ -177,12 +177,12 @@ class IncomingProductForm(forms.ModelForm):
         if remaining < 1 and final_status == "ready":
             raise ValidationError(_("At least one Weighing Set must be registered for the Incoming Product."))
 
-        for i in range(remaining):
-            prefix = f'weighingset_set-{i}-'
-            if not self.data.get(prefix + 'provider', '').strip():
-                raise ValidationError(_(f'Weighing Set {i + 1} is missing a provider.'))
-            if not self.data.get(prefix + 'harvesting_crew', '').strip():
-                raise ValidationError(_(f'Weighing Set {i + 1} is missing a harvesting crew.'))
+        # for i in range(remaining):
+        #     prefix = f'weighingset_set-{i}-'
+        #     if not self.data.get(prefix + 'provider', '').strip():
+        #         raise ValidationError(_(f'Weighing Set {i + 1} is missing a provider.'))
+        #     if not self.data.get(prefix + 'harvesting_crew', '').strip():
+        #         raise ValidationError(_(f'Weighing Set {i + 1} is missing a harvesting crew.'))
 
         return cleaned_data
 
@@ -242,7 +242,8 @@ class BatchForm(forms.ModelForm):
 class WeighingSetForm(forms.ModelForm):
     class Meta:
         model = WeighingSet
-        fields = '__all__'
+        exclude = ('protected',)
+
 
     def clean(self):
         cleaned_data = super().clean()
@@ -272,7 +273,6 @@ class WeighingSetForm(forms.ModelForm):
                         raise ValidationError(
                             _(f"No se puede modificar la pesada protegida (campo modificado: {field}).")
                         )
-
         if commit:
             instance.save()
         return instance

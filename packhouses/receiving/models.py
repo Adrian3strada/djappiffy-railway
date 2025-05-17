@@ -367,9 +367,9 @@ class IncomingProduct(models.Model):
         previous_status = 'open'
         if self.pk:
             previous_status = IncomingProduct.objects.get(pk=self.pk).status
-
         super().save(*args, **kwargs)
 
+        # Crear lote
         if self.status == 'ready' and previous_status != 'ready' and self.batch_id is None:
             with transaction.atomic():
                 new_batch = Batch.objects.create(
@@ -401,6 +401,32 @@ class IncomingProduct(models.Model):
                             }
                         )
 
+    def recalculate_weighing_data(self):
+        weighing_sets = self.weighingset_set.all()
+        self.total_weighed_sets = weighing_sets.count()
+
+        self.total_weighed_set_containers = sum(
+            container.quantity or 0
+            for set in weighing_sets
+            for container in set.weighingsetcontainer_set.all()
+        )
+        self.packhouse_weight_result = weighing_sets.aggregate(
+            total=Sum('net_weight')
+        )['total'] or 0.0
+        if self.total_weighed_set_containers > 0:
+            self.average_per_container = round(
+                self.total_weighed_set_containers / self.total_weighed_set_containers, 3
+            )
+        else:
+            self.average_per_container = 0.0
+
+        self.save(update_fields=[
+            'total_weighed_sets',
+            'total_weighed_set_containers',
+            'packhouse_weight_result',
+            'average_per_container'
+        ])
+
     def __str__(self):
         schedule_harvest = self.scheduleharvest
         if schedule_harvest:
@@ -429,8 +455,12 @@ class WeighingSet(models.Model):
 
     def save(self, *args, **kwargs):        
         with transaction.atomic():
-            type(self).objects.filter(incoming_product=self.incoming_product).update(protected=True)
+            type(self).objects.exclude(pk=self.pk).filter(
+                incoming_product=self.incoming_product
+            ).update(protected=True)
+
             self.protected = False
+            
             # Asignar un ooid incremental
             last_record = (
                 type(self).objects

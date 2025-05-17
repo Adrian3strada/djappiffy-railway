@@ -163,20 +163,9 @@ def update_weighing_set_totals(sender, instance, **kwargs):
 
     parent.net_weight = gross - tare - platform
     parent.save(update_fields=["container_tare", "total_containers", "net_weight"])
-
+        
 @receiver(post_save, sender=WeighingSet)
 def handle_weighing_set_post_save(sender, instance, created, **kwargs):
-    # Proteger pesadas anteriores
-    if created:
-        previous = WeighingSet.objects.filter(
-            incoming_product=instance.incoming_product
-        ).exclude(pk=instance.pk)
-        previous.update(protected=True)
-    # Verificar que la pesada nueva se guarde como protected=False
-    if instance.protected:
-        instance.protected = False
-        instance.save(update_fields=["protected"])
-
     # Registrar movimiento de peso si existe net_weight y un batch relacionado
     if instance.net_weight > 0 and instance.incoming_product.batch is not None:
         batch = instance.incoming_product.batch
@@ -219,3 +208,15 @@ def handle_post_delete_weighing_set(sender, instance, **kwargs):
                 source=source_data
             )
 
+
+@receiver(post_save, sender=WeighingSet)
+@receiver(post_delete, sender=WeighingSet)
+@receiver(post_save, sender=WeighingSetContainer)
+@receiver(post_delete, sender=WeighingSetContainer)
+def recalculate_weighingset_change(sender, instance, **kwargs):
+    incoming = getattr(instance, 'incoming_product', None)
+    if not incoming and hasattr(instance, 'weighing_set'):
+        incoming = getattr(instance.weighing_set, 'incoming_product', None)
+
+    if incoming:
+        incoming.recalculate_weighing_data()
