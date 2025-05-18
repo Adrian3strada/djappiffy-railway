@@ -3,7 +3,7 @@ from common.billing.models import LegalEntityCategory
 from .models import (
     Market, Product, ProductMarketClass, ProductVariety, ProductSize,
     ProductHarvestSizeKind, ProductMarketMeasureUnitManagementCost,
-    ProductPhenologyKind,
+    ProductPhenologyKind, OrchardGeoLocation,
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, ProductKindCountryStandardPackaging,
@@ -17,7 +17,7 @@ from .models import (
     ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue, ProductFoodSafetyProcess,
     ProductDryMatterAcceptanceReport
 )
-
+from .forms import OLGoogleMapsSatelliteWidget
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind, VehicleFuelKind, VehicleKind,
                                                   VehicleBrand, OrchardCertificationKind, OrchardCertificationVerifier
                                                   )
@@ -30,6 +30,7 @@ from .forms import (ProductVarietyInlineFormSet, ProductHarvestSizeKindInlineFor
 from django_ckeditor_5.widgets import CKEditor5Widget
 from organizations.models import Organization
 from cities_light.models import Country, Region, SubRegion, City
+from django.contrib.gis.db import models as geomodels
 import nested_admin
 from django.utils.translation import gettext_lazy as _
 from .filters import (ByCountryForOrganizationMarketsFilter, ByProductForOrganizationFilter,
@@ -39,12 +40,14 @@ from .filters import (ByCountryForOrganizationMarketsFilter, ByProductForOrganiz
                       ByStateForOrganizationGathererFilter, ByCityForOrganizationGathererFilter,
                       ByClientCapitalFrameworkForOrganizationFilter, BySupplyKindForPackagingFilter,
                       BySupplyForOrganizationPackagingFilter, ByProductForOrganizationPackagingFilter,
-                      ByMarketForOrganizationPackagingFilter, ByProductKindCountryStandardPackagingForOrganizationPackagingFilter,
+                      ByMarketForOrganizationPackagingFilter,
+                      ByProductKindCountryStandardPackagingForOrganizationPackagingFilter,
                       ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                       ByCityForOrganizationClientsFilter, ByPaymentKindForOrganizationFilter,
                       ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
                       ByMarketForOrganizationProductPackagingFilter, ByProductForOrganizationProductPackagingFilter,
-                      ByProductSizeForOrganizationProductPackagingFilter, ByPackagingForOrganizationProductPackagingFilter,
+                      ByProductSizeForOrganizationProductPackagingFilter,
+                      ByPackagingForOrganizationProductPackagingFilter,
                       ByProductPresentationForOrganizationProductPackagingFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
@@ -52,7 +55,8 @@ from .filters import (ByCountryForOrganizationMarketsFilter, ByProductForOrganiz
                       ByServiceProviderForOrganizationServiceFilter, ByStateForOrganizationWeighingScaleFilter,
                       ByCityForOrganizationWeighingScaleFilter, ByCountryForOrganizationExportingCompaniesFilter,
                       ByStateForOrganizationExportingCompaniesFilter, ByCityForOrganizationExportingCompaniesFilter,
-                      ByCountryForOrganizationCustomsBrokersFilter, ByProductForOrganizationProductPackagingPalletFilter,
+                      ByCountryForOrganizationCustomsBrokersFilter,
+                      ByProductForOrganizationProductPackagingPalletFilter,
                       ByMarketForOrganizationPalletFilter,
                       BySupplyForOrganizationPalletFilter,
                       )
@@ -76,7 +80,6 @@ from .resources import (ProductResource, MarketResource, ProductSizeResource, Pr
                         ExportingCompanyResource, TransferResource, LocalTransporterResource,
                         BorderToDestinationTransporterResource, CustomsBrokerResource, VesselResource, AirlineResource,
                         InsuranceCompanyResource, ProductPresentationResource, ProductPackagingResource)
-from django import forms
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -84,6 +87,7 @@ admin.site.unregister(SubRegion)
 admin.site.unregister(City)
 
 from cities_light.admin import CityAdmin as CLCityAdmin
+from django.contrib.gis.forms import OSMWidget
 
 
 # @admin.register(City)
@@ -106,7 +110,7 @@ class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     list_display = ('name', 'alias', 'get_countries', 'is_mixable', 'is_enabled')
     list_filter = (ByCountryForOrganizationMarketsFilter, 'is_mixable', 'is_enabled',)
     search_fields = ('name', 'alias')
-    fields = ('country', 'countries','name', 'alias',  'is_mixable',
+    fields = ('country', 'countries', 'name', 'alias', 'is_mixable',
               'label_language', 'address_label', 'is_enabled')
 
     def get_countries(self, obj):
@@ -265,6 +269,7 @@ class ProductRipenessInline(admin.TabularInline):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
 
+
 class ProductPestInline(admin.TabularInline):
     model = ProductPest
     extra = 0
@@ -294,6 +299,7 @@ class ProductPestInline(admin.TabularInline):
 
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
+
 
 class ProductDiseaseInline(admin.TabularInline):
     model = ProductDisease
@@ -325,17 +331,20 @@ class ProductDiseaseInline(admin.TabularInline):
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
 
+
 class ProductPhysicalDamageInline(admin.TabularInline):
     model = ProductPhysicalDamage
     extra = 0
     verbose_name = _('Physical Damage')
     verbose_name_plural = _('Physical Damages')
 
+
 class ProductResidueInline(admin.TabularInline):
     model = ProductResidue
     extra = 0
     verbose_name = _('Residue')
     verbose_name_plural = _('Residues')
+
 
 class ProductFoodSafetyProcessInline(admin.TabularInline):
     model = ProductFoodSafetyProcess
@@ -365,6 +374,7 @@ class ProductFoodSafetyProcessInline(admin.TabularInline):
 
     class Media:
         js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
+
 
 class ProductDryMatterAcceptanceReportInline(admin.TabularInline):
     model = ProductDryMatterAcceptanceReport
@@ -469,6 +479,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             return formfield
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+
 @admin.register(ProductSize)
 class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
     # report_function = staticmethod(basic_report)
@@ -523,7 +534,9 @@ class ProductSizeAdmin(SortableAdminMixin, ByProductForOrganizationAdminMixin):
                 market = Market.objects.get(id=market_id)
                 product = Product.objects.get(id=product_id)
                 queryset = ProductKindCountryStandardSize.objects.filter(standard__product_kind=product.kind,
-                                                                         standard__country_id__in=[country.id for country in market.countries.all()],
+                                                                         standard__country_id__in=[country.id for
+                                                                                                   country in
+                                                                                                   market.countries.all()],
                                                                          is_enabled=True)
                 kwargs["queryset"] = queryset
                 formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -612,7 +625,8 @@ class ClientShipAddressInline(admin.StackedInline):
 
         if db_field.name == "city":
             if markets_countries:
-                kwargs["queryset"] = SubRegion.objects.filter(country_id__in=[country.id for country in markets_countries])
+                kwargs["queryset"] = SubRegion.objects.filter(
+                    country_id__in=[country.id for country in markets_countries])
             else:
                 kwargs["queryset"] = SubRegion.objects.none()
             formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
@@ -639,8 +653,8 @@ class ClientAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ClientResource]
     list_display = (
-    'name', 'category', 'tax_id', 'market', 'country_display', 'state_display', 'city_display', 'neighborhood',
-    'tax_id', 'contact_phone_number', 'is_enabled')
+        'name', 'category', 'tax_id', 'market', 'country_display', 'state_display', 'city_display', 'neighborhood',
+        'tax_id', 'contact_phone_number', 'is_enabled')
     list_filter = (ByMarketForOrganizationFilter, 'category', ByCountryForOrganizationClientsFilter,
                    ByStateForOrganizationClientsFilter,
                    ByCityForOrganizationClientsFilter, ByClientCapitalFrameworkForOrganizationFilter,
@@ -961,7 +975,8 @@ class MaquiladoraAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         if db_field.name == "clients":
             if hasattr(request, 'organization'):
                 # kwargs["queryset"] = Client.objects.filter(Q(organization=request.organization, is_enabled=True, category="maquiladora") & (Q(maquiladora__isnull=True) | Q(maquiladora=obj)))
-                kwargs["queryset"] = Client.objects.filter(Q(organization=request.organization, is_enabled=True, category="maquiladora"))
+                kwargs["queryset"] = Client.objects.filter(
+                    Q(organization=request.organization, is_enabled=True, category="maquiladora"))
             else:
                 kwargs["queryset"] = Client.objects.none()
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -1001,6 +1016,23 @@ class OrchardCertificationInline(admin.StackedInline):
         js = ('js/admin/forms/packhouses/catalogs/orchard_certification_inline.js',)
 
 
+class OrchardGeoLocationInline(admin.StackedInline):
+    model = OrchardGeoLocation
+    extra = 1
+    max_num = 1
+    can_delete = False
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.form.base_fields['geom'].widget = OLGoogleMapsSatelliteWidget(attrs={'geom_type': 'MultiPolygon'})
+        return formset
+
+
+
+
+
+
+
 @admin.register(Orchard)
 class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
@@ -1011,7 +1043,7 @@ class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     fields = ('name', 'code', 'category', 'product', 'producer', 'safety_authority_registration_date', 'state', 'city',
               'district', 'ha',
               'sanitary_certificate', 'is_enabled')
-    inlines = [OrchardCertificationInline]
+    inlines = [OrchardCertificationInline, OrchardGeoLocationInline]
 
     def get_category(self, obj):
         return obj.get_category_display()
@@ -1083,10 +1115,12 @@ class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [SupplyResource]
-    list_display = ('name', 'kind', 'capacity_display', 'usage_discount_quantity_display', 'minimum_stock_quantity', 'maximum_stock_quantity', 'is_enabled')
+    list_display = ('name', 'kind', 'capacity_display', 'usage_discount_quantity_display', 'minimum_stock_quantity',
+                    'maximum_stock_quantity', 'is_enabled')
     list_filter = ('kind', 'is_enabled')
     search_fields = ('name',)
-    fields = ('kind', 'name', 'capacity', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity', 'kg_tare', 'is_enabled')
+    fields = ('kind', 'name', 'capacity', 'usage_discount_quantity', 'minimum_stock_quantity', 'maximum_stock_quantity',
+              'kg_tare', 'is_enabled')
 
     def capacity_display(self, obj):
         if obj.capacity and obj.capacity > 0:
@@ -1095,6 +1129,7 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             unit = units[:-1] if obj.capacity == 1 and units[-1].lower() == 's' else units
             return f"{capacity} {unit}"
         return "-"
+
     capacity_display.short_description = _('Capacity')
     capacity_display.admin_order_field = 'capacity'
 
@@ -1102,6 +1137,7 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         units = str(obj.kind.usage_discount_unit_category.unit_category)
         unit = units[:-1] if obj.usage_discount_quantity == 1 and units[-1].lower() == 's' else units
         return f"{str(obj.usage_discount_quantity)} {unit}"
+
     usage_discount_quantity_display.short_description = _('Usage discount quantity')
     usage_discount_quantity_display.admin_order_field = 'usage_discount_quantity'
 
@@ -1136,7 +1172,9 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
         if db_field.name == "capacity":
             print("capacity")
-            packaging_containment_categories = ['packaging_containment', 'packaging_presentation', 'packaging_separator', 'packaging_storage', 'packhouse_cleaning', 'packhouse_fuel', 'harvest_container']
+            packaging_containment_categories = ['packaging_containment', 'packaging_presentation',
+                                                'packaging_separator', 'packaging_storage', 'packhouse_cleaning',
+                                                'packhouse_fuel', 'harvest_container']
             print("packaging_containment_categories", packaging_containment_categories)
             print("request", request)
             if request.POST:
@@ -1162,7 +1200,6 @@ class SupplyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
     class Media:
         js = ('js/admin/forms/supply.js',)
-
 
 
 class CrewChiefInline(admin.TabularInline):
@@ -1236,8 +1273,6 @@ class HarvestingPaymentSettingInline(admin.StackedInline):
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
-
-
 
 
 @admin.register(HarvestingCrew)
@@ -1340,7 +1375,8 @@ class ProductPresentationComplementarySupplyInline(admin.TabularInline):
         presentation_complement_categories = ['packaging_presentation_complement']
 
         if db_field.name == "kind":
-            kwargs["queryset"] = SupplyKind.objects.filter(category__in=presentation_complement_categories, is_enabled=True)
+            kwargs["queryset"] = SupplyKind.objects.filter(category__in=presentation_complement_categories,
+                                                           is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -1362,6 +1398,7 @@ class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
 
     def markets_display(self, obj):
         return ', '.join([market.name for market in obj.markets.all()])
+
     markets_display.short_description = _('Markets')
     markets_display.admin_order_field = 'name'
 
@@ -1448,7 +1485,8 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
         packaging_complement_categories = ['packaging_complement', 'packaging_storage']
 
         if db_field.name == "kind":
-            kwargs["queryset"] = SupplyKind.objects.filter(category__in=packaging_complement_categories, is_enabled=True)
+            kwargs["queryset"] = SupplyKind.objects.filter(category__in=packaging_complement_categories,
+                                                           is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -1474,12 +1512,14 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
     def display_clients(self, obj):
         return ", ".join([client.name for client in obj.clients.all()])
+
     display_clients.short_description = 'Clients'
 
     def country_standard_packaging_display(self, obj):
         if obj.country_standard_packaging:
             return f"{obj.country_standard_packaging.name} ({obj.country_standard_packaging.standard.name}: {obj.country_standard_packaging.standard.country})"
         return f"-"
+
     country_standard_packaging_display.short_description = _('Country standard packaging')
     country_standard_packaging_display.admin_order_field = 'name'
 
@@ -1518,7 +1558,8 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         obj = Packaging.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
-        packaging_supply_kind = request.POST.get('packaging_supply_kind') if request.POST else obj.packaging_supply_kind if obj else None
+        packaging_supply_kind = request.POST.get(
+            'packaging_supply_kind') if request.POST else obj.packaging_supply_kind if obj else None
         market_id = request.POST.get('market') if request.POST else obj.market_id if obj else None
         product_id = request.POST.get('product') if request.POST else obj.product_id if obj else None
         product_kind = ProductKind.objects.get(id=Product.objects.get(id=product_id).kind_id) if product_id else None
@@ -1554,7 +1595,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             if organization and product_kind and market_id:
                 market_countries = Market.objects.get(id=market_id).countries.all().values_list('id', flat=True)
                 queryset = ProductKindCountryStandardPackaging.objects.filter(standard__product_kind=product_kind,
-                standard__country__in=market_countries)
+                                                                              standard__country__in=market_countries)
 
                 kwargs["queryset"] = queryset
                 formfield.required = queryset.exists()
@@ -1563,12 +1604,10 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
                 formfield.required = False
             return formfield
 
-
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
         js = ('js/admin/forms/packaging.js',)
-
 
 
 class ProductPackagingPresentationInline(admin.TabularInline):
@@ -1710,7 +1749,9 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
 
         if db_field.name == "product_size":
             if organization:
-                kwargs["queryset"] = ProductSize.objects.filter(Q(product__organization=organization) | Q(market__organization=organization)).filter(is_enabled=True)
+                kwargs["queryset"] = ProductSize.objects.filter(
+                    Q(product__organization=organization) | Q(market__organization=organization)).filter(
+                    is_enabled=True)
             else:
                 kwargs["queryset"] = ProductSize.objects.none()
 
@@ -1862,7 +1903,8 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
         if db_field.name == "supply":
             if organization:
-                kwargs["queryset"] = Supply.objects.filter(**organization_queryfilter, kind__category='packaging_pallet')
+                kwargs["queryset"] = Supply.objects.filter(**organization_queryfilter,
+                                                           kind__category='packaging_pallet')
             else:
                 kwargs["queryset"] = Supply.objects.none()
 
@@ -1887,6 +1929,7 @@ class WeighingScaleAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
     def get_state_name(self, obj):
         return obj.state.name
+
     get_state_name.short_description = _('State')
     get_state_name.admin_order_field = 'state__name'
 
@@ -2019,8 +2062,8 @@ class ExportingCompanyAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     list_filter = (ByCountryForOrganizationExportingCompaniesFilter, ByStateForOrganizationExportingCompaniesFilter,
                    ByCityForOrganizationExportingCompaniesFilter, 'is_enabled',)
     fields = (
-    'name', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number',
-    'tax_id', 'contact_name', 'email', 'phone_number', 'is_enabled')
+        'name', 'country', 'state', 'city', 'district', 'postal_code', 'neighborhood', 'address', 'external_number',
+        'tax_id', 'contact_name', 'email', 'phone_number', 'is_enabled')
     inlines = (ExportingCompanyBeneficiaryInline,)
 
     def get_state_name(self, obj):
@@ -2366,6 +2409,5 @@ class ProviderAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         js = ('js/admin/forms/common/country-state-city-district.js',
               'js/admin/forms/packhouses/catalogs/provider.js',
               'js/admin/forms/packhouses/catalogs/harvesting_crew_provider.js')
-
 
 # /Providers
