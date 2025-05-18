@@ -1,13 +1,13 @@
 from common.base.router import drf_router
 from django.urls import path
 from . import views
-from .models import ProductHarvestSizeKind
+from .models import ProductHarvestSizeKind, OrchardGeoLocation
 from .viewsets import (
     MarketViewSet, ProductMarketClassViewSet, VehicleViewSet, HarvestingCrewProviderViewSet,
     CrewChiefViewSet, ProductVarietyViewSet, ProductHarvestSizeKindViewSet, ProductPhenologyKindViewSet,
     ClientViewSet, ProviderViewSet, ProductViewSet, MaquiladoraViewSet, SupplyViewSet,
     ProductSizeViewSet, ProductPresentationViewSet, ProductPackagingViewSet, ProductPackagingPalletViewSet, PalletViewSet,
-    OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, PackagingViewSet, ProductRipenessViewSet,
+    OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, OrchardGeoLocationViewSet, PackagingViewSet, ProductRipenessViewSet,
     ServiceViewSet
 )
 
@@ -34,9 +34,11 @@ drf_router.register(r'rest/v1/catalogs/harvesting-crew-provider', HarvestingCrew
 drf_router.register(r'rest/v1/catalogs/crew_chief', CrewChiefViewSet, basename='crew_chief')
 drf_router.register(r'rest/v1/catalogs/client', ClientViewSet, basename='client')
 drf_router.register(r'rest/v1/catalogs/orchard', OrchardViewSet, basename='orchard')
+drf_router.register(r'rest/v1/catalogs/orchard-certification', OrchardCertificationViewSet, basename='orchard_certification')
+drf_router.register(r'rest/v1/catalogs/orchard-geolocation', OrchardGeoLocationViewSet, basename='orchard_geolocation')
+
 drf_router.register(r'rest/v1/catalogs/harvesting-crew', HarvestingCrewViewSet, basename='harvesting_crew')
 drf_router.register(r'rest/v1/catalogs/maquiladora', MaquiladoraViewSet, basename='maquiladora')
-drf_router.register(r'rest/v1/catalogs/orchard-certification', OrchardCertificationViewSet, basename='orchard_certification')
 drf_router.register(r'rest/v1/catalogs/product-ripeness', ProductRipenessViewSet, basename='product_ripeness')
 drf_router.register(r'rest/v1/catalogs/service', ServiceViewSet, basename='service')
 

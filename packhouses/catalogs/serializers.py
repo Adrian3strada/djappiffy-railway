@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from packhouses.catalogs.models import (
     Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, Pallet, ProductPackagingPallet,
-    ProductVariety, ProductPhenologyKind, Maquiladora, ProductPresentation,
+    ProductVariety, ProductPhenologyKind, Maquiladora, ProductPresentation, OrchardGeoLocation,
     CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, Packaging,
     HarvestingCrew, OrchardCertification, ProductRipeness, ProductPackaging, Service
 )
@@ -163,7 +163,6 @@ class MaquiladoraSerializer(serializers.ModelSerializer):
         model = Maquiladora
         fields = '__all__'
 
-from rest_framework import serializers
 
 class OrchardCertificationSerializer(serializers.ModelSerializer):
     verifier_name = serializers.SerializerMethodField()
@@ -178,6 +177,16 @@ class OrchardCertificationSerializer(serializers.ModelSerializer):
 
     def get_expired_text(self, obj):
         return _('Expired')
+
+
+class OrchardGeoLocationSerializer(serializers.ModelSerializer):
+    verifier_name = serializers.SerializerMethodField()
+    expired_text = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OrchardGeoLocation
+        fields = '__all__'
+
 
 class ProductRipenessSerializer(serializers.ModelSerializer):
     class Meta:
