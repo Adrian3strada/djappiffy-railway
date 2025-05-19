@@ -1029,10 +1029,6 @@ class OrchardGeoLocationInline(admin.StackedInline):
 
 
 
-
-
-
-
 @admin.register(Orchard)
 class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)

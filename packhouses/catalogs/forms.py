@@ -17,6 +17,9 @@ from django.contrib.gis import forms as gis_forms
 
 class OLGoogleMapsSatelliteWidget(OSMWidget):
     template_name = "gis/ol-googlemaps-satellite.html"
+    default_lon = -102
+    default_lat = 20
+    default_zoom = 5
     # map_srid = 4326
 
 
