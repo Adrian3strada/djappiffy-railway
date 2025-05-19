@@ -145,11 +145,6 @@
     }
 },
 {
-    "orchard_certification": [
-        2
-    ]
-},
-{
     "model": "gathering.scheduleharvestharvestingcrew",
     "pk": 1,
     "fields": {
