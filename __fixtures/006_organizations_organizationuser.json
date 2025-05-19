@@ -86,16 +86,5 @@
     "user": "04.blue.02.worker",
     "organization": 4
   }
-},
-{
-  "model": "organizations.organizationuser",
-  "pk": 9,
-  "fields": {
-    "created": "2025-05-08T23:24:35.607Z",
-    "modified": "2025-05-08T23:24:35.608Z",
-    "is_admin": true,
-    "user": "F86xJOQzJCWBgaA0N2zSwPmXzXr2",
-    "organization": 8
-  }
 }
 ]

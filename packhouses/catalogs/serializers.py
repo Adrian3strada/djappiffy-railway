@@ -6,7 +6,7 @@ from packhouses.catalogs.models import (
     HarvestingCrew, OrchardCertification, ProductRipeness, ProductPackaging, Service
 )
 from django.utils.translation import gettext_lazy as _
-
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -179,13 +179,11 @@ class OrchardCertificationSerializer(serializers.ModelSerializer):
         return _('Expired')
 
 
-class OrchardGeoLocationSerializer(serializers.ModelSerializer):
-    verifier_name = serializers.SerializerMethodField()
-    expired_text = serializers.SerializerMethodField()
-
+class OrchardGeoLocationSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = OrchardGeoLocation
         fields = '__all__'
+        geo_field = 'geom'
 
 
 class ProductRipenessSerializer(serializers.ModelSerializer):

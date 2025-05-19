@@ -167,7 +167,7 @@
     "comments": "Pasar por el camión a la bascula",
     "created_at": "2025-05-02T22:04:42.349Z",
     "organization": 1,
-    "incoming_product": 6,
+    "incoming_product": null,
     "orchard_certification": [
       1
     ]
@@ -196,7 +196,7 @@
     "comments": "",
     "created_at": "2025-05-06T17:11:10.348Z",
     "organization": 1,
-    "incoming_product": 7,
+    "incoming_product": null,
     "orchard_certification": [
       1
     ]
@@ -210,13 +210,13 @@
     "harvest_date": "2025-05-08",
     "product_provider": null,
     "category": "gathering",
-    "gatherer": 4,
+    "gatherer": 1,
     "maquiladora": null,
     "product": 1,
     "product_variety": 1,
     "product_phenologies": 1,
     "product_harvest_size_kind": 1,
-    "orchard": 3,
+    "orchard": 2,
     "market": 4,
     "weight_expected": 0.0,
     "weighing_scale": 2,
