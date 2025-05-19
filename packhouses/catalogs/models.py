@@ -688,6 +688,7 @@ class OrchardGeoLocation(models.Model):
     mode = models.CharField(max_length=20, choices=(('upload', _('Upload')), ('draw', _('Draw')), ('coordinates', _('Write coordinates'))), verbose_name=_('Mode'))
     file = models.FileField(upload_to='orchard_geolocation/', verbose_name=_('File'), null=True, blank=False)
     coordinates = models.JSONField(verbose_name=_('Coordinates'), null=True, blank=False)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     geom = models.MultiPolygonField(srid=4326, verbose_name=_('Orchard geolocation'))
 
     def __str__(self):

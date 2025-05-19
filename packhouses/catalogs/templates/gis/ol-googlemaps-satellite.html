@@ -11,7 +11,7 @@ options['default_zoom'] = {{ default_zoom|unlocalize }};
   var base_layer = new ol.layer.Tile({
       source: new ol.source.XYZ({
           maxZoom: 23,
-          url: 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+          url: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}'
       })
   });
 {% endblock %}
