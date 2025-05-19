@@ -6,7 +6,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_processing_status_choices, get_batch_status_change
 from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, Provider, ProductFoodSafetyProcess,
                                         Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage,
-                                        ProductResidue, ProductDryMatterAcceptanceReport, Market)
+                                        ProductResidue, ProductDryMatterAcceptanceReport, Orchard, Market)
 from common.base.models import Pest
 from django.db.models import F, Sum
 from django.core.exceptions import ValidationError
