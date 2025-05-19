@@ -1,8 +1,8 @@
 [
 {
-    "model": "gathering.scheduleharvest",
-    "pk": 1,
-    "fields": {
+  "model": "gathering.scheduleharvest",
+  "pk": 1,
+  "fields": {
     "ooid": 1,
     "harvest_date": "2025-03-24",
     "product_provider": 5,
@@ -23,15 +23,15 @@
     "created_at": "2025-03-24T17:30:45.174Z",
     "organization": 1,
     "incoming_product": 1,
-    "orchard_certification": [
+    "orchard_certifications": [
         1
     ]
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvest",
-    "pk": 2,
-    "fields": {
+  "model": "gathering.scheduleharvest",
+  "pk": 2,
+  "fields": {
     "ooid": 2,
     "harvest_date": "2025-04-12",
     "product_provider": 7,
@@ -52,15 +52,15 @@
     "created_at": "2025-04-12T15:41:50.413Z",
     "organization": 1,
     "incoming_product": 2,
-    "orchard_certification": [
+    "orchard_certifications": [
         1
     ]
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvest",
-    "pk": 3,
-    "fields": {
+  "model": "gathering.scheduleharvest",
+  "pk": 3,
+  "fields": {
     "ooid": 3,
     "harvest_date": "2025-04-12",
     "product_provider": 7,
@@ -81,15 +81,15 @@
     "created_at": "2025-04-12T15:43:29.809Z",
     "organization": 1,
     "incoming_product": 3,
-    "orchard_certification": [
+    "orchard_certifications": [
         1
     ]
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvest",
-    "pk": 4,
-    "fields": {
+  "model": "gathering.scheduleharvest",
+  "pk": 4,
+  "fields": {
     "ooid": 4,
     "harvest_date": "2025-04-12",
     "product_provider": 8,
@@ -110,15 +110,15 @@
     "created_at": "2025-04-12T15:45:52.667Z",
     "organization": 1,
     "incoming_product": 4,
-    "orchard_certification": [
+    "orchard_certifications": [
         1
     ]
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvest",
-    "pk": 5,
-    "fields": {
+  "model": "gathering.scheduleharvest",
+  "pk": 5,
+  "fields": {
     "ooid": 5,
     "harvest_date": "2025-04-12",
     "product_provider": 8,
@@ -139,195 +139,343 @@
     "created_at": "2025-04-12T15:48:28.844Z",
     "organization": 1,
     "incoming_product": 5,
-    "orchard_certification": [
+    "orchard_certifications": [
         2
     ]
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestharvestingcrew",
-    "pk": 1,
-    "fields": {
+  "model": "gathering.scheduleharvest",
+  "pk": 6,
+  "fields": {
+    "ooid": 6,
+    "harvest_date": "2025-05-03",
+    "product_provider": 7,
+    "category": "gathering",
+    "gatherer": 1,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 1,
+    "product_phenologies": 1,
+    "product_harvest_size_kind": 2,
+    "orchard": 1,
+    "market": 4,
+    "weight_expected": 0.0,
+    "weighing_scale": 2,
+    "meeting_point": "En la bascula",
+    "status": "ready",
+    "comments": "Pasar por el camión a la bascula",
+    "created_at": "2025-05-02T22:04:42.349Z",
+    "organization": 1,
+    "incoming_product": 6,
+    "orchard_certification": [
+      1
+    ]
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 7,
+  "fields": {
+    "ooid": 7,
+    "harvest_date": "2025-05-07",
+    "product_provider": 7,
+    "category": "gathering",
+    "gatherer": 1,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 1,
+    "product_phenologies": 1,
+    "product_harvest_size_kind": 2,
+    "orchard": 1,
+    "market": 3,
+    "weight_expected": 0.0,
+    "weighing_scale": 1,
+    "meeting_point": "En la bascula",
+    "status": "ready",
+    "comments": "",
+    "created_at": "2025-05-06T17:11:10.348Z",
+    "organization": 1,
+    "incoming_product": 7,
+    "orchard_certification": [
+      1
+    ]
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 8,
+  "fields": {
+    "ooid": 8,
+    "harvest_date": "2025-05-08",
+    "product_provider": null,
+    "category": "gathering",
+    "gatherer": 4,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 1,
+    "product_phenologies": 1,
+    "product_harvest_size_kind": 1,
+    "orchard": 3,
+    "market": 4,
+    "weight_expected": 0.0,
+    "weighing_scale": 2,
+    "meeting_point": "En la bascula",
+    "status": "open",
+    "comments": "",
+    "created_at": "2025-05-08T23:31:16.104Z",
+    "organization": 1,
+    "incoming_product": null,
+    "orchard_certification": []
+  }
+},
+{
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 1,
+  "fields": {
     "harvest_cutting": 1,
     "provider": 6,
     "harvesting_crew": 1
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestharvestingcrew",
-    "pk": 2,
-    "fields": {
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 2,
+  "fields": {
     "harvest_cutting": 2,
     "provider": 9,
     "harvesting_crew": 5
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestharvestingcrew",
-    "pk": 3,
-    "fields": {
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 3,
+  "fields": {
     "harvest_cutting": 3,
     "provider": 9,
     "harvesting_crew": 6
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestharvestingcrew",
-    "pk": 4,
-    "fields": {
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 4,
+  "fields": {
     "harvest_cutting": 3,
     "provider": 6,
     "harvesting_crew": 2
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestharvestingcrew",
-    "pk": 5,
-    "fields": {
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 5,
+  "fields": {
     "harvest_cutting": 4,
     "provider": 9,
     "harvesting_crew": 6
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestharvestingcrew",
-    "pk": 6,
-    "fields": {
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 6,
+  "fields": {
     "harvest_cutting": 5,
     "provider": 9,
     "harvesting_crew": 6
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestharvestingcrew",
-    "pk": 7,
-    "fields": {
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 7,
+  "fields": {
     "harvest_cutting": 5,
     "provider": 9,
     "harvesting_crew": 5
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestharvestingcrew",
-    "pk": 8,
-    "fields": {
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 8,
+  "fields": {
     "harvest_cutting": 5,
     "provider": 6,
     "harvesting_crew": 1
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestvehicle",
-    "pk": 1,
-    "fields": {
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 9,
+  "fields": {
+    "harvest_cutting": 6,
+    "provider": 10,
+    "harvesting_crew": 1
+  }
+},
+{
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 10,
+  "fields": {
+    "harvest_cutting": 7,
+    "provider": 9,
+    "harvesting_crew": 5
+  }
+},
+{
+  "model": "gathering.scheduleharvestharvestingcrew",
+  "pk": 11,
+  "fields": {
+    "harvest_cutting": 8,
+    "provider": 10,
+    "harvesting_crew": 3
+  }
+},
+{
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 1,
+  "fields": {
     "harvest_cutting": 1,
     "provider": 6,
     "vehicle": 1,
     "guide_number": "na",
     "stamp_number": "123456",
     "has_arrived": true
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestvehicle",
-    "pk": 2,
-    "fields": {
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 2,
+  "fields": {
     "harvest_cutting": 2,
     "provider": 10,
     "vehicle": 4,
     "guide_number": "NA",
     "stamp_number": "123",
     "has_arrived": true
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestvehicle",
-    "pk": 3,
-    "fields": {
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 3,
+  "fields": {
     "harvest_cutting": 2,
     "provider": 9,
     "vehicle": 6,
     "guide_number": "NA",
     "stamp_number": "123",
     "has_arrived": true
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestvehicle",
-    "pk": 4,
-    "fields": {
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 4,
+  "fields": {
     "harvest_cutting": 3,
     "provider": 10,
     "vehicle": 4,
     "guide_number": "NA",
     "stamp_number": "123",
     "has_arrived": true
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestvehicle",
-    "pk": 5,
-    "fields": {
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 5,
+  "fields": {
     "harvest_cutting": 4,
     "provider": 9,
     "vehicle": 7,
     "guide_number": null,
     "stamp_number": "123",
     "has_arrived": false
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestvehicle",
-    "pk": 6,
-    "fields": {
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 6,
+  "fields": {
     "harvest_cutting": 4,
     "provider": 9,
     "vehicle": 6,
     "guide_number": null,
     "stamp_number": "123",
     "has_arrived": false
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestvehicle",
-    "pk": 7,
-    "fields": {
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 7,
+  "fields": {
     "harvest_cutting": 5,
     "provider": 9,
     "vehicle": 2,
     "guide_number": "NA",
     "stamp_number": "123",
     "has_arrived": true
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestvehicle",
-    "pk": 8,
-    "fields": {
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 8,
+  "fields": {
     "harvest_cutting": 5,
     "provider": 10,
     "vehicle": 4,
     "guide_number": "NA",
     "stamp_number": "123",
     "has_arrived": true
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestvehicle",
-    "pk": 9,
-    "fields": {
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 9,
+  "fields": {
     "harvest_cutting": 5,
     "provider": 6,
     "vehicle": 3,
     "guide_number": null,
     "stamp_number": "123",
     "has_arrived": false
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestcontainervehicle",
-    "pk": 1,
-    "fields": {
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 10,
+  "fields": {
+    "harvest_cutting": 6,
+    "provider": 10,
+    "vehicle": 2,
+    "guide_number": "5757",
+    "stamp_number": "123",
+    "has_arrived": true
+  }
+},
+{
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 11,
+  "fields": {
+    "harvest_cutting": 7,
+    "provider": 10,
+    "vehicle": 2,
+    "guide_number": "123",
+    "stamp_number": "12",
+    "has_arrived": true
+  }
+},
+{
+  "model": "gathering.scheduleharvestvehicle",
+  "pk": 12,
+  "fields": {
+    "harvest_cutting": 8,
+    "provider": 10,
+    "vehicle": 4,
+    "guide_number": null,
+    "stamp_number": "123",
+    "has_arrived": false
+  }
+},
+{
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 1,
+  "fields": {
     "harvest_cutting": 1,
     "harvest_container": 31,
     "quantity": 250,
@@ -335,12 +483,12 @@
     "empty_containers": 38,
     "missing_containers": 0,
     "created_at_model": "gathering"
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestcontainervehicle",
-    "pk": 2,
-    "fields": {
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 2,
+  "fields": {
     "harvest_cutting": 1,
     "harvest_container": 32,
     "quantity": 10,
@@ -348,12 +496,12 @@
     "empty_containers": 0,
     "missing_containers": 0,
     "created_at_model": "incoming_product"
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestcontainervehicle",
-    "pk": 3,
-    "fields": {
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 3,
+  "fields": {
     "harvest_cutting": 2,
     "harvest_container": 32,
     "quantity": 100,
@@ -361,12 +509,12 @@
     "empty_containers": 10,
     "missing_containers": 0,
     "created_at_model": "incoming_product"
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestcontainervehicle",
-    "pk": 4,
-    "fields": {
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 4,
+  "fields": {
     "harvest_cutting": 3,
     "harvest_container": 31,
     "quantity": 120,
@@ -374,12 +522,12 @@
     "empty_containers": 10,
     "missing_containers": 10,
     "created_at_model": "gathering"
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestcontainervehicle",
-    "pk": 5,
-    "fields": {
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 5,
+  "fields": {
     "harvest_cutting": 4,
     "harvest_container": 32,
     "quantity": 80,
@@ -387,12 +535,12 @@
     "empty_containers": 2,
     "missing_containers": 1,
     "created_at_model": "incoming_product"
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestcontainervehicle",
-    "pk": 6,
-    "fields": {
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 6,
+  "fields": {
     "harvest_cutting": 4,
     "harvest_container": 31,
     "quantity": 30,
@@ -400,12 +548,12 @@
     "empty_containers": 0,
     "missing_containers": 0,
     "created_at_model": "gathering"
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestcontainervehicle",
-    "pk": 7,
-    "fields": {
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 7,
+  "fields": {
     "harvest_cutting": 5,
     "harvest_container": 32,
     "quantity": 80,
@@ -413,12 +561,12 @@
     "empty_containers": 0,
     "missing_containers": 0,
     "created_at_model": "incoming_product"
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestcontainervehicle",
-    "pk": 8,
-    "fields": {
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 8,
+  "fields": {
     "harvest_cutting": 6,
     "harvest_container": 31,
     "quantity": 40,
@@ -426,12 +574,12 @@
     "empty_containers": 0,
     "missing_containers": 0,
     "created_at_model": "gathering"
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestcontainervehicle",
-    "pk": 9,
-    "fields": {
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 9,
+  "fields": {
     "harvest_cutting": 7,
     "harvest_container": 32,
     "quantity": 30,
@@ -439,12 +587,12 @@
     "empty_containers": 0,
     "missing_containers": 0,
     "created_at_model": "incoming_product"
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestcontainervehicle",
-    "pk": 10,
-    "fields": {
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 10,
+  "fields": {
     "harvest_cutting": 7,
     "harvest_container": 31,
     "quantity": 20,
@@ -452,12 +600,12 @@
     "empty_containers": 0,
     "missing_containers": 0,
     "created_at_model": "incoming_product"
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestcontainervehicle",
-    "pk": 11,
-    "fields": {
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 11,
+  "fields": {
     "harvest_cutting": 8,
     "harvest_container": 32,
     "quantity": 20,
@@ -465,12 +613,12 @@
     "empty_containers": 0,
     "missing_containers": 0,
     "created_at_model": "gathering"
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestcontainervehicle",
-    "pk": 12,
-    "fields": {
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 12,
+  "fields": {
     "harvest_cutting": 8,
     "harvest_container": 31,
     "quantity": 60,
@@ -478,12 +626,12 @@
     "empty_containers": 0,
     "missing_containers": 0,
     "created_at_model": "incoming_product"
-    }
+  }
 },
 {
-    "model": "gathering.scheduleharvestcontainervehicle",
-    "pk": 13,
-    "fields": {
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 13,
+  "fields": {
     "harvest_cutting": 9,
     "harvest_container": 32,
     "quantity": 60,
@@ -491,6 +639,45 @@
     "empty_containers": 0,
     "missing_containers": 60,
     "created_at_model": "gathering"
-    }
+  }
+},
+{
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 14,
+  "fields": {
+    "harvest_cutting": 10,
+    "harvest_container": 31,
+    "quantity": 300,
+    "full_containers": 0,
+    "empty_containers": 0,
+    "missing_containers": 300,
+    "created_at_model": "gathering"
+  }
+},
+{
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 16,
+  "fields": {
+    "harvest_cutting": 11,
+    "harvest_container": 32,
+    "quantity": 300,
+    "full_containers": 0,
+    "empty_containers": 0,
+    "missing_containers": 300,
+    "created_at_model": "gathering"
+  }
+},
+{
+  "model": "gathering.scheduleharvestcontainervehicle",
+  "pk": 17,
+  "fields": {
+    "harvest_cutting": 12,
+    "harvest_container": 31,
+    "quantity": 300,
+    "full_containers": 0,
+    "empty_containers": 0,
+    "missing_containers": 0,
+    "created_at_model": "gathering"
+  }
 }
 ]

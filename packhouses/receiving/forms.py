@@ -1,12 +1,14 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from packhouses.gathering.models import ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle
-from .models import IncomingProduct, Batch
+from .models import IncomingProduct, Batch, WeighingSet, WeighingSetContainer
 from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
 from django.utils.safestring import mark_safe
 from django.db import transaction
+from common.settings import STATUS_CHOICES
 
+# Forms
 class ContainerInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -73,7 +75,7 @@ class BaseScheduleHarvestVehicleFormSet(BaseInlineFormSet):
         else:
             incoming_status = self.data.get('status')
 
-        if incoming_status == "accepted":
+        if incoming_status == "ready":
             valid_forms = [
                 form.cleaned_data
                 for form in self.forms
@@ -145,6 +147,16 @@ class IncomingProductForm(forms.ModelForm):
         model = IncomingProduct
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        status = self.initial.get('status') or self.instance.status
+        # Oculta los estados no seleccionables para el usuario
+        if 'status' in self.fields:
+            self.fields['status'].choices = [
+                (value, label) for value, label in self.fields['status'].choices
+                if value != 'closed' or value == status
+            ]
+
     def clean(self):
         cleaned_data = super().clean() or {}
 
@@ -153,8 +165,8 @@ class IncomingProductForm(forms.ModelForm):
         # Status final enviado por el form
         final_status = cleaned_data.get('status', initial_status)
 
-        if initial_status == 'accepted' and final_status != 'accepted':
-            raise ValidationError(_("Once accepted, the status cannot be changed."))
+        if initial_status == 'ready' and final_status != 'ready':
+            raise ValidationError(_("Once it is ready, the status cannot be changed."))
 
         # Validación de los WeighingSets (igual que antes)…
         total = int(self.data.get('weighingset_set-TOTAL_FORMS', 0))
@@ -162,17 +174,23 @@ class IncomingProductForm(forms.ModelForm):
             1 for i in range(total)
             if self.data.get(f'weighingset_set-{i}-DELETE', 'off') != 'on'
         )
-        if remaining < 1 and final_status == "accepted":
+        if remaining < 1 and final_status == "ready":
             raise ValidationError(_("At least one Weighing Set must be registered for the Incoming Product."))
 
+        # Validación para proveedores y cuadrillas
         for i in range(remaining):
             prefix = f'weighingset_set-{i}-'
-            if not self.data.get(prefix + 'provider', '').strip():
-                raise ValidationError(_(f'Weighing Set {i + 1} is missing a provider.'))
-            if not self.data.get(prefix + 'harvesting_crew', '').strip():
-                raise ValidationError(_(f'Weighing Set {i + 1} is missing a harvesting crew.'))
+            existing_id = self.data.get(prefix + 'id', '').strip()
+
+            # Solo validar si es una nueva pesada (sin pk asignado)
+            if not existing_id:
+                if not self.data.get(prefix + 'provider', '').strip():
+                    raise ValidationError(_(f'Weighing Set {i + 1} is missing a provider.'))
+                if not self.data.get(prefix + 'harvesting_crew', '').strip():
+                    raise ValidationError(_(f'Weighing Set {i + 1} is missing a harvesting crew.'))
 
         return cleaned_data
+
 
 
 class BatchForm(forms.ModelForm):
@@ -180,8 +198,33 @@ class BatchForm(forms.ModelForm):
         model = Batch
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        status = self.initial.get('status') or self.instance.status
+        # Oculta los estados no seleccionables para el usuario
+        self.fields['status'].choices = [
+            (value, label) for value, label in self.fields['status'].choices
+            if value != 'closed' or value == status
+        ]
+
     def clean(self):
         cleaned = super().clean()
+
+        status = cleaned.get('status')
+        quarantine = cleaned.get('is_quarantined')
+        available = cleaned.get('is_available_for_processing')
+
+        # No permitir cambiar de estado una vez cerrado el lote
+        if self.instance.pk and self.instance.status == 'closed' and status != 'closed':
+            self.add_error('status', _('Cannot change status once closed.'))
+            cleaned['status'] = 'closed'  # restaurar el valor real
+
+        # No permitir cambiar valores de campos booleanos cuando este cancelado o rechazado el lote
+        if status in ['closed', 'canceled'] and self.instance.pk:
+            if quarantine != self.instance.is_quarantined:
+                self.add_error('is_quarantined', _('Cannot change this field when status is closed or canceled.'))
+            if available != self.instance.is_available_for_processing:
+                self.add_error('is_available_for_processing', _('Cannot change this field when status is closed or canceled.'))
 
         # Recorre cada IncomingProduct y comprueba que tenga al menos un WeighingSet no marcado para borrar
         for i in range(int(self.data.get('incomingproduct_set-TOTAL_FORMS', 0))):
@@ -200,4 +243,53 @@ class BatchForm(forms.ModelForm):
                 )
         return cleaned
 
+
+class WeighingSetForm(forms.ModelForm):
+    class Meta:
+        model = WeighingSet
+        exclude = ('protected',)
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if self.instance.pk and self.instance.protected:
+            # Solo revisamos si hay cambios reales
+            for field in self.fields:
+                if field in self.changed_data:
+                    raise ValidationError(_("This weighing is protected and cannot be edited."))
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+
+        if instance.pk and instance.protected:
+            try:
+                from_db = type(instance).objects.get(pk=instance.pk)
+            except Exception:
+                raise ValidationError(_("Weighing data could not be accessed for validation."))
+
+            for field in self.fields:
+                if field in self.changed_data:
+                    old = getattr(from_db, field)
+                    new = getattr(instance, field)
+                    if old != new:
+                        raise ValidationError(
+                            _(f"This weighing is protected and cannot be edited.")
+                        )
+        if commit:
+            instance.save()
+        return instance
+
+class WeighingSetInlineFormSet(BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+        for form in self.forms:
+            if not form.cleaned_data:
+                continue
+
+            instance = form.instance
+            if form.cleaned_data.get('DELETE', False) and instance.protected:
+                raise ValidationError(_("This weighing is protected and cannot be deleted."))
 

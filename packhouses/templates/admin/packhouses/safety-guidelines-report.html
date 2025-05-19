@@ -249,7 +249,7 @@ table.header-table .center h1 {
 
     <div class="row row-four">
         <p style="grid-column: span 3;"><strong>{% translate "Orchard Certification:" %} </strong>
-            {% for certification in harvest.orchard_certification.all %}
+            {% for certification in harvest.orchard_certifications.all %}
                 {{ certification.certification_kind.name }} {{certification.certification_number}}{% if not forloop.last %}, {% endif %}
             {% empty %}
                 {% translate "No Data" %}

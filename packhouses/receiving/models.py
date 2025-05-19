@@ -3,49 +3,45 @@ from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
-from .utils import get_approval_status_choices, get_processing_status_choices, get_batch_status_change
+from .utils import get_processing_status_choices, get_batch_status_change
 from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, Provider, ProductFoodSafetyProcess,
                                         Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage,
-                                        ProductResidue, ProductDryMatterAcceptanceReport)
+                                        OrchardCertification,
+                                        ProductResidue, ProductDryMatterAcceptanceReport, Orchard, Market)
 from common.base.models import Pest
 from django.db.models import F, Sum
 from django.core.exceptions import ValidationError
+from common.settings import STATUS_CHOICES
 
 
 # Create your models here.
 class Batch(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_('Batch Number'), null=True, blank=True, unique=True)
-    review_status = models.CharField(max_length=25, verbose_name=_('Review Status'),
-                                     choices=get_approval_status_choices(), default='pending', blank=True)
-    operational_status = models.CharField(max_length=25, choices=get_processing_status_choices(), default='pending',
-                                          verbose_name=_('Operational Status'), blank=True)
+    status = models.CharField(max_length=25, verbose_name=_('Status'),
+                                     choices=STATUS_CHOICES, default='open', blank=True)
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
+    is_quarantined = models.BooleanField(default=False, verbose_name=_('In quarantine'))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Entry Date'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
+    # 'parent' apunta al lote padre al que este lote fue unido.
+    # Si es None, significa que el lote no ha sido unido a ningún otro.
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='children', verbose_name=_('Parent'))
 
     def __str__(self):
-        try:
-            incoming = self.incomingproduct
-        except IncomingProduct.DoesNotExist:
-            incoming = None
+        incoming = getattr(self, 'incomingproduct', None)
 
         if incoming:
             sh = getattr(incoming, 'scheduleharvest', None)
-            harvest_info = (
-                f"{_('Schedule Harvest Number')}: {sh.ooid}"
-                if sh else
-                _('No Harvest')
-            )
-            return (
-                f"{self.ooid} – {_('Incoming Product')} "
-                f"id: {incoming.id} – {harvest_info}"
-            )
+            harvest = f"{_('Schedule Harvest Number')}: {sh.ooid}" if sh else _('No Harvest')
+            return f"Batch {self.ooid} – {_('Incoming Product')} ID: {incoming.id} – {harvest}"
 
-        return f"{self.ooid} – {_('No IncomingProduct Asociated')}"
+        if hasattr(self, 'children') and self.children.exists():
+            return f"{self.ooid} – {_('Parent Batch')}"
+
+        return f"{self.ooid} – {_('No Incoming Product Associated')}"
 
     @property
-    def batch_weight(self):
+    def ingress_weight(self):
         if self.batchweightmovement_set.exists():
             return self.batchweightmovement_set.aggregate(
                 batch_weight=Sum('weight')
@@ -53,15 +49,27 @@ class Batch(models.Model):
         return 0
 
     @property
-    def available_weight(self):
-        total_weight = self.batch_weight
+    def weight_received(self):
+        qs = self.batchweightmovement_set.filter(source__model__icontains='weighingset')
+        total_weight = qs.aggregate(batch_weight=Sum('weight'))['batch_weight'] or 0
         if self.is_parent:
             total_weight += sum(child.batch_weight for child in self.children.all())
         return total_weight
 
     @property
+    def available_weight(self):
+        total_weight = self.ingress_weight
+        if self.is_parent:
+            total_weight += sum(child.ingress_weight for child in self.children.all())
+        return total_weight
+
+    @property
     def yield_available_weight(self):
         return self.available_weight
+
+    @property
+    def yield_orchard_producer(self):
+        return self.incomingproduct.scheduleharvest.orchard.producer
 
     @property
     def yield_harvest_provider(self):
@@ -80,8 +88,58 @@ class Batch(models.Model):
         return self.incomingproduct.scheduleharvest.orchard.code
 
     @property
-    def yield_orchard_producer(self):
+    def yield_orchard_selected_certifications(self):
+        return self.incomingproduct.scheduleharvest.orchard_certification.all()
+
+    @property
+    def yield_orchard_current_certifications(self):
+        return OrchardCertification.objects.filter(
+            orchard=self.yield_orchard,
+            expiration_date__gte=self.created_at,
+        )
+
+    @property
+    def yield_progress(self):
+        return 0
+
+    @property
+    def yield_harvest_date(self):
+        return self.incomingproduct.scheduleharvest.harvest_date
+
+    @property
+    def yield_producer(self):
         return self.incomingproduct.scheduleharvest.orchard.producer
+
+    # @property para lotes padres e hijos
+    @property
+    def is_child(self):
+        return self.parent is not None
+
+    @property
+    def is_parent(self):
+        return self.children.exists()
+
+    @property
+    def children_list(self):
+        return self.children.all()
+
+    @property
+    def children_ooids(self):
+        return ", ".join(str(batch.ooid) for batch in self.children.all())
+
+    @property
+    def parent_batch_ooid(self):
+        return self.parent.ooid if self.parent else ''
+
+
+    def clean(self):
+        # Bloquear edición de campos booleanos cuando el lote este cerrado o cancelado/rechazado
+        if self.status in ['closed', 'canceled'] and self.pk:
+            prev = Batch.objects.get(pk=self.pk)
+            if self.is_available_for_processing != prev.is_available_for_processing:
+                raise ValidationError({'is_available_for_processing': _('Cannot be changed when status is closed or canceled.')})
+            if self.is_quarantined != prev.is_quarantined:
+                raise ValidationError({'is_quarantined': _('Cannot be changed when status is closed or canceled.')})
 
     def save(self, *args, **kwargs):
         if self.ooid is None:
@@ -95,20 +153,38 @@ class Batch(models.Model):
                 self.ooid = (last.ooid + 1) if last else 1
         super().save(*args, **kwargs)
 
+    # Métodos para historial de status del lote
+    def status_history(self):
+        return self.batchstatuschange_set.filter(field_name='status')
+
+    def last_status_change(self):
+        return self.status_history().order_by('-created_at').first()
+
+    # Unitr lotes para crear un padre
     @classmethod
     def validate_merge_batches(cls, batches_queryset):
-        if batches_queryset.filter(parent_batch__isnull=False).exists():
+        # Validar que los lotes seleccionados no sean hijos
+        if batches_queryset.filter(parent__isnull=False).exists():
             raise ValidationError(
                 _('You cannot merge batches that have already been merged into another batch.'),
                 code='invalid_merge'
             )
 
-        if batches_queryset.exclude(review_status='accepted').exists():
+        # Validar que ningun lote seleccionado sea padre
+        if batches_queryset.filter(parent__isnull=True, children__isnull=False).exists():
             raise ValidationError(
-                _('Only batches with a Review Status of “Accepted” can be merged.'),
+                _('You cannot merge batches that already contain other merged batches.'),
+                code='invalid_merge'
+            )
+
+        # Validar que los lotes seleccionados tenga en su status "ready"
+        if batches_queryset.exclude(status='ready').exists():
+            raise ValidationError(
+                _('Only batches with a Review Status of “Ready” can be merged.'),
                 code='invalid_status'
             )
 
+        # Verificar que los lotes sean del mismo proveedor, producto, variedad, fenología
         prefix = 'incomingproduct__scheduleharvest__'
         checks = {
             _('provider'): prefix + 'product_provider',
@@ -122,26 +198,48 @@ class Batch(models.Model):
                 msg = _('All batches selected must have the same %(label)s.') % {'label': label}
                 raise ValidationError(msg, code='invalid_merge')
 
+        # Verificar que los lotes a unir, sus mercados permitan mezclarse
+        market_ids = batches_queryset.values_list('incomingproduct__scheduleharvest__market', flat=True).distinct()
+        markets = Market.objects.filter(pk__in=market_ids)
+        non_mixable_markets = markets.filter(is_mixable=False)
+
+        if markets.count() > 1 and non_mixable_markets.exists():
+            raise ValidationError(
+                _('Cannot merge batches: non-mixable markets cannot be mixed with others.'),
+                code='invalid_market_mix'
+            )
+
+    # Unir un lote (no hijo) a un lote padre
     @classmethod
-    def validate_add_batches_to_existing_merge(cls, parent_batch, candidate_batches):
-        if parent_batch.parent is not None:
+    def validate_add_batches_to_existing_merge(cls, parent, candidate_batches):
+        # Verificar que el lote padre no sea hijo
+        if parent.parent is not None:
             raise ValidationError(
                 _('The selected destination batch is already merged into another batch.'),
                 code='invalid_target'
             )
-
-        if candidate_batches.exclude(review_status='accepted').exists():
+        # Verificar que los lotes seleccionados no sean hijos de otro lote que no sea el lote padre que se seleccione
+        already_merged = candidate_batches.filter(parent__isnull=False)
+        if already_merged.exists():
+            oids = ", ".join(f'batch {o}' for o in already_merged.values_list("ooid", flat=True))
             raise ValidationError(
-                _('Only batches with a Review Status of “Accepted” can be merged.'),
+                _('The following batches are already part of another merged batch: %s') % oids,
+                code='invalid_merge'
+            )
+        # Validar que los lotes seleccionados tenga en su status "ready"
+        if candidate_batches.exclude(status='ready').exists():
+            raise ValidationError(
+                _('Only batches with a Review Status of “Ready” can be merged.'),
                 code='invalid_status'
             )
-
-        child_ids = list(parent_batch.children.values_list('pk', flat=True))
+        # Se añaden los lotes seleccionados a los hijos actuales del lote padre
+        child_ids = list(parent.children.values_list('pk', flat=True))
         candidate_ids = list(candidate_batches.values_list('pk', flat=True))
         combined_ids = child_ids + candidate_ids
 
         all_batches = Batch.objects.filter(pk__in=combined_ids)
 
+        # Verificar que los lotes sean del mismo proveedor, producto, variedad, fenología
         prefix = 'incomingproduct__scheduleharvest__'
         checks = {
             _('provider'): prefix + 'product_provider',
@@ -157,59 +255,31 @@ class Batch(models.Model):
                     code='invalid_merge'
                 )
 
-    @property
-    def is_merged(self):
-        return self.parent is not None
+        # Verificar que los lotes a unir, sus mercados permitan mezclarse
+        market_ids = all_batches.values_list(
+            'incomingproduct__scheduleharvest__market', flat=True
+        ).distinct()
+        markets = Market.objects.filter(pk__in=market_ids)
 
-    @property
-    def is_parent(self):
-        return self.children.exists()
+        # 2. Identificar los no mezclables
+        non_mixable = markets.filter(is_mixable=False)
 
-    @property
-    def children(self):
-        return self.children.all()
+        # 3. Si hay más de un mercado total Y al menos un mercado no mezclable, hay que verificar si son del mismo
+        if non_mixable.exists() and market_ids.count() > 1:
+            non_mixable_ids = list(non_mixable.values_list('id', flat=True))
 
-    @property
-    def children_ooids(self):
-        return ", ".join(str(b.ooid) for b in self.children.all())
+            if len(non_mixable_ids) > 1:
+                raise ValidationError(
+                    _('Cannot add batches: more than one non-mixable market is involved.'),
+                    code='invalid_market_mix'
+                )
 
-    @property
-    def parent_batch_ooid(self):
-        return self.parent.ooid if self.parent else ''
-
-    @property
-    def children_total_weight_received(self):
-        total = 0
-        for child in self.children:
-            ip = getattr(child, 'incomingproduct', None)
-            if not ip:
-                continue
-            if ip.packhouse_weight_result:
-                total += ip.packhouse_weight_result
-        return total
-
-    @property
-    def children_total_current_weight(self):
-        total = 0
-        for child in self.children:
-            ip = getattr(child, 'incomingproduct', None)
-            if not ip:
-                continue
-            if ip.current_kg_available:
-                total += ip.current_kg_available
-        return total
-
-    def operational_status_history(self):
-        return self.batchstatuschange_set.filter(field_name='operational_status')
-
-    def review_status_history(self):
-        return self.batchstatuschange_set.filter(field_name='review_status')
-
-    def last_operational_status_change(self):
-        return self.operational_status_history().order_by('-changed_at').first()
-
-    def last_review_status_change(self):
-        return self.review_status_history().order_by('-changed_at').first()
+            # También inválido si hay mezcla de ese mercado no mezclable con otros mezclables
+            if markets.count() > 1:
+                raise ValidationError(
+                    _('Cannot add batches: non-mixable market cannot be mixed with others.'),
+                    code='invalid_market_mix'
+                )
 
     class Meta:
         verbose_name = _('Batch')
@@ -221,11 +291,11 @@ class Batch(models.Model):
             )
         ]
 
-
 class BatchWeightMovement(models.Model):
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, verbose_name=_('Batch'))
     weight = models.FloatField(default=0, verbose_name=_('Weight'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
+    source = models.JSONField(default=dict, blank=True, verbose_name=_("Source Information"))
 
     def __str__(self):
         return f"{self.batch} {self.created_at} :: {self.weight}"
@@ -236,7 +306,7 @@ class BatchWeightMovement(models.Model):
         verbose_name_plural = _('Batch Weight Movements')
 
     def clean(self):
-        if self.weight < 0 and self.batch.batch_weight + self.weight < 0:
+        if self.weight < 0 and self.batch.ingress_weight + self.weight < 0:
             raise ValidationError(
                 _('This movement would result in a negative weight for the batch.'),
             )
@@ -248,31 +318,31 @@ class BatchWeightMovement(models.Model):
 
 class BatchStatusChange(models.Model):
     field_name = models.CharField(max_length=32, choices=get_batch_status_change, )
-    changed_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     old_status = models.CharField(max_length=25)
     new_status = models.CharField(max_length=25)
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, verbose_name=_('Batch'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'), )
 
     class Meta:
-        ordering = ['-changed_at']
+        ordering = ['-created_at']
         indexes = [
-            models.Index(fields=['batch', 'field_name', 'changed_at']),
+            models.Index(fields=['batch', 'field_name', 'created_at']),
         ]
         verbose_name = _('Batch Status Change')
         verbose_name_plural = _('Batch Status Changes')
 
     def __str__(self):
         return (
-            f"{self.new_status!r} {_('at')} {self.changed_at} — "
+            f"{self.new_status!r} {_('at')} {self.created_at} — "
             f"{self.get_field_name_display()} for {_('Batch')} {self.batch.pk} "
             f"(was {self.old_status!r})"
         )
 
 
 class IncomingProduct(models.Model):
-    status = models.CharField(max_length=20, verbose_name=_('Status'), choices=get_approval_status_choices(),
-                              default='pending')
+    status = models.CharField(max_length=20, verbose_name=_('Status'), choices=STATUS_CHOICES,
+                              default='open')
     public_weighing_scale = models.ForeignKey(WeighingScale, verbose_name=_("Public Weighing Scale"),
                                               on_delete=models.PROTECT, null=True, blank=False)
     public_weight_result = models.FloatField(default=0, verbose_name=_("Public Weight Result"), )
@@ -283,7 +353,6 @@ class IncomingProduct(models.Model):
     phytosanitary_certificate = models.CharField(max_length=50, verbose_name=_('Phytosanitary Certificate'), null=True,
                                                  blank=True)
     kg_sample = models.FloatField(default=0, verbose_name=_("Kg for Sample"), validators=[MinValueValidator(0.01)])
-    current_kg_available = models.FloatField(default=0, verbose_name=_("Current Kg Available"), )
     containers_assigned = models.PositiveIntegerField(default=0, verbose_name=_('Containments Assigned'),
                                                       help_text=_('Containments assigned per harvest'))
     empty_containers = models.PositiveIntegerField(default=0, verbose_name=_('Empty Containments'),
@@ -296,6 +365,7 @@ class IncomingProduct(models.Model):
                                              help_text=_('Missing containments per harvest'))
     average_per_container = models.FloatField(default=0, verbose_name=_("Average per Container"), help_text=_(
         'Based on packhouse weight result and weighed set containments'))
+    is_quarantined = models.BooleanField(default=False, verbose_name=_('In quarantine'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'))
     batch = models.OneToOneField(Batch, on_delete=models.PROTECT, verbose_name=_('Batch'), null=True, blank=True)
     comments = models.TextField(verbose_name=_("Comments"), blank=True, null=True)
@@ -306,49 +376,83 @@ class IncomingProduct(models.Model):
             return self.public_weight_result
         return 0
 
-    @property
-    def available_weight(self):
-        if self.current_kg_available:
-            return self.current_kg_available
-        return 0
-
     def clean(self):
         if self.pk:
             initial_status = IncomingProduct.objects.get(pk=self.pk).status
-            if initial_status == 'accepted' and self.status != 'accepted':
-                raise ValidationError("Once accepted, the status cannot be changed.")
+            if initial_status == 'ready' and self.status != 'ready':
+                raise ValidationError("Once it is 'Ready', the status cannot be changed.")
 
-        if self.status == "accepted" and not self.weighingset_set.exists():
-            raise ValidationError("At least one Weighing Set must be registered for the Incoming Product.")
+        # Comentado porque model.clean() corre antes de validar/guardar inlines y weighingset_set siempre esta vacío al crear por primera vez
+        # if self.status == "ready" and not self.weighingset_set.exists():
+        #     raise ValidationError("At least one Weighing Set must be registered for the Incoming Product.")
 
     def save(self, *args, **kwargs):
         self.clean()
 
-        previous_status = 'pending'
+        previous_status = 'open'
         if self.pk:
             previous_status = IncomingProduct.objects.get(pk=self.pk).status
-
         super().save(*args, **kwargs)
 
-        if self.status == 'accepted' and previous_status != 'accepted' and self.batch_id is None:
+        # Crear lote
+        if self.status == 'ready' and previous_status != 'ready' and self.batch_id is None:
             with transaction.atomic():
                 new_batch = Batch.objects.create(
-                    review_status='pending',
-                    operational_status='pending',
+                    status='open',
                     is_available_for_processing=False,
                     organization=self.organization
                 )
                 self.batch = new_batch
                 super().save(update_fields=['batch'])
-                BatchWeightMovement.objects.create(
-                    batch=new_batch,
-                    weight=self.packhouse_weight_result
-                )
+
+                existing_weighing_sets = self.weighingset_set.all()
+                for weighing_set in existing_weighing_sets:
+                    exists = BatchWeightMovement.objects.filter(
+                        batch=new_batch,
+                        source__model=weighing_set.__class__.__name__,
+                        source__id=weighing_set.pk
+                    ).exists()
+                    print("que tiene exists(): ", exists)
+                    if not exists:
+                        BatchWeightMovement.objects.create(
+                            batch=new_batch,
+                            weight=weighing_set.net_weight or 0,
+                            source={
+                                "model": weighing_set.__class__.__name__,
+                                "id": weighing_set.pk,
+                                "gross_weight": weighing_set.gross_weight,
+                                "container_tare": weighing_set.container_tare,
+                                "platform_tare": weighing_set.platform_tare
+                            }
+                        )
+
+    def recalculate_weighing_data(self):
+        weighing_sets = self.weighingset_set.all()
+        self.total_weighed_sets = weighing_sets.count()
+
+        self.total_weighed_set_containers = sum(
+            container.quantity or 0
+            for set in weighing_sets
+            for container in set.weighingsetcontainer_set.all()
+        )
+        self.packhouse_weight_result = weighing_sets.aggregate(
+            total=Sum('net_weight')
+        )['total'] or 0.0
+        if self.total_weighed_set_containers > 0:
+            self.average_per_container = round(
+                self.total_weighed_set_containers / self.total_weighed_set_containers, 3
+            )
+        else:
+            self.average_per_container = 0.0
+
+        self.save(update_fields=[
+            'total_weighed_sets',
+            'total_weighed_set_containers',
+            'packhouse_weight_result',
+            'average_per_container'
+        ])
 
     def __str__(self):
-        # from packhouses.gathering.models import ScheduleHarvest
-        # schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=self).first()
-        # TODO: Jaqueline: Validar que este cambio funciona bien, si si, eliminar estos tres comentarios
         schedule_harvest = self.scheduleharvest
         if schedule_harvest:
             return f"{schedule_harvest.ooid} - {schedule_harvest.orchard}"
@@ -357,12 +461,6 @@ class IncomingProduct(models.Model):
     class Meta:
         verbose_name = _('Incoming Product')
         verbose_name_plural = _('Incoming Product')
-        """constraints = [
-            models.UniqueConstraint(
-                fields=['harvest', 'organization'],
-                name='unique_incoming_product_harvest'
-            )
-        ]"""
 
 
 class WeighingSet(models.Model):
@@ -374,44 +472,43 @@ class WeighingSet(models.Model):
     container_tare = models.FloatField(default=0.0, verbose_name=_("Container Tare"), )
     platform_tare = models.FloatField(default=0.0, verbose_name=_("Platform Tare"), )
     net_weight = models.FloatField(default=0.0, verbose_name=_("Net Weight"), )
+    protected = models.BooleanField(default=False, verbose_name=_("Protected"))
     incoming_product = models.ForeignKey(IncomingProduct, verbose_name=_('Incoming Product'), on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.ooid}"
 
     def save(self, *args, **kwargs):
-        if not self.ooid:
-            with transaction.atomic():
-                last_ws = (
-                    WeighingSet.objects
-                    .select_for_update()
-                    .filter(incoming_product=self.incoming_product)
-                    .order_by('-ooid')
-                    .first()
-                )
-                self.ooid = (last_ws.ooid + 1) if last_ws else 1
+        with transaction.atomic():
+            type(self).objects.exclude(pk=self.pk).filter(
+                incoming_product=self.incoming_product
+            ).update(protected=True)
 
-        super().save(*args, **kwargs)
+            self.protected = False
+
+            # Asignar un ooid incremental
+            last_record = (
+                type(self).objects
+                .filter(incoming_product=self.incoming_product)
+                .select_for_update()
+                .order_by('-ooid')
+                .first()
+            )
+            self.ooid = (last_record.ooid + 1) if last_record else 1
+            super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        # Captura el incoming_product y el ooid antes de borrar
-        inc = self.incoming_product
+        if self.protected:
+            raise ValidationError(_("Only the latest (unprotected) weighing set can be deleted; older sets remain locked."))
+        incoming_product_temp = self.incoming_product
         deleted_ooid = self.ooid
+
         with transaction.atomic():
             super().delete(*args, **kwargs)
-            # Decrementa en 1 todos los ooid > eliminado para reacomodar
-            WeighingSet.objects.filter(
-                incoming_product=inc,
+            updated_count = type(self).objects.filter(
+                incoming_product=incoming_product_temp,
                 ooid__gt=deleted_ooid
             ).update(ooid=F('ooid') - 1)
-
-    class Meta:
-        verbose_name = _('Weighing Set')
-        verbose_name_plural = _('Weighing Sets')
-        constraints = [
-            models.UniqueConstraint(fields=['incoming_product', 'ooid'], name='weighing_unique_incomingproduct')
-        ]
-
 
 class WeighingSetContainer(models.Model):
     harvest_container = models.ForeignKey(Supply, on_delete=models.CASCADE,

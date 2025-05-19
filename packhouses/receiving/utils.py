@@ -10,15 +10,6 @@ def update_weighing_set_numbers(incoming_product):
                 pallet.ooid = index
                 pallet.save(update_fields=['ooid'])
 
-def get_approval_status_choices():
-    return [
-        ('pending',    _('Pending')),
-        ('accepted',   _('Accepted')),
-        ('rejected',   _('Rejected')),
-        ('quarantine', _('Quarantine')),
-    ]
-
-
 def get_processing_status_choices():
     return [
         ('pending', _('Pending')),

@@ -1283,13 +1283,15 @@ class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.
             else:
                 batches = Batch.objects.all()
 
+            # Se renombraron campos y valores relacionados con 'status' antes 'operational_status'
+            # Es necesario validar que esta refactorización no rompa el comportamiento esperado
             def is_batch_valid(batch):
-                last_status = batch.last_operational_status_change()
+                last_status = batch.last_status_change()
                 if not last_status:
-                    return False  # Si no hay historial quiere decir que esta pendiente, entonces pasa
-                if last_status.new_status in ['canceled', 'pending']:
+                    return False  # Si no hay historial quiere decir que esta pendiente (open), entonces pasa
+                if last_status.new_status in ['canceled', 'open']:
                     return False
-                if last_status.new_status == 'finalized' and last_status.changed_at < one_month_ago:
+                if last_status.new_status == 'closed' and last_status.created_at < one_month_ago:
                     return False
                 return True
 
