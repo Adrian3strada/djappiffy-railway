@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const CONTAINER_FORMSET_SELECTOR= 'div[id^="incomingproduct_set-0-weighingset_set-"]';
     const TOTAL_ID = 'id_incomingproduct_set-0-total_weighed_sets';
     const observed = new WeakSet();
+
+    
   
     const debounce = (fn, wait = 300) => {
       let timeout;
@@ -75,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
       field.style.border = 'none';
       field.style.color = '#555';
     };
+
   
     const fetchContainerTare = async id => {
       if (!id) return 0;
@@ -308,6 +311,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
     // disable computed fields
     $('input[name$="-total_containers"], input[name$="-container_tare"]').each(function() {
+      disableField(this);
+    });
+    $('input[name$="-total_containers"], input[name$="-net_weight"]').each(function() {
       disableField(this);
     });
     document.addEventListener('formset:added', e => {

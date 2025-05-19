@@ -2,17 +2,21 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete
 from organizations.models import OrganizationUser, OrganizationOwner
 from .models import User, Group
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 @receiver(post_save, sender=OrganizationUser)
-def add_organization_user(sender, instance, **kwargs):
+def add_organization_user(sender, instance, created, raw=False, **kwargs):
+    # 1) Si estamos cargando fixtures (raw=True), salimos
+    # 2) Si no hay usuario relacionado, salimos
+    if raw or not instance.user:
+        return
 
+    # A partir de aquí, ya existe instance.user
     if instance.is_admin:
-        user = User.objects.filter(username = instance.user_id).first()
-        user.groups.add(*Group.objects.all())
-    
+        instance.user.groups.set(Group.objects.all())
     else:
-        user = User.objects.filter(username = instance.user_id).first()
-        user.groups.clear()
+        instance.user.groups.clear()
 
 
 @receiver(post_save, sender=OrganizationOwner)
