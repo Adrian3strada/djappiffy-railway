@@ -1,4 +1,4 @@
-from django.db import models
+from django.contrib.gis.db import models
 from common.mixins import (CleanKindAndOrganizationMixin, CleanNameAndOrganizationMixin, CleanProductMixin,
                            CleanNameOrAliasAndOrganizationMixin, CleanNameAndMarketMixin, CleanNameAndProductMixin,
                            CleanNameAndProviderMixin, CleanNameAndCategoryAndOrganizationMixin,
@@ -665,6 +665,7 @@ class OrchardCertification(models.Model):
     certification_kind = models.ForeignKey(OrchardCertificationKind, verbose_name=_('Orchard certification kind'),
                                            on_delete=models.PROTECT)
     certification_number = models.CharField(max_length=100, verbose_name=_('Certification number'))
+    certification_document = models.FileField(upload_to='orchard_certifications/', verbose_name=_('Certification document'))
     expiration_date = models.DateField(verbose_name=_('Expiration date'))
     verifier = models.ForeignKey(OrchardCertificationVerifier, verbose_name=_('Orchard certification verifier'),
                                  on_delete=models.PROTECT)
@@ -680,6 +681,26 @@ class OrchardCertification(models.Model):
         verbose_name_plural = _('Orchard certifications')
         unique_together = ('orchard', 'certification_kind')
         ordering = ('orchard', 'certification_kind')
+
+
+class OrchardGeoLocation(models.Model):
+    orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.CASCADE)
+    mode = models.CharField(max_length=20, choices=(('upload', _('Upload')), ('draw', _('Draw')), ('coordinates', _('Write coordinates'))), verbose_name=_('Mode'))
+    file = models.FileField(upload_to='orchard_geolocation/', verbose_name=_('File'), null=True, blank=False)
+    coordinates = models.JSONField(verbose_name=_('Coordinates'), null=True, blank=False)
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    geom = models.MultiPolygonField(srid=4326, verbose_name=_('Orchard geolocation'))
+
+    def __str__(self):
+        return self.id
+
+    class Meta:
+        verbose_name = _('Orchard geolocation')
+        verbose_name_plural = _('Orchard geolocations')
+        ordering = ('orchard', 'id')
+        constraints = [
+            models.UniqueConstraint(fields=['orchard'], name='orchard_geolocation_unique_orchard'),
+        ]
 
 
 class CrewChief(models.Model):

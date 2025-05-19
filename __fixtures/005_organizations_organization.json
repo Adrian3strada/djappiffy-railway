@@ -42,49 +42,5 @@
     "modified": "2024-12-11T23:42:43.565Z",
     "slug": "blue-coast-packers"
   }
-},
-{
-  "model": "organizations.organization",
-  "pk": 5,
-  "fields": {
-    "name": "Org1",
-    "is_active": true,
-    "created": "2025-05-01T00:07:00.832Z",
-    "modified": "2025-05-01T00:07:00.832Z",
-    "slug": "org1"
-  }
-},
-{
-  "model": "organizations.organization",
-  "pk": 6,
-  "fields": {
-    "name": "Org2",
-    "is_active": true,
-    "created": "2025-05-01T00:07:00.841Z",
-    "modified": "2025-05-01T00:07:00.841Z",
-    "slug": "org2"
-  }
-},
-{
-  "model": "organizations.organization",
-  "pk": 7,
-  "fields": {
-    "name": "Org3",
-    "is_active": true,
-    "created": "2025-05-01T00:07:00.845Z",
-    "modified": "2025-05-01T00:07:00.845Z",
-    "slug": "org3"
-  }
-},
-{
-  "model": "organizations.organization",
-  "pk": 8,
-  "fields": {
-    "name": "prueba edur operator 1",
-    "is_active": true,
-    "created": "2025-05-08T23:24:35.577Z",
-    "modified": "2025-05-08T23:24:35.578Z",
-    "slug": "prueba-edur-operator-1"
-  }
 }
 ]

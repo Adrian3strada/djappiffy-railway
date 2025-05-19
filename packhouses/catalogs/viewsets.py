@@ -6,16 +6,17 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
                           ProductPhenologyKindSerializer, ClientSerializer, ProductSizeSerializer,
                           MaquiladoraSerializer, PackagingSerializer, ProductPresentationSerializer,
-                          SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
+                          SupplySerializer, OrchardSerializer, OrchardGeoLocationSerializer,
+                          HarvestingCrewSerializer,
                           ProductPackagingSerializer, PalletSerializer, ProductPackagingPalletSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
-                          OrchardCertificationSerializer, ProductRipenessSerializer, ServiceSerializer
-
+                          OrchardCertificationSerializer, ProductRipenessSerializer, ServiceSerializer,
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, Client, Maquiladora, Provider,
                      Product, Packaging, ProductPresentation, ProductPackaging, Pallet, ProductPackagingPallet,
-                     Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness, Service
+                     Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, OrchardGeoLocation,
+                     ProductRipeness, Service
                      )
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -388,6 +389,7 @@ class HarvestingCrewViewSet(viewsets.ModelViewSet):
 
         return HarvestingCrew.objects.filter(organization=self.request.organization)
 
+
 class OrchardCertificationViewSet(viewsets.ModelViewSet):
     serializer_class = OrchardCertificationSerializer
     filterset_fields = ['is_enabled', 'orchard']
@@ -399,6 +401,20 @@ class OrchardCertificationViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return OrchardCertification.objects.filter(orchard__organization=self.request.organization)
+
+
+class OrchardGeoLocationViewSet(viewsets.ModelViewSet):
+    serializer_class = OrchardGeoLocationSerializer
+    filterset_fields = ['is_enabled', 'orchard']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return OrchardGeoLocation.objects.filter(orchard__organization=self.request.organization)
+
 
 class ProductRipenessViewSet(viewsets.ModelViewSet):
     serializer_class = ProductRipenessSerializer

@@ -1,12 +1,12 @@
 from rest_framework import serializers
 from packhouses.catalogs.models import (
     Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, Pallet, ProductPackagingPallet,
-    ProductVariety, ProductPhenologyKind, Maquiladora, ProductPresentation,
+    ProductVariety, ProductPhenologyKind, Maquiladora, ProductPresentation, OrchardGeoLocation,
     CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, Packaging,
     HarvestingCrew, OrchardCertification, ProductRipeness, ProductPackaging, Service
 )
 from django.utils.translation import gettext_lazy as _
-
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -163,7 +163,6 @@ class MaquiladoraSerializer(serializers.ModelSerializer):
         model = Maquiladora
         fields = '__all__'
 
-from rest_framework import serializers
 
 class OrchardCertificationSerializer(serializers.ModelSerializer):
     expired_text = serializers.SerializerMethodField()
@@ -175,6 +174,14 @@ class OrchardCertificationSerializer(serializers.ModelSerializer):
 
     def get_expired_text(self, obj):
         return _('Expired')
+
+
+class OrchardGeoLocationSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = OrchardGeoLocation
+        fields = '__all__'
+        geo_field = 'geom'
+
 
 class ProductRipenessSerializer(serializers.ModelSerializer):
     class Meta:
