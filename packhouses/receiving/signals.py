@@ -143,26 +143,36 @@ def update_weighing_set_totals(sender, instance, **kwargs):
     try:
         parent = instance.weighing_set
     except WeighingSet.DoesNotExist:
-        parent = None
+        return
 
     if not parent or not parent.pk:
         return
-    
-    if parent.protected:
+
+    # ✅ Evitamos ejecutar si aún no hay datos clave (como el peso bruto)
+    if parent.gross_weight is None or parent.platform_tare is None:
         return
-    
-    parent.refresh_from_db(fields=["gross_weight", "platform_tare"])
 
+    # ✅ Calculamos datos agregados de los contenedores
     containers = parent.weighingsetcontainer_set.all()
-    parent.container_tare = sum(c.quantity * c.harvest_container.kg_tare for c in containers)
-    parent.total_containers = sum(c.quantity for c in containers)
 
+    total_tare = sum(
+        c.quantity * (c.harvest_container.kg_tare or 0)
+        for c in containers
+    )
+    total_qty = sum(c.quantity or 0 for c in containers)
+
+    # ✅ Calculamos net_weight
     gross = parent.gross_weight or 0
-    tare = parent.container_tare or 0
+    tare = total_tare or 0
     platform = parent.platform_tare or 0
+    net = gross - tare - platform
 
-    parent.net_weight = gross - tare - platform
+    # ✅ Actualizamos los campos relacionados
+    parent.container_tare = total_tare
+    parent.total_containers = total_qty
+    parent.net_weight = net
     parent.save(update_fields=["container_tare", "total_containers", "net_weight"])
+
         
 @receiver(post_save, sender=WeighingSet)
 def handle_weighing_set_post_save(sender, instance, created, **kwargs):
@@ -209,14 +219,22 @@ def handle_post_delete_weighing_set(sender, instance, **kwargs):
             )
 
 
-@receiver(post_save, sender=WeighingSet)
-@receiver(post_delete, sender=WeighingSet)
-@receiver(post_save, sender=WeighingSetContainer)
-@receiver(post_delete, sender=WeighingSetContainer)
+@receiver([post_save, post_delete], sender=WeighingSet)
+@receiver([post_save, post_delete], sender=WeighingSetContainer)
 def recalculate_weighingset_change(sender, instance, **kwargs):
-    incoming = getattr(instance, 'incoming_product', None)
-    if not incoming and hasattr(instance, 'weighing_set'):
-        incoming = getattr(instance.weighing_set, 'incoming_product', None)
+    incoming = None
+
+    if isinstance(instance, WeighingSet):
+        incoming = instance.incoming_product
+
+    elif isinstance(instance, WeighingSetContainer):
+        weighing_set_id = getattr(instance, 'weighing_set_id', None)
+        if weighing_set_id:
+            try:
+                weighing_set = WeighingSet.objects.only("incoming_product_id").get(pk=weighing_set_id)
+                incoming = weighing_set.incoming_product
+            except WeighingSet.DoesNotExist:
+                incoming = None
 
     if incoming:
         incoming.recalculate_weighing_data()

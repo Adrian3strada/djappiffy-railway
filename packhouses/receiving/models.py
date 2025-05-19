@@ -453,23 +453,27 @@ class WeighingSet(models.Model):
     def __str__(self):
         return f"{self.ooid}"
 
-    def save(self, *args, **kwargs):        
-        with transaction.atomic():
-            type(self).objects.exclude(pk=self.pk).filter(
-                incoming_product=self.incoming_product
-            ).update(protected=True)
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            super().save(*args, **kwargs)
 
-            self.protected = False
-            
-            # Asignar un ooid incremental
-            last_record = (
-                type(self).objects
-                .filter(incoming_product=self.incoming_product)
-                .select_for_update()
-                .order_by('-ooid')
-                .first()
-            )
-            self.ooid = (last_record.ooid + 1) if last_record else 1
+            with transaction.atomic():
+                # proteger pesadas anteriores
+                type(self).objects.filter(incoming_product=self.incoming_product)\
+                    .exclude(pk=self.pk)\
+                    .update(protected=True)
+                # asignar ooid
+                last_record = (
+                    type(self).objects
+                    .filter(incoming_product=self.incoming_product)
+                    .select_for_update()
+                    .order_by('-ooid')
+                    .first()
+                )
+                self.ooid = (last_record.ooid + 1) if last_record and last_record.pk != self.pk else 1
+                self.protected = False
+                super().save(update_fields=["protected", "ooid"])
+        else:
             super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
