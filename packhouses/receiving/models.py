@@ -6,7 +6,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_approval_status_choices, get_processing_status_choices, get_batch_status_change
 from packhouses.catalogs.models import (WeighingScale, Supply, HarvestingCrew, Provider, ProductFoodSafetyProcess,
                                         Product, Vehicle, ProductPest, ProductDisease, ProductPhysicalDamage,
-                                        ProductResidue, ProductDryMatterAcceptanceReport)
+                                        OrchardCertification,
+                                        ProductResidue, ProductDryMatterAcceptanceReport, Orchard)
 from common.base.models import Pest
 from django.db.models import F, Sum
 from django.core.exceptions import ValidationError
@@ -45,7 +46,7 @@ class Batch(models.Model):
         return f"{self.ooid} – {_('No IncomingProduct Asociated')}"
 
     @property
-    def batch_weight(self):
+    def ingress_weight(self):
         if self.batchweightmovement_set.exists():
             return self.batchweightmovement_set.aggregate(
                 batch_weight=Sum('weight')
@@ -54,14 +55,18 @@ class Batch(models.Model):
 
     @property
     def available_weight(self):
-        total_weight = self.batch_weight
+        total_weight = self.ingress_weight
         if self.is_parent:
-            total_weight += sum(child.batch_weight for child in self.children.all())
+            total_weight += sum(child.ingress_weight for child in self.children.all())
         return total_weight
 
     @property
     def yield_available_weight(self):
         return self.available_weight
+
+    @property
+    def yield_orchard_producer(self):
+        return self.incomingproduct.scheduleharvest.orchard.producer
 
     @property
     def yield_harvest_provider(self):
@@ -80,8 +85,23 @@ class Batch(models.Model):
         return self.incomingproduct.scheduleharvest.orchard.code
 
     @property
-    def yield_orchard_producer(self):
-        return self.incomingproduct.scheduleharvest.orchard.producer
+    def yield_orchard_selected_certifications(self):
+        return self.incomingproduct.scheduleharvest.orchard_certification.all()
+
+    @property
+    def yield_orchard_current_certifications(self):
+        return OrchardCertification.objects.filter(
+            orchard=self.yield_orchard,
+            expiration_date__gte=self.created_at,
+        )
+
+    @property
+    def yield_progress(self):
+        return 0
+
+    @property
+    def yield_harvest_date(self):
+        return self.incomingproduct.scheduleharvest.harvest_date
 
     def save(self, *args, **kwargs):
         if self.ooid is None:
@@ -236,7 +256,7 @@ class BatchWeightMovement(models.Model):
         verbose_name_plural = _('Batch Weight Movements')
 
     def clean(self):
-        if self.weight < 0 and self.batch.batch_weight + self.weight < 0:
+        if self.weight < 0 and self.batch.ingress_weight + self.weight < 0:
             raise ValidationError(
                 _('This movement would result in a negative weight for the batch.'),
             )
