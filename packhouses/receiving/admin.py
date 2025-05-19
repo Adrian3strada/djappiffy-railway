@@ -275,6 +275,12 @@ class WeighingSetContainerInline(nested_admin.NestedTabularInline):
     model = WeighingSetContainer
     extra = 0
 
+    def get_readonly_fields(self, request, obj=None):
+        # Si se está editando un IncomingProduct existente, los campos son solo lectura
+        if obj and obj.pk:
+            return [f.name for f in self.model._meta.fields if f.name != 'id']
+        return super().get_readonly_fields(request, obj)
+
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         form = formset.form
@@ -303,27 +309,10 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     form = WeighingSetForm
     formset = WeighingSetInlineFormSet
 
-    
-    def get_readonly_fields(self, request, obj=None):
-        # Si el objeto principal ya existe, se muestra todo como solo lectura.
-        if obj:
-            return self.fields
-        return super().get_readonly_fields(request, obj)
-
     def has_change_permission(self, request, obj=None):
         if obj:
             return False
         return True
-    
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        form = formset.form
-        for field in form.base_fields.values():
-            field.widget.can_add_related = False
-            field.widget.can_change_related = False
-            field.widget.can_delete_related = False
-            field.widget.can_view_related = False
-        return formset
 
     def get_readonly_fields(self, request, obj=None):
         # Obtener los campos readonly predefinidos
@@ -337,6 +326,16 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
         if obj and obj.pk:
             readonly_fields.append('ooid')
         return readonly_fields
+    
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        form = formset.form
+        for field in form.base_fields.values():
+            field.widget.can_add_related = False
+            field.widget.can_change_related = False
+            field.widget.can_delete_related = False
+            field.widget.can_view_related = False
+        return formset
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = None
