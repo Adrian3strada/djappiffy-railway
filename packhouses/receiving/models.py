@@ -51,7 +51,7 @@ class Batch(models.Model):
         qs = self.batchweightmovement_set.filter(source__model__icontains='weighingset')
         total_weight = qs.aggregate(batch_weight=Sum('weight'))['batch_weight'] or 0
         if self.is_parent:
-            total_weight += sum(child.batch_weight for child in self.children.all())
+            total_weight += sum(child.ingress_weight for child in self.children.all())
         return total_weight
 
     @property
@@ -62,15 +62,11 @@ class Batch(models.Model):
         return total_weight
 
     @property
-    def yield_available_weight(self):
-        return self.available_weight
-
-    @property
     def yield_orchard_producer(self):
         return self.incomingproduct.scheduleharvest.orchard.producer
 
     @property
-    def yield_harvest_provider(self):
+    def harvest_product_provider(self):
         return self.incomingproduct.scheduleharvest.product_provider
 
     @property

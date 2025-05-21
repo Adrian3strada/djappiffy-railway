@@ -16,7 +16,7 @@ from .models import (IncomingProduct, WeighingSet, WeighingSetContainer,
 from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLinksMixin)
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInlineMixin
-from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet, 
+from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet,
                     BatchForm, WeighingSetForm, WeighingSetInlineFormSet,)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                       ByCategoryForOrganizationIncomingProductFilter)
@@ -326,7 +326,7 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
         if obj and obj.pk:
             readonly_fields.append('ooid')
         return readonly_fields
-    
+
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         form = formset.form
@@ -336,7 +336,7 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
             field.widget.can_delete_related = False
             field.widget.can_view_related = False
         return formset
-    
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = None
         if hasattr(request, 'organization'):
@@ -366,7 +366,7 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard',
                     'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'status','generate_actions_buttons')
     fields = ('mrl', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result',
-              'total_weighed_sets', 'packhouse_weight_result', 'total_weighed_set_containers', 'average_per_container', 
+              'total_weighed_sets', 'packhouse_weight_result', 'total_weighed_set_containers', 'average_per_container',
               'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'kg_sample',
               'comments', 'is_quarantined','status')
     list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
@@ -564,7 +564,7 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
 class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = IncomingProduct
     fields = ('mrl', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result',
-              'total_weighed_sets', 'packhouse_weight_result', 'total_weighed_set_containers', 'average_per_container', 
+              'total_weighed_sets', 'packhouse_weight_result', 'total_weighed_set_containers', 'average_per_container',
               'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'kg_sample',
               'comments', 'is_quarantined','status')
     readonly_fields = ('status',)
@@ -592,9 +592,10 @@ class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline)
 
 @admin.register(Batch)
 class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
-    list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 
+    list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product_provider', 'get_scheduleharvest_product',
                     'get_scheduleharvest_product_variety', 'get_scheduleharvest_product_phenology', 'get_scheduleharvest_orchards',
-                    'get_scheduleharvest_harvest_date', 'display_created_at',  'weight_received_display', 'get_batch_available_weight', 
+                    'get_scheduleharvest_harvest_date', 'display_created_at', 'get_ingress_weight_display',
+                    'get_available_weight_display',
                     'status', 'is_quarantined', 'display_available_for_processing', 'generate_actions_buttons',)
     fields = ['ooid', 'status', 'is_quarantined', 'is_available_for_processing']
     readonly_fields = ['ooid',]
@@ -679,8 +680,8 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         qs = queryset.select_related('incomingproduct__scheduleharvest')
 
         possible_parents = queryset.filter(
-            parent__isnull=True, 
-            children__isnull=False 
+            parent__isnull=True,
+            children__isnull=False
         ).distinct()
 
         if possible_parents.count() != 1:
@@ -690,10 +691,10 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
                 level=messages.ERROR
             )
             return
-        
+
         parent = possible_parents.first()
         children_to_add = qs.exclude(pk=parent.pk)
-        
+
         # Validar los lotes por añadir con los que ya fueron unidos
         try:
             Batch.validate_add_batches_to_existing_merge(parent, children_to_add)
@@ -716,7 +717,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
                 level=messages.ERROR
             )
             return
-       
+
         url = reverse(
             'admin:%s_%s_change' % (
                 parent._meta.app_label,
@@ -734,7 +735,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         pass
     generate_actions_buttons.short_description = _('Actions')
     generate_actions_buttons.allow_tags = True
-    
+
 
     def display_available_for_processing(self, obj):
         if obj.is_child:
@@ -843,14 +844,13 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     get_scheduleharvest_product_provider.short_description = _('Product Provider')
     get_scheduleharvest_product_provider.admin_order_field = 'incomingproduct__scheduleharvest__product_provider'
 
-    def weight_received_display(self, obj):
-        return f"{obj.weight_received:.3f}" if obj.weight_received else ""
-    weight_received_display.short_description = _('Weight Received')
+    def get_ingress_weight_display(self, obj):
+        return f"{obj.ingress_weight:.2f}"
+    get_ingress_weight_display.short_description = _('Ingress weight')
 
-    def get_batch_available_weight(self, obj):
-        total = obj.available_weight
-        return '{:,.3f}'.format(total) if total else ''
-    get_batch_available_weight.short_description = _('Available Weight')
+    def get_available_weight_display(self, obj):
+        return f'{obj.available_weight:,.2f}'
+    get_available_weight_display.short_description = _('Available Weight')
 
     def get_scheduleharvest_product_variety(self, obj):
         batches = (
