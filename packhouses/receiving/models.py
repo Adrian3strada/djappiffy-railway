@@ -23,6 +23,8 @@ class Batch(models.Model):
     is_quarantined = models.BooleanField(default=False, verbose_name=_('In quarantine'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Entry Date'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
+    # 'parent' apunta al lote padre al que este lote fue unido.
+    # Si es None, significa que el lote no ha sido unido a ningún otro.
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='children', verbose_name=_('Parent'))
 
     def __str__(self):
@@ -42,9 +44,17 @@ class Batch(models.Model):
     def ingress_weight(self):
         if self.batchweightmovement_set.exists():
             return self.batchweightmovement_set.aggregate(
-                ingress_weight=Sum('weight')
-            )['ingress_weight']
+                batch_weight=Sum('weight')
+            )['batch_weight']
         return 0
+
+    @property
+    def weight_received(self):
+        qs = self.batchweightmovement_set.filter(source__model__icontains='weighingset')
+        total_weight = qs.aggregate(batch_weight=Sum('weight'))['batch_weight'] or 0
+        if self.is_parent:
+            total_weight += sum(child.batch_weight for child in self.children.all())
+        return total_weight
 
     @property
     def available_weight(self):
@@ -54,29 +64,37 @@ class Batch(models.Model):
         return total_weight
 
     @property
-    def harvest_orchard_producer(self):
+    def yield_available_weight(self):
+        return self.available_weight
+
+    @property
+    def yield_orchard_producer(self):
         return self.incomingproduct.scheduleharvest.orchard.producer
 
     @property
-    def harvest_product_provider(self):
+    def yield_harvest_provider(self):
         return self.incomingproduct.scheduleharvest.product_provider
 
     @property
-    def harvest_gatherer(self):
+    def yield_harvest_gatherer(self):
         return self.incomingproduct.scheduleharvest.gatherer
 
     @property
-    def harvest_orchard(self):
+    def yield_orchard(self):
         return self.incomingproduct.scheduleharvest.orchard
 
     @property
-    def orchard_registry_code(self):
+    def yield_orchard_registry_code(self):
         return self.incomingproduct.scheduleharvest.orchard.code
 
     @property
-    def orchard_current_certifications(self):
+    def yield_orchard_selected_certifications(self):
+        return self.incomingproduct.scheduleharvest.orchard_certification.all()
+
+    @property
+    def yield_orchard_current_certifications(self):
         return OrchardCertification.objects.filter(
-            orchard=self.orchard,
+            orchard=self.yield_orchard,
             expiration_date__gte=self.created_at,
         )
 
@@ -85,8 +103,12 @@ class Batch(models.Model):
         return 0
 
     @property
-    def harvest_date(self):
+    def yield_harvest_date(self):
         return self.incomingproduct.scheduleharvest.harvest_date
+
+    @property
+    def yield_producer(self):
+        return self.incomingproduct.scheduleharvest.orchard.producer
 
     # @property para lotes padres e hijos
     @property
