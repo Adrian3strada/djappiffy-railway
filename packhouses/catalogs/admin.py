@@ -298,7 +298,7 @@ class ProductPestInline(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
+        js = ('js/admin/forms/packhouses/catalogs/select_product.js', 'js/admin/forms/packhouses/catalogs/product_pest_disease.js',)
 
 
 class ProductDiseaseInline(admin.TabularInline):
@@ -329,7 +329,7 @@ class ProductDiseaseInline(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/select_product.js',)
+        js = ('js/admin/forms/packhouses/catalogs/select_product.js', 'js/admin/forms/packhouses/catalogs/product_pest_disease.js',)
 
 
 class ProductPhysicalDamageInline(admin.TabularInline):
@@ -379,8 +379,8 @@ class ProductFoodSafetyProcessInline(admin.TabularInline):
 class ProductDryMatterAcceptanceReportInline(admin.TabularInline):
     model = ProductDryMatterAcceptanceReport
     extra = 0
-    verbose_name = _('Product Additional Value')
-    verbose_name_plural = _('Product Additional Values')
+    verbose_name = _('Dry Matter Acceptance Report')
+    verbose_name_plural = _('Dry Matter Acceptance Report')
     readonly_fields = ['created_at']
     can_delete = False
 

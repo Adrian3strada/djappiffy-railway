@@ -5,6 +5,7 @@ from packhouses.catalogs.models import (
     CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, Packaging,
     HarvestingCrew, OrchardCertification, ProductRipeness, ProductPackaging, Service
 )
+from common.base.models import (PestProductKind, DiseaseProductKind)
 from django.utils.translation import gettext_lazy as _
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
@@ -193,3 +194,17 @@ class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = '__all__'
+
+class PestProductKindSerializer(serializers.ModelSerializer):
+    pest = serializers.CharField(source='pest.name', read_only=True)
+
+    class Meta:
+        model = PestProductKind
+        fields = ['id', 'pest']
+
+class DiseaseProductKindSerializer(serializers.ModelSerializer):
+    disease = serializers.CharField(source='disease.name', read_only=True)
+
+    class Meta:
+        model = DiseaseProductKind
+        fields = ['id', 'disease']

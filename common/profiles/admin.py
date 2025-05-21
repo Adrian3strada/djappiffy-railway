@@ -4,9 +4,10 @@ from .models import (UserProfile, OrganizationProfile, ProducerProfile,
                      TradeExporterProfile, PackhouseExporterSetting, EudrOperatorProfile)
 from django.utils.translation import gettext_lazy as _
 from cities_light.models import Country, Region, SubRegion, City
-from organizations.models import Organization
+from organizations.models import Organization, OrganizationUser
 from common.billing.models import LegalEntityCategory
 from common.base.models import ProductKind
+from common.users.models import User
 
 # Register your Admin classes here.
 
@@ -72,6 +73,20 @@ class PackhouseExporterSettingInline(admin.StackedInline):
     can_delete = False
     verbose_name = _("Platform setting")
 
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        if obj:
+            if obj.organization != request.organization:
+                if 'user_organization' in fields:
+                    fields = list(fields)
+                    fields.remove('user_organization')
+        else:
+            if 'user_organization' in fields:
+                    fields = list(fields)
+                    fields.remove('user_organization')
+
+        return fields
+
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == 'product_kinds':
             kwargs['queryset'] = ProductKind.objects.filter(for_packaging=True, is_enabled=True)
@@ -81,16 +96,40 @@ class PackhouseExporterSettingInline(admin.StackedInline):
 
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "user_organization":
+            kwargs["queryset"] = OrganizationUser.objects.filter(organization=request.organization)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+        
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+
+        class CustomFormset(formset):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                for form in self.forms:
+                    instance = form.instance
+                    if instance and instance.pk:
+                        if instance.user_organization is not None:
+                            if 'user_organization' in form.fields:
+                                form.fields['user_organization'].disabled = True
+
+        return CustomFormset
 
 @admin.register(PackhouseExporterProfile)
 class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
     inlines = [PackhouseExporterSettingInline]
+    exclude = ('organization',)
+    readonly_fields = ['product_kinds']
 
     def get_fields(self, request, obj=None):
         fields = list(super().get_fields(request, obj))
         if not request.user.is_superuser:
             fields.remove('product_kinds')
-            fields.remove('organization')
+            # fields.remove('organization')
         return fields
 
     def get_form(self, request, obj=None, **kwargs):
@@ -127,7 +166,7 @@ class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
                 kwargs["queryset"] = SubRegion.objects.filter(region_id=state_id)
             else:
                 kwargs["queryset"] = SubRegion.objects.none()
-            print("city", kwargs["queryset"])
+
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda item: item.name
             return formfield
@@ -169,13 +208,13 @@ class PackhouseExporterProfileAdmin(admin.ModelAdmin, OrganizationProfileMixin):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
+    # def formfield_for_manytomany(self, db_field, request, **kwargs):
 
-        if db_field.name == 'product_kinds':
-            kwargs['queryset'] = ProductKind.objects.filter(for_packaging=True, is_enabled=True)
-            formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
-            formfield.required = True
-            return formfield
+    #     if db_field.name == 'product_kinds':
+    #         kwargs['queryset'] = ProductKind.objects.filter(for_packaging=True, is_enabled=True)
+    #         formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
+    #         formfield.required = True
+    #         return formfield
 
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 

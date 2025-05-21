@@ -241,8 +241,8 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
 
 
 class ProductPest(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
-    pest = models.ForeignKey(PestProductKind, verbose_name=_('Pest'), on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    pest = models.ForeignKey(PestProductKind, verbose_name=_('Pest'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -257,8 +257,8 @@ class ProductPest(models.Model):
         ]
 
 class ProductDisease(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
-    disease = models.ForeignKey(DiseaseProductKind, verbose_name=_('Disease'), on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    disease = models.ForeignKey(DiseaseProductKind, verbose_name=_('Disease'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -273,7 +273,7 @@ class ProductDisease(models.Model):
         ]
 
 class ProductPhysicalDamage(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -290,7 +290,7 @@ class ProductPhysicalDamage(models.Model):
         ]
 
 class ProductResidue(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -307,7 +307,7 @@ class ProductResidue(models.Model):
         ]
 
 class ProductFoodSafetyProcess(models.Model):
-    procedure = models.ForeignKey(FoodSafetyProcedure, verbose_name=_('Food Safety Procedure'), on_delete=models.CASCADE)
+    procedure = models.ForeignKey(FoodSafetyProcedure, verbose_name=_('Food Safety Procedure'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -332,8 +332,8 @@ class ProductDryMatterAcceptanceReport(models.Model):
 
     class Meta:
         ordering = ('-created_at',)
-        verbose_name = _('Product Additional Value')
-        verbose_name_plural = _('Product Additional Values')
+        verbose_name = _('Dry Matter Acceptance Report')
+        verbose_name_plural = _('Dry Matter Acceptance Report')
 
     def save_model(self, request, obj, form, change):
         latest = ProductDryMatterAcceptanceReport.objects.order_by('-created_at').first()

@@ -13,7 +13,7 @@ from django.urls import reverse
 
 class CertificationDocumentInline(admin.TabularInline):
     model = CertificationDocument
-    extra = 1
+    extra = 0
 
 class FormatInline(admin.TabularInline):
     model = Format

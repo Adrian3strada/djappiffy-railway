@@ -1,0 +1,366 @@
+[
+    {
+        "model": "auth.group",
+        "pk": 3,
+        "fields": {
+            "name": "User / User"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 4,
+        "fields": {
+            "name": "Profiles / Pachouses exporter profile"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 5,
+        "fields": {
+            "name": "Certifications / Certification"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 6,
+        "fields": {
+            "name": "Billing / Exchage Rate"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 7,
+        "fields": {
+            "name": "Billing / Legal Entity"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 8,
+        "fields": {
+            "name": "Catalogs settings / Bank"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 9,
+        "fields": {
+            "name": "Catalogs settings / Orchard certification kind"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 10,
+        "fields": {
+            "name": "Catalogs settings / Orchard certification verifier"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 11,
+        "fields": {
+            "name": "Catalogs settings / Packaging kind authority"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 12,
+        "fields": {
+            "name": "Catalogs settings / Payment kind"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 13,
+        "fields": {
+            "name": "Catalogs settings / Status"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 14,
+        "fields": {
+            "name": "Catalogs settings / Vehicle brand"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 15,
+        "fields": {
+            "name": "Catalogs settings / Vehicle fuel kind"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 16,
+        "fields": {
+            "name": "Catalogs settings / Vehicle kind"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 17,
+        "fields": {
+            "name": "Catalogs settings / Vehicle ownership kind"
+        }
+    },
+    {
+      "model": "auth.group",
+      "pk": 18,
+      "fields": {
+          "name": "Catalogs / Market"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 19,
+      "fields": {
+          "name": "Catalogs / Product"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 20,
+      "fields": {
+          "name": "Catalogs / Product size"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 21,
+      "fields": {
+          "name": "Catalogs / Supply"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 22,
+      "fields": {
+          "name": "Catalogs / Pallet"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 23,
+      "fields": {
+          "name": "Catalogs / Packaging"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 24,
+      "fields": {
+          "name": "Catalogs / Product presentation"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 25,
+      "fields": {
+          "name": "Catalogs / Product packaging"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 26,
+      "fields": {
+          "name": "Catalogs / Provider"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 27,
+      "fields": {
+          "name": "Catalogs / Client"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 28,
+      "fields": {
+          "name": "Catalogs / Vehicle"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 29,
+      "fields": {
+          "name": "Catalogs / Gatherer"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 30,
+      "fields": {
+          "name": "Catalogs / Maquiladora"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 31,
+      "fields": {
+          "name": "Catalogs / Orchard"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 32,
+      "fields": {
+          "name": "Catalogs / Harvesting crew"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 33,
+      "fields": {
+          "name": "Catalogs / Service"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 34,
+      "fields": {
+          "name": "Catalogs / Weighing scale"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 35,
+      "fields": {
+          "name": "Catalogs / Cold chamber"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 36,
+      "fields": {
+          "name": "Catalogs / Exporting company"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 37,
+      "fields": {
+          "name": "Catalogs / Transfer"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 38,
+      "fields": {
+          "name": "Catalogs / Local Transporter"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 39,
+      "fields": {
+          "name": "Catalogs / Border to destination transporter"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 40,
+      "fields": {
+          "name": "Catalogs / Customs Broker"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 41,
+      "fields": {
+          "name": "Catalogs / Vessel"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 42,
+      "fields": {
+          "name": "Catalogs / Airline"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 43,
+      "fields": {
+          "name": "Catalogs / Insurance Company"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 44,
+      "fields": {
+          "name": "Storehouse / Adjustment inventory"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 45,
+      "fields": {
+          "name": "Storehouse / Inventory transaction"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 46,
+      "fields": {
+          "name": "Storehouse / Storehouse Entry"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 47,
+      "fields": {
+          "name": "Purchases / Purchase order"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 48,
+      "fields": {
+          "name": "Purchases / Requisition"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 49,
+      "fields": {
+          "name": "Purchases / Service order"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 50,
+      "fields": {
+          "name": "Receiving / Batche"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 51,
+      "fields": {
+          "name": "Receiving / Food Safety"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 52,
+      "fields": {
+          "name": "Receiving / Incoming product"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 53,
+      "fields": {
+          "name": "Gathering / Schedule harvest"
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 54,
+      "fields": {
+          "name": "Sales / Order"
+      }
+    }
+]

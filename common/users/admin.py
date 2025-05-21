@@ -36,7 +36,7 @@ class OrganizationUserInline(admin.TabularInline, OrganizationRoleMixin):
         return readonly_fields
 
     class Media:
-        js = ('js/admin/forms/common/eye_admin.js',)
+        js = ('js/admin/forms/common/eye_admin.js', 'js/admin/forms/common/permission.js',)
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin, OrganizationRoleMixin):
@@ -278,3 +278,4 @@ class CustomUserAdmin(UserAdmin, OrganizationRoleMixin):
 admin.site.unregister(OriginalGroup)
 admin.site.register(Group)
 # admin.site.register(Permission)
+admin.site.unregister(OrganizationUser)
