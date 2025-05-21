@@ -13,6 +13,7 @@ from packhouses.purchases.views import (requisition_pdf, set_requisition_ready, 
                                         set_purchase_order_supply_ready, set_purchase_order_supply_open,
                                         set_purchase_order_supply_payment)
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from .admin import custom_index
 
 
 urlpatterns = [

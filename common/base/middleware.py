@@ -50,7 +50,7 @@ class SubdomainDetectionMiddleware:
     def __call__(self, request):
         requested_hostname = self._get_request_hostname(request)
 
-        if re.match(r'^/(dadmin|rest)/.+', request.path):
+        if re.match(r'^/(dadmin|rest)/.*', request.path):
             ### Ask for Settings
             try:
                 requested_settings = PackhouseExporterSetting.objects.get(
