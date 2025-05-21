@@ -115,7 +115,16 @@ MIDDLEWARE = [
 
     'django.middleware.locale.LocaleMiddleware',
     'common.base.middleware.SubdomainDetectionMiddleware',
+    'common.base.middleware.AdjustUploadLimitsMiddleware',
 ]
+
+LARGE_UPLOAD_ALLOWED_PATH_URLS = [
+    path.strip() for path in os.getenv('LARGE_UPLOAD_ALLOWED_PATH_URLS', '').split(',') if path.strip()
+]
+
+LARGE_UPLOAD_FIELD_LIMIT = int(os.getenv('LARGE_UPLOAD_FIELD_LIMIT', 5000))
+
+
 
 ROOT_URLCONF = "application.urls"
 
