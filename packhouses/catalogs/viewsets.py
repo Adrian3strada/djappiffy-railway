@@ -459,6 +459,28 @@ class ProductKindViewSetMixin:
 
         return queryset
 
+class PestProductKindViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for managing PestProductKind objects.
+
+    Query Parameters:
+        - product_kind_id (int): Filters the PestProductKind objects by the associated product kind ID.
+    """
+    serializer_class = PestProductKindSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = PestProductKind.objects.all()
+        product_kind_id = self.request.query_params.get('product_kind_id')
+
+        if product_kind_id:
+            queryset = queryset.filter(product_kind_id=product_kind_id)
+
+        return queryset
+
 class DiseaseProductKindViewSet(viewsets.ModelViewSet):
     serializer_class = DiseaseProductKindSerializer
 
