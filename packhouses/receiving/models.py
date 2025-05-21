@@ -51,9 +51,9 @@ class Batch(models.Model):
     @property
     def weight_received(self):
         qs = self.batchweightmovement_set.filter(source__model__icontains='weighingset')
-        total_weight = qs.aggregate(batch_weight=Sum('weight'))['batch_weight'] or 0
+        total_weight = qs.aggregate(ingress_weight=Sum('weight'))['ingress_weight'] or 0
         if self.is_parent:
-            total_weight += sum(child.batch_weight for child in self.children.all())
+            total_weight += sum(child.ingress_weight for child in self.children.all())
         return total_weight
 
     @property
@@ -133,13 +133,21 @@ class Batch(models.Model):
 
 
     def clean(self):
-        # Bloquear edición de campos booleanos cuando el lote este cerrado o cancelado/rechazado
+        if self.status == 'open':
+            if self.is_available_for_processing:
+                raise ValidationError(_("An 'open' batch cannot be available for processing."))
+        if self.status == 'ready':
+            if self.is_quarantined:
+                raise ValidationError(_("Batches marked as 'ready' cannot be set to quarantine."))
+        # Verificar que ambos booleanos deben estar en False en estado cerrado o cancelado
         if self.status in ['closed', 'canceled'] and self.pk:
-            prev = Batch.objects.get(pk=self.pk)
-            if self.is_available_for_processing != prev.is_available_for_processing:
-                raise ValidationError({'is_available_for_processing': _('Cannot be changed when status is closed or canceled.')})
-            if self.is_quarantined != prev.is_quarantined:
-                raise ValidationError({'is_quarantined': _('Cannot be changed when status is closed or canceled.')})
+            errors = {}
+            if self.is_available_for_processing:
+                errors['is_available_for_processing'] = _('Must be false when status is closed or canceled.')
+            if self.is_quarantined:
+                errors['is_quarantined'] = _('Must be false when status is closed or canceled.')
+            if errors:
+                raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
         if self.ooid is None:
@@ -371,12 +379,68 @@ class IncomingProduct(models.Model):
     comments = models.TextField(verbose_name=_("Comments"), blank=True, null=True)
 
     @property
-    def packhouse_result_weight(self):
-        if self.public_weight_result:
-            return self.public_weight_result
-        return 0
+    def weighed_sets_count(self):
+        return self.weighingset_set.count()
+
+    @property
+    def containers_count(self):
+        return sum(
+            container.quantity or 0
+            for weighing in self.weighingset_set.all()
+            for container in weighing.weighingsetcontainer_set.all()
+        )
+    
+    @property
+    def total_net_weight(self):
+        return sum(
+            weighing.net_weight or 0
+            for weighing in self.weighingset_set.all()
+        )
+    
+    @property
+    def average_weight_per_container(self):
+        total_weight = self.total_net_weight
+        total_containers = self.containers_count
+        return round(total_weight / total_containers, 3) if total_containers else 0.0
+
+    @property
+    def assigned_container_total(self):
+        return sum(
+            container.quantity or 0
+            for vehicle in self.scheduleharvest.scheduleharvestvehicle_set.all()
+            for container in vehicle.scheduleharvestcontainervehicle_set.all()
+        )
+
+    @property
+    def full_container_total(self):
+        return sum(
+            container.full_containers or 0
+            for vehicle in self.scheduleharvest.scheduleharvestvehicle_set.filter(has_arrived=True)
+            for container in vehicle.scheduleharvestcontainervehicle_set.all()
+        )
+
+    @property
+    def empty_container_total(self):
+        return sum(
+            container.empty_containers or 0
+            for vehicle in self.scheduleharvest.scheduleharvestvehicle_set.filter(has_arrived=True)
+            for container in vehicle.scheduleharvestcontainervehicle_set.all()
+        )
+
+    @property
+    def missing_container_total(self):
+        return sum(
+            container.missing_containers or 0
+            for vehicle in self.scheduleharvest.scheduleharvestvehicle_set.filter(has_arrived=True)
+            for container in vehicle.scheduleharvestcontainervehicle_set.all()
+        )
+
 
     def clean(self):
+        if self.status == 'ready':
+            if self.is_quarantined:
+                raise ValidationError(_("Cannot be in quarantine if its status is 'ready'"))
+            
         if self.pk:
             initial_status = IncomingProduct.objects.get(pk=self.pk).status
             if initial_status == 'ready' and self.status != 'ready':
@@ -392,9 +456,12 @@ class IncomingProduct(models.Model):
         previous_status = 'open'
         if self.pk:
             previous_status = IncomingProduct.objects.get(pk=self.pk).status
+
+        if self.pk is not None:
+            self.recalculate_weighing_data()
         super().save(*args, **kwargs)
 
-        # Crear lote
+        # Crear lote y movimientos
         if self.status == 'ready' and previous_status != 'ready' and self.batch_id is None:
             with transaction.atomic():
                 new_batch = Batch.objects.create(
@@ -405,14 +472,12 @@ class IncomingProduct(models.Model):
                 self.batch = new_batch
                 super().save(update_fields=['batch'])
 
-                existing_weighing_sets = self.weighingset_set.all()
-                for weighing_set in existing_weighing_sets:
+                for weighing_set in self.weighingset_set.all():
                     exists = BatchWeightMovement.objects.filter(
                         batch=new_batch,
                         source__model=weighing_set.__class__.__name__,
                         source__id=weighing_set.pk
                     ).exists()
-                    print("que tiene exists(): ", exists)
                     if not exists:
                         BatchWeightMovement.objects.create(
                             batch=new_batch,
@@ -445,12 +510,6 @@ class IncomingProduct(models.Model):
         else:
             self.average_per_container = 0.0
 
-        self.save(update_fields=[
-            'total_weighed_sets',
-            'total_weighed_set_containers',
-            'packhouse_weight_result',
-            'average_per_container'
-        ])
 
     def __str__(self):
         schedule_harvest = self.scheduleharvest

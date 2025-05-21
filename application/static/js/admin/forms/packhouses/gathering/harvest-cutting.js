@@ -71,6 +71,7 @@ document.addEventListener("DOMContentLoaded", function() {
               button.hide();
 
               var row = button.closest("tr");
+              row.find(".btn-ready-confirm").hide();
               var statusCell = row.find(".field-status");
               statusCell.text("Canceled");
 
@@ -148,6 +149,7 @@ document.addEventListener("DOMContentLoaded", function() {
               button.hide();
 
               var row = button.closest("tr");
+              row.find(".btn-cancel-confirm").hide();
               var statusCell = row.find(".field-status");
               statusCell.text("Ready");
 

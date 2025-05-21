@@ -192,18 +192,18 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
             cancel_button_html = format_html(
                 '''
                 <a class="button btn-cancel-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
-                   data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:red;">
+                data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:red;">
                     <i class="fa-solid fa-ban"></i>
                 </a>
                 ''',
                 tooltip_cancel, cancel_url, confirm_cancel_text, confirm_button_text, cancel_button_text
-            )
+            ) if obj.status == 'open' else ''
 
             if obj.status == 'open':
                 set_harvest_ready_button = format_html(
                     '''
                     <a class="button btn-ready-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
-                       data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#4daf50;">
+                    data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#4daf50;">
                         <i class="fa-solid fa-paper-plane"></i>
                     </a>
                     ''',
