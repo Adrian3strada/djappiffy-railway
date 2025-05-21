@@ -672,6 +672,7 @@ class OrchardCertification(models.Model):
     extra_code = models.CharField(max_length=100, verbose_name=_('Extra code'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.certification_kind} - {self.certification_number}"

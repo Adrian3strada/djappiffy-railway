@@ -198,7 +198,7 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     def get_fields(self, request, obj=None):
         fields = [
             'ooid', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
-            'product_phenologies', 'product_harvest_size_kind', 'orchard', 'orchard_certifications', 'market',
+            'product_phenologies', 'product_harvest_size_kind', 'orchard', 'market',
             'weight_expected', 'weighing_scale', 'comments'
         ]
         if obj:
@@ -248,10 +248,6 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
                 "model": Market,
                 "filters": {"is_enabled": True},
             },
-            "orchard_certifications": {
-                "model": OrchardCertification,
-                "filters": {"is_enabled": True},
-            },
             "weighing_scale": {
                 "model": WeighingScale,
                 "filters": {"is_enabled": True},
@@ -267,8 +263,7 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',
-              'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js')
+        js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',)
 
 # Inlines para los pallets
 class WeighingSetContainerInline(nested_admin.NestedTabularInline):
@@ -480,7 +475,7 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
     model = ScheduleHarvest
     extra = 0
     fields = ('ooid', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
-        'product_phenologies', 'product_harvest_size_kind', 'orchard', 'orchard_certifications', 'market',
+        'product_phenologies', 'product_harvest_size_kind', 'orchard', 'market',
         'weight_expected', 'weighing_scale', 'comments')
     readonly_fields = ('ooid', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
     can_delete = False
@@ -539,10 +534,6 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
                 "model": Market,
                 "filters": {"is_enabled": True},
             },
-            "orchard_certifications": {
-                "model": OrchardCertification,
-                "filters": {"is_enabled": True},
-            },
             "weighing_scale": {
                 "model": WeighingScale,
                 "filters": {"is_enabled": True},
@@ -558,8 +549,7 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',
-              'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js')
+        js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',)
 
 class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = IncomingProduct

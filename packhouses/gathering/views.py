@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from .models import (ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle, Country, Region, SubRegion, City)
-from packhouses.catalogs.models import HarvestingCrew
+from packhouses.catalogs.models import HarvestingCrew, OrchardCertification
 from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseForbidden
 from weasyprint import HTML, CSS
@@ -158,6 +158,15 @@ def good_harvest_practices_format(request, harvest_id):
             size: legal portrait;
         }''')
 
+    orchard_certifications = OrchardCertification.objects.filter(
+        orchard=harvest.orchard,
+        created_at__lte=harvest.harvest_date,
+        expiration_date__gte=harvest.harvest_date,
+        is_enabled=True
+        )
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.debug(f"Orchard certifications: {orchard_certifications}")
 
     # Renderizar el template HTML
     html_string = render_to_string('admin/packhouses/safety-guidelines-report.html', {
@@ -166,6 +175,7 @@ def good_harvest_practices_format(request, harvest_id):
         'pdf_title': pdf_title,
         'logo_url': logo_url,
         'harvest': harvest,
+        'orchard_certifications': orchard_certifications,
         'harvesting_crew': harvestingcrew,
         'crew_vehicles': crew_vehicles,
         'scheduleharvestharvestingcrewinline': scheduleharvestharvestingcrewinline,
@@ -226,7 +236,6 @@ def set_scheduleharvest_ready(request, harvest_id):
     incoming_product = IncomingProduct.objects.create(organization=scheduleharvest.organization)
     scheduleharvest.incoming_product = incoming_product
     scheduleharvest.save()
-
 
     success_message = _('Harvest sent to Fruit Receiving Area successfully.')
     return JsonResponse({
