@@ -1,4 +1,5 @@
 from django.db import models
+from organizations.models import Organization
 
 from ..catalogs.models import Market, ProductSize, Packaging, ProductPackaging, ProductMarketClass, ProductRipeness
 from ..hrm.models import Employee
@@ -62,7 +63,6 @@ class Package(models.Model):
         verbose_name_plural = _('Packages')
 
 
-
 class Packing(models.Model):
     batch = models.ForeignKey(Batch, verbose_name=_('Batch'), on_delete=models.PROTECT)
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Market class'), on_delete=models.PROTECT)
@@ -70,6 +70,7 @@ class Packing(models.Model):
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
     product_packaging_weight = models.FloatField(_("Product packaging weight"))
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

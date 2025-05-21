@@ -23,8 +23,6 @@ class Batch(models.Model):
     is_quarantined = models.BooleanField(default=False, verbose_name=_('In quarantine'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Entry Date'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
-    # 'parent' apunta al lote padre al que este lote fue unido.
-    # Si es None, significa que el lote no ha sido unido a ningún otro.
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='children', verbose_name=_('Parent'))
 
     def __str__(self):

@@ -32,6 +32,7 @@ class ByProductForOrganizationAdminMixin(admin.ModelAdmin):
             return qs.filter(product__organization=request.organization)
         return qs
 
+
 class DisableInlineRelatedLinksMixin:
     """
     Mixin para eliminar todos los botones de "agregar", "editar", "ver" y "eliminar"
@@ -50,6 +51,7 @@ class DisableInlineRelatedLinksMixin:
 
         return formset
 
+
 class ByUserAdminMixin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -62,6 +64,7 @@ class ByUserAdminMixin(admin.ModelAdmin):
         user_profile = User.objects.get(username=request.user)
         obj.user = user_profile
         super().save_model(request, obj, form, change)
+
 
 class DisableLinksAdminMixin:
     """

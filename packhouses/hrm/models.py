@@ -4,10 +4,10 @@ from organizations.models import Organization
 from cities_light.models import City, Country, Region, SubRegion
 from django.utils.translation import gettext_lazy as _
 from common.mixins import CleanNameAndOrganizationMixin
-from packhouses.packhouse_settings.models import PaymentKind 
+from packhouses.packhouse_settings.models import PaymentKind
 from common.billing.models import LegalEntityCategory
 from packhouses.packhouse_settings.models import Bank
-from .utils import (EMPLOYEE_GENDER_CHOICES, EMPLOYEE_BLOOD_TYPE_CHOICES, EMPLOYEE_ACADEMIC_CHOICES, EMPLOYEE_PAYMENT_CHOICES, 
+from .utils import (EMPLOYEE_GENDER_CHOICES, EMPLOYEE_BLOOD_TYPE_CHOICES, EMPLOYEE_ACADEMIC_CHOICES, EMPLOYEE_PAYMENT_CHOICES,
                     EMERGENCY_CONTACT_RELATIONSHIP_CHOICES, MARITAL_STATUS_CHOICES, PAYMENT_CHOICES, EMPLOYEE_PAYMENT_METHOD_CHOICES, )
 from django.core.exceptions import ValidationError
 from .settings import JOB_CATEGORIES
@@ -37,8 +37,8 @@ class JobPosition(CleanNameAndOrganizationMixin, models.Model):
 
     def __str__(self):
         return f"{self.name}"
-    
-    class Meta: 
+
+    class Meta:
         verbose_name = _('Job Position')
         verbose_name_plural = _('Job Positions')
         ordering = ('name', )
@@ -53,13 +53,14 @@ class WorkShiftSchedule(models.Model):
     exit_time = models.TimeField(verbose_name=_('Exit Time'), blank=True, null=True, default="18:00:00" )
     is_enabled = models.BooleanField(default=True, verbose_name=_("Is Enabled"))
     job_position = models.ForeignKey(JobPosition, on_delete=models.CASCADE, verbose_name=_('Job Position'))
-    
+
     def __str__(self):
         return self.day
 
     class Meta:
         verbose_name = _('Work Shift Schedule')
         verbose_name_plural = _('Work Shift Schedules')
+
 
 class Employee(CleanNameAndOrganizationMixin, models.Model):
     status = models.ForeignKey(EmployeeStatus, on_delete=models.CASCADE, verbose_name=_('Status'))
@@ -80,7 +81,7 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
             parts.append(self.middle_name)
         parts.append(self.last_name)
         return ' '.join(parts)
-    
+
     def save(self, *args, **kwargs):
         self.full_name = self.get_full_name()
         super().save(*args, **kwargs)
@@ -88,7 +89,7 @@ class Employee(CleanNameAndOrganizationMixin, models.Model):
     def __str__(self):
         return f"{self.full_name}"
 
-    class Meta: 
+    class Meta:
         verbose_name = _('Employee')
         verbose_name_plural = _('Employees')
         ordering = ('full_name',)
@@ -107,7 +108,7 @@ class EmployeeJobPosition(models.Model):
     license = models.BooleanField(default=False, verbose_name=_('License'), help_text=_('Employee requires drivers license'))
     equipment = models.BooleanField(default=True, verbose_name=_('Equipment'), help_text=_('Employee requires uniform and/or equipment'))
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
-    
+
     def __str__(self):
         return f"{self.employee} - {self.job_position}"
 
@@ -135,16 +136,16 @@ class EmployeeTaxAndMedicalInformation(models.Model):
     emergency_contact_name = models.CharField(max_length=100, verbose_name=_('Emergency Contact Name'), blank=False, null=False, help_text=_('Name of the emergency contact'))
     emergency_contact_phone = models.CharField(max_length=20, verbose_name=_('Emergency Contact Phone'), blank=False, null=False, help_text=_('Phone number of the emergency contact'))
     emergency_contact_relationship = models.CharField(max_length=20, choices=EMERGENCY_CONTACT_RELATIONSHIP_CHOICES, verbose_name=_('Emergency Contact Relationship'), blank=False, null=False)
-    
+
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
-    
+
     class Meta:
         verbose_name = _('Tax and Medical Information')
         verbose_name_plural = _('Tax and Medical Information Records')
 
 
 class EmployeeContactInformation(models.Model):
-    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)  
+    country = models.ForeignKey(Country, verbose_name=_('Country'), on_delete=models.PROTECT)
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
     district = models.ForeignKey(City, verbose_name=_('District'), on_delete=models.PROTECT, null=True, blank=True)
@@ -156,10 +157,10 @@ class EmployeeContactInformation(models.Model):
     phone_number = models.CharField(max_length=20, verbose_name=_('Phone number'))
     email = models.EmailField(max_length=255, verbose_name=_('Email'))
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
-    
+
     def __str__(self):
         return f"Address and Contact Information: {self.employee} "
-    
+
     class Meta:
         verbose_name = _('Address and Contact Information')
         verbose_name_plural = _('Address and Contact Information Records')
@@ -170,7 +171,7 @@ class EmployeeAcademicAndWorkInfomation(models.Model):
     degree = models.CharField(max_length=255, verbose_name=_('Degree'), null=True, blank=True)
     professional_license = models.CharField(max_length=255, verbose_name=_('Professional License'), null=True, blank=True)
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
-    
+
     class Meta:
         verbose_name = _('Academic and Work Information')
         verbose_name_plural = _('Academic and Work Information Records')
@@ -180,7 +181,7 @@ class EmployeeWorkExperience(models.Model):
     title = models.CharField(max_length=255, verbose_name=_('Previous Role'), null=True, blank=True)
     company_name = models.CharField(max_length=255, verbose_name=_("Company Name"), null=True, blank=True)
     time_in_position = models.CharField(max_length=20, verbose_name="Time in Position", help_text=_("Example: '2 years 3 months'"), null=True, blank=True)
-    
+
     def __str__(self):
         return f"{self.title} at {self.company_name}" if self.company_name else self.title
 
@@ -189,8 +190,8 @@ class EmployeeCertificationInformation(models.Model):
     certification_name = models.CharField(max_length=200)
     issuing_organization = models.CharField(max_length=200)
     issue_date = models.DateField()
-    expiration_date = models.DateField(null=True, blank=True)  
-    
+    expiration_date = models.DateField(null=True, blank=True)
+
     def __str__(self):
         return f"{self.certification_name}"
-    
+
