@@ -9,6 +9,7 @@ import uuid
 
 # Create your models here.
 
+
 class PackerLabel(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     employee = models.ForeignKey(Employee, verbose_name=_('Employee'), on_delete=models.PROTECT)

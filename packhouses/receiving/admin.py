@@ -53,7 +53,6 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
                 return [f.name for f in self.model._meta.fields if f.name != 'created_at_model']
         return []
 
-
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         form = formset.form
