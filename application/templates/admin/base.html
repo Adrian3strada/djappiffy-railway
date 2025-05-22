@@ -284,6 +284,10 @@
             <div class="content">
                 <div class="container-fluid">
                     <section id="content" class="content">
+                        {% if request.resolver_match.view_name == 'admin:index' %}
+                            {% block content_dashboard %}{% endblock %}
+                        {% endif %}
+
                         {% block messages %}
                             {% for message in messages %}
                                 {% if message.tags == 'success' %}

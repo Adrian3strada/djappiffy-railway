@@ -148,26 +148,23 @@ def update_weighing_set_totals(sender, instance, **kwargs):
     if not parent or not parent.pk:
         return
 
-    # ✅ Evitamos ejecutar si aún no hay datos clave (como el peso bruto)
     if parent.gross_weight is None or parent.platform_tare is None:
         return
 
-    # ✅ Calculamos datos agregados de los contenedores
     containers = parent.weighingsetcontainer_set.all()
-
     total_tare = sum(
         c.quantity * (c.harvest_container.kg_tare or 0)
         for c in containers
     )
     total_qty = sum(c.quantity or 0 for c in containers)
 
-    # ✅ Calculamos net_weight
+    # Calcular net_weight de pesada
     gross = parent.gross_weight or 0
     tare = total_tare or 0
     platform = parent.platform_tare or 0
     net = gross - tare - platform
 
-    # ✅ Actualizamos los campos relacionados
+    # Actualizar fields con los cálculos
     parent.container_tare = total_tare
     parent.total_containers = total_qty
     parent.net_weight = net

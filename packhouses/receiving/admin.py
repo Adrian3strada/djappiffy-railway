@@ -34,6 +34,7 @@ from django import forms
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.utils.formats import date_format
+from .mixins import IncomingProductMetricsMixin
 # from django import forms
 
 # Inlines para datos del corte
@@ -362,16 +363,16 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
 
 # Reciba
 @admin.register(IncomingProduct)
-class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
+class IncomingProductAdmin(IncomingProductMetricsMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard',
                     'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'status','generate_actions_buttons')
     fields = ('mrl', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result',
-              'total_weighed_sets', 'packhouse_weight_result', 'total_weighed_set_containers', 'average_per_container',
-              'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'kg_sample',
+              'kg_sample', *IncomingProductMetricsMixin.readonly_fields,
               'comments', 'is_quarantined','status')
     list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                    ByCategoryForOrganizationIncomingProductFilter)
     search_fields = ('scheduleharvest__ooid',)
+    readonly_fields = IncomingProductMetricsMixin.readonly_fields
     inlines = [WeighingSetInline, ScheduleHarvestInline]
     form = IncomingProductForm
     actions = None
@@ -561,11 +562,10 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
         js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',
               'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js')
 
-class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline):
+class IncomingProductInline(IncomingProductMetricsMixin, CustomNestedStackedInlineMixin, admin.StackedInline):
     model = IncomingProduct
     fields = ('mrl', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result',
-              'total_weighed_sets', 'packhouse_weight_result', 'total_weighed_set_containers', 'average_per_container',
-              'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'kg_sample',
+              'kg_sample', *IncomingProductMetricsMixin.readonly_fields,
               'comments', 'is_quarantined','status')
     readonly_fields = ('status',)
     extra = 0
@@ -573,6 +573,7 @@ class IncomingProductInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     show_change_link = True
     custom_title = _("Incoming Product Information")
     inlines = [WeighingSetInline, ScheduleHarvestInlineForBatch]
+    readonly_fields = IncomingProductMetricsMixin.readonly_fields
 
     def has_add_permission(self, request, obj=None):
         return False

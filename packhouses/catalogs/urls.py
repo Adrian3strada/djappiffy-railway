@@ -8,7 +8,7 @@ from .viewsets import (
     ClientViewSet, ProviderViewSet, ProductViewSet, MaquiladoraViewSet, SupplyViewSet,
     ProductSizeViewSet, ProductPresentationViewSet, ProductPackagingViewSet, ProductPackagingPalletViewSet, PalletViewSet,
     OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, OrchardGeoLocationViewSet, PackagingViewSet, ProductRipenessViewSet,
-    ServiceViewSet
+    ServiceViewSet, PestProductKindViewSet, DiseaseProductKindViewSet
 )
 
 
@@ -41,5 +41,7 @@ drf_router.register(r'rest/v1/catalogs/harvesting-crew', HarvestingCrewViewSet, 
 drf_router.register(r'rest/v1/catalogs/maquiladora', MaquiladoraViewSet, basename='maquiladora')
 drf_router.register(r'rest/v1/catalogs/product-ripeness', ProductRipenessViewSet, basename='product_ripeness')
 drf_router.register(r'rest/v1/catalogs/service', ServiceViewSet, basename='service')
+drf_router.register(r'rest/v1/catalogs/pest-kinds', PestProductKindViewSet, basename='pest_kinds')
+drf_router.register(r'rest/v1/catalogs/disease-kinds', DiseaseProductKindViewSet, basename='disease_kinds')
 
 urlpatterns += drf_router.urls

@@ -29,19 +29,19 @@
     function updateFieldsBasedOnBatchStatus(status) {
         if (status == 'open'){
             enableField(inQuarantinedField);
+            availableForProcessingField.prop('checked', false);
             disableField(availableForProcessingField);
         }
         else if (status == 'ready'){
-            enableField(inQuarantinedField);
+            disableField(inQuarantinedField);
+            inQuarantinedField.prop('checked', false);
             enableField(availableForProcessingField);
         }
-        else if (status == 'canceled'){
+        else if (status == 'canceled' || status == 'closed'){
             disableField(inQuarantinedField);
+            inQuarantinedField.prop('checked', false);
             disableField(availableForProcessingField);
-        }
-        else if (status == 'closed'){
-            disableField(inQuarantinedField);
-            disableField(availableForProcessingField);
+            availableForProcessingField.prop('checked', false);
         }
     }
 

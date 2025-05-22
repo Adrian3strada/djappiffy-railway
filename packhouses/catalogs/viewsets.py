@@ -11,6 +11,7 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
                           ProductPackagingSerializer, PalletSerializer, ProductPackagingPalletSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
                           OrchardCertificationSerializer, ProductRipenessSerializer, ServiceSerializer,
+                          PestProductKindSerializer, DiseaseProductKindSerializer
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, Client, Maquiladora, Provider,
@@ -18,6 +19,7 @@ from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider
                      Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, OrchardGeoLocation,
                      ProductRipeness, Service
                      )
+from common.base.models import (PestProductKind, DiseaseProductKind)
 from django_filters.rest_framework import DjangoFilterBackend
 
 
@@ -441,4 +443,56 @@ class ServiceViewSet(viewsets.ModelViewSet):
 
         return Service.objects.filter(organization=self.request.organization)
 
+class ProductKindViewSetMixin:
+    model = None  # This should be set by subclasses
 
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = self.model.objects.all()
+        product_kind_id = self.request.query_params.get('product_kind_id')
+
+        if product_kind_id:
+            queryset = queryset.filter(product_kind_id=product_kind_id)
+
+        return queryset
+
+class PestProductKindViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for managing PestProductKind objects.
+
+    Query Parameters:
+        - product_kind_id (int): Filters the PestProductKind objects by the associated product kind ID.
+    """
+    serializer_class = PestProductKindSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = PestProductKind.objects.all()
+        product_kind_id = self.request.query_params.get('product_kind_id')
+
+        if product_kind_id:
+            queryset = queryset.filter(product_kind_id=product_kind_id)
+
+        return queryset
+
+class DiseaseProductKindViewSet(viewsets.ModelViewSet):
+    serializer_class = DiseaseProductKindSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = DiseaseProductKind.objects.all()
+        product_kind_id = self.request.query_params.get('product_kind_id')
+
+        if product_kind_id:
+            queryset = queryset.filter(product_kind_id=product_kind_id)
+
+        return queryset

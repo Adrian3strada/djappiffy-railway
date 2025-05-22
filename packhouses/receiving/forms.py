@@ -211,20 +211,11 @@ class BatchForm(forms.ModelForm):
         cleaned = super().clean()
 
         status = cleaned.get('status')
-        quarantine = cleaned.get('is_quarantined')
-        available = cleaned.get('is_available_for_processing')
 
         # No permitir cambiar de estado una vez cerrado el lote
         if self.instance.pk and self.instance.status == 'closed' and status != 'closed':
             self.add_error('status', _('Cannot change status once closed.'))
             cleaned['status'] = 'closed'  # restaurar el valor real
-
-        # No permitir cambiar valores de campos booleanos cuando este cancelado o rechazado el lote
-        if status in ['closed', 'canceled'] and self.instance.pk:
-            if quarantine != self.instance.is_quarantined:
-                self.add_error('is_quarantined', _('Cannot change this field when status is closed or canceled.'))
-            if available != self.instance.is_available_for_processing:
-                self.add_error('is_available_for_processing', _('Cannot change this field when status is closed or canceled.'))
 
         # Recorre cada IncomingProduct y comprueba que tenga al menos un WeighingSet no marcado para borrar
         for i in range(int(self.data.get('incomingproduct_set-TOTAL_FORMS', 0))):
