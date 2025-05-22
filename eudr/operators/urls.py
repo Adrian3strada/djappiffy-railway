@@ -7,7 +7,7 @@ from .viewsets import OperatorParcelViewSet, ProductionIntervalViewSet, LegalCom
 urlpatterns = []
 
 drf_router.register(r'rest/v1/eudr/operator/parcel', OperatorParcelViewSet, basename='operator_parcel')
-drf_router.register(r'rest/v1/eudr/operator/parcel/production-interval', ProductionIntervalViewSet, basename='production_interval')
-drf_router.register(r'rest/v1/eudr/operator/parcel/legal-compliance', LegalComplianceViewSet, basename='legal_compliance')
+drf_router.register(r'rest/v1/eudr/operator/production-interval', ProductionIntervalViewSet, basename='production_interval')
+drf_router.register(r'rest/v1/eudr/operator/legal-compliance', LegalComplianceViewSet, basename='legal_compliance')
 
 urlpatterns += drf_router.urls

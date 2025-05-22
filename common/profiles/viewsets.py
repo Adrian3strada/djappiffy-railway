@@ -127,7 +127,7 @@ class EudrOperatorProfileViewSet(BaseOrganizationProfileViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        queryset = EudrOperatorProfile.objects.all()
+        queryset = super().get_queryset()
 
         same = self.request.GET.get('same')
         if same and hasattr(self.request, 'organization'):

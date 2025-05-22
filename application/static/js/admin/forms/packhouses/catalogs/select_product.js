@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const pestSelector = '.inline-group [name^="productpest_set-"][name$="-pest"]';
     const diseaseSelector = '.inline-group [name^="productdisease_set-"][name$="-disease"]';
     const processSelector = '.inline-group [name^="productfoodsafetyprocess_set-"][name$="-procedure"]';
-    
+
     updateSelectOptions(pestSelector);
     updateSelectOptions(diseaseSelector);
     updateSelectOptions(processSelector);
@@ -54,4 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
             updateSelectOptions(processSelector);
         }
     });
+
+    window.updateSelectOptions = updateSelectOptions;
 });

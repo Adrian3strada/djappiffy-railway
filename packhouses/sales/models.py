@@ -145,6 +145,10 @@ class OrderItemPackaging(models.Model):
         return f"{self.pk}"
 
     @property
+    def product_packaging_quantity(self):
+        return self.quantity
+
+    @property
     def current_quantity(self):
         processes = OrderItemPackagingProcess.objects.filter(packaging=self)
         if processes:

@@ -162,7 +162,7 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.N
 class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     form = ScheduleHarvestForm
     fields = ('ooid', 'status', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
-              'product_variety', 'product_phenologies', 'product_harvest_size_kind', 'orchard', 'orchard_certifications',
+              'product_variety', 'product_phenologies', 'product_harvest_size_kind', 'orchard',
               'market', 'weight_expected', 'weighing_scale', 'meeting_point', 'comments' )
     list_display = ('ooid', 'harvest_date', 'category', 'product_provider', 'product','product_variety', 'market',
                     'weight_expected', 'status',  'generate_actions_buttons')
@@ -192,18 +192,18 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
             cancel_button_html = format_html(
                 '''
                 <a class="button btn-cancel-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
-                   data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:red;">
+                data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:red;">
                     <i class="fa-solid fa-ban"></i>
                 </a>
                 ''',
                 tooltip_cancel, cancel_url, confirm_cancel_text, confirm_button_text, cancel_button_text
-            )
+            ) if obj.status == 'open' else ''
 
             if obj.status == 'open':
                 set_harvest_ready_button = format_html(
                     '''
                     <a class="button btn-ready-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
-                       data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#4daf50;">
+                    data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#4daf50;">
                         <i class="fa-solid fa-paper-plane"></i>
                     </a>
                     ''',
@@ -285,10 +285,6 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
             },
             "orchard": {
                 "model": Orchard,
-                "filters": {"is_enabled": True},
-            },
-            "orchard_certifications": {
-                "model": OrchardCertification,
                 "filters": {"is_enabled": True},
             },
             "weighing_scale": {

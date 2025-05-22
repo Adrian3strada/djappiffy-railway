@@ -27,7 +27,7 @@ def certification_file_path(instance, filename):
 
     organization_name = slugify(instance.certification.organization.name).replace(" ", "")
     entity = slugify(instance.certification.certification_entity.entity).replace(" ", "")
-    certification = slugify(instance.certification.certification_entity.certification).replace(" ", "")
+    certification = slugify(instance.certification.certification_entity.name_certification).replace(" ", "")
     year = datetime.now().year
     file_extension = os.path.splitext(filename)[1]
 

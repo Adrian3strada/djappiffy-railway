@@ -92,11 +92,6 @@ class ScheduleHarvest(models.Model):
         verbose_name=_("Orchard"),
         on_delete=models.PROTECT,
     )
-    orchard_certifications = models.ManyToManyField(
-        OrchardCertification,
-        verbose_name=_("Orchard Certification"),
-        blank=True
-    )
     market = models.ForeignKey(
         Market,
         verbose_name=_("Market"),
