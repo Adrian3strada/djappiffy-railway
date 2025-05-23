@@ -210,7 +210,6 @@ class OrderItemPallet(models.Model):
         verbose_name_plural = _('Order items by pallet')
 
 
-
 class OrderItemPack(models.Model):
     pricing_by = models.CharField(max_length=30, verbose_name=_('Pricing by'), choices=ORDER_ITEMS_PRICING_CHOICES)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
