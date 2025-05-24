@@ -118,6 +118,10 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.pk}"
 
+    @property
+    def order_item_kind(self):
+        return self.order.order_items_kind
+
     class Meta:
         verbose_name = _('Order item by pallet')
         verbose_name_plural = _('Order items by pallet')
