@@ -134,7 +134,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         orderItemsPalletTab.removeClass('hidden')
       }
     }
-    // aqui deleteOrderItemInline();
   }
 
   function updateClientOptions() {

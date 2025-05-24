@@ -52,38 +52,32 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
         if self.order_items_kind == 'product_weight':
             return self.orderitemweight_set.all().count()
         elif self.order_items_kind == 'product_packaging':
-            return self.orderitempackaging_set.all().count()
+            return self.orderitem_set.all().count()
         elif self.order_items_kind == 'product_pallet':
-            return self.orderitempallet_set.all().count()
+            return self.orderitem_set.all().count()
         else:
             return 0
 
     @property
     def items_total_price(self):
         if self.order_items_kind == 'product_weight':
-            return self.orderitemweight_set.aggregate(total_price=Sum('price'))['total_price']
+            return self.orderitemweight_set.aggregate(total_price=Sum('amount_price'))['total_price']
         elif self.order_items_kind == 'product_packaging':
-            return self.orderitempackaging_set.aggregate(total_price=Sum('price'))['total_price']
+            return self.orderitem_set.aggregate(total_price=Sum('amount_price'))['total_price']
         elif self.order_items_kind == 'product_pallet':
-            return self.orderitempallet_set.aggregate(total_price=Sum('price'))['total_price']
+            return self.orderitem_set.aggregate(total_price=Sum('amount_price'))['total_price']
         else:
             return 0
 
     @receiver(post_save, sender='sales.Order')
     def clean_order_items(sender, instance, **kwargs):
         if instance.order_items_kind == 'product_weight':
-            instance.orderitempackaging_set.all().delete()
-            instance.orderitempallet_set.all().delete()
-        elif instance.order_items_kind == 'product_packaging':
+            instance.orderitem_set.all().delete()
+        elif instance.order_items_kind == 'product_packaging' or instance.order_items_kind == 'product_pallet':
             instance.orderitemweight_set.all().delete()
-            instance.orderitempallet_set.all().delete()
-        elif instance.order_items_kind == 'product_pallet':
-            instance.orderitemweight_set.all().delete()
-            instance.orderitempackaging_set.all().delete()
         else:
             instance.orderitemweight_set.all().delete()
-            instance.orderitempackaging_set.all().delete()
-            instance.orderitempallet_set.all().delete()
+            instance.orderitem_set.all().delete()
 
     def __str__(self):
         return f"#{self.ooid} - {self.client} - SHIPMENT: {self.shipment_date} - DELIVERY: {self.delivery_date}"
@@ -112,11 +106,11 @@ class OrderItem(models.Model):
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
     product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'), on_delete=models.PROTECT, null=True, blank=False)
     product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
-    packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'), validators=[MinValueValidator(1)], null=True, blank=False)
     product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'), validators=[MinValueValidator(0.01)])
     product_presentations_per_packaging = models.PositiveIntegerField(verbose_name=_('Product presentations per packaging'), null=True, blank=False)
     product_pieces_per_presentation = models.PositiveIntegerField(verbose_name=_('Product pieces per presentation'), null=True, blank=False)
-    pallet_quantity = models.PositiveIntegerField(verbose_name=_('Pallet quantity'), validators=[MinValueValidator(1)])
+    pallet_quantity = models.PositiveIntegerField(verbose_name=_('Pallet quantity'), validators=[MinValueValidator(1)], null=True, blank=False)
+    packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'), validators=[MinValueValidator(1)], null=True, blank=False)
     unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
     amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2, null=True, blank=False)
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
@@ -168,6 +162,8 @@ class OrderItemPackaging(OrderItem):
             return self.packaging_quantity
 
     def clean(self):
+        self.pallet_quantity = 0
+        self.product_packaging_pallet = None
         self.amount_price = 0
         if self.pricing_by == 'product_weight':
             self.amount_price = self.unit_price * self.packaging_quantity * self.product_weight_per_packaging if self.unit_price and self.packaging_quantity and self.product_weight_per_packaging else 0
@@ -176,6 +172,10 @@ class OrderItemPackaging(OrderItem):
         if self.pricing_by == 'product_presentation':
             self.amount_price = self.unit_price * self.packaging_quantity * self.product_presentations_per_packaging if self.unit_price and self.packaging_quantity and self.product_presentations_per_packaging else 0
         super().clean()
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
     class Meta:
         proxy = True
