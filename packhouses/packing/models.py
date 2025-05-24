@@ -1,7 +1,9 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from organizations.models import Organization
 
-from ..catalogs.models import Market, ProductSize, Packaging, ProductPackaging, ProductMarketClass, ProductRipeness
+from ..catalogs.models import Market, ProductSize, Packaging, ProductPackaging, ProductMarketClass, ProductRipeness, \
+    ProductPhenologyKind
 from ..hrm.models import Employee
 from ..receiving.models import Batch
 from django.utils.translation import gettext_lazy as _
@@ -70,8 +72,6 @@ class Packing(models.Model):
     product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
-
-
 
 
     quantity = models.FloatField(verbose_name=_('Quantity'), validators=[MinValueValidator(0.01)])

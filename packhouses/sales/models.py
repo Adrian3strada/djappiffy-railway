@@ -104,6 +104,31 @@ class Order(IncotermsAndLocalDeliveryMarketMixin, models.Model):
         ]
 
 
+class OrderItem(models.Model):
+    pricing_by = models.CharField(max_length=30, verbose_name=_('Pricing by'), choices=ORDER_ITEMS_PRICING_CHOICES)
+    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
+    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
+    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
+    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
+    product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'), on_delete=models.PROTECT, null=True, blank=False)
+    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
+    packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'), validators=[MinValueValidator(1)], null=True, blank=False)
+    product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'), validators=[MinValueValidator(0.01)])
+    product_presentations_per_packaging = models.PositiveIntegerField(verbose_name=_('Product presentations per packaging'), null=True, blank=False)
+    product_pieces_per_presentation = models.PositiveIntegerField(verbose_name=_('Product pieces per presentation'), null=True, blank=False)
+    pallet_quantity = models.PositiveIntegerField(verbose_name=_('Pallet quantity'), validators=[MinValueValidator(1)])
+    unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
+    amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2, null=True, blank=False)
+    order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.pk}"
+
+    class Meta:
+        verbose_name = _('Order item by pallet')
+        verbose_name_plural = _('Order items by pallet')
+
+
 class OrderItemWeight(models.Model):
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
@@ -126,25 +151,7 @@ class OrderItemWeight(models.Model):
         verbose_name_plural = _('Order items by weight')
 
 
-class OrderItemPackaging(models.Model):
-    pricing_by = models.CharField(max_length=30, verbose_name=_('Pricing by'), choices=ORDER_ITEMS_PRICING_CHOICES)
-    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT, limit_choices_to={'category__in': ['size', 'mix']})
-    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
-    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
-    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
-    product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'), on_delete=models.PROTECT, null=True, blank=False)
-    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
-    packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'), validators=[MinValueValidator(1)])
-    product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'), validators=[MinValueValidator(0.01)])
-    product_presentations_per_packaging = models.PositiveIntegerField(verbose_name=_('Product presentations per packaging'), null=True, blank=False)
-    product_pieces_per_presentation = models.PositiveIntegerField(verbose_name=_('Product pieces per presentation'), null=True, blank=False)
-    pallet_quantity = models.PositiveIntegerField(verbose_name=_('Pallet quantity'), validators=[MinValueValidator(1)])
-    unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
-    amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2, null=True, blank=False)
-    order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.pk}"
+class OrderItemPackaging(OrderItem):
 
     @property
     def current_quantity(self):
@@ -171,30 +178,12 @@ class OrderItemPackaging(models.Model):
         super().clean()
 
     class Meta:
+        proxy = True
         verbose_name = _('Order item by packaging')
         verbose_name_plural = _('Order items by packaging')
 
 
-class OrderItemPallet(models.Model):
-    pricing_by = models.CharField(max_length=30, verbose_name=_('Pricing by'), choices=ORDER_ITEMS_PRICING_CHOICES)
-    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
-    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
-    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
-    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
-    product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'), on_delete=models.PROTECT, null=True, blank=False)
-    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
-    packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'), validators=[MinValueValidator(1)], null=True, blank=False)
-    product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'), validators=[MinValueValidator(0.01)])
-    product_presentations_per_packaging = models.PositiveIntegerField(verbose_name=_('Product presentations per packaging'), null=True, blank=False)
-    product_pieces_per_presentation = models.PositiveIntegerField(verbose_name=_('Product pieces per presentation'), null=True, blank=False)
-    pallet_quantity = models.PositiveIntegerField(verbose_name=_('Pallet quantity'), validators=[MinValueValidator(1)])
-    unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
-    amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2, null=True, blank=False)
-    order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.pk}"
-
+class OrderItemPallet(OrderItem):
     def clean(self):
         self.amount_price = 0
         if self.pricing_by == 'product_weight':
@@ -206,31 +195,7 @@ class OrderItemPallet(models.Model):
         super().clean()
 
     class Meta:
-        verbose_name = _('Order item by pallet')
-        verbose_name_plural = _('Order items by pallet')
-
-
-class OrderItemPack(models.Model):
-    pricing_by = models.CharField(max_length=30, verbose_name=_('Pricing by'), choices=ORDER_ITEMS_PRICING_CHOICES)
-    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
-    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
-    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
-    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
-    product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'), on_delete=models.PROTECT, null=True, blank=False)
-    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
-    packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'), validators=[MinValueValidator(1)], null=True, blank=False)
-    product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'), validators=[MinValueValidator(0.01)])
-    product_presentations_per_packaging = models.PositiveIntegerField(verbose_name=_('Product presentations per packaging'), null=True, blank=False)
-    product_pieces_per_presentation = models.PositiveIntegerField(verbose_name=_('Product pieces per presentation'), null=True, blank=False)
-    pallet_quantity = models.PositiveIntegerField(verbose_name=_('Pallet quantity'), validators=[MinValueValidator(1)])
-    unit_price = models.FloatField(verbose_name=_('Unit price'), validators=[MinValueValidator(0.01)])
-    amount_price = models.DecimalField(verbose_name=_('Amount price'), max_digits=20, decimal_places=2, null=True, blank=False)
-    order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.pk}"
-
-    class Meta:
+        proxy = True
         verbose_name = _('Order item by pallet')
         verbose_name_plural = _('Order items by pallet')
 
@@ -248,5 +213,3 @@ class OrderItemPackagingProcess(models.Model):
     class Meta:
         verbose_name = _('Order item packaging process')
         verbose_name_plural = _('Order item packaging process')
-
-
