@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productPresentationsPerPackagingField = $(newForm).find('input[name$="-product_presentations_per_packaging"]');
       const productPiecesPerPresentationField = $(newForm).find('input[name$="-product_pieces_per_presentation"]');
 
-      const quantityField = $(newForm).find('input[name$="-quantity"]');
+      const packagingQuantityField = $(newForm).find('input[name$="-packaging_quantity"]');
       const unitPriceField = $(newForm).find('input[name$="-unit_price"]');
       const amountPriceField = $(newForm).find('input[name$="-amount_price"]');
 
@@ -291,27 +291,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         let amountPrice = 0;
 
         if (pricingByField.val() === 'product_weight') {
-          if (unitPriceField.val() && quantityField.val() && productWeightPerPackagingField.val() && unitPriceField.val() > 0 && quantityField.val() > 0 && productWeightPerPackagingField.val() > 0) {
-            amountPrice = unitPriceField.val() * quantityField.val() * productWeightPerPackagingField.val();
+          if (unitPriceField.val() && packagingQuantityField.val() && productWeightPerPackagingField.val() && unitPriceField.val() > 0 && packagingQuantityField.val() > 0 && productWeightPerPackagingField.val() > 0) {
+            amountPrice = unitPriceField.val() * packagingQuantityField.val() * productWeightPerPackagingField.val();
           }
         }
 
         if (pricingByField.val() === 'product_packaging') {
-          if (unitPriceField.val() && quantityField.val() && unitPriceField.val() > 0 && quantityField.val() > 0) {
-            amountPrice = unitPriceField.val() * quantityField.val();
+          if (unitPriceField.val() && packagingQuantityField.val() && unitPriceField.val() > 0 && packagingQuantityField.val() > 0) {
+            amountPrice = unitPriceField.val() * packagingQuantityField.val();
           }
         }
 
         if (pricingByField.val() === 'product_presentation') {
-          if (unitPriceField.val() && quantityField.val() && productPresentationsPerPackagingField.val() && unitPriceField.val() > 0 && quantityField.val() > 0 && productPresentationsPerPackagingField.val() > 0) {
-            amountPrice = unitPriceField.val() * quantityField.val() * productPresentationsPerPackagingField.val()
+          if (unitPriceField.val() && packagingQuantityField.val() && productPresentationsPerPackagingField.val() && unitPriceField.val() > 0 && packagingQuantityField.val() > 0 && productPresentationsPerPackagingField.val() > 0) {
+            amountPrice = unitPriceField.val() * packagingQuantityField.val() * productPresentationsPerPackagingField.val()
           }
         }
 
         amountPriceField.val(amountPrice);
       }
 
-      quantityField.on('change', () => {
+      packagingQuantityField.on('change', () => {
         setAmountPrice();
       })
 
@@ -349,7 +349,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productWeightPerPackagingField = $(form).find(`input[name$="${index}-product_weight_per_packaging"]`);
       const productPresentationsPerPackagingField = $(form).find(`input[name$="${index}-product_presentations_per_packaging"]`);
       const productPiecesPerPresentationField = $(form).find(`input[name$="${index}-product_pieces_per_presentation"]`);
-      const quantityField = $(form).find(`input[name$="${index}-quantity"]`);
+      const packagingQuantityField = $(form).find(`input[name$="${index}-packaging_quantity"]`);
       const unitPriceField = $(form).find(`input[name$="${index}-unit_price"]`);
       const amountPriceField = $(form).find(`input[name$="${index}-amount_price"]`);
 
@@ -497,27 +497,27 @@ document.addEventListener('DOMContentLoaded', async () => {
       function setAmountPrice() {
         let amountPrice = 0;
         if (pricingByField.val() === 'product_weight') {
-          if (unitPriceField.val() && quantityField.val() && productWeightPerPackagingField.val() && unitPriceField.val() > 0 && quantityField.val() > 0 && productWeightPerPackagingField.val() > 0) {
-            amountPrice = unitPriceField.val() * quantityField.val() * productWeightPerPackagingField.val();
+          if (unitPriceField.val() && packagingQuantityField.val() && productWeightPerPackagingField.val() && unitPriceField.val() > 0 && packagingQuantityField.val() > 0 && productWeightPerPackagingField.val() > 0) {
+            amountPrice = unitPriceField.val() * packagingQuantityField.val() * productWeightPerPackagingField.val();
           }
         }
 
         if (pricingByField.val() === 'product_packaging') {
-          if (unitPriceField.val() && quantityField.val() && unitPriceField.val() > 0 && quantityField.val() > 0) {
-            amountPrice = unitPriceField.val() * quantityField.val();
+          if (unitPriceField.val() && packagingQuantityField.val() && unitPriceField.val() > 0 && packagingQuantityField.val() > 0) {
+            amountPrice = unitPriceField.val() * packagingQuantityField.val();
           }
         }
 
         if (pricingByField.val() === 'product_presentation') {
-          if (unitPriceField.val() && quantityField.val() && productPresentationsPerPackagingField.val() && unitPriceField.val() > 0 && quantityField.val() > 0 && productPresentationsPerPackagingField.val() > 0) {
-            amountPrice = unitPriceField.val() * quantityField.val() * productPresentationsPerPackagingField.val()
+          if (unitPriceField.val() && packagingQuantityField.val() && productPresentationsPerPackagingField.val() && unitPriceField.val() > 0 && packagingQuantityField.val() > 0 && productPresentationsPerPackagingField.val() > 0) {
+            amountPrice = unitPriceField.val() * packagingQuantityField.val() * productPresentationsPerPackagingField.val()
           }
         }
 
         amountPriceField.val(amountPrice);
       }
 
-      quantityField.on('change', () => {
+      packagingQuantityField.on('change', () => {
         setAmountPrice();
       })
 

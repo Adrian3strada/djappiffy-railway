@@ -124,13 +124,12 @@ class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['address_label'].widget = CKEditor5Widget()
-        form.base_fields['countries'].queryset = Country.objects.all()
         return form
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Country, Organization]):
-            readonly_fields.extend(['name', 'alias', 'countries', 'organization'])
+        if obj and is_instance_used(obj, exclude=[Organization]):
+            readonly_fields.extend(['name', 'alias', 'country', 'countries', 'organization'])
         return readonly_fields
 
     def save_model(self, request, obj, form, change):

@@ -70,10 +70,10 @@ def custom_index(self, request, extra_context=None):
             "block_name": _('Incoming product'),
             "open_title": _('Open'),
             "open": IncomingProduct.objects.filter(status="open", organization=request.organization).count(),
-            "open_url": f"{changelist_url}?{urlencode({'status': "open", 'organization__id': request.organization.id})}",
+            "open_url": f"{changelist_url}?{urlencode({'status': 'open', 'organization__id': request.organization.id})}",
             "quarantine_title": _('Quarantine'),
             "quarantine": IncomingProduct.objects.filter(status="open", is_quarantined=True, organization=request.organization).count(),
-            "quarantine_url": f"{changelist_url}?{urlencode({'status':"open", 'is_quarantined':True, 'organization__id': request.organization.id})}",
+            "quarantine_url": f"{changelist_url}?{urlencode({'status':'open', 'is_quarantined':True, 'organization__id': request.organization.id})}",
         }
 
     if request.user.has_perm("sales.view_order"):

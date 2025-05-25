@@ -126,7 +126,7 @@ class ByPackagingForOrganizationProductPackagingFilter(ByPackagingForOrganizatio
                                                                                                flat=True).distinct())
             packagings = Packaging.objects.filter(id__in=packaging_relatedlist).order_by('name')
 
-        return [(packaging.id, f"{packaging.name}" + f" - ({packaging.country_standard_packaging.standard.name}: {packaging.country_standard_packaging})") for packaging in packagings]
+        return [(packaging.id, f"{packaging.name}" + f" - ({packaging.country_standard_packaging.standard.name if packaging.country_standard_packaging.standard and packaging.country_standard_packaging.standard.name else '-'}: {packaging.country_standard_packaging})") for packaging in packagings]
 
 
 class ByPackagingForOrganizationFilter(admin.SimpleListFilter):
@@ -142,21 +142,6 @@ class ByPackagingForOrganizationFilter(admin.SimpleListFilter):
             return queryset.filter(packaging__id=self.value())
         return queryset
 
-
-class ByPackagingForOrganizationProductPackagingFilter(ByPackagingForOrganizationFilter):
-    def lookups(self, request, model_admin):
-        packagings = Packaging.objects.filter(organization=request.organization)
-        return [(packaging.id, packaging.name) for packaging in packagings]
-
-    def lookups(self, request, model_admin):
-        packagings = Packaging.objects.none()
-        if hasattr(request, 'organization'):
-            packaging_relatedlist = list(
-                ProductPackaging.objects.filter(organization=request.organization).values_list('packaging',
-                                                                                               flat=True).distinct())
-            packagings = Packaging.objects.filter(id__in=packaging_relatedlist).order_by('name')
-
-        return [(packaging.id, f"{packaging.name}" + f" - ({packaging.country_standard_packaging.standard.name}: {packaging.country_standard_packaging})") for packaging in packagings]
 
 
 class ByProductPresentationForOrganizationProductPackagingFilter(ByPackagingForOrganizationFilter):
