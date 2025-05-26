@@ -198,7 +198,7 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     def get_fields(self, request, obj=None):
         fields = [
             'ooid', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
-            'product_phenologies', 'product_harvest_size_kind', 'orchard', 'orchard_certifications', 'market',
+            'product_phenologies', 'product_harvest_size_kind', 'orchard',  'market',
             'weight_expected', 'weighing_scale', 'comments'
         ]
         if obj:
@@ -480,7 +480,7 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
     model = ScheduleHarvest
     extra = 0
     fields = ('ooid', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
-        'product_phenologies', 'product_harvest_size_kind', 'orchard', 'orchard_certifications', 'market',
+        'product_phenologies', 'product_harvest_size_kind', 'orchard', 'market',
         'weight_expected', 'weighing_scale', 'comments')
     readonly_fields = ('ooid', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
     can_delete = False
