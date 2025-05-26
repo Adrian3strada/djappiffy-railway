@@ -23,8 +23,6 @@ class Batch(models.Model):
     is_quarantined = models.BooleanField(default=False, verbose_name=_('In quarantine'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Entry Date'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
-    # 'parent' apunta al lote padre al que este lote fue unido.
-    # Si es None, significa que el lote no ha sido unido a ningún otro.
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='children', verbose_name=_('Parent'))
 
     def __str__(self):
@@ -64,15 +62,11 @@ class Batch(models.Model):
         return total_weight
 
     @property
-    def yield_available_weight(self):
-        return self.available_weight
-
-    @property
     def yield_orchard_producer(self):
         return self.incomingproduct.scheduleharvest.orchard.producer
 
     @property
-    def yield_harvest_provider(self):
+    def harvest_product_provider(self):
         return self.incomingproduct.scheduleharvest.product_provider
 
     @property

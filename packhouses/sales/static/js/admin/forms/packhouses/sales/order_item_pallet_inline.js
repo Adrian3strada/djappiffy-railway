@@ -150,11 +150,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productMarketClassField = $(newForm).find('select[name$="-product_market_class"]');
       const productMarketRipenessField = $(newForm).find('select[name$="-product_ripeness"]');
       const productPackagingPalletField = $(newForm).find(`select[name$="-product_packaging_pallet"]`);
-      const productPackagingQuantityPerPalletField = $(newForm).find(`input[name$="-product_packaging_quantity_per_pallet"]`);
+      const packagingQuantityField = $(newForm).find(`input[name$="-packaging_quantity"]`);
       const productWeightPerPackagingField = $(newForm).find('input[name$="-product_weight_per_packaging"]');
       const productPresentationsPerPackagingField = $(newForm).find('input[name$="-product_presentations_per_packaging"]');
       const productPiecesPerPresentationField = $(newForm).find('input[name$="-product_pieces_per_presentation"]');
-      const quantityField = $(newForm).find('input[name$="-quantity"]');
+      const palletQuantityField = $(newForm).find('input[name$="-pallet_quantity"]');
       const unitPriceField = $(newForm).find('input[name$="-unit_price"]');
       const amountPriceField = $(newForm).find('input[name$="-amount_price"]');
 
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (productPackagingPalletField.val()) {
           fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${productPackagingPalletField.val()}/`)
             .then(data => {
-              productPackagingQuantityPerPalletField.val(data.product_packaging_quantity)
+              packagingQuantityField.val(data.product_packaging_quantity)
               productWeightPerPackagingField.val(data.product_packaging_detail.product_weight_per_packaging)
               setTimeout(() => {
                 if (data.product_packaging_detail.product_presentation) {
@@ -297,27 +297,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         let amountPrice = 0;
 
         if (pricingByField.val() === 'product_weight') {
-          if (productPackagingQuantityPerPalletField.val() && unitPriceField.val() && quantityField.val() && productWeightPerPackagingField.val() && productPackagingQuantityPerPalletField.val() > 0 && unitPriceField.val() > 0 && quantityField.val() > 0 && productWeightPerPackagingField.val() > 0) {
-            amountPrice = productPackagingQuantityPerPalletField.val() * unitPriceField.val() * quantityField.val() * productWeightPerPackagingField.val();
+          if (packagingQuantityField.val() && unitPriceField.val() && palletQuantityField.val() && productWeightPerPackagingField.val() && packagingQuantityField.val() > 0 && unitPriceField.val() > 0 && palletQuantityField.val() > 0 && productWeightPerPackagingField.val() > 0) {
+            amountPrice = packagingQuantityField.val() * unitPriceField.val() * palletQuantityField.val() * productWeightPerPackagingField.val();
           }
         }
 
         if (pricingByField.val() === 'product_packaging') {
-          if (productPackagingQuantityPerPalletField.val() && unitPriceField.val() && quantityField.val() && productPackagingQuantityPerPalletField.val() > 0 && unitPriceField.val() > 0 && quantityField.val() > 0) {
-            amountPrice = productPackagingQuantityPerPalletField.val() * unitPriceField.val() * quantityField.val();
+          if (packagingQuantityField.val() && unitPriceField.val() && palletQuantityField.val() && packagingQuantityField.val() > 0 && unitPriceField.val() > 0 && palletQuantityField.val() > 0) {
+            amountPrice = packagingQuantityField.val() * unitPriceField.val() * palletQuantityField.val();
           }
         }
 
         if (pricingByField.val() === 'product_presentation') {
-          if (productPackagingQuantityPerPalletField.val() && unitPriceField.val() && quantityField.val() && productPresentationsPerPackagingField.val() && productPackagingQuantityPerPalletField.val() > 0 && unitPriceField.val() > 0 && quantityField.val() > 0 && productPresentationsPerPackagingField.val() > 0) {
-            amountPrice = productPackagingQuantityPerPalletField.val() * unitPriceField.val() * quantityField.val() * productPresentationsPerPackagingField.val()
+          if (packagingQuantityField.val() && unitPriceField.val() && palletQuantityField.val() && productPresentationsPerPackagingField.val() && packagingQuantityField.val() > 0 && unitPriceField.val() > 0 && palletQuantityField.val() > 0 && productPresentationsPerPackagingField.val() > 0) {
+            amountPrice = packagingQuantityField.val() * unitPriceField.val() * palletQuantityField.val() * productPresentationsPerPackagingField.val()
           }
         }
 
         amountPriceField.val(amountPrice);
       }
 
-      quantityField.on('change', () => {
+      palletQuantityField.on('change', () => {
         setAmountPrice();
       })
 
@@ -354,11 +354,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productMarketClassField = $(form).find(`select[name$="${index}-product_market_class"]`);
       const productMarketRipenessField = $(form).find(`select[name$="${index}-product_ripeness"]`);
       const productPackagingPalletField = $(form).find(`select[name$="${index}-product_packaging_pallet"]`);
-      const productPackagingQuantityPerPalletField = $(form).find(`input[name$="${index}-product_packaging_quantity_per_pallet"]`);
+      const packagingQuantityField = $(form).find(`input[name$="${index}-packaging_quantity"]`);
       const productWeightPerPackagingField = $(form).find(`input[name$="${index}-product_weight_per_packaging"]`);
       const productPresentationsPerPackagingField = $(form).find(`input[name$="${index}-product_presentations_per_packaging"]`);
       const productPiecesPerPresentationField = $(form).find(`input[name$="${index}-product_pieces_per_presentation"]`);
-      const quantityField = $(form).find(`input[name$="${index}-quantity"]`);
+      const palletQuantityField = $(form).find(`input[name$="${index}-pallet_quantity"]`);
       const unitPriceField = $(form).find(`input[name$="${index}-unit_price"]`);
       const amountPriceField = $(form).find(`input[name$="${index}-amount_price"]`);
 
@@ -487,7 +487,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (productPackagingPalletField.val()) {
           fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${productPackagingPalletField.val()}/`)
             .then(data => {
-              productPackagingQuantityPerPalletField.val(data.product_packaging_quantity)
+              packagingQuantityField.val(data.product_packaging_quantity)
               productWeightPerPackagingField.val(data.product_packaging_detail.product_weight_per_packaging);
               setTimeout(() => {
                 if (data.product_packaging_detail.product_presentation) {
@@ -514,27 +514,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         let amountPrice = 0;
 
         if (pricingByField.val() === 'product_weight') {
-          if (productPackagingQuantityPerPalletField.val() && unitPriceField.val() && quantityField.val() && productWeightPerPackagingField.val() && productPackagingQuantityPerPalletField.val() > 0 && unitPriceField.val() > 0 && quantityField.val() > 0 && productWeightPerPackagingField.val() > 0) {
-            amountPrice = productPackagingQuantityPerPalletField.val() * unitPriceField.val() * quantityField.val() * productWeightPerPackagingField.val();
+          if (packagingQuantityField.val() && unitPriceField.val() && palletQuantityField.val() && productWeightPerPackagingField.val() && packagingQuantityField.val() > 0 && unitPriceField.val() > 0 && palletQuantityField.val() > 0 && productWeightPerPackagingField.val() > 0) {
+            amountPrice = packagingQuantityField.val() * unitPriceField.val() * palletQuantityField.val() * productWeightPerPackagingField.val();
           }
         }
 
         if (pricingByField.val() === 'product_packaging') {
-          if (productPackagingQuantityPerPalletField.val() && unitPriceField.val() && quantityField.val() && productPackagingQuantityPerPalletField.val() > 0 && unitPriceField.val() > 0 && quantityField.val() > 0) {
-            amountPrice = productPackagingQuantityPerPalletField.val() * unitPriceField.val() * quantityField.val();
+          if (packagingQuantityField.val() && unitPriceField.val() && palletQuantityField.val() && packagingQuantityField.val() > 0 && unitPriceField.val() > 0 && palletQuantityField.val() > 0) {
+            amountPrice = packagingQuantityField.val() * unitPriceField.val() * palletQuantityField.val();
           }
         }
 
         if (pricingByField.val() === 'product_presentation') {
-          if (productPackagingQuantityPerPalletField.val() && unitPriceField.val() && quantityField.val() && productPresentationsPerPackagingField.val() && productPackagingQuantityPerPalletField.val() > 0 && unitPriceField.val() > 0 && quantityField.val() > 0 && productPresentationsPerPackagingField.val() > 0) {
-            amountPrice = productPackagingQuantityPerPalletField.val() * unitPriceField.val() * quantityField.val() * productPresentationsPerPackagingField.val()
+          if (packagingQuantityField.val() && unitPriceField.val() && palletQuantityField.val() && productPresentationsPerPackagingField.val() && packagingQuantityField.val() > 0 && unitPriceField.val() > 0 && palletQuantityField.val() > 0 && productPresentationsPerPackagingField.val() > 0) {
+            amountPrice = packagingQuantityField.val() * unitPriceField.val() * palletQuantityField.val() * productPresentationsPerPackagingField.val()
           }
         }
 
         amountPriceField.val(amountPrice);
       }
 
-      quantityField.on('change', () => {
+      palletQuantityField.on('change', () => {
         setAmountPrice();
       })
 
