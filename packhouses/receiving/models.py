@@ -16,7 +16,7 @@ from common.settings import STATUS_CHOICES
 
 # Create your models here.
 class Batch(models.Model):
-    ooid = models.PositiveIntegerField(verbose_name=_('Batch Number'), null=True, blank=True, unique=True)
+    ooid = models.PositiveIntegerField(verbose_name=_('Batch Number'), null=True, blank=True)
     status = models.CharField(max_length=25, verbose_name=_('Status'),
                                      choices=STATUS_CHOICES, default='open', blank=True)
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
