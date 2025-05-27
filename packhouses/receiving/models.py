@@ -16,7 +16,7 @@ from common.settings import STATUS_CHOICES
 
 # Create your models here.
 class Batch(models.Model):
-    ooid = models.PositiveIntegerField(verbose_name=_('Batch Number'), null=True, blank=True, unique=True)
+    ooid = models.PositiveIntegerField(verbose_name=_('Batch Number'), null=True, blank=True)
     status = models.CharField(max_length=25, verbose_name=_('Status'),
                                      choices=STATUS_CHOICES, default='open', blank=True)
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
@@ -83,7 +83,7 @@ class Batch(models.Model):
 
     @property
     def yield_orchard_selected_certifications(self):
-        return self.incomingproduct.scheduleharvest.orchard_certification.all()
+        return self.incomingproduct.scheduleharvest.orchard_certifications.all()
 
     @property
     def yield_orchard_current_certifications(self):
@@ -383,14 +383,14 @@ class IncomingProduct(models.Model):
             for weighing in self.weighingset_set.all()
             for container in weighing.weighingsetcontainer_set.all()
         )
-    
+
     @property
     def total_net_weight(self):
         return sum(
             weighing.net_weight or 0
             for weighing in self.weighingset_set.all()
         )
-    
+
     @property
     def average_weight_per_container(self):
         total_weight = self.total_net_weight
@@ -434,7 +434,7 @@ class IncomingProduct(models.Model):
         if self.status == 'ready':
             if self.is_quarantined:
                 raise ValidationError(_("Cannot be in quarantine if its status is 'ready'"))
-            
+
         if self.pk:
             initial_status = IncomingProduct.objects.get(pk=self.pk).status
             if initial_status == 'ready' and self.status != 'ready':

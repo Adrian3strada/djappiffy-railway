@@ -1070,11 +1070,11 @@ class ProductPackagingPresentation(models.Model):
 
 class ProductPackagingPallet(models.Model):
     product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
-    pallet = models.ForeignKey(Pallet, on_delete=models.CASCADE)
     product_packaging_quantity = models.PositiveIntegerField(verbose_name=_('Product packaging quantity'),
                                                              help_text=_(
                                                              'Amount of product packaging units for this pallet.'),
                                                              validators=[MinValueValidator(1)])
+    pallet = models.ForeignKey(Pallet, on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
