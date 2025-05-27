@@ -36,88 +36,22 @@ from decimal import Decimal, ROUND_DOWN
 
 # Create your models here.
 class ScheduleHarvest(models.Model):
-    ooid = models.PositiveIntegerField(
-        verbose_name=_("Harvest Number"),
-        null=True, blank=True, unique=True
-    )
-    harvest_date = models.DateField(
-        verbose_name=_('Harvest date'),
-        default=datetime.date.today
-    )
-    product_provider = models.ForeignKey(
-        Provider,
-        verbose_name=_("Product provider"),
-        on_delete=models.PROTECT,
-        null=True, blank=True
-    )
-    category = models.CharField(
-        max_length=255,
-         choices=get_harvest_cutting_categories_choices(),
-        verbose_name=_("Category"),
-    )
-    gatherer = models.ForeignKey(
-        Gatherer,
-        verbose_name=_("Gatherer"),
-        on_delete=models.PROTECT,
-        null=True, blank=True
-    )
-    maquiladora = models.ForeignKey(
-        Maquiladora,
-        verbose_name=_("Maquiladora"),
-        on_delete=models.PROTECT,
-        null=True, blank=True
-    )
-    product = models.ForeignKey(
-        Product,
-        verbose_name=_("Product"),
-        on_delete=models.PROTECT,
-    )
-    product_variety = models.ForeignKey(
-        ProductVariety,
-        verbose_name=_("Product Variety"),
-        on_delete=models.PROTECT,
-    )
-    product_phenologies = models.ForeignKey(
-        ProductPhenologyKind,
-        verbose_name=_("Product phenology"),
-        on_delete=models.PROTECT
-    )
-    product_ripeness = models.ForeignKey(
-        ProductRipeness,
-        verbose_name=_("Product ripeness"),
-        on_delete=models.PROTECT
-    )
-    product_harvest_size_kind = models.ForeignKey(
-        ProductHarvestSizeKind,
-        verbose_name=_("Product harvest size"),
-        on_delete=models.PROTECT
-    )
-    orchard = models.ForeignKey(
-        Orchard,
-        verbose_name=_("Orchard"),
-        on_delete=models.PROTECT,
-    )
-    market = models.ForeignKey(
-        Market,
-        verbose_name=_("Market"),
-        on_delete=models.PROTECT,
-    )
-    weight_expected = models.FloatField(
-        verbose_name=_("Expected Weight in kilograms"),
-        validators=[MinValueValidator(0.01)]
-    )
-    weighing_scale = models.ForeignKey(
-        WeighingScale,
-        verbose_name=_("Weighing Scale"),
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True
-    )
-    meeting_point = models.CharField(
-        max_length=255,
-        verbose_name=_("Meeting Point for the Harvest Cutting"),
-        null=True, blank=True
-    )
+    ooid = models.PositiveIntegerField(verbose_name=_("Harvest Number"), null=True, blank=True, unique=True)
+    harvest_date = models.DateField(verbose_name=_('Harvest date'), default=datetime.date.today)
+    product_provider = models.ForeignKey(Provider, verbose_name=_("Product provider"), on_delete=models.PROTECT, null=True, blank=True)
+    category = models.CharField(max_length=255, choices=get_harvest_cutting_categories_choices(), verbose_name=_("Category"),)
+    gatherer = models.ForeignKey(Gatherer, verbose_name=_("Gatherer"), on_delete=models.PROTECT, null=True, blank=True)
+    maquiladora = models.ForeignKey(Maquiladora, verbose_name=_("Maquiladora"), on_delete=models.PROTECT, null=True, blank=True)
+    product = models.ForeignKey(Product, verbose_name=_("Product"), on_delete=models.PROTECT,)
+    product_variety = models.ForeignKey(ProductVariety, verbose_name=_("Product Variety"), on_delete=models.PROTECT,)
+    product_phenologies = models.ForeignKey(ProductPhenologyKind, verbose_name=_("Product phenology"), on_delete=models.PROTECT)
+    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_("Product ripeness"), on_delete=models.PROTECT, null=True,blank=True)
+    product_harvest_size_kind = models.ForeignKey(ProductHarvestSizeKind, verbose_name=_("Product harvest size"), on_delete=models.PROTECT)
+    orchard = models.ForeignKey(Orchard, verbose_name=_("Orchard"), on_delete=models.PROTECT,)
+    market = models.ForeignKey(Market, verbose_name=_("Market"), on_delete=models.PROTECT,)
+    weight_expected = models.FloatField(verbose_name=_("Expected Weight in kilograms"), validators=[MinValueValidator(0.01)])
+    weighing_scale = models.ForeignKey(WeighingScale, verbose_name=_("Weighing Scale"), on_delete=models.PROTECT, null=True, blank=True)
+    meeting_point = models.CharField(max_length=255, verbose_name=_("Meeting Point for the Harvest Cutting"), null=True, blank=True)
     status = models.CharField(max_length=8, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open')
     comments = models.TextField(verbose_name=_('Comments'), blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
@@ -205,35 +139,12 @@ class ScheduleHarvestHarvestingCrew(models.Model):
         verbose_name_plural = _('Harvesting Crews')
 
 class ScheduleHarvestVehicle(models.Model):
-    harvest_cutting = models.ForeignKey(
-        ScheduleHarvest,
-        verbose_name=_("Harvest Cutting"),
-        on_delete=models.CASCADE,
-    )
-    provider = models.ForeignKey(
-        Provider,
-        verbose_name=_('Harvesting Crew Provider'),
-        on_delete=models.CASCADE,
-    )
-    vehicle = models.ForeignKey(
-        Vehicle,
-        verbose_name=_("Vehicle"),
-        on_delete=models.CASCADE,
-    )
-    guide_number = models.CharField(
-        max_length=20,
-        verbose_name=_('Guide Number'),
-        null= True,
-        blank=False,
-        )
-    stamp_number = models.CharField(
-        max_length=20,
-        verbose_name=_("Stamp Number"),
-    )
-    has_arrived = models.BooleanField(
-        default=False,
-        verbose_name=_('Vehicle has Arrived')
-    )
+    harvest_cutting = models.ForeignKey(ScheduleHarvest, verbose_name=_("Harvest Cutting"), on_delete=models.CASCADE,)
+    provider = models.ForeignKey(Provider, verbose_name=_('Harvesting Crew Provider'), on_delete=models.CASCADE,)
+    vehicle = models.ForeignKey(Vehicle, verbose_name=_("Vehicle"), on_delete=models.CASCADE,)
+    guide_number = models.CharField(max_length=20, verbose_name=_('Guide Number'), null= True, blank=False,)
+    stamp_number = models.CharField(max_length=20, verbose_name=_("Stamp Number"), )
+    has_arrived = models.BooleanField( default=False,verbose_name=_('Vehicle has Arrived'))
 
     def __str__(self):
         return f"{self.vehicle.license_plate} / {self.vehicle.name}"
@@ -246,12 +157,9 @@ class ScheduleHarvestVehicle(models.Model):
 
 class ScheduleHarvestContainerVehicle(models.Model):
     harvest_cutting = models.ForeignKey(ScheduleHarvestVehicle, on_delete=models.CASCADE)
-    harvest_container = models.ForeignKey(
-        Supply,
-        on_delete=models.CASCADE,
-        limit_choices_to={'kind__category': 'harvest_container'},
-        verbose_name=_('Harvest Containments')
-    )
+    harvest_container = models.ForeignKey(Supply, on_delete=models.CASCADE, 
+                                           limit_choices_to={'kind__category': 'harvest_container'},
+                                           verbose_name=_('Harvest Containments'))
     quantity = models.PositiveIntegerField()
     full_containers = models.PositiveIntegerField(default=0, verbose_name=_('Full containments'))
     empty_containers = models.PositiveIntegerField(default=0,verbose_name=_('Empty containments'))
