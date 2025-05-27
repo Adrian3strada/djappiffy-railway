@@ -24,7 +24,7 @@ from packhouses.catalogs.filters import (StatesForOrganizationCountryFilter, ByC
                                          )
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, Market, WeighingScale,
                                         ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind,
-                                        OrchardCertification, Supply)
+                                        OrchardCertification, Supply, ProductRipeness)
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
 from common.base.models import ProductKind
@@ -162,13 +162,37 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.N
 class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     form = ScheduleHarvestForm
     fields = ('ooid', 'status', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
-              'product_variety', 'product_phenologies', 'product_harvest_size_kind', 'orchard',
+              'product_variety', 'product_phenologies', 'product_ripeness', 'product_harvest_size_kind', 'orchard',
               'market', 'weight_expected', 'weighing_scale', 'meeting_point', 'comments' )
-    list_display = ('ooid', 'harvest_date', 'category', 'product_provider', 'product','product_variety', 'market',
+    list_display = ('ooid', 'harvest_date', 'category', 'product_provider',
+                    'get_orchard_name', 'get_orchard_code', 'get_orchard_product_producer',
+                    'product', 'get_orchard_category', 'product_variety', 'product_phenologies', 'product_ripeness', 'market',
                     'weight_expected', 'status',  'generate_actions_buttons')
     list_filter = ('category', 'product_provider','gatherer', 'maquiladora', 'status' )
     readonly_fields = ('ooid', 'status')
     inlines = [HarvestCuttingHarvestingCrewInline, HarvestCuttingVehicleInline]
+
+    def get_orchard_name(self, obj):
+        return obj.orchard.name if obj.orchard else None
+    get_orchard_name.short_description = _('Orchard')
+    get_orchard_name.admin_order_field = 'orchard__name' 
+
+    def get_orchard_code(self, obj):
+        return obj.orchard.code if obj.orchard else None
+    get_orchard_code.short_description = _('Orchard Code')
+    get_orchard_code.admin_order_field = 'orchard__code' 
+
+    def get_orchard_category(self, obj):
+        if obj.orchard:
+            return obj.orchard.get_category_display()
+        return None
+    get_orchard_category.short_description = _('Product Category')
+    get_orchard_category.admin_order_field = 'orchard__category'
+
+    def get_orchard_product_producer(self, obj):
+        return obj.orchard.producer if obj.orchard else None
+    get_orchard_product_producer.short_description = _('Product Producer')
+    get_orchard_product_producer.admin_order_field = 'orchard__producer'
 
     def generate_actions_buttons(self, obj):
         pdf_url = reverse('harvest_order_pdf', args=[obj.pk])
@@ -264,6 +288,9 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
 
         if db_field.name == "product_varieties":
             kwargs["queryset"] = ProductVariety.objects.filter(**product_organization_queryfilter)
+        
+        if db_field.name == "product_ripeness":
+            kwargs["queryset"] = ProductRipeness.objects.filter(**product_organization_queryfilter)
 
         field_filters = {
             "product_provider": {

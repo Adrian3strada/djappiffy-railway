@@ -152,10 +152,16 @@ class IncomingProductForm(forms.ModelForm):
         status = self.initial.get('status') or self.instance.status
         # Oculta los estados no seleccionables para el usuario
         if 'status' in self.fields:
+            current_choices = self.fields['status'].choices
             self.fields['status'].choices = [
-                (value, label) for value, label in self.fields['status'].choices
+                (value, label)
+                for value, label in current_choices
                 if value != 'closed' or value == status
             ]
+        if status in ['ready', 'closed', 'canceled']:
+            # Deshabilitar el campo en el formulario
+            self.fields['is_quarantined'].disabled = True
+            self.fields['is_quarantined'].initial = False
 
     def clean(self):
         cleaned_data = super().clean() or {}
@@ -201,11 +207,14 @@ class BatchForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         status = self.initial.get('status') or self.instance.status
-        # Oculta los estados no seleccionables para el usuario
-        self.fields['status'].choices = [
-            (value, label) for value, label in self.fields['status'].choices
-            if value != 'closed' or value == status
-        ]
+
+        # Ocultar opción "closed", a menos que ya esté seleccionada
+        if 'status' in self.fields:
+            self.fields['status'].choices = [
+                (value, label) for value, label in self.fields['status'].choices
+                if value != 'closed' or value == status
+            ]
+
 
     def clean(self):
         cleaned = super().clean()
@@ -240,7 +249,6 @@ class WeighingSetForm(forms.ModelForm):
         model = WeighingSet
         exclude = ('protected',)
 
-
     def clean(self):
         cleaned_data = super().clean()
 
@@ -274,6 +282,13 @@ class WeighingSetForm(forms.ModelForm):
         return instance
 
 class WeighingSetInlineFormSet(BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for form in self.forms:
+            instance = form.instance
+            if instance.pk and getattr(instance, 'protected', False):
+                form.fields['DELETE'].disabled = True 
+
     def clean(self):
         super().clean()
         for form in self.forms:
@@ -284,3 +299,23 @@ class WeighingSetInlineFormSet(BaseInlineFormSet):
             if form.cleaned_data.get('DELETE', False) and instance.protected:
                 raise ValidationError(_("This weighing is protected and cannot be deleted."))
 
+class WeighingSetContainerInlineFormSet(BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for form in self.forms:
+            instance = form.instance
+            weighing_set = instance.weighing_set or form.initial.get('weighing_set')
+
+            if weighing_set and weighing_set.protected:
+                if 'DELETE' in form.fields:
+                    form.fields['DELETE'].disabled = True
+                    
+    def clean(self):
+        super().clean()
+        for form in self.forms:
+            instance = form.instance
+            if form.cleaned_data.get('DELETE') and instance.weighing_set.protected:
+                raise ValidationError(_('You cannot delete a container that belongs to a protected weighing set.'))
+            if instance.weighing_set.protected and form.has_changed():
+                raise ValidationError(_('You cannot modify a container that belongs to a protected weighing set.'))

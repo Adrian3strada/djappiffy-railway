@@ -10,118 +10,49 @@ document.addEventListener("DOMContentLoaded", function() {
         row.style.display = "none";  
     });
 
-    const totalWeighingSetsField = $('#id_total_weighed_sets');
-    const packhouseWeightResultField = $('#id_packhouse_weight_result');
-    const containersAssignedField = $('#id_containers_assigned');
-    const fullContainersField = $('#id_full_containers_per_harvest');
-    const emptyContainersField = $('#id_empty_containers');
-    const missingContainersField = $('#id_missing_containers');
-    const averageContainersField = $('#id_average_per_container');
-    const missingVehicleContainerField = $('input[name$="-missing_containers"]');
-    const totaWeighedSetContainersField = $('#id_total_weighed_set_containers');
     const statusField = $('#id_status');
     const initialStatus = statusField.val();
+    const inQuarantinedField = $('#id_is_quarantined');
 
-    // deshabilitar edición en campos, pero permitir que los valores se envíen
     function disableField(field) {
         field.prop("readonly", true);
         field.css({
             "pointer-events": "none",
-            "background-color": "#e9ecef",
-            "border": "none",
-            "color": "#555"
+            "outline": "none",
+            "opacity": "0.3",
+            "transform": "scale(1.1)",
+            "cursor": "not-allowed"
         });
     }
 
-    disableField(totalWeighingSetsField);
-    disableField(packhouseWeightResultField);
-    disableField(containersAssignedField);
-    disableField(missingContainersField);
-    disableField(averageContainersField);
-    disableField(fullContainersField);
-    disableField(emptyContainersField);
-    disableField(missingVehicleContainerField);
-    disableField(totaWeighedSetContainersField);
+    function enableField(field) {
+        field.prop("readonly", false);
+        field.css({
+            "pointer-events": "auto",
+            "opacity": "1",
+            "transform": "none",
+            "cursor": "pointer"
+        });
+    }
 
-    
     if (initialStatus !== 'closed') {
         statusField.find('option[value="closed"]').remove();
         statusField.trigger('change.select2');
     }
 
-    // Función para actualizar missingBoxes
-    function updateMissingContainers() {
-        const boxesAssigned = parseFloat(containersAssignedField.val());
-        const fullBoxes = parseFloat(fullContainersField.val());
-        const emptyBoxes = parseFloat(emptyContainersField.val());
-
-        const missingBoxes = boxesAssigned - fullBoxes - emptyBoxes;
-        missingContainersField.val(missingBoxes);
+    function updateFieldsBasedOnBatchStatus(status) {
+        if (status === 'open') {
+            enableField(inQuarantinedField);
+        } else if (status === 'ready' || status === 'canceled' || status === 'closed') {
+            disableField(inQuarantinedField);
+            inQuarantinedField.prop('checked', false);
+        }
     }
 
-    // Función para actualizar averageBox
-    function updateAveragePerContainers() {
-        const packhouseWeightResult = parseFloat(packhouseWeightResultField.val());
-        const fullBoxes = parseFloat(totaWeighedSetContainersField.val());
-    
-        const averagePerBox = fullBoxes > 0 
-            ? Math.floor((packhouseWeightResult / fullBoxes) * 1000) / 1000 
-            : 0;
-            
-        averageContainersField.val(averagePerBox);
-    }
+    updateFieldsBasedOnBatchStatus(initialStatus);
 
-    fullContainersField.on('input', function() {
-        updateMissingContainers();
-        updateAveragePerContainers(); 
+    statusField.on('change', function () {
+        const newStatus = $(this).val();
+        updateFieldsBasedOnBatchStatus(newStatus);
     });
-    emptyContainersField.on('input', updateMissingContainers);
-    packhouseWeightResultField.on('input change', function() {
-        updateAveragePerContainers();
-    });
-    
-    updateMissingContainers();
-    updateAveragePerContainers();
-    
-    document.querySelectorAll('input[name="_save"], input[name="_continue"]').forEach(button => {
-        button.addEventListener('click', function(e) {
-            updateMissingContainers();
-            updateAveragePerContainers();
-        });
-    });
-
-    const form = document.querySelector('form');
-    if (form) {
-        document.querySelectorAll('input[name="_save"], input[name="_continue"]').forEach(button => {
-            button.addEventListener('click', function(e) {
-                updateMissingContainers();
-                updateAveragePerContainers();
-                
-                const publicWeight = parseFloat($('#id_public_weight_result').val().replace(',', '.')) || 0;
-                const packhouseWeight = parseFloat($('#id_packhouse_weight_result').val().replace(',', '.')) || 0;
-                const threshold = publicWeight * 0.015; 
-                const diff = publicWeight - packhouseWeight; 
-                const status = $('#id_status').val();
-                console.log("El status: ", status)
-
-                if (publicWeight > packhouseWeight && diff >= threshold && status === "ready") {
-                    e.preventDefault();
-                    const diffPerc = (diff / publicWeight) * 100; 
-                    Swal.fire({
-                        title: 'Significant Difference!',
-                        text: `The difference is ${diffPerc.toFixed(2)}%, are you sure you want to proceed?`,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Yes',
-                        cancelButtonText: 'No'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            e.target.closest('form').submit();
-                        }
-                    });                    
-                }
-            });
-        });
-    }
-
 });

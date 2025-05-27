@@ -17,12 +17,27 @@ from django.http import HttpResponseForbidden
 from django.http import JsonResponse
 from packhouses.receiving.models import IncomingProduct
 from django.contrib.auth.decorators import login_required
+from itertools import chain
+
+import qrcode
+import base64
+from io import BytesIO
+
+def generate_qr_base64(data: str) -> str:
+    qr = qrcode.make(data)
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    img_str = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    return f"data:image/png;base64,{img_str}"
+
 
 def harvest_order_pdf(request, harvest_id):
+    """
     # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
     if not request.user.is_authenticated:
         login_url = reverse('admin:login')
         return redirect(login_url)
+    """
 
     # Obtener el registro
     harvest = get_object_or_404(ScheduleHarvest, pk=harvest_id)
@@ -60,7 +75,15 @@ def harvest_order_pdf(request, harvest_id):
     scheduleharvestvehicleinline = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest).prefetch_related(
         Prefetch('scheduleharvestcontainervehicle_set',queryset=ScheduleHarvestContainerVehicle.objects.all(),)
     )
-    total_box = ScheduleHarvestContainerVehicle.objects.filter(harvest_cutting__in=scheduleharvestvehicleinline).aggregate(total=Sum('quantity'))['total'] or 0
+    orchard_certifications = OrchardCertification.objects.filter(
+        orchard=harvest.orchard,
+        created_at__lte=harvest.harvest_date,
+        expiration_date__gte=harvest.harvest_date,
+        is_enabled=True
+        )
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.debug(f"Orchard certifications: {orchard_certifications}")
 
     # CSS
     base_url = request.build_absolute_uri('/')
@@ -68,6 +91,22 @@ def harvest_order_pdf(request, harvest_id):
         @page {
             size: letter portrait;
         }''')
+    
+    qr_data = (
+        f"Orchard: {harvest.orchard}\n"
+        f"Registry Code: {harvest.orchard.code}\n"
+        f"Product: {harvest.product}\n"
+        f"Product Variety: {harvest.product_variety}\n"
+        f"Product Phenology: {harvest.product_phenologies}\n"
+        f"Product Provider: {harvest.product_provider}\n"
+        f"Market: {harvest.market}\n"
+        f"Product Category: {harvest.orchard.get_category_display}\n"
+        f"Location: {harvest.orchard.district.name}, {harvest.orchard.city.name}, {harvest.orchard.state.name}\n"
+        f"Product Ripeness: {harvest.product_ripeness}\n"
+        f"Weight Expected: {harvest.weight_expected} {harvest.product.measure_unit_category}\n"
+        f"Harvest Size: {harvest.product_harvest_size_kind}\n"
+    )
+    qr_image = generate_qr_base64(qr_data)
 
     # Renderizar el template HTML
     html_string = render_to_string('admin/packhouses/schedule-harvest-report.html', {
@@ -76,9 +115,10 @@ def harvest_order_pdf(request, harvest_id):
         'pdf_title': pdf_title,
         'logo_url': logo_url,
         'harvest': harvest,
+        "qr_image": qr_image,
+        'orchard_certifications': orchard_certifications,
         'scheduleharvestharvestingcrewinline': scheduleharvestharvestingcrewinline,
         'scheduleharvestvehicleinline': scheduleharvestvehicleinline,
-        'total_box': total_box,
         'year': year,
         'date': date,
     })
@@ -145,10 +185,13 @@ def good_harvest_practices_format(request, harvest_id):
     harvestingcrew = HarvestingCrew.objects.filter(pk__in=harvestingcrew_ids)
 
     # Filtrar vehiculos por cuadrillas
-    crew_vehicles = []
-    for crew in scheduleharvestharvestingcrewinline:
-        vehicles = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest,provider=crew.provider)
-        crew_vehicles.extend(vehicles)
+    # Recolectar todos los providers únicos desde los crews
+    
+    vehicles = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest)
+
+    print(f"Vehículos encontrados: {vehicles.count()}")
+    for v in vehicles:
+        print(f"  ➤ ID SHV: {v.id} | Vehículo: {v.vehicle.name} | Placa: {v.vehicle.license_plate}")
 
 
     # CSS
@@ -177,7 +220,7 @@ def good_harvest_practices_format(request, harvest_id):
         'harvest': harvest,
         'orchard_certifications': orchard_certifications,
         'harvesting_crew': harvestingcrew,
-        'crew_vehicles': crew_vehicles,
+        'vehicles': vehicles,
         'scheduleharvestharvestingcrewinline': scheduleharvestharvestingcrewinline,
         'year': year,
         'date': date,
@@ -232,9 +275,15 @@ def set_scheduleharvest_ready(request, harvest_id):
             'message': 'You cannot send this harvest.'
         }, status=403)
 
-    scheduleharvest.status = 'ready'
-    incoming_product = IncomingProduct.objects.create(organization=scheduleharvest.organization)
+    incoming_kwargs = {
+        'organization': scheduleharvest.organization,
+    }
+    if scheduleharvest.weighing_scale:
+        incoming_kwargs['public_weighing_scale'] = scheduleharvest.weighing_scale
+
+    incoming_product = IncomingProduct.objects.create(**incoming_kwargs)
     scheduleharvest.incoming_product = incoming_product
+    scheduleharvest.status = 'ready'
     scheduleharvest.save()
 
     success_message = _('Harvest sent to Fruit Receiving Area successfully.')

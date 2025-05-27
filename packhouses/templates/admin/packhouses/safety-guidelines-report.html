@@ -16,7 +16,6 @@
   }
 /* Estilos de la tabla de encabezado */
 table.header-table .center h1 {
-    margin: 5px 0 !important;
     font-size: 9pt !important;
 }
 
@@ -158,16 +157,18 @@ table.header-table .center h1 {
 .folio-table {
     width: 100%;
     text-align: center;
-    margin-bottom: 10px;
-    border-collapse: collapse;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    border-collapse: separate; 
+    font-size: 7pt;
 }
 
 .folio-table tr {
-    height: 25px;
+    height: 15px;
 }
 
 .folio-table td {
-    line-height: 25px;
+    line-height: 15px;
     padding: 0;
     overflow: hidden;
 }
@@ -195,15 +196,45 @@ table.header-table .center h1 {
 .signature_section {
     page-break-after: always;
 }
+
+.row-four2 {
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
+  border: 1px solid red;
+  margin-bottom: 10px;
+  padding: 5px 10px;
+  gap: 4px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.row-four2 p {
+  margin: 0;
+  padding: 2px;
+  font-size: 12px;  /* para evitar colapso visual */
+}
+
+.footer-space-table {
+    text-align: center;
+    font-size: 5pt;
+    border-collapse: collapse;
+}
+
 </style>
 
 {% for crew in scheduleharvestharvestingcrewinline %}
-
 <table class="folio-table">
     <tr>
-        <td style="width: 10%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Folio" %}</td>
-        <td style="width: 20%; color:red; background-color: #fff4cc;"> {% translate "N°" %} {{ crew.id }}</td>
-        <td style="width: 70%;"></td>
+        <td style="width: 15%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest No." %}</td>
+        <td style="width: 30%; color:#b30000; background-color: #fff4cc;"> {{ harvest.ooid }}</td>
+    </tr>
+    <tr>
+        <td style="width: 15%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest Date" %}</td>
+        <td style="width: 30%; color:#b30000; background-color: #fff4cc;"> {{ harvest.harvest_date }}</td>
+    </tr>
+    <tr>
+        <td style=" width: 15%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Folio" %}</td>
+        <td style=" width: 30%; color: #b30000; background-color: #fff4cc;"> {% translate "N°" %} {{ crew.id }}</td>
+        <td ></td>
     </tr>
 </table>
 
@@ -211,11 +242,13 @@ table.header-table .center h1 {
     <div class="title">
         <h2>{% translate "General Information" %}</h2>
     </div>
+
     <div class="row row-four">
-        <p><strong>{% translate "No. Harvest:" %}</strong> <span style="color:red;">{{ harvest.id }}</span></p>
-        <p>
+        <p><strong>{% translate "Orchard:" %} </strong>{{harvest.orchard.name}}</p>
+        <p><strong>{% translate "Product:" %} </strong>{{harvest.product}}</p>
+         <p>
             {% if harvest.category == 'gathering' %}
-            <strong>{% translate "Gatherer:"}</strong> {{ harvest.gatherer }}
+            <strong>{% translate "Gatherer:" %}</strong> {{ harvest.gatherer }}
             {% elif harvest.category == 'maquila' %}
             <strong>{% translate "Maquiladora:" %}</strong> {{ harvest.maquiladora }}
             {% else %}
@@ -223,64 +256,64 @@ table.header-table .center h1 {
             {% endif %}
         </p>
         <p><strong>{% translate "Crew Chief" %}:</strong> {{crew.provider}}</p>
+    </div>
+
+     <div class="row row-four">
+        <p><strong>{% translate "Registery Code:" %} </strong>{{harvest.orchard.code}}</p>
+        <p><strong>{% translate "Product Variety:" %} </strong>{{harvest.product_variety}}</p>
+        <p><strong>{% translate "Product Producer:" %} </strong>{{harvest.orchard.producer}}</p>
         <p><strong>{% translate "Crew:" %}</strong> {{ crew.harvesting_crew }}</p>
-    </div>
+     </div>
 
-    <div class="row row-four">
-        <p><strong>{% translate "Producer:" %} </strong>{{harvest.orchard.producer}}</p>
-        <p><strong>{% translate "Arrival Time:" %}</strong></p>
-        <p><strong>{% translate "Departure Time:" %}</strong></p>
-        <p><strong>{% translate "Date:" %} </strong>{{harvest.created_at}}</p>
-    </div>
+     <div class="row row-four">
+        <p>&nbsp;</p>
+        <p><strong>{% translate "Product Phenology:" %} </strong>{{harvest.product_phenologies}}</p>
+        <p><strong>{% translate "Product Ripeness:" %} </strong>{{harvest.product_ripeness}}</p>
+        <p>&nbsp;</p>
+     </div>
 
-    <div class="row row-four">
-        <p><strong>{% translate "Product:" %}</strong> {{harvest.product}}</p>
-        <p><strong>{% translate "Variety:" %}</strong> {{harvest.product_variety}}</p>
-        <p><strong>{% translate "Phenology:" %}</strong> {{harvest.product_phenologies}}</p>
-        <p><strong>{% translate "Harvest Type:" %}</strong> {{harvest.product_harvest_size_kind}}</p>
-    </div>
+      <div class="row row-four">
+        <p><strong>{% translate "Safety Reg. Date:" %} </strong>{{harvest.orchard.safety_authority_registration_date}}</p>
+        <p><strong>{% translate "Product Category:" %}</strong>{{harvest.orchard.get_category_display}}</p>
+        <p><strong>{% translate "Harvest Size:" %}</strong> {{harvest.product_harvest_size_kind}}</p>
+        <p><strong>{% translate "Creation Date:" %}</strong> {{harvest.created_at}}</p>
+      </div>
 
-    <!-- Grupo de tres elementos -->
-    <div class="row row-four">
-        <p><strong>{% translate "Orchard:" %} </strong>{{harvest.orchard.name}}</p>
-        <p style="grid-column: span 2;"><strong>{% translate "Location:" %} </strong>{{harvest.orchard.district.name}}, {{harvest.orchard.city.name}}, {{harvest.orchard.state.name}}</p>
-        <p><strong>{% translate "Date:" %} </strong>{{harvest.created_at}}</p>
-    </div>
+      <div class="row row-four">
+        <p style="grid-column: span 3;"><strong>{% translate "Orchard Location:" %} </strong>{{harvest.orchard.district.name}}, {{harvest.orchard.city.name}}, {{harvest.orchard.state.name}}</p>
+        <p>&nbsp;</p>
+      </div>
 
-    <div class="row row-four">
-        <p style="grid-column: span 3;"><strong>{% translate "Orchard Certifications:" %} </strong>
+      <div class="row row-four">
+        <p style="grid-column: span 4;"><strong>{% translate "Orchard Certifications:" %} </strong>
             {% for certification in orchard_certifications %}
                 {{ certification.certification_kind.name }} {{certification.certification_number}}{% if not forloop.last %} | {% endif %}
             {% empty %}
                 {% translate "No Data" %}
             {% endfor %}
         </p>
-        <p><strong>{% translate "Full Boxes:" %}</strong></p>
-    </div>
+      </div>
 
-    <div class="row row-four">
-        <p style="grid-column: span 3;"><strong>{% translate "Comments:" %}</strong> {{harvest.comments|default:""}}</p>
-        <p><strong>{% translate "Lock N°:" %}</strong></p>
-    </div>
+      {% for vehicle in vehicles %}
+        <div class="row row-four">
+            <p><strong>{% translate "Vehicle:" %}</strong> {{ vehicle.vehicle.name }}</p>
+            <p><strong>{% translate "License Plate:" %}</strong> {{ vehicle.vehicle.license_plate }}</p>
+            <p><strong>{% translate "Stamp Number:" %}</strong> {{ vehicle.stamp_number }}</p>
+            <p><strong>{% translate "Operator:" %}</strong></p>
+        </div>
+    {% endfor %}
+      <div class="row row-four">
+        <p style="grid-column: span 4;"><strong>{% translate "Meeting Point:" %} </strong>{{harvest.meeting_point}}</p>
+      </div>
 
-    <div class="row row-four">
-        <p style="grid-column: span 2;"><strong>{% translate "Operator:" %}</strong></p>
-        <p style="grid-column: span 2;""><strong>{% translate "License Plate:" %} </strong>
-            {% for vehicle in crew_vehicles %}
-                {% if vehicle.provider == crew.provider %}
-                    {{ vehicle.vehicle.license_plate }},
-                {% endif %}
-            {% empty %}
-                {% translate "No vehicles available for this crew." %}
-            {% endfor %}
-        </p>
-    </div>
+      <div class="row row-four">
+        <p style="grid-column: span 2;"><strong>{% translate "Departure Time:" %}</strong></p>
+        <p style="grid-column: span 2;"><strong>{% translate "Arrival Time:" %}</strong></p>
+      </div>
 
-    <div class="row row-four">
-        <p style="grid-column: span 1;"><strong>{% translate "Destination:" %}</strong> {{harvest.market}}</p>
-        <p style="grid-column: span 3;"><strong>{% translate "Meeting Point" %}:</strong> {{harvest.meeting_point|default:""}}</p>
-    </div>
-</div>
+       <div class="row row-four">
+        <p style="grid-column: span 4; margin-bottom: 7px;"><strong>{% translate "Comments:" %} </strong></p>
+      </div>
 
 <div class="harvest-information" style="margin-top:-5px;">
     <table class="harvest-information-table">

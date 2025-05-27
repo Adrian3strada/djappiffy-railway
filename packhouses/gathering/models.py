@@ -24,9 +24,9 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, ProductVariety,
                                         Market, ProductPhenologyKind, ProductHarvestSizeKind, WeighingScale,
-                                        HarvestingCrew, Vehicle, OrchardCertification, Supply)
+                                        HarvestingCrew, Vehicle, OrchardCertification, Supply, ProductRipeness)
 from django.db.models import Max, Min
-from django.db.models import Q, F
+from django.db.models import Q, F, Sum
 import datetime
 from common.settings import STATUS_CHOICES
 from packhouses.receiving.models import IncomingProduct
@@ -82,6 +82,11 @@ class ScheduleHarvest(models.Model):
         verbose_name=_("Product phenology"),
         on_delete=models.PROTECT
     )
+    product_ripeness = models.ForeignKey(
+        ProductRipeness,
+        verbose_name=_("Product ripeness"),
+        on_delete=models.PROTECT
+    )
     product_harvest_size_kind = models.ForeignKey(
         ProductHarvestSizeKind,
         verbose_name=_("Product harvest size"),
@@ -123,6 +128,14 @@ class ScheduleHarvest(models.Model):
     )
     incoming_product = models.OneToOneField(IncomingProduct, on_delete=models.SET_NULL, null=True, blank=True)
 
+    @property
+    def containers_assigned(self):
+        vehicles = self.scheduleharvestvehicle_set.all()
+
+        return ScheduleHarvestContainerVehicle.objects.filter(
+            harvest_cutting__in=vehicles
+        ).aggregate(total=Sum('quantity'))['total'] or 0
+        
     def __str__(self):
         return f"{self.ooid}"
 

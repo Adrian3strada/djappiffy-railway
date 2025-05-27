@@ -6,9 +6,56 @@
 {% load static %}
 
 <style>
-    table.header-table {
-            margin-bottom: 0px !important;
-        }
+    @font-face {
+    font-family: 'Futura';
+    src: url('../../../static/fonts/Futura.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  body {
+    font-family: 'Futura', sans-serif;
+    font-size: 7pt;
+  }
+
+  /* Estilos de la tabla de encabezado */
+table.header-table .center h1 {
+    margin-bottom: 0px !important;
+}
+/* Tabla de folios */
+.folio-table {
+    width: 100%;
+    text-align: center;
+    margin-top: 0px;
+    margin-bottom: 10px;
+    border-collapse: separate; 
+}
+
+.folio-table tr {
+    height: 15px;
+}
+
+.folio-table td {
+    line-height: 15px;
+    padding: 0;
+    overflow: hidden;
+}
+
+  .information-section{
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.row-three {
+  display: grid;
+  grid-template-columns: 40% 20% 40%;
+}
+
+.row-three p {
+  margin: 0;
+  border-bottom: 1px solid #000;
+}
+
 .title{
         display: flex;
         background-color: #ffc600;
@@ -109,20 +156,33 @@
 }
 
 .print-container {
-    margin-top: 20px;
     display: flex;
-    width: 100%;
-    height: 30%; 
+    width: 60%;
     border: 2px solid #091941;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .qr-space {
-    width: 50%;
+    width: 50%; /* puedes ajustar a menos si lo quieres más chico */
     display: flex;
     align-items: center;
     justify-content: center;
     border-right: 2px solid #091941;
+    padding: 10px; /* opcional */
 }
+
+
+.qr-space img {
+    max-height: 100%;   /* Nunca más alto que el div */
+    max-width: 100%;    /* Opcional, por si acaso */
+    height: auto;       /* Para que respete la proporción */
+    width: auto;
+    object-fit: contain;
+}
+
+
 
 .data-space {
     flex: 1;
@@ -131,79 +191,85 @@
 
 </style>
 
+
+<table class="folio-table">
+    <tr>
+        <td style="width: 10%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest No." %}</td>
+        <td style="width: 20%; color:#b30000; background-color: #fff4cc;"> {{ harvest.ooid }}</td>
+        <td style="width: 70%;"></td>
+    </tr>
+    <tr>
+        <td style="width: 10%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest Date" %}</td>
+        <td style="width: 20%; color:#b30000; background-color: #fff4cc;"> {{ harvest.harvest_date }}</td>
+        <td style="width: 70%;"></td>
+    </tr>
+    <tr>
+        <td style=" width: 15%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Folio" %}</td>
+        <td style=" width: 30%; color: #b30000; background-color: #fff4cc;"> {% translate "N°" %} {{ crew.id }}</td>
+        <td style="width: 70%;"></td>
+    </tr>
+</table>
+
 <div style="margin-top: 0px;">
     <h2 class="title">{% translate "General Information" %}</h2>
 </div>
 
-<div>
-    <div class="info-container">
-        <table class="info-table">
-            <tbody>
-                <tr>
-                    <td class="label">{% translate "Harvest Date:" %}</td>
-                    <td class="value">{{ harvest.harvest_date }}</td>
-                
-                    <td class="label">{% translate "Provider:" %}</td>
-                    <td class="value">{{ harvest.product_provider }}</td>
-                
-                    <td class="label">{% translate "Category:" %}</td>
-                    <td class="value">{{ harvest.get_category_display }}</td>
-                </tr>                
-    
-                <tr>
-                    {% if harvest.category == 'gathering' %}
-                        <td class="label">{% translate "Gatherer:" %}</td>
-                        <td class="value">{{ harvest.gatherer }}</td>
-                    {% elif harvest.category == 'maquila' %}
-                        <td class="label">{% translate "Maquiladora:" %}</td>
-                        <td class="value">{{ harvest.maquiladora }}</td>
-                    {% else %}
-                        <td colspan="2"></td> 
-                    {% endif %}
-    
-                    <td class="label">{% translate "Product:" %}</td>
-                    <td>{{ harvest.product }}</td>
-    
-                    <td class="label">{% translate "Variety:" %}</td>
-                    <td>{{ harvest.product_variety }}</td>
-                </tr>
-    
-                <tr>
-                    <td class="label">{% translate "Phenology:" %}</td>
-                    <td class="value">{{ harvest.product_phenologies }}</td>
-    
-                    <td class="label">{% translate "Harvest Size:" %}</td>
-                    <td class="value">{{ harvest.product_harvest_size_kind }}</td>
-    
-                    <td class="label">{% translate "Orchard:" %}</td>
-                    <td class="value">{{ harvest.orchard }}</td>
-                </tr>
-    
-                <tr>
-                    <td class="label">{% translate "Market:" %}</td>
-                    <td class="value">{{ harvest.market }}</td>
-    
-                    <td class="label">{% translate "Expected Weight:" %}</td>
-                    <td class="value">{{ harvest.weight_expected }} KG</td>
-    
-                    <td class="label">{% translate "Weight Scale:" %}</td>
-                    <td class="value">{{ harvest.weighing_scale }}</td>
-                </tr>
-    
-                <tr>
-                    <td class="label">{% translate "Meeting Point:" %}</td>
-                    <td class="value">{{ harvest.meeting_point }}</td>
-    
-                    <td class="label"></td>
-                    <td class="value"></td>
-    
-                    <td class="label">{% translate "Status:" %}</td>
-                    <td class="value">{{ harvest.get_status_display }}</td>
-                </tr>
-            </tbody>
-        </table>
+<div class="information-section">
+   <div class="row row-three">
+        <p><strong>{% translate "Orchard:" %}</strong> {{ harvest.orchard.name }}</p>
+        <p><strong>{% translate "Product:" %}</strong> {{ harvest.product }}</p>
+        {% if harvest.category == 'gathering' %}
+            <p><strong>{% translate "Gatherer:" %}</strong> {{ harvest.gatherer }}</p>
+        {% elif harvest.category == 'maquila' %}
+            <p><strong>{% translate "Maquiladora:" %}</strong> {{ harvest.maquiladora }}</p>
+        {% else %}
+            <p>&nbsp;</p>
+        {% endif %}
     </div>
-    
+
+    <div class="row row-three">
+        <p><strong>{% translate "Registery Code:" %}</strong> {{ harvest.orchard.code }}</p>
+        <p><strong>{% translate "Product Variety:" %}</strong> {{ harvest.product_variety }}</p>
+        <p><strong>{% translate "Product Producer:" %}</strong> {{ harvest.product_producer }}</p>
+    </div>
+
+    <div class="row row-three">
+        <p>&nbsp;</p>
+        <p><strong>{% translate "Product Phenology:" %}</strong> {{ harvest.product_phenologies }}</p>
+        <p><strong>{% translate "Product Provider:" %}</strong> {{ harvest.product_provider }}</p>
+    </div>
+
+    <div class="row row-three">
+        <p style="grid-column: span 3;"><strong>{% translate "Orchard Certification:" %}</strong> 
+            {% for certification in orchard_certifications %}
+                    {{ certification.certification_kind.name }} {{certification.certification_number}} {% if not forloop.last %} | {% endif %}
+                {% empty %}
+                    {% translate "No Data" %}
+                {% endfor %}
+        </p>   
+    </div>
+
+    <div class="row row-three">
+        <p><strong>{% translate "Market:" %}</strong> {{ harvest.market }}</p>
+        <p><strong>{% translate "Product Category:" %}</strong>{{harvest.orchard.get_category_display}}</p>
+        <p><strong>{% translate "Weight Scale:" %}</strong> {{ harvest.weighing_scale }}</p>
+    </div>
+
+    <div class="row row-three">
+        <p style="grid-column: span 1;"><strong>{% translate "Location:" %}</strong> {{harvest.orchard.district.name}}, {{harvest.orchard.city.name}}, {{harvest.orchard.state.name}} </p>
+        <p><strong>{% translate "Product Ripeness:" %}</strong> {{ harvest.product_ripeness }}</p>
+        <p><strong>{% translate "Weight Expected:" %}</strong> {{ harvest.weight_expected }}</p>
+    </div>
+
+    <div class="row row-three">
+        <p><strong>{% translate "Meeting Point:" %}</strong> {{ harvest.meeting_point }}</p>
+        <p><strong>{% translate "Harvest Size:" %}</strong> {{ harvest.product_harvest_size_kind }}</p>
+        <p><strong>{% translate "Total containments assigned:" %}</strong> {{ harvest.contianers_assigned }}</p>    
+    </div>
+
+    <div class="row row-three">
+        <p style="grid-column: span 3;"><strong>{% translate "Comments:" %}</strong> {{ harvest.comments }}</p>    
+    </div>
 </div>
 
 <div>
@@ -271,14 +337,17 @@
 
 <div class="print-container">
     <div class="qr-space">
-       
+       <img src="{{ qr_image }}" alt="QR Code" style="max-height: 100%; max-width: 100%;">
     </div>
 
     <div class="data-space">
-        <p><strong>{% translate "Product:" %}</strong>{{harvest.product}} </p>
+        <p><strong>{% translate "Product: " %}</strong>{{harvest.product}} </p>
         <p><strong>{% translate "Product Variety:" %} </strong>{{harvest.product_variety}}</p>
-        <p><strong>{% translate "Total of Containers:" %} </strong>{{total_box}}</p>
-        <p><strong>{% translate "Expected Weight:" %} </strong>{{harvest.weight_expected}} KG</p>
+        <p><strong>{% translate "Product Phenelogy:" %} </strong>{{harvest.product_phenologies}}</p>
+        <p><strong>{% translate "Harvest Size:" %}</strong> {{ harvest.product_harvest_size_kind }}</p>
+        <p><strong>{% translate "Total of Containers:" %} </strong>{{ harvest.contianers_assigned }}</p>
+        <p><strong>{% translate "Expected Weight:" %} </strong>{{harvest.weight_expected}} {{harvest.product.measure_unit_category}}</p>
+        <p><strong>{% translate "Comments:" %}</strong> {{ harvest.comments }}</p>
     </div>
 </div>
 

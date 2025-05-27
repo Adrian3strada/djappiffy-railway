@@ -17,9 +17,10 @@ from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLi
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInlineMixin
 from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet,
-                    BatchForm, WeighingSetForm, WeighingSetInlineFormSet,)
+                    BatchForm, WeighingSetForm, WeighingSetInlineFormSet, WeighingSetContainerInlineFormSet)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
-                      ByCategoryForOrganizationIncomingProductFilter)
+                      ByCategoryForOrganizationIncomingProductFilter, ByOrchardForOrganizationBatchFilter, ByProviderForOrganizationBatchFilter, 
+                      ByProductForOrganizationBatchFilter, ByCategoryForOrganizationBatchFilter)
 from .utils import update_weighing_set_numbers,  CustomScheduleHarvestFormSet
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
@@ -28,12 +29,13 @@ from django.utils.html import format_html
 from django.urls import path, reverse
 import nested_admin
 from common.base.models import Pest
-from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.db.models import Q
 from django import forms
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.utils.formats import date_format
+from .mixins import IncomingProductMetricsMixin, BatchDisplayMixin
+
 from .mixins import IncomingProductMetricsMixin
 # from django import forms
 
@@ -189,17 +191,14 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     def get_formset(self, request, obj=None, **kwargs):
         FormSet = super().get_formset(request, obj, **kwargs)
         class CustomFormSet(FormSet, CustomScheduleHarvestFormSet):
-            def __init__(self2, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-                for form in self2.forms:
-                    form.fields['weighing_scale'].required = True
+            pass
         return CustomFormSet
 
     def get_fields(self, request, obj=None):
         fields = [
             'ooid', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
-            'product_phenologies', 'product_harvest_size_kind', 'orchard',  'market',
-            'weight_expected', 'weighing_scale', 'comments'
+            'product_phenologies', 'product_harvest_size_kind', 'orchard', 'market',
+            'weight_expected', 'comments'
         ]
         if obj:
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=obj).first()
@@ -248,10 +247,6 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
                 "model": Market,
                 "filters": {"is_enabled": True},
             },
-            "orchard_certifications": {
-                "model": OrchardCertification,
-                "filters": {"is_enabled": True},
-            },
             "weighing_scale": {
                 "model": WeighingScale,
                 "filters": {"is_enabled": True},
@@ -273,7 +268,13 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
 # Inlines para los pallets
 class WeighingSetContainerInline(nested_admin.NestedTabularInline):
     model = WeighingSetContainer
+    formset = WeighingSetContainerInlineFormSet
     extra = 0
+    
+    def get_max_num(self, request, obj=None, **kwargs):
+        if obj and getattr(obj, 'protected', False):
+            return 0
+        return super().get_max_num(request, obj, **kwargs)
 
     def get_readonly_fields(self, request, obj=None):
         # Si se está editando un IncomingProduct existente, los campos son solo lectura
@@ -304,7 +305,8 @@ class WeighingSetContainerInline(nested_admin.NestedTabularInline):
 class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = WeighingSet
     inlines = [WeighingSetContainerInline]
-    fields = ('ooid', 'provider', 'harvesting_crew', 'gross_weight', 'total_containers', 'container_tare', 'platform_tare', 'net_weight')
+    fields = ('ooid', 'provider', 'harvesting_crew', 'gross_weight', 'total_containers', 'container_tare', 
+              'platform_tare', 'net_weight',)
     extra = 0
     form = WeighingSetForm
     formset = WeighingSetInlineFormSet
@@ -356,14 +358,15 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
             )
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    # class Media:
-    #     js = ('js/admin/forms/packhouses/receiving/incomingproduct/weighing_set_inline.js',)
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/incomingproduct/weighing_set_inline.js',)
 
 
 # Reciba
 @admin.register(IncomingProduct)
 class IncomingProductAdmin(IncomingProductMetricsMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard',
+                    'get_scheduleharvest_orchard_product_producer',
                     'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'status','generate_actions_buttons')
     fields = ('mrl', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result',
               'kg_sample', *IncomingProductMetricsMixin.readonly_fields,
@@ -407,11 +410,9 @@ class IncomingProductAdmin(IncomingProductMetricsMixin, ByOrganizationAdminMixin
             # Registra la URL custom usando admin_site.admin_view para aplicar permisos y manejo
             path('weighing_set_report/<int:pk>/', self.admin_site.admin_view(weighing_set_report), name='receiving_incomingproduct_weighing_set_report'),
         ]
-        # Colocar custom_urls antes o después según convenga para no interferir con otros patrones
         return custom_urls + urls
 
     def generate_actions_buttons(self, obj):
-        # Ahora usamos el namespace 'admin' y el nombre que definimos en get_urls
         pdf_url = reverse('admin:receiving_incomingproduct_weighing_set_report', args=[obj.pk])
         tooltip_weighing_report = _('Generate Weighing Set Report')
         return format_html(
@@ -452,6 +453,10 @@ class IncomingProductAdmin(IncomingProductMetricsMixin, ByOrganizationAdminMixin
     def get_scheduleharvest_product_provider(self, obj):
         schedule_harvest = obj.scheduleharvest
         return schedule_harvest.product_provider if schedule_harvest else None
+    
+    def get_scheduleharvest_orchard_product_producer(self, obj):
+        schedule_harvest = obj.scheduleharvest
+        return schedule_harvest.orchard.producer if schedule_harvest else None
 
     get_scheduleharvest_ooid.admin_order_field = 'scheduleharvest__ooid'
     get_scheduleharvest_ooid.short_description = _('Harvest Number')
@@ -465,6 +470,8 @@ class IncomingProductAdmin(IncomingProductMetricsMixin, ByOrganizationAdminMixin
     get_scheduleharvest_product_provider.short_description = _('Product Provider')
     get_scheduleharvest_category.admin_order_field = 'scheduleharvest__category'
     get_scheduleharvest_category.short_description = _('Category')
+    get_scheduleharvest_orchard_product_producer.admin_order_field = 'scheduleharvest__orchard__producer'
+    get_scheduleharvest_orchard_product_producer.short_description = _('Product Producer')
 
 
     def save_related(self, request, form, formsets, change):
@@ -481,7 +488,7 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
     extra = 0
     fields = ('ooid', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
         'product_phenologies', 'product_harvest_size_kind', 'orchard', 'market',
-        'weight_expected', 'weighing_scale', 'comments')
+        'weight_expected', 'comments')
     readonly_fields = ('ooid', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
     can_delete = False
     can_add = False
@@ -509,10 +516,7 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
     def get_formset(self, request, obj=None, **kwargs):
         FormSet = super().get_formset(request, obj, **kwargs)
         class CustomFormSet(FormSet, CustomScheduleHarvestFormSet):
-            def __init__(self2, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-                for form in self2.forms:
-                    form.fields['weighing_scale'].required = True
+            pass
         return CustomFormSet
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -537,10 +541,6 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
         field_filters = {
             "market": {
                 "model": Market,
-                "filters": {"is_enabled": True},
-            },
-            "orchard_certifications": {
-                "model": OrchardCertification,
                 "filters": {"is_enabled": True},
             },
             "weighing_scale": {
@@ -572,7 +572,7 @@ class IncomingProductInline(IncomingProductMetricsMixin, CustomNestedStackedInli
     show_change_link = True
     custom_title = _("Incoming Product Information")
     inlines = [WeighingSetInline, ScheduleHarvestInlineForBatch]
-    readonly_fields = IncomingProductMetricsMixin.readonly_fields
+    readonly_fields = IncomingProductMetricsMixin.readonly_fields + ('is_quarantined', 'status')
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -591,21 +591,38 @@ class IncomingProductInline(IncomingProductMetricsMixin, CustomNestedStackedInli
         update_weighing_set_numbers(form.instance)
 
 @admin.register(Batch)
-class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
+class BatchAdmin(ByOrganizationAdminMixin, BatchDisplayMixin, nested_admin.NestedModelAdmin):
     list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product_provider', 'get_scheduleharvest_product',
                     'get_scheduleharvest_product_variety', 'get_scheduleharvest_product_phenology', 'get_scheduleharvest_orchards',
-                    'get_scheduleharvest_harvest_date', 'display_created_at', 'get_ingress_weight_display',
-                    'get_available_weight_display',
-                    'status', 'is_quarantined', 'display_available_for_processing', 'generate_actions_buttons',)
-    fields = ['ooid', 'status', 'is_quarantined', 'is_available_for_processing']
-    readonly_fields = ['ooid',]
+                    'get_scheduleharvest_harvest_date', 'display_created_at', 'get_batch_merge_status', 'weight_received_display', 
+                    'get_batch_available_weight', 'status', 'display_available_for_processing', 'generate_actions_buttons',)
     form = BatchForm
     inlines = [IncomingProductInline]
+    list_filter = (ByProductForOrganizationBatchFilter, ByOrchardForOrganizationBatchFilter,ByProviderForOrganizationBatchFilter, 
+                   ByCategoryForOrganizationBatchFilter, 'status', 'is_available_for_processing', 'created_at')
     list_per_page = 20
-    actions = ['action_merge_batches', 'action_merge_into_existing_batch']
+    search_fields = ('ooid',)
+    actions = ['action_merge_batches', 'action_merge_into_existing_batch', 'action_unmerge_all_batches',
+               'action_unmerge_selected_batches']
     admin.site.disable_action('delete_selected')
 
-    @admin.action(description='Merge batches into a new batch.')
+    def has_add_permission(self, request):
+        return False
+
+    def get_weight_fields(self, is_parent):
+        base = ['display_own_weight_received', 'display_own_net_received']
+        extra = ['display_weight_received', 'display_available_weight'] if is_parent else []
+        return base + extra
+
+    def get_fieldsets(self, request, obj=None):
+        fields = ['ooid', 'status', 'is_available_for_processing', 'display_batch_role']
+        fields += self.get_weight_fields(obj.is_parent if obj else False)
+        return ((_('Batch Info'), {'fields': fields}),)
+
+    def get_readonly_fields(self, request, obj=None):
+        return ['ooid', 'display_batch_role'] + self.get_weight_fields(obj.is_parent if obj else False)
+
+    @admin.action(description=_('Merge selected batches into a single batch group'))
     def action_merge_batches(self, request, queryset):
         if queryset.count() < 2:
             self.message_user(
@@ -624,51 +641,33 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             self.message_user(request, e.message, level=messages.ERROR)
             return
 
-        # Unir Lote
-        with transaction.atomic():
-            parents = [b for b in qs if b.is_parent]
-            if len(parents) > 1:
-                self.message_user(
-                    request,
-                    _('Cannot merge batches that already contain merged batches.'),
-                    level=messages.ERROR
-                )
-                return
-            if parents:
-                destination = parents[0]
-                sources = [b for b in qs if b != destination]
-            else:
-                destination = Batch.objects.create(
-                    organization=queryset.first().organization,
-                    status='ready',
-                )
-                sources = list(qs)
-            for origin in sources:
-                origin.parent = destination
-                origin.status = 'ready'
-                origin.is_available_for_processing = False
-                origin.save(update_fields=[
-                    'parent',
-                    'status',
-                    'is_available_for_processing',
-                ])
+        try:
+            parent_batch = Batch.merge_batches(qs)
+        except Exception as e:
+            self.message_user(
+                request,
+                _('An unexpected error occurred while merging batches: %s') % str(e),
+                level=messages.ERROR
+            )
+            return
+        
         url = reverse(
             'admin:%s_%s_change' % (
-                destination._meta.app_label,
-                destination._meta.model_name
+                parent_batch._meta.app_label,
+                parent_batch._meta.model_name
             ),
-            args=[destination.pk]
+            args=[parent_batch.pk]
         )
 
         msg = format_html(
             _('Batches were successfully merged into <a href="{}">batch {}</a>.'),
             url,
-            destination.ooid
+            parent_batch.ooid
         )
 
         self.message_user(request, msg, level=messages.SUCCESS)
 
-    @admin.action(description='Add batches to an existing merged batch.')
+    @admin.action(description=_('Merge batches to an existing batch group.'))
     def action_merge_into_existing_batch(self, request, queryset):
         if queryset.count() < 2:
             self.message_user(
@@ -684,14 +683,22 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             children__isnull=False
         ).distinct()
 
-        if possible_parents.count() != 1:
+        if possible_parents.count() == 0:
+            self.message_user(
+                request,
+                _('You must select exactly one merged batch (a batch that already has batches merged into) as the destination.'),
+                level=messages.ERROR
+            )
+            return
+
+        if possible_parents.count() > 1:
             self.message_user(
                 request,
                 _('Only one merged batch can be selected as destination, but multiple were found.'),
                 level=messages.ERROR
             )
             return
-
+        
         parent = possible_parents.first()
         children_to_add = qs.exclude(pk=parent.pk)
 
@@ -699,21 +706,20 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         try:
             Batch.validate_add_batches_to_existing_merge(parent, children_to_add)
         except ValidationError as e:
-            self.message_user(request, e.message, level=messages.ERROR)
+            self.message_user(
+                request,
+                _('Validation error: %s') % e.message,
+                level=messages.ERROR
+            )
             return
 
         # Unir lotes al lote existente dentro de una transacción
         try:
-            with transaction.atomic():
-                for batch in children_to_add:
-                    batch.parent = parent
-                    batch.parent = parent
-                    batch.status = 'ready'
-                    batch.save()
+            Batch.add_batches_to_merge(parent, children_to_add)
         except Exception as e:
             self.message_user(
                 request,
-                _('An error occurred while merging batches: %s') % str(e),
+                _('An error occurred while saving batches: %s') % str(e),
                 level=messages.ERROR
             )
             return
@@ -731,159 +737,52 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
             parent.ooid)
         self.message_user(request, msg, level=messages.SUCCESS)
 
+    @admin.action(description=_('Unmerge all batches from this parent'))
+    def action_unmerge_all_batches(self, request, queryset):
+        if queryset.count() != 1:
+            self.message_user(
+                request,
+                _('Please select only one parent batch to unmerge.'),
+                level=messages.WARNING
+            )
+            return
+        parent_batch = queryset.first()
+        try:
+            Batch.unmerge_all_children(parent_batch)
+            self.message_user(
+                request,
+                _('All child batches of batch %(ooid)s were successfully unmerged.') % {'ooid': parent_batch.ooid},
+                level=messages.SUCCESS
+            )
+        except ValidationError as e:
+            self.message_user(
+                request,
+                e.message,
+                level=messages.ERROR
+            )
+    
+    @admin.action(description=_('Unmerge selected batches from parent.'))
+    def action_unmerge_selected_batches(self, request, queryset):
+        try:
+            Batch.unmerge_selected_children(queryset)
+            ooids = ', '.join(str(batch.ooid) for batch in queryset)
+            self.message_user(
+                request,
+                _('The following batches were successfully unmerged: %(ooids)s.') % {'ooids': ooids},
+                level=messages.SUCCESS
+            )
+        except ValidationError as e:
+            self.message_user(
+                request,
+                e.message,
+                level=messages.ERROR
+            )
+
     def generate_actions_buttons(self, obj):
         pass
     generate_actions_buttons.short_description = _('Actions')
     generate_actions_buttons.allow_tags = True
-
-
-    def display_available_for_processing(self, obj):
-        if obj.is_child:
-            return ''
-        return _boolean_icon(obj.is_available_for_processing)
-    display_available_for_processing.short_description = _('Available for Processing')
-    display_available_for_processing.admin_order_field = 'is_available_for_processing'
-
-    def get_scheduleharvest_ooid(self, obj):
-        batches = (
-            obj.children.select_related('incomingproduct__scheduleharvest')
-            if obj.is_parent else
-            [obj])
-        ooids = {
-            str(sh.ooid)
-            for b in batches
-            if (incoming := getattr(b, 'incomingproduct', None))
-            and (sh := getattr(incoming, 'scheduleharvest', None))
-            and sh.ooid is not None
-        }
-        return ", ".join(sorted(ooids))
-    get_scheduleharvest_ooid.short_description = _('Harvest')
-    get_scheduleharvest_ooid.admin_order_field = 'incomingproduct__scheduleharvest__ooid'
-
-    def get_scheduleharvest_harvest_date(self, obj):
-        if obj.is_parent:
-            fechas = obj.children.filter(
-                incomingproduct__scheduleharvest__harvest_date__isnull=False
-            ).values_list(
-                'incomingproduct__scheduleharvest__harvest_date', flat=True
-            )
-            unique_dates = sorted({f for f in fechas})
-            if not unique_dates:
-                date_str = ''
-            else:
-                salida = [
-                    date_format(f, format='DATE_FORMAT', use_l10n=True)
-                    for f in unique_dates
-                ]
-                date_str = salida[0] if len(salida) == 1 else ", ".join(salida)
-        else:
-            incoming = getattr(obj, 'incomingproduct', None)
-            sh = getattr(incoming, 'scheduleharvest', None) if incoming else None
-            if sh and sh.harvest_date:
-                date_str = date_format(sh.harvest_date,
-                                       format='DATE_FORMAT',
-                                       use_l10n=True)
-            else:
-                date_str = ''
-
-        # 2) Devuelve siempre envuelto en un span de ancho mínimo
-        return format_html(
-            '<span style="display:inline-block; min-width:80px;">{}</span>',
-            date_str
-        )
-
-    get_scheduleharvest_harvest_date.short_description = _("Schedule Harvest Date")
-    get_scheduleharvest_harvest_date.admin_order_field = 'incomingproduct__scheduleharvest__harvest_date'
-
-    def get_scheduleharvest_product(self, obj):
-        batches = (
-        obj.children.select_related('incomingproduct__scheduleharvest__product')
-        if obj.is_parent else
-        [obj])
-        products = {
-            str(sh.product)
-            for b in batches
-            if (incoming := getattr(b, 'incomingproduct', None))
-            and (sh := getattr(incoming, 'scheduleharvest', None))
-            and sh.product
-        }
-        return next(iter(products), '')
-    get_scheduleharvest_product.short_description = _('Product')
-    get_scheduleharvest_product.admin_order_field = 'incomingproduct__scheduleharvest__product'
-
-    def get_scheduleharvest_orchards(self, obj):
-        batches = (
-            obj.children.select_related('incomingproduct__scheduleharvest__orchard')
-            if obj.is_parent else
-            [obj]
-        )
-        names = {
-            str(orch)
-            for b in batches
-            if (incoming := getattr(b, 'incomingproduct', None))
-            and (sh := getattr(incoming, 'scheduleharvest', None))
-            and (orch := sh.orchard)
-        }
-        return ", ".join(sorted(names))
-    get_scheduleharvest_orchards.short_description = _('Orchards')
-    get_scheduleharvest_orchards.admin_order_field = 'incomingproduct__scheduleharvest__orchard'
-
-    def get_scheduleharvest_product_provider(self, obj):
-        batches = (
-        obj.children.select_related('incomingproduct__scheduleharvest__product_provider')
-        if obj.is_parent else
-        [obj])
-        product_provider = {
-            str(sh.product_provider)
-            for b in batches
-            if (incoming := getattr(b, 'incomingproduct', None))
-            and (sh := getattr(incoming, 'scheduleharvest', None))
-            and sh.product_provider
-        }
-        return next(iter(product_provider), '')
-    get_scheduleharvest_product_provider.short_description = _('Product Provider')
-    get_scheduleharvest_product_provider.admin_order_field = 'incomingproduct__scheduleharvest__product_provider'
-
-    def get_ingress_weight_display(self, obj):
-        return f"{obj.ingress_weight:.2f}"
-    get_ingress_weight_display.short_description = _('Ingress weight')
-
-    def get_available_weight_display(self, obj):
-        return f'{obj.available_weight:,.2f}'
-    get_available_weight_display.short_description = _('Available Weight')
-
-    def get_scheduleharvest_product_variety(self, obj):
-        batches = (
-        obj.children.select_related('incomingproduct__scheduleharvest__product_variety')
-        if obj.is_parent else
-        [obj])
-        products = {
-            str(sh.product_variety)
-            for b in batches
-            if (incoming := getattr(b, 'incomingproduct', None))
-            and (sh := getattr(incoming, 'scheduleharvest', None))
-            and sh.product_variety
-        }
-        return next(iter(products), '')
-    get_scheduleharvest_product_variety.short_description = _('Product Variety')
-    get_scheduleharvest_product_variety.admin_order_field = 'incomingproduct__scheduleharvest__product'
-
-    def get_scheduleharvest_product_phenology(self, obj):
-        batches = (
-        obj.children.select_related('incomingproduct__scheduleharvest__product_phenologies')
-        if obj.is_parent else
-        [obj])
-        products = {
-            str(sh.product_phenologies)
-            for b in batches
-            if (incoming := getattr(b, 'incomingproduct', None))
-            and (sh := getattr(incoming, 'scheduleharvest', None))
-            and sh.product_phenologies
-        }
-        return next(iter(products), '')
-    get_scheduleharvest_product_phenology.short_description = _('Product Phenology')
-    get_scheduleharvest_product_phenology.admin_order_field = 'incomingproduct__scheduleharvest__product'
-
+    
     def display_created_at(self, obj):
         s = date_format(obj.created_at, format='DATETIME_FORMAT', use_l10n=True)
         return format_html(
@@ -894,8 +793,7 @@ class BatchAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     display_created_at.admin_order_field = 'created_at'
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/batch/incoming_product_for_batch.js',
-              'js/admin/forms/packhouses/receiving/batch/batch_operation.js',)
+        js = ('js/admin/forms/packhouses/receiving/batch/batch_operation.js',)
 
 
 # Inocuidad
