@@ -43,7 +43,9 @@ table.header-table .center h1 {
 
 .row-four {
     grid-template-columns: repeat(4, 1fr);
+    margin: 1px;
 }
+
 
 .row p {
     margin: 0;
@@ -202,15 +204,13 @@ table.header-table .center h1 {
   grid-template-columns: 25% 25% 25% 25%;
   border: 1px solid red;
   margin-bottom: 10px;
-  padding: 5px 10px;
   gap: 4px;
   break-inside: avoid;
   page-break-inside: avoid;
 }
 .row-four2 p {
   margin: 0;
-  padding: 2px;
-  font-size: 12px;  /* para evitar colapso visual */
+  font-size: 12px;  
 }
 
 .footer-space-table {
@@ -218,23 +218,27 @@ table.header-table .center h1 {
     font-size: 5pt;
     border-collapse: collapse;
 }
-
+.avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
 </style>
 
 {% for crew in scheduleharvestharvestingcrewinline %}
 <table class="folio-table">
     <tr>
         <td style="width: 15%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest No." %}</td>
-        <td style="width: 30%; color:#b30000; background-color: #fff4cc;"> {{ harvest.ooid }}</td>
+        <td style="width: 20%; color:#b30000; background-color: #fff4cc;"> {{ harvest.ooid }}</td>
+        <td style="width: 65%;"></td>
     </tr>
     <tr>
-        <td style="width: 15%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest Date" %}</td>
-        <td style="width: 30%; color:#b30000; background-color: #fff4cc;"> {{ harvest.harvest_date }}</td>
+        <td style="width: 15%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest Schedule Date" %}</td>
+        <td style="width: 20%; color:#b30000; background-color: #fff4cc;"> {{ harvest.harvest_date }}</td>
     </tr>
     <tr>
         <td style=" width: 15%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Folio" %}</td>
-        <td style=" width: 30%; color: #b30000; background-color: #fff4cc;"> {% translate "N°" %} {{ crew.id }}</td>
-        <td ></td>
+        <td style=" width: 20%; color: #b30000; background-color: #fff4cc;"> {{ harvest.ooid }}</td>
+        
     </tr>
 </table>
 
@@ -261,26 +265,40 @@ table.header-table .center h1 {
      <div class="row row-four">
         <p><strong>{% translate "Registery Code:" %} </strong>{{harvest.orchard.code}}</p>
         <p><strong>{% translate "Product Variety:" %} </strong>{{harvest.product_variety}}</p>
-        <p><strong>{% translate "Product Producer:" %} </strong>{{harvest.orchard.producer}}</p>
+        <p><strong>{% translate "Product Producer:" %} </strong>{{ harvest.orchard.producer }}</p>
         <p><strong>{% translate "Crew:" %}</strong> {{ crew.harvesting_crew }}</p>
      </div>
 
      <div class="row row-four">
         <p>&nbsp;</p>
         <p><strong>{% translate "Product Phenology:" %} </strong>{{harvest.product_phenologies}}</p>
-        <p><strong>{% translate "Product Ripeness:" %} </strong>{{harvest.product_ripeness}}</p>
-        <p>&nbsp;</p>
+        <p><strong>{% translate "Product Provider:" %} </strong>{{harvest.product_provider}}</p>
+        <p><strong>{% translate "Scheduling Type:" %}</strong>
+            {% if harvest.is_scheduled %}
+                {% translate "Scheduled Harvest" %}
+            {% else %}
+                {% translate "Unscheduled Harvest" %}
+            {% endif %}
+        </p>
+
      </div>
 
       <div class="row row-four">
         <p><strong>{% translate "Safety Reg. Date:" %} </strong>{{harvest.orchard.safety_authority_registration_date}}</p>
         <p><strong>{% translate "Product Category:" %}</strong>{{harvest.orchard.get_category_display}}</p>
-        <p><strong>{% translate "Harvest Size:" %}</strong> {{harvest.product_harvest_size_kind}}</p>
+        <p><strong>{% translate "Product Ripeness:" %}</strong>
+            {% if harvest.product_ripeness %}
+                {{ harvest.product_ripeness }}
+            {% else %}
+                
+            {% endif %}
+        </p>
         <p><strong>{% translate "Creation Date:" %}</strong> {{harvest.created_at}}</p>
       </div>
 
       <div class="row row-four">
-        <p style="grid-column: span 3;"><strong>{% translate "Orchard Location:" %} </strong>{{harvest.orchard.district.name}}, {{harvest.orchard.city.name}}, {{harvest.orchard.state.name}}</p>
+        <p style="grid-column: span 2;"><strong>{% translate "Orchard Location:" %} </strong>{{harvest.orchard.district.name}}, {{harvest.orchard.city.name}}, {{harvest.orchard.state.name}}</p>
+        <p><strong>{% translate "Harvest Size:" %}</strong> {{harvest.product_harvest_size_kind}}</p>
         <p>&nbsp;</p>
       </div>
 
@@ -751,7 +769,7 @@ table.header-table .center h1 {
     </div>
 </div>
 
-<div class="signature_section">
+<div class="signature_section avoid-break">
     <div class="observations">
         <h3 style="margin-bottom: 4px;">{% translate "Observations" %}</h3>
         <p style="margin-top:-5px;"></p>

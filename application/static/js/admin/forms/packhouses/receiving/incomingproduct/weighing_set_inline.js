@@ -23,19 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
         $field.val(selected);
     }
 
-  const handleProviderChange = ($provider, $crew, selectedCrew = null) => {
-    const providerId = $provider.val();
-
-    if (providerId) {
-      const url = `/rest/v1/catalogs/harvesting-crew/?provider=${providerId}`;
-      fetchOptions(url).then(crews => {
-        updateFieldOptions($crew, crews, selectedCrew);
-      });
-    } else {
-      updateFieldOptions($crew, [], null);
-    }
-  };
-
   const fetchContainerTare = async id => {
     if (!id) return 0;
     try {
@@ -93,14 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const $provider = $weighing_set.find('select[name$="-provider"]');
     const $crew = $weighing_set.find('select[name$="-harvesting_crew"]');
     const selelectCrew = $crew.val();
-
-    if ($provider.val()) {
-      handleProviderChange($provider, $crew, selelectCrew);
-    } else {
-      updateFieldOptions($crew, [], null);
-    }
-
-    $provider.on('change', () => handleProviderChange($provider, $crew));
 
     $weighing_set.on('input', 'input[name$="-quantity"]', () => {
       calculateWeighingSetTare($weighing_set);
@@ -179,6 +158,153 @@ document.addEventListener('DOMContentLoaded', () => {
       const headerCell = table.querySelector(`thead th:nth-child(${deleteColumnIndex + 1})`);
       if (headerCell) headerCell.style.display = 'none';
     }
+  });
+
+  // Guarda las opciones originales de cada select existente de WeighingSet
+  function storeOriginalOptions() {
+      const selects = document.querySelectorAll(
+          'select[id^="id_weighingset_set-"]:not([id*="__prefix__"])[id$="-harvesting_crew"]'
+      );
+      selects.forEach(select => {
+          if (!select.dataset.originalOptions) {
+              select.dataset.originalOptions = select.innerHTML;
+          }
+      });
+  }
+
+  // Restaura las opciones originales en un elemento select
+  function restoreOriginalOptions(select) {
+      if (select.dataset.originalOptions) {
+          select.innerHTML = select.dataset.originalOptions;
+      }
+  }
+
+  // Reinicializa Select2 para un elemento select, asegurando que se conserve el valor actual
+  function reinitializeSelect2(selectElement, currentValue) {
+      const $select = $(selectElement);
+
+      if ($select.data('select2')) {
+          $select.select2('destroy');
+      }
+
+      if (!$select.find('option[value=""]').length) {
+          $select.prepend(new Option("---------", "", false, false));
+      }
+      $select.val(currentValue);
+      $select.select2();
+  }
+
+
+  // Obtiene los IDs de cuadrillas actualmente programadas (excluyendo las marcadas para eliminación)
+  function getScheduledCrewIds() {
+      const selector = 'select[id^="id_scheduleharvest-"][id*="-scheduleharvestharvestingcrew_set-"]:not([id*="__prefix__"])[id$="-harvesting_crew"]';
+      const selects = document.querySelectorAll(selector);
+      const crewIds = [];
+      selects.forEach(select => {
+          const row = select.closest('tr');
+          const deleteCheckbox = row?.querySelector('input[type="checkbox"][id$="DELETE"]');
+          if (deleteCheckbox?.checked) return;
+          const val = select.value;
+          if (val) crewIds.push(val.trim());
+      });
+      return crewIds;
+  }
+
+  // Filtra las opciones de un select de WeighingSet según las cuadrillas permitidas, limpiando la selección si ya no es válida
+  function filterSelectOptions(selectElement, allowedCrewIds) {
+      if (!selectElement) return;
+      const $select = $(selectElement);
+
+      const currentValue = $select.val();
+
+      restoreOriginalOptions(selectElement);
+
+      $select.find('option').each(function () {
+          const $option = $(this);
+          const val = $option.attr('value');
+          if (val !== "" && !allowedCrewIds.includes(val)) {
+              $option.remove();
+          }
+      });
+
+      const isStillValid = currentValue && $select.find(`option[value="${currentValue}"]`).length > 0;
+      if (!isStillValid) {
+          $select.val("");
+      } else {
+          $select.val(currentValue);
+      }
+      reinitializeSelect2(selectElement, $select.val());
+  }
+
+  // Aplica el filtrado a todos los selects de cuadrillas en WeighingSet
+  function applyFiltering() {
+      storeOriginalOptions();
+      const allowedCrewIds = getScheduledCrewIds();
+      const allSelects = document.querySelectorAll(
+          'select[id^="id_weighingset_set-"]:not([id*="__prefix__"])[id$="-harvesting_crew"]'
+      );
+      allSelects.forEach(select => {
+          filterSelectOptions(select, allowedCrewIds);
+      });
+  }
+
+  // Maneja la lógica al agregar nuevos formularios inline de WeighingSet
+  document.addEventListener('formset:added', function (event) {
+      const newForm = event.detail?.form || event.target;
+      if (!newForm) {
+          console.warn("⚠️ formset:added event contains no form");
+          return;
+      }
+      const select = newForm.querySelector('select[name$="-harvesting_crew"]');
+      if (select && !select.dataset.originalOptions) {
+          select.dataset.originalOptions = select.innerHTML;
+      }
+      setTimeout(() => {
+          applyFiltering();
+      }, 100);
+  });
+
+  // Dispara el filtrado ante cualquier cambio relevante en los campos del formulario
+  document.addEventListener('change', function (event) {
+      const element = event.target;
+      if (
+          element.matches('input[type="checkbox"][id$="DELETE"]') ||
+          element.matches('select[id*="-harvesting_crew"]') ||
+          element.matches('select[id*="-provider"]')
+      ) {
+          setTimeout(applyFiltering, 100);
+      }
+  });
+
+  // Observa cambios en el DOM de los inlines de cuadrillas y activa el filtrado
+  const crewInlineContainer = document.querySelector('[id$="-scheduleharvestharvestingcrew_set-group"]');
+  if (crewInlineContainer) {
+      const crewObserver = new MutationObserver(mutations => {
+          let shouldUpdate = false;
+          for (const mutation of mutations) {
+              if (
+                  (mutation.type === 'childList' && (mutation.addedNodes.length || mutation.removedNodes.length)) ||
+                  (mutation.type === 'attributes' && (mutation.target.matches('select') || mutation.target.matches('input[type="checkbox"]')))
+              ) {
+                  shouldUpdate = true;
+                  break;
+              }
+          }
+          if (shouldUpdate) {
+              setTimeout(applyFiltering, 100);
+          }
+      });
+      crewObserver.observe(crewInlineContainer, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['value', 'checked']
+      });
+  }
+
+  // Aplica el filtrado inicial al cargar la página
+  window.addEventListener("load", () => {
+      setTimeout(applyFiltering, 100);
   });
 
   });

@@ -161,14 +161,14 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.N
 @admin.register(ScheduleHarvest)
 class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     form = ScheduleHarvestForm
-    fields = ('ooid', 'status', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
+    fields = ('ooid', 'status', 'is_scheduled', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
               'product_variety', 'product_phenologies', 'product_ripeness', 'product_harvest_size_kind', 'orchard',
               'market', 'weight_expected', 'weighing_scale', 'meeting_point', 'comments' )
     list_display = ('ooid', 'harvest_date', 'category', 'product_provider',
                     'get_orchard_name', 'get_orchard_code', 'get_orchard_product_producer',
                     'product', 'get_orchard_category', 'product_variety', 'product_phenologies', 'product_ripeness', 'market',
                     'weight_expected', 'status',  'generate_actions_buttons')
-    list_filter = ('category', 'product_provider','gatherer', 'maquiladora', 'status' )
+    list_filter = ('product_provider', 'category', 'gatherer', 'maquiladora', 'status',)
     readonly_fields = ('ooid', 'status')
     inlines = [HarvestCuttingHarvestingCrewInline, HarvestCuttingVehicleInline]
 

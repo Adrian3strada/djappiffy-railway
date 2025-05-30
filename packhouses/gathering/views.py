@@ -42,29 +42,25 @@ def harvest_order_pdf(request, harvest_id):
     # Obtener el registro
     harvest = get_object_or_404(ScheduleHarvest, pk=harvest_id)
 
-    # Obtener Datos de la Organización
-    if hasattr(request, 'organization'):
-        organization = request.organization.organizationprofile.name
-        add =  request.organization.organizationprofile.address
-        organization_profile = request.organization.organizationprofile
-        def get_name(model, obj_id, default):
-            if obj_id:
-                try:
-                    return model.objects.get(id=obj_id).name
-                except model.DoesNotExist:
-                    return f"{default} does not exist"
-            return f"{default} not specified"
+    organization_profile = harvest.orchard.organization.organizationprofile
+    organization = organization_profile.name
+    add = organization_profile.address
 
-        # Obtener los nombres de las regiones
-        city_name = get_name(SubRegion, organization_profile.city_id, "Ciudad")
-        country_name = get_name(Country, organization_profile.country_id, "Country")
-        state_name = get_name(Region, organization_profile.state_id, "State")
-        district_name = get_name(City, organization_profile.district_id, "District")
-        if organization_profile.logo:
-            logo_url = organization_profile.logo.url
-        else:
-            logo_url = None
-    pdf_title = capfirst(ScheduleHarvest._meta.verbose_name)
+    def get_name(model, obj_id, default):
+        if obj_id:
+            try:
+                return model.objects.get(id=obj_id).name
+            except model.DoesNotExist:
+                return f"{default} does not exist"
+        return f"{default} not specified"
+
+    city_name = get_name(SubRegion, organization_profile.city_id, "City")
+    country_name = get_name(Country, organization_profile.country_id, "Country")
+    state_name = get_name(Region, organization_profile.state_id, "State")
+    district_name = get_name(City, organization_profile.district_id, "District")
+    logo_url = organization_profile.logo.url if organization_profile.logo else None
+
+    pdf_title = _("Schedule Harvest Order")
     packhouse_name = organization
     company_address = f"{add}, {district_name}, {city_name}, {state_name}, {country_name}"
     date = datetime.now()
@@ -91,25 +87,15 @@ def harvest_order_pdf(request, harvest_id):
         @page {
             size: letter portrait;
         }''')
-    
-    qr_data = (
-        f"Orchard: {harvest.orchard}\n"
-        f"Registry Code: {harvest.orchard.code}\n"
-        f"Product: {harvest.product}\n"
-        f"Product Variety: {harvest.product_variety}\n"
-        f"Product Phenology: {harvest.product_phenologies}\n"
-        f"Product Provider: {harvest.product_provider}\n"
-        f"Market: {harvest.market}\n"
-        f"Product Category: {harvest.orchard.get_category_display}\n"
-        f"Location: {harvest.orchard.district.name}, {harvest.orchard.city.name}, {harvest.orchard.state.name}\n"
-        f"Product Ripeness: {harvest.product_ripeness}\n"
-        f"Weight Expected: {harvest.weight_expected} {harvest.product.measure_unit_category}\n"
-        f"Harvest Size: {harvest.product_harvest_size_kind}\n"
+
+    report_url = request.build_absolute_uri(
+        reverse("harvest_order_pdf", args=[harvest.pk])
     )
+    qr_data = report_url
     qr_image = generate_qr_base64(qr_data)
 
     # Renderizar el template HTML
-    html_string = render_to_string('admin/packhouses/schedule-harvest-report.html', {
+    html_string = render_to_string('admin/packhouses/gathering/schedule-harvest-report.html', {
         'packhouse_name': packhouse_name,
         'company_address': company_address,
         'pdf_title': pdf_title,
@@ -161,7 +147,7 @@ def good_harvest_practices_format(request, harvest_id):
             return f"{default} not specified"
 
         # Obtener los nombres de las regiones
-        city_name = get_name(SubRegion, organization_profile.city_id, "Ciudad")
+        city_name = get_name(SubRegion, organization_profile.city_id, "City")
         country_name = get_name(Country, organization_profile.country_id, "Country")
         state_name = get_name(Region, organization_profile.state_id, "State")
         district_name = get_name(City, organization_profile.district_id, "District")
@@ -175,7 +161,6 @@ def good_harvest_practices_format(request, harvest_id):
     date = datetime.now()
     year = str(date.year)
 
-    # Obtener los inlines relacionados
     # Filtrar los ScheduleHarvestHarvestingCrew relacionados con el harvest específico
     scheduleharvestharvestingcrewinline = ScheduleHarvestHarvestingCrew.objects.filter(harvest_cutting=harvest).select_related('harvesting_crew')
     # Obtener los IDs de los HarvestingCrew asociados
@@ -185,14 +170,7 @@ def good_harvest_practices_format(request, harvest_id):
     harvestingcrew = HarvestingCrew.objects.filter(pk__in=harvestingcrew_ids)
 
     # Filtrar vehiculos por cuadrillas
-    # Recolectar todos los providers únicos desde los crews
-    
     vehicles = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest)
-
-    print(f"Vehículos encontrados: {vehicles.count()}")
-    for v in vehicles:
-        print(f"  ➤ ID SHV: {v.id} | Vehículo: {v.vehicle.name} | Placa: {v.vehicle.license_plate}")
-
 
     # CSS
     base_url = request.build_absolute_uri('/')
@@ -212,7 +190,7 @@ def good_harvest_practices_format(request, harvest_id):
     logger.debug(f"Orchard certifications: {orchard_certifications}")
 
     # Renderizar el template HTML
-    html_string = render_to_string('admin/packhouses/safety-guidelines-report.html', {
+    html_string = render_to_string('admin/packhouses/gathering/safety-guidelines-report.html', {
         'packhouse_name': packhouse_name,
         'company_address': company_address,
         'pdf_title': pdf_title,

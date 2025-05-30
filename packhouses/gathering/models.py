@@ -55,11 +55,8 @@ class ScheduleHarvest(models.Model):
     status = models.CharField(max_length=8, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open')
     comments = models.TextField(verbose_name=_('Comments'), blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
-    organization = models.ForeignKey(
-        Organization,
-        on_delete=models.PROTECT,
-        verbose_name=_('Organization'),
-    )
+    is_scheduled = models.BooleanField(default=True, verbose_name=_("Was it scheduled?"))
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT,verbose_name=_('Organization'),)
     incoming_product = models.OneToOneField(IncomingProduct, on_delete=models.SET_NULL, null=True, blank=True)
 
     @property
@@ -115,22 +112,10 @@ class ScheduleHarvest(models.Model):
         ]
 
 class ScheduleHarvestHarvestingCrew(models.Model):
-    harvest_cutting = models.ForeignKey(
-        ScheduleHarvest,
-        verbose_name=_("Schedule Harvest"),
-        on_delete=models.CASCADE,
-    )
-    provider = models.ForeignKey(
-        Provider,
-        verbose_name=_('Harvesting Crew Provider'),
-        on_delete=models.CASCADE,
-    )
-    harvesting_crew = models.ForeignKey(
-        HarvestingCrew,
-        verbose_name=_("Harvesting Crew"),
-        on_delete=models.CASCADE,
-    )
-
+    harvest_cutting = models.ForeignKey(ScheduleHarvest, verbose_name=_("Schedule Harvest"), on_delete=models.CASCADE,)
+    provider = models.ForeignKey(Provider, verbose_name=_('Harvesting Crew Provider'), on_delete=models.CASCADE,)
+    harvesting_crew = models.ForeignKey(HarvestingCrew, verbose_name=_("Harvesting Crew"), on_delete=models.CASCADE,)
+    
     def __str__(self):
         return f"{self.provider.name} : {self.harvesting_crew.name}"
 

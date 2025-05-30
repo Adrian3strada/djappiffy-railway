@@ -115,6 +115,10 @@ class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
             )
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_crew_inline.js',)
+
 
 class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = ScheduleHarvestVehicle
@@ -183,7 +187,7 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     model = ScheduleHarvest
     extra = 0
     inlines = [ScheduleHarvestHarvestingCrewInline, ScheduleHarvestVehicleInline ]
-    readonly_fields = ('ooid', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
+    readonly_fields = ('ooid','is_scheduled', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
     can_delete = False
     can_add = False
     show_title = False
@@ -196,7 +200,7 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
 
     def get_fields(self, request, obj=None):
         fields = [
-            'ooid', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
+            'ooid', 'is_scheduled', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
             'product_phenologies', 'product_harvest_size_kind', 'orchard', 'market',
             'weight_expected', 'comments'
         ]
@@ -263,7 +267,7 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
 
     class Media:
         js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',
-              'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js')
+              'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js', )
 
 # Inlines para los pallets
 class WeighingSetContainerInline(nested_admin.NestedTabularInline):
@@ -305,7 +309,7 @@ class WeighingSetContainerInline(nested_admin.NestedTabularInline):
 class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = WeighingSet
     inlines = [WeighingSetContainerInline]
-    fields = ('ooid', 'provider', 'harvesting_crew', 'gross_weight', 'total_containers', 'container_tare', 
+    fields = ('ooid', 'harvesting_crew', 'gross_weight', 'total_containers', 'container_tare', 
               'platform_tare', 'net_weight',)
     extra = 0
     form = WeighingSetForm
@@ -343,13 +347,6 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
         organization = None
         if hasattr(request, 'organization'):
             organization = request.organization
-
-        if db_field.name == "provider":
-            kwargs["queryset"] = Provider.objects.filter(
-                organization=organization,
-                is_enabled=True,
-                category='harvesting_provider'
-            )
 
         if db_field.name == "harvesting_crew":
             kwargs["queryset"] = HarvestingCrew.objects.filter(
@@ -486,10 +483,10 @@ class IncomingProductAdmin(IncomingProductMetricsMixin, ByOrganizationAdminMixin
 class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = ScheduleHarvest
     extra = 0
-    fields = ('ooid', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
+    fields = ('ooid', 'is_scheduled', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
         'product_phenologies', 'product_harvest_size_kind', 'orchard', 'market',
         'weight_expected', 'comments')
-    readonly_fields = ('ooid', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
+    readonly_fields = ('ooid', 'is_scheduled', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
     can_delete = False
     can_add = False
     custom_title = _("Schedule Harvest Information")
@@ -559,7 +556,9 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
 
     class Media:
         js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',
-              'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js')
+              'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js',
+              'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_crew_inline.js')
+        
 
 class IncomingProductInline(IncomingProductMetricsMixin, CustomNestedStackedInlineMixin, admin.StackedInline):
     model = IncomingProduct
@@ -793,7 +792,8 @@ class BatchAdmin(ByOrganizationAdminMixin, BatchDisplayMixin, nested_admin.Neste
     display_created_at.admin_order_field = 'created_at'
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/batch/batch_operation.js',)
+        js = ('js/admin/forms/packhouses/receiving/batch/batch_operation.js',
+              'js/admin/forms/packhouses/receiving/batch/weighingset_inline_for_batch.js',)
 
 
 # Inocuidad

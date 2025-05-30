@@ -190,8 +190,6 @@ class IncomingProductForm(forms.ModelForm):
 
             # Solo validar si es una nueva pesada (sin pk asignado)
             if not existing_id:
-                if not self.data.get(prefix + 'provider', '').strip():
-                    raise ValidationError(_(f'Weighing Set {i + 1} is missing a provider.'))
                 if not self.data.get(prefix + 'harvesting_crew', '').strip():
                     raise ValidationError(_(f'Weighing Set {i + 1} is missing a harvesting crew.'))
 
