@@ -1,12 +1,12 @@
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from organizations.models import Organization
-
 from ..catalogs.models import Market, ProductSize, Packaging, ProductPackaging, ProductMarketClass, ProductRipeness, \
-    ProductPhenologyKind
+    ProductPhenologyKind, Product
 from ..hrm.models import Employee
 from ..receiving.models import Batch
 from django.utils.translation import gettext_lazy as _
+from common.settings import STATUS_CHOICES
 import uuid
 
 # Create your models here.
@@ -88,10 +88,54 @@ class Packing(models.Model):
 
 class PackingPallet(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_('OOID'), null=True, blank=True)
-    packing = models.ForeignKey(Packing, verbose_name=_('Packing'), on_delete=models.CASCADE)
-    pallet_number = models.CharField(max_length=50, verbose_name=_('Pallet number'))
-    quantity = models.FloatField(verbose_name=_('Quantity'), validators=[MinValueValidator(0.01)])
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
+    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
+    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
+    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
+    status = models.CharField(max_length=20, verbose_name=_('Status'), choices=STATUS_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    # cajas -- @property / invref
+    # kg -- @property / invref
+
+    def __str__(self):
+        return f"{self.packing} - {self.pallet_number} - {self.quantity}"
+
+    def save(self, *args, **kwargs):
+        if self.ooid is None:
+            with transaction.atomic():
+                last = (PackingPallet.objects.filter(organization=self.organization).order_by('-ooid').first())
+                self.ooid = (last.ooid + 1) if last else 1
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('Packing Pallet')
+        verbose_name_plural = _('Packing Pallets')
+
+
+
+
+class PackingPackage(models.Model):
+    ooid = models.PositiveIntegerField(verbose_name=_('OOID'), null=True, blank=True)
+
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
+    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
+    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
+    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
+
+    product_weight = models.FloatField(verbose_name=_('Product weight'), validators=[MinValueValidator(0.01)])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+    package_quantity = models.PositiveIntegerField(verbose_name=_('Package quantity'), validators=[MinValueValidator(0.01)])
+    packing_pallet = models.ForeignKey(PackingPallet, verbose_name=_('Packing Pallet'), on_delete=models.PROTECT, null=True, blank=True)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+    # cajas -- @property / invref
+    # kg -- @property / invref
 
     def __str__(self):
         return f"{self.packing} - {self.pallet_number} - {self.quantity}"
