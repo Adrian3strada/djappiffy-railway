@@ -652,7 +652,6 @@ class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
     def __str__(self):
         return f"{self.code} - {self.name}"
 
-
     def save(self, *args, **kwargs):
         if self.producer:
             self.producer_name = None

@@ -35,6 +35,8 @@ from django.dispatch import receiver
 from decimal import Decimal, ROUND_DOWN
 
 # Create your models here.
+
+
 class ScheduleHarvest(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_("Harvest Number"), null=True, blank=True, unique=True)
     harvest_date = models.DateField(verbose_name=_('Harvest date'), default=datetime.date.today)
@@ -66,7 +68,7 @@ class ScheduleHarvest(models.Model):
         return ScheduleHarvestContainerVehicle.objects.filter(
             harvest_cutting__in=vehicles
         ).aggregate(total=Sum('quantity'))['total'] or 0
-        
+
     def __str__(self):
         return f"{self.ooid}"
 
@@ -115,13 +117,14 @@ class ScheduleHarvestHarvestingCrew(models.Model):
     harvest_cutting = models.ForeignKey(ScheduleHarvest, verbose_name=_("Schedule Harvest"), on_delete=models.CASCADE,)
     provider = models.ForeignKey(Provider, verbose_name=_('Harvesting Crew Provider'), on_delete=models.CASCADE,)
     harvesting_crew = models.ForeignKey(HarvestingCrew, verbose_name=_("Harvesting Crew"), on_delete=models.CASCADE,)
-    
+
     def __str__(self):
         return f"{self.provider.name} : {self.harvesting_crew.name}"
 
     class Meta:
         verbose_name = _('Harvesting Crew')
         verbose_name_plural = _('Harvesting Crews')
+
 
 class ScheduleHarvestVehicle(models.Model):
     harvest_cutting = models.ForeignKey(ScheduleHarvest, verbose_name=_("Harvest Cutting"), on_delete=models.CASCADE,)
@@ -139,10 +142,9 @@ class ScheduleHarvestVehicle(models.Model):
         verbose_name_plural = _('Vehicles')
 
 
-
 class ScheduleHarvestContainerVehicle(models.Model):
     harvest_cutting = models.ForeignKey(ScheduleHarvestVehicle, on_delete=models.CASCADE)
-    harvest_container = models.ForeignKey(Supply, on_delete=models.CASCADE, 
+    harvest_container = models.ForeignKey(Supply, on_delete=models.CASCADE,
                                            limit_choices_to={'kind__category': 'harvest_container'},
                                            verbose_name=_('Harvest Containments'))
     quantity = models.PositiveIntegerField()

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PackerEmployee, PackerLabel, Packing
+from .models import PackerEmployee, PackerLabel, PackingPackage
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html
 from django.urls import path, reverse
@@ -76,8 +76,8 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
         js = ('js/admin.js',)
 
 
-@admin.register(Packing)
-class PackingAdmin(ByOrganizationAdminMixin):
+@admin.register(PackingPackage)
+class PackingPackageAdmin(ByOrganizationAdminMixin):
     list_display = ("batch", "product_market_class", "product_size" )
     search_fields = ("product_market_class__name", "product_size__name")
     list_filter = ("product_market_class__name", "product_size__name")
