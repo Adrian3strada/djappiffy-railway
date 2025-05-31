@@ -1,6 +1,13 @@
  document.addEventListener("DOMContentLoaded", function() {
+
+    document.querySelectorAll("td.original").forEach(row => {
+        row.style.display = "none"; 
+    });
+    document.querySelectorAll("th.original").forEach(row => {
+        row.style.display = "none";  
+    });
+
     const statusField = $('#id_status');
-    const inQuarantinedField = $('#id_is_quarantined');
     const availableForProcessingField = $('#id_is_available_for_processing');
 
     const initialStatus = statusField.val(); 
@@ -28,18 +35,13 @@
 
     function updateFieldsBasedOnBatchStatus(status) {
         if (status == 'open'){
-            enableField(inQuarantinedField);
             availableForProcessingField.prop('checked', false);
             disableField(availableForProcessingField);
         }
         else if (status == 'ready'){
-            disableField(inQuarantinedField);
-            inQuarantinedField.prop('checked', false);
             enableField(availableForProcessingField);
         }
         else if (status == 'canceled' || status == 'closed'){
-            disableField(inQuarantinedField);
-            inQuarantinedField.prop('checked', false);
             disableField(availableForProcessingField);
             availableForProcessingField.prop('checked', false);
         }

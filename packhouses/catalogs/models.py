@@ -638,7 +638,8 @@ class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
     category = models.CharField(max_length=100, verbose_name=_('Product category'),
                                 choices=ORCHARD_PRODUCT_CLASSIFICATION_CHOICES)
     product = models.ManyToManyField(Product, verbose_name=_('Product'), blank=True, )
-    producer = models.ForeignKey(Provider, verbose_name=_('Producer'), on_delete=models.PROTECT)
+    producer = models.ForeignKey(Provider, verbose_name=_('Producer'), on_delete=models.PROTECT, null=True, blank=True)
+    producer_name = models.CharField(max_length=255, verbose_name=_('Producer name'), null=True, blank=True)
     safety_authority_registration_date = models.DateField(verbose_name=_('Safety authority registration date'))
     state = models.ForeignKey(Region, verbose_name=_('State'), on_delete=models.PROTECT)
     city = models.ForeignKey(SubRegion, verbose_name=_('City'), on_delete=models.PROTECT)
@@ -650,6 +651,12 @@ class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
 
     def __str__(self):
         return f"{self.code} - {self.name}"
+
+
+    def save(self, *args, **kwargs):
+        if self.producer:
+            self.producer_name = None
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Orchard')
@@ -663,12 +670,14 @@ class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
 
 class OrchardCertification(models.Model):
     certification_kind = models.ForeignKey(OrchardCertificationKind, verbose_name=_('Orchard certification kind'),
-                                           on_delete=models.PROTECT)
+                                           on_delete=models.PROTECT, null=True, blank=True)
+    certification_kind_name = models.CharField(max_length=255, null=True, blank=True)
     certification_number = models.CharField(max_length=100, verbose_name=_('Certification number'))
     certification_document = models.FileField(upload_to='orchard_certifications/', verbose_name=_('Certification document'))
     expiration_date = models.DateField(verbose_name=_('Expiration date'))
     verifier = models.ForeignKey(OrchardCertificationVerifier, verbose_name=_('Orchard certification verifier'),
-                                 on_delete=models.PROTECT)
+                                 on_delete=models.PROTECT, null=True, blank=True)
+    verifier_name = models.CharField(max_length=255, null=True, blank=True)
     extra_code = models.CharField(max_length=100, verbose_name=_('Extra code'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.CASCADE)

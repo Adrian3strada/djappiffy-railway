@@ -153,6 +153,30 @@ class OrchardSerializer(serializers.ModelSerializer):
         model = Orchard
         fields = '__all__'
 
+    def validate(self, data):
+        producer = data.get('producer')
+        producer_name = data.get('producer_name')
+        if not producer and not producer_name:
+            raise serializers.ValidationError(
+                _("Debe enviar al menos 'producer' o 'producer_name'.")
+            )
+        if producer and producer_name:
+            raise serializers.ValidationError(
+                _("No puede enviar ambos: 'producer' y 'producer_name'.")
+            )
+        return data
+
+    def create(self, validated_data):
+        if validated_data.get('producer'):
+            validated_data['producer_name'] = None
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if instance.producer or validated_data.get('producer'):
+            validated_data['producer_name'] = None
+        return super().update(instance, validated_data)
+
+
 class HarvestingCrewSerializer(serializers.ModelSerializer):
     class Meta:
         model = HarvestingCrew
@@ -166,15 +190,36 @@ class MaquiladoraSerializer(serializers.ModelSerializer):
 
 
 class OrchardCertificationSerializer(serializers.ModelSerializer):
-    expired_text = serializers.SerializerMethodField()
-    certification_kind_name = serializers.CharField(source='certification_kind.name', read_only=True)
-
     class Meta:
         model = OrchardCertification
         fields = '__all__'
 
-    def get_expired_text(self, obj):
-        return _('Expired')
+    def create(self, validated_data):
+        # Preserve 'certification_kind_name' only if 'certification_kind' is not provided
+        if not validated_data.get('certification_kind') and validated_data.get('certification_kind_name'):
+            # 'certification_kind_name' remains unchanged
+            pass
+        else:
+            # Clear 'certification_kind_name' if 'certification_kind' is provided
+            validated_data['certification_kind_name'] = None
+
+        # Preserve 'verifier_name' only if 'verifier' is not provided
+        if not validated_data.get('verifier') and validated_data.get('verifier_name'):
+            # 'verifier_name' remains unchanged
+            pass
+        else:
+            # Clear 'verifier_name' if 'verifier' is provided
+            validated_data['verifier_name'] = None
+
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        # Si ya existe FK, limpia el campo *_name
+        if validated_data.get('certification_kind'):
+            validated_data['certification_kind_name'] = None
+        if validated_data.get('verifier'):
+            validated_data['verifier_name'] = None
+        return super().update(instance, validated_data)
 
 
 class OrchardGeoLocationSerializer(GeoFeatureModelSerializer):
@@ -182,6 +227,17 @@ class OrchardGeoLocationSerializer(GeoFeatureModelSerializer):
         model = OrchardGeoLocation
         fields = '__all__'
         geo_field = 'geom'
+
+    def validate(self, data):
+        geom = data.get('geom')
+        coordinates = data.get('coordinates')
+        file = data.get('file')
+
+        if not geom and not coordinates and not file:
+            raise serializers.ValidationError(
+                _("You must provide at least one of: 'geom', 'coordinates', or 'file'.")
+            )
+        return data
 
 
 class ProductRipenessSerializer(serializers.ModelSerializer):

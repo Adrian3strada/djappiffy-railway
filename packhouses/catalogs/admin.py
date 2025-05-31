@@ -88,6 +88,7 @@ admin.site.unregister(City)
 
 from cities_light.admin import CityAdmin as CLCityAdmin
 from django.contrib.gis.forms import OSMWidget
+from django import forms
 
 
 # @admin.register(City)
@@ -1026,9 +1027,19 @@ class OrchardGeoLocationInline(admin.StackedInline):
         formset.form.base_fields['geom'].widget = OLGoogleMapsSatelliteWidget(attrs={'geom_type': 'MultiPolygon'})
         return formset
 
+      
+class OrchardAdminForm(forms.ModelForm):
+    class Meta:
+        model = Orchard
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['producer'].required = True
 
 @admin.register(Orchard)
 class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
+    form = OrchardAdminForm
     report_function = staticmethod(basic_report)
     resource_classes = [OrchardResource]
     list_display = ('name', 'code', 'producer', 'get_category', 'is_enabled')

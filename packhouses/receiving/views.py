@@ -76,7 +76,7 @@ def weighing_set_report(request, pk):
         headers = [] 
     
     # Excluir los campos no deseados
-    excluded_fields = ['id', 'incoming_product']
+    excluded_fields = ['id', 'incoming_product', 'protected']
     headers = get_model_fields_verbose_names(WeighingSet, excluded_fields=excluded_fields)
 
         

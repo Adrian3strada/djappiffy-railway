@@ -28,14 +28,12 @@ class ProductResource(DehydrationResource, ExportResource):
     product_variety = Field(column_name=_("Variety"), readonly=True)
     product_phenology = Field(column_name=_("Phenology Kind"), readonly=True)
     product_harvest_size = Field(column_name=_("Harvest Size"), readonly=True)
-    product_mass_volume = Field(column_name=_("Mass Volume"), readonly=True)
     product_ripeness = Field(column_name=_("Ripeness"), readonly=True)
     product_pest = Field(column_name=_("Pest"), readonly=True)
     product_diseases = Field(column_name=_("Deseases"), readonly=True)
     product_physical_damage = Field(column_name=_("Physical Damage"), readonly=True)
     product_residues = Field(column_name=_("Residues"), readonly=True)
     product_food_safety_process = Field(column_name=_("Food Safety Process"), readonly=True)
-    product_additional_values = Field(column_name=_("Product Additional Values"), readonly=True)
 
     def __init__(self, export_format=None, **kwargs):
         super().__init__(**kwargs)
@@ -90,16 +88,6 @@ class ProductResource(DehydrationResource, ExportResource):
             return render_html_list(product_harvest_sizes)
         else:
             return ", ".join([phk.name for phk in product_harvest_sizes])
-
-    def dehydrate_product_mass_volume(self, product):
-        product_mass_volumes = product.productmassvolumekind_set.filter(is_enabled=True)
-        if not product_mass_volumes.exists():
-            return ' '
-        if self.export_format == 'pdf':
-            product_mass_volumes = [pmv.name for pmv in product_mass_volumes]
-            return render_html_list(product_mass_volumes)
-        else:
-            return ", ".join([pmv.name for pmv in product_mass_volumes])
 
     def dehydrate_product_ripeness(self, product):
         product_ripeness = product.productripeness_set.filter(is_enabled=True)
@@ -163,23 +151,12 @@ class ProductResource(DehydrationResource, ExportResource):
             product_food_safety_process = ", ".join([str(pr.procedure) for pr in product_food_safety_process])
             return product_food_safety_process
 
-    def dehydrate_product_additional_values(self, product):
-        product_additional_values = product.productadditionalvalue_set.all()
-        if not product_additional_values.exists():
-            return ''
-        if self.export_format == 'pdf':
-            product_additional_values = [f"{pav.acceptance_report} ({date_format(pav.created_at)})" for pav in product_additional_values]
-            return render_html_list(product_additional_values)
-        else:
-            product_additional_values = ", ".join([f"{pav.acceptance_report} ({date_format(pav.created_at)})" for pav in product_additional_values])
-            return product_additional_values
-
     class Meta:
         model = Product
         exclude = default_excluded_fields
         export_order = ('id', 'kind', 'name', 'measure_unit_category', 'markets', 'product_managment_cost', 'product_class',  'product_variety',
-                        'product_phenology', 'product_harvest_size', 'product_mass_volume', 'product_ripeness', 'product_pest', 'product_diseases', 
-                        'product_physical_damage', 'product_residues', 'product_food_safety_process', 'product_additional_values', 'is_enabled')
+                        'product_phenology', 'product_harvest_size', 'product_ripeness', 'product_pest', 'product_diseases', 
+                        'product_physical_damage', 'product_residues', 'product_food_safety_process', 'is_enabled')
 
 class ProductSizeResource(DehydrationResource, ExportResource):
     class Meta:

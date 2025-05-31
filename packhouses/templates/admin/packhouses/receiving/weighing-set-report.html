@@ -21,14 +21,15 @@
     text-align: center;
     margin-bottom: 10px;
     border-collapse: collapse;
+    font-size: 8pt;
 }
 
 .folio-table tr {
-    height: 25px;
+    height: 20px;
 }
 
 .folio-table td {
-    line-height: 25px;
+    line-height: 20px;
     padding: 0;
     overflow: hidden;
 }
@@ -132,46 +133,58 @@ tr {
     text-align: left;
 }
 
+.row-two {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
+.row-two p {
+    font-size: 7pt;
+  margin: 0;
+  border-bottom: 1px solid #000;
+}
+
 </style>
 
 <table class="folio-table">
     <tr>
-        <td style="width: 10%; border-left: 10px solid #123782; background-color: #ffc600;"><strong>{% translate "Harvest" %}</strong></td>
+        <td style="width: 15%; border-left: 10px solid #123782; background-color: #ffc600;"><strong>{% translate "Harvest No." %}</strong></td>
         <td style="width: 20%; color:red; background-color: #fff4cc;"> {% translate "N°" %} {{ harvest.ooid }}</td>
-        <td style="width: 70%;"></td>
+        <td style="width: 65%;"></td>
     </tr>
 </table>
 
 <div>
-    <div class="info-container">
-        <div class="info-row">
-            <div class="info-item">{% translate "Harvest Date: " %}{{harvest.harvest_date}}</div>
-            <div class="info-item">{% translate "Status" %}: {{harvest.get_status_display}}</div>
-        </div>
     
-        <div class="info-row">
+
+        <div class="row row-two">
+            <p><strong>{% translate "Harvest Date: " %}</strong>{{harvest.harvest_date}}</p>
             {% if harvest.category == 'gathering' %}
-                <div class="info-item">{% translate "Gatherer: " %}{{ harvest.gatherer }}</div>
+                <p><strong>{% translate "Gatherer: " %}</strong>{{ harvest.gatherer }}</p>
             {% elif harvest.category == 'maquila' %}
-                <div class="info-item">{% translate "Maquiladora: " %} {{ harvest.maquiladora }}</div>
+                <p><strong>{% translate "Maquiladora: " %}</strong> {{ harvest.maquiladora }}</p>
             {% else %}
-                <div class="info-item">""</div>
-            {% endif %}
-            <div class="info-item">{% translate "Market:" %} {{harvest.market}}</div>
+                <p>&nbsp;</p>
+            {% endif %} 
         </div>
 
-        <div class="info-row">
-            <div class="info-item">{% translate "Product Provider: " %}{{harvest.product_provider}}</div>
-            <div class="info-item">{% translate "Product:" %} {{harvest.product}}</div>
+        <div class="row row-two">
+            <p><strong>{% translate "Status: " %}</strong> {{harvest.get_status_display}}</p>
+            <p><strong>{% translate "Product:" %}</strong> {{harvest.product}}</p>
+                       
         </div>
 
-        <div class="info-row">
-            <div class="info-item">{% translate "Product Variety:" %} {{harvest.product_variety}}</div>
-            <div class="info-item">{% translate "Orchard:" %} {{harvest.orchard}}</div>
+        <div class="row row-two">
+            <p><strong>{% translate "Orchard:" %}</strong> {{harvest.orchard}}</p>
+            <p><strong>{% translate "Product Provider: " %}</strong>{{harvest.product_provider}}</p>
+        </div>
+
+        <div class="row row-two">
+            <p><strong>{% translate "Market: " %}</strong> {{harvest.market}}</p> 
+            <p><strong>{% translate "Product Variety:" %}</strong>{{harvest.product_variety}}</p>  
         </div>
 
     </div>
-</div>
 
 <div class="div-table">
     <table class="table_form">

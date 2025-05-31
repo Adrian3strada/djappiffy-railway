@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", function() {
   const initialVarietyValue = varietyField.val();
   const seasonField = $("#id_product_phenologies");
   const initialSeasonValue = seasonField.val();
+  const ripinessField = $("#id_product_ripeness");
+  const initialRipenessValue = ripinessField.val();
   const harvestSizeField = $("#id_product_harvest_size_kind");
   const initialHarvestSizeValue = harvestSizeField.val();
   const orchardField = $("#id_orchard");
@@ -259,6 +261,21 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
+  function updateRipenessField() {
+    const productId = productField.val();
+    if (productId) {
+      fetchOptions(`${API_BASE_URL}/catalogs/product-ripeness/?product=${productId}&is_enabled=true`)
+        .then((data) => {
+          updateFieldOptions(ripinessField, data);
+          if (initialRipenessValue) {
+            ripinessField.val(initialRipenessValue).trigger("change");
+          }
+        });
+    } else {
+      updateFieldOptions(ripinessField, []);
+    }
+  }
+
   function updateHarvestSizeField() {
     const productId = productField.val();
     if (productId) {
@@ -336,6 +353,7 @@ document.addEventListener("DOMContentLoaded", function() {
         updateSeasonField();
         updateHarvestSizeField();
         updateOrchardField();
+        updateRipenessField();
         // updateOrchardCertificationField();
     }, 300);
 });
@@ -359,6 +377,7 @@ document.addEventListener("DOMContentLoaded", function() {
   updateSeasonField();
   updateHarvestSizeField();
   updateOrchardField();
+  updateRipenessField();
   // updateOrchardCertificationField();
 
 });
