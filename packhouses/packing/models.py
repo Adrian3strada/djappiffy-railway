@@ -97,12 +97,12 @@ class PackingPallet(models.Model):
 
 
 class PackingPackage(models.Model):
-    ooid = models.PositiveIntegerField(verbose_name=_('OOID'), null=True, blank=True)
+    ooid = models.PositiveIntegerField(verbose_name=_('Package ID'), null=True, blank=True)
     batch = models.ForeignKey(Batch, verbose_name=_('Batch'), on_delete=models.PROTECT)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'),on_delete=models.PROTECT, null=True, blank=False)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
-    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
 

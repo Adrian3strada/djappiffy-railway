@@ -79,8 +79,15 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
     list_filter = ("product_market_class", "product_size")
 
     def get_fields(self, request, obj=None):
-        fields = [field for field in super().get_fields(request, obj) if field not in ['created_at', 'organization']]
+        fields = ['ooid'] + [field for field in super().get_fields(request, obj) if field not in ['created_at', 'organization', 'ooid']]
         return fields
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = super().get_readonly_fields(request, obj)
+        readonly_fields += ('ooid',)
+        if obj:
+            return readonly_fields + ['batch', 'product_market_class', 'product_size']
+        return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = request.organization if hasattr(request, 'organization') else None
