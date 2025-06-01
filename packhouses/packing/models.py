@@ -184,5 +184,5 @@ class PackingPackage(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = _('Packing Pallet')
-        verbose_name_plural = _('Packing Pallets')
+        verbose_name = _('Packing Package')
+        verbose_name_plural = _('Packing Packages')
