@@ -99,3 +99,6 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
             return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packing/packing_package.js',)

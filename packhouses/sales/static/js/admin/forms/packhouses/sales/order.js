@@ -108,17 +108,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
-  const deleteOrderItemInline = () => {
-    const inlineItems = document.querySelectorAll('.inline-related');
-    inlineItems.forEach(item => {
-      const deleteCheckbox = item.querySelector('input[type="checkbox"][name$="-DELETE"]');
-      if (deleteCheckbox) {
-        deleteCheckbox.checked = true;
-      }
-      item.remove(); // Elimina el elemento del DOM
-    });
-  };
-
   const toggleShowOrderItemInline = () => {
     orderItemsWightTab.addClass('hidden')
     orderItemsPackagingTab.addClass('hidden')
