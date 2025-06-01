@@ -26,7 +26,6 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
     def has_change_permission(self, request, obj=None):
         return False
 
-
     def new_labels(self, obj):
         return format_html(
             '<div style="display: flex; align-items: center; gap: 10px;">'
@@ -39,7 +38,6 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
 
     new_labels.short_description = _("New labels")
     new_labels.allow_tags = True
-
 
     def pending_labels(self, obj):
         pending_count = PackerLabel.objects.filter(employee=obj, scanned_at__isnull=True).count()
@@ -61,7 +59,6 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
     pending_labels.short_description = _("Pending labels")
     pending_labels.allow_tags = True
 
-
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -71,7 +68,6 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
         ]
         return custom_urls + urls
 
-
     class Media:
         js = ('js/admin.js',)
 
@@ -80,15 +76,11 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
 class PackingPackageAdmin(ByOrganizationAdminMixin):
     list_display = ("batch", "product_market_class", "product_size" )
     search_fields = ("product_market_class__name", "product_size__name")
-    list_filter = ("product_market_class__name", "product_size__name")
-    fields = [
-        "batch",
-        "product_market_class",
-        "product_size",
-        "product_ripeness",
-        "product_packaging",
-        "product_packaging_weight",
-    ]
+    list_filter = ("product_market_class", "product_size")
+
+    def get_fields(self, request, obj=None):
+        fields = [field for field in super().get_fields(request, obj) if field not in ['created_at', 'organization']]
+        return fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = request.organization if hasattr(request, 'organization') else None
