@@ -109,21 +109,23 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
             kwargs["queryset"] = Product.objects.filter(organization=organization)
 
         if db_field.name == "product_phenology":
-            kwargs["queryset"] = ProductPhenologyKind.objects.filter(organization=organization)
+            organization_products = Product.objects.filter(organization=organization)
+            kwargs["queryset"] = ProductPhenologyKind.objects.filter(product__in=organization_products)
 
         if db_field.name == "product_size":
-            kwargs["queryset"] = ProductSize.objects.filter(organization=organization)
+            organization_products = Product.objects.filter(organization=organization)
+            kwargs["queryset"] = ProductSize.objects.filter(product__in=organization_products)
 
         if db_field.name == "product_market_class":
-            kwargs["queryset"] = ProductMarketClass.objects.filter(organization=organization)
+            organization_products = Product.objects.filter(organization=organization)
+            kwargs["queryset"] = ProductMarketClass.objects.filter(product__in=organization_products)
 
         if db_field.name == "product_ripeness":
-            kwargs["queryset"] = ProductRipeness.objects.filter(organization=organization)
+            organization_products = Product.objects.filter(organization=organization)
+            kwargs["queryset"] = ProductRipeness.objects.filter(product__in=organization_products)
 
         if db_field.name == "product_packaging":
             kwargs["queryset"] = ProductPackaging.objects.filter(organization=organization)
-
-
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

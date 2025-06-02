@@ -65,15 +65,20 @@ document.addEventListener("DOMContentLoaded", async function () {
       const product = batchProperties.product;
       const productPhenology = batchProperties.product_phenology;
 
-      updateFieldOptions(marketField, [market], market.id);
-      updateFieldOptions(productField, [product], product.id);
-      updateFieldOptions(productPhenologyField, [productPhenology], productPhenology.id);
-    } else {
-      updateFieldOptions(marketField, []);
-      updateFieldOptions(productField, []);
-      updateFieldOptions(productPhenologyField, []);
+      marketField.val(market.id).trigger('change');
+      productField.val(product.id).trigger('change');
+      productPhenologyField.val(productPhenology.id).trigger('change');
+
     }
   });
 
+  marketField.on("change", async function () {
+    if (marketField.val()) {
+      const products = await fetchOptions(`/rest/v1/market/${marketId}/product/`);
+      updateFieldOptions(productField, products);
+    } else {
+      productField.empty().trigger('change');
+    }
+  });
 
 });
