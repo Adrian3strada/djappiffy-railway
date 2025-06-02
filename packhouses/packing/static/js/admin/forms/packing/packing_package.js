@@ -7,11 +7,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   let batchProperties = null
 
-
-  const API_BASE_URL = "/rest/v1";
-
   function getOrganization() {
-    fetchOptions(`${API_BASE_URL}/profiles/packhouse-exporter-profile/?same=1`).then(
+    fetchOptions(`/rest/v1/profiles/packhouse-exporter-profile/?same=1`).then(
       (data) => {
         if (data.count === 1) {
           organization = data.results.pop()
@@ -53,23 +50,33 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   async function getBatchProperties() {
     if (batchField.val()) {
-      batchProperties = await fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
+      batchProperties = await fetchOptions(`/rest/v1/receiving/batch/${batchField.val()}/`)
     } else {
       batchProperties = null;
     }
   }
 
+  batchField.on("change", async function () {
+    alert("Batch changed, fetching properties...");
+    await getBatchProperties();
+    if (batchProperties) {
+      console.log("Batch properties:", batchProperties);
+      const market = batchProperties.market;
+      const product = batchProperties.product;
+      const productPhenology = batchProperties.product_phenology;
+      const productSize = batchProperties.product_size;
 
-  function updateClientOptions() {
-    // clientCategory = clientCategoryField.val();
-    if (!!clientCategory && clientCategory === 'packhouse') {
-      fetchOptions(`${API_BASE_URL}/catalogs/client/?category=${clientCategory}&is_enabled=1`).then(
-        (data) => {
-          updateFieldOptions(clientField, data, client);
-        }
-      );
+      updateFieldOptions(marketField, [market], market.id);
+      updateFieldOptions(productField, [product], product.id);
+      updateFieldOptions(productPhenologyField, [productPhenology], productPhenology.id);
+      updateFieldOptions(productSizeField, [productSize], productSize.id);
+    } else {
+      updateFieldOptions(marketField, []);
+      updateFieldOptions(productField, []);
+      updateFieldOptions(productPhenologyField, []);
+      updateFieldOptions(productSizeField, []);
     }
-  }
+  });
 
 
 });

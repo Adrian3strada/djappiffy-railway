@@ -1,6 +1,7 @@
 from django.urls import path
 from common.base.router import drf_router
 from packhouses.receiving.views import weighing_set_report
+from packhouses.receiving.viewsets import BatchViewSet
 
 
 app_name = 'receiving'  # TODO: preguntar a Jaqueline ¿qué hace esto?
