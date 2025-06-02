@@ -46,7 +46,7 @@ class ScheduleHarvest(models.Model):
     maquiladora = models.ForeignKey(Maquiladora, verbose_name=_("Maquiladora"), on_delete=models.PROTECT, null=True, blank=True)
     product = models.ForeignKey(Product, verbose_name=_("Product"), on_delete=models.PROTECT,)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_("Product Variety"), on_delete=models.PROTECT,)
-    product_phenologies = models.ForeignKey(ProductPhenologyKind, verbose_name=_("Product phenology"), on_delete=models.PROTECT)
+    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_("Product phenology"), on_delete=models.PROTECT)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_("Product ripeness"), on_delete=models.PROTECT, null=True,blank=True)
     product_harvest_size_kind = models.ForeignKey(ProductHarvestSizeKind, verbose_name=_("Product harvest size"), on_delete=models.PROTECT)
     orchard = models.ForeignKey(Orchard, verbose_name=_("Orchard"), on_delete=models.PROTECT,)
