@@ -74,10 +74,19 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   marketField.on("change", async function () {
     if (marketField.val()) {
-      const products = await fetchOptions(`/rest/v1/market/${marketId}/product/`);
-      updateFieldOptions(productField, products);
+      const products = await fetchOptions(`/rest/v1/catalogs/product/?markets=${marketField.val()}`);
+      updateFieldOptions(productField, products, productField.val());
     } else {
-      productField.empty().trigger('change');
+      updateFieldOptions(productField, []);
+    }
+  });
+
+  productField.on("change", async function () {
+    if (productField.val()) {
+      const phenologies = await fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productField.val()}`);
+      updateFieldOptions(productPhenologyField, phenologies, productPhenologyField.val());
+    } else {
+      updateFieldOptions(productPhenologyField, []);
     }
   });
 
