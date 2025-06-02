@@ -98,8 +98,8 @@ class PackingPallet(models.Model):
 
 class PackingPackage(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_('Package ID'), null=True, blank=True)
-    batch = models.ForeignKey(Batch, verbose_name=_('Batch'), on_delete=models.PROTECT, limit_choices_to={'parent__isnull': True})
-    # , 'is_available_for_processing': True
+    batch = models.ForeignKey(Batch, verbose_name=_('Batch'), on_delete=models.PROTECT)
+    # , limit_choices_to={'parent__isnull': True, 'is_available_for_processing': True} ?
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'),on_delete=models.PROTECT, null=True, blank=False)
@@ -113,10 +113,10 @@ class PackingPackage(models.Model):
     product_pieces_per_presentation = models.PositiveIntegerField(verbose_name=_('Product pieces per presentation'), null=True, blank=False)
     packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'), validators=[MinValueValidator(1)], null=True, blank=False)
 
-    processing_date = models.DateTimeField(default=datetime.datetime.today(), verbose_name=_('Processing date'))
+    processing_date = models.DateField(default=datetime.datetime.today(), verbose_name=_('Processing date'))
     packing_pallet = models.ForeignKey(PackingPallet, verbose_name=_('Packing Pallet'), on_delete=models.PROTECT, null=True, blank=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True)
     # cajas -- packaging_quantity
     # kg -- @property packaging_quantity * product_weight_per_packaging
 

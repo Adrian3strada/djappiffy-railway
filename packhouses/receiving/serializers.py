@@ -22,7 +22,7 @@ class BatchSerializer(serializers.ModelSerializer):
 
     def get_product_phenology(self, obj):
         if obj.incomingproduct and obj.incomingproduct.scheduleharvest:
-            return ProductPhenologyKindSerializer(obj.incomingproduct.scheduleharvest.product, read_only=True).data
+            return ProductPhenologyKindSerializer(obj.incomingproduct.scheduleharvest.product_phenology, read_only=True).data
         return None
 
     class Meta:

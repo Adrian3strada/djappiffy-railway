@@ -64,17 +64,14 @@ document.addEventListener("DOMContentLoaded", async function () {
       const market = batchProperties.market;
       const product = batchProperties.product;
       const productPhenology = batchProperties.product_phenology;
-      const productSize = batchProperties.product_size;
 
       updateFieldOptions(marketField, [market], market.id);
       updateFieldOptions(productField, [product], product.id);
       updateFieldOptions(productPhenologyField, [productPhenology], productPhenology.id);
-      updateFieldOptions(productSizeField, [productSize], productSize.id);
     } else {
       updateFieldOptions(marketField, []);
       updateFieldOptions(productField, []);
       updateFieldOptions(productPhenologyField, []);
-      updateFieldOptions(productSizeField, []);
     }
   });
 

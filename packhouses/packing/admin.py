@@ -9,6 +9,10 @@ from .views import generate_label_pdf, generate_pending_label_pdf, discard_label
 from common.base.mixins import (ByOrganizationAdminMixin)
 from packhouses.receiving.models import Batch
 from packhouses.gathering.models import ScheduleHarvest
+from packhouses.catalogs.models import Market, Product, ProductPhenologyKind, ProductSize, ProductMarketClass, \
+    ProductRipeness, ProductPackaging
+
+
 # Register your models here.
 
 
@@ -97,6 +101,29 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda obj: f"{obj.ooid} :: {obj.harvest_product_provider} - {obj.incomingproduct.scheduleharvest.created_at.strftime('%Y-%m-%d')}"
             return formfield
+
+        if db_field.name == "market":
+            kwargs["queryset"] = Market.objects.filter(organization=organization)
+
+        if db_field.name == "product":
+            kwargs["queryset"] = Product.objects.filter(organization=organization)
+
+        if db_field.name == "product_phenology":
+            kwargs["queryset"] = ProductPhenologyKind.objects.filter(organization=organization)
+
+        if db_field.name == "product_size":
+            kwargs["queryset"] = ProductSize.objects.filter(organization=organization)
+
+        if db_field.name == "product_market_class":
+            kwargs["queryset"] = ProductMarketClass.objects.filter(organization=organization)
+
+        if db_field.name == "product_ripeness":
+            kwargs["queryset"] = ProductRipeness.objects.filter(organization=organization)
+
+        if db_field.name == "product_packaging":
+            kwargs["queryset"] = ProductPackaging.objects.filter(organization=organization)
+
+
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
