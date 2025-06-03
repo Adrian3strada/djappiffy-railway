@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const productField = $("#id_product")
   const productPhenologyField = $("#id_product_phenology")
   const productSizeField = $("#id_product_size")
+  const productMarketClassField = $("#id_product_market_class")
 
   let batchProperties = null
 
@@ -74,8 +75,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   marketField.on("change", async function () {
     if (marketField.val()) {
-      const products = await fetchOptions(`/rest/v1/catalogs/product/?markets=${marketField.val()}`);
+      const products = await fetchOptions(`/rest/v1/catalogs/product/?markets=${marketField.val()}&is_enabled=1`);
       updateFieldOptions(productField, products, productField.val());
+      await setProductSizes();
+      await setProductMarketClasses();
     } else {
       updateFieldOptions(productField, []);
     }
@@ -83,11 +86,36 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   productField.on("change", async function () {
     if (productField.val()) {
-      const phenologies = await fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productField.val()}`);
+      const phenologies = await fetchOptions(`/rest/v1/catalogs/product-phenology/?product=${productField.val()}&is_enabled=1`);
       updateFieldOptions(productPhenologyField, phenologies, productPhenologyField.val());
+      await setProductSizes();
+      await setProductMarketClasses();
     } else {
       updateFieldOptions(productPhenologyField, []);
+      updateFieldOptions(productSizeField, []);
     }
   });
+
+  const setProductSizes = async () => {
+    if (productField.val() && marketField.val()) {
+      const sizes = await fetchOptions(`/rest/v1/catalogs/product-size/?product=${productField.val()}&market=${marketField.val()}&category=size&is_enabled=1`);
+      updateFieldOptions(productSizeField, sizes, productSizeField.val());
+    } else {
+      updateFieldOptions(productSizeField, []);
+    }
+  }
+
+  const setProductMarketClasses = async () => {
+    if (productField.val() && marketField.val()) {
+      const productMarketClass = await fetchOptions(`/rest/v1/catalogs/product-market-class/?product=${productField.val()}&market=${marketField.val()}&is_enabled=1`);
+      if (productMarketClass.length > 0) {
+        updateFieldOptions(productMarketClassField, productMarketClass, productMarketClassField.val());
+      } else {
+        updateFieldOptions(productMarketClassField, []);
+      }
+    } else {
+      updateFieldOptions(productMarketClassField, []);
+    }
+  }
 
 });

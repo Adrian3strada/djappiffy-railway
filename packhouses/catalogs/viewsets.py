@@ -121,7 +121,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 class PalletViewSet(viewsets.ModelViewSet):
     serializer_class = PalletSerializer
-    filterset_fields = ['market', 'product', 'is_enabled']
+    filterset_fields = ['product', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
