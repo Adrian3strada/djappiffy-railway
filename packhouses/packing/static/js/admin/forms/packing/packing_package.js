@@ -6,6 +6,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   const productSizeField = $("#id_product_size")
   const productMarketClassField = $("#id_product_market_class")
   const productPackagingField = $("#id_product_packaging")
+  const productWeightPerPackagingField = $("#id_product_weight_per_packaging")
+  const productPresentationsPerPackagingField = $("#id_product_presentations_per_packaging")
+  const productPiecesPerPresentationField = $("#id_product_pieces_per_presentation")
+  const packagingQuantityField = $("#id_packaging_quantity")
 
   let batchProperties = null
 
@@ -102,6 +106,30 @@ document.addEventListener("DOMContentLoaded", async function () {
   productSizeField.on("change", async function () {
     if (productSizeField.val()) {
       await setProductPackagings();
+    }
+  });
+
+  productPackagingField.on("change", async function () {
+    if (productPackagingField.val()) {
+      const packaging = productPackagingField.find(':selected');
+      const weightPerPackaging = packaging.data('weight-per-packaging') || 0;
+      const presentationsPerPackaging = packaging.data('presentations-per-packaging') || 0;
+      const piecesPerPresentation = packaging.data('pieces-per-presentation') || 0;
+
+      productWeightPerPackagingField.val(weightPerPackaging);
+      productPresentationsPerPackagingField.val(presentationsPerPackaging);
+      productPiecesPerPresentationField.val(piecesPerPresentation);
+
+      if (packaging.data('quantity')) {
+        packagingQuantityField.val(packaging.data('quantity'));
+      } else {
+        packagingQuantityField.val(1);
+      }
+    } else {
+      productWeightPerPackagingField.val('');
+      productPresentationsPerPackagingField.val('');
+      productPiecesPerPresentationField.val('');
+      packagingQuantityField.val(1);
     }
   });
 
