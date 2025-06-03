@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const productPhenologyField = $("#id_product_phenology")
   const productSizeField = $("#id_product_size")
   const productMarketClassField = $("#id_product_market_class")
+  const productPackagingField = $("#id_product_packaging")
 
   let batchProperties = null
 
@@ -79,6 +80,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       updateFieldOptions(productField, products, productField.val());
       await setProductSizes();
       await setProductMarketClasses();
+      await setProductPackagings();
     } else {
       updateFieldOptions(productField, []);
     }
@@ -90,9 +92,16 @@ document.addEventListener("DOMContentLoaded", async function () {
       updateFieldOptions(productPhenologyField, phenologies, productPhenologyField.val());
       await setProductSizes();
       await setProductMarketClasses();
+      await setProductPackagings();
     } else {
       updateFieldOptions(productPhenologyField, []);
       updateFieldOptions(productSizeField, []);
+    }
+  });
+
+  productSizeField.on("change", async function () {
+    if (productSizeField.val()) {
+      await setProductPackagings();
     }
   });
 
@@ -107,14 +116,27 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const setProductMarketClasses = async () => {
     if (productField.val() && marketField.val()) {
-      const productMarketClass = await fetchOptions(`/rest/v1/catalogs/product-market-class/?product=${productField.val()}&market=${marketField.val()}&is_enabled=1`);
-      if (productMarketClass.length > 0) {
-        updateFieldOptions(productMarketClassField, productMarketClass, productMarketClassField.val());
+      const classes = await fetchOptions(`/rest/v1/catalogs/product-market-class/?product=${productField.val()}&market=${marketField.val()}&is_enabled=1`);
+      if (classes.length > 0) {
+        updateFieldOptions(productMarketClassField, classes, productMarketClassField.val());
       } else {
         updateFieldOptions(productMarketClassField, []);
       }
     } else {
       updateFieldOptions(productMarketClassField, []);
+    }
+  }
+
+  const setProductPackagings = async () => {
+    if (marketField.val() && productField.val() && productSizeField.val()) {
+      const packagings = await fetchOptions(`/rest/v1/catalogs/product-packaging/?product=${productField.val()}&market=${marketField.val()}&product_size=${productSizeField.val()}&is_enabled=1`);
+      if (packagings.length > 0) {
+        updateFieldOptions(productPackagingField, packagings, productPackagingField.val());
+      } else {
+        updateFieldOptions(productPackagingField, []);
+      }
+    } else {
+      updateFieldOptions(productPackagingField, []);
     }
   }
 
