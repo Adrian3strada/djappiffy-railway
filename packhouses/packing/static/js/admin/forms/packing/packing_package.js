@@ -113,26 +113,31 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   productPackagingField.on("change", async function () {
+
     if (productPackagingField.val()) {
-      const packaging = productPackagingField.find(':selected');
-      const weightPerPackaging = packaging.data('weight-per-packaging') || 0;
-      const presentationsPerPackaging = packaging.data('presentations-per-packaging') || 0;
-      const piecesPerPresentation = packaging.data('pieces-per-presentation') || 0;
+      const productPackaging = await fetchOptions(`/rest/v1/catalogs/product-packaging/${productPackagingField.val()}/`);
+      console.log("Selected product packaging:", productPackaging);
+
+      if (productPackaging.category === 'presentation') {
+        productPresentationsPerPackagingField.closest('.form-group').fadeIn();
+        productPiecesPerPresentationField.closest('.form-group').fadeIn();
+      } else {
+        productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+        productPiecesPerPresentationField.closest('.form-group').fadeOut();
+      }
 
       productWeightPerPackagingField.val(weightPerPackaging);
       productPresentationsPerPackagingField.val(presentationsPerPackaging);
       productPiecesPerPresentationField.val(piecesPerPresentation);
 
-      if (packaging.data('quantity')) {
-        packagingQuantityField.val(packaging.data('quantity'));
-      } else {
-        packagingQuantityField.val(1);
-      }
     } else {
-      productWeightPerPackagingField.val('');
-      productPresentationsPerPackagingField.val('');
-      productPiecesPerPresentationField.val('');
-      packagingQuantityField.val(1);
+      productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+      productPiecesPerPresentationField.closest('.form-group').fadeOut();
+
+      productWeightPerPackagingField.val(null);
+      productPresentationsPerPackagingField.val(null);
+      productPiecesPerPresentationField.val(null);
+      packagingQuantityField.val(null);
     }
   });
 
