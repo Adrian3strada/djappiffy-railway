@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   let batchProperties = null
 
+  productPresentationsPerPackagingField.closest('.form-group').hide()
+  productPiecesPerPresentationField.closest('.form-group').hide()
+
   function getOrganization() {
     fetchOptions(`/rest/v1/profiles/packhouse-exporter-profile/?same=1`).then(
       (data) => {
