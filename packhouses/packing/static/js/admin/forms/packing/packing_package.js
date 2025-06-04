@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   const productWeightPerPackagingField = $("#id_product_weight_per_packaging")
   const productPresentationsPerPackagingField = $("#id_product_presentations_per_packaging")
   const productPiecesPerPresentationField = $("#id_product_pieces_per_presentation")
-  const packagingQuantityField = $("#id_packaging_quantity")
 
   let batchProperties = null
   let market = marketField.val()
