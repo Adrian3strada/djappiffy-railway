@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PackerEmployee, PackerLabel
+from .models import PackerEmployee, PackerLabel, PackingPackage
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html
 from django.urls import path, reverse
@@ -7,21 +7,28 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from .views import generate_label_pdf, generate_pending_label_pdf, discard_labels
 from common.base.mixins import (ByOrganizationAdminMixin)
+from packhouses.receiving.models import Batch
+from packhouses.gathering.models import ScheduleHarvest
+from packhouses.catalogs.models import Market, Product, ProductPhenologyKind, ProductSize, ProductMarketClass, \
+    ProductRipeness, ProductPackaging
+
+
+# Register your models here.
+
 
 @admin.register(PackerEmployee)
 class PackerEmployeeAdmin(ByOrganizationAdminMixin):
-    list_display = ("full_name", "new_labels", "pending_labels")  
+    list_display = ("full_name", "new_labels", "pending_labels")
     search_fields = ("full_name",)
 
     def has_add_permission(self, request):
-        return False  
+        return False
 
     def has_delete_permission(self, request, obj=None):
-        return False  
+        return False
 
     def has_change_permission(self, request, obj=None):
         return False
-    
 
     def new_labels(self, obj):
         return format_html(
@@ -36,7 +43,6 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
     new_labels.short_description = _("New labels")
     new_labels.allow_tags = True
 
-
     def pending_labels(self, obj):
         pending_count = PackerLabel.objects.filter(employee=obj, scanned_at__isnull=True).count()
 
@@ -49,14 +55,13 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
             '</div>',
             obj.id,
             pending_count,
-            obj.id, 
+            obj.id,
             _("Download remaining"),
-            obj.id, 
+            obj.id,
             _("Discard")
         )
     pending_labels.short_description = _("Pending labels")
     pending_labels.allow_tags = True
-
 
     def get_urls(self):
         urls = super().get_urls()
@@ -67,7 +72,62 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
         ]
         return custom_urls + urls
 
+    class Media:
+        js = ('js/admin.js',)
+
+
+@admin.register(PackingPackage)
+class PackingPackageAdmin(ByOrganizationAdminMixin):
+    list_display = ("batch", "product_market_class", "product_size" )
+    search_fields = ("product_market_class__name", "product_size__name")
+    list_filter = ("product_market_class", "product_size")
+
+    def get_fields(self, request, obj=None):
+        fields = ['ooid'] + [field for field in super().get_fields(request, obj) if field not in ['created_at', 'organization', 'ooid']]
+        return fields
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = super().get_readonly_fields(request, obj)
+        readonly_fields += ('ooid',)
+        if obj:
+            return readonly_fields + ['batch', 'product_market_class', 'product_size']
+        return readonly_fields
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        organization = request.organization if hasattr(request, 'organization') else None
+
+        if db_field.name == "batch":
+            kwargs["queryset"] = Batch.objects.filter(organization=organization)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: f"{obj.ooid} :: {obj.harvest_product_provider} - {obj.incomingproduct.scheduleharvest.created_at.strftime('%Y-%m-%d')}"
+            return formfield
+
+        if db_field.name == "market":
+            kwargs["queryset"] = Market.objects.filter(organization=organization)
+
+        if db_field.name == "product":
+            kwargs["queryset"] = Product.objects.filter(organization=organization)
+
+        if db_field.name == "product_phenology":
+            organization_products = Product.objects.filter(organization=organization)
+            kwargs["queryset"] = ProductPhenologyKind.objects.filter(product__in=organization_products)
+
+        if db_field.name == "product_size":
+            organization_products = Product.objects.filter(organization=organization)
+            kwargs["queryset"] = ProductSize.objects.filter(product__in=organization_products)
+
+        if db_field.name == "product_market_class":
+            organization_products = Product.objects.filter(organization=organization)
+            kwargs["queryset"] = ProductMarketClass.objects.filter(product__in=organization_products)
+
+        if db_field.name == "product_ripeness":
+            organization_products = Product.objects.filter(organization=organization)
+            kwargs["queryset"] = ProductRipeness.objects.filter(product__in=organization_products)
+
+        if db_field.name == "product_packaging":
+            kwargs["queryset"] = ProductPackaging.objects.filter(organization=organization)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin.js',)  
-
+        js = ('js/admin/forms/packing/packing_package.js',)

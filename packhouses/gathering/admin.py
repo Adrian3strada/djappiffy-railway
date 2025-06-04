@@ -17,14 +17,14 @@ from packhouses.catalogs.filters import (StatesForOrganizationCountryFilter, ByC
                                          ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                                          ByCityForOrganizationClientsFilter,
                                          ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
-                                         ByProductMassVolumeKindForOrganizationFilter, ByProductHarvestSizeKindForOrganizationFilter,
+                                         ByProductHarvestSizeKindForOrganizationFilter,
                                          ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
                                          ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
                                          ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter
                                          )
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, Market, WeighingScale,
                                         ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind,
-                                        OrchardCertification, Supply)
+                                        OrchardCertification, Supply, ProductRipeness)
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
 from common.base.models import ProductKind
@@ -91,12 +91,12 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
     form = ContainerInlineForm
 
     def get_readonly_fields(self, request, obj=None):
-        """ Aplica solo lectura a los campos de contenedor solo si `created_by == 'incoming_product'` """
+        """ Aplica solo lectura a los campos de contenedor solo si `created_at_model == 'incoming_product'` """
         if obj and isinstance(obj, ScheduleHarvestContainerVehicle):
-            # Verificamos el campo 'created_by' del contenedor
-            if obj.created_by == 'incoming_product':
-                # Retorna todos los campos menos 'created_by' como solo lectura
-                return [f.name for f in self.model._meta.fields if f.name != 'created_by']
+            # Verificamos el campo 'created_at_model' del contenedor
+            if obj.created_at_model == 'incoming_product':
+                # Retorna todos los campos menos 'created_at_model' como solo lectura
+                return [f.name for f in self.model._meta.fields if f.name != 'created_at_model']
         return []
 
     def get_formset(self, request, obj=None, **kwargs):
@@ -161,14 +161,38 @@ class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.N
 @admin.register(ScheduleHarvest)
 class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     form = ScheduleHarvestForm
-    fields = ('ooid', 'status', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
-              'product_variety', 'product_phenologies', 'product_harvest_size_kind', 'orchard', 'orchard_certification',
+    fields = ('ooid', 'status', 'is_scheduled', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
+              'product_variety', 'product_phenology', 'product_ripeness', 'product_harvest_size_kind', 'orchard',
               'market', 'weight_expected', 'weighing_scale', 'meeting_point', 'comments' )
-    list_display = ('ooid', 'harvest_date', 'category', 'product_provider', 'product','product_variety', 'market',
+    list_display = ('ooid', 'harvest_date', 'category', 'product_provider',
+                    'get_orchard_name', 'get_orchard_code', 'get_orchard_product_producer',
+                    'product', 'get_orchard_category', 'product_variety', 'product_phenology', 'product_ripeness', 'market',
                     'weight_expected', 'status',  'generate_actions_buttons')
-    list_filter = ('category', 'product_provider','gatherer', 'maquiladora', 'status' )
+    list_filter = ('product_provider', 'category', 'gatherer', 'maquiladora', 'status',)
     readonly_fields = ('ooid', 'status')
     inlines = [HarvestCuttingHarvestingCrewInline, HarvestCuttingVehicleInline]
+
+    def get_orchard_name(self, obj):
+        return obj.orchard.name if obj.orchard else None
+    get_orchard_name.short_description = _('Orchard')
+    get_orchard_name.admin_order_field = 'orchard__name'
+
+    def get_orchard_code(self, obj):
+        return obj.orchard.code if obj.orchard else None
+    get_orchard_code.short_description = _('Orchard Code')
+    get_orchard_code.admin_order_field = 'orchard__code'
+
+    def get_orchard_category(self, obj):
+        if obj.orchard:
+            return obj.orchard.get_category_display()
+        return None
+    get_orchard_category.short_description = _('Product Category')
+    get_orchard_category.admin_order_field = 'orchard__category'
+
+    def get_orchard_product_producer(self, obj):
+        return obj.orchard.producer if obj.orchard else None
+    get_orchard_product_producer.short_description = _('Product Producer')
+    get_orchard_product_producer.admin_order_field = 'orchard__producer'
 
     def generate_actions_buttons(self, obj):
         pdf_url = reverse('harvest_order_pdf', args=[obj.pk])
@@ -192,18 +216,18 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
             cancel_button_html = format_html(
                 '''
                 <a class="button btn-cancel-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
-                   data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:red;">
+                data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:red;">
                     <i class="fa-solid fa-ban"></i>
                 </a>
                 ''',
                 tooltip_cancel, cancel_url, confirm_cancel_text, confirm_button_text, cancel_button_text
-            )
+            ) if obj.status == 'open' else ''
 
             if obj.status == 'open':
                 set_harvest_ready_button = format_html(
                     '''
                     <a class="button btn-ready-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
-                       data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#4daf50;">
+                    data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#4daf50;">
                         <i class="fa-solid fa-paper-plane"></i>
                     </a>
                     ''',
@@ -242,6 +266,11 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
             form.base_fields['product'].widget.can_change_related = False
             form.base_fields['product'].widget.can_delete_related = False
             form.base_fields['product'].widget.can_view_related = False
+        if 'market' in form.base_fields:
+            form.base_fields['market'].widget.can_add_related = False
+            form.base_fields['market'].widget.can_change_related = False
+            form.base_fields['market'].widget.can_delete_related = False
+            form.base_fields['market'].widget.can_view_related = False
 
         return form
 
@@ -259,6 +288,9 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
 
         if db_field.name == "product_varieties":
             kwargs["queryset"] = ProductVariety.objects.filter(**product_organization_queryfilter)
+
+        if db_field.name == "product_ripeness":
+            kwargs["queryset"] = ProductRipeness.objects.filter(**product_organization_queryfilter)
 
         field_filters = {
             "product_provider": {
@@ -280,10 +312,6 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
             },
             "orchard": {
                 "model": Orchard,
-                "filters": {"is_enabled": True},
-            },
-            "orchard_certification": {
-                "model": OrchardCertification,
                 "filters": {"is_enabled": True},
             },
             "weighing_scale": {
@@ -326,6 +354,3 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
 
     class Media:
         js = ('js/admin/forms/packhouses/gathering/harvest-cutting.js',)
-
-
-

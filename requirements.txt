@@ -1,5 +1,5 @@
-Django>=4.2,<5.3
-wagtail>=6.2,<6.5
+Django>=5.0.14,<5.1
+wagtail>=7.0
 psycopg2-binary
 gdal
 django-sass
@@ -11,6 +11,7 @@ pyproj
 geos
 shapely
 rasterio
+tqdm
 django-auditlog
 django-autoslug
 django-sass
@@ -55,6 +56,7 @@ django-weasyprint
 django-import-export
 setuptools
 qrcode
+aiosmtpd
 
 geopandas
 numpy

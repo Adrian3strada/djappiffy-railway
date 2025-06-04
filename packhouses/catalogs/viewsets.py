@@ -1,24 +1,24 @@
-from itertools import product
-
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketSerializer, ProductMarketClassSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
-                          ProductPhenologyKindSerializer, ProductMassVolumeKindSerializer, ClientSerializer, ProductSizeSerializer,
+                          ProductPhenologyKindSerializer, ClientSerializer, ProductSizeSerializer,
                           MaquiladoraSerializer, PackagingSerializer, ProductPresentationSerializer,
-                          SupplySerializer, OrchardSerializer, HarvestingCrewSerializer,
+                          SupplySerializer, OrchardSerializer, OrchardGeoLocationSerializer,
+                          HarvestingCrewSerializer,
                           ProductPackagingSerializer, PalletSerializer, ProductPackagingPalletSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
-                          OrchardCertificationSerializer, ProductRipenessSerializer, PurchaseOrderSupplySerializer,
-
+                          OrchardCertificationSerializer, ProductRipenessSerializer, ServiceSerializer,
+                          PestProductKindSerializer, DiseaseProductKindSerializer
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
-                     ProductHarvestSizeKind, ProductPhenologyKind, ProductMassVolumeKind, Client, Maquiladora, Provider,
+                     ProductHarvestSizeKind, ProductPhenologyKind, Client, Maquiladora, Provider,
                      Product, Packaging, ProductPresentation, ProductPackaging, Pallet, ProductPackagingPallet,
-                     Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, ProductRipeness,
+                     Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, OrchardGeoLocation,
+                     ProductRipeness, Service
                      )
+from common.base.models import (PestProductKind, DiseaseProductKind)
 from django_filters.rest_framework import DjangoFilterBackend
-from packhouses.purchases.models import PurchaseOrderSupply
 
 
 class ProductHarvestSizeKindViewSet(viewsets.ModelViewSet):
@@ -45,19 +45,6 @@ class ProductPhenologyKindViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return ProductPhenologyKind.objects.filter(product__organization=self.request.organization)
-
-
-class ProductMassVolumeKindViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductMassVolumeKindSerializer
-    filterset_fields = ['product', 'is_enabled']
-    pagination_class = None
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            raise NotAuthenticated()
-
-        return ProductMassVolumeKind.objects.filter(product__organization=self.request.organization)
 
 
 class MarketViewSet(viewsets.ModelViewSet):
@@ -134,7 +121,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 class PalletViewSet(viewsets.ModelViewSet):
     serializer_class = PalletSerializer
-    filterset_fields = ['market', 'product', 'is_enabled']
+    filterset_fields = ['product', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -402,6 +389,7 @@ class HarvestingCrewViewSet(viewsets.ModelViewSet):
 
         return HarvestingCrew.objects.filter(organization=self.request.organization)
 
+
 class OrchardCertificationViewSet(viewsets.ModelViewSet):
     serializer_class = OrchardCertificationSerializer
     filterset_fields = ['is_enabled', 'orchard']
@@ -413,6 +401,20 @@ class OrchardCertificationViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         return OrchardCertification.objects.filter(orchard__organization=self.request.organization)
+
+
+class OrchardGeoLocationViewSet(viewsets.ModelViewSet):
+    serializer_class = OrchardGeoLocationSerializer
+    filterset_fields = ['is_enabled', 'orchard']
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        return OrchardGeoLocation.objects.filter(orchard__organization=self.request.organization)
+
 
 class ProductRipenessViewSet(viewsets.ModelViewSet):
     serializer_class = ProductRipenessSerializer
@@ -426,18 +428,69 @@ class ProductRipenessViewSet(viewsets.ModelViewSet):
 
         return ProductRipeness.objects.filter(product__organization=self.request.organization)
 
-class PurchaseOrderSupplyViewSet(viewsets.ModelViewSet):
-    serializer_class = PurchaseOrderSupplySerializer
-    filterset_fields = ['purchase_order']  # Filtra por purchase_order
-    pagination_class = None  # Desactiva la paginación
+
+class ServiceViewSet(viewsets.ModelViewSet):
+    serializer_class = ServiceSerializer
+    filterset_fields = ['service_provider', 'is_enabled']
+    pagination_class = None
 
     def get_queryset(self):
         user = self.request.user
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        # Filtra los PurchaseOrderSupply por purchase_order_id
-        purchase_order_id = self.request.query_params.get('purchase_order', None)
-        if purchase_order_id:
-            return PurchaseOrderSupply.objects.filter(purchase_order_id=purchase_order_id)
-        return PurchaseOrderSupply.objects.none()
+        return Service.objects.filter(organization=self.request.organization)
+
+class ProductKindViewSetMixin:
+    model = None  # This should be set by subclasses
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = self.model.objects.all()
+        product_kind_id = self.request.query_params.get('product_kind_id')
+
+        if product_kind_id:
+            queryset = queryset.filter(product_kind_id=product_kind_id)
+
+        return queryset
+
+class PestProductKindViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for managing PestProductKind objects.
+
+    Query Parameters:
+        - product_kind_id (int): Filters the PestProductKind objects by the associated product kind ID.
+    """
+    serializer_class = PestProductKindSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = PestProductKind.objects.all()
+        product_kind_id = self.request.query_params.get('product_kind_id')
+
+        if product_kind_id:
+            queryset = queryset.filter(product_kind_id=product_kind_id)
+
+        return queryset
+
+class DiseaseProductKindViewSet(viewsets.ModelViewSet):
+    serializer_class = DiseaseProductKindSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = DiseaseProductKind.objects.all()
+        product_kind_id = self.request.query_params.get('product_kind_id')
+
+        if product_kind_id:
+            queryset = queryset.filter(product_kind_id=product_kind_id)
+
+        return queryset

@@ -1,9 +1,9 @@
 from rest_framework import viewsets
 from .models import (UserProfile, OrganizationProfile, ProducerProfile, ImporterProfile, PackhouseExporterProfile,
-                     TradeExporterProfile)
+                     TradeExporterProfile, EudrOperatorProfile)
 from .serializers import (UserProfileSerializer, ProducerProfileSerializer,
                           ImporterProfileSerializer, PackhouseExporterProfileSerializer, TradeExporterProfileSerializer,
-                          OrganizationProfilePolymorphicSerializer)
+                          OrganizationProfilePolymorphicSerializer, EudrOperatorProfileSerializer)
 from .permissions import IsOrganizationMember
 from organizations.models import OrganizationUser
 from rest_framework.exceptions import NotAuthenticated
@@ -20,13 +20,14 @@ class BaseOrganizationProfileViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         products_data = self.request.data.pop('products', [])
-        del serializer.validated_data['products']
+        serializer.validated_data.pop('products', None)
         instance = serializer.save()
         instance.product_kinds.set(products_data)
 
+
     def perform_update(self, serializer):
         products_data = self.request.data.pop('products', [])
-        del serializer.validated_data['products']
+        serializer.validated_data.pop('products', None)
         instance = serializer.save()
         instance.product_kinds.set(products_data)
         if not self.request.user.is_superuser:
@@ -110,6 +111,23 @@ class TradeExporterProfileViewSet(BaseOrganizationProfileViewSet):
             raise NotAuthenticated()
 
         queryset = TradeExporterProfile.objects.all()
+
+        same = self.request.GET.get('same')
+        if same and hasattr(self.request, 'organization'):
+            queryset = queryset.filter(organization=self.request.organization)
+
+        return queryset
+    
+
+class EudrOperatorProfileViewSet(BaseOrganizationProfileViewSet):
+    serializer_class = EudrOperatorProfileSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        queryset = super().get_queryset()
 
         same = self.request.GET.get('same')
         if same and hasattr(self.request, 'organization'):

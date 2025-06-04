@@ -1,34 +1,43 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from packhouses.receiving.views import weighing_set_report
 from packhouses.gathering.models import ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle
 from packhouses.catalogs.models import (Supply, HarvestingCrew, Vehicle, Provider, Product, ProductVariety, Gatherer, Maquiladora,
-                                        Market, Orchard, OrchardCertification, WeighingScale, ProductPhenologyKind, ProductHarvestSizeKind)
+                                        Market, Orchard, OrchardCertification, WeighingScale, ProductPhenologyKind, ProductHarvestSizeKind, ProductDryMatterAcceptanceReport,
+                                        ProductFoodSafetyProcess, ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue)
 from packhouses.catalogs.utils import get_harvest_cutting_categories_choices
 from .models import (IncomingProduct, WeighingSet, WeighingSetContainer,
                     FoodSafety, FoodSafety, DryMatter, InternalInspection,
                     VehicleReview, SampleCollection, Average,
                     VehicleInspection, VehicleCondition,
-                    SensorySpecification, SampleWeight, SamplePest,
+                    SampleWeight, SamplePest,
                     SampleDisease, SamplePhysicalDamage, SampleResidue,
                     Batch,
                     )
 from common.base.mixins import (ByOrganizationAdminMixin, DisableInlineRelatedLinksMixin)
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInlineMixin
-from .forms import IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet
+from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet,
+                    BatchForm, WeighingSetForm, WeighingSetInlineFormSet, WeighingSetContainerInlineFormSet)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
-                      ByCategoryForOrganizationIncomingProductFilter)
-from .utils import update_pallet_numbers,  CustomScheduleHarvestFormSet
+                      ByCategoryForOrganizationIncomingProductFilter, ByOrchardForOrganizationBatchFilter, ByProviderForOrganizationBatchFilter, 
+                      ByProductForOrganizationBatchFilter, ByCategoryForOrganizationBatchFilter)
+from .utils import update_weighing_set_numbers,  CustomScheduleHarvestFormSet
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
 from common.base.decorators import uppercase_form_charfield, uppercase_alphanumeric_form_charfield
-import nested_admin
 from django.urls import reverse
 from django.utils.html import format_html
 from django.urls import path, reverse
-from nested_admin import NestedStackedInline, NestedTabularInline
-from packhouses.catalogs.models import ProductFoodSafetyProcess, ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue
+import nested_admin
 from common.base.models import Pest
+from django.db.models import Q
 from django import forms
+from django.db import transaction
+from django.core.exceptions import ValidationError
+from django.utils.formats import date_format
+from .mixins import IncomingProductMetricsMixin, BatchDisplayMixin
+
+from .mixins import IncomingProductMetricsMixin
+# from django import forms
 
 # Inlines para datos del corte
 class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
@@ -36,17 +45,16 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
     extra = 0
     formset = ContainerInlineFormSet
     form = ContainerInlineForm
-    exclude = ("created_by",)
+    exclude = ("created_at_model",)
 
     def get_readonly_fields(self, request, obj=None):
-        """ Aplica solo lectura a los campos de contenedor solo si `created_by == 'gathering'` """
+        """ Aplica solo lectura a los campos de contenedor solo si `created_at_model == 'gathering'` """
         if obj and isinstance(obj, ScheduleHarvestContainerVehicle):
-            # Verificamos el campo 'created_by' del contenedor
-            if obj.created_by == 'gathering':
-                # Retorna todos los campos menos 'created_by' como solo lectura
-                return [f.name for f in self.model._meta.fields if f.name != 'created_by']
+            # Verificamos el campo 'created_at_model' del contenedor
+            if obj.created_at_model == 'gathering':
+                # Retorna todos los campos menos 'created_at_model' como solo lectura
+                return [f.name for f in self.model._meta.fields if f.name != 'created_at_model']
         return []
-
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -107,6 +115,10 @@ class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
             )
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_crew_inline.js',)
+
 
 class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = ScheduleHarvestVehicle
@@ -114,6 +126,7 @@ class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.Stacked
     formset = BaseScheduleHarvestVehicleFormSet
     fields = ('provider', 'vehicle', 'has_arrived', 'guide_number', 'stamp_vehicle_number')  # Agregar el nuevo campo
     extra = 0
+    max_num = 0
     inlines = [HarvestCuttingContainerVehicleInline]
 
     def get_formset(self, request, obj=None, **kwargs):
@@ -174,7 +187,7 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     model = ScheduleHarvest
     extra = 0
     inlines = [ScheduleHarvestHarvestingCrewInline, ScheduleHarvestVehicleInline ]
-    readonly_fields = ('ooid', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
+    readonly_fields = ('ooid','is_scheduled', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
     can_delete = False
     can_add = False
     show_title = False
@@ -187,9 +200,9 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
 
     def get_fields(self, request, obj=None):
         fields = [
-            'ooid', 'status', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
-            'product_phenologies', 'product_harvest_size_kind', 'orchard', 'orchard_certification', 'market',
-            'weight_expected', 'weighing_scale', 'comments'
+            'ooid', 'is_scheduled', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
+            'product_phenologies', 'product_harvest_size_kind', 'orchard', 'market',
+            'weight_expected', 'comments'
         ]
         if obj:
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=obj).first()
@@ -238,10 +251,6 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
                 "model": Market,
                 "filters": {"is_enabled": True},
             },
-            "orchard_certification": {
-                "model": OrchardCertification,
-                "filters": {"is_enabled": True},
-            },
             "weighing_scale": {
                 "model": WeighingScale,
                 "filters": {"is_enabled": True},
@@ -257,13 +266,25 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/vehicle_inline.js',
-              'js/admin/forms/packhouses/receiving/schedule_harvest_inline.js')
+        js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',
+              'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js', )
 
 # Inlines para los pallets
 class WeighingSetContainerInline(nested_admin.NestedTabularInline):
     model = WeighingSetContainer
+    formset = WeighingSetContainerInlineFormSet
     extra = 0
+    
+    def get_max_num(self, request, obj=None, **kwargs):
+        if obj and getattr(obj, 'protected', False):
+            return 0
+        return super().get_max_num(request, obj, **kwargs)
+
+    def get_readonly_fields(self, request, obj=None):
+        # Si se está editando un IncomingProduct existente, los campos son solo lectura
+        if obj and obj.pk:
+            return [f.name for f in self.model._meta.fields if f.name != 'id']
+        return super().get_readonly_fields(request, obj)
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -288,18 +309,16 @@ class WeighingSetContainerInline(nested_admin.NestedTabularInline):
 class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = WeighingSet
     inlines = [WeighingSetContainerInline]
-    fields = ('ooid', 'provider', 'harvesting_crew', 'gross_weight', 'total_containers', 'container_tare', 'platform_tare', 'net_weight')
+    fields = ('ooid', 'harvesting_crew', 'gross_weight', 'total_containers', 'container_tare', 
+              'platform_tare', 'net_weight',)
     extra = 0
+    form = WeighingSetForm
+    formset = WeighingSetInlineFormSet
 
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        form = formset.form
-        for field in form.base_fields.values():
-            field.widget.can_add_related = False
-            field.widget.can_change_related = False
-            field.widget.can_delete_related = False
-            field.widget.can_view_related = False
-        return formset
+    def has_change_permission(self, request, obj=None):
+        if obj:
+            return False
+        return True
 
     def get_readonly_fields(self, request, obj=None):
         # Obtener los campos readonly predefinidos
@@ -312,20 +331,22 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
         # Campos readonly para objetos existentes
         if obj and obj.pk:
             readonly_fields.append('ooid')
-
-
         return readonly_fields
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        form = formset.form
+        for field in form.base_fields.values():
+            field.widget.can_add_related = False
+            field.widget.can_change_related = False
+            field.widget.can_delete_related = False
+            field.widget.can_view_related = False
+        return formset
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = None
         if hasattr(request, 'organization'):
             organization = request.organization
-
-        if db_field.name == "provider":
-            kwargs["queryset"] = Provider.objects.filter(
-                organization=organization,
-                is_enabled=True,
-                category='harvesting_provider'
-            )
 
         if db_field.name == "harvesting_crew":
             kwargs["queryset"] = HarvestingCrew.objects.filter(
@@ -335,26 +356,29 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/weighing_set_inline.js',)
+        js = ('js/admin/forms/packhouses/receiving/incomingproduct/weighing_set_inline.js',)
+
 
 # Reciba
 @admin.register(IncomingProduct)
-class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
+class IncomingProductAdmin(IncomingProductMetricsMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard',
+                    'get_scheduleharvest_orchard_product_producer',
                     'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'status','generate_actions_buttons')
-    fields = ('status', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result', 'total_weighed_sets',
-              'packhouse_weight_result', 'mrl', 'kg_sample', 'containers_assigned', 'full_containers_per_harvest', 'empty_containers', 'missing_containers', 'total_weighed_set_containers',
-              'average_per_container', 'current_kg_available', 'comments')
+    fields = ('mrl', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result',
+              'kg_sample', *IncomingProductMetricsMixin.readonly_fields,
+              'comments', 'is_quarantined','status')
     list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
                    ByCategoryForOrganizationIncomingProductFilter)
     search_fields = ('scheduleharvest__ooid',)
+    readonly_fields = IncomingProductMetricsMixin.readonly_fields
     inlines = [WeighingSetInline, ScheduleHarvestInline]
     form = IncomingProductForm
     actions = None
 
-    # Filtrar en el Admin solo los cortes que su status sea distinto a "accepted"
+    # Filtrar en el Admin solo los cortes que su status sea distinto a "ready"
     # def get_queryset(self, request):
-    #    return super().get_queryset(request).exclude(status="accepted")
+    #    return super().get_queryset(request).exclude(status="ready")
 
     @uppercase_form_charfield('weighing_record_number')
     @uppercase_form_charfield('phytosanitary_certificate')
@@ -370,6 +394,12 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     def has_add_permission(self, request):
         return False
 
+    def get_readonly_fields(self, request, obj=None):
+        status = list(self.readonly_fields)
+        # Si ya está aceptado, hacer el campo status solo lectura
+        if obj and obj.status == 'ready':
+            status.append('status')
+        return status
 
     def get_urls(self):
         urls = super().get_urls()
@@ -377,11 +407,9 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
             # Registra la URL custom usando admin_site.admin_view para aplicar permisos y manejo
             path('weighing_set_report/<int:pk>/', self.admin_site.admin_view(weighing_set_report), name='receiving_incomingproduct_weighing_set_report'),
         ]
-        # Colocar custom_urls antes o después según convenga para no interferir con otros patrones
         return custom_urls + urls
 
     def generate_actions_buttons(self, obj):
-        # Ahora usamos el namespace 'admin' y el nombre que definimos en get_urls
         pdf_url = reverse('admin:receiving_incomingproduct_weighing_set_report', args=[obj.pk])
         tooltip_weighing_report = _('Generate Weighing Set Report')
         return format_html(
@@ -422,6 +450,10 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     def get_scheduleharvest_product_provider(self, obj):
         schedule_harvest = obj.scheduleharvest
         return schedule_harvest.product_provider if schedule_harvest else None
+    
+    def get_scheduleharvest_orchard_product_producer(self, obj):
+        schedule_harvest = obj.scheduleharvest
+        return schedule_harvest.orchard.producer if schedule_harvest else None
 
     get_scheduleharvest_ooid.admin_order_field = 'scheduleharvest__ooid'
     get_scheduleharvest_ooid.short_description = _('Harvest Number')
@@ -435,30 +467,347 @@ class IncomingProductAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdm
     get_scheduleharvest_product_provider.short_description = _('Product Provider')
     get_scheduleharvest_category.admin_order_field = 'scheduleharvest__category'
     get_scheduleharvest_category.short_description = _('Category')
+    get_scheduleharvest_orchard_product_producer.admin_order_field = 'scheduleharvest__orchard__producer'
+    get_scheduleharvest_orchard_product_producer.short_description = _('Product Producer')
 
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
-        update_pallet_numbers(form.instance)
+        update_weighing_set_numbers(form.instance)
 
     class Media:
-         js = ('js/admin/forms/packhouses/receiving/incoming_product.js',)
+         js = ('js/admin/forms/packhouses/receiving/incomingproduct/incoming_product.js',)
+
+
+# Lotes
+class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.StackedInline):
+    model = ScheduleHarvest
+    extra = 0
+    fields = ('ooid', 'is_scheduled', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
+        'product_phenologies', 'product_harvest_size_kind', 'orchard', 'market',
+        'weight_expected', 'comments')
+    readonly_fields = ('ooid', 'is_scheduled', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
+    can_delete = False
+    can_add = False
+    custom_title = _("Schedule Harvest Information")
+    inlines = [ScheduleHarvestHarvestingCrewInline, ScheduleHarvestVehicleInline ]
+
+    def get_fields(self, request, obj=None):
+        """
+        Devuelve la tupla de campos, insertando 'gatherer' o 'maquiladora'
+        justo después de 'category' según obj.category.
+        """
+        base = list(self.fields)
+        # encuentra el índice donde va después de 'category':
+        idx = base.index('category') + 1
+
+        # si ya existe schedule_harvest (obj es el IncomingProduct):
+        sh = ScheduleHarvest.objects.filter(incoming_product=obj).first() if obj else None
+        if sh:
+            if sh.category == 'gathering':
+                base.insert(idx, 'gatherer')
+            elif sh.category == 'maquila':
+                base.insert(idx, 'maquiladora')
+        return tuple(base)
+
+    def get_formset(self, request, obj=None, **kwargs):
+        FormSet = super().get_formset(request, obj, **kwargs)
+        class CustomFormSet(FormSet, CustomScheduleHarvestFormSet):
+            pass
+        return CustomFormSet
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name in ("product_phenologies", "product_harvest_size_kind", "orchard"):
+            obj_id = request.resolver_match.kwargs.get("object_id")
+            sh = ScheduleHarvest.objects.filter(incoming_product__batch__pk=obj_id).first()
+
+            if sh:
+                pid = sh.product
+                if db_field.name == "product_phenologies":
+                    qs = ProductPhenologyKind.objects.filter(product=pid, is_enabled=True)
+                elif db_field.name == "product_harvest_size_kind":
+                    qs = ProductHarvestSizeKind.objects.filter(product=pid, is_enabled=True)
+                else:  # "orchard"
+                    org = sh.incoming_product.organization
+                    qs = Orchard.objects.filter(product=pid, organization=org, is_enabled=True)
+            else:
+                qs = db_field.related_model.objects.none()
+
+            kwargs["queryset"] = qs
+
+        field_filters = {
+            "market": {
+                "model": Market,
+                "filters": {"is_enabled": True},
+            },
+            "weighing_scale": {
+                "model": WeighingScale,
+                "filters": {"is_enabled": True},
+            },
+        }
+
+        if db_field.name in field_filters and hasattr(request, "organization"):
+            model = field_filters[db_field.name]["model"]
+            filters = field_filters[db_field.name]["filters"]
+
+            kwargs["queryset"] = model.objects.filter(organization=request.organization, **filters)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',
+              'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js',
+              'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_crew_inline.js')
+        
+
+class IncomingProductInline(IncomingProductMetricsMixin, CustomNestedStackedInlineMixin, admin.StackedInline):
+    model = IncomingProduct
+    fields = ('mrl', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result',
+              'kg_sample', *IncomingProductMetricsMixin.readonly_fields,
+              'comments', 'is_quarantined','status')
+    readonly_fields = ('status',)
+    extra = 0
+    max_num = 0
+    show_change_link = True
+    custom_title = _("Incoming Product Information")
+    inlines = [WeighingSetInline, ScheduleHarvestInlineForBatch]
+    readonly_fields = IncomingProductMetricsMixin.readonly_fields + ('is_quarantined', 'status')
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        base_fields = formset.form.base_fields
+        if 'public_weighing_scale' in base_fields:
+            widget = base_fields['public_weighing_scale'].widget
+            for attr in ('can_add_related', 'can_change_related', 'can_delete_related', 'can_view_related'):
+                setattr(widget, attr, False)
+        return formset
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        update_weighing_set_numbers(form.instance)
 
 @admin.register(Batch)
-class BatchAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
-    list_display = ('ooid', 'status',)
-    exclude = ('ooid',)
+class BatchAdmin(ByOrganizationAdminMixin, BatchDisplayMixin, nested_admin.NestedModelAdmin):
+    list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_product_provider', 'get_scheduleharvest_product',
+                    'get_scheduleharvest_product_variety', 'get_scheduleharvest_product_phenology', 'get_scheduleharvest_orchards',
+                    'get_scheduleharvest_harvest_date', 'display_created_at', 'get_batch_merge_status', 'weight_received_display', 
+                    'get_batch_available_weight', 'status', 'display_available_for_processing', 'generate_actions_buttons',)
+    form = BatchForm
+    inlines = [IncomingProductInline]
+    list_filter = (ByProductForOrganizationBatchFilter, ByOrchardForOrganizationBatchFilter,ByProviderForOrganizationBatchFilter, 
+                   ByCategoryForOrganizationBatchFilter, 'status', 'is_available_for_processing', 'created_at')
+    list_per_page = 20
+    search_fields = ('ooid',)
+    actions = ['action_merge_batches', 'action_merge_into_existing_batch', 'action_unmerge_all_batches',
+               'action_unmerge_selected_batches']
+    admin.site.disable_action('delete_selected')
 
-class DryMatterInline(NestedTabularInline):
+    def has_add_permission(self, request):
+        return False
+
+    def get_weight_fields(self, is_parent):
+        base = ['display_own_weight_received', 'display_own_net_received']
+        extra = ['display_weight_received', 'display_available_weight'] if is_parent else []
+        return base + extra
+
+    def get_fieldsets(self, request, obj=None):
+        fields = ['ooid', 'status', 'is_available_for_processing', 'display_batch_role']
+        fields += self.get_weight_fields(obj.is_parent if obj else False)
+        return ((_('Batch Info'), {'fields': fields}),)
+
+    def get_readonly_fields(self, request, obj=None):
+        return ['ooid', 'display_batch_role'] + self.get_weight_fields(obj.is_parent if obj else False)
+
+    @admin.action(description=_('Merge selected batches into a single batch group'))
+    def action_merge_batches(self, request, queryset):
+        if queryset.count() < 2:
+            self.message_user(
+                request,
+                _('Select at least two batches to merge.'),
+                level=messages.WARNING
+            )
+            return
+
+        qs = queryset.select_related('incomingproduct__scheduleharvest')
+
+        # Validar provider/product/variety/phenology/status
+        try:
+            Batch.validate_merge_batches(qs)
+        except ValidationError as e:
+            self.message_user(request, e.message, level=messages.ERROR)
+            return
+
+        try:
+            parent_batch = Batch.merge_batches(qs)
+        except Exception as e:
+            self.message_user(
+                request,
+                _('An unexpected error occurred while merging batches: %s') % str(e),
+                level=messages.ERROR
+            )
+            return
+        
+        url = reverse(
+            'admin:%s_%s_change' % (
+                parent_batch._meta.app_label,
+                parent_batch._meta.model_name
+            ),
+            args=[parent_batch.pk]
+        )
+
+        msg = format_html(
+            _('Batches were successfully merged into <a href="{}">batch {}</a>.'),
+            url,
+            parent_batch.ooid
+        )
+
+        self.message_user(request, msg, level=messages.SUCCESS)
+
+    @admin.action(description=_('Merge batches to an existing batch group.'))
+    def action_merge_into_existing_batch(self, request, queryset):
+        if queryset.count() < 2:
+            self.message_user(
+                request,
+                _('Select at least two batches to merge.'),
+                level=messages.WARNING
+            )
+            return
+        qs = queryset.select_related('incomingproduct__scheduleharvest')
+
+        possible_parents = queryset.filter(
+            parent__isnull=True,
+            children__isnull=False
+        ).distinct()
+
+        if possible_parents.count() == 0:
+            self.message_user(
+                request,
+                _('You must select exactly one merged batch (a batch that already has batches merged into) as the destination.'),
+                level=messages.ERROR
+            )
+            return
+
+        if possible_parents.count() > 1:
+            self.message_user(
+                request,
+                _('Only one merged batch can be selected as destination, but multiple were found.'),
+                level=messages.ERROR
+            )
+            return
+        
+        parent = possible_parents.first()
+        children_to_add = qs.exclude(pk=parent.pk)
+
+        # Validar los lotes por añadir con los que ya fueron unidos
+        try:
+            Batch.validate_add_batches_to_existing_merge(parent, children_to_add)
+        except ValidationError as e:
+            self.message_user(
+                request,
+                _('Validation error: %s') % e.message,
+                level=messages.ERROR
+            )
+            return
+
+        # Unir lotes al lote existente dentro de una transacción
+        try:
+            Batch.add_batches_to_merge(parent, children_to_add)
+        except Exception as e:
+            self.message_user(
+                request,
+                _('An error occurred while saving batches: %s') % str(e),
+                level=messages.ERROR
+            )
+            return
+
+        url = reverse(
+            'admin:%s_%s_change' % (
+                parent._meta.app_label,
+                parent._meta.model_name
+            ),
+            args=[parent.pk]
+        )
+        msg = format_html(
+            _('Batches were successfully merged into <a href="{}">batch {}</a>.'),
+            url,
+            parent.ooid)
+        self.message_user(request, msg, level=messages.SUCCESS)
+
+    @admin.action(description=_('Unmerge all batches from this parent'))
+    def action_unmerge_all_batches(self, request, queryset):
+        if queryset.count() != 1:
+            self.message_user(
+                request,
+                _('Please select only one parent batch to unmerge.'),
+                level=messages.WARNING
+            )
+            return
+        parent_batch = queryset.first()
+        try:
+            Batch.unmerge_all_children(parent_batch)
+            self.message_user(
+                request,
+                _('All child batches of batch %(ooid)s were successfully unmerged.') % {'ooid': parent_batch.ooid},
+                level=messages.SUCCESS
+            )
+        except ValidationError as e:
+            self.message_user(
+                request,
+                e.message,
+                level=messages.ERROR
+            )
+    
+    @admin.action(description=_('Unmerge selected batches from parent.'))
+    def action_unmerge_selected_batches(self, request, queryset):
+        try:
+            Batch.unmerge_selected_children(queryset)
+            ooids = ', '.join(str(batch.ooid) for batch in queryset)
+            self.message_user(
+                request,
+                _('The following batches were successfully unmerged: %(ooids)s.') % {'ooids': ooids},
+                level=messages.SUCCESS
+            )
+        except ValidationError as e:
+            self.message_user(
+                request,
+                e.message,
+                level=messages.ERROR
+            )
+
+    def generate_actions_buttons(self, obj):
+        pass
+    generate_actions_buttons.short_description = _('Actions')
+    generate_actions_buttons.allow_tags = True
+    
+    def display_created_at(self, obj):
+        s = date_format(obj.created_at, format='DATETIME_FORMAT', use_l10n=True)
+        return format_html(
+            '<span style="display:inline-block; min-width:80px;">{}</span>',
+            s
+        )
+    display_created_at.short_description = _("Entry Date")
+    display_created_at.admin_order_field = 'created_at'
+
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/batch/batch_operation.js',
+              'js/admin/forms/packhouses/receiving/batch/weighingset_inline_for_batch.js',)
+
+
+# Inocuidad
+class DryMatterInline(nested_admin.NestedTabularInline):
     model = DryMatter
-    extra = 1
+    extra = 0
+    fields = ['product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter']
 
-    fields = ['product_weight', 'paper_weight', 'moisture_weight', 'dry_weight', 'dry_matter_percentage']
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/food_safety/average.js',)
 
-class InternalInspectionInline(NestedTabularInline):
+class InternalInspectionInline(nested_admin.NestedTabularInline):
     model = InternalInspection
-    extra = 1
-
+    extra = 0
     fields = ['internal_temperature', 'product_pest']
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -470,8 +819,7 @@ class InternalInspectionInline(NestedTabularInline):
                     food_safety = FoodSafety.objects.get(pk=object_id)
                     incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-                    product = schedule_harvest.product
-                    kwargs["queryset"] = ProductPest.objects.filter(product=product, pest__inside=True)
+                    kwargs["queryset"] = ProductPest.objects.filter(product=schedule_harvest.product, pest__pest__inside=True)
 
                 except InternalInspection.DoesNotExist:
                     kwargs['queryset'] = ProductPest.objects.none()
@@ -479,6 +827,9 @@ class InternalInspectionInline(NestedTabularInline):
                 kwargs['queryset'] = ProductPest.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packhouses/receiving/food_safety/average.js',)
 
 class VehicleInspectionInline(nested_admin.NestedTabularInline):
     model = VehicleInspection
@@ -517,39 +868,22 @@ class VehicleReviewInline(nested_admin.NestedStackedInline):
             food_safety = FoodSafety.objects.get(pk=object_id)
             incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-            kwargs["queryset"] = ScheduleHarvestVehicle.objects.filter(harvest_cutting_id=schedule_harvest)
+            kwargs["queryset"] = ScheduleHarvestVehicle.objects.filter(harvest_cutting_id=schedule_harvest, has_arrived=True)
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/select_vehicle.js',)
-
-class SensorySpecificationInline(nested_admin.NestedTabularInline):
-    model = SensorySpecification
-    extra = 0
-    min_num = 1
-    max_num = 1
-    can_delete = False
+        js = ('js/admin/forms/packhouses/receiving/food_safety/select_vehicle.js',)
 
 class SampleWeightInline(nested_admin.NestedTabularInline):
     model = SampleWeight
     extra = 0
-
     fields = ['weight']
-
-class SamplePestForm(forms.ModelForm):
-    class Meta:
-        model = SamplePest
-        fields = ['product_pest', 'sample_pest', 'percentage']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
 
 class SamplePestInline(nested_admin.NestedTabularInline):
     model = SamplePest
     extra = 0
     fields = ['product_pest', 'sample_pest', 'percentage']
-    form = SamplePestForm
+    readonly_fields = ['percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_pest":
@@ -559,7 +893,6 @@ class SamplePestInline(nested_admin.NestedTabularInline):
                     food_safety = FoodSafety.objects.get(pk=object_id)
                     incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
                     schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-                    print(ProductPest.objects.filter(product=schedule_harvest.product))
                     kwargs["queryset"] = ProductPest.objects.filter(product=schedule_harvest.product)
                 except FoodSafety.DoesNotExist:
                     kwargs['queryset'] = ProductPest.objects.none()
@@ -568,23 +901,11 @@ class SamplePestInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/percentage_pest.js',)
-
-class SampleDiseaseForm(forms.ModelForm):
-    class Meta:
-        model = SampleDisease
-        fields = ['product_disease', 'sample_disease', 'percentage']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
-
 class SampleDiseaseInline(nested_admin.NestedTabularInline):
     model = SampleDisease
     extra = 0
     fields = ['product_disease', 'sample_disease', 'percentage']
-    form = SampleDiseaseForm
+    readonly_fields = ['percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_disease":
@@ -602,23 +923,11 @@ class SampleDiseaseInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/percentage_disease.js',)
-
-class SamplePhysicalDamageForm(forms.ModelForm):
-    class Meta:
-        model = SamplePhysicalDamage
-        fields = ['product_physical_damage', 'sample_physical_damage', 'percentage']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
-
 class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
     model = SamplePhysicalDamage
     extra = 0
     fields = ['product_physical_damage', 'sample_physical_damage', 'percentage']
-    form = SamplePhysicalDamageForm
+    readonly_fields = ['percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_physical_damage":
@@ -636,23 +945,11 @@ class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/percentage_physical_damage.js',)
-
-class SampleResidueForm(forms.ModelForm):
-    class Meta:
-        model = SampleResidue
-        fields = ['product_residue', 'sample_residue', 'percentage']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['percentage'].widget.attrs['readonly'] = 'readonly'
-
 class SampleResidueInline(nested_admin.NestedTabularInline):
     model = SampleResidue
     extra = 0
     fields = ['product_residue', 'sample_residue', 'percentage']
-    form = SampleResidueForm
+    readonly_fields = ['percentage']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product_residue":
@@ -670,9 +967,6 @@ class SampleResidueInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    class Media:
-        js = ('js/admin/forms/packhouses/receiving/percentage_residue.js',)
-
 class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
     model = SampleCollection
     extra = 1
@@ -682,9 +976,12 @@ class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInl
     inlines = [SampleWeightInline, SamplePestInline, SampleDiseaseInline, SamplePhysicalDamageInline, SampleResidueInline]
 
     class Media:
-        js = ('js/admin/forms/packhouses/receiving/select_sample.js',)
+        js = (
+            'js/admin/forms/packhouses/receiving/food_safety/select_sample.js',
+            'js/admin/forms/packhouses/receiving/food_safety/percentage.js',
+            )
 
-class AverageInline(nested_admin.NestedTabularInline):
+class AverageInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
     model = Average
     can_delete = False
     extra = 0
@@ -696,14 +993,30 @@ class AverageInline(nested_admin.NestedTabularInline):
     def has_change_permission(self, request, obj=None):
         return False
 
-# Mapeo de nombres de inlines con sus clases
-INLINE_CLASSES = {
-    "DryMatter": DryMatterInline,
-    "InternalInspection": InternalInspectionInline,
-    "VehicleReview": VehicleReviewInline,
-    "SampleCollection": SampleCollectionInline,
-    "Average": AverageInline,
-}
+    def get_fields(self, request, obj=None):
+        include_fields = []
+
+        if not obj:
+            return include_fields
+
+        try:
+            incoming_product = IncomingProduct.objects.filter(batch=obj.batch).first()
+            schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
+            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__name_model', flat=True)
+            all_possible_fields = {
+                "DryMatter": ['acceptance_report', 'average_dry_matter'],
+                "InternalInspection": ['average_internal_temperature'],
+            }
+
+            # Detectar qué campos están relacionados con los modelos que NO están en la configuración
+            for model, campos in all_possible_fields.items():
+                if model in food_safety_config:
+                    include_fields.extend(campos)
+
+        except ProductFoodSafetyProcess.DoesNotExist:
+            pass
+
+        return include_fields
 
 @admin.register(FoodSafety)
 class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
@@ -711,7 +1024,23 @@ class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_filter = ['batch']
     inlines = [DryMatterInline, InternalInspectionInline, VehicleReviewInline, SampleCollectionInline, AverageInline]
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['batch'].widget.can_add_related = False
+        form.base_fields['batch'].widget.can_change_related = False
+        form.base_fields['batch'].widget.can_delete_related = False
+        form.base_fields['batch'].widget.can_view_related = False
+
+        return form
+
     def get_inlines(self, request, obj=None):
+        # Mapeo de nombres de inlines con sus clases
+        INLINE_CLASSES = {
+            "DryMatter": DryMatterInline,
+            "InternalInspection": InternalInspectionInline,
+            "VehicleReview": VehicleReviewInline,
+            "SampleCollection": SampleCollectionInline,
+        }
         inlines_list = []
 
         if not obj:
@@ -720,8 +1049,11 @@ class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         try:
             incoming_product = IncomingProduct.objects.filter(batch=obj.batch).first()
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__model', flat=True)
+            food_safety_config = ProductFoodSafetyProcess.objects.filter(product=schedule_harvest.product).values_list('procedure__name_model', flat=True)
             inlines_list = [INLINE_CLASSES[inline] for inline in food_safety_config if inline in INLINE_CLASSES]
+
+            if DryMatterInline in inlines_list or InternalInspectionInline in inlines_list:
+                inlines_list.append(AverageInline)
 
         except ProductFoodSafetyProcess.DoesNotExist:
             return inlines_list

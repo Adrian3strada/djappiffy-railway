@@ -5,7 +5,7 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from cities_light.models import Country, Region, SubRegion, City
-from organizations.models import Organization
+from organizations.models import Organization, OrganizationUser
 from polymorphic.models import PolymorphicModel
 from common.base.models import ProductKind
 from common.billing.models import LegalEntityCategory
@@ -83,6 +83,7 @@ class OrganizationProfile(PolymorphicModel):
         Organization,
         on_delete=models.CASCADE,
         null=True,
+        blank=True,
         verbose_name=_('Organization'),
         help_text=_('Linked Organization to this profile.'),
     )
@@ -107,6 +108,8 @@ class OrganizationProfile(PolymorphicModel):
         City,
         on_delete=models.PROTECT,
         verbose_name=_('District'),
+        blank=True,
+        null=True
     )
     postal_code = models.CharField(
         max_length=10,
@@ -170,7 +173,7 @@ class OrganizationProfile(PolymorphicModel):
     ### Products
     product_kinds = models.ManyToManyField(
         ProductKind,
-        blank=False,
+        blank=True,
         verbose_name=_('Product kinds'),
     )
 
@@ -180,7 +183,10 @@ class OrganizationProfile(PolymorphicModel):
     class Meta:
         verbose_name = _('Organization profile')
         verbose_name_plural = _('Organization profiles')
-
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'tax_id'],
+                                    name='organizationprofile_unique_name_tax_id'),
+        ]
 
 class ProducerProfile(OrganizationProfile):
 
@@ -202,16 +208,22 @@ class PackhouseExporterProfile(OrganizationProfile):
     sanitary_registry = models.CharField(max_length=50, verbose_name=_('Sanitary registry'))
     chain_of_custody = models.CharField(max_length=150, verbose_name=_('Chain of custody'))
 
+    def save(self, *args, **kwargs):
+        if not self.organization:
+            organization = Organization.objects.create(name=self.name)
+            self.organization = organization
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = _('Packhouse exporter profile')
         verbose_name_plural = _('Packhouse exporter profiles')
-
 
 class PackhouseExporterSetting(models.Model):
     profile = models.OneToOneField(PackhouseExporterProfile, on_delete=models.CASCADE, verbose_name=_('Packhouse exporter profile'))
     product_kinds = models.ManyToManyField(ProductKind, blank=True, verbose_name=_('Product kinds'))
     hostname = models.CharField(max_length=255, blank=False, null=False, verbose_name=_('Hostname'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+    user_organization = models.OneToOneField(OrganizationUser, on_delete=models.PROTECT, null=True, blank=True, verbose_name=_('User owner'))
 
     def clean(self):
         """
@@ -235,3 +247,18 @@ class TradeExporterProfile(OrganizationProfile):
     class Meta:
         verbose_name = _('Trade exporter profile')
         verbose_name_plural = _('Trade exporter profiles')
+
+
+class EudrOperatorProfile(OrganizationProfile):
+
+    eori_number = models.CharField(
+        max_length=30,
+        blank=True,
+        null=True,
+        verbose_name=_("EORI number"),
+        help_text=_("Required for importers"),
+    )
+
+    class Meta: 
+        verbose_name = _('EUDR operator profile')
+        verbose_name_plural = _('EUDR operator profiles')

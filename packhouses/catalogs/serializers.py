@@ -1,13 +1,13 @@
 from rest_framework import serializers
 from packhouses.catalogs.models import (
     Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, Pallet, ProductPackagingPallet,
-    ProductVariety, ProductPhenologyKind, ProductMassVolumeKind, Maquiladora, ProductPresentation,
+    ProductVariety, ProductPhenologyKind, Maquiladora, ProductPresentation, OrchardGeoLocation,
     CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, Packaging,
-    HarvestingCrew, OrchardCertification, ProductRipeness, ProductPackaging
+    HarvestingCrew, OrchardCertification, ProductRipeness, ProductPackaging, Service
 )
+from common.base.models import (PestProductKind, DiseaseProductKind)
 from django.utils.translation import gettext_lazy as _
-from packhouses.purchases.models import PurchaseOrderSupply
-
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -73,12 +73,6 @@ class ProductHarvestSizeKindSerializer(serializers.ModelSerializer):
 class ProductPhenologyKindSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductPhenologyKind
-        fields = '__all__'
-
-
-class ProductMassVolumeKindSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductMassVolumeKind
         fields = '__all__'
 
 
@@ -159,6 +153,30 @@ class OrchardSerializer(serializers.ModelSerializer):
         model = Orchard
         fields = '__all__'
 
+    def validate(self, data):
+        producer = data.get('producer')
+        producer_name = data.get('producer_name')
+        if not producer and not producer_name:
+            raise serializers.ValidationError(
+                _("Debe enviar al menos 'producer' o 'producer_name'.")
+            )
+        if producer and producer_name:
+            raise serializers.ValidationError(
+                _("No puede enviar ambos: 'producer' y 'producer_name'.")
+            )
+        return data
+
+    def create(self, validated_data):
+        if validated_data.get('producer'):
+            validated_data['producer_name'] = None
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if instance.producer or validated_data.get('producer'):
+            validated_data['producer_name'] = None
+        return super().update(instance, validated_data)
+
+
 class HarvestingCrewSerializer(serializers.ModelSerializer):
     class Meta:
         model = HarvestingCrew
@@ -170,56 +188,79 @@ class MaquiladoraSerializer(serializers.ModelSerializer):
         model = Maquiladora
         fields = '__all__'
 
-from rest_framework import serializers
 
 class OrchardCertificationSerializer(serializers.ModelSerializer):
-    verifier_name = serializers.SerializerMethodField()
-    expired_text = serializers.SerializerMethodField()
-
     class Meta:
         model = OrchardCertification
         fields = '__all__'
 
-    def get_verifier_name(self, obj):
-        return obj.verifier.name
+    def create(self, validated_data):
+        # Preserve 'certification_kind_name' only if 'certification_kind' is not provided
+        if not validated_data.get('certification_kind') and validated_data.get('certification_kind_name'):
+            # 'certification_kind_name' remains unchanged
+            pass
+        else:
+            # Clear 'certification_kind_name' if 'certification_kind' is provided
+            validated_data['certification_kind_name'] = None
 
-    def get_expired_text(self, obj):
-        return _('Expired')
+        # Preserve 'verifier_name' only if 'verifier' is not provided
+        if not validated_data.get('verifier') and validated_data.get('verifier_name'):
+            # 'verifier_name' remains unchanged
+            pass
+        else:
+            # Clear 'verifier_name' if 'verifier' is provided
+            validated_data['verifier_name'] = None
+
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        # Si ya existe FK, limpia el campo *_name
+        if validated_data.get('certification_kind'):
+            validated_data['certification_kind_name'] = None
+        if validated_data.get('verifier'):
+            validated_data['verifier_name'] = None
+        return super().update(instance, validated_data)
+
+
+class OrchardGeoLocationSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = OrchardGeoLocation
+        fields = '__all__'
+        geo_field = 'geom'
+
+    def validate(self, data):
+        geom = data.get('geom')
+        coordinates = data.get('coordinates')
+        file = data.get('file')
+
+        if not geom and not coordinates and not file:
+            raise serializers.ValidationError(
+                _("You must provide at least one of: 'geom', 'coordinates', or 'file'.")
+            )
+        return data
+
 
 class ProductRipenessSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductRipeness
         fields = '__all__'
 
-
-class PurchaseOrderSupplySerializer(serializers.ModelSerializer):
-    purchase_order_supply_options = serializers.SerializerMethodField()
+class ServiceSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = PurchaseOrderSupply
-        fields = ("id", "requisition_supply", "quantity", 'unit_category', 'delivery_deadline',
-                  "comments", "is_in_inventory", "purchase_order_supply_options")
+        model = Service
+        fields = '__all__'
 
-    def get_purchase_order_supply_options(self, obj):
-        unit_mapping = {
-            "cm": _("meters"),
-            "ml": _("liters"),
-            "gr": _("kilograms"),
-            "piece": _("pieces"),
-        }
+class PestProductKindSerializer(serializers.ModelSerializer):
+    pest = serializers.CharField(source='pest.name', read_only=True)
 
-        return [
-            {
-                "id": pos.id,
-                "kind": str(pos.requisition_supply.supply.kind),
-                "name": str(pos.requisition_supply.supply),
-                "unit": unit_mapping.get(
-                    getattr(pos.requisition_supply.supply.kind, "usage_discount_unit_category", ""),
-                    getattr(pos.requisition_supply.supply.kind, "usage_discount_unit_category", "")
-                ),
-                "real_unit": str(pos.requisition_supply.supply.kind.usage_discount_unit_category),
-            }
-            for pos in PurchaseOrderSupply.objects.filter(purchase_order=obj.purchase_order)
-        ]
+    class Meta:
+        model = PestProductKind
+        fields = ['id', 'pest']
 
+class DiseaseProductKindSerializer(serializers.ModelSerializer):
+    disease = serializers.CharField(source='disease.name', read_only=True)
 
+    class Meta:
+        model = DiseaseProductKind
+        fields = ['id', 'disease']

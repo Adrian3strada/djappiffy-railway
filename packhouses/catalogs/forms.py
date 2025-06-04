@@ -9,6 +9,18 @@ from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from common.utils import is_instance_used
+from django.contrib.gis.forms import OSMWidget
+
+from django.contrib.gis import forms as gis_forms
+# Register your forms here.
+
+
+class OLGoogleMapsSatelliteWidget(OSMWidget):
+    template_name = "gis/ol-googlemaps-satellite.html"
+    default_lon = -102
+    default_lat = 20
+    default_zoom = 5
+    # map_srid = 4326
 
 
 class ProductSeasonKindInlineFormSet(BaseInlineFormSet):
@@ -19,25 +31,7 @@ class ProductSeasonKindInlineFormSet(BaseInlineFormSet):
             instance = form.instance
 
             # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductSize.objects.all().exists(): #filter(product_season_kind=instance).exists():
-                form.fields['name'].disabled = True
-                form.fields['name'].widget.attrs.update(
-                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
-                form.fields['DELETE'].initial = False
-                form.fields['DELETE'].disabled = True
-                form.fields['DELETE'].widget.attrs.update(
-                    {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'hidden'})
-
-
-class ProductMassVolumeKindInlineFormSet(BaseInlineFormSet):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        for form in self.forms:
-            instance = form.instance
-
-            # Verifica si la instancia de ProductVariety está en uso
-            if instance.pk and ProductSize.objects.all().exists():#filter(product_mass_volume_kind=instance).exists():
+            if instance.pk and ProductSize.objects.all().exists():
                 form.fields['name'].disabled = True
                 form.fields['name'].widget.attrs.update(
                     {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'readonly-field'})
@@ -183,4 +177,9 @@ class ProviderForm(forms.ModelForm):
 
         if category == 'harvesting_provider' and not vehicle_provider:
             self.add_error('vehicle_provider', _('This field is required when category is Harvesting Provider.'))
+
         return cleaned_data
+
+
+
+

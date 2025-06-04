@@ -10,6 +10,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 158,
     "countries": [
       158
     ]
@@ -26,6 +27,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 2,
+    "country": 158,
     "countries": [
       158
     ]
@@ -42,6 +44,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 234,
     "countries": [
       234
     ]
@@ -58,6 +61,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 38,
     "countries": [
       38
     ]
@@ -74,6 +78,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 49,
     "countries": [
       49
     ]
@@ -90,6 +95,7 @@
     "address_label": null,
     "is_enabled": true,
     "organization": 1,
+    "country": 211,
     "countries": [
       211
     ]
@@ -686,66 +692,7 @@
     "sort_order": 9
   }
 },
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 1,
-  "fields": {
-    "name": "ESTANDAR",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 2,
-  "fields": {
-    "name": "ENMALLADO",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 3,
-  "fields": {
-    "name": "ORGÁNICO",
-    "is_enabled": true,
-    "product": 1,
-    "sort_order": 2
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 4,
-  "fields": {
-    "name": "ESTANDAR",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 0
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 5,
-  "fields": {
-    "name": "ENMALLADO",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 1
-  }
-},
-{
-  "model": "catalogs.productmassvolumekind",
-  "pk": 6,
-  "fields": {
-    "name": "ORGÁNICO",
-    "is_enabled": true,
-    "product": 2,
-    "sort_order": 2
-  }
-},
+
 {
   "model": "catalogs.productripeness",
   "pk": 1,
@@ -2136,7 +2083,8 @@
     "verifier": 1,
     "extra_code": "6637H",
     "is_enabled": true,
-    "orchard": 1
+    "orchard": 1,
+    "created_at": "2025-03-24T17:30:45.174Z"
   }
 },
 {
@@ -2149,7 +2097,8 @@
     "verifier": 4,
     "extra_code": "665D7H",
     "is_enabled": true,
-    "orchard": 2
+    "orchard": 2,
+    "created_at": "2025-03-24T17:30:45.174Z"
   }
 },
 {
@@ -2943,7 +2892,7 @@
   "fields": {
     "kind": 9,
     "name": "CAJA DE CAMPO DE 25",
-    "capacity": null,
+    "capacity": 25.0,
     "minimum_stock_quantity": 100,
     "maximum_stock_quantity": 20000,
     "usage_discount_quantity": 1,
@@ -2958,7 +2907,7 @@
   "fields": {
     "kind": 9,
     "name": "CAJA DE CAMPO DE 20",
-    "capacity": null,
+    "capacity": 20.0,
     "minimum_stock_quantity": 100,
     "maximum_stock_quantity": 20000,
     "usage_discount_quantity": 1,
@@ -2971,7 +2920,6 @@
   "model": "catalogs.pallet",
   "pk": 1,
   "fields": {
-    "market": 1,
     "product": 1,
     "supply": 22,
     "name": "AGUACATE MX MADERA 14",
@@ -2984,37 +2932,10 @@
   "model": "catalogs.pallet",
   "pk": 2,
   "fields": {
-    "market": 1,
     "product": 1,
     "supply": 23,
     "name": "AGUACATE MX PLASTICO 14",
     "alias": "AAP14",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.pallet",
-  "pk": 3,
-  "fields": {
-    "market": 3,
-    "product": 1,
-    "supply": 23,
-    "name": "AGUACATE US PLASTICO 11",
-    "alias": "AGUSP11",
-    "is_enabled": true,
-    "organization": 1
-  }
-},
-{
-  "model": "catalogs.pallet",
-  "pk": 4,
-  "fields": {
-    "market": 3,
-    "product": 1,
-    "supply": 22,
-    "name": "AGUACATE US MADERA 14",
-    "alias": "AGUSM14",
     "is_enabled": true,
     "organization": 1
   }
@@ -3382,7 +3303,7 @@
   "pk": 7,
   "fields": {
     "product_packaging": 4,
-    "pallet": 4,
+    "pallet": 1,
     "product_packaging_quantity": 80,
     "is_enabled": true
   }
@@ -3392,7 +3313,7 @@
   "pk": 8,
   "fields": {
     "product_packaging": 4,
-    "pallet": 3,
+    "pallet": 2,
     "product_packaging_quantity": 80,
     "is_enabled": true
   }
@@ -3402,7 +3323,7 @@
   "pk": 9,
   "fields": {
     "product_packaging": 2,
-    "pallet": 4,
+    "pallet": 2,
     "product_packaging_quantity": 90,
     "is_enabled": true
   }

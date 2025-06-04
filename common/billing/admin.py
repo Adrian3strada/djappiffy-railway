@@ -9,7 +9,7 @@ class BillingSerieInline(admin.TabularInline):
     extra = 0
 
 @admin.register(LegalEntity)
-class LegalEntityAdmin(admin.ModelAdmin):
+class LegalEntityAdmin(ByOrganizationAdminMixin, admin.ModelAdmin):
     inlines = [BillingSerieInline]
 
 @admin.register(ExchangeRate)

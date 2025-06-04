@@ -50,7 +50,7 @@ class SubdomainDetectionMiddleware:
     def __call__(self, request):
         requested_hostname = self._get_request_hostname(request)
 
-        if re.match(r'^/(dadmin|rest)/.+', request.path):
+        if re.match(r'^/(dadmin|rest)/.*', request.path):
             ### Ask for Settings
             try:
                 requested_settings = PackhouseExporterSetting.objects.get(
@@ -121,3 +121,14 @@ class SubdomainDetectionMiddleware:
         """
         return (self._is_user_in_organization(user, organization) and
                 user.is_active and user.is_staff) or user.is_superuser
+
+class AdjustUploadLimitsMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+        self.allowed_paths = settings.LARGE_UPLOAD_ALLOWED_PATH_URLS
+        self.max_fields = settings.LARGE_UPLOAD_FIELD_LIMIT
+
+    def __call__(self, request):
+        if request.path in self.allowed_paths and request.method == "POST":
+            request.META['DATA_UPLOAD_MAX_NUMBER_FIELDS'] = self.max_fields
+        return self.get_response(request)

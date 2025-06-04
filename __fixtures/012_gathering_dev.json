@@ -11,7 +11,7 @@
     "maquiladora": null,
     "product": 1,
     "product_variety": 1,
-    "product_phenologies": 1,
+    "product_phenology": 1,
     "product_harvest_size_kind": 1,
     "orchard": 1,
     "market": 1,
@@ -22,11 +22,8 @@
     "comments": "",
     "created_at": "2025-03-24T17:30:45.174Z",
     "organization": 1,
-    "incoming_product": 1,
-    "orchard_certification": [
-        1
-    ]
-    }
+    "incoming_product": 1
+  }
 },
 {
     "model": "gathering.scheduleharvest",
@@ -40,7 +37,7 @@
     "maquiladora": 3,
     "product": 1,
     "product_variety": 1,
-    "product_phenologies": 3,
+    "product_phenology": 3,
     "product_harvest_size_kind": 1,
     "orchard": 1,
     "market": 3,
@@ -51,11 +48,8 @@
     "comments": "",
     "created_at": "2025-04-12T15:41:50.413Z",
     "organization": 1,
-    "incoming_product": 2,
-    "orchard_certification": [
-        1
-    ]
-    }
+    "incoming_product": 2
+  }
 },
 {
     "model": "gathering.scheduleharvest",
@@ -69,7 +63,7 @@
     "maquiladora": 2,
     "product": 1,
     "product_variety": 1,
-    "product_phenologies": 1,
+    "product_phenology": 1,
     "product_harvest_size_kind": 5,
     "orchard": 1,
     "market": 6,
@@ -80,11 +74,8 @@
     "comments": "",
     "created_at": "2025-04-12T15:43:29.809Z",
     "organization": 1,
-    "incoming_product": 3,
-    "orchard_certification": [
-        1
-    ]
-    }
+    "incoming_product": 3
+  }
 },
 {
     "model": "gathering.scheduleharvest",
@@ -98,7 +89,7 @@
     "maquiladora": null,
     "product": 1,
     "product_variety": 2,
-    "product_phenologies": 3,
+    "product_phenology": 3,
     "product_harvest_size_kind": 14,
     "orchard": 1,
     "market": 4,
@@ -109,11 +100,8 @@
     "comments": "",
     "created_at": "2025-04-12T15:45:52.667Z",
     "organization": 1,
-    "incoming_product": 4,
-    "orchard_certification": [
-        1
-    ]
-    }
+    "incoming_product": 4
+  }
 },
 {
     "model": "gathering.scheduleharvest",
@@ -127,7 +115,7 @@
     "maquiladora": 1,
     "product": 1,
     "product_variety": 2,
-    "product_phenologies": 2,
+    "product_phenology": 2,
     "product_harvest_size_kind": 1,
     "orchard": 2,
     "market": 1,
@@ -138,11 +126,86 @@
     "comments": "",
     "created_at": "2025-04-12T15:48:28.844Z",
     "organization": 1,
-    "incoming_product": 5,
-    "orchard_certification": [
-        2
-    ]
-    }
+    "incoming_product": 5
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 6,
+  "fields": {
+    "ooid": 6,
+    "harvest_date": "2025-05-03",
+    "product_provider": 7,
+    "category": "gathering",
+    "gatherer": 1,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 1,
+    "product_phenology": 1,
+    "product_harvest_size_kind": 2,
+    "orchard": 1,
+    "market": 4,
+    "weight_expected": 0.0,
+    "weighing_scale": 2,
+    "meeting_point": "En la bascula",
+    "status": "ready",
+    "comments": "Pasar por el camión a la bascula",
+    "created_at": "2025-05-02T22:04:42.349Z",
+    "organization": 1,
+    "incoming_product": null
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 7,
+  "fields": {
+    "ooid": 7,
+    "harvest_date": "2025-05-07",
+    "product_provider": 7,
+    "category": "gathering",
+    "gatherer": 1,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 1,
+    "product_phenology": 1,
+    "product_harvest_size_kind": 2,
+    "orchard": 1,
+    "market": 3,
+    "weight_expected": 0.0,
+    "weighing_scale": 1,
+    "meeting_point": "En la bascula",
+    "status": "ready",
+    "comments": "",
+    "created_at": "2025-05-06T17:11:10.348Z",
+    "organization": 1,
+    "incoming_product": null
+  }
+},
+{
+  "model": "gathering.scheduleharvest",
+  "pk": 8,
+  "fields": {
+    "ooid": 8,
+    "harvest_date": "2025-05-08",
+    "product_provider": null,
+    "category": "gathering",
+    "gatherer": 1,
+    "maquiladora": null,
+    "product": 1,
+    "product_variety": 1,
+    "product_phenology": 1,
+    "product_harvest_size_kind": 1,
+    "orchard": 2,
+    "market": 4,
+    "weight_expected": 0.0,
+    "weighing_scale": 2,
+    "meeting_point": "En la bascula",
+    "status": "open",
+    "comments": "",
+    "created_at": "2025-05-08T23:31:16.104Z",
+    "organization": 1,
+    "incoming_product": null
+  }
 },
 {
     "model": "gathering.scheduleharvestharvestingcrew",
@@ -334,7 +397,7 @@
     "full_containers": 200,
     "empty_containers": 38,
     "missing_containers": 0,
-    "created_by": "gathering"
+    "created_at_model": "gathering"
     }
 },
 {
@@ -347,7 +410,7 @@
     "full_containers": 10,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -360,7 +423,7 @@
     "full_containers": 90,
     "empty_containers": 10,
     "missing_containers": 0,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -373,7 +436,7 @@
     "full_containers": 100,
     "empty_containers": 10,
     "missing_containers": 10,
-    "created_by": "gathering"
+    "created_at_model": "gathering"
     }
 },
 {
@@ -386,7 +449,7 @@
     "full_containers": 77,
     "empty_containers": 2,
     "missing_containers": 1,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -399,7 +462,7 @@
     "full_containers": 30,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "gathering"
+    "created_at_model": "gathering"
     }
 },
 {
@@ -412,7 +475,7 @@
     "full_containers": 0,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -425,7 +488,7 @@
     "full_containers": 0,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "gathering"
+    "created_at_model": "gathering"
     }
 },
 {
@@ -438,7 +501,7 @@
     "full_containers": 30,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -451,7 +514,7 @@
     "full_containers": 20,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -464,7 +527,7 @@
     "full_containers": 20,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "gathering"
+    "created_at_model": "gathering"
     }
 },
 {
@@ -477,7 +540,7 @@
     "full_containers": 60,
     "empty_containers": 0,
     "missing_containers": 0,
-    "created_by": "incoming_product"
+    "created_at_model": "incoming_product"
     }
 },
 {
@@ -490,7 +553,7 @@
     "full_containers": 0,
     "empty_containers": 0,
     "missing_containers": 60,
-    "created_by": "gathering"
+    "created_at_model": "gathering"
     }
 }
 ]

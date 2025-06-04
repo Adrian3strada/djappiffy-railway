@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function setPalletOptions() {
     if (marketField.val() && productField.val()) {
-      fetchOptions(`/rest/v1/catalogs/pallet/?market=${marketField.val()}&product=${productField.val()}&is_enabled=1`)
+      fetchOptions(`/rest/v1/catalogs/pallet/?product=${productField.val()}&is_enabled=1`)
         .then(data => {
           palletOptions = data;
         })

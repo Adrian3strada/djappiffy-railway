@@ -1,0 +1,11 @@
+.dj_map {
+    width: 100%; /* Ajusta el ancho según sea necesario */
+    height: 400px; /* Ajusta la altura según sea necesario */
+    border: 1px solid #ccc; /* Opcional: para visualizar los bordes */
+}
+
+.dj_map_wrapper {
+  position: relative;
+  float: left;
+  width: 100%;
+}

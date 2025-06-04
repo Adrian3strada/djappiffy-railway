@@ -1,6 +1,6 @@
 from common.base.router import drf_router
 from .viewsets import (UserProfileViewSet, OrganizationProfileViewSet, ProducerProfileViewSet, ImporterProfileViewSet,
-                       PackhouseExporterProfileViewSet, TradeExporterProfileViewSet)
+                       PackhouseExporterProfileViewSet, TradeExporterProfileViewSet, EudrOperatorProfileViewSet)
 
 # write your urls here
 
@@ -10,5 +10,6 @@ drf_router.register(r'rest/v1/profiles/producer-profile', ProducerProfileViewSet
 drf_router.register(r'rest/v1/profiles/importer-profile', ImporterProfileViewSet, basename='importer-profile')
 drf_router.register(r'rest/v1/profiles/packhouse-exporter-profile', PackhouseExporterProfileViewSet, basename='packhouse-exporter-profile')
 drf_router.register(r'rest/v1/profiles/trade-exporter-profile', TradeExporterProfileViewSet, basename='trade-exporter-profile')
+drf_router.register(r'rest/v1/profiles/eudr-operator-profile', EudrOperatorProfileViewSet, basename='eudr-operator-profile')
 
 urlpatterns = drf_router.urls

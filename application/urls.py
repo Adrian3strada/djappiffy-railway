@@ -13,6 +13,7 @@ from packhouses.purchases.views import (requisition_pdf, set_requisition_ready, 
                                         set_purchase_order_supply_ready, set_purchase_order_supply_open,
                                         set_purchase_order_supply_payment)
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from .admin import custom_index
 
 
 urlpatterns = [
@@ -59,8 +60,11 @@ urlpatterns = [
     path("", include("common.billing.urls")),
     path("", include("packhouses.catalogs.urls")),
     path("", include("packhouses.packhouse_settings.urls")),
+    path("", include("packhouses.storehouse.urls")),
     path("", include("eudr.parcels.urls")),
     path("", include("packhouses.receiving.urls")),
+    path("", include("eudr.operators.urls")),
+    path("", include("packhouses.gathering.urls")),
 
     # Internationalization
     path("i18n/", include("django.conf.urls.i18n")),

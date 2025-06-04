@@ -2,6 +2,7 @@ from django.db import models
 from organizations.models import Organization
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
+from organizations.models import OrganizationUser, OrganizationOwner
 import os
 
 
@@ -25,7 +26,8 @@ class CleanKindAndOrganizationMixin(models.Model):
             errors = e.message_dict
 
         if self.organization_id:
-            if self.__class__.objects.filter(kind=self.kind, organization=self.organization).exclude(pk=self.pk).exists():
+            if self.__class__.objects.filter(kind=self.kind, organization=self.organization).exclude(
+                pk=self.pk).exists():
                 errors['kind'] = _('Kind must be unique, it already exists.')
 
         if errors:
@@ -33,7 +35,6 @@ class CleanKindAndOrganizationMixin(models.Model):
 
     class Meta:
         abstract = True
-
 
 
 class CleanUniqueNameForOrganizationMixin(models.Model):
@@ -53,7 +54,8 @@ class CleanUniqueNameForOrganizationMixin(models.Model):
             errors = e.message_dict
 
         if self.organization_id:
-            if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(pk=self.pk).exists():
+            if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(
+                pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
 
         if errors:
@@ -65,7 +67,6 @@ class CleanUniqueNameForOrganizationMixin(models.Model):
 
     class Meta:
         abstract = True
-
 
 
 class CleanNameAndOrganizationMixin(models.Model):
@@ -88,7 +89,8 @@ class CleanNameAndOrganizationMixin(models.Model):
             errors = e.message_dict
 
         if self.organization_id:
-            if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(pk=self.pk).exists():
+            if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(
+                pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
 
         if errors:
@@ -126,9 +128,11 @@ class CleanNameAndCodeAndOrganizationMixin(models.Model):
             errors = e.message_dict
 
         if self.organization_id:
-            if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(pk=self.pk).exists():
+            if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(
+                pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
-            if self.__class__.objects.filter(code=self.code, organization=self.organization).exclude(pk=self.pk).exists():
+            if self.__class__.objects.filter(code=self.code, organization=self.organization).exclude(
+                pk=self.pk).exists():
                 errors['code'] = _('Code must be unique, it already exists.')
 
         if errors:
@@ -163,8 +167,8 @@ class CleanNameAndCategoryAndOrganizationMixin(models.Model):
             errors = e.message_dict
 
         if self.organization_id:
-            if self.__class__.objects.filter(name=self.name, category=self.category, organization=self.organization).exclude(
-                pk=self.pk).exists():
+            if self.__class__.objects.filter(name=self.name, category=self.category,
+                                             organization=self.organization).exclude(pk=self.pk).exists():
                 errors['name'] = _('Name and category must be unique, it already exists a registry with this data.')
                 errors['category'] = _('Name and category must be unique, it already exists a registry with this data.')
 
@@ -203,9 +207,11 @@ class CleanNameOrAliasAndOrganizationMixin(models.Model):
             errors = e.message_dict
 
         if self.organization_id:
-            if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(pk=self.pk).exists():
+            if self.__class__.objects.filter(name=self.name, organization=self.organization).exclude(
+                pk=self.pk).exists():
                 errors['name'] = _('Must be unique, it already exists.')
-            if self.__class__.objects.filter(alias=self.alias, organization=self.organization).exclude(pk=self.pk).exists():
+            if self.__class__.objects.filter(alias=self.alias, organization=self.organization).exclude(
+                pk=self.pk).exists():
                 errors['alias'] = _('Must be unique, it already exists.')
 
         if errors:
@@ -260,8 +266,6 @@ class CleanNameAndAliasProductMixin(models.Model):
     def clean(self):
         self.name = getattr(self, 'name', None)
         self.alias = getattr(self, 'alias', None)
-        self.product = getattr(self, 'product', None)
-        self.product_id = getattr(self, 'product_id', None)
 
         if self.name:
             self.name = self.name.upper()
@@ -275,12 +279,6 @@ class CleanNameAndAliasProductMixin(models.Model):
             super().clean()
         except ValidationError as e:
             errors = e.message_dict
-
-        if self.product_id:
-            if self.__class__.objects.filter(name=self.name, product=self.product).exclude(pk=self.pk).exists():
-                errors['name'] = _('Name must be unique, it already exists.')
-            if self.__class__.objects.filter(alias=self.alias, product=self.product).exclude(pk=self.pk).exists():
-                errors['alias'] = _('Alias must be unique, it already exists.')
 
         if errors:
             raise ValidationError(errors)
@@ -339,7 +337,8 @@ class CleanProductVarietyMixin(models.Model):
             errors = e.message_dict
 
         if self.product_variety_id:
-            if self.__class__.objects.filter(name=self.name, product_variety=self.product_varieties).exclude(pk=self.pk).exists():
+            if self.__class__.objects.filter(name=self.name, product_variety=self.product_varieties).exclude(
+                pk=self.pk).exists():
                 errors['name'] = _('Name must be unique, it already exists.')
 
         if errors:
@@ -442,8 +441,10 @@ class CleanNameAndVarietyAndMarketAndVolumeKindMixin(models.Model):
             errors = e.message_dict
 
         if self.product_variety_id and self.market_id and self.product_mass_volume_kind_id:
-            if self.__class__.objects.filter(name=self.name, product_variety=self.product_varieties, market=self.markets,
-                                             product_mass_volume_kind=self.product_mass_volume_kind).exclude(pk=self.pk).exists():
+            if self.__class__.objects.filter(name=self.name, product_variety=self.product_varieties,
+                                             market=self.markets,
+                                             product_mass_volume_kind=self.product_mass_volume_kind).exclude(
+                pk=self.pk).exists():
                 errors['name'] = _('Name, variety, market and volume kind must be unique together.')
                 errors['product_variety'] = _('Name, variety, market and volume kind must be unique together.')
                 errors['market'] = _('Name, variety, market and volume kind must be unique together.')
@@ -549,8 +550,8 @@ class CleanNameAndServiceProviderAndOrganizationMixin(models.Model):
             errors = e.message_dict
 
         if self.organization_id and self.service_provider_id:
-            if self.__class__.objects.filter(name=self.name, service_provider=self.service_provider, organization=self.organization).exclude(pk=self.pk).exists():
-
+            if self.__class__.objects.filter(name=self.name, service_provider=self.service_provider,
+                                             organization=self.organization).exclude(pk=self.pk).exists():
                 errors['name'] = _('Name and service provider must be unique together.')
                 errors['service_provider'] = _('Name and service provider must be unique together.')
 
@@ -564,6 +565,7 @@ class CleanNameAndServiceProviderAndOrganizationMixin(models.Model):
     class Meta:
         abstract = True
 
+
 class CleanDocumentsMixin(models.Model):
     def save(self, *args, **kwargs):
         try:
@@ -572,7 +574,7 @@ class CleanDocumentsMixin(models.Model):
                 if os.path.isfile(old_instance.route.path):
                     os.remove(old_instance.route.path)
         except self.__class__.DoesNotExist:
-            pass 
+            pass
 
         super().save(*args, **kwargs)
 
@@ -583,3 +585,33 @@ class CleanDocumentsMixin(models.Model):
 
     class Meta:
         abstract = True
+
+
+class OrganizationRoleMixin:
+
+    def get_org_user(self, request, user):
+        if not user:
+            return null
+        return OrganizationUser.objects.filter(organization=request.organization, user=user).first()
+
+    def is_owner(self, request, org_user):
+        if not org_user:
+            return False
+        return OrganizationOwner.objects.filter(organization=request.organization,
+                                                organization_user_id=org_user).exists()
+
+
+class ReadOnlyIfCanceledMixin:
+    """
+    Hace todos los campos de solo lectura si el modelo está en un status='canceled'.
+    """
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        parent_obj = self._get_parent_obj(request)
+        if parent_obj and parent_obj.status in ['canceled']:
+            readonly_fields.extend([
+                field.name for field in self.model._meta.fields
+                if field.name not in readonly_fields
+            ])
+        return readonly_fields

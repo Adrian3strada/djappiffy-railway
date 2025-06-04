@@ -2,7 +2,7 @@ from django.utils.translation import gettext_lazy as _
 from django.db import transaction
 from django.forms.models import BaseInlineFormSet
 
-def update_pallet_numbers(incoming_product):
+def update_weighing_set_numbers(incoming_product):
     pallets = incoming_product.weighingset_set.all().order_by('id')
     with transaction.atomic():
         for index, pallet in enumerate(pallets, start=1):
@@ -10,12 +10,19 @@ def update_pallet_numbers(incoming_product):
                 pallet.ooid = index
                 pallet.save(update_fields=['ooid'])
 
-def get_incoming_product_categories_status():
+def get_processing_status_choices():
     return [
         ('pending', _('Pending')),
-        ('accepted', _('Accepted')),
-        ('rejected', _('Rejected')),
-        ('quarintine', _('Quarintine')),
+        ('in_operation', 'In Operation'),
+        ('in_another_batch', 'In Another Batch'),
+        ('canceled', 'Canceled'),
+        ('finalized', 'Finalized'),
+]
+
+def get_batch_status_change (): 
+    return [
+        ('operational_status', 'Operational Status'),
+        ('review_status',      'Review Status'),
     ]
 
 class CustomScheduleHarvestFormSet(BaseInlineFormSet):

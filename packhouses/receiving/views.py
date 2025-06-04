@@ -17,27 +17,30 @@ import json
 from .resources import get_model_fields_verbose_names, transform_data
 from .forms import ContainerInlineForm
 
+
 def create_contenedor(request):
     if request.method == 'POST':
         form = ContainerInlineForm(request.POST)
         if form.is_valid():
-            form.save()  
+            form.save()
     else:
         form = ContainerInlineForm()
     return
-    
+
+
 def weighing_set_report(request, pk):
     # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
     if not request.user.is_authenticated:
         login_url = reverse('admin:login')
         return redirect(login_url)
     incomingProduct = get_object_or_404(IncomingProduct, pk=pk)
-    
+
     # Obtener Datos de la Organización
     if hasattr(request, 'organization'):
         organization = request.organization.organizationprofile.name
-        add =  request.organization.organizationprofile.address
+        add = request.organization.organizationprofile.address
         organization_profile = request.organization.organizationprofile
+
         def get_name(model, obj_id, default):
             if obj_id:
                 try:
@@ -68,18 +71,17 @@ def weighing_set_report(request, pk):
     # Obtener pallets de IncomingProduct y transformar datos
     pallet_received_records = incomingProduct.weighingset_set.all()
     pallet_received_json = serializers.serialize('json', pallet_received_records)
-    
+
     json_data = json.loads(pallet_received_json)
-    if json_data: 
-       headers = list(json_data[0]['fields'].keys())
-    else: 
-        headers = [] 
-    
-    # Excluir los campos no deseados
-    excluded_fields = ['id', 'incoming_product']
+    if json_data:
+        headers = list(json_data[0]['fields'].keys())
+    else:
+        headers = []
+
+        # Excluir los campos no deseados
+    excluded_fields = ['id', 'incoming_product', 'protected']
     headers = get_model_fields_verbose_names(WeighingSet, excluded_fields=excluded_fields)
 
-        
     data = [[item['fields'].get(header) for header in headers] for item in json_data]
     # Transformar los datos del queryset
     data = transform_data(pallet_received_records, excluded_fields=excluded_fields)
@@ -118,7 +120,7 @@ def weighing_set_report(request, pk):
     # Convertir el HTML a PDF
     html = HTML(string=html_string, base_url=base_url)
     pdf_buffer = BytesIO()
-    html.write_pdf(pdf_buffer, stylesheets=[css],)
+    html.write_pdf(pdf_buffer, stylesheets=[css], )
 
     # Traducir el nombre del archivo manualmente
     filename = f"{_('weighing_set')}_{incomingProduct.id}.pdf"

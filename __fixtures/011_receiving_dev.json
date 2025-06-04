@@ -1,159 +1,278 @@
-
 [
 {
-    "model": "receiving.batch",
-    "pk": 1,
-    "fields": {
-        "status" : "Pending 1",
-        "ooid" : 1,
-        "organization" : 1
-    }
+  "model": "receiving.batch",
+  "pk": 1,
+  "fields": {
+    "ooid": 1,
+    "status": "open",
+    "is_available_for_processing": false,
+    "created_at": "2025-03-24T17:30:45.174Z",
+    "organization": 1,
+    "parent": null
+  }
 },
 {
-    "model": "receiving.batch",
-    "pk": 2,
-    "fields": {
-        "status" : "Pending 2",
-        "ooid" : 2,
-        "organization" : 1
-    }
+  "model": "receiving.batch",
+  "pk": 2,
+  "fields": {
+    "ooid": 2,
+    "status": "open",
+    "is_available_for_processing": false,
+    "created_at": "2025-03-24T17:30:45.174Z",
+    "organization": 1,
+    "parent": null
+  }
 },
 {
-    "model": "receiving.batch",
-    "pk": 3,
-    "fields": {
-        "status" : "Pending 3",
-        "ooid" : 3,
-        "organization" : 1
-    }
+  "model": "receiving.batch",
+  "pk": 3,
+  "fields": {
+    "ooid": 3,
+    "status": "open",
+    "is_available_for_processing": false,
+    "created_at": "2025-03-24T17:30:45.174Z",
+    "organization": 1,
+    "parent": null
+  }
 },
 {
-    "model": "receiving.incomingproduct",
-    "pk": 1,
-    "fields": {
-    "status": "accepted",
+  "model": "receiving.batchweightmovement",
+  "pk": 1,
+  "fields": {
+    "batch": 1,
+    "weight": 886.0,
+    "created_at": "2025-05-24T17:26:31.721Z",
+    "source": {
+      "model": "WeighingSet",
+      "id": 1,
+      "gross_weight": 900.0,
+      "container_tare": 12.0,
+      "platform_tare": 2.0
+    }
+  }
+},
+{
+  "model": "receiving.batchweightmovement",
+  "pk": 2,
+  "fields": {
+    "batch": 1,
+    "weight": 977.0,
+    "created_at": "2025-05-24T17:26:31.723Z",
+    "source": {
+      "model": "WeighingSet",
+      "id": 2,
+      "gross_weight": 1000.0,
+      "container_tare": 20.0,
+      "platform_tare": 3.0
+    }
+  }
+},
+{
+  "model": "receiving.batchweightmovement",
+  "pk": 3,
+  "fields": {
+    "batch": 1,
+    "weight": 801.0,
+    "created_at": "2025-05-24T17:26:31.725Z",
+    "source": {
+      "model": "WeighingSet",
+      "id": 3,
+      "gross_weight": 820.0,
+      "container_tare": 15.0,
+      "platform_tare": 4.0
+    }
+  }
+},
+{
+  "model": "receiving.batchweightmovement",
+  "pk": 4,
+  "fields": {
+    "batch": 1,
+    "weight": 740.0,
+    "created_at": "2025-05-24T17:26:31.727Z",
+    "source": {
+      "model": "WeighingSet",
+      "id": 4,
+      "gross_weight": 750.0,
+      "container_tare": 9.0,
+      "platform_tare": 1.0
+    }
+  }
+},
+{
+  "model": "receiving.batchweightmovement",
+  "pk": 5,
+  "fields": {
+    "batch": 1,
+    "weight": 1068.2,
+    "created_at": "2025-05-24T17:26:31.729Z",
+    "source": {
+      "model": "WeighingSet",
+      "id": 5,
+      "gross_weight": 1100.0,
+      "container_tare": 30.0,
+      "platform_tare": 1.8
+    }
+  }
+},
+{
+  "model": "receiving.batchweightmovement",
+  "pk": 6,
+  "fields": {
+    "batch": 2,
+    "weight": 883.0,
+    "created_at": "2025-05-24T17:26:31.731Z",
+    "source": {
+      "model": "WeighingSet",
+      "id": 6,
+      "gross_weight": 900.0,
+      "container_tare": 15.0,
+      "platform_tare": 2.0
+    }
+  }
+},
+{
+  "model": "receiving.batchweightmovement",
+  "pk": 7,
+  "fields": {
+    "batch": 2,
+    "weight": 1184.0,
+    "created_at": "2025-05-24T17:26:31.732Z",
+    "source": {
+      "model": "WeighingSet",
+      "id": 7,
+      "gross_weight": 1200.0,
+      "container_tare": 15.0,
+      "platform_tare": 1.0
+    }
+  }
+},
+{
+  "model": "receiving.batchweightmovement",
+  "pk": 8,
+  "fields": {
+    "batch": 2,
+    "weight": 1187.0,
+    "created_at": "2025-05-24T17:26:31.734Z",
+    "source": {
+      "model": "WeighingSet",
+      "id": 8,
+      "gross_weight": 1200.0,
+      "container_tare": 12.0,
+      "platform_tare": 1.0
+    }
+  }
+},
+{
+  "model": "receiving.batchweightmovement",
+  "pk": 9,
+  "fields": {
+    "batch": 3,
+    "weight": 1274.0,
+    "created_at": "2025-05-24T17:26:31.736Z",
+    "source": {
+      "model": "WeighingSet",
+      "id": 9,
+      "gross_weight": 1300.0,
+      "container_tare": 25.0,
+      "platform_tare": 1.0
+    }
+  }
+},
+{
+  "model": "receiving.incomingproduct",
+  "pk": 1,
+  "fields": {
+    "status": "ready",
     "public_weighing_scale": 2,
     "public_weight_result": 4500.0,
-    "packhouse_weight_result": 4472.2,
     "weighing_record_number": "WR123",
     "total_weighed_sets": 5,
     "mrl": 0.0,
     "phytosanitary_certificate": null,
     "kg_sample": 0.0,
-    "current_kg_available": 4472.2,
-    "containers_assigned": 260,
-    "empty_containers": 38,
-    "total_weighed_set_containers": 188,
-    "full_containers_per_harvest": 210,
-    "missing_containers": 12,
-    "average_per_container": 23.788,
+    "is_quarantined": false,
     "organization": 1,
-    "comments": "",
-    "batch": 1
-    }
+    "batch": 1,
+    "comments": ""
+  }
 },
 {
-    "model": "receiving.incomingproduct",
-    "pk": 2,
-    "fields": {
-    "status": "accepted",
+  "model": "receiving.incomingproduct",
+  "pk": 2,
+  "fields": {
+    "status": "ready",
     "public_weighing_scale": 2,
     "public_weight_result": 3300.0,
-    "packhouse_weight_result": 3254.0,
     "weighing_record_number": "WW123",
     "total_weighed_sets": 3,
     "mrl": 0.0,
     "phytosanitary_certificate": null,
     "kg_sample": 30.0,
-    "current_kg_available": 3254.0,
-    "containers_assigned": 220,
-    "empty_containers": 20,
-    "total_weighed_set_containers": 100,
-    "full_containers_per_harvest": 190,
-    "missing_containers": 10,
-    "average_per_container": 32.54,
+    "is_quarantined": false,
     "organization": 1,
-    "comments": "",
-    "batch": 2
-    }
+    "batch": 2,
+    "comments": ""
+  }
 },
 {
-    "model": "receiving.incomingproduct",
-    "pk": 3,
-    "fields": {
-    "status": "accepted",
+  "model": "receiving.incomingproduct",
+  "pk": 3,
+  "fields": {
+    "status": "ready",
     "public_weighing_scale": 3,
     "public_weight_result": 3800.0,
-    "packhouse_weight_result": 1274.0,
     "weighing_record_number": "111",
     "total_weighed_sets": 1,
     "mrl": 0.0,
     "phytosanitary_certificate": null,
     "kg_sample": 0.0,
-    "current_kg_available": 1274.0,
-    "containers_assigned": 110,
-    "empty_containers": 2,
-    "total_weighed_set_containers": 50,
-    "full_containers_per_harvest": 107,
-    "missing_containers": 1,
-    "average_per_container": 25.48,
+    "is_quarantined": false,
     "organization": 1,
-    "comments": "",
-    "batch": 3
-    }
+    "batch": 3,
+    "comments": ""
+  }
 },
 {
-    "model": "receiving.incomingproduct",
-    "pk": 4,
-    "fields": {
-    "status": "pending",
+  "model": "receiving.incomingproduct",
+  "pk": 4,
+  "fields": {
+    "status": "open",
     "public_weighing_scale": null,
     "public_weight_result": 0.0,
-    "packhouse_weight_result": 0.0,
     "weighing_record_number": "",
     "total_weighed_sets": 0,
     "mrl": 0.0,
     "phytosanitary_certificate": null,
     "kg_sample": 0.0,
-    "current_kg_available": 0.0,
-    "containers_assigned": 0,
-    "empty_containers": 0,
-    "total_weighed_set_containers": 0,
-    "full_containers_per_harvest": 0,
-    "missing_containers": 0,
-    "average_per_container": 0.0,
+    "is_quarantined": false,
     "organization": 1,
+    "batch": null,
     "comments": null
-    }
+  }
 },
 {
-    "model": "receiving.incomingproduct",
-    "pk": 5,
-    "fields": {
-    "status": "pending",
+  "model": "receiving.incomingproduct",
+  "pk": 5,
+  "fields": {
+    "status": "open",
     "public_weighing_scale": 3,
     "public_weight_result": 2600.0,
-    "packhouse_weight_result": 1972.0,
     "weighing_record_number": "1",
     "total_weighed_sets": 2,
     "mrl": 0.0,
     "phytosanitary_certificate": null,
     "kg_sample": 10.0,
-    "current_kg_available": 1972.0,
-    "containers_assigned": 130,
-    "empty_containers": 0,
-    "total_weighed_set_containers": 80,
-    "full_containers_per_harvest": 130,
-    "missing_containers": 0,
-    "average_per_container": 24.65,
+    "is_quarantined": false,
     "organization": 1,
+    "batch": null,
     "comments": ""
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 1,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 1,
+  "fields": {
     "ooid": 1,
     "provider": 6,
     "harvesting_crew": 1,
@@ -162,13 +281,14 @@
     "container_tare": 12.0,
     "platform_tare": 2.0,
     "net_weight": 886.0,
+    "protected": true,
     "incoming_product": 1
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 2,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 2,
+  "fields": {
     "ooid": 2,
     "provider": 6,
     "harvesting_crew": 1,
@@ -177,13 +297,14 @@
     "container_tare": 20.0,
     "platform_tare": 3.0,
     "net_weight": 977.0,
+    "protected": true,
     "incoming_product": 1
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 3,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 3,
+  "fields": {
     "ooid": 3,
     "provider": 6,
     "harvesting_crew": 1,
@@ -192,13 +313,14 @@
     "container_tare": 15.0,
     "platform_tare": 4.0,
     "net_weight": 801.0,
+    "protected": true,
     "incoming_product": 1
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 4,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 4,
+  "fields": {
     "ooid": 4,
     "provider": 6,
     "harvesting_crew": 1,
@@ -207,13 +329,14 @@
     "container_tare": 9.0,
     "platform_tare": 1.0,
     "net_weight": 740.0,
+    "protected": true,
     "incoming_product": 1
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 5,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 5,
+  "fields": {
     "ooid": 5,
     "provider": 6,
     "harvesting_crew": 1,
@@ -222,13 +345,14 @@
     "container_tare": 30.0,
     "platform_tare": 1.8,
     "net_weight": 1068.2,
+    "protected": true,
     "incoming_product": 1
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 6,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 6,
+  "fields": {
     "ooid": 1,
     "provider": 9,
     "harvesting_crew": 5,
@@ -237,13 +361,14 @@
     "container_tare": 15.0,
     "platform_tare": 2.0,
     "net_weight": 883.0,
+    "protected": true,
     "incoming_product": 2
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 7,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 7,
+  "fields": {
     "ooid": 2,
     "provider": 9,
     "harvesting_crew": 5,
@@ -252,13 +377,14 @@
     "container_tare": 15.0,
     "platform_tare": 1.0,
     "net_weight": 1184.0,
+    "protected": true,
     "incoming_product": 2
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 8,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 8,
+  "fields": {
     "ooid": 3,
     "provider": 9,
     "harvesting_crew": 5,
@@ -267,13 +393,14 @@
     "container_tare": 12.0,
     "platform_tare": 1.0,
     "net_weight": 1187.0,
+    "protected": true,
     "incoming_product": 2
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 9,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 9,
+  "fields": {
     "ooid": 1,
     "provider": 9,
     "harvesting_crew": 6,
@@ -282,13 +409,14 @@
     "container_tare": 25.0,
     "platform_tare": 1.0,
     "net_weight": 1274.0,
+    "protected": false,
     "incoming_product": 3
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 10,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 10,
+  "fields": {
     "ooid": 1,
     "provider": 9,
     "harvesting_crew": 5,
@@ -297,13 +425,14 @@
     "container_tare": 6.0,
     "platform_tare": 2.0,
     "net_weight": 992.0,
+    "protected": true,
     "incoming_product": 5
-    }
+  }
 },
 {
-    "model": "receiving.weighingset",
-    "pk": 11,
-    "fields": {
+  "model": "receiving.weighingset",
+  "pk": 11,
+  "fields": {
     "ooid": 2,
     "provider": 6,
     "harvesting_crew": 1,
@@ -312,106 +441,107 @@
     "container_tare": 18.0,
     "platform_tare": 2.0,
     "net_weight": 980.0,
+    "protected": true,
     "incoming_product": 5
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 1,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 1,
+  "fields": {
     "harvest_container": 32,
     "quantity": 40,
     "weighing_set": 1
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 2,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 2,
+  "fields": {
     "harvest_container": 31,
     "quantity": 40,
     "weighing_set": 2
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 3,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 3,
+  "fields": {
     "harvest_container": 31,
     "quantity": 30,
     "weighing_set": 3
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 4,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 4,
+  "fields": {
     "harvest_container": 31,
     "quantity": 18,
     "weighing_set": 4
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 5,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 5,
+  "fields": {
     "harvest_container": 31,
     "quantity": 60,
     "weighing_set": 5
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 6,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 6,
+  "fields": {
     "harvest_container": 31,
     "quantity": 30,
     "weighing_set": 6
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 7,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 7,
+  "fields": {
     "harvest_container": 31,
     "quantity": 30,
     "weighing_set": 7
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 8,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 8,
+  "fields": {
     "harvest_container": 32,
     "quantity": 40,
     "weighing_set": 8
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 9,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 9,
+  "fields": {
     "harvest_container": 31,
     "quantity": 50,
     "weighing_set": 9
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 10,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 10,
+  "fields": {
     "harvest_container": 32,
     "quantity": 20,
     "weighing_set": 10
-    }
+  }
 },
 {
-    "model": "receiving.weighingsetcontainer",
-    "pk": 11,
-    "fields": {
+  "model": "receiving.weighingsetcontainer",
+  "pk": 11,
+  "fields": {
     "harvest_container": 32,
     "quantity": 60,
     "weighing_set": 11
-    }
+  }
 }
 ]

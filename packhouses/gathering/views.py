@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from .models import (ScheduleHarvest, ScheduleHarvestHarvestingCrew, ScheduleHarvestVehicle, ScheduleHarvestContainerVehicle, Country, Region, SubRegion, City)
-from packhouses.catalogs.models import HarvestingCrew
+from packhouses.catalogs.models import HarvestingCrew, OrchardCertification
 from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseForbidden
 from weasyprint import HTML, CSS
@@ -17,50 +17,69 @@ from django.http import HttpResponseForbidden
 from django.http import JsonResponse
 from packhouses.receiving.models import IncomingProduct
 from django.contrib.auth.decorators import login_required
+from itertools import chain
+
+import qrcode
+import base64
+from io import BytesIO
+
+def generate_qr_base64(data: str) -> str:
+    qr = qrcode.make(data)
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    img_str = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    return f"data:image/png;base64,{img_str}"
+
 
 def harvest_order_pdf(request, harvest_id):
+    """
     # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
     if not request.user.is_authenticated:
         login_url = reverse('admin:login')
         return redirect(login_url)
+    """
 
     # Obtener el registro
     harvest = get_object_or_404(ScheduleHarvest, pk=harvest_id)
 
-    # Obtener Datos de la Organización
-    if hasattr(request, 'organization'):
-        organization = request.organization.organizationprofile.name
-        add =  request.organization.organizationprofile.address
-        organization_profile = request.organization.organizationprofile
-        def get_name(model, obj_id, default):
-            if obj_id:
-                try:
-                    return model.objects.get(id=obj_id).name
-                except model.DoesNotExist:
-                    return f"{default} does not exist"
-            return f"{default} not specified"
+    organization_profile = harvest.orchard.organization.organizationprofile
+    organization = organization_profile.name
+    add = organization_profile.address
 
-        # Obtener los nombres de las regiones
-        city_name = get_name(SubRegion, organization_profile.city_id, "Ciudad")
-        country_name = get_name(Country, organization_profile.country_id, "Country")
-        state_name = get_name(Region, organization_profile.state_id, "State")
-        district_name = get_name(City, organization_profile.district_id, "District")
-        if organization_profile.logo:
-            logo_url = organization_profile.logo.url
-        else:
-            logo_url = None
-    pdf_title = capfirst(ScheduleHarvest._meta.verbose_name)
+    def get_name(model, obj_id, default):
+        if obj_id:
+            try:
+                return model.objects.get(id=obj_id).name
+            except model.DoesNotExist:
+                return f"{default} does not exist"
+        return f"{default} not specified"
+
+    city_name = get_name(SubRegion, organization_profile.city_id, "City")
+    country_name = get_name(Country, organization_profile.country_id, "Country")
+    state_name = get_name(Region, organization_profile.state_id, "State")
+    district_name = get_name(City, organization_profile.district_id, "District")
+    logo_url = organization_profile.logo.url if organization_profile.logo else None
+
+    pdf_title = _("Schedule Harvest Order")
     packhouse_name = organization
     company_address = f"{add}, {district_name}, {city_name}, {state_name}, {country_name}"
     date = datetime.now()
-    year = date.year
+    year = str(date.year)
 
     # Obtener los inlines relacionados
     scheduleharvestharvestingcrewinline = ScheduleHarvestHarvestingCrew.objects.filter(harvest_cutting=harvest)
     scheduleharvestvehicleinline = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest).prefetch_related(
         Prefetch('scheduleharvestcontainervehicle_set',queryset=ScheduleHarvestContainerVehicle.objects.all(),)
     )
-    total_box = ScheduleHarvestContainerVehicle.objects.filter(harvest_cutting__in=scheduleharvestvehicleinline).aggregate(total=Sum('quantity'))['total'] or 0
+    orchard_certifications = OrchardCertification.objects.filter(
+        orchard=harvest.orchard,
+        created_at__lte=harvest.harvest_date,
+        expiration_date__gte=harvest.harvest_date,
+        is_enabled=True
+        )
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.debug(f"Orchard certifications: {orchard_certifications}")
 
     # CSS
     base_url = request.build_absolute_uri('/')
@@ -69,16 +88,23 @@ def harvest_order_pdf(request, harvest_id):
             size: letter portrait;
         }''')
 
+    report_url = request.build_absolute_uri(
+        reverse("harvest_order_pdf", args=[harvest.pk])
+    )
+    qr_data = report_url
+    qr_image = generate_qr_base64(qr_data)
+
     # Renderizar el template HTML
-    html_string = render_to_string('admin/packhouses/schedule-harvest-report.html', {
+    html_string = render_to_string('admin/packhouses/gathering/schedule-harvest-report.html', {
         'packhouse_name': packhouse_name,
         'company_address': company_address,
         'pdf_title': pdf_title,
         'logo_url': logo_url,
         'harvest': harvest,
+        "qr_image": qr_image,
+        'orchard_certifications': orchard_certifications,
         'scheduleharvestharvestingcrewinline': scheduleharvestharvestingcrewinline,
         'scheduleharvestvehicleinline': scheduleharvestvehicleinline,
-        'total_box': total_box,
         'year': year,
         'date': date,
     })
@@ -121,7 +147,7 @@ def good_harvest_practices_format(request, harvest_id):
             return f"{default} not specified"
 
         # Obtener los nombres de las regiones
-        city_name = get_name(SubRegion, organization_profile.city_id, "Ciudad")
+        city_name = get_name(SubRegion, organization_profile.city_id, "City")
         country_name = get_name(Country, organization_profile.country_id, "Country")
         state_name = get_name(Region, organization_profile.state_id, "State")
         district_name = get_name(City, organization_profile.district_id, "District")
@@ -133,9 +159,8 @@ def good_harvest_practices_format(request, harvest_id):
     packhouse_name = organization
     company_address = f"{add}, {district_name}, {city_name}, {state_name}, {country_name}"
     date = datetime.now()
-    year = date.year
+    year = str(date.year)
 
-    # Obtener los inlines relacionados
     # Filtrar los ScheduleHarvestHarvestingCrew relacionados con el harvest específico
     scheduleharvestharvestingcrewinline = ScheduleHarvestHarvestingCrew.objects.filter(harvest_cutting=harvest).select_related('harvesting_crew')
     # Obtener los IDs de los HarvestingCrew asociados
@@ -145,11 +170,7 @@ def good_harvest_practices_format(request, harvest_id):
     harvestingcrew = HarvestingCrew.objects.filter(pk__in=harvestingcrew_ids)
 
     # Filtrar vehiculos por cuadrillas
-    crew_vehicles = []
-    for crew in scheduleharvestharvestingcrewinline:
-        vehicles = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest,provider=crew.provider)
-        crew_vehicles.extend(vehicles)
-
+    vehicles = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest)
 
     # CSS
     base_url = request.build_absolute_uri('/')
@@ -158,16 +179,26 @@ def good_harvest_practices_format(request, harvest_id):
             size: legal portrait;
         }''')
 
+    orchard_certifications = OrchardCertification.objects.filter(
+        orchard=harvest.orchard,
+        created_at__lte=harvest.harvest_date,
+        expiration_date__gte=harvest.harvest_date,
+        is_enabled=True
+        )
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.debug(f"Orchard certifications: {orchard_certifications}")
 
     # Renderizar el template HTML
-    html_string = render_to_string('admin/packhouses/safety-guidelines-report.html', {
+    html_string = render_to_string('admin/packhouses/gathering/safety-guidelines-report.html', {
         'packhouse_name': packhouse_name,
         'company_address': company_address,
         'pdf_title': pdf_title,
         'logo_url': logo_url,
         'harvest': harvest,
+        'orchard_certifications': orchard_certifications,
         'harvesting_crew': harvestingcrew,
-        'crew_vehicles': crew_vehicles,
+        'vehicles': vehicles,
         'scheduleharvestharvestingcrewinline': scheduleharvestharvestingcrewinline,
         'year': year,
         'date': date,
@@ -222,11 +253,16 @@ def set_scheduleharvest_ready(request, harvest_id):
             'message': 'You cannot send this harvest.'
         }, status=403)
 
-    scheduleharvest.status = 'ready'
-    incoming_product = IncomingProduct.objects.create(organization=scheduleharvest.organization)
-    scheduleharvest.incoming_product = incoming_product
-    scheduleharvest.save()
+    incoming_kwargs = {
+        'organization': scheduleharvest.organization,
+    }
+    if scheduleharvest.weighing_scale:
+        incoming_kwargs['public_weighing_scale'] = scheduleharvest.weighing_scale
 
+    incoming_product = IncomingProduct.objects.create(**incoming_kwargs)
+    scheduleharvest.incoming_product = incoming_product
+    scheduleharvest.status = 'ready'
+    scheduleharvest.save()
 
     success_message = _('Harvest sent to Fruit Receiving Area successfully.')
     return JsonResponse({
