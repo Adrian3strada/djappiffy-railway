@@ -2,7 +2,7 @@ from django.urls import path, include
 from common.base.router import drf_router
 from .viewsets import (ProductKindViewSet, CityViewSet, SubRegionViewSet, RegionViewSet, CountryViewSet,
                        CapitalFrameworkViewSet, ProductStandardPackagingViewSet, SupplyKindViewSet,
-                       CountryProductStandardSizeViewSet, SupplyMeasureUnitCategoryViewSet)
+                       CountryProductStandardSizeViewSet, SupplyMeasureUnitCategoryViewSet, FruitPurchasePriceCategoryViewSet)
 
 # write your urls here
 
@@ -22,5 +22,6 @@ drf_router.register(r'rest/v1/cities/region', RegionViewSet, basename='cities_re
 drf_router.register(r'rest/v1/cities/subregion', SubRegionViewSet, basename='cities_subregion')
 drf_router.register(r'rest/v1/cities/city', CityViewSet, basename='cities_city')
 drf_router.register(r'rest/v1/base/supply-measure-unit-category', SupplyMeasureUnitCategoryViewSet, basename='base_supplymeasureunitcategory')
+drf_router.register(r'rest/v1/base/fruit-purchase-price-category', FruitPurchasePriceCategoryViewSet, basename='base_fruitpurchasepricecategoryviewset')
 # urlpatterns += drf_router.urls
 # productpackagingstandard

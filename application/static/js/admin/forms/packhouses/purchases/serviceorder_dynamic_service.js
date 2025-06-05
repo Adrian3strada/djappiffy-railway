@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const cost = parseFloat($('#id_cost').val()) || 0;
         const tax = parseFloat($('#id_tax').val()) || 0;
 
-        if (tax < 0 || tax > 100) return; // Evita mostrar cosas locas
+        if (tax < 0 || tax > 100) return;
 
         const total = cost + (cost * (tax / 100));
         const formatted = formatDecimal(total);

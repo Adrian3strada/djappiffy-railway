@@ -5,7 +5,7 @@ from common.profiles.models import UserProfile
 from .models import (Requisition, RequisitionSupply, PurchaseOrder,
                      PurchaseOrderSupply, PurchaseOrderCharge, PurchaseOrderDeduction,
                      PurchaseOrderPayment, ServiceOrder, ServiceOrderCharge, ServiceOrderDeduction,
-                     ServiceOrderPayment, PurchaseMassPayment
+                     ServiceOrderPayment, PurchaseMassPayment, FruitPurchaseOrder, FruitPurchaseOrderReceipt, FruitPurchaseOrderPayment
                      )
 from packhouses.catalogs.models import Supply, Provider, Service
 from django.utils.translation import gettext_lazy as _
@@ -19,7 +19,8 @@ from common.base.mixins import (
 )
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import (RequisitionForm, PurchaseOrderForm, PurchaseOrderPaymentForm, RequisitionSupplyForm,
-                    ServiceOrderForm, ServiceOrderPaymentForm, PurchaseMassPaymentForm
+                    ServiceOrderForm, ServiceOrderPaymentForm, PurchaseMassPaymentForm, FruitOrderPaymentForm,
+                    FruitPaymentInlineFormSet, FruitPurchaseOrderReceiptForm
                     )
 from django.utils.html import format_html, format_html_join, mark_safe
 from django.urls import reverse
@@ -1356,7 +1357,6 @@ class PurchaseMassPaymentAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin,
     def save_related(self, request, form, formsets, change):
         """
         Se ejecuta después de guardar las relaciones M2M.
-        Aquí ya podemos crear los pagos individuales.
         """
         super().save_related(request, form, formsets, change)
 
@@ -1463,3 +1463,295 @@ class PurchaseMassPaymentAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin,
 
     class Media:
         js = ('js/admin/forms/packhouses/purchases/purchase_mass_payments.js',)
+
+
+class FruitPurchaseOrderReceiptInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
+    """
+    Inline del admin para agregar recibos a una orden de compra de frutas.
+    """
+    model = FruitPurchaseOrderReceipt
+    form = FruitPurchaseOrderReceiptForm
+    readonly_fields = ('ooid','status', 'created_at', 'created_by', 'created_at', 'cancellation_date', 'canceled_by')
+    extra = 0
+    can_delete = False
+
+    class Media:
+        js = ('js/admin/forms/packhouses/purchases/fruit_purchase_order_receipt.js',)
+
+class FruitPaymentInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
+    """
+    Inline del admin para agregar pagos a una orden de compra de frutas.
+    """
+    model = FruitPurchaseOrderPayment
+    form = FruitOrderPaymentForm
+    formset = FruitPaymentInlineFormSet
+    fields = (
+        'cancel_button',
+        'fruit_purchase_order_receipt',
+        'payment_kind',
+        'bank',
+        'additional_inputs',
+        'amount',
+        'payment_date',
+        'proof_of_payment',
+        'comments',
+        'payment_info',
+    )
+    extra = 0
+    can_delete = False
+    readonly_fields = ('cancel_button', 'payment_info')
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        """
+        Filtra los recibos mostrados en el campo fruit_purchase_order_receipt
+        para que solo muestre los que pertenecen a la orden padre.
+        """
+        field = super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+        if db_field.name == 'fruit_purchase_order_receipt' and hasattr(request, 'fruit_purchase_order_obj'):
+            fruit_order = request.fruit_purchase_order_obj
+            field.queryset = field.queryset.filter(fruit_purchase_order=fruit_order)
+
+        return field
+
+    def get_formset(self, request, obj=None, **kwargs):
+        """
+        Pasa la orden de compra al formset para filtrar correctamente los receipts.
+        También desactiva proof_of_payment si el payment ya existe.
+        """
+        kwargs['formset'] = self.formset  # Asegura que se use el correcto
+
+        # ← Este es el formset real (con soporte para 'fruit_purchase_order')
+        base_formset_class = super().get_formset(request, obj, **kwargs)
+
+        class CustomFormset(base_formset_class):
+            def __init__(self2, *args, **kwargs2):
+                kwargs2['fruit_purchase_order'] = obj  # ¡Este es el paso clave!
+                super().__init__(*args, **kwargs2)
+
+                for form in self2.forms:
+                    if form.instance.pk and 'proof_of_payment' in form.fields:
+                        form.fields['proof_of_payment'].widget.attrs['disabled'] = True
+
+        return CustomFormset
+
+    def cancel_button(self, obj):
+        if obj.pk and obj.status != "canceled":
+            url = reverse('admin:cancel_fruit_payment', args=[obj.pk])
+            title = _("Are you sure you want to cancel this payment?")
+            confirm_text = _("Yes, cancel")
+            cancel_text = _("No, keep it")
+            button_label = _("Cancel payment")
+            return format_html(
+                '<a class="button" href="{0}" onclick="event.preventDefault(); '
+                'Swal.fire({{ '
+                'title: \'{1}\', '
+                'icon: \'warning\', '
+                'showCancelButton: true, '
+                'confirmButtonText: \'{2}\', '
+                'cancelButtonText: \'{3}\', '
+                'confirmButtonColor: \'#d33\' '
+                '}}).then((result) => {{ if (result.isConfirmed) {{ '
+                'window.location.href=\'{0}\'; '
+                '}} }});">{4}</a>',
+                url, title, confirm_text, cancel_text, button_label
+            )
+        if not obj.pk:
+            return ""
+        if obj.status == "canceled":
+            return format_html('<span class="canceled">{}</span>', _('Payment canceled'))
+
+    cancel_button.short_description = ""
+
+    def payment_info(self, obj):
+        if not obj.pk:
+            return ""
+
+        created_by = obj.created_by or ""
+        created_at = obj.created_at.strftime("%d/%m/%Y %H:%M") if obj.created_at else ""
+
+        if obj.status == "canceled":
+            canceled_by = obj.canceled_by or ""
+            cancellation_date = obj.cancellation_date.strftime("%d/%m/%Y %H:%M") if obj.cancellation_date else ""
+            added_by_info = format_html(
+                '<div><span>{}</span>: {}<br><span>{}</span>: {}</div>',
+                _("Registered by"), created_by,
+                _("Payment date"), created_at
+            )
+            return format_html(
+                '{}<div><span>{}</span>: {}<br><span>{}</span>: {} Hrs.</div>',
+                added_by_info, _("Canceled by"), canceled_by,
+                _("Cancellation date"), cancellation_date
+            )
+        else:
+            return format_html(
+                '<div><span>{}</span>: {}<br><span>{}</span>: {}</div>',
+                _("Registered by"), created_by,
+                _("Payment date"), created_at
+            )
+
+    payment_info.short_description = _("Payment info")
+
+
+
+    class Media:
+        js = ('js/admin/forms/packhouses/purchases/fruit_orders_payments.js',)
+
+@admin.register(FruitPurchaseOrder)
+class FruitPurchaseOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.ModelAdmin):
+    """
+    Admin para gestionar órdenes de compra de frutas.
+    Permite registrar órdenes de compra de fruta, verificar su estado y realizar acciones como
+    imprimir reporte y cancelar la orden.
+    """
+    list_display = (
+        'ooid', 'batch', 'category', 'status', 'created_at', 'created_by'
+    )
+    fields = (
+        'ooid','category', 'batch', 'status', 'created_at', 'created_by',
+    )
+    list_filter = ('category','status')
+    readonly_fields = ('ooid','status', 'created_at', 'created_by')
+    inlines = [FruitPurchaseOrderReceiptInline, FruitPaymentInline ]
+
+    def get_formset(self, request, obj=None, **kwargs):
+        """
+        Inyecta el objeto padre en el request para que los inlines puedan filtrar
+        según la orden de compra actual.
+        """
+        request.fruit_purchase_order_obj = obj
+        return super().get_formset(request, obj, **kwargs)
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly = list(super().get_readonly_fields(request, obj))
+
+        if obj and (obj.fruitpurchaseorderreceipt_set.exists() or obj.fruitpurchaseorderpayment_set.exists()):
+            readonly.append("batch")
+
+        return readonly
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        Filtra proveedores disponibles según la organización activa y el estado del lote (batch).
+        """
+        if db_field.name == "batch" and hasattr(request, 'organization'):
+            org = getattr(request, 'organization', None)
+            if org:
+                batches = Batch.objects.filter(organization=org).select_related('organization')
+            else:
+                batches = Batch.objects.all()
+
+            def is_batch_valid(batch):
+                last_status = batch.last_status_change()
+                if not last_status:
+                    return False
+                if last_status.new_status in ['canceled', 'open']:
+                    return False
+                if last_status.new_status == 'closed':
+                    return False
+                return True
+
+            # Batches ya usados por este modelo
+            used_batch_ids = self.model.objects.values_list('batch_id', flat=True)
+
+            # Filtra por estado y uso
+            valid_batch_ids = [
+                b.pk for b in batches
+                if is_batch_valid(b) and b.pk not in used_batch_ids
+            ]
+
+            kwargs["queryset"] = Batch.objects.filter(pk__in=valid_batch_ids)
+
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+            def label_from_instance(obj):
+                provider = obj.harvest_product_provider or obj.yield_producer
+                provider_str = str(provider) if provider else "No provider"
+                date_str = obj.incomingproduct.scheduleharvest.created_at.strftime(
+                    '%d/%m/%Y') if obj.incomingproduct and obj.incomingproduct.scheduleharvest else "No date"
+                return f"{obj.ooid} :: {provider_str} - {date_str}"
+
+            formfield.label_from_instance = label_from_instance
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def save_model(self, request, obj, form, change):
+        """
+        Guarda el objeto principal (sin relaciones M2M).
+        """
+        if not change:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
+    def save_formset(self, request, form, formset, change):
+        """
+        Asigna automáticamente el usuario que creó los recibos cuando se agregan desde el inline.
+        También elimina correctamente los recibos marcados para borrar.
+        """
+        if formset.model != FruitPurchaseOrderReceipt:
+            return formset.save()
+
+        instances = formset.save(commit=False)
+
+        # Guardar los nuevos o modificados
+        for obj in instances:
+            if not obj.pk:
+                obj.created_by = request.user
+            obj.save()
+
+        # Eliminar los marcados
+        for obj in formset.deleted_objects:
+            obj.delete()
+
+        # Guardar M2M si aplica
+        formset.save_m2m()
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('cancel-fruit-payment/<int:payment_id>/', self.admin_site.admin_view(self.cancel_fruit_payment), name='cancel_fruit_payment')
+        ]
+        return custom_urls + urls
+
+    def cancel_fruit_payment(self, request, payment_id, *args, **kwargs):
+        """
+        Cancela un pago de una orden de compra de fruta y recalcula el balance del recibo asociado.
+        """
+        fruit_order_id = None  # Lo declaramos arriba para asegurarlo
+
+        try:
+            with transaction.atomic():
+                payment = FruitPurchaseOrderPayment.objects.select_for_update().get(id=payment_id)
+
+                # Marcar como cancelado
+                payment.status = "canceled"
+                payment.cancellation_date = timezone.now()
+                payment.canceled_by = request.user
+                payment.save(update_fields=["status", "cancellation_date", "canceled_by"])
+
+                self.message_user(
+                    request,
+                    _(f"Payment canceled successfully. New balance payable: ${payment.fruit_purchase_order_receipt.balance_payable:.2f}"),
+                    level=messages.SUCCESS
+                )
+
+                fruit_order_id = payment.fruit_purchase_order_id
+
+        except FruitPurchaseOrderPayment.DoesNotExist:
+            self.message_user(request, _("Payment not found."), level=messages.ERROR)
+
+        except Exception as e:
+            transaction.set_rollback(True)
+            self.message_user(
+                request,
+                _(f"An error occurred while canceling the payment: {str(e)}"),
+                level=messages.ERROR
+            )
+
+        # Redirigir al tab de pagos
+        redirect_url = (
+            reverse("admin:purchases_fruitpurchaseorder_change", args=[fruit_order_id]) + "#payments-tab"
+            if fruit_order_id else request.path + "#payments-tab"
+        )
+        return HttpResponseRedirect(redirect_url)

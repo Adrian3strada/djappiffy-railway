@@ -66,7 +66,7 @@ class ScheduleHarvest(models.Model):
         vehicles = self.scheduleharvestvehicle_set.all()
 
         return ScheduleHarvestContainerVehicle.objects.filter(
-            harvest_cutting__in=vehicles
+            schedule_harvest_vehicle__in=vehicles
         ).aggregate(total=Sum('quantity'))['total'] or 0
 
     def __str__(self):
@@ -114,10 +114,21 @@ class ScheduleHarvest(models.Model):
         ]
 
 class ScheduleHarvestHarvestingCrew(models.Model):
-    harvest_cutting = models.ForeignKey(ScheduleHarvest, verbose_name=_("Schedule Harvest"), on_delete=models.CASCADE,)
-    provider = models.ForeignKey(Provider, verbose_name=_('Harvesting Crew Provider'), on_delete=models.CASCADE,)
-    harvesting_crew = models.ForeignKey(HarvestingCrew, verbose_name=_("Harvesting Crew"), on_delete=models.CASCADE,)
-
+    schedule_harvest = models.ForeignKey(
+        ScheduleHarvest,
+        verbose_name=_("Schedule Harvest"),
+        on_delete=models.CASCADE,
+    )
+    provider = models.ForeignKey(
+        Provider,
+        verbose_name=_('Harvesting Crew Provider'),
+        on_delete=models.CASCADE,
+    )
+    harvesting_crew = models.ForeignKey(
+        HarvestingCrew,
+        verbose_name=_("Harvesting Crew"),
+        on_delete=models.CASCADE,
+)
     def __str__(self):
         return f"{self.provider.name} : {self.harvesting_crew.name}"
 
@@ -127,12 +138,35 @@ class ScheduleHarvestHarvestingCrew(models.Model):
 
 
 class ScheduleHarvestVehicle(models.Model):
-    harvest_cutting = models.ForeignKey(ScheduleHarvest, verbose_name=_("Harvest Cutting"), on_delete=models.CASCADE,)
-    provider = models.ForeignKey(Provider, verbose_name=_('Harvesting Crew Provider'), on_delete=models.CASCADE,)
-    vehicle = models.ForeignKey(Vehicle, verbose_name=_("Vehicle"), on_delete=models.CASCADE,)
-    guide_number = models.CharField(max_length=20, verbose_name=_('Guide Number'), null= True, blank=False,)
-    stamp_number = models.CharField(max_length=20, verbose_name=_("Stamp Number"), )
-    has_arrived = models.BooleanField( default=False,verbose_name=_('Vehicle has Arrived'))
+    schedule_harvest = models.ForeignKey(
+        ScheduleHarvest,
+        verbose_name=_("Harvest Cutting"),
+        on_delete=models.CASCADE,
+    )
+    provider = models.ForeignKey(
+        Provider,
+        verbose_name=_('Harvesting Crew Provider'),
+        on_delete=models.CASCADE,
+    )
+    vehicle = models.ForeignKey(
+        Vehicle,
+        verbose_name=_("Vehicle"),
+        on_delete=models.CASCADE,
+    )
+    guide_number = models.CharField(
+        max_length=20,
+        verbose_name=_('Guide Number'),
+        null= True,
+        blank=False,
+        )
+    stamp_number = models.CharField(
+        max_length=20,
+        verbose_name=_("Stamp Number"),
+    )
+    has_arrived = models.BooleanField(
+        default=False,
+        verbose_name=_('Vehicle has Arrived')
+    )
 
     def __str__(self):
         return f"{self.vehicle.license_plate} / {self.vehicle.name}"
@@ -143,10 +177,13 @@ class ScheduleHarvestVehicle(models.Model):
 
 
 class ScheduleHarvestContainerVehicle(models.Model):
-    harvest_cutting = models.ForeignKey(ScheduleHarvestVehicle, on_delete=models.CASCADE)
-    harvest_container = models.ForeignKey(Supply, on_delete=models.CASCADE,
-                                           limit_choices_to={'kind__category': 'harvest_container'},
-                                           verbose_name=_('Harvest Containments'))
+    schedule_harvest_vehicle = models.ForeignKey(ScheduleHarvestVehicle, on_delete=models.CASCADE)
+    harvest_container = models.ForeignKey(
+        Supply,
+        on_delete=models.CASCADE,
+        limit_choices_to={'kind__category': 'harvest_container'},
+        verbose_name=_('Harvest Containments')
+    )
     quantity = models.PositiveIntegerField()
     full_containers = models.PositiveIntegerField(default=0, verbose_name=_('Full containments'))
     empty_containers = models.PositiveIntegerField(default=0,verbose_name=_('Empty containments'))
@@ -170,9 +207,9 @@ def set_created_from_app1(sender, instance, created, **kwargs):
 @receiver(post_save, sender=ScheduleHarvestVehicle)
 @receiver(post_delete, sender=ScheduleHarvestVehicle)
 def on_vehicle_change(sender, instance, **kwargs):
-    instance.harvest_cutting.recalc_weight_expected()
+    instance.schedule_harvest.recalc_weight_expected()
 
 @receiver(post_save, sender=ScheduleHarvestContainerVehicle)
 @receiver(post_delete, sender=ScheduleHarvestContainerVehicle)
 def on_container_change(sender, instance, **kwargs):
-    instance.harvest_cutting.harvest_cutting.recalc_weight_expected()
+    instance.schedule_harvest_vehicle.schedule_harvest.recalc_weight_expected()
