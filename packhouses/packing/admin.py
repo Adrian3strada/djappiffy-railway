@@ -60,15 +60,19 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
             obj.id,
             _("Discard")
         )
+
     pending_labels.short_description = _("Pending labels")
     pending_labels.allow_tags = True
 
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
-            path("generate_label/<int:employee_id>/", self.admin_site.admin_view(generate_label_pdf), name="generate_label"),
-            path("generate_pending_labels/<int:employee_id>/", self.admin_site.admin_view(generate_pending_label_pdf), name="generate_pending_labels"),
-            path("discard_labels/<int:employee_id>/", self.admin_site.admin_view(discard_labels), name="discard_labels"),
+            path("generate_label/<int:employee_id>/", self.admin_site.admin_view(generate_label_pdf),
+                 name="generate_label"),
+            path("generate_pending_labels/<int:employee_id>/", self.admin_site.admin_view(generate_pending_label_pdf),
+                 name="generate_pending_labels"),
+            path("discard_labels/<int:employee_id>/", self.admin_site.admin_view(discard_labels),
+                 name="discard_labels"),
         ]
         return custom_urls + urls
 
@@ -78,7 +82,7 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
 
 @admin.register(PackingPackage)
 class PackingPackageAdmin(ByOrganizationAdminMixin):
-    list_display = ("batch", "product_market_class", "product_size" )
+    list_display = ("batch", "product_market_class", "product_size")
     search_fields = ("product_market_class__name", "product_size__name")
     list_filter = ("product_market_class", "product_size")
     fields = ['ooid', 'batch', 'market', 'product', 'product_phenology', 'product_size', 'product_market_class',
@@ -92,13 +96,41 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
             return [f for f in fields if f != 'status']
         return ['ooid']
 
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = ProductSize.objects.get(id=object_id) if object_id else None
+        organization = request.organization if hasattr(request, 'organization') else None
+        product_packaging_instance = None
+
+        if request.POST:
+            product_packaging = request.POST.get("product_packaging")
+            if product_packaging:
+                product_packaging_instance = ProductPackaging.objects.get(id=product_packaging)
+
+        if db_field.name == "product_presentations_per_packaging":
+            formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+            if product_packaging_instance:
+                if product_packaging_instance.category == 'single':
+                    formfield.required = False
+            return formfield
+
+        if db_field.name == "product_pieces_per_presentation":
+            formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+            if product_packaging_instance:
+                if product_packaging_instance.category == 'single':
+                    formfield.required = False
+            return formfield
+
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = request.organization if hasattr(request, 'organization') else None
 
         if db_field.name == "batch":
             kwargs["queryset"] = Batch.objects.filter(organization=organization)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda obj: f"{obj.ooid} :: {obj.harvest_product_provider} - {obj.incomingproduct.scheduleharvest.created_at.strftime('%Y-%m-%d')}"
+            formfield.label_from_instance = lambda \
+                obj: f"{obj.ooid} :: {obj.harvest_product_provider} - {obj.incomingproduct.scheduleharvest.created_at.strftime('%Y-%m-%d')}"
             return formfield
 
         if db_field.name == "market":
