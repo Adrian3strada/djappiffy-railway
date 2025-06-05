@@ -652,7 +652,6 @@ class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
     def __str__(self):
         return f"{self.code} - {self.name}"
 
-
     def save(self, *args, **kwargs):
         if self.producer:
             self.producer_name = None
@@ -1044,6 +1043,9 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     alias = models.CharField(max_length=30, verbose_name=_('Alias'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.name} ({self.alias}) - {self.market}, {self.packaging}, {self.product_size} ({self.product})"
 
     class Meta:
         verbose_name = _('Product packaging')

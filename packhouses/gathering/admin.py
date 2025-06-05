@@ -162,11 +162,11 @@ class ScheduleHarvestVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.
 class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     form = ScheduleHarvestForm
     fields = ('ooid', 'status', 'is_scheduled', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
-              'product_variety', 'product_phenologies', 'product_ripeness', 'product_harvest_size_kind', 'orchard',
+              'product_variety', 'product_phenology', 'product_ripeness', 'product_harvest_size_kind', 'orchard',
               'market', 'weight_expected', 'weighing_scale', 'meeting_point', 'comments' )
     list_display = ('ooid', 'harvest_date', 'category', 'product_provider',
                     'get_orchard_name', 'get_orchard_code', 'get_orchard_product_producer',
-                    'product', 'get_orchard_category', 'product_variety', 'product_phenologies', 'product_ripeness', 'market',
+                    'product', 'get_orchard_category', 'product_variety', 'product_phenology', 'product_ripeness', 'market',
                     'weight_expected', 'status',  'generate_actions_buttons')
     list_filter = ('product_provider', 'category', 'gatherer', 'maquiladora', 'status',)
     readonly_fields = ('ooid', 'status')
@@ -354,6 +354,3 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
 
     class Media:
         js = ('js/admin/forms/packhouses/gathering/harvest-cutting.js',)
-
-
-

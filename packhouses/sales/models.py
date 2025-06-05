@@ -122,6 +122,22 @@ class OrderItem(models.Model):
     def order_item_kind(self):
         return self.order.order_items_kind
 
+    @property
+    def order_item_packaging_quantity_amount(self):
+        if self.order.order_items_kind == 'product_packaging':
+            return self.packaging_quantity
+        elif self.order.order_items_kind == 'product_pallet':
+            return self.packaging_quantity * self.pallet_quantity
+        return 0
+
+    @property
+    def order_item_weight_amount(self):
+        if self.order.order_items_kind == 'product_packaging':
+            return self.packaging_quantity * self.product_weight_per_packaging
+        elif self.order.order_items_kind == 'product_pallet':
+            return self.packaging_quantity * self.pallet_quantity * self.product_weight_per_packaging
+        return 0
+
     class Meta:
         verbose_name = _('Order item by pallet')
         verbose_name_plural = _('Order items by pallet')

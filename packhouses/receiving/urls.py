@@ -1,7 +1,8 @@
 from django.urls import path
 from packhouses.receiving.views import weighing_set_report
 from common.base.router import drf_router
-from .viewsets import BatchViewSet
+from packhouses.receiving.viewsets import BatchViewSet
+
 
 app_name = 'receiving'
 
@@ -10,4 +11,7 @@ urlpatterns = [
 ]
 
 drf_router.register(r'rest/v1/receiving/batch', BatchViewSet, basename='batch')
+
+urlpatterns += drf_router.urls
+
 

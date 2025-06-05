@@ -150,6 +150,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productMarketClassField = $(newForm).find('select[name$="-product_market_class"]');
       const productMarketRipenessField = $(newForm).find('select[name$="-product_ripeness"]');
       const productPackagingPalletField = $(newForm).find(`select[name$="-product_packaging_pallet"]`);
+      const productPackagingField = $(newForm).find(`select[name$="-product_packaging"]`);
       const packagingQuantityField = $(newForm).find(`input[name$="-packaging_quantity"]`);
       const productWeightPerPackagingField = $(newForm).find('input[name$="-product_weight_per_packaging"]');
       const productPresentationsPerPackagingField = $(newForm).find('input[name$="-product_presentations_per_packaging"]');
@@ -265,12 +266,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       productPackagingPalletField.on('change', () => {
-        // productWeightPerPackagingField.val(null);
-        // productPresentationsPerPackagingField.closest('.form-group').fadeOut();
-        // productPiecesPerPresentationField.closest('.form-group').fadeOut();
         if (productPackagingPalletField.val()) {
           fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${productPackagingPalletField.val()}/`)
             .then(data => {
+              const productPackaging = fetchOptions(`/rest/v1/catalogs/product-packaging/${data.product_packaging}/`)
+              productPackaging.then(data => {
+                updateFieldOptions(productPackagingField, [data], data.id);
+              })
               packagingQuantityField.val(data.product_packaging_quantity)
               productWeightPerPackagingField.val(data.product_packaging_detail.product_weight_per_packaging)
               setTimeout(() => {
@@ -354,6 +356,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productMarketClassField = $(form).find(`select[name$="${index}-product_market_class"]`);
       const productMarketRipenessField = $(form).find(`select[name$="${index}-product_ripeness"]`);
       const productPackagingPalletField = $(form).find(`select[name$="${index}-product_packaging_pallet"]`);
+      const productPackagingField = $(form).find(`select[name$="-product_packaging"]`);
       const packagingQuantityField = $(form).find(`input[name$="${index}-packaging_quantity"]`);
       const productWeightPerPackagingField = $(form).find(`input[name$="${index}-product_weight_per_packaging"]`);
       const productPresentationsPerPackagingField = $(form).find(`input[name$="${index}-product_presentations_per_packaging"]`);
@@ -481,12 +484,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       productPackagingPalletField.on('change', () => {
-        // productWeightPerPackagingField.val(null);
-        // productPresentationsPerPackagingField.closest('.form-group').fadeOut();
-        // productPiecesPerPresentationField.closest('.form-group').fadeOut();
         if (productPackagingPalletField.val()) {
           fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${productPackagingPalletField.val()}/`)
             .then(data => {
+              const productPackaging = fetchOptions(`/rest/v1/catalogs/product-packaging/${data.product_packaging}/`)
+              productPackaging.then(data => {
+                updateFieldOptions(productPackagingField, [data], data.id);
+              })
               packagingQuantityField.val(data.product_packaging_quantity)
               productWeightPerPackagingField.val(data.product_packaging_detail.product_weight_per_packaging);
               setTimeout(() => {

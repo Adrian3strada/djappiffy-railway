@@ -35,6 +35,8 @@ from django.dispatch import receiver
 from decimal import Decimal, ROUND_DOWN
 
 # Create your models here.
+
+
 class ScheduleHarvest(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_("Harvest Number"), null=True, blank=True, unique=True)
     harvest_date = models.DateField(verbose_name=_('Harvest date'), default=datetime.date.today)
@@ -44,7 +46,7 @@ class ScheduleHarvest(models.Model):
     maquiladora = models.ForeignKey(Maquiladora, verbose_name=_("Maquiladora"), on_delete=models.PROTECT, null=True, blank=True)
     product = models.ForeignKey(Product, verbose_name=_("Product"), on_delete=models.PROTECT,)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_("Product Variety"), on_delete=models.PROTECT,)
-    product_phenologies = models.ForeignKey(ProductPhenologyKind, verbose_name=_("Product phenology"), on_delete=models.PROTECT)
+    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_("Product phenology"), on_delete=models.PROTECT)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_("Product ripeness"), on_delete=models.PROTECT, null=True,blank=True)
     product_harvest_size_kind = models.ForeignKey(ProductHarvestSizeKind, verbose_name=_("Product harvest size"), on_delete=models.PROTECT)
     orchard = models.ForeignKey(Orchard, verbose_name=_("Orchard"), on_delete=models.PROTECT,)
@@ -126,14 +128,14 @@ class ScheduleHarvestHarvestingCrew(models.Model):
         HarvestingCrew,
         verbose_name=_("Harvesting Crew"),
         on_delete=models.CASCADE,
-    )
-
+)
     def __str__(self):
         return f"{self.provider.name} : {self.harvesting_crew.name}"
 
     class Meta:
         verbose_name = _('Harvesting Crew')
         verbose_name_plural = _('Harvesting Crews')
+
 
 class ScheduleHarvestVehicle(models.Model):
     schedule_harvest = models.ForeignKey(
@@ -172,7 +174,6 @@ class ScheduleHarvestVehicle(models.Model):
     class Meta:
         verbose_name = _('Vehicle')
         verbose_name_plural = _('Vehicles')
-
 
 
 class ScheduleHarvestContainerVehicle(models.Model):

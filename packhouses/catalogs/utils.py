@@ -8,7 +8,6 @@ def vehicle_year_choices():
     current_year = datetime.date.today().year
     return [(str(year), str(year)) for year in range(1888, current_year + 2)]
 
-
 # Validador para asegurarse de que el año esté dentro del rango
 def vehicle_validate_year(value):
     current_year = datetime.date.today().year
@@ -49,4 +48,3 @@ def get_harvest_cutting_categories_choices():
         ('gathering', _('Gathering')),
         ('maquila', _('Maquila')),
     ]
-

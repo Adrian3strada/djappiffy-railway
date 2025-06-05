@@ -1,5 +1,3 @@
-from itertools import product
-
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketSerializer, ProductMarketClassSerializer, VehicleSerializer,
@@ -123,7 +121,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 class PalletViewSet(viewsets.ModelViewSet):
     serializer_class = PalletSerializer
-    filterset_fields = ['market', 'product', 'is_enabled']
+    filterset_fields = ['product', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
