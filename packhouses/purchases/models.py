@@ -1047,7 +1047,8 @@ class FruitPurchaseOrder(models.Model):
     )
 
     def __str__(self):
-        return f"{_("Batch")} {self.batch.ooid}"
+        batch_label = _("Batch")
+        return f"{batch_label} {self.batch.ooid}"
 
     def save(self, *args, **kwargs):
         if not self.ooid:
