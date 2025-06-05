@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PackerEmployee, PackerLabel, PackingPackage
+from .models import PackerEmployee, PackerLabel, PackingPackage, PackingPallet
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html
 from django.urls import path, reverse
@@ -80,9 +80,24 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
         js = ('js/admin.js',)
 
 
+@admin.register(PackingPallet)
+class PackingPalletAdmin(ByOrganizationAdminMixin):
+    list_display = ("ooid", "market", "product_market_class", "product_size", "product", "status")
+    search_fields = ("product_market_class__name", "product_size__name")
+    list_filter = ("product_market_class", "product_size")
+    fields = ['ooid', 'market', 'product', 'product_size', 'product_phenology', 'product_market_class',
+              'product_ripeness', 'product_packaging', 'product_packaging_pallet', 'status']
+
+    def get_readonly_fields(self, request, obj=None):
+        fields = self.get_fields(request, obj)
+        if obj and obj.status not in ['open']:
+            return [f for f in fields if f != 'status']
+        return ['ooid']
+
+
 @admin.register(PackingPackage)
 class PackingPackageAdmin(ByOrganizationAdminMixin):
-    list_display = ("batch", "product_market_class", "product_size")
+    list_display = ("ooid", "batch", "market", "product_market_class", "product_size", "product", "status")
     search_fields = ("product_market_class__name", "product_size__name")
     list_filter = ("product_market_class", "product_size")
     fields = ['ooid', 'batch', 'market', 'product', 'product_phenology', 'product_size', 'product_market_class',

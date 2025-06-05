@@ -4,7 +4,7 @@ from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from organizations.models import Organization
 from ..catalogs.models import Market, ProductSize, Packaging, ProductPackaging, ProductMarketClass, ProductRipeness, \
-    ProductPhenologyKind, Product
+    ProductPhenologyKind, Product, ProductPackagingPallet
 from ..hrm.models import Employee
 from ..receiving.models import Batch
 from django.utils.translation import gettext_lazy as _
@@ -75,6 +75,8 @@ class PackingPallet(models.Model):
     product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
+    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
+    product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'), on_delete=models.PROTECT, null=True, blank=False)
     status = models.CharField(max_length=20, default='open', verbose_name=_('Status'), choices=STATUS_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -82,7 +84,7 @@ class PackingPallet(models.Model):
     # kg -- @property / invref
 
     def __str__(self):
-        return f"{self.packing} - {self.pallet_number} - {self.quantity}"
+        return f"{self.ooid} - {self.market} - {self.product_size} ({self.product})"
 
     def save(self, *args, **kwargs):
         if self.ooid is None:
@@ -113,11 +115,11 @@ class PackingPackage(models.Model):
     product_pieces_per_presentation = models.PositiveIntegerField(verbose_name=_('Product pieces per presentation'), null=True, blank=False)
     packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'), validators=[MinValueValidator(1)], null=True, blank=False)
 
-    processing_date = models.DateField(default=datetime.datetime.today(), verbose_name=_('Processing date'))
+    processing_date = models.DateField(default=datetime.datetime.today, verbose_name=_('Processing date'))
     status = models.CharField(max_length=20, default='open', verbose_name=_('Status'), choices=STATUS_CHOICES)
     packing_pallet = models.ForeignKey(PackingPallet, verbose_name=_('Packing Pallet'), on_delete=models.PROTECT, null=True, blank=True)
-    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
     created_at = models.DateField(auto_now_add=True)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
     # cajas -- packaging_quantity
     # kg -- @property packaging_quantity * product_weight_per_packaging
 

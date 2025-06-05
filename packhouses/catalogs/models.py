@@ -1044,6 +1044,9 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
+    def __str__(self):
+        return f"{self.name} ({self.alias}) - {self.market}, {self.packaging}, {self.product_size} ({self.product})"
+
     class Meta:
         verbose_name = _('Product packaging')
         verbose_name_plural = _('Product packaging')
