@@ -160,7 +160,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       productWeightPerPackagingField.val(packaging.product_weight_per_packaging);
 
       if (packaging.category === 'presentation') {
-        alert("This packaging is a presentation, please select a packaging that is not a presentation.");
         productPresentationsPerPackagingField.closest('.form-group').fadeIn();
         productPiecesPerPresentationField.closest('.form-group').fadeIn();
         productPresentationsPerPackagingField.val(packaging.product_presentations_per_packaging);
@@ -200,5 +199,18 @@ document.addEventListener("DOMContentLoaded", async function () {
   productPackagingField.on("change", async function () {
     await productPackagingFieldChangeHandler();
   });
+
+  if (marketField.val()) {
+    await marketFieldChangeHandler();
+  }
+
+  if (productField.val()) {
+    await productFieldChangeHandler();
+  }
+
+  if (productSizeField.val()) {
+    await productSizeFieldChangeHandler();
+  }
+
 
 });
