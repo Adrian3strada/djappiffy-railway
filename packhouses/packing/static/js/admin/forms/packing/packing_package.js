@@ -9,8 +9,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   const productWeightPerPackagingField = $("#id_product_weight_per_packaging")
   const productPresentationsPerPackagingField = $("#id_product_presentations_per_packaging")
   const productPiecesPerPresentationField = $("#id_product_pieces_per_presentation")
+  const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
   let batchProperties = null
+
   let market = marketField.val()
   let product = productField.val()
   let productPhenology = productPhenologyField.val()
