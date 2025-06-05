@@ -10,7 +10,7 @@ from common.base.mixins import (ByOrganizationAdminMixin)
 from packhouses.receiving.models import Batch
 from packhouses.gathering.models import ScheduleHarvest
 from packhouses.catalogs.models import Market, Product, ProductPhenologyKind, ProductSize, ProductMarketClass, \
-    ProductRipeness, ProductPackaging
+    ProductRipeness, ProductPackaging, ProductPackagingPallet
 
 
 # Register your models here.
@@ -80,6 +80,15 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
         js = ('js/admin.js',)
 
 
+class PackingPackageInline(admin.StackedInline):
+    model = PackingPackage
+    extra = 0
+    fields = ('ooid', 'batch', 'market', 'product', 'product_size', 'product_market_class', 'product_ripeness',
+              'product_packaging', 'product_weight_per_packaging', 'product_presentations_per_packaging',
+              'product_pieces_per_presentation', 'packaging_quantity', 'processing_date', 'status')
+    readonly_fields = ('ooid',)
+
+
 @admin.register(PackingPallet)
 class PackingPalletAdmin(ByOrganizationAdminMixin):
     list_display = ("ooid", "market", "product_market_class", "product_size", "product", "status")
@@ -87,12 +96,56 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
     list_filter = ("product_market_class", "product_size")
     fields = ['ooid', 'market', 'product', 'product_size', 'product_phenology', 'product_market_class',
               'product_ripeness', 'product_packaging', 'product_packaging_pallet', 'status']
+    inlines = [PackingPackageInline]
 
     def get_readonly_fields(self, request, obj=None):
         fields = self.get_fields(request, obj)
         if obj and obj.status not in ['open']:
             return [f for f in fields if f != 'status']
         return ['ooid']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        organization = request.organization if hasattr(request, 'organization') else None
+
+        if db_field.name == "batch":
+            kwargs["queryset"] = Batch.objects.filter(organization=organization)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda \
+                obj: f"{obj.ooid} :: {obj.harvest_product_provider} - {obj.incomingproduct.scheduleharvest.created_at.strftime('%Y-%m-%d')}"
+            return formfield
+
+        if db_field.name == "market":
+            kwargs["queryset"] = Market.objects.filter(organization=organization)
+
+        if db_field.name == "product":
+            kwargs["queryset"] = Product.objects.filter(organization=organization)
+
+        if db_field.name == "product_phenology":
+            organization_products = Product.objects.filter(organization=organization)
+            kwargs["queryset"] = ProductPhenologyKind.objects.filter(product__in=organization_products)
+
+        if db_field.name == "product_size":
+            organization_products = Product.objects.filter(organization=organization)
+            kwargs["queryset"] = ProductSize.objects.filter(product__in=organization_products)
+
+        if db_field.name == "product_market_class":
+            organization_products = Product.objects.filter(organization=organization)
+            kwargs["queryset"] = ProductMarketClass.objects.filter(product__in=organization_products)
+
+        if db_field.name == "product_ripeness":
+            organization_products = Product.objects.filter(organization=organization)
+            kwargs["queryset"] = ProductRipeness.objects.filter(product__in=organization_products)
+
+        if db_field.name == "product_packaging":
+            kwargs["queryset"] = ProductPackaging.objects.filter(organization=organization)
+
+        if db_field.name == "product_packaging_pallet":
+            kwargs["queryset"] = ProductPackagingPallet.objects.filter(product_packaging__organization=organization)
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('js/admin/forms/packing/packing_pallet.js',)
 
 
 @admin.register(PackingPackage)
