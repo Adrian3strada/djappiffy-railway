@@ -10,7 +10,7 @@ from organizations.models import Organization
 from cities_light.models import City, Country, Region, SubRegion
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
-from common.base.models import ProductKind, CapitalFramework, LegalEntityCategory, Currency, SupplyMeasureUnitCategory
+from common.base.models import ProductKind, CapitalFramework, LegalEntityCategory, Currency, SupplyMeasureUnitCategory, FruitPurchasePriceCategory
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   OrchardCertificationVerifier,
@@ -24,7 +24,7 @@ from common.base.settings import SUPPLY_MEASURE_UNIT_CATEGORY_CHOICES
 from django.db.models import Sum
 from decimal import Decimal, ROUND_HALF_UP
 from django.core.exceptions import ValidationError
-from .settings import PURCHASE_SERVICE_CATEGORY_CHOICES, PURCHASE_CATEGORY_CHOICES
+from .settings import PURCHASE_SERVICE_CATEGORY_CHOICES, PURCHASE_CATEGORY_CHOICES, FRUIT_PURCHASE_CATEGORY_CHOICES, FRUIT_RECEIPT_KIND_CHOICES
 from packhouses.receiving.models import Batch
 from packhouses.catalogs.models import Service
 from common.utils import validate_file_extension
@@ -1004,3 +1004,287 @@ class PurchaseMassPayment(models.Model):
     class Meta:
         verbose_name = _("Mass Payment")
         verbose_name_plural = _("Mass Payments")
+
+class FruitPurchaseOrder(models.Model):
+    """
+    Representa una orden de compra de fruta, vinculada a un proveedor y a un lote específico.
+    Permite registrar la cantidad de fruta comprada, su precio unitario y el costo total.
+    """
+    ooid = models.PositiveIntegerField(
+        verbose_name=_("Folio"),
+        null=True, blank=True, unique=True
+    )
+    batch = models.ForeignKey(
+        Batch,
+        verbose_name=_("Batch"),
+        on_delete=models.PROTECT
+    )
+    category = models.CharField(
+        max_length=40,
+        verbose_name=_("Category"),
+        choices=FRUIT_PURCHASE_CATEGORY_CHOICES,
+    )
+    status = models.CharField(
+        max_length=255,
+        choices=STATUS_CHOICES,
+        default='open',
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Created at')
+    )
+    created_by = models.ForeignKey(
+        User,
+        verbose_name=_("Created by"),
+        on_delete=models.PROTECT,
+        null=True, blank=True,
+        related_name="created_fruit_orders"
+    )
+    organization = models.ForeignKey(
+        Organization,
+        verbose_name=_("Organization"),
+        on_delete=models.PROTECT
+    )
+
+    def __str__(self):
+        return f"{_("Batch")} {self.batch.ooid}"
+
+    def save(self, *args, **kwargs):
+        if not self.ooid:
+            # Usar transacción y bloqueo de fila para evitar condiciones de carrera
+            with transaction.atomic():
+                last_order = FruitPurchaseOrder.objects.select_for_update().filter(organization=self.organization).order_by(
+                    '-ooid').first()
+                self.ooid = (last_order.ooid + 1) if last_order and last_order.ooid is not None else 1
+
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _("Fruit Purchase Order")
+        verbose_name_plural = _("Fruit Purchase Orders")
+        ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(fields=['batch', 'organization'], name='unique_batch_fruit_order_organization')
+        ]
+
+class FruitPurchaseOrderReceipt(models.Model):
+    """
+    Representa un recibo de compra de fruta, vinculado a una orden de compra de fruta y a un proveedor/productor.
+    Permite registrar el costo total y el estado del recibo.
+    """
+    ooid = models.PositiveIntegerField(
+        verbose_name=_("Folio"),
+        null=True, blank=True
+    )
+    fruit_purchase_order = models.ForeignKey(
+        FruitPurchaseOrder,
+        verbose_name=_("Fruit Purchase Order"),
+        on_delete=models.CASCADE
+    )
+    receipt_kind = models.CharField(
+        max_length=40,
+        verbose_name=_("Receipt kind"),
+        choices=FRUIT_RECEIPT_KIND_CHOICES,
+    )
+    provider = models.ForeignKey(
+        Provider,
+        verbose_name=_("Provider/Producer"),
+        on_delete=models.PROTECT
+    )
+    price_category = models.ForeignKey(
+        FruitPurchasePriceCategory,
+        verbose_name=_("Price category"),
+        on_delete=models.PROTECT
+    )
+    container_capacity = models.DecimalField(
+        verbose_name=_("Container capacity"),
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0.01)]
+    )
+    quantity = models.DecimalField(
+        verbose_name=_("Quantity"),
+        max_digits=10, decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+    unit_price = models.DecimalField(
+        verbose_name=_("Unit Price"),
+        max_digits=10, decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+    total_cost = models.DecimalField(
+        verbose_name=_("Total cost"),
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(0.01)]
+    )
+    balance_payable = models.DecimalField(
+        max_digits=12, decimal_places=2,
+        default=0,
+        verbose_name=_("Balance payable")
+    )
+    status = models.CharField(
+        max_length=255,
+        choices=STATUS_CHOICES,
+        default='open',
+    )
+    created_by = models.ForeignKey(
+        User,
+        verbose_name=_("Created by"),
+        on_delete=models.PROTECT,
+        null=True, blank=True,
+        related_name="created_fruit_receipts"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Created at')
+    )
+    canceled_by = models.ForeignKey(
+        User,
+        verbose_name=_("Canceled by"),
+        on_delete=models.PROTECT,
+        null=True, blank=True,
+        related_name="canceled_fruit_receipts"
+    )
+    cancellation_date = models.DateTimeField(
+        verbose_name=_("Cancellation date"),
+        null=True, blank=True
+    )
+
+    def __str__(self):
+        return _("BATCH %(batch)s - RECEIPT %(receipt)s - %(provider)s") % {
+            "batch": self.fruit_purchase_order.batch.ooid,
+            "receipt": self.ooid,
+            "provider": self.provider.name,
+        }
+
+    def save(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+
+        with transaction.atomic():
+            is_new = self.pk is None
+
+            if user and is_new:
+                self.created_by = user
+
+            # Calcular el total de la orden (cantidad * precio unitario)
+            self.total_cost = self.quantity * self.unit_price
+
+            # Si es nuevo, asignar el folio incremental
+            if is_new:
+                last_order = FruitPurchaseOrderReceipt.objects.select_for_update().filter(
+                    fruit_purchase_order=self.fruit_purchase_order
+                ).order_by('-ooid').first()
+                self.ooid = (last_order.ooid + 1) if last_order and last_order.ooid is not None else 1
+
+            # Guardar temporalmente para que esté en la DB si es nuevo (necesario para el cálculo de pagos)
+            super().save(*args, **kwargs)
+
+            # Recalcular balance_payable restando los pagos no cancelados
+            total_paid = FruitPurchaseOrderPayment.objects.filter(
+                fruit_purchase_order_receipt=self,
+                status__in=['open', 'closed']  # o != 'canceled' si es más directo
+            ).aggregate(total=Sum('amount'))['total'] or 0
+
+
+    class Meta:
+        verbose_name = _("Fruit Receipt")
+        verbose_name_plural = _("Fruit Receipts")
+        constraints = [
+            models.UniqueConstraint(
+                fields=['fruit_purchase_order', 'ooid'],
+                name='unique_ooid_per_purchase_order'
+            )
+        ]
+
+class FruitPurchaseOrderPayment(models.Model):
+    fruit_purchase_order = models.ForeignKey(
+        FruitPurchaseOrder,
+        verbose_name=_("Fruit Purchase Order"),
+        on_delete=models.CASCADE
+    )
+    fruit_purchase_order_receipt = models.ForeignKey(
+        FruitPurchaseOrderReceipt,
+        verbose_name=_("Fruit Purchase Order Receipt"),
+        on_delete=models.CASCADE
+    )
+    payment_date = models.DateField(
+        verbose_name=_('Payment date'),
+        default=datetime.date.today
+    )
+    amount = models.DecimalField(
+        verbose_name=_("Amount"),
+        max_digits=12, decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+    payment_kind = models.ForeignKey(
+        PaymentKind,
+        verbose_name=_("Payment kind"),
+        on_delete=models.PROTECT
+    )
+    bank = models.ForeignKey(
+        Bank,
+        verbose_name=_("Bank"),
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True
+    )
+    comments = models.CharField(
+        max_length=255,
+        verbose_name=_("Comments"),
+        null=True, blank=True
+    )
+    additional_inputs = models.JSONField(
+        verbose_name=_("Additional inputs"),
+        null=True, blank=True
+    )
+    status = models.CharField(
+        max_length=255,
+        choices=STATUS_CHOICES,
+        default='closed',
+    )
+    created_by = models.ForeignKey(
+        User,
+        verbose_name=_("Added by"),
+        on_delete=models.PROTECT,
+        null=True, blank=True,
+        related_name="added_fruit_payments"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Created at')
+    )
+    canceled_by = models.ForeignKey(
+        User,
+        verbose_name=_("Canceled by"),
+        on_delete=models.PROTECT,
+        null=True, blank=True,
+        related_name="canceled_fruit_payments"
+    )
+    cancellation_date = models.DateTimeField(
+        verbose_name=_("Cancellation date"),
+        null=True, blank=True
+    )
+    mass_payment = models.ForeignKey(
+        "PurchaseMassPayment",
+        verbose_name=_("Mass payment"),
+        on_delete=models.CASCADE,
+        null=True, blank=True
+    )
+    proof_of_payment = models.FileField(
+        verbose_name=_("Proof of Payment"),
+        upload_to='purchases/payments/proofs/',
+        validators=[validate_file_extension],
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return f"{self.payment_date} - ${self.amount}"
+
+    class Meta:
+        verbose_name = _("Payment")
+        verbose_name_plural = _("Payments")

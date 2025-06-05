@@ -198,6 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Nuevos forms agregados
     document.addEventListener('formset:added', (event) => {
         if (event.detail.formsetName === 'serviceorderpayment_set') {
+            setTimeout(updateSimulatedBalance, 100);
             const $newForm = $(event.target);
             const paymentkindField = $newForm.find('select[id^="id_serviceorderpayment_set-"][name$="-payment_kind"]');
             paymentkindField.on('change', function () {
@@ -206,4 +207,85 @@ document.addEventListener("DOMContentLoaded", function () {
             handlePaymentkindChange(paymentkindField, $newForm);
         }
     });
+
+    injectBalanceSummaryBox();
+
+  function injectBalanceSummaryBox() {
+      if ($('#balance-summary').length) return; // Evita duplicados
+          const html = `
+            <div id="balance-summary">
+              <div><strong>Balance actual:</strong> $<span id="original-balance">—</span></div>
+              <div><strong>Balance después de los pagos:</strong> $<span id="simulated-balance">—</span></div>
+            </div>
+          `;
+          $('body').append(html);
+      }
+
+  function parseBalanceText(text) {
+      if (!text) return 0;
+      // Reemplaza punto de miles y coma decimal por punto
+      const clean = text.replace(/\./g, '').replace(',', '.').replace(/\s/g, '');
+      const num = parseFloat(clean);
+      return isNaN(num) ? 0 : num;
+  }
+
+  function getOriginalBalance() {
+      const readonlyText = $('.field-balance_payable .readonly').text().trim();
+      return parseBalanceText(readonlyText);
+  }
+
+  function getNewPaymentsTotal() {
+      let total = 0;
+      const initialForms = parseInt($("#id_serviceorderpayment_set-INITIAL_FORMS").val(), 10) || 0;
+
+      $('div[id^="serviceorderpayment_set-"]').each(function () {
+          const formId = $(this).attr('id');
+
+          // Se asegura que el form sea del tipo serviceorderpayment_set-<número>
+          const matchId = formId.match(/^serviceorderpayment_set-(\d+)$/);
+          if (!matchId) return;
+
+          const amountField = $(this).find('input[name$="-amount"]');
+          const nameAttr = amountField.attr('name') || '';
+          const match = nameAttr.match(/serviceorderpayment_set-(\d+)-amount/);
+          if (!match) return;
+
+          const index = parseInt(match[1], 10);
+          const isNew = index >= initialForms;
+
+          if (isNew) {
+              const value = parseFloat(amountField.val().replace(',', '.')) || 0;
+              total += value;
+          }
+      });
+      return total;
+  }
+
+  function updateSimulatedBalance() {
+      const original = getOriginalBalance();
+      const newPayments = getNewPaymentsTotal();
+      const simulated = original - newPayments;
+
+      if(simulated < 0) {
+        $('#simulated-balance').css('color', 'red');
+      }else {
+        $('#simulated-balance').css('color', 'black');
+      }
+
+      $('#original-balance').text(original.toLocaleString('es-MX', { minimumFractionDigits: 2 }));
+      $('#simulated-balance').text(simulated.toLocaleString('es-MX', { minimumFractionDigits: 2 }));
+  }
+
+  function attachSimulatedBalanceListeners() {
+      $(document).on('input', 'input[name$="-amount"]', updateSimulatedBalance);
+      updateSimulatedBalance();
+  }
+
+  $(document).on('input', 'input[id^="id_serviceorderpayment_set-"][id$="-amount"]', function () {
+      updateSimulatedBalance();
+  });
+
+  attachSimulatedBalanceListeners();
+
+
 });

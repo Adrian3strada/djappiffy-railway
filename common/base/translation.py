@@ -1,5 +1,6 @@
 from modeltranslation.translator import register, TranslationOptions
-from .models import ProductKind, Incoterm, LocalDelivery, Currency, SupplyKind, SupplyMeasureUnitCategory
+from .models import (ProductKind, Incoterm, LocalDelivery, Currency, SupplyKind, SupplyMeasureUnitCategory,
+                     FruitPurchasePriceCategory)
 
 
 @register(ProductKind)
@@ -28,5 +29,9 @@ class SupplyKindTranslationOptions(TranslationOptions):
 
 @register(SupplyMeasureUnitCategory)
 class SupplyMeasureUnitCategoryTranslationOptions(TranslationOptions):
+    fields = ('name',)
+
+@register(FruitPurchasePriceCategory)
+class FruitPurchasePriceCategoryTranslationOptions(TranslationOptions):
     fields = ('name',)
 

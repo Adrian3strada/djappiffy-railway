@@ -1,9 +1,10 @@
 from rest_framework import viewsets
 from .serializers import (ProductKindSerializer, CitySerializer, SubRegionSerializer, RegionSerializer,
                           CapitalFrameworkSerializer, ProductStandardPackagingSerializer, SupplyKindSerializer,
-                          CountrySerializer, CountryProductStandardSizeSerializer, SupplyMeasureUnitCategorySerializer)
+                          CountrySerializer, CountryProductStandardSizeSerializer, SupplyMeasureUnitCategorySerializer,
+                          FruitPurchasePriceCategorySerializer)
 from .models import (ProductKind, ProductKindCountryStandardSize, CapitalFramework,
-                     ProductKindCountryStandardPackaging, SupplyKind, SupplyMeasureUnitCategory)
+                     ProductKindCountryStandardPackaging, SupplyKind, SupplyMeasureUnitCategory, FruitPurchasePriceCategory)
 from cities_light.contrib.restframework3 import CityModelViewSet as BaseCityModelViewSet
 from cities_light.contrib.restframework3 import SubRegionModelViewSet as BaseSubRegionModelViewSet
 from cities_light.contrib.restframework3 import RegionModelViewSet as BaseRegionModelViewSet
@@ -147,5 +148,9 @@ class SupplyMeasureUnitCategoryViewSet(viewsets.ModelViewSet):
     queryset = SupplyMeasureUnitCategory.objects.all()
     filterset_fields = ['is_enabled']
 
-
+class FruitPurchasePriceCategoryViewSet(viewsets.ModelViewSet):
+    serializer_class = FruitPurchasePriceCategorySerializer
+    pagination_class = None
+    queryset = FruitPurchasePriceCategory.objects.all()
+    filterset_fields = ['id', 'is_container', 'is_enabled']
 

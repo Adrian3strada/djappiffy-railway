@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils.translation import gettext as _
 from .models import (Requisition, RequisitionSupply, Country, Region, SubRegion, City, PurchaseOrder, PurchaseOrderSupply,
-                     PurchaseOrderCharge, PurchaseOrderDeduction)
+                     PurchaseOrderCharge, PurchaseOrderDeduction, FruitPurchaseOrderReceipt)
 from packhouses.catalogs.models import HarvestingCrew
 from django.template.loader import render_to_string
 from django.http import HttpResponse
@@ -401,3 +401,14 @@ class CancelMassPaymentView(View):
                 "success": False,
                 "message": f"Error: {str(e)}"
             }, status=500)
+
+def get_receipts_for_order(request):
+    order_id = request.GET.get('order_id')
+    if not order_id:
+        return JsonResponse([], safe=False)
+
+    receipts = FruitPurchaseOrderReceipt.objects.filter(
+        fruit_purchase_order_id=order_id
+    ).values('id', 'ooid')
+
+    return JsonResponse(list(receipts), safe=False)

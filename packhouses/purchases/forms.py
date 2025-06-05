@@ -2,16 +2,18 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .models import (Requisition, PurchaseOrder, PurchaseOrderPayment,RequisitionSupply, ServiceOrder,
-                    ServiceOrderPayment, PurchaseMassPayment
+                    ServiceOrderPayment, PurchaseMassPayment, FruitPurchaseOrderReceipt, FruitPurchaseOrderPayment
                      )
 from django.forms.models import ModelChoiceField
 import json
 from django.utils.safestring import mark_safe
 from packhouses.catalogs.models import Supply, Provider
 from django.db import models
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 import datetime
 from common.widgets import CustomFileDisplayWidget
+from django.forms.models import BaseInlineFormSet
+
 
 
 class RequisitionForm(forms.ModelForm):
@@ -381,3 +383,148 @@ class PurchaseMassPaymentForm(forms.ModelForm):
             self.add_error('bank', _("This field is required for the selected payment kind."))
 
         return cleaned_data
+
+class FruitPurchaseOrderReceiptForm(forms.ModelForm):
+    class Meta:
+        model = FruitPurchaseOrderReceipt
+        fields = (
+            'ooid',
+            'fruit_purchase_order',
+            'receipt_kind',
+            'provider',
+            'price_category',
+            'container_capacity',
+            'quantity',
+            'unit_price',
+            'total_cost',
+            'balance_payable',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = self.instance
+
+        self._can_edit_prices = True
+
+        # Deshabilitar siempre total_cost y balance_payable
+        for field in ['total_cost', 'balance_payable']:
+            self.fields[field].disabled = True
+            self.fields[field].widget.attrs['class'] = self.fields[field].widget.attrs.get('class', '') + ' readonly-field'
+
+        # Si hay instancia, validamos los pagos
+        if instance and instance.pk:
+            payments = instance.fruitpurchaseorderpayment_set.all()
+            has_payments = payments.exists()
+            all_canceled = has_payments and all(p.status == 'canceled' for p in payments)
+            any_active = any(p.status != 'canceled' for p in payments)
+
+            if any_active:
+                # Ningún campo editable
+                for field in self.fields:
+                    self.fields[field].disabled = True
+                    self.fields[field].widget.attrs['class'] = self.fields[field].widget.attrs.get('class', '') + ' readonly-field'
+                self._can_edit_prices = False
+            elif all_canceled:
+                # Solo quantity y unit_price editables
+                for field in self.fields:
+                    if field not in ['quantity', 'unit_price', 'total_cost', 'balance_payable']:
+                        self.fields[field].disabled = True
+                        self.fields[field].widget.attrs['class'] = self.fields[field].widget.attrs.get('class', '') + ' readonly-field'
+                self._can_edit_prices = True
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if self._can_edit_prices:
+            quantity = cleaned_data.get('quantity')
+            unit_price = cleaned_data.get('unit_price')
+
+            if quantity is not None and unit_price is not None:
+                total_cost = (Decimal(quantity) * Decimal(unit_price)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+                cleaned_data['total_cost'] = total_cost
+                cleaned_data['balance_payable'] = total_cost  # Porque todos los pagos están cancelados
+
+        return cleaned_data
+
+class FruitOrderPaymentForm(forms.ModelForm):
+    class Meta:
+        model = FruitPurchaseOrderPayment
+        fields = (
+            'fruit_purchase_order_receipt',
+            'payment_date',
+            'payment_kind',
+            'amount',
+            'bank',
+            'comments',
+            'additional_inputs',
+            'proof_of_payment',
+        )
+        widgets = {
+            'additional_inputs': forms.HiddenInput(),
+            'proof_of_payment': CustomFileDisplayWidget()
+        }
+
+    def __init__(self, *args, fruit_purchase_order=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        fruit_order = fruit_purchase_order or getattr(self.instance, 'fruit_purchase_order', None)
+
+        if fruit_order:
+            self.fields['fruit_purchase_order_receipt'].queryset = FruitPurchaseOrderReceipt.objects.filter(
+                fruit_purchase_order=fruit_order
+            )
+        else:
+            self.fields['fruit_purchase_order_receipt'].queryset = FruitPurchaseOrderReceipt.objects.none()
+
+        instance = self.instance
+        if instance and instance.pk:
+            for field in self.fields:
+                self.fields[field].disabled = True
+                self.fields[field].widget.attrs['class'] = self.fields[field].widget.attrs.get('class',
+                                                                                               '') + ' readonly-field'
+
+            if 'payment_date' in self.fields:
+                self.fields['payment_date'].widget = forms.TextInput(attrs={
+                    'readonly': 'readonly',
+                    'class': 'readonly-field'
+                })
+
+            if instance.additional_inputs:
+                self.fields['additional_inputs'].initial = json.dumps(instance.additional_inputs)
+
+        for field_name in ['payment_kind', 'bank']:
+            if hasattr(self.fields[field_name].widget, 'can_add_related'):
+                self.fields[field_name].widget.can_add_related = False
+                self.fields[field_name].widget.can_change_related = False
+                self.fields[field_name].widget.can_delete_related = False
+                self.fields[field_name].widget.can_view_related = False
+
+        self.fields['bank'].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        payment_kind = cleaned_data.get('payment_kind')
+        bank = cleaned_data.get('bank')
+
+        if payment_kind and getattr(payment_kind, 'requires_bank', False) and not bank:
+            self.add_error('bank', _("This field is required for the selected payment kind."))
+
+        receipt = cleaned_data.get('fruit_purchase_order_receipt')
+        order = self.instance.fruit_purchase_order
+
+        if receipt and receipt.fruit_purchase_order != order:
+            self.add_error('fruit_purchase_order_receipt', _("This receipt does not belong to the selected order."))
+
+        return cleaned_data
+
+class FruitPaymentInlineFormSet(BaseInlineFormSet):
+    def __init__(self, *args, fruit_purchase_order=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fruit_purchase_order = fruit_purchase_order
+
+    def _construct_form(self, i, **kwargs):
+        kwargs['fruit_purchase_order'] = self.fruit_purchase_order
+        return super()._construct_form(i, **kwargs)
+
+

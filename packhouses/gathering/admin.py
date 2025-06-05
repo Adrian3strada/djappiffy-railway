@@ -47,7 +47,7 @@ from django.urls import reverse
 from .forms import ScheduleHarvestForm, ContainerInlineForm, ContainerInlineFormSet
 
 
-class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
+class ScheduleHarvestHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = ScheduleHarvestHarvestingCrew
     extra = 0
     min = 1
@@ -83,7 +83,7 @@ class HarvestCuttingHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_
         js = ('js/admin/forms/packhouses/gathering/harvest_cutting_harvesting_crew_inline.js',)
 
 
-class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
+class ScheduleHarvestContainerVehicleInline(nested_admin.NestedTabularInline):
     model = ScheduleHarvestContainerVehicle
     fields = ('harvest_container', 'quantity')
     extra = 0
@@ -123,11 +123,11 @@ class HarvestCuttingContainerVehicleInline(nested_admin.NestedTabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class HarvestCuttingVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
+class ScheduleHarvestVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = ScheduleHarvestVehicle
     extra = 0
-    fields = ('harvest_cutting', 'provider', 'vehicle', 'stamp_number')
-    inlines = [HarvestCuttingContainerVehicleInline]
+    fields = ('schedule_harvest', 'provider', 'vehicle', 'stamp_number')
+    inlines = [ScheduleHarvestContainerVehicleInline]
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
@@ -170,17 +170,17 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
                     'weight_expected', 'status',  'generate_actions_buttons')
     list_filter = ('product_provider', 'category', 'gatherer', 'maquiladora', 'status',)
     readonly_fields = ('ooid', 'status')
-    inlines = [HarvestCuttingHarvestingCrewInline, HarvestCuttingVehicleInline]
+    inlines = [ScheduleHarvestHarvestingCrewInline, ScheduleHarvestVehicleInline]
 
     def get_orchard_name(self, obj):
         return obj.orchard.name if obj.orchard else None
     get_orchard_name.short_description = _('Orchard')
-    get_orchard_name.admin_order_field = 'orchard__name' 
+    get_orchard_name.admin_order_field = 'orchard__name'
 
     def get_orchard_code(self, obj):
         return obj.orchard.code if obj.orchard else None
     get_orchard_code.short_description = _('Orchard Code')
-    get_orchard_code.admin_order_field = 'orchard__code' 
+    get_orchard_code.admin_order_field = 'orchard__code'
 
     def get_orchard_category(self, obj):
         if obj.orchard:
@@ -288,7 +288,7 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
 
         if db_field.name == "product_varieties":
             kwargs["queryset"] = ProductVariety.objects.filter(**product_organization_queryfilter)
-        
+
         if db_field.name == "product_ripeness":
             kwargs["queryset"] = ProductRipeness.objects.filter(**product_organization_queryfilter)
 

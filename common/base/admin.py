@@ -3,10 +3,13 @@ from unicodedata import category
 from django.contrib import admin
 from organizations.admin import OrganizationAdmin, OrganizationUserAdmin
 from organizations.models import Organization, OrganizationUser
-from .models import (ProductKind, ProductKindCountryStandard, ProductKindCountryStandardSize, LegalEntityCategory, CapitalFramework,
+from .models import (ProductKind, ProductKindCountryStandard, ProductKindCountryStandardSize, LegalEntityCategory,
+                     CapitalFramework,
                      ProductKindCountryStandardPackaging, SupplyKind,
                      Incoterm, LocalDelivery, Currency,
-                     CertificationEntity, CertificationFormat, Pest, Disease, PestProductKind, DiseaseProductKind, FoodSafetyProcedure, SupplyMeasureUnitCategory)
+                     CertificationEntity, CertificationFormat, Pest, Disease, PestProductKind, DiseaseProductKind,
+                     FoodSafetyProcedure, SupplyMeasureUnitCategory,
+                     FoodSafetyProcedure, FruitPurchasePriceCategory)
 from .filters import (ByProductKindForPackagingFilter, ByCountryForMarketProductSizeStandardFilter,
                       ByCountryForCapitalFrameworkFilter)
 from wagtail.documents.models import Document
@@ -251,3 +254,7 @@ class FoodSafetyProcedureAdmin(admin.ModelAdmin):
     list_display = ('name', 'description',)
     list_filter = ['name', 'description']
     form = InlineFoodSafetyProcedureForm
+
+@admin.register(FruitPurchasePriceCategory)
+class FruitPurchasePriceCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name','is_container', 'is_enabled')

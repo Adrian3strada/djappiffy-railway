@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
             url: url,
             method: 'GET',
             dataType: 'json'
-        }).fail(error => console.error('Error al obtener opciones:', error));
+        }).fail(error => console.error('Error fetching options:', error));
     }
 
     function capitalize(str) {
@@ -15,24 +15,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function getFullPrefix(formContainer) {
-      // Buscar el primer elemento cuyo name comience con "purchaseorderpayment_set-"
-      // y que NO contenga "TOTAL_FORMS", "INITIAL_FORMS", "MIN_NUM_FORMS" o "MAX_NUM_FORMS"
-      const $el = formContainer
-        .find('[id^="id_purchaseorderpayment_set-"]')
-        .filter(function () {
-          const name = $(this).attr('name');
-          return !/(TOTAL_FORMS|INITIAL_FORMS|MIN_NUM_FORMS|MAX_NUM_FORMS)/.test(name);
-        })
-        .first();
-      return $el.length ? $el.attr('name').split('-').slice(0, 2).join('-') : null;
+        const $el = formContainer
+            .find('[id^="id_fruitpurchaseorderpayment_set-"]')
+            .filter(function () {
+                const name = $(this).attr('name');
+                return !/(TOTAL_FORMS|INITIAL_FORMS|MIN_NUM_FORMS|MAX_NUM_FORMS)/.test(name);
+            })
+            .first();
+        return $el.length ? $el.attr('name').split('-').slice(0, 2).join('-') : null;
     }
 
     function updateHiddenField(formContainer) {
         const additionalInputsData = [];
         const fullPrefix = getFullPrefix(formContainer);
-        if (!fullPrefix) return; // Si no se pudo obtener el prefijo, salimos
+        if (!fullPrefix) return;
 
-        // Recorrer solo los inputs dentro de .additional-inputs de este formset
         formContainer.find('.additional-inputs input').each(function () {
             const $this = $(this);
             const fieldId = parseInt($this.data('field-id'), 10);
@@ -43,8 +40,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const attrs = {};
             $.each(this.attributes, function () {
                 if (
-                  this.specified &&
-                  !['type', 'value', 'name', 'id', 'class', 'data-field-id', 'data-field-name', 'data-data_type'].includes(this.name)
+                    this.specified &&
+                    !['type', 'value', 'name', 'id', 'class', 'data-field-id', 'data-field-name', 'data-data_type'].includes(this.name)
                 ) {
                     attrs[this.name] = this.value;
                 }
@@ -59,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        // Buscar o crear el campo oculto para este formset específico
         let hiddenField = formContainer.find(`input[name="${fullPrefix}-additional_inputs"]`);
         if (!hiddenField.length) {
             hiddenField = $(`<input type="hidden" name="${fullPrefix}-additional_inputs">`);
@@ -79,14 +75,12 @@ document.addEventListener("DOMContentLoaded", function () {
             try {
                 storedInputs = JSON.parse(hiddenField.val()) || [];
             } catch (e) {
-                console.error("Error al parsear el JSON almacenado:", e);
+                console.error("Error parsing JSON:", e);
             }
         }
 
         if (data && data['additional_inputs'].length) {
-
             data['additional_inputs'].forEach(function (inputData) {
-
                 let attrs = '';
                 if (inputData.data_type === 'int') {
                     inputData.data_type = 'number';
@@ -110,7 +104,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 const uniqueFieldId = `${fullPrefix}-${inputData.id}`;
-
                 const fieldHtml = `
                     <div class="form-group field-additional-${uniqueFieldId}">
                         <div class="row">
@@ -127,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                     data-data_type="${inputData.data_type}"
                                     value="${prepopulated}"
                                     ${readonly}
-                                    >
+                                >
                             </div>
                         </div>
                     </div>
@@ -149,75 +142,101 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-function handlePaymentkindChange(paymentkindField, formContainer) {
-    const paymentkindId = paymentkindField.val();
-    let additionalContainer = formContainer.find('.additional-inputs');
-    if (!additionalContainer.length) {
-        paymentkindField.closest('.form-group').after('<div class="additional-inputs"></div>');
-        additionalContainer = formContainer.find('.additional-inputs');
+    function handlePaymentkindChange(paymentkindField, formContainer) {
+        const paymentkindId = paymentkindField.val();
+        let additionalContainer = formContainer.find('.additional-inputs');
+        if (!additionalContainer.length) {
+            paymentkindField.closest('.form-group').after('<div class="additional-inputs"></div>');
+            additionalContainer = formContainer.find('.additional-inputs');
+        }
+
+        if (paymentkindId) {
+            fetchOptions(`/rest/v1/purchases/payment-additional-inputs/?payment_kind=${paymentkindId}&is_enabled=true`)
+                .then(data => {
+                    updateAdditionalInputs(data, additionalContainer, formContainer);
+                    if (typeof data.requires_bank !== 'undefined') {
+                        toggleBankField(formContainer, data.requires_bank);
+                    }
+                })
+                .catch(error => console.error('Error loading additional inputs:', error));
+        } else {
+            additionalContainer.empty();
+            updateHiddenField(formContainer);
+        }
     }
 
-    if (paymentkindId) {
-        fetchOptions(`/rest/v1/purchases/payment-additional-inputs/?payment_kind=${paymentkindId}&is_enabled=true`)
-            .then(data => {
-                updateAdditionalInputs(data, additionalContainer, formContainer);
-                if (typeof data.requires_bank !== 'undefined') {
-                    toggleBankField(formContainer, data.requires_bank);
-                }
-            })
-            .catch(error => console.error('Error al obtener los inputs adicionales:', error));
-    } else {
-        additionalContainer.empty();
-        updateHiddenField(formContainer);
+    function toggleBankField(formContainer, shouldShow) {
+        const bankFieldWrapper = formContainer.find('[id$="-bank"]').closest('.form-row, .form-group');
+        if (shouldShow) {
+            bankFieldWrapper.show();
+            bankFieldWrapper.find('select').prop('required', true);
+        } else {
+            bankFieldWrapper.hide();
+            bankFieldWrapper.find('select').prop('required', false);
+        }
     }
-}
 
-function toggleBankField(formContainer, shouldShow) {
-    const bankFieldWrapper = formContainer.find('[id$="-bank"]').closest('.form-row, .form-group');
-    if (shouldShow) {
-        bankFieldWrapper.show();
-        bankFieldWrapper.find('select').prop('required', true);
-    } else {
-        bankFieldWrapper.hide();
-        bankFieldWrapper.find('select').prop('required', false);
-    }
-}
-
-
-// Maneja los forms ya existentes en el DOM, excluyendo los management forms
-const existingForms = $('div[id^="purchaseorderpayment_set-"]').filter(function () {
-  return !this.id.match(/TOTAL_FORMS|INITIAL_FORMS|MIN_NUM_FORMS|MAX_NUM_FORMS/);
-});
-existingForms.each((index, form) => {
-  const $form = $(form);
-  // Para el selector usamos index-1: si index > 0, sino 0
-  const idx = index > 0 ? index - 1 : 0;
-  const paymentkindField = $form.find(`select[name$="${idx}-payment_kind"]`);
-
-  if (paymentkindField.val()) {
-    handlePaymentkindChange(paymentkindField, $form);
-  }
-
-  paymentkindField.on('change', () => {
-    handlePaymentkindChange(paymentkindField, $form);
-  });
-});
-
-// Maneja los nuevos forms agregados
-document.addEventListener('formset:added', (event) => {
-  if (event.detail.formsetName === 'purchaseorderpayment_set') {
-    setTimeout(updateSimulatedBalance, 100);
-    // Espera breve para asegurar render
-    const $newForm = $(event.target);
-    const paymentkindField = $newForm.find('select[id^="id_purchaseorderpayment_set-"][name$="-payment_kind"]');
-    paymentkindField.on('change', function () {
-      handlePaymentkindChange(paymentkindField, $newForm);
+    // Forms ya presentes
+    const existingForms = $('div[id^="fruitpurchaseorderpayment_set-"]').filter(function () {
+        return !this.id.match(/TOTAL_FORMS|INITIAL_FORMS|MIN_NUM_FORMS|MAX_NUM_FORMS/);
     });
-    handlePaymentkindChange(paymentkindField, $newForm);
-  }
-});
 
-  injectBalanceSummaryBox();
+    existingForms.each((index, form) => {
+        const $form = $(form);
+        const idx = index > 0 ? index - 1 : 0;
+        const paymentkindField = $form.find(`select[name$="${idx}-payment_kind"]`);
+
+        if (paymentkindField.val()) {
+            handlePaymentkindChange(paymentkindField, $form);
+        }
+
+        paymentkindField.on('change', () => {
+            handlePaymentkindChange(paymentkindField, $form);
+        });
+    });
+
+    // Obtener el ID de la orden de compra de frutas desde la URL
+    function getFruitPurchaseOrderIdFromUrl() {
+        const parts = window.location.pathname.split('/');
+        const index = parts.indexOf('fruitpurchaseorder');
+        if (index !== -1 && parts.length > index + 1) {
+            return parts[index + 1];
+        }
+        return null;
+    }
+
+
+    // Nuevos forms agregados
+    document.addEventListener('formset:added', (event) => {
+        if (event.detail.formsetName === 'fruitpurchaseorderpayment_set') {
+            setTimeout(updateSimulatedBalance, 100);
+            const $newForm = $(event.target);
+            const paymentkindField = $newForm.find('select[id^="id_fruitpurchaseorderpayment_set-"][name$="-payment_kind"]');
+            const selectField = $newForm.find('select[id$="-fruit_purchase_order_receipt"]');
+            const orderId = getFruitPurchaseOrderIdFromUrl();
+
+            paymentkindField.on('change', function () {
+                handlePaymentkindChange(paymentkindField, $newForm);
+            });
+            handlePaymentkindChange(paymentkindField, $newForm);
+            $.get('/rest/v1/purchases/fruit-receipts/?fruit_purchase_order=' + orderId, function(data) {
+                selectField.empty();
+                selectField.append($('<option>', {
+                    value: '',
+                    text: '---------'
+                }));
+
+                data.forEach(function(receipt) {
+                    selectField.append($('<option>', {
+                        value: receipt.id,
+                        text: '#' + receipt.ooid + " - " + receipt.provider_name
+                    }));
+                });
+            });
+        }
+    });
+
+    injectBalanceSummaryBox();
 
   function injectBalanceSummaryBox() {
       if ($('#balance-summary').length) return; // Evita duplicados
@@ -239,24 +258,30 @@ document.addEventListener('formset:added', (event) => {
   }
 
   function getOriginalBalance() {
-      const readonlyText = $('.field-balance_payable .readonly').text().trim();
-      return parseBalanceText(readonlyText);
+      let total = 0;
+
+      $('input[id^="id_fruitpurchaseorderreceipt_set-"][id$="-balance_payable"]').each(function () {
+          const value = parseFloat($(this).val()) || 0;
+          total += value;
+      });
+
+      return total;
   }
 
   function getNewPaymentsTotal() {
       let total = 0;
-      const initialForms = parseInt($("#id_purchaseorderpayment_set-INITIAL_FORMS").val(), 10) || 0;
+      const initialForms = parseInt($("#id_fruitpurchaseorderpayment_set-INITIAL_FORMS").val(), 10) || 0;
 
-      $('div[id^="purchaseorderpayment_set-"]').each(function () {
+      $('div[id^="fruitpurchaseorderpayment_set-"]').each(function () {
           const formId = $(this).attr('id');
 
-          // Se asegura que el form sea del tipo purchaseorderpayment_set-<número>
-          const matchId = formId.match(/^purchaseorderpayment_set-(\d+)$/);
+          // Se asegura que el form sea del tipo fruitpurchaseorderpayment_set-<número>
+          const matchId = formId.match(/^fruitpurchaseorderpayment_set-(\d+)$/);
           if (!matchId) return;
 
           const amountField = $(this).find('input[name$="-amount"]');
           const nameAttr = amountField.attr('name') || '';
-          const match = nameAttr.match(/purchaseorderpayment_set-(\d+)-amount/);
+          const match = nameAttr.match(/fruitpurchaseorderpayment_set-(\d+)-amount/);
           if (!match) return;
 
           const index = parseInt(match[1], 10);
@@ -290,11 +315,10 @@ document.addEventListener('formset:added', (event) => {
       updateSimulatedBalance();
   }
 
-  $(document).on('input', 'input[id^="id_purchaseorderpayment_set-"][id$="-amount"]', function () {
+  $(document).on('input', 'input[id^="id_fruitpurchaseorderpayment_set-"][id$="-amount"]', function () {
       updateSimulatedBalance();
   });
 
   attachSimulatedBalanceListeners();
-
 
 });

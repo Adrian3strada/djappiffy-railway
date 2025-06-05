@@ -1,11 +1,12 @@
 from rest_framework import viewsets
 from rest_framework.exceptions import NotAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-from .serializers import PaymentKindAdditionalInputSerializer, PurchaseOrderSerializer, ServiceOrderSerializer
+from .serializers import (PaymentKindAdditionalInputSerializer, PurchaseOrderSerializer, ServiceOrderSerializer,
+                          FruitReceiptsSerializer)
 from packhouses.packhouse_settings.models import PaymentKindAdditionalInput
 from packhouses.packhouse_settings.models import PaymentKind
 from rest_framework.response import Response
-from .models import PurchaseOrder, ServiceOrder
+from .models import PurchaseOrder, ServiceOrder, FruitPurchaseOrderReceipt
 
 
 
@@ -53,7 +54,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         qs = PurchaseOrder.objects.filter(
             organization=self.request.organization,
             balance_payable__gt=0
-        )
+        ).order_by('id')
 
         provider = self.request.query_params.get('provider')
         currency = self.request.query_params.get('currency')
@@ -81,7 +82,7 @@ class ServiceOrderViewSet(viewsets.ModelViewSet):
         qs = ServiceOrder.objects.filter(
             organization=self.request.organization,
             balance_payable__gt=0
-        )
+        ).order_by('id')
 
         provider = self.request.query_params.get('provider')
         currency = self.request.query_params.get('currency')
@@ -92,4 +93,23 @@ class ServiceOrderViewSet(viewsets.ModelViewSet):
             qs = qs.filter(currency_id=currency)
 
         return qs
+
+
+class FruitReceiptsViewSet(viewsets.ModelViewSet):
+    serializer_class = FruitReceiptsSerializer
+    filterset_fields = ['fruit_purchase_order',]
+    filter_backends = [DjangoFilterBackend]
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated()
+
+        order_id = self.kwargs.get('pk') or self.request.query_params.get('fruit_purchase_order')
+
+        return FruitPurchaseOrderReceipt.objects.filter(
+            fruit_purchase_order__organization=self.request.organization,
+            fruit_purchase_order_id=order_id
+        )
 

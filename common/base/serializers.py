@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.utils import translation
 from .models import (ProductKind, ProductKindCountryStandardSize, CapitalFramework,
-                     ProductKindCountryStandardPackaging, SupplyKind, SupplyMeasureUnitCategory)
+                     ProductKindCountryStandardPackaging, SupplyKind, SupplyMeasureUnitCategory, FruitPurchasePriceCategory)
 from cities_light.contrib.restframework3 import CountrySerializer as BaseCountrySerializer
 from cities_light.contrib.restframework3 import RegionSerializer as BaseRegionSerializer
 from cities_light.contrib.restframework3 import SubRegionSerializer as BaseSubRegionSerializer
@@ -58,4 +58,9 @@ class CapitalFrameworkSerializer(serializers.ModelSerializer):
 class SupplyMeasureUnitCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SupplyMeasureUnitCategory
+        fields = "__all__"
+
+class FruitPurchasePriceCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FruitPurchasePriceCategory
         fields = "__all__"

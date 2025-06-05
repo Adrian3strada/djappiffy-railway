@@ -373,3 +373,19 @@ class FoodSafetyProcedure(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+class FruitPurchasePriceCategory(models.Model):
+    name = models.CharField(max_length=100)
+    is_container = models.BooleanField(default=False, verbose_name=_('Is container'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('Fruit Purchase Price Category')
+        verbose_name_plural = _('Fruit Purchase Price Categories')
+        ordering = ['name']
+        constraints = [
+            models.UniqueConstraint(fields=['name'], name='fruitpurchasepricecategory_unique_name')
+        ]
