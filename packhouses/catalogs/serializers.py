@@ -49,21 +49,6 @@ class ProductPackagingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProductPackagingPalletSerializer(serializers.ModelSerializer):
-    product_packaging_detail = serializers.SerializerMethodField(read_only=True)
-    name = serializers.SerializerMethodField(read_only=True)
-
-    def get_name(self, obj):
-        return f"{obj.pallet} [{obj.product_packaging_quantity}] -- {obj.product_packaging}"
-
-    def get_product_packaging_detail(self, obj):
-        return ProductPackagingSerializer(obj.product_packaging, read_only=True).data
-
-    class Meta:
-        model = ProductPackagingPallet
-        fields = '__all__'
-
-
 class ProductHarvestSizeKindSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductHarvestSizeKind

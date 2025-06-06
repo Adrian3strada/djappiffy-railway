@@ -6,7 +6,7 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
                           MaquiladoraSerializer, PackagingSerializer, ProductPresentationSerializer,
                           SupplySerializer, OrchardSerializer, OrchardGeoLocationSerializer,
                           HarvestingCrewSerializer,
-                          ProductPackagingSerializer, PalletSerializer, ProductPackagingPalletSerializer,
+                          ProductPackagingSerializer, PalletSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
                           OrchardCertificationSerializer, ProductRipenessSerializer, ServiceSerializer,
                           PestProductKindSerializer, DiseaseProductKindSerializer
@@ -191,44 +191,6 @@ class ProductPackagingViewSet(viewsets.ModelViewSet):
 
         if product_presentation__isnull:
             queryset = queryset.filter(product_presentation__isnull=product_presentation__isnull)
-
-        return queryset
-
-class ProductPackagingPalletViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductPackagingPalletSerializer
-    filterset_fields = ['product_packaging', 'pallet']
-    pagination_class = None
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            raise NotAuthenticated()
-
-        queryset = ProductPackagingPallet.objects.filter(product_packaging__organization=self.request.organization)
-
-        product_packaging__product = self.request.GET.get('product_packaging__product')
-        product_packaging__market = self.request.GET.get('product_packaging__market')
-        product_packaging__category = self.request.GET.get('product_packaging__category')
-        product_packaging__product_size = self.request.GET.get('product_packaging__product_size')
-        product_packaging__product_presentation__isnull = self.request.GET.get('product_packaging__product_presentation__isnull')
-
-        if product_packaging__product:
-            queryset = queryset.filter(product_packaging__product=product_packaging__product)
-
-        if product_packaging__market:
-            queryset = queryset.filter(product_packaging__market=product_packaging__market)
-
-        if product_packaging__category:
-            queryset = queryset.filter(product_packaging__category=product_packaging__category)
-
-        if product_packaging__product_size:
-            queryset = queryset.filter(product_packaging__product_size=product_packaging__product_size)
-
-        if product_packaging__product:
-            queryset = queryset.filter(product_packaging__product=product_packaging__product)
-
-        if product_packaging__product_presentation__isnull:
-            queryset = queryset.filter(product_packaging__product_presentation__isnull=True if product_packaging__product_presentation__isnull == '1' else False)
 
         return queryset
 

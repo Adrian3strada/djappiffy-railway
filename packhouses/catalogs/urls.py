@@ -3,7 +3,7 @@ from .viewsets import (
     MarketViewSet, ProductMarketClassViewSet, VehicleViewSet, HarvestingCrewProviderViewSet,
     CrewChiefViewSet, ProductVarietyViewSet, ProductHarvestSizeKindViewSet, ProductPhenologyKindViewSet,
     ClientViewSet, ProviderViewSet, ProductViewSet, MaquiladoraViewSet, SupplyViewSet,
-    ProductSizeViewSet, ProductPresentationViewSet, ProductPackagingViewSet, ProductPackagingPalletViewSet,
+    ProductSizeViewSet, ProductPresentationViewSet, ProductPackagingViewSet,
     PalletViewSet,
     OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, OrchardGeoLocationViewSet, PackagingViewSet,
     ProductRipenessViewSet,
@@ -24,8 +24,7 @@ drf_router.register(r'rest/v1/catalogs/product-size', ProductSizeViewSet, basena
 drf_router.register(r'rest/v1/catalogs/product-presentation', ProductPresentationViewSet,
                     basename='product_presentation')
 drf_router.register(r'rest/v1/catalogs/product-packaging', ProductPackagingViewSet, basename='product_packaging')
-drf_router.register(r'rest/v1/catalogs/product-packaging-pallet', ProductPackagingPalletViewSet,
-                    basename='product_packaging_pallet')
+# drf_router.register(r'rest/v1/catalogs/product-packaging-pallet', ProductPackagingPalletViewSet, basename='product_packaging_pallet')
 drf_router.register(r'rest/v1/catalogs/packaging', PackagingViewSet, basename='packaging')
 drf_router.register(r'rest/v1/catalogs/provider', ProviderViewSet, basename='provider')
 drf_router.register(r'rest/v1/catalogs/supply', SupplyViewSet, basename='supply')
