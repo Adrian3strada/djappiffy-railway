@@ -278,7 +278,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   })
 
-
   maquiladoraField.closest('.form-group').hide();
   localDeliveryField.closest('.form-group').hide();
   incotermsField.closest('.form-group').hide();
@@ -288,9 +287,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   if (productField.val()) {
     getProductProperties();
+    productField.closest('.form-group').show();
     productVarietyField.closest('.form-group').show();
     orderItemsKindField.closest('.form-group').show();
   } else {
+    productField.closest('.form-group').hide();
     productVarietyField.closest('.form-group').hide();
     orderItemsKindField.closest('.form-group').hide();
   }

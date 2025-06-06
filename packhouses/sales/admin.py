@@ -142,7 +142,8 @@ class OrderItemPackagingInline(OrderItemInlineMixin):
         return formset
 
     class Media:
-        js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)
+        # js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)
+        pass
 
 
 class OrderItemPalletInline(OrderItemInlineMixin):
@@ -158,7 +159,8 @@ class OrderItemPalletInline(OrderItemInlineMixin):
         return formset
 
     class Media:
-        js = ('js/admin/forms/packhouses/sales/order_item_pallet_inline.js',)
+        # js = ('js/admin/forms/packhouses/sales/order_item_pallet_inline.js',)
+        pass
 
 
 @admin.register(Order)
