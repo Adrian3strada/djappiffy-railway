@@ -155,9 +155,14 @@ document.addEventListener('DOMContentLoaded', function () {
       const productStandardPackagingName = countryStandardPackagingField.find('option:selected').text();
       let productAndMarket = ''
       if (productName && marketName) {
-         productAndMarket = ` (${productName}:${marketName})`;
+         productAndMarket = ` - (${productName}:${marketName})`;
       }
-      const nameString = `${packagingSupplyKindName} ${productStandardPackagingName}${productAndMarket}`
+      let supplyName = ''
+      if (packagingSupplyField.val()) {
+        const packagingSupplyName = packagingSupplyField.find('option:selected').text();
+        supplyName = ` - [${packagingSupplyName}]`;
+      }
+      const nameString = `${packagingSupplyKindName} ${productStandardPackagingName}${supplyName}${productAndMarket}`
       nameField.val(nameString)
     } else if (packagingSupplyKindField.val()) {
       const packagingSupplyKindName = packagingSupplyKindField.find('option:selected').text();
@@ -196,6 +201,12 @@ document.addEventListener('DOMContentLoaded', function () {
       updateProductStandardPackaging();
       updateName();
     });
+  });
+
+  packagingSupplyField.on('change', () => {
+    if (packagingSupplyField.val()) {
+      updateName();
+    }
   });
 
   packagingSupplyKindField.on('change', function () {

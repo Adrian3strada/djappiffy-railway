@@ -1509,8 +1509,8 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     list_display = ('name', 'packaging_supply_kind', 'packaging_supply', 'product', 'market',
                     'country_standard_packaging_display', 'display_clients', 'is_enabled')
     fields = (
-        'market', 'product', 'packaging_supply_kind', 'country_standard_packaging',
-        'name', 'packaging_supply', 'is_enabled', 'clients'
+        'market', 'product', 'packaging_supply_kind', 'country_standard_packaging', 'packaging_supply',
+        'name', 'is_enabled', 'clients'
     )
     inlines = (PackagingComplementarySupplyInline,)
 
