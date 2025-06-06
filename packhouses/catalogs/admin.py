@@ -12,7 +12,7 @@ from .models import (
     Pallet, PalletComplementarySupply,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    PackagingComplementarySupply, ProductRipeness, ProductPackagingPresentation,
+    PackagingComplementarySupply, ProductRipeness,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary,
     ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue, ProductFoodSafetyProcess,
     ProductDryMatterAcceptanceReport
@@ -1615,70 +1615,6 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         js = ('js/admin/forms/packaging.js',)
 
 
-class ProductPackagingPresentationInline(admin.TabularInline):
-    model = ProductPackagingPresentation
-    min_num = 0
-    extra = 0
-    max_num = 1
-    verbose_name = _('Presentation')
-    verbose_name_plural = _('Presentations')
-
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        if 'presentation' in formset.form.base_fields:
-            formset.form.base_fields['presentation'].widget.can_add_related = False
-            formset.form.base_fields['presentation'].widget.can_change_related = False
-            formset.form.base_fields['presentation'].widget.can_delete_related = False
-            formset.form.base_fields['presentation'].widget.can_view_related = False
-        return formset
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        parent_obj_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = Packaging.objects.get(id=parent_obj_id) if parent_obj_id else None
-        organization = request.organization if hasattr(request, 'organization') else None
-
-        if db_field.name == "presentation":
-            if organization:
-                kwargs["queryset"] = ProductPresentation.objects.filter(organization=organization, is_enabled=True)
-            else:
-                kwargs["queryset"] = ProductPresentation.objects.none()
-
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-"""
-class ProductPackagingPalletInline(admin.TabularInline):
-    model = ProductPackagingPallet
-    min_num = 0
-    extra = 0
-    verbose_name = _('Pallet')
-    verbose_name_plural = _('Pallets')
-
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        if 'pallet' in formset.form.base_fields:
-            formset.form.base_fields['pallet'].widget.can_add_related = False
-            formset.form.base_fields['pallet'].widget.can_change_related = False
-            formset.form.base_fields['pallet'].widget.can_delete_related = False
-            formset.form.base_fields['pallet'].widget.can_view_related = True
-        return formset
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        parent_obj_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = ProductPackaging.objects.get(id=parent_obj_id) if parent_obj_id else None
-        organization = request.organization if hasattr(request, 'organization') else None
-
-        if db_field.name == "pallet":
-            kwargs["queryset"] = Pallet.objects.none()
-            if organization:
-                kwargs["queryset"] = Pallet.objects.filter(organization=organization, is_enabled=True)
-
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    class Media:
-        js = ('js/admin/forms/product_packaging_pallet_inline.js',)
-"""
-
-
 @admin.register(ProductPackaging)
 class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
@@ -1694,10 +1630,9 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                     'product_presentation', 'product_pieces_per_presentation',
                     'product_presentations_per_packaging', 'is_enabled']
     search_fields = ('name', 'alias')
-    fields = ['category', 'market', 'product', 'product_size', 'packaging', 'product_weight_per_packaging',
+    fields = ['category', 'market', 'product', 'packaging', 'product_size', 'product_weight_per_packaging',
               'product_presentation', 'product_pieces_per_presentation', 'product_presentations_per_packaging',
               'name', 'alias', 'is_enabled']
-    inlines = []
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')

@@ -1068,24 +1068,6 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-class ProductPackagingPresentation(models.Model):
-    product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
-    product_presentation = models.ForeignKey(ProductPresentation, verbose_name=_('presentation'),
-                                             on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'),
-                                           help_text=_('Amount of product presentations for this product packaging'),
-                                           validators=[MinValueValidator(1)])
-
-    class Meta:
-        verbose_name = _('Product packaging presentation')
-        verbose_name_plural = _('Product packaging presentations')
-        ordering = ('product_packaging', 'product_presentation')
-        constraints = [
-            models.UniqueConstraint(fields=('product_packaging', 'product_presentation'),
-                                    name='productpackagingpresentation_unique_productpackaging_presentation'),
-        ]
-
-
 class ProductPackagingPallet(models.Model):
     product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
     product_packaging_quantity = models.PositiveIntegerField(verbose_name=_('Product packaging quantity'),
