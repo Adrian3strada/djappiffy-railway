@@ -1016,6 +1016,9 @@ class PackagingComplementarySupply(models.Model):
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
 
+    def __str__(self):
+        return f"{self.supply} ({self.quantity})"
+
     class Meta:
         verbose_name = _('Product packaging complementary supply')
         verbose_name_plural = _('Product packaging complementary supplies')

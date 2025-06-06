@@ -1485,9 +1485,7 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_obj_id = request.resolver_match.kwargs.get("object_id")
         parent_obj = Packaging.objects.get(id=parent_obj_id) if parent_obj_id else None
-        # packaging_complement_categories = ['packaging_complement', 'packaging_separator', 'packaging_labeling', 'packaging_storage']
-        # se removieron algunas categorias por el issue #164
-        packaging_complement_categories = ['packaging_complement', 'packaging_storage']
+        packaging_complement_categories = ['packaging_complement', 'packaging_separator', 'packaging_labeling', 'packaging_storage']
 
         if db_field.name == "kind":
             kwargs["queryset"] = SupplyKind.objects.filter(category__in=packaging_complement_categories,
@@ -1504,11 +1502,12 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
 class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PackagingResource]
+    # TODO: agregar filtro para clientes
     list_filter = (BySupplyKindForPackagingFilter, BySupplyForOrganizationPackagingFilter,
                    ByProductForOrganizationPackagingFilter, ByMarketForOrganizationPackagingFilter,
                    ByProductKindCountryStandardPackagingForOrganizationPackagingFilter, 'is_enabled', 'clients')
     list_display = ('name', 'packaging_supply_kind', 'packaging_supply', 'product', 'market',
-                    'country_standard_packaging_display', 'is_enabled', 'display_clients')
+                    'country_standard_packaging_display', 'display_clients', 'is_enabled')
     fields = (
         'market', 'product', 'packaging_supply_kind', 'country_standard_packaging',
         'name', 'packaging_supply', 'is_enabled', 'clients'
@@ -1519,6 +1518,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return ", ".join([client.name for client in obj.clients.all()])
 
     display_clients.short_description = 'Clients'
+    display_clients.admin_order_field = 'clients__name'
 
     def country_standard_packaging_display(self, obj):
         if obj.country_standard_packaging:
