@@ -1891,7 +1891,7 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj, exclude=[Market, Product, Supply, Organization, PalletComplementarySupply]):
-            readonly_fields.extend(['product', 'name', 'alias', 'supply'])
+            readonly_fields.extend(['market', 'product', 'name', 'alias', 'supply', 'product_packagings', 'max_packages_quantity'])
         return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
