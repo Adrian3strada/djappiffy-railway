@@ -14,7 +14,7 @@ from .filters import (ByMaquiladoraForOrganizationOrderFilter, ByClientForOrgani
                       ByProductForOrganizationOrderFilter, ByProductVarietyForOrganizationOrderFilter)
 from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
-                                        ProductPackaging,
+                                        ProductPackaging, Pallet,
                                         ProductPhenologyKind, ProductMarketClass, Packaging, ProductPackagingPallet)
 from .models import Order, OrderItemWeight, OrderItemPackaging, OrderItemPallet
 from .forms import OrderItemWeightFormSet, OrderItemPackagingFormSet, OrderItemPalletFormSet
@@ -81,11 +81,9 @@ class OrderItemInlineMixin(admin.StackedInline):
                                                                        market=client.market, is_enabled=True)
 
         if db_field.name == "product_packaging_pallet":
-            kwargs["queryset"] = ProductPackagingPallet.objects.none()
+            kwargs["queryset"] = Pallet.objects.none()
             if client and product:
-                kwargs["queryset"] = ProductPackagingPallet.objects.filter(product_packaging__product=product,
-                                                                           product_packaging__market=client.market,
-                                                                           is_enabled=True)
+                kwargs["queryset"] = Pallet.objects.filter(market=client.market, product=product, is_enabled=True)
 
         if db_field.name == "product_packaging":
             kwargs["queryset"] = ProductPackaging.objects.none()
@@ -135,10 +133,6 @@ class OrderItemPackagingInline(OrderItemInlineMixin):
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        formset.form.base_fields['product_packaging'].widget.can_add_related = False
-        formset.form.base_fields['product_packaging'].widget.can_change_related = False
-        formset.form.base_fields['product_packaging'].widget.can_delete_related = False
-        formset.form.base_fields['product_packaging'].widget.can_view_related = False
         return formset
 
     class Media:
@@ -152,10 +146,6 @@ class OrderItemPalletInline(OrderItemInlineMixin):
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        formset.form.base_fields['product_packaging_pallet'].widget.can_add_related = False
-        formset.form.base_fields['product_packaging_pallet'].widget.can_change_related = False
-        formset.form.base_fields['product_packaging_pallet'].widget.can_delete_related = False
-        formset.form.base_fields['product_packaging_pallet'].widget.can_view_related = False
         return formset
 
     class Media:

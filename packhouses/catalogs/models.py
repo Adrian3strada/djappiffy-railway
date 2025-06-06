@@ -1047,7 +1047,9 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"{self.name} ({self.alias}) - {self.market} - {self.packaging} - {self.product_size} ({self.product})"
+        # return f"{self.name} ({self.alias}) - {self.market} - {self.packaging} - {self.product_size} ({self.product})"
+        return f"{self.name}"
+
 
     class Meta:
         verbose_name = _('Product packaging')
