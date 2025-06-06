@@ -15,8 +15,10 @@ from django.conf import settings
 from .utils import (vehicle_year_choices, vehicle_validate_year, get_type_choices, get_payment_choices,
                     get_vehicle_category_choices, get_provider_categories_choices)
 from django.core.exceptions import ValidationError
-from common.base.models import (ProductKind, ProductKindCountryStandardSize, ProductKindCountryStandardPackaging, CapitalFramework,
-                                ProductKindCountryStandard, LegalEntityCategory, SupplyKind, PestProductKind, DiseaseProductKind)
+from common.base.models import (ProductKind, ProductKindCountryStandardSize, ProductKindCountryStandardPackaging,
+                                CapitalFramework,
+                                ProductKindCountryStandard, LegalEntityCategory, SupplyKind, PestProductKind,
+                                DiseaseProductKind)
 from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
                                                   PaymentKind, VehicleFuelKind, VehicleKind, VehicleBrand,
                                                   AuthorityPackagingKind,
@@ -41,8 +43,8 @@ class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
         on_delete=models.PROTECT,
         verbose_name=_('Country'),
         related_name='market_country',
-        null = False,
-        blank = False
+        null=False,
+        blank=False
     )
 
     countries = models.ManyToManyField(Country, verbose_name=_('Countries'))
@@ -94,7 +96,7 @@ class Product(CleanNameAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     description = models.CharField(blank=True, null=True, max_length=255, verbose_name=_('Description'))
     measure_unit_category = models.CharField(max_length=30, verbose_name=_('Measure unit category'),
-                                                   choices=PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES)
+                                             choices=PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES)
     markets = models.ManyToManyField(Market, verbose_name=_('Markets'), blank=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -214,13 +216,7 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Varieties'), blank=False)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     category = models.CharField(max_length=30, verbose_name=_('Category'), choices=PRODUCT_SIZE_CATEGORY_CHOICES)
-    standard_size = models.ForeignKey(
-    ProductKindCountryStandardSize,
-    verbose_name=_('Standard size'),
-    on_delete=models.PROTECT,
-    null=True,
-    blank=True,
-)
+    standard_size = models.ForeignKey(ProductKindCountryStandardSize, verbose_name=_('Standard size'), on_delete=models.PROTECT, null=True, blank=True)
 
     name = models.CharField(max_length=160, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
@@ -256,6 +252,7 @@ class ProductPest(models.Model):
                                     name='unique_product_pest_name')
         ]
 
+
 class ProductDisease(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     disease = models.ForeignKey(DiseaseProductKind, verbose_name=_('Disease'), on_delete=models.PROTECT)
@@ -271,6 +268,7 @@ class ProductDisease(models.Model):
             models.UniqueConstraint(fields=['product', 'disease', 'name'],
                                     name='unique_product_disease_name')
         ]
+
 
 class ProductPhysicalDamage(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
@@ -289,6 +287,7 @@ class ProductPhysicalDamage(models.Model):
                                     name='productphysicaldamage_unique_name_product'),
         ]
 
+
 class ProductResidue(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=False)
@@ -306,8 +305,10 @@ class ProductResidue(models.Model):
                                     name='productresidue_unique_name_product'),
         ]
 
+
 class ProductFoodSafetyProcess(models.Model):
-    procedure = models.ForeignKey(FoodSafetyProcedure, verbose_name=_('Food Safety Procedure'), on_delete=models.PROTECT)
+    procedure = models.ForeignKey(FoodSafetyProcedure, verbose_name=_('Food Safety Procedure'),
+                                  on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
@@ -321,6 +322,7 @@ class ProductFoodSafetyProcess(models.Model):
             models.UniqueConstraint(fields=['procedure', 'product'],
                                     name='productfoodsafetyprocess_unique_procedure_product'),
         ]
+
 
 class ProductDryMatterAcceptanceReport(models.Model):
     acceptance_report = models.IntegerField(verbose_name=_('Dry Matter Acceptance Report'), null=True, blank=True)
@@ -340,6 +342,7 @@ class ProductDryMatterAcceptanceReport(models.Model):
         if obj.pk != latest.pk:
             return  # No guardar si no es el último
         super().save_model(request, obj, form, change)
+
 
 # /Products
 
@@ -672,7 +675,8 @@ class OrchardCertification(models.Model):
                                            on_delete=models.PROTECT, null=True, blank=True)
     certification_kind_name = models.CharField(max_length=255, null=True, blank=True)
     certification_number = models.CharField(max_length=100, verbose_name=_('Certification number'))
-    certification_document = models.FileField(upload_to='orchard_certifications/', verbose_name=_('Certification document'))
+    certification_document = models.FileField(upload_to='orchard_certifications/',
+                                              verbose_name=_('Certification document'))
     expiration_date = models.DateField(verbose_name=_('Expiration date'))
     verifier = models.ForeignKey(OrchardCertificationVerifier, verbose_name=_('Orchard certification verifier'),
                                  on_delete=models.PROTECT, null=True, blank=True)
@@ -694,7 +698,8 @@ class OrchardCertification(models.Model):
 
 class OrchardGeoLocation(models.Model):
     orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.CASCADE)
-    mode = models.CharField(max_length=20, choices=(('upload', _('Upload')), ('draw', _('Draw')), ('coordinates', _('Write coordinates'))), verbose_name=_('Mode'))
+    mode = models.CharField(max_length=20, choices=(('upload', _('Upload')), ('draw', _('Draw')),
+                                                    ('coordinates', _('Write coordinates'))), verbose_name=_('Mode'))
     file = models.FileField(upload_to='orchard_geolocation/', verbose_name=_('File'), null=True, blank=False)
     coordinates = models.JSONField(verbose_name=_('Coordinates'), null=True, blank=False)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
@@ -814,9 +819,9 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
     minimum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Minimum stock quantity'))
     maximum_stock_quantity = models.PositiveIntegerField(verbose_name=_('Maximum stock quantity'))
     usage_discount_quantity = models.FloatField(verbose_name=_('Usage discount quantity'),
-                                                          validators=[MinValueValidator(0.01)],
-                                                          help_text=_(
-                                                              'Amount of units to discount when a supply is consumed, based in the usage unit of the supply kind'))
+                                                validators=[MinValueValidator(0.01)],
+                                                help_text=_(
+                                                    'Amount of units to discount when a supply is consumed, based in the usage unit of the supply kind'))
     kg_tare = models.FloatField(default=0, verbose_name=_("Kg tare"), null=True, blank=True, )
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -888,20 +893,21 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 
 
 class Pallet(models.Model):
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT, limit_choices_to={'is_enabled': True})
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT, limit_choices_to={'is_enabled': True})
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT,
+                               limit_choices_to={'is_enabled': True})
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT,
+                                limit_choices_to={'is_enabled': True})
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT,
                                limit_choices_to={'kind__category': 'packaging_pallet', 'is_enabled': True})
-    name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
-    alias = models.CharField(max_length=20, verbose_name=_('Alias'), null=False, blank=False)
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    alias = models.CharField(max_length=20, verbose_name=_('Alias'))
+    product_packagings = models.ManyToManyField('ProductPackaging', verbose_name=_('Product packaging'))
     max_packages_quantity = models.PositiveIntegerField(verbose_name=_('Max packages per pallet'))
-    product_packagings = models.ManyToManyField('ProductPackaging', verbose_name=_('Product packaging'), limit_choices_to={'is_enabled': True})
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
-
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name}:{self.alias} ({self.max_packages_quantity}) - {self.supply} ({self.product})"
 
     class Meta:
         verbose_name = _('Pallet')
@@ -1017,6 +1023,9 @@ class PackagingComplementarySupply(models.Model):
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
 
+    def __str__(self):
+        return f"{self.supply} ({self.quantity})"
+
     class Meta:
         verbose_name = _('Product packaging complementary supply')
         verbose_name_plural = _('Product packaging complementary supplies')
@@ -1029,7 +1038,8 @@ class PackagingComplementarySupply(models.Model):
 
 class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     category = models.CharField(max_length=20, choices=PRODUCT_PACKAGING_CATEGORY_CHOICES, verbose_name=_('Category'))
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT, limit_choices_to={'is_enabled': True})
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT,
+                               limit_choices_to={'is_enabled': True})
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.CASCADE)
@@ -1041,14 +1051,16 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
         verbose_name=_('Product presentations per packaging'),
         null=True, blank=True, validators=[MinValueValidator(1)])
     product_pieces_per_presentation = models.PositiveIntegerField(verbose_name=_('Product pieces per presentation'),
-                                                                  null=True, blank=True, validators=[MinValueValidator(1)])
+                                                                  null=True, blank=True,
+                                                                  validators=[MinValueValidator(1)])
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     alias = models.CharField(max_length=30, verbose_name=_('Alias'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"{self.name} ({self.alias}) - {self.market}, {self.packaging}, {self.product_size} ({self.product})"
+        # return f"{self.name} ({self.alias}) - {self.market} - {self.packaging} - {self.product_size} ({self.product})"
+        return f"{self.name}"
 
     class Meta:
         verbose_name = _('Product packaging')
@@ -1064,29 +1076,11 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-class ProductPackagingPresentation(models.Model):
-    product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
-    product_presentation = models.ForeignKey(ProductPresentation, verbose_name=_('presentation'),
-                                             on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(verbose_name=_('Quantity'),
-                                           help_text=_('Amount of product presentations for this product packaging'),
-                                           validators=[MinValueValidator(1)])
-
-    class Meta:
-        verbose_name = _('Product packaging presentation')
-        verbose_name_plural = _('Product packaging presentations')
-        ordering = ('product_packaging', 'product_presentation')
-        constraints = [
-            models.UniqueConstraint(fields=('product_packaging', 'product_presentation'),
-                                    name='productpackagingpresentation_unique_productpackaging_presentation'),
-        ]
-
-
 class ProductPackagingPallet(models.Model):
     product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
     product_packaging_quantity = models.PositiveIntegerField(verbose_name=_('Product packaging quantity'),
                                                              help_text=_(
-                                                             'Amount of product packaging units for this pallet.'),
+                                                                 'Amount of product packaging units for this pallet.'),
                                                              validators=[MinValueValidator(1)])
     pallet = models.ForeignKey(Pallet, on_delete=models.CASCADE)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))

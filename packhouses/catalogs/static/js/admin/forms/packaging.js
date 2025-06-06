@@ -149,15 +149,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateName() {
     if (packagingSupplyKindField.val() && countryStandardPackagingField.val()) {
+      const productName = productField.find('option:selected').text();
+      const marketName = marketField.find('option:selected').text();
       const packagingSupplyKindName = packagingSupplyKindField.find('option:selected').text();
       const productStandardPackagingName = countryStandardPackagingField.find('option:selected').text();
-      const nameString = `${packagingSupplyKindName} ${productStandardPackagingName}`
+      let productAndMarket = ''
+      if (productName && marketName) {
+         productAndMarket = ` (${productName}:${marketName})`;
+      }
+      const nameString = `${packagingSupplyKindName} ${productStandardPackagingName}${productAndMarket}`
       nameField.val(nameString)
     } else if (packagingSupplyKindField.val()) {
       const packagingSupplyKindName = packagingSupplyKindField.find('option:selected').text();
       nameField.val(packagingSupplyKindName)
     } else {
-      nameField.val('')
+      nameField.val(null)
     }
   }
 
@@ -182,11 +188,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   productField.on('change', () => {
     getProductProperties();
+    updateName();
   })
 
   marketField.on('change', () => {
     getMarketCountries().then(() => {
       updateProductStandardPackaging();
+      updateName();
     });
   });
 
@@ -217,18 +225,6 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
   });
-
-  /*
-    maxProductAmountPerPackageField.on('change', function () {
-      if (maxProductAmountPerPackageField.val() && productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
-        const maxProductAmount = parseFloat(productStandardPackagingProperties.max_product_amount);
-        const maxProductAmountPerPackage = parseFloat(maxProductAmountPerPackageField.val());
-        if (maxProductAmountPerPackage > maxProductAmount) {
-          maxProductAmountPerPackageField.val(maxProductAmount);
-        }
-      }
-    });
-  */
 
   if (!countryStandardPackagingField.val()) updateFieldOptions(countryStandardPackagingField, []);
 

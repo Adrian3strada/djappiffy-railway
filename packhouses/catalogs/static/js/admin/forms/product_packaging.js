@@ -11,15 +11,12 @@ document.addEventListener('DOMContentLoaded', async function () {
   const nameField = $('#id_name');
   const aliasField = $('#id_alias');
 
-  let productProperties = null;
   let packagingProperties = null;
   let packagingSupplyProperties = null;
   let productPresentationProperties = null;
   let productPresentationSupplyProperties = null;
 
   let category = categoryField.val();
-  let market = marketField.val();
-  let product = productField.val();
   let productSize = productSizeField.val();
   let packaging = packagingField.val();
   let productWeightPerPackaging = productWeightPerPackagingField.val();
@@ -34,20 +31,12 @@ document.addEventListener('DOMContentLoaded', async function () {
   productPiecesPerPresentationField.attr('step', 1);
   productPiecesPerPresentationField.attr('min', 1);
 
-  marketField.closest('.form-group').hide();
-  productField.closest('.form-group').hide();
-  productSizeField.closest('.form-group').hide();
-  packagingField.closest('.form-group').hide();
   productWeightPerPackagingField.closest('.form-group').hide();
 
   productPresentationField.closest('.form-group').hide();
   productPresentationsPerPackagingField.closest('.form-group').hide();
   productPiecesPerPresentationField.closest('.form-group').hide();
 
-  if (market) marketField.closest('.form-group').show();
-  if (product) productField.closest('.form-group').show();
-  if (productSize) productSizeField.closest('.form-group').show();
-  if (packaging) packagingField.closest('.form-group').show();
   if (productWeightPerPackaging) productWeightPerPackagingField.closest('.form-group').show();
   if (productPresentation) productPresentationField.closest('.form-group').show();
   if (productPresentationsPerPackaging) productPresentationsPerPackagingField.closest('.form-group').show();
@@ -67,17 +56,6 @@ document.addEventListener('DOMContentLoaded', async function () {
       method: 'GET',
       dataType: 'json'
     }).fail(error => console.error('Fetch error:', error));
-  }
-
-  function getProductProperties() {
-    if (productField.val()) {
-      fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
-        .then(product_data => {
-          productProperties = product_data;
-        })
-    } else {
-      productProperties = null;
-    }
   }
 
   async function getPackagingProperties() {
@@ -141,25 +119,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   }
 
-  function updateProduct() {
-    if (marketField.val()) {
-      fetchOptions(`/rest/v1/catalogs/product/?markets=${marketField.val()}&is_enabled=1`)
-        .then(data => {
-          updateFieldOptions(productField, data, product ? product : null);
-          productField.closest('.form-group').fadeIn();
-        })
-    } else {
-      updateFieldOptions(productField, []);
-    }
-  }
-
   function updateProductSize() {
-    if (categoryField.val() && productField.val() && marketField.val()) {
+    if (categoryField.val()) {
       let categories = 'size,mix'
       if (categoryField.val() === 'presentation') {
         categories = 'size'
       }
-      fetchOptions(`/rest/v1/catalogs/product-size/?product=${productField.val()}&market=${marketField.val()}&categories=${categories}&is_enabled=1`)
+      fetchOptions(`/rest/v1/catalogs/product-size/?product=${packagingProperties.product}&market=${packagingProperties.market}&categories=${categories}&is_enabled=1`)
         .then(data => {
           updateFieldOptions(productSizeField, data, productSize ? productSize : null);
           productSizeField.closest('.form-group').fadeIn();
@@ -228,21 +194,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   });
 
-  marketField.on('change', async () => {
-    market = marketField.val();
-    await updateProduct();
-  });
-
-  productField.on('change', async () => {
-    product = productField.val();
-    await getProductProperties();
-    await updateProductSize();
-    await updatePackaging();
-    if (categoryField.val() === 'presentation') {
-      await updateProductPresentation();
-    }
-  })
-
   productSizeField.on('change', () => {
     productSize = productSizeField.val();
     updateName();
@@ -293,14 +244,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     updateName();
   });
-
-  if (categoryField.val()) {
-    marketField.closest('.form-group').show();
-  }
-
-  if (marketField.val()) {
-    await updateProduct();
-  }
 
   if (packagingField.val()) {
     fetchOptions(`/rest/v1/catalogs/packaging/${packagingField.val()}/`)
