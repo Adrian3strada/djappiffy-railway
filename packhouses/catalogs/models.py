@@ -901,7 +901,7 @@ class Pallet(models.Model):
                                limit_choices_to={'kind__category': 'packaging_pallet', 'is_enabled': True})
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
-    product_packagings = models.ManyToManyField('ProductPackaging', verbose_name=_('Product packaging'))
+    product_packagings = models.ManyToManyField('packhouses.catalogs.models.SizePackaging', verbose_name=_('Product packaging'))
     max_packages_quantity = models.PositiveIntegerField(verbose_name=_('Max packages per pallet'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -1036,7 +1036,7 @@ class PackagingComplementarySupply(models.Model):
         ]
 
 
-class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
+class SizePackaging(CleanNameAndOrganizationMixin, models.Model):
     category = models.CharField(max_length=20, choices=PRODUCT_PACKAGING_CATEGORY_CHOICES, verbose_name=_('Category'))
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.CASCADE)
@@ -1065,16 +1065,15 @@ class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
         ordering = ('name',)
         constraints = [
             models.UniqueConstraint(
-                fields=('market', 'product', 'product_size', 'packaging', 'product_presentation', 'organization'),
-                name='productpackaging_unique_market_product_productsize_packaging_productpresentation_organization'),
+                fields=('product_size', 'packaging', 'product_presentation', 'organization'),
+                name='productpackaging_unique_productsize_packaging_productpresentation_organization'),
             models.UniqueConstraint(fields=('name', 'organization'), name='productpackaging_unique_name_organization'),
-            models.UniqueConstraint(fields=('alias', 'organization'),
-                                    name='productpackaging_unique_alias_organization'),
+            models.UniqueConstraint(fields=('alias', 'organization'), name='productpackaging_unique_alias_organization'),
         ]
 
 
 class ProductPackagingPallet(models.Model):
-    product_packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
+    product_packaging = models.ForeignKey(SizePackaging, on_delete=models.CASCADE)
     product_packaging_quantity = models.PositiveIntegerField(verbose_name=_('Product packaging quantity'),
                                                              help_text=_(
                                                                  'Amount of product packaging units for this pallet.'),

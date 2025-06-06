@@ -7,7 +7,7 @@ from .models import (
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, ProductKindCountryStandardPackaging,
-    Service, ProductPresentation, Packaging, ProductPackaging,
+    Service, ProductPresentation, Packaging, SizePackaging,
     WeighingScale, ColdChamber,
     Pallet, PalletComplementarySupply,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
@@ -1614,7 +1614,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         js = ('js/admin/forms/packaging.js',)
 
 
-@admin.register(ProductPackaging)
+@admin.register(SizePackaging)
 class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductPackagingResource]
@@ -1655,7 +1655,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
+        obj = SizePackaging.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
         category = request.POST.get('category') if request.POST else obj.category if obj else None
@@ -1691,7 +1691,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
+        obj = SizePackaging.objects.get(id=obj_id) if obj_id else None
 
         category = request.POST.get('category') if request.POST else obj.category if obj else None
 
