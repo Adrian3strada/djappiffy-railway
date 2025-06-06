@@ -44,15 +44,6 @@ class ByProductForOrganizationFilter(admin.SimpleListFilter):
         return queryset
 
 
-class ByProductForOrganizationProductPackagingFilter(ByProductForOrganizationFilter):
-    def lookups(self, request, model_admin):
-        products = Product.objects.none()
-        if hasattr(request, 'organization'):
-            product_relatedlist = list(ProductPackaging.objects.filter(organization=request.organization).values_list('product', flat=True).distinct())
-            products = Product.objects.filter(id__in=product_relatedlist).order_by('name')
-        return [(product.id, product.name) for product in products]
-
-
 class ByProductForOrganizationProductSizeFilter(ByProductForOrganizationFilter):
     def lookups(self, request, model_admin):
         products = Product.objects.none()
@@ -216,15 +207,6 @@ class ByMarketForOrganizationProductSizeFilter(ByMarketForOrganizationFilter):
         if hasattr(request, 'organization'):
             productsize_relatedlist = list(ProductSize.objects.filter(product__organization=request.organization).values_list('market', flat=True).distinct())
             markets = Market.objects.filter(id__in=productsize_relatedlist).order_by('name')
-        return [(market.id, market.name) for market in markets]
-
-
-class ByMarketForOrganizationProductPackagingFilter(ByMarketForOrganizationFilter):
-    def lookups(self, request, model_admin):
-        markets = Market.objects.none()
-        if hasattr(request, 'organization'):
-            market_relatedlist = list(ProductPackaging.objects.filter(organization=request.organization).values_list('market', flat=True).distinct())
-            markets = Market.objects.filter(id__in=market_relatedlist).order_by('name')
         return [(market.id, market.name) for market in markets]
 
 

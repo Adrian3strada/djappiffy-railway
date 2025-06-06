@@ -1038,9 +1038,6 @@ class PackagingComplementarySupply(models.Model):
 
 class ProductPackaging(CleanNameAndOrganizationMixin, models.Model):
     category = models.CharField(max_length=20, choices=PRODUCT_PACKAGING_CATEGORY_CHOICES, verbose_name=_('Category'))
-    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT,
-                               limit_choices_to={'is_enabled': True})
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.CASCADE)
     product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'),

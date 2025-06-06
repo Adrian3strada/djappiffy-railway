@@ -45,7 +45,6 @@ from .filters import (ByCountryForOrganizationMarketsFilter, ByProductForOrganiz
                       ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                       ByCityForOrganizationClientsFilter, ByPaymentKindForOrganizationFilter,
                       ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
-                      ByMarketForOrganizationProductPackagingFilter, ByProductForOrganizationProductPackagingFilter,
                       ByProductSizeForOrganizationProductPackagingFilter,
                       ByPackagingForOrganizationProductPackagingFilter,
                       ByProductPresentationForOrganizationProductPackagingFilter,
@@ -1619,18 +1618,17 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductPackagingResource]
-    list_filter = ['category', ByMarketForOrganizationProductPackagingFilter,
-                   ByProductForOrganizationProductPackagingFilter,
+    list_filter = ['category',
                    ByProductSizeForOrganizationProductPackagingFilter,
                    ByPackagingForOrganizationProductPackagingFilter,
                    ByProductPresentationForOrganizationProductPackagingFilter,
                    'is_enabled']
-    list_display = ['name', 'alias', 'category', 'market', 'product', 'product_size', 'packaging',
+    list_display = ['name', 'alias', 'category', 'product_size', 'packaging',
                     'product_weight_per_packaging',
                     'product_presentation', 'product_pieces_per_presentation',
                     'product_presentations_per_packaging', 'is_enabled']
     search_fields = ('name', 'alias')
-    fields = ['category', 'market', 'product', 'packaging', 'product_size', 'product_weight_per_packaging',
+    fields = ['category', 'packaging', 'product_size', 'product_weight_per_packaging',
               'product_presentation', 'product_pieces_per_presentation', 'product_presentations_per_packaging',
               'name', 'alias', 'is_enabled']
 
@@ -1638,16 +1636,6 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     @uppercase_alphanumeric_form_charfield('alias')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if 'market' in form.base_fields:
-            form.base_fields['market'].widget.can_add_related = False
-            form.base_fields['market'].widget.can_change_related = False
-            form.base_fields['market'].widget.can_delete_related = False
-            form.base_fields['market'].widget.can_view_related = False
-        if 'product' in form.base_fields:
-            form.base_fields['product'].widget.can_add_related = False
-            form.base_fields['product'].widget.can_change_related = False
-            form.base_fields['product'].widget.can_delete_related = False
-            form.base_fields['product'].widget.can_view_related = False
         if 'product_size' in form.base_fields:
             form.base_fields['product_size'].widget.can_add_related = False
             form.base_fields['product_size'].widget.can_change_related = False
@@ -1670,23 +1658,8 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
-        market_id = request.POST.get('market') if request.POST else obj.market_id if obj else None
-        product_id = request.POST.get('product') if request.POST else obj.product_id if obj else None
         category = request.POST.get('category') if request.POST else obj.category if obj else None
-
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
-
-        if db_field.name == "market":
-            if organization:
-                kwargs["queryset"] = Market.objects.filter(**organization_queryfilter)
-            else:
-                kwargs["queryset"] = Market.objects.none()
-
-        if db_field.name == "product":
-            if organization:
-                kwargs["queryset"] = Product.objects.filter(**organization_queryfilter)
-            else:
-                kwargs["queryset"] = Product.objects.none()
 
         if db_field.name == "packaging":
             if organization:

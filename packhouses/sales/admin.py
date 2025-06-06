@@ -88,8 +88,8 @@ class OrderItemInlineMixin(admin.StackedInline):
         if db_field.name == "product_packaging":
             kwargs["queryset"] = ProductPackaging.objects.none()
             if parent_object and parent_object.product:
-                kwargs["queryset"] = ProductPackaging.objects.filter(product=parent_object.product,
-                                                                     market=parent_object.client.market,
+                kwargs["queryset"] = ProductPackaging.objects.filter(packaging__product=parent_object.product,
+                                                                     packaging__market=parent_object.client.market,
                                                                      is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
