@@ -888,14 +888,17 @@ class Service(CleanNameAndServiceProviderAndOrganizationMixin, models.Model):
 
 
 class Pallet(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT, limit_choices_to={'is_enabled': True})
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT, limit_choices_to={'is_enabled': True})
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT,
-                               limit_choices_to={'kind__category': 'packaging_pallet'})
+                               limit_choices_to={'kind__category': 'packaging_pallet', 'is_enabled': True})
     name = models.CharField(max_length=255, verbose_name=_('Name'), null=False, blank=False)
     alias = models.CharField(max_length=20, verbose_name=_('Alias'), null=False, blank=False)
     max_packages_quantity = models.PositiveIntegerField(verbose_name=_('Max packages per pallet'))
+    product_packagings = models.ManyToManyField('ProductPackaging', verbose_name=_('Product packaging'), limit_choices_to={'is_enabled': True})
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
 
     def __str__(self):
         return f"{self.name}"

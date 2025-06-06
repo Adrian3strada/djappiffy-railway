@@ -1865,10 +1865,10 @@ class PalletComplementarySupplyInLine(admin.TabularInline):
 class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PalletResource]
-    list_display = ('name', 'alias', 'product', 'supply', 'is_enabled')
+    list_display = ('name', 'alias', 'max_packages_quantity', 'product', 'supply', 'is_enabled')
     list_filter = (ByProductForOrganizationProductPackagingPalletFilter,
                    BySupplyForOrganizationPalletFilter, 'is_enabled')
-    fields = ('product', 'supply', 'name', 'alias', 'is_enabled')
+    fields = ('product', 'supply', 'name', 'alias', 'max_packages_quantity', 'product_packagings', 'is_enabled')
     search_fields = ('name', 'alias')
     inlines = [PalletComplementarySupplyInLine]
 
