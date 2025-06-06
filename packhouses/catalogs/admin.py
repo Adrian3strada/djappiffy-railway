@@ -1688,6 +1688,13 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
             else:
                 kwargs["queryset"] = Product.objects.none()
 
+        if db_field.name == "packaging":
+            if organization:
+                queryset = Packaging.objects.filter(**organization_queryfilter)
+                kwargs["queryset"] = queryset
+            else:
+                kwargs["queryset"] = Packaging.objects.none()
+
         if db_field.name == "product_size":
             if organization:
                 kwargs["queryset"] = ProductSize.objects.filter(
@@ -1695,17 +1702,6 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
                     is_enabled=True)
             else:
                 kwargs["queryset"] = ProductSize.objects.none()
-
-        if db_field.name == "packaging":
-            if organization:
-                queryset = Packaging.objects.filter(**organization_queryfilter)
-                if market_id:
-                    queryset = queryset.filter(market=market_id)
-                if product_id:
-                    queryset = queryset.filter(product_id=product_id)
-                kwargs["queryset"] = queryset
-            else:
-                kwargs["queryset"] = Packaging.objects.none()
 
         if db_field.name == "product_presentation":
             queryset = ProductPresentation.objects.none()
