@@ -201,7 +201,7 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     def get_fields(self, request, obj=None):
         fields = [
             'ooid', 'is_scheduled', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
-            'product_phenologies', 'product_harvest_size_kind', 'orchard', 'market',
+            'product_phenology', 'product_harvest_size_kind', 'orchard', 'market',
             'weight_expected', 'comments'
         ]
         if obj:
@@ -225,14 +225,14 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
         if db_field.name == "product_varieties":
             kwargs["queryset"] = ProductVariety.objects.filter(**product_organization_queryfilter)
 
-        if db_field.name in ("product_phenologies", "product_harvest_size_kind", "orchard"):
+        if db_field.name in ("product_phenology", "product_harvest_size_kind", "orchard"):
             qs_none = db_field.related_model.objects.none()
             obj_id = request.resolver_match.kwargs.get("object_id")
             incoming_product = IncomingProduct.objects.filter(id=obj_id).first() if obj_id else None
             schedule_harvest = (ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
                                 if incoming_product else None)
             mapping = {
-                "product_phenologies": (ProductPhenologyKind, "product_phenologies"),
+                "product_phenology": (ProductPhenologyKind, "product_phenology"),
                 "product_harvest_size_kind": (ProductHarvestSizeKind, "product_harvest_size_kind"),
                 "orchard": (Orchard, None),
             }
@@ -484,7 +484,7 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
     model = ScheduleHarvest
     extra = 0
     fields = ('ooid', 'is_scheduled', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
-        'product_phenologies', 'product_harvest_size_kind', 'orchard', 'market',
+        'product_phenology', 'product_harvest_size_kind', 'orchard', 'market',
         'weight_expected', 'comments')
     readonly_fields = ('ooid', 'is_scheduled', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
     can_delete = False
@@ -517,13 +517,13 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
         return CustomFormSet
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name in ("product_phenologies", "product_harvest_size_kind", "orchard"):
+        if db_field.name in ("product_phenology", "product_harvest_size_kind", "orchard"):
             obj_id = request.resolver_match.kwargs.get("object_id")
             sh = ScheduleHarvest.objects.filter(incoming_product__batch__pk=obj_id).first()
 
             if sh:
                 pid = sh.product
-                if db_field.name == "product_phenologies":
+                if db_field.name == "product_phenology":
                     qs = ProductPhenologyKind.objects.filter(product=pid, is_enabled=True)
                 elif db_field.name == "product_harvest_size_kind":
                     qs = ProductHarvestSizeKind.objects.filter(product=pid, is_enabled=True)
@@ -868,7 +868,7 @@ class VehicleReviewInline(nested_admin.NestedStackedInline):
             food_safety = FoodSafety.objects.get(pk=object_id)
             incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-            kwargs["queryset"] = ScheduleHarvestVehicle.objects.filter(harvest_cutting_id=schedule_harvest, has_arrived=True)
+            kwargs["queryset"] = ScheduleHarvestVehicle.objects.filter(schedule_harvest_id=schedule_harvest, has_arrived=True)
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:

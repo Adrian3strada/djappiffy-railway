@@ -1939,7 +1939,7 @@
   "model": "catalogs.gatherer",
   "pk": 1,
   "fields": {
-    "name": "GOKU GONZALEZ",
+    "name": "ROBERTO GONZALEZ",
     "zone": "CENTRO",
     "tax_registry_code": "D773HD8",
     "population_registry_code": null,

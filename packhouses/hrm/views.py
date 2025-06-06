@@ -11,7 +11,7 @@ import os
 
 # Create your views here.
 
-def basic_report(request, json_data, model_name):
+def basic_report(request, json_data, model_name, model_key, pretty_filters):
     # prepare data
     json_data = json.loads(json_data)
     base_url = request.build_absolute_uri('/')

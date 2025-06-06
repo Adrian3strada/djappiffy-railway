@@ -57,6 +57,7 @@ django-import-export
 setuptools
 qrcode
 aiosmtpd
+django-admin-rangefilter
 
 geopandas
 numpy
