@@ -762,6 +762,7 @@ class ByProductKindCountryStandardPackagingForOrganizationPackagingFilter(admin.
         return queryset
 
 
+# TODO: remover jul25
 class ByProductForOrganizationProductPackagingPalletFilter(admin.SimpleListFilter):
     title = _('Product')
     parameter_name = 'product'

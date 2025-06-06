@@ -7,7 +7,7 @@ from .models import (
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, ProductKindCountryStandardPackaging,
-    Service, ProductPresentation, Packaging, ProductPackaging, ProductPackagingPallet,
+    Service, ProductPresentation, Packaging, ProductPackaging,
     WeighingScale, ColdChamber,
     Pallet, PalletComplementarySupply,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
@@ -1027,7 +1027,7 @@ class OrchardGeoLocationInline(admin.StackedInline):
         formset.form.base_fields['geom'].widget = OLGoogleMapsSatelliteWidget(attrs={'geom_type': 'MultiPolygon'})
         return formset
 
-      
+
 class OrchardAdminForm(forms.ModelForm):
     class Meta:
         model = Orchard
@@ -1645,7 +1645,7 @@ class ProductPackagingPresentationInline(admin.TabularInline):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-
+"""
 class ProductPackagingPalletInline(admin.TabularInline):
     model = ProductPackagingPallet
     min_num = 0
@@ -1676,6 +1676,7 @@ class ProductPackagingPalletInline(admin.TabularInline):
 
     class Media:
         js = ('js/admin/forms/product_packaging_pallet_inline.js',)
+"""
 
 
 @admin.register(ProductPackaging)
@@ -1696,7 +1697,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
     fields = ['category', 'market', 'product', 'product_size', 'packaging', 'product_weight_per_packaging',
               'product_presentation', 'product_pieces_per_presentation', 'product_presentations_per_packaging',
               'name', 'alias', 'is_enabled']
-    inlines = [ProductPackagingPalletInline]
+    inlines = []
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
