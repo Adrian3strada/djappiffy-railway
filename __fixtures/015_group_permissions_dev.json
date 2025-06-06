@@ -2527,9 +2527,9 @@
       "Catalogs / Product packaging"
     ],
     "permission": [
-      "add_productpackaging",
+      "add_sizepackaging",
       "catalogs",
-      "productpackaging"
+      "sizepackaging"
     ]
   }
 },
@@ -2541,9 +2541,9 @@
       "Catalogs / Product packaging"
     ],
     "permission": [
-      "change_productpackaging",
+      "change_sizepackaging",
       "catalogs",
-      "productpackaging"
+      "sizepackaging"
     ]
   }
 },
@@ -2555,9 +2555,9 @@
       "Catalogs / Product packaging"
     ],
     "permission": [
-      "delete_productpackaging",
+      "delete_sizepackaging",
       "catalogs",
-      "productpackaging"
+      "sizepackaging"
     ]
   }
 },
@@ -2569,9 +2569,9 @@
       "Catalogs / Product packaging"
     ],
     "permission": [
-      "view_productpackaging",
+      "view_sizepackaging",
       "catalogs",
-      "productpackaging"
+      "sizepackaging"
     ]
   }
 },
