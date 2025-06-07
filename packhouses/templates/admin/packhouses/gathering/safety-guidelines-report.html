@@ -227,16 +227,16 @@ table.header-table .center h1 {
 {% for crew in scheduleharvestharvestingcrewinline %}
 <table class="folio-table">
     <tr>
-        <td style="width: 15%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest No." %}</td>
+        <td style="width: 20%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest No." %}</td>
         <td style="width: 20%; color:#b30000; background-color: #fff4cc;"> {{ harvest.ooid }}</td>
-        <td style="width: 65%;"></td>
+        <td style="width: 60%;"></td>
     </tr>
     <tr>
-        <td style="width: 15%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest Schedule Date" %}</td>
+        <td style="width: 20%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest Schedule Date" %}</td>
         <td style="width: 20%; color:#b30000; background-color: #fff4cc;"> {{ harvest.harvest_date }}</td>
     </tr>
     <tr>
-        <td style=" width: 15%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Folio" %}</td>
+        <td style=" width: 20%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Folio" %}</td>
         <td style=" width: 20%; color: #b30000; background-color: #fff4cc;"> {{ harvest.ooid }}</td>
         
     </tr>
@@ -271,7 +271,7 @@ table.header-table .center h1 {
 
      <div class="row row-four">
         <p>&nbsp;</p>
-        <p><strong>{% translate "Product Phenology:" %} </strong>{{harvest.product_phenologies}}</p>
+        <p><strong>{% translate "Product Phenology:" %} </strong>{{harvest.product_phenology}}</p>
         <p><strong>{% translate "Product Provider:" %} </strong>{{harvest.product_provider}}</p>
         <p><strong>{% translate "Scheduling Type:" %}</strong>
             {% if harvest.is_scheduled %}

@@ -68,8 +68,8 @@ def harvest_order_pdf(request, harvest_id):
     year = str(date.year)
 
     # Obtener los inlines relacionados
-    scheduleharvestharvestingcrewinline = ScheduleHarvestHarvestingCrew.objects.filter(harvest_cutting=harvest)
-    scheduleharvestvehicleinline = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest).prefetch_related(
+    scheduleharvestharvestingcrewinline = ScheduleHarvestHarvestingCrew.objects.filter(schedule_harvest=harvest)
+    scheduleharvestvehicleinline = ScheduleHarvestVehicle.objects.filter(schedule_harvest=harvest).prefetch_related(
         Prefetch('scheduleharvestcontainervehicle_set',queryset=ScheduleHarvestContainerVehicle.objects.all(),)
     )
     orchard_certifications = OrchardCertification.objects.filter(
@@ -163,7 +163,7 @@ def good_harvest_practices_format(request, harvest_id):
     year = str(date.year)
 
     # Filtrar los ScheduleHarvestHarvestingCrew relacionados con el harvest específico
-    scheduleharvestharvestingcrewinline = ScheduleHarvestHarvestingCrew.objects.filter(harvest_cutting=harvest).select_related('harvesting_crew')
+    scheduleharvestharvestingcrewinline = ScheduleHarvestHarvestingCrew.objects.filter(schedule_harvest=harvest).select_related('harvesting_crew')
     # Obtener los IDs de los HarvestingCrew asociados
     harvestingcrew_ids = scheduleharvestharvestingcrewinline.values_list('harvesting_crew', flat=True)
 
@@ -171,7 +171,7 @@ def good_harvest_practices_format(request, harvest_id):
     harvestingcrew = HarvestingCrew.objects.filter(pk__in=harvestingcrew_ids)
 
     # Filtrar vehiculos por cuadrillas
-    vehicles = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest)
+    vehicles = ScheduleHarvestVehicle.objects.filter(schedule_harvest=harvest)
 
     # CSS
     base_url = request.build_absolute_uri('/')

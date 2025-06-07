@@ -19,7 +19,10 @@ from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInline
 from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet,
                     BatchForm, WeighingSetForm, WeighingSetInlineFormSet, WeighingSetContainerInlineFormSet)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
-                      ByCategoryForOrganizationIncomingProductFilter, ByOrchardForOrganizationBatchFilter, ByProviderForOrganizationBatchFilter, 
+                      ByCategoryForOrganizationIncomingProductFilter, ByProductProducerForOrganizationIncomingProductFilter, ByOrchardForOrganizationBatchFilter, 
+                      ByProviderForOrganizationBatchFilter, ByProductPhenologyForOrganizationIncomingProductFilter, ByOrchardProductCategoryForOrganizationIncomingProductFilter,
+                      MaquiladoraForIncomingProductFilter, ByOrchardCertificationForOrganizationIncomingProductFilter, SchedulingTypeFilter,
+                      ByHarvestingCrewForOrganizationIncomingProductFilter, GathererForIncomingProductFilter,
                       ByProductForOrganizationBatchFilter, ByCategoryForOrganizationBatchFilter)
 from .utils import update_weighing_set_numbers,  CustomScheduleHarvestFormSet
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
@@ -35,8 +38,9 @@ from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.utils.formats import date_format
 from .mixins import IncomingProductMetricsMixin, BatchDisplayMixin
-
-from .mixins import IncomingProductMetricsMixin
+from common.base.utils import SheetReportExportAdminMixin
+from .views import basic_report
+from .resources import IncomingProductResource
 # from django import forms
 
 # Inlines para datos del corte
@@ -361,17 +365,21 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
 
 # Reciba
 @admin.register(IncomingProduct)
-class IncomingProductAdmin(IncomingProductMetricsMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
+class IncomingProductAdmin(SheetReportExportAdminMixin, IncomingProductMetricsMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard',
                     'get_scheduleharvest_orchard_product_producer',
                     'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'status','generate_actions_buttons')
     fields = ('mrl', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result',
               'kg_sample', *IncomingProductMetricsMixin.readonly_fields,
               'comments', 'is_quarantined','status')
-    list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
-                   ByCategoryForOrganizationIncomingProductFilter)
+    list_filter = (ByProviderForOrganizationIncomingProductFilter, ByProductProducerForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
+                   ByProductPhenologyForOrganizationIncomingProductFilter,ByOrchardProductCategoryForOrganizationIncomingProductFilter,
+                   ByHarvestingCrewForOrganizationIncomingProductFilter, ByCategoryForOrganizationIncomingProductFilter, GathererForIncomingProductFilter, 
+                   MaquiladoraForIncomingProductFilter, ByOrchardCertificationForOrganizationIncomingProductFilter, SchedulingTypeFilter, 'status')
     search_fields = ('scheduleharvest__ooid',)
     readonly_fields = IncomingProductMetricsMixin.readonly_fields
+    report_function = staticmethod(basic_report)
+    resource_classes = [IncomingProductResource]
     inlines = [WeighingSetInline, ScheduleHarvestInline]
     form = IncomingProductForm
     actions = None
