@@ -2920,10 +2920,12 @@
   "model": "catalogs.pallet",
   "pk": 1,
   "fields": {
+    "market": 1,
     "product": 1,
     "supply": 22,
     "name": "AGUACATE MX MADERA 14",
     "alias": "AGMXMAD14",
+    "max_packages_quantity": 100,
     "is_enabled": true,
     "organization": 1
   }
@@ -2932,10 +2934,12 @@
   "model": "catalogs.pallet",
   "pk": 2,
   "fields": {
+    "market": 1,
     "product": 1,
     "supply": 23,
     "name": "AGUACATE MX PLASTICO 14",
     "alias": "AAP14",
+    "max_packages_quantity": 100,
     "is_enabled": true,
     "organization": 1
   }
