@@ -1060,8 +1060,8 @@ class SizePackaging(CleanNameAndOrganizationMixin, models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Product packaging')
-        verbose_name_plural = _('Product packaging')
+        verbose_name = _('Size packaging')
+        verbose_name_plural = _('Size packaging')
         ordering = ('name',)
         constraints = [
             models.UniqueConstraint(

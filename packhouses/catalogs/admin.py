@@ -1615,7 +1615,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
 
 @admin.register(SizePackaging)
-class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
+class SizePackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductPackagingResource]
     list_filter = ['category',
@@ -1641,11 +1641,6 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
             form.base_fields['product_size'].widget.can_change_related = False
             form.base_fields['product_size'].widget.can_delete_related = False
             form.base_fields['product_size'].widget.can_view_related = False
-        if 'packaging' in form.base_fields:
-            form.base_fields['packaging'].widget.can_add_related = False
-            form.base_fields['packaging'].widget.can_change_related = False
-            form.base_fields['packaging'].widget.can_delete_related = False
-            form.base_fields['packaging'].widget.can_view_related = False
         if 'product_presentation' in form.base_fields:
             form.base_fields['product_presentation'].widget.can_add_related = False
             form.base_fields['product_presentation'].widget.can_change_related = False

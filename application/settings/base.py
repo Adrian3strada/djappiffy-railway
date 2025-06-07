@@ -403,7 +403,7 @@ JAZZMIN_SETTINGS = {
         "catalogs.Supply",
         "catalogs.Packaging",
         "catalogs.ProductPresentation",
-        "catalogs.ProductPackaging",
+        "catalogs.SizePackaging",
         "catalogs.Pallet",
         "catalogs.Provider",
         "catalogs.Client",
