@@ -15,24 +15,36 @@
   body {
     font-family: 'Futura', sans-serif;
   }
+
+/* Secciones generales */
+.information-section {
+    width: 100%;
+    margin-bottom: 5px;
+    font-size: 7pt !important;
+}
+
 /* Tabla de folios */
 .folio-table {
+    font-size: 7pt;
     width: 100%;
     text-align: center;
-    margin-bottom: 10px;
-    border-collapse: collapse;
-    font-size: 8pt;
+    margin-top: 0px;
+    margin-bottom: 5px;
+    border-collapse: separate; 
 }
 
 .folio-table tr {
-    height: 20px;
+    margin-top: 0px;
+    height: 15px;
 }
 
 .folio-table td {
-    line-height: 20px;
+    margin-top: 0px;
+    line-height: 15px;
     padding: 0;
     overflow: hidden;
 }
+
 .first-header {
     width: 5%;
     align-items: center;
@@ -144,47 +156,119 @@ tr {
   border-bottom: 1px solid #000;
 }
 
+/* Filas y columnas */
+.row {
+    display: grid;
+    margin-top: 5px;
+}
+
+.row-four {
+    grid-template-columns: repeat(4, 1fr);
+    margin: 1px;
+}
+
+
+.row p {
+    margin: 0;
+    border-bottom: 1px solid #000;
+}
+
+.row p strong {
+    font-weight: bold;
+}
+
 </style>
 
-<table class="folio-table">
+<div style="margin-top: 0px;">
+<table style="margin-top: 0px;" class="folio-table">
     <tr>
-        <td style="width: 15%; border-left: 10px solid #123782; background-color: #ffc600;"><strong>{% translate "Harvest No." %}</strong></td>
-        <td style="width: 20%; color:red; background-color: #fff4cc;"> {% translate "N°" %} {{ harvest.ooid }}</td>
-        <td style="width: 65%;"></td>
+        <td style="width: 20%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest No." %}</td>
+        <td style="width: 20%; color:#b30000; background-color: #fff4cc;"> {{ harvest.ooid }}</td>
+        <td style="width: 60%;"></td>
+    </tr>
+    <tr>
+        <td style="width: 20%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest Schedule Date" %}</td>
+        <td style="width: 20%; color:#b30000; background-color: #fff4cc;"> {{ harvest.harvest_date }}</td>
+        <td style="width: 60%;"></td>
+    </tr>
+    <tr>
+        <td style=" width: 20%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest Reception Date" %}</td>
+        <td style=" width: 20%; color: #b30000; background-color: #fff4cc;"> {{ harvest.created_at }}</td>
+        
     </tr>
 </table>
+</div>
 
-<div>
-    
-
-        <div class="row row-two">
-            <p><strong>{% translate "Harvest Date: " %}</strong>{{harvest.harvest_date}}</p>
+<div class="information-section">
+    <div class="row row-four">
+        <p><strong>{% translate "Orchard:" %} </strong>{{harvest.orchard.name}}</p>
+        <p><strong>{% translate "Product:" %} </strong>{{harvest.product}}</p>
+         <p>
             {% if harvest.category == 'gathering' %}
-                <p><strong>{% translate "Gatherer: " %}</strong>{{ harvest.gatherer }}</p>
+            <strong>{% translate "Gatherer:" %}</strong> {{ harvest.gatherer }}
             {% elif harvest.category == 'maquila' %}
-                <p><strong>{% translate "Maquiladora: " %}</strong> {{ harvest.maquiladora }}</p>
+            <strong>{% translate "Maquiladora:" %}</strong> {{ harvest.maquiladora }}
             {% else %}
-                <p>&nbsp;</p>
-            {% endif %} 
-        </div>
-
-        <div class="row row-two">
-            <p><strong>{% translate "Status: " %}</strong> {{harvest.get_status_display}}</p>
-            <p><strong>{% translate "Product:" %}</strong> {{harvest.product}}</p>
-                       
-        </div>
-
-        <div class="row row-two">
-            <p><strong>{% translate "Orchard:" %}</strong> {{harvest.orchard}}</p>
-            <p><strong>{% translate "Product Provider: " %}</strong>{{harvest.product_provider}}</p>
-        </div>
-
-        <div class="row row-two">
-            <p><strong>{% translate "Market: " %}</strong> {{harvest.market}}</p> 
-            <p><strong>{% translate "Product Variety:" %}</strong>{{harvest.product_variety}}</p>  
-        </div>
-
+                {% translate "No Data" %}
+            {% endif %}
+        </p>
+        <p><strong>{% translate "Scheduling Type:" %}</strong>
+            {% if harvest.is_scheduled %}
+                {% translate "Scheduled Harvest" %}
+            {% else %}
+                {% translate "Unscheduled Harvest" %}
+            {% endif %}
+        </p>
     </div>
+    <div class="row row-four">
+        <p><strong>{% translate "Registery Code:" %} </strong>{{harvest.orchard.code}}</p>
+        <p><strong>{% translate "Product Variety:" %} </strong>{{harvest.product_variety}}</p>
+        <p><strong>{% translate "Product Producer:" %} </strong>{{ harvest.orchard.producer }}</p>
+        <p><strong>{% translate "Creation Date:" %}</strong> {{harvest.created_at}}</p>
+     </div>
+     <div class="row row-four">
+        <p>&nbsp;</p>
+        <p><strong>{% translate "Product Phenology:" %} </strong>{{harvest.product_phenology}}</p>
+        <p><strong>{% translate "Product Provider:" %} </strong>{{harvest.product_provider}}</p>
+        <p><strong>{% translate "Harvest Size:" %}</strong> {{harvest.product_harvest_size_kind}}</p>
+
+     </div>
+     <div class="row row-four">
+        <p><strong>{% translate "Safety Reg. Date:" %} </strong>{{harvest.orchard.safety_authority_registration_date}}</p>
+        <p><strong>{% translate "Product Category:" %}</strong>{{harvest.orchard.get_category_display}}</p>
+        <p><strong>{% translate "Product Ripeness:" %}</strong>
+            {% if harvest.product_ripeness %}
+                {{ harvest.product_ripeness }}
+            {% else %}
+                
+            {% endif %}
+        </p>
+        <p>&nbsp;</p>
+      </div>
+      <div class="row row-four">
+        <p style="grid-column: span 4;"><strong>{% translate "Orchard Location:" %} </strong>{{harvest.orchard.district.name}}, {{harvest.orchard.city.name}}, {{harvest.orchard.state.name}}</p>
+      </div>
+
+      <div class="row row-four">
+        <p style="grid-column: span 4;"><strong>{% translate "Orchard Certifications:" %} </strong>
+            {% for certification in orchard_certifications %}
+                {{ certification.certification_kind.name }} {{certification.certification_number}}{% if not forloop.last %} | {% endif %}
+            {% empty %}
+                {% translate "No Data" %}
+            {% endfor %}
+        </p>
+      </div>
+       <div class="row row-four">
+        <p style="grid-column: span 4; margin-bottom: 7px;"><strong>{% translate "Comments:" %} </strong>
+            {% if harvest.comments %}
+                {{ harvest.comments }}
+            {% else %}
+                {% translate "No Comments" %}
+            {% endif %}
+        </p>
+      </div>
+
+</div>
 
 <div class="div-table">
     <table class="table_form">

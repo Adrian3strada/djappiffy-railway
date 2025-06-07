@@ -104,6 +104,27 @@ tr {
     {% endfor %}
 </div>
 
+{% if date_ranges %}
+  <p>
+    <strong>{% translate "Records in Specified Date Range:" %}</strong>
+    {% for label, value in date_ranges.items %}
+      {{ label }}: {{ value }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}.
+  </p>
+{% endif %}
+
+
+
+{% if other_filters %}
+  <p style="text-decoration: underline;">
+    <strong>{% translate "Applied Filters:" %}</strong>
+    {% for label, value in other_filters.items %}
+      {{ label }}: {{ value }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+  </p>
+{% endif %}
+
+
 <div class="div-table">
     <table class="table_form">
         <thead>

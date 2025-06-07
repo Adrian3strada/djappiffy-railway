@@ -18,10 +18,11 @@ from django.http import JsonResponse
 from packhouses.receiving.models import IncomingProduct
 from django.contrib.auth.decorators import login_required
 from itertools import chain
-
+import json 
 import qrcode
 import base64
 from io import BytesIO
+from .utils import FILTER_DISPLAY_CONFIG, apply_filter_config
 
 def generate_qr_base64(data: str) -> str:
     qr = qrcode.make(data)
@@ -67,8 +68,8 @@ def harvest_order_pdf(request, harvest_id):
     year = str(date.year)
 
     # Obtener los inlines relacionados
-    scheduleharvestharvestingcrewinline = ScheduleHarvestHarvestingCrew.objects.filter(harvest_cutting=harvest)
-    scheduleharvestvehicleinline = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest).prefetch_related(
+    scheduleharvestharvestingcrewinline = ScheduleHarvestHarvestingCrew.objects.filter(schedule_harvest=harvest)
+    scheduleharvestvehicleinline = ScheduleHarvestVehicle.objects.filter(schedule_harvest=harvest).prefetch_related(
         Prefetch('scheduleharvestcontainervehicle_set',queryset=ScheduleHarvestContainerVehicle.objects.all(),)
     )
     orchard_certifications = OrchardCertification.objects.filter(
@@ -162,7 +163,7 @@ def good_harvest_practices_format(request, harvest_id):
     year = str(date.year)
 
     # Filtrar los ScheduleHarvestHarvestingCrew relacionados con el harvest específico
-    scheduleharvestharvestingcrewinline = ScheduleHarvestHarvestingCrew.objects.filter(harvest_cutting=harvest).select_related('harvesting_crew')
+    scheduleharvestharvestingcrewinline = ScheduleHarvestHarvestingCrew.objects.filter(schedule_harvest=harvest).select_related('harvesting_crew')
     # Obtener los IDs de los HarvestingCrew asociados
     harvestingcrew_ids = scheduleharvestharvestingcrewinline.values_list('harvesting_crew', flat=True)
 
@@ -170,7 +171,7 @@ def good_harvest_practices_format(request, harvest_id):
     harvestingcrew = HarvestingCrew.objects.filter(pk__in=harvestingcrew_ids)
 
     # Filtrar vehiculos por cuadrillas
-    vehicles = ScheduleHarvestVehicle.objects.filter(harvest_cutting=harvest)
+    vehicles = ScheduleHarvestVehicle.objects.filter(schedule_harvest=harvest)
 
     # CSS
     base_url = request.build_absolute_uri('/')
@@ -269,3 +270,102 @@ def set_scheduleharvest_ready(request, harvest_id):
         'success': True,
         'message': success_message
     })
+
+
+
+def basic_report(request, json_data, model_verbose_name, model_key, pretty_filters):
+    # prepare data
+    json_data = json.loads(json_data)
+    base_url = request.build_absolute_uri('/')
+
+    if json_data:
+        headers = list(json_data[0].keys())
+    else:
+        headers = []
+
+    data = [[item.get(header) for header in headers] for item in json_data]
+
+    if hasattr(request, 'organization'):
+        organization = request.organization.organizationprofile.name
+        add = request.organization.organizationprofile.address
+        organization_profile = request.organization.organizationprofile
+
+        def get_name(model, obj_id, default):
+            if obj_id:
+                try:
+                    return model.objects.get(id=obj_id).name
+                except model.DoesNotExist:
+                    return f"{default} does not exist"
+            return f"{default} not specified"
+
+        # Obtener los nombres de las regiones
+        city_name = get_name(SubRegion, organization_profile.city_id, "Ciudad")
+        country_name = get_name(Country, organization_profile.country_id, "Country")
+        state_name = get_name(Region, organization_profile.state_id, "State")
+        district_name = get_name(City, organization_profile.district_id, "District")
+
+        if organization_profile.logo:
+            logo_url = organization_profile.logo.url
+        else:
+            logo_url = None
+
+    pdf_title = model_verbose_name
+    packhouse_name = organization
+    company_address = f"{add}, {district_name}, {city_name}, {state_name}, {country_name}"
+    columns_total = len(headers)
+    date = datetime.now()
+    year = str(date.year)
+    ordered = apply_filter_config(pretty_filters, model_key)
+
+    # 1. Separar “date‐ranges” del resto
+    date_ranges = {}
+    other_filters = {}
+    for label, value in ordered.items():
+        # Si el valor contiene " - ", asumimos que es un rango de fechas
+        if isinstance(value, str) and " - " in value:
+            date_ranges[label] = value
+        else:
+            other_filters[label] = value
+
+    # orientation page
+    if len(headers) < 10:
+        css = CSS(string='''
+        @page {
+            size: letter portrait;
+        }''')
+    elif len(headers) < 16:
+        css = CSS(string='''
+        @page {
+            size: letter landscape;
+        }''')
+    else:
+        css = CSS(string='''
+        @page {
+            size: 18in 11in;
+        }''')
+
+    # send data to create pdf
+    html_string = render_to_string(
+        "admin/packhouses/base-table-report.html",
+        {
+            "company_info":    "Certiffy",
+            "pdf_title":       pdf_title,
+            "headers":         headers,
+            "packhouse_name":  packhouse_name,
+            "company_address": company_address,
+            "data":            data,
+            "columns_total":   columns_total,
+            "year":            year,
+            "date":            date,
+            "date_ranges":     date_ranges,
+            "other_filters":   other_filters,
+        },
+    )
+
+    html = HTML(string=html_string, base_url=base_url)
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="{model_verbose_name}.pdf"'
+    html.write_pdf(response, stylesheets=[css])
+
+    return response
+

@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'adminsortable2',
     'polymorphic',
     'nested_admin',
+    'rangefilter',
 
     # djappiffy apps
     "common",

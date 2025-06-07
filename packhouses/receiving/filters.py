@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 from packhouses.catalogs.utils import get_harvest_cutting_categories_choices
+from packhouses.catalogs.settings import ORCHARD_PRODUCT_CLASSIFICATION_CHOICES
 
 # Filtros personalizados para IncomingProduct
 class ByOrchardForOrganizationIncomingProductFilter(admin.SimpleListFilter):
@@ -66,7 +67,7 @@ class ByProductForOrganizationIncomingProductFilter(admin.SimpleListFilter):
         return queryset
 
 class ByCategoryForOrganizationIncomingProductFilter(admin.SimpleListFilter):
-    title = _('Category')
+    title = _('Harvesting Category')
     parameter_name = 'scheduleharvest_category'
 
     def has_output(self):
@@ -86,6 +87,171 @@ class ByCategoryForOrganizationIncomingProductFilter(admin.SimpleListFilter):
             return queryset.filter(scheduleharvest__category=self.value())
         return queryset
 
+class ByProductProducerForOrganizationIncomingProductFilter(admin.SimpleListFilter):
+    title = _('Product Producer')
+    parameter_name = 'scheduleharvest__orchard__producer'
+
+    def has_output(self):
+        return True
+    
+    def lookups(self, request, model_admin):
+        qs = model_admin.model.objects.filter(
+            scheduleharvest__orchard__isnull=False,
+            scheduleharvest__orchard__producer__isnull=False,
+            scheduleharvest__orchard__organization=request.organization
+        ).values_list('scheduleharvest__orchard__producer__id', 
+                      'scheduleharvest__orchard__producer__name').distinct()
+        return qs
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(
+                scheduleharvest__orchard__producer__id=self.value()
+            )
+        return queryset
+
+class ByProductPhenologyForOrganizationIncomingProductFilter(admin.SimpleListFilter):
+    title = _('Product Phenology')
+    parameter_name = 'scheduleharvest__product_phenology'  
+
+    def lookups(self, request, model_admin):
+        qs = model_admin.model.objects.filter(
+            scheduleharvest__product_phenology__isnull=False,
+            scheduleharvest__product_phenology__product__organization=request.organization  
+        ).values_list('scheduleharvest__product_phenology__id', 'scheduleharvest__product_phenology__name').distinct()
+        return qs
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(scheduleharvest__product_phenology__id=self.value())
+        return queryset
+
+class ByOrchardProductCategoryForOrganizationIncomingProductFilter(admin.SimpleListFilter):
+    title = _('Product Category')
+    parameter_name = 'scheduleharvest__orchard_product_category'
+
+    def lookups(self, request, model_admin):
+        # Obtener valores únicos de categoría usados
+        used_categories = (
+            model_admin.model.objects.filter(
+                scheduleharvest__orchard__isnull=False,
+                scheduleharvest__orchard__category__isnull=False,
+                scheduleharvest__orchard__organization=request.organization
+            )
+            .values_list('scheduleharvest__orchard__category', flat=True)
+            .distinct()
+        )
+
+        choices_dict = dict(ORCHARD_PRODUCT_CLASSIFICATION_CHOICES)
+        return [(cat, choices_dict.get(cat, cat)) for cat in used_categories]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(scheduleharvest__orchard__category=self.value())
+        return queryset
+    
+class ByHarvestingCrewForOrganizationIncomingProductFilter(admin.SimpleListFilter):
+    title = _('Harvesting Crew')
+    parameter_name = 'scheduleharvest__harvesting_crew'
+    
+    def lookups(self, request, model_admin):
+        crew_ids = (
+            model_admin.model.objects.filter(
+                scheduleharvest__scheduleharvestharvestingcrew__harvesting_crew__isnull=False,
+                scheduleharvest__scheduleharvestharvestingcrew__harvesting_crew__organization=request.organization
+            )
+            .values_list(
+                'scheduleharvest__scheduleharvestharvestingcrew__harvesting_crew__id',
+                'scheduleharvest__scheduleharvestharvestingcrew__harvesting_crew__name'
+            )
+            .distinct()
+        )
+        return crew_ids
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(
+                scheduleharvest__scheduleharvestharvestingcrew__harvesting_crew__id=self.value()
+            )
+        return queryset
+
+class GathererForIncomingProductFilter(admin.SimpleListFilter):
+    title = _('Gatherer')
+    parameter_name = 'scheduleharvest__gatherer'
+
+    def lookups(self, request, model_admin):
+        qs = model_admin.model.objects.filter(
+            scheduleharvest__gatherer__isnull=False
+        ).values_list(
+            'scheduleharvest__gatherer__id',
+            'scheduleharvest__gatherer__name'
+        ).distinct()
+        return qs
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(
+                scheduleharvest__gatherer__id=self.value()
+            )
+        return queryset
+
+class MaquiladoraForIncomingProductFilter(admin.SimpleListFilter):
+    title = _('Maquiladora')
+    parameter_name = 'scheduleharvest__maquiladora'
+
+    def lookups(self, request, model_admin):
+        qs = model_admin.model.objects.filter(
+            scheduleharvest__maquiladora__isnull=False
+        ).values_list(
+            'scheduleharvest__maquiladora__id',
+            'scheduleharvest__maquiladora__name'
+        ).distinct()
+        return qs
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(
+                scheduleharvest__maquiladora__id=self.value()
+            )
+        return queryset
+
+class ByOrchardCertificationForOrganizationIncomingProductFilter(admin.SimpleListFilter):
+    title = _('Orchard Certification')
+    parameter_name = 'orchard_certification'
+
+    def lookups(self, request, model_admin):
+        certs = model_admin.model.objects.filter(
+            scheduleharvest__orchard__orchardcertification__isnull=False,
+            scheduleharvest__orchard__organization=request.organization
+        ).values_list(
+            'scheduleharvest__orchard__orchardcertification__certification_kind__id',
+            'scheduleharvest__orchard__orchardcertification__certification_kind__name'
+        ).distinct()
+        return list(certs)
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(
+                scheduleharvest__orchard__orchardcertification__certification_kind__id=self.value()
+            ).distinct()
+        return queryset
+
+class SchedulingTypeFilter(admin.SimpleListFilter):
+    title = _('Scheduling Type')
+    parameter_name = 'scheduleharvest_is_scheduled'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('1', _('Scheduled Harvest')),
+            ('0', _('Unscheduled Harvest')),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == '1':
+            return queryset.filter(scheduleharvest__is_scheduled=True)
+        if self.value() == '0':
+            return queryset.filter(scheduleharvest__is_scheduled=False)
+        return queryset
 
 # Filtros personalizados para Batch
 class ByOrchardForOrganizationBatchFilter(admin.SimpleListFilter):

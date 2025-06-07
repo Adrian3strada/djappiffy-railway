@@ -6,6 +6,145 @@ from django.core.exceptions import PermissionDenied
 from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import gettext_lazy as _
 from django.apps import apps
+from django.db.models.fields.related import ForeignKey
+from packhouses.catalogs.models import Provider, HarvestingCrew, OrchardCertificationKind
+from packhouses.catalogs.settings import ORCHARD_PRODUCT_CLASSIFICATION_CHOICES
+
+def resolve_custom_fields(request, model):
+    resolved = {}
+    if 'is_scheduled' in request.GET:
+        resolved['is_scheduled'] = request.GET['is_scheduled']
+
+    if 'orchard_product_category' in request.GET:
+        raw = request.GET['orchard_product_category']
+        label = dict(ORCHARD_PRODUCT_CLASSIFICATION_CHOICES).get(raw, raw)
+        resolved['orchard_product_category'] = label
+
+    if 'scheduleharvest_product_provider' in request.GET:
+        provider_id = request.GET['scheduleharvest_product_provider']
+        name = Provider.objects.filter(id=provider_id).values_list('name', flat=True).first()
+        resolved['scheduleharvest_product_provider'] = name or f"ID {provider_id}"
+
+    if 'scheduleharvest_product_producer' in request.GET:
+        producer_id = request.GET['scheduleharvest_product_producer']
+        name = Provider.objects.filter(id=producer_id).values_list('name', flat=True).first()
+        resolved['scheduleharvest_product_producer'] = name or f"ID {producer_id}"
+
+    if 'harvesting_crew' in request.GET:
+        crew_id = request.GET['harvesting_crew']
+        name = HarvestingCrew.objects.filter(id=crew_id).values_list('name', flat=True).first()
+        resolved['harvesting_crew'] = name or f"ID {crew_id}"
+    
+    if 'orchard_certification' in request.GET:
+        cert_id = request.GET['orchard_certification']
+        name = (
+            OrchardCertificationKind.objects
+            .filter(id=cert_id)
+            .values_list('name', flat=True)
+            .first()
+        )
+        resolved['orchard_certification'] = name or f"ID {cert_id}"
+    return resolved
+
+
+def resolve_field_verbose_and_value(model, key, raw_value):
+    try:
+        if key.endswith('__range'):
+            field_lookup = key.replace('__range', '')
+            field = model._meta.get_field(field_lookup)
+            label = str(_(field.verbose_name)).title()
+            
+            if isinstance(raw_value, (list, tuple)):
+                if len(raw_value) >= 2:
+                    value = f"{raw_value[0]} - {raw_value[1]}"
+                else:
+                    value = raw_value[0]
+            elif isinstance(raw_value, str):
+                if ',' in raw_value:
+                    parts = raw_value.split(',', 1)
+                    if len(parts) == 2:
+                        value = f"{parts[0].strip()} - {parts[1].strip()}"
+                    else:
+                        value = raw_value
+                else:
+                    value = raw_value
+            else:
+                value = raw_value
+            return key, value
+
+        parts = key.split('__')
+        current_model = model
+        field = None
+        for part in parts:
+            field = current_model._meta.get_field(part)
+            if hasattr(field, 'remote_field') and field.remote_field:
+                current_model = field.remote_field.model
+
+        label = str(_(field.verbose_name)).title()
+
+        if field.choices:
+            value = str(_(dict(field.choices).get(raw_value, raw_value)))
+        elif hasattr(field, 'remote_field'):
+            obj = field.remote_field.model.objects.filter(pk=raw_value).first()
+            value = str(obj) if obj else raw_value
+        else:
+            value = raw_value
+        return key, value
+
+    except Exception as e:
+        return key, raw_value
+
+
+
+def prettify_filter_names(filters, model, request=None):
+    ignored_keys = {'q', 'o', 'export_type'}
+    pretty = {}
+    range_filters = {}
+    custom = resolve_custom_fields(request, model) if request else {}
+    pretty.update(custom)
+
+    for key, value in filters.items():
+        if key in ignored_keys:
+            continue
+        if not value:
+            continue
+        if key in custom:
+            continue
+
+        # Si es un filtro de rango
+        if key.endswith('__gte') or key.endswith('__lte'):
+            if key.endswith('__gte'):
+                base_key = key.replace('__gte', '')
+                bound = 'gte'
+            elif key.endswith('__lte'):
+                base_key = key.replace('__lte', '')
+                bound = 'lte'
+            final_key = f"{base_key}__range"
+            if final_key not in range_filters:
+                range_filters[final_key] = {}
+            range_filters[final_key][bound] = value
+        else:
+            clean_key = key
+            for suffix in ['__id__exact', '__exact', '__gte', '__lte', '__contains', '__icontains', '__range']:
+                if clean_key.endswith(suffix):
+                    clean_key = clean_key.replace(suffix, '')
+                    break
+            if clean_key not in pretty:
+                label_key, resolved_value = resolve_field_verbose_and_value(model, clean_key, value)
+                pretty[clean_key] = resolved_value
+            
+    # Combinar los filtros de rango almacenados
+    for final_key, bounds in range_filters.items():
+        combined = ""
+        if 'gte' in bounds and 'lte' in bounds:
+            combined = f"{bounds['gte']} - {bounds['lte']}"
+        elif 'gte' in bounds:
+            combined = bounds['gte']
+        elif 'lte' in bounds:
+            combined = bounds['lte']
+        pretty[final_key] = combined
+    return pretty
+
 
 # Para exportar solo a PDF
 class ReportExportAdminMixin(ExportMixin):
@@ -19,11 +158,13 @@ class ReportExportAdminMixin(ExportMixin):
         queryset = self.get_export_queryset(request)
         export_data = self.get_export_data(formats[0](), request, queryset)
         model_name = self.model._meta.verbose_name
+        model_key = self.model.__name__
 
         if self.report_function is None:
             raise NotImplementedError("A report for this model is not available at the moment.")
-
-        response = self.report_function(request, export_data, model_name)
+        model = self.model
+        applied_filters = prettify_filter_names(request.GET.dict(), model)
+        response = self.report_function(request, export_data, model_name, model_key, applied_filters)
         return response
 
     def get_export_resource_kwargs(self, request, *args, **kwargs):
@@ -70,6 +211,7 @@ class SheetReportExportAdminMixin(ExportMixin):
         queryset = self.get_export_queryset(request)
         request.GET = original_get
         model_name = self.model._meta.verbose_name
+        model_key = self.model.__name__
 
         if action == "export-sheet":
             formats = [XLSX]
@@ -81,8 +223,9 @@ class SheetReportExportAdminMixin(ExportMixin):
             export_data = self.get_export_data(formats[0](), request, queryset)
             if self.report_function is None:
                 raise NotImplementedError("A report for this model is not available at the moment.")
-
-            response = self.report_function(request, export_data, model_name)
+            model = self.model
+            applied_filters = prettify_filter_names(request.GET.dict(), self.model, request)
+            response = self.report_function(request, export_data, model_name, model_key, applied_filters)
             return response
         else:
             raise ValueError("The action is not recognized.")
@@ -168,6 +311,15 @@ class DehydrationResource():
 
     def dehydrate_product_variety_size(self, obj):
         return obj.product_variety_size.name if obj.product_variety_size else ""
+    
+    def dehydrate_product_phenologies(self, obj):
+        return obj.product_phenologies.name if obj.product_phenologies else ""
+    
+    def dehydrate_product_phenology(self, obj):
+        return obj.product_phenology.name if obj.product_phenology else ""
+    
+    def dehydrate_product_harvest_size_kind(self, obj):
+        return obj.product_harvest_size_kind.name if obj.product_harvest_size_kind else ""
 
     def dehydrate_product_size(self, obj):
         return obj.product_size.name if obj.product_size else ""
@@ -233,7 +385,7 @@ class DehydrationResource():
         return obj.capital_framework.name if obj.capital_framework else ""
 
     def dehydrate_status(self, obj):
-        return obj.status.name if obj.status else ""
+        return obj.get_status_display() if obj.status else ""
 
     def dehydrate_is_foreign(self, obj):
         return "✅" if obj.is_foreign else "❌"
@@ -267,8 +419,22 @@ class DehydrationResource():
     
     def dehydrate_measure_unit_category(self, obj):
         return obj.get_measure_unit_category_display() if obj.measure_unit_category else ""
-
-
+    
+    def dehydrate_orchard(self, obj):
+        return obj.orchard.name if obj.orchard else ""
+    
+    def dehydrate_weighing_scale(self, obj):
+        return obj.weighing_scale.name if obj.weighing_scale else ""
+    
+    def dehydrate_gatherer(self, obj):
+        return obj.gatherer.name if obj.gatherer else ""
+    
+    def dehydrate_maquiladora(self, obj):
+        return obj.maquiladora.name if obj.maquiladora else ""
+    
+    def dehydrate_product_provider(self, obj):
+        return obj.product_provider.name if obj.product_provider else ""
+    
 default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization', 'description')
 
 

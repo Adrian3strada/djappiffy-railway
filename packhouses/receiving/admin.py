@@ -19,7 +19,10 @@ from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInline
 from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet,
                     BatchForm, WeighingSetForm, WeighingSetInlineFormSet, WeighingSetContainerInlineFormSet)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
-                      ByCategoryForOrganizationIncomingProductFilter, ByOrchardForOrganizationBatchFilter, ByProviderForOrganizationBatchFilter, 
+                      ByCategoryForOrganizationIncomingProductFilter, ByProductProducerForOrganizationIncomingProductFilter, ByOrchardForOrganizationBatchFilter, 
+                      ByProviderForOrganizationBatchFilter, ByProductPhenologyForOrganizationIncomingProductFilter, ByOrchardProductCategoryForOrganizationIncomingProductFilter,
+                      MaquiladoraForIncomingProductFilter, ByOrchardCertificationForOrganizationIncomingProductFilter, SchedulingTypeFilter,
+                      ByHarvestingCrewForOrganizationIncomingProductFilter, GathererForIncomingProductFilter,
                       ByProductForOrganizationBatchFilter, ByCategoryForOrganizationBatchFilter)
 from .utils import update_weighing_set_numbers,  CustomScheduleHarvestFormSet
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
@@ -35,8 +38,9 @@ from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.utils.formats import date_format
 from .mixins import IncomingProductMetricsMixin, BatchDisplayMixin
-
-from .mixins import IncomingProductMetricsMixin
+from common.base.utils import SheetReportExportAdminMixin
+from .views import basic_report
+from .resources import IncomingProductResource
 # from django import forms
 
 # Inlines para datos del corte
@@ -201,7 +205,7 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     def get_fields(self, request, obj=None):
         fields = [
             'ooid', 'is_scheduled', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
-            'product_phenologies', 'product_harvest_size_kind', 'orchard', 'market',
+            'product_phenology', 'product_harvest_size_kind', 'orchard', 'market',
             'weight_expected', 'comments'
         ]
         if obj:
@@ -225,14 +229,14 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
         if db_field.name == "product_varieties":
             kwargs["queryset"] = ProductVariety.objects.filter(**product_organization_queryfilter)
 
-        if db_field.name in ("product_phenologies", "product_harvest_size_kind", "orchard"):
+        if db_field.name in ("product_phenology", "product_harvest_size_kind", "orchard"):
             qs_none = db_field.related_model.objects.none()
             obj_id = request.resolver_match.kwargs.get("object_id")
             incoming_product = IncomingProduct.objects.filter(id=obj_id).first() if obj_id else None
             schedule_harvest = (ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
                                 if incoming_product else None)
             mapping = {
-                "product_phenologies": (ProductPhenologyKind, "product_phenologies"),
+                "product_phenology": (ProductPhenologyKind, "product_phenology"),
                 "product_harvest_size_kind": (ProductHarvestSizeKind, "product_harvest_size_kind"),
                 "orchard": (Orchard, None),
             }
@@ -361,17 +365,21 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
 
 # Reciba
 @admin.register(IncomingProduct)
-class IncomingProductAdmin(IncomingProductMetricsMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
+class IncomingProductAdmin(SheetReportExportAdminMixin, IncomingProductMetricsMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_scheduleharvest_category', 'get_scheduleharvest_orchard',
                     'get_scheduleharvest_orchard_product_producer',
                     'get_scheduleharvest_product_provider', 'get_scheduleharvest_product', 'status','generate_actions_buttons')
     fields = ('mrl', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result',
               'kg_sample', *IncomingProductMetricsMixin.readonly_fields,
               'comments', 'is_quarantined','status')
-    list_filter = (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
-                   ByCategoryForOrganizationIncomingProductFilter)
+    list_filter = (ByProviderForOrganizationIncomingProductFilter, ByProductProducerForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
+                   ByProductPhenologyForOrganizationIncomingProductFilter,ByOrchardProductCategoryForOrganizationIncomingProductFilter,
+                   ByHarvestingCrewForOrganizationIncomingProductFilter, ByCategoryForOrganizationIncomingProductFilter, GathererForIncomingProductFilter, 
+                   MaquiladoraForIncomingProductFilter, ByOrchardCertificationForOrganizationIncomingProductFilter, SchedulingTypeFilter, 'status')
     search_fields = ('scheduleharvest__ooid',)
     readonly_fields = IncomingProductMetricsMixin.readonly_fields
+    report_function = staticmethod(basic_report)
+    resource_classes = [IncomingProductResource]
     inlines = [WeighingSetInline, ScheduleHarvestInline]
     form = IncomingProductForm
     actions = None
@@ -484,7 +492,7 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
     model = ScheduleHarvest
     extra = 0
     fields = ('ooid', 'is_scheduled', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
-        'product_phenologies', 'product_harvest_size_kind', 'orchard', 'market',
+        'product_phenology', 'product_harvest_size_kind', 'orchard', 'market',
         'weight_expected', 'comments')
     readonly_fields = ('ooid', 'is_scheduled', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
     can_delete = False
@@ -517,13 +525,13 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
         return CustomFormSet
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name in ("product_phenologies", "product_harvest_size_kind", "orchard"):
+        if db_field.name in ("product_phenology", "product_harvest_size_kind", "orchard"):
             obj_id = request.resolver_match.kwargs.get("object_id")
             sh = ScheduleHarvest.objects.filter(incoming_product__batch__pk=obj_id).first()
 
             if sh:
                 pid = sh.product
-                if db_field.name == "product_phenologies":
+                if db_field.name == "product_phenology":
                     qs = ProductPhenologyKind.objects.filter(product=pid, is_enabled=True)
                 elif db_field.name == "product_harvest_size_kind":
                     qs = ProductHarvestSizeKind.objects.filter(product=pid, is_enabled=True)
@@ -868,7 +876,7 @@ class VehicleReviewInline(nested_admin.NestedStackedInline):
             food_safety = FoodSafety.objects.get(pk=object_id)
             incoming_product = IncomingProduct.objects.filter(batch=food_safety.batch).first()
             schedule_harvest = ScheduleHarvest.objects.filter(incoming_product=incoming_product).first()
-            kwargs["queryset"] = ScheduleHarvestVehicle.objects.filter(harvest_cutting_id=schedule_harvest, has_arrived=True)
+            kwargs["queryset"] = ScheduleHarvestVehicle.objects.filter(schedule_harvest_id=schedule_harvest, has_arrived=True)
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:

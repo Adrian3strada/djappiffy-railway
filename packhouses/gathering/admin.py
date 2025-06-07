@@ -24,7 +24,7 @@ from packhouses.catalogs.filters import (StatesForOrganizationCountryFilter, ByC
                                          )
 from packhouses.catalogs.models import (Provider, Gatherer, Maquiladora, Orchard, Product, Market, WeighingScale,
                                         ProductVariety, HarvestingCrew, Vehicle, ProductHarvestSizeKind,
-                                        OrchardCertification, Supply, ProductRipeness)
+                                        OrchardCertification, Supply, ProductRipeness, ProductPhenologyKind)
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
 from common.base.models import ProductKind
@@ -34,18 +34,22 @@ from common.base.mixins import (ByOrganizationAdminMixin, ByProductForOrganizati
 from common.forms import SelectWidgetWithData
 from django import forms
 import nested_admin
-
-# Register your models here.
-
 from django.shortcuts import get_object_or_404
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.contrib.admin.widgets import AdminDateWidget
 from django.utils.html import format_html
 from django.urls import reverse
 from .forms import ScheduleHarvestForm, ContainerInlineForm, ContainerInlineFormSet
-
+from .filters import (ByProductProviderForOrganizationScheduleHarvestFilter, ByOrchardProductProducerForOrganizationScheduleHarvestFilter,
+                      ByHarvestingCrewForOrganizationScheduleHarvestFilter, ByProductForOrganizationScheduleHarvestFilter, 
+                      ByProductVarietyForOrganizationScheduleHarvestFilter, ByProductPhenologyForOrganizationScheduleHarvestFilter, 
+                      ByOrchardProductCategoryForOrganizationScheduleHarvestFilter, HarvestingCategoryFilter, SchedulingTypeFilter, 
+                      GathererFilter, MaquiladoraFilter, ByOrchardCertificationForOrganizationScheduleHarvestFilter)
+from .views import basic_report
+from .resources import ScheduleHarvestResource
+from common.base.utils import SheetReportExportAdminMixin
+from datetime import datetime
 
 class ScheduleHarvestHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = ScheduleHarvestHarvestingCrew
@@ -156,10 +160,9 @@ class ScheduleHarvestVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.
     class Media:
         js = ('js/admin/forms/packhouses/gathering/harvest_cutting_vehicle_inline.js',)
 
-
-
+from .filters import GatheringDateRangeFilter
 @admin.register(ScheduleHarvest)
-class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
+class ScheduleHarvestAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     form = ScheduleHarvestForm
     fields = ('ooid', 'status', 'is_scheduled', 'harvest_date', 'category', 'gatherer', 'maquiladora', 'product_provider', 'product',
               'product_variety', 'product_phenology', 'product_ripeness', 'product_harvest_size_kind', 'orchard',
@@ -167,9 +170,16 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
     list_display = ('ooid', 'harvest_date', 'category', 'product_provider',
                     'get_orchard_name', 'get_orchard_code', 'get_orchard_product_producer',
                     'product', 'get_orchard_category', 'product_variety', 'product_phenology', 'product_ripeness', 'market',
-                    'weight_expected', 'status',  'generate_actions_buttons')
-    list_filter = ('product_provider', 'category', 'gatherer', 'maquiladora', 'status',)
+                    'weight_expected', 'scheduled_harvest', 'status',  'generate_actions_buttons')
+    list_filter = (("harvest_date", GatheringDateRangeFilter), ByProductProviderForOrganizationScheduleHarvestFilter, 
+                   ByOrchardProductProducerForOrganizationScheduleHarvestFilter, ByProductForOrganizationScheduleHarvestFilter,
+                   ByProductPhenologyForOrganizationScheduleHarvestFilter, ByOrchardProductCategoryForOrganizationScheduleHarvestFilter, 
+                   ByHarvestingCrewForOrganizationScheduleHarvestFilter, HarvestingCategoryFilter, GathererFilter, 
+                   MaquiladoraFilter, ByOrchardCertificationForOrganizationScheduleHarvestFilter, SchedulingTypeFilter, 'status',)
+    search_fields = ('ooid',)
     readonly_fields = ('ooid', 'status')
+    report_function = staticmethod(basic_report)
+    resource_classes = [ScheduleHarvestResource]
     inlines = [ScheduleHarvestHarvestingCrewInline, ScheduleHarvestVehicleInline]
 
     def get_orchard_name(self, obj):
@@ -193,6 +203,12 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
         return obj.orchard.producer if obj.orchard else None
     get_orchard_product_producer.short_description = _('Product Producer')
     get_orchard_product_producer.admin_order_field = 'orchard__producer'
+
+    def scheduled_harvest(self, obj):
+        return obj.is_scheduled  
+    scheduled_harvest.boolean = True
+    scheduled_harvest.short_description = _('Scheduled Harvest')
+    scheduled_harvest.admin_order_field = 'is_scheduled'
 
     def generate_actions_buttons(self, obj):
         pdf_url = reverse('harvest_order_pdf', args=[obj.pk])
@@ -288,6 +304,9 @@ class ScheduleHarvestAdmin(ByOrganizationAdminMixin, ByProductForOrganizationAdm
 
         if db_field.name == "product_varieties":
             kwargs["queryset"] = ProductVariety.objects.filter(**product_organization_queryfilter)
+
+        if db_field.name == "product_phenology":
+            kwargs["queryset"] = ProductPhenologyKind.objects.filter(**product_organization_queryfilter)
 
         if db_field.name == "product_ripeness":
             kwargs["queryset"] = ProductRipeness.objects.filter(**product_organization_queryfilter)
