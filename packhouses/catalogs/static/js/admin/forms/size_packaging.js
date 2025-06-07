@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', async function () {
   const categoryField = $('#id_category');
-  const productField = $('#id_product');
   const productSizeField = $('#id_product_size');
   const packagingField = $('#id_packaging');
   const productWeightPerPackagingField = $('#id_product_weight_per_packaging');
@@ -23,6 +22,8 @@ document.addEventListener('DOMContentLoaded', async function () {
   let productPiecesPerPresentation = productPiecesPerPresentationField.val();
   let productPresentationsPerPackaging = productPresentationsPerPackagingField.val();
 
+  let categories = 'size,mix';
+
   productWeightPerPackagingField.attr('step', '0.01');
   productWeightPerPackagingField.attr('min', '0.01');
   productPresentationsPerPackagingField.attr('step', 1);
@@ -31,7 +32,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   productPiecesPerPresentationField.attr('min', 1);
 
   productWeightPerPackagingField.closest('.form-group').hide();
-
   productPresentationField.closest('.form-group').hide();
   productPresentationsPerPackagingField.closest('.form-group').hide();
   productPiecesPerPresentationField.closest('.form-group').hide();
@@ -120,10 +120,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   function updateProductSize() {
     if (categoryField.val()) {
-      let categories = 'size,mix'
-      if (categoryField.val() === 'presentation') {
-        categories = 'size'
-      }
       fetchOptions(`/rest/v1/catalogs/product-size/?product=${packagingProperties.product}&market=${packagingProperties.market}&categories=${categories}&is_enabled=1`)
         .then(data => {
           updateFieldOptions(productSizeField, data, productSize ? productSize : null);
@@ -169,7 +165,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   function updateProductPresentation() {
-    fetchOptions(`/rest/v1/catalogs/product-presentation/?product=${productField.val()}&markets=${marketField.val()}`)
+    fetchOptions(`/rest/v1/catalogs/product-presentation/?product=${1}&markets=${1}`)
       .then(data => {
         updateFieldOptions(productPresentationField, data, productPresentation ? productPresentation : null);
       })
@@ -177,18 +173,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   categoryField.on('change', async () => {
     category = categoryField.val();
-    if (categoryField.val()) {
-      await updateProductSize();
-      marketField.closest('.form-group').fadeIn();
-    } else {
-      marketField.closest('.form-group').fadeOut();
-    }
+    category === 'presentation' ? categories = 'size' : categories = 'size,mix';
   });
-
-  productSizeField.on('change', () => {
-    productSize = productSizeField.val();
-    updateName();
-  })
 
   packagingField.on('change', async () => {
     packaging = packagingField.val();
@@ -197,6 +183,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     await updateProductPackagingProductWeight();
     updateName();
   })
+
+  productSizeField.on('change', () => {
+    productSize = productSizeField.val();
+    updateName();
+  })
+
 
   productPresentationField.on('change', async () => {
     productPresentation = productPresentationField.val();
@@ -247,5 +239,5 @@ document.addEventListener('DOMContentLoaded', async function () {
       })
   }
 
-  [categoryField, productField, marketField, productSizeField, packagingField, productPresentationField].forEach(field => field.select2());
+  [categoryField, productSizeField, packagingField, productPresentationField].forEach(field => field.select2());
 });
