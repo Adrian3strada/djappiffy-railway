@@ -1707,7 +1707,8 @@ class SizePackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return super().formfield_for_dbfield(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/product_packaging.js',)
+        js = ('js/admin/forms/size_packaging.js',)
+        pass
 
 
 class PalletComplementarySupplyInLine(admin.TabularInline):
