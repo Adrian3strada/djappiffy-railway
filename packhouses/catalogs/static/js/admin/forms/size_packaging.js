@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   const productPresentationsPerPackagingField = $('#id_product_presentations_per_packaging');
   const nameField = $('#id_name');
   const aliasField = $('#id_alias');
+  const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
   let packagingProperties = null;
   let packagingSupplyProperties = null;
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   let productPresentationSupplyProperties = null;
 
   let categories = 'size,mix';
+  let allowChangeName = false;
 
   productWeightPerPackagingField.attr('step', '0.01');
   productWeightPerPackagingField.attr('min', '0.01');
@@ -77,29 +79,29 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   function updateName() {
-
-    if (categoryField.val() === 'single') {
-
-      if (packagingField.val() && productSizeField.val() && productWeightPerPackagingField.val()) {
-        const packagingName = packagingField.val() ? packagingField.find('option:selected').text() + ' ' : '';
-        const productSizeName = productSizeField.val() ? 'S:' + productSizeField.find('option:selected').text() + ' - ' : '';
-        const productWeight = productWeightPerPackagingField.val() ? 'W:' + productWeightPerPackagingField.val() : '';
-        let nameString = `${packagingName}${productSizeName}${productWeight}`
-        nameField.val(nameString.trim())
+    if (allowChangeName) {
+      if (categoryField.val() === 'single') {
+        if (packagingField.val() && productSizeField.val() && productWeightPerPackagingField.val()) {
+          const packagingName = packagingField.val() ? packagingField.find('option:selected').text() + ' ' : '';
+          const productSizeName = productSizeField.val() ? 'S:' + productSizeField.find('option:selected').text() + ' - ' : '';
+          const productWeight = productWeightPerPackagingField.val() ? 'W:' + productWeightPerPackagingField.val() : '';
+          let nameString = `${packagingName}${productSizeName}${productWeight}`
+          nameField.val(nameString.trim())
+        }
+      } else if (categoryField.val() === 'presentation') {
+        if (packagingField.val() && productSizeField.val() && productWeightPerPackagingField.val() && productPresentationField.val() && productPiecesPerPresentationField.val() && productPresentationsPerPackagingField.val()) {
+          const packagingName = packagingField.val() ? packagingField.find('option:selected').text() + ' - ' : '';
+          const productSizeName = productSizeField.val() ? 'S:' + productSizeField.find('option:selected').text() + ' - ' : '';
+          const productWeight = productWeightPerPackagingField.val() ? 'W:' + productWeightPerPackagingField.val() : '';
+          const productPresentationName = productPresentationField.val() ? productPresentationField.find('option:selected').text() + ' - ' : '';
+          const productPiecesPerPresentation = productPiecesPerPresentationField.val() ? 'P:' + productPiecesPerPresentationField.val() + ', ' : '';
+          const productPresentationPerPackaging = productPresentationsPerPackagingField.val() ? 'Q:' + productPresentationsPerPackagingField.val() + ', ' : '';
+          let nameString = `${packagingName}${productSizeName}${productPresentationName}${productPiecesPerPresentation}${productPresentationPerPackaging}${productWeight}`
+          nameField.val(nameString.trim())
+        }
+      } else {
+        // pass
       }
-    } else if (categoryField.val() === 'presentation') {
-      if (packagingField.val() && productSizeField.val() && productWeightPerPackagingField.val() && productPresentationField.val() && productPiecesPerPresentationField.val() && productPresentationsPerPackagingField.val()) {
-        const packagingName = packagingField.val() ? packagingField.find('option:selected').text() + ' - ' : '';
-        const productSizeName = productSizeField.val() ? 'S:' + productSizeField.find('option:selected').text() + ' - ' : '';
-        const productWeight = productWeightPerPackagingField.val() ? 'W:' + productWeightPerPackagingField.val() : '';
-        const productPresentationName = productPresentationField.val() ? productPresentationField.find('option:selected').text() + ' - ' : '';
-        const productPiecesPerPresentation = productPiecesPerPresentationField.val() ? 'P:' + productPiecesPerPresentationField.val() + ', ' : '';
-        const productPresentationPerPackaging = productPresentationsPerPackagingField.val() ? 'Q:' + productPresentationsPerPackagingField.val() + ', ' : '';
-        let nameString = `${packagingName}${productSizeName}${productPresentationName}${productPiecesPerPresentation}${productPresentationPerPackaging}${productWeight}`
-        nameField.val(nameString.trim())
-      }
-    } else {
-      nameField.val('');
     }
   }
 
@@ -110,19 +112,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     } else {
       updateFieldOptions(productSizeField, []);
     }
-  }
-
-  function updatePackaging() {
-    fetchOptions(`/rest/v1/catalogs/packaging/?is_enabled=1`)
-      .then(data => {
-        updateFieldOptions(packagingField, data, packagingField.val() ? packagingField.val() : null);
-        packagingField.closest('.form-group').fadeIn();
-        if (categoryField.val() === 'presentation') {
-          productPresentationField.closest('.form-group').fadeIn();
-          productPresentationsPerPackagingField.closest('.form-group').fadeIn();
-          productPiecesPerPresentationField.closest('.form-group').fadeIn();
-        }
-      })
   }
 
   async function updateProductPackagingProductWeight() {
@@ -194,7 +183,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     updateName();
   })
 
-
   productPresentationField.on('change', async () => {
     await getProductPresentationSupplyProperties();
     await updateProductPresentationQuantities();
@@ -236,6 +224,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     await getPackagingProperties();
     await updateProductSize();
     await updateProductPresentation();
+  }
+
+  if (isEditing) {
+    setTimeout(() => {
+      allowChangeName = true;
+    }, 200)
+  } else {
+    allowChangeName = true;
   }
 
   [categoryField, productSizeField, packagingField, productPresentationField].forEach(field => field.select2());
