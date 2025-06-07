@@ -211,7 +211,7 @@
     "model": "gathering.scheduleharvestharvestingcrew",
     "pk": 1,
     "fields": {
-    "harvest_cutting": 1,
+    "schedule_harvest": 1,
     "provider": 6,
     "harvesting_crew": 1
     }
@@ -220,7 +220,7 @@
     "model": "gathering.scheduleharvestharvestingcrew",
     "pk": 2,
     "fields": {
-    "harvest_cutting": 2,
+    "schedule_harvest": 2,
     "provider": 9,
     "harvesting_crew": 5
     }
@@ -229,7 +229,7 @@
     "model": "gathering.scheduleharvestharvestingcrew",
     "pk": 3,
     "fields": {
-    "harvest_cutting": 3,
+    "schedule_harvest": 3,
     "provider": 9,
     "harvesting_crew": 6
     }
@@ -238,7 +238,7 @@
     "model": "gathering.scheduleharvestharvestingcrew",
     "pk": 4,
     "fields": {
-    "harvest_cutting": 3,
+    "schedule_harvest": 3,
     "provider": 6,
     "harvesting_crew": 2
     }
@@ -247,7 +247,7 @@
     "model": "gathering.scheduleharvestharvestingcrew",
     "pk": 5,
     "fields": {
-    "harvest_cutting": 4,
+    "schedule_harvest": 4,
     "provider": 9,
     "harvesting_crew": 6
     }
@@ -256,7 +256,7 @@
     "model": "gathering.scheduleharvestharvestingcrew",
     "pk": 6,
     "fields": {
-    "harvest_cutting": 5,
+    "schedule_harvest": 5,
     "provider": 9,
     "harvesting_crew": 6
     }
@@ -265,7 +265,7 @@
     "model": "gathering.scheduleharvestharvestingcrew",
     "pk": 7,
     "fields": {
-    "harvest_cutting": 5,
+    "schedule_harvest": 5,
     "provider": 9,
     "harvesting_crew": 5
     }
@@ -274,7 +274,7 @@
     "model": "gathering.scheduleharvestharvestingcrew",
     "pk": 8,
     "fields": {
-    "harvest_cutting": 5,
+    "schedule_harvest": 5,
     "provider": 6,
     "harvesting_crew": 1
     }
@@ -283,7 +283,7 @@
     "model": "gathering.scheduleharvestvehicle",
     "pk": 1,
     "fields": {
-    "harvest_cutting": 1,
+    "schedule_harvest": 1,
     "provider": 6,
     "vehicle": 1,
     "guide_number": "na",
@@ -295,7 +295,7 @@
     "model": "gathering.scheduleharvestvehicle",
     "pk": 2,
     "fields": {
-    "harvest_cutting": 2,
+    "schedule_harvest": 2,
     "provider": 10,
     "vehicle": 4,
     "guide_number": "NA",
@@ -307,7 +307,7 @@
     "model": "gathering.scheduleharvestvehicle",
     "pk": 3,
     "fields": {
-    "harvest_cutting": 2,
+    "schedule_harvest": 2,
     "provider": 9,
     "vehicle": 6,
     "guide_number": "NA",
@@ -319,7 +319,7 @@
     "model": "gathering.scheduleharvestvehicle",
     "pk": 4,
     "fields": {
-    "harvest_cutting": 3,
+    "schedule_harvest": 3,
     "provider": 10,
     "vehicle": 4,
     "guide_number": "NA",
@@ -331,7 +331,7 @@
     "model": "gathering.scheduleharvestvehicle",
     "pk": 5,
     "fields": {
-    "harvest_cutting": 4,
+    "schedule_harvest": 4,
     "provider": 9,
     "vehicle": 7,
     "guide_number": null,
@@ -343,7 +343,7 @@
     "model": "gathering.scheduleharvestvehicle",
     "pk": 6,
     "fields": {
-    "harvest_cutting": 4,
+    "schedule_harvest": 4,
     "provider": 9,
     "vehicle": 6,
     "guide_number": null,
@@ -355,7 +355,7 @@
     "model": "gathering.scheduleharvestvehicle",
     "pk": 7,
     "fields": {
-    "harvest_cutting": 5,
+    "schedule_harvest": 5,
     "provider": 9,
     "vehicle": 2,
     "guide_number": "NA",
@@ -367,7 +367,7 @@
     "model": "gathering.scheduleharvestvehicle",
     "pk": 8,
     "fields": {
-    "harvest_cutting": 5,
+    "schedule_harvest": 5,
     "provider": 10,
     "vehicle": 4,
     "guide_number": "NA",
@@ -379,7 +379,7 @@
     "model": "gathering.scheduleharvestvehicle",
     "pk": 9,
     "fields": {
-    "harvest_cutting": 5,
+    "schedule_harvest": 5,
     "provider": 6,
     "vehicle": 3,
     "guide_number": null,
@@ -391,7 +391,7 @@
     "model": "gathering.scheduleharvestcontainervehicle",
     "pk": 1,
     "fields": {
-    "harvest_cutting": 1,
+    "schedule_harvest_vehicle": 1,
     "harvest_container": 31,
     "quantity": 250,
     "full_containers": 200,
@@ -404,7 +404,7 @@
     "model": "gathering.scheduleharvestcontainervehicle",
     "pk": 2,
     "fields": {
-    "harvest_cutting": 1,
+    "schedule_harvest_vehicle": 1,
     "harvest_container": 32,
     "quantity": 10,
     "full_containers": 10,
@@ -417,7 +417,7 @@
     "model": "gathering.scheduleharvestcontainervehicle",
     "pk": 3,
     "fields": {
-    "harvest_cutting": 2,
+    "schedule_harvest_vehicle": 2,
     "harvest_container": 32,
     "quantity": 100,
     "full_containers": 90,
@@ -430,7 +430,7 @@
     "model": "gathering.scheduleharvestcontainervehicle",
     "pk": 4,
     "fields": {
-    "harvest_cutting": 3,
+    "schedule_harvest_vehicle": 3,
     "harvest_container": 31,
     "quantity": 120,
     "full_containers": 100,
@@ -443,7 +443,7 @@
     "model": "gathering.scheduleharvestcontainervehicle",
     "pk": 5,
     "fields": {
-    "harvest_cutting": 4,
+    "schedule_harvest_vehicle": 4,
     "harvest_container": 32,
     "quantity": 80,
     "full_containers": 77,
@@ -456,7 +456,7 @@
     "model": "gathering.scheduleharvestcontainervehicle",
     "pk": 6,
     "fields": {
-    "harvest_cutting": 4,
+    "schedule_harvest_vehicle": 4,
     "harvest_container": 31,
     "quantity": 30,
     "full_containers": 30,
@@ -469,7 +469,7 @@
     "model": "gathering.scheduleharvestcontainervehicle",
     "pk": 7,
     "fields": {
-    "harvest_cutting": 5,
+    "schedule_harvest_vehicle": 5,
     "harvest_container": 32,
     "quantity": 80,
     "full_containers": 0,
@@ -482,7 +482,7 @@
     "model": "gathering.scheduleharvestcontainervehicle",
     "pk": 8,
     "fields": {
-    "harvest_cutting": 6,
+    "schedule_harvest_vehicle": 6,
     "harvest_container": 31,
     "quantity": 40,
     "full_containers": 0,
@@ -495,7 +495,7 @@
     "model": "gathering.scheduleharvestcontainervehicle",
     "pk": 9,
     "fields": {
-    "harvest_cutting": 7,
+    "schedule_harvest_vehicle": 7,
     "harvest_container": 32,
     "quantity": 30,
     "full_containers": 30,
@@ -508,7 +508,7 @@
     "model": "gathering.scheduleharvestcontainervehicle",
     "pk": 10,
     "fields": {
-    "harvest_cutting": 7,
+    "schedule_harvest_vehicle": 7,
     "harvest_container": 31,
     "quantity": 20,
     "full_containers": 20,
@@ -521,7 +521,7 @@
     "model": "gathering.scheduleharvestcontainervehicle",
     "pk": 11,
     "fields": {
-    "harvest_cutting": 8,
+    "schedule_harvest_vehicle": 8,
     "harvest_container": 32,
     "quantity": 20,
     "full_containers": 20,
@@ -534,7 +534,7 @@
     "model": "gathering.scheduleharvestcontainervehicle",
     "pk": 12,
     "fields": {
-    "harvest_cutting": 8,
+    "schedule_harvest_vehicle": 8,
     "harvest_container": 31,
     "quantity": 60,
     "full_containers": 60,
@@ -547,7 +547,7 @@
     "model": "gathering.scheduleharvestcontainervehicle",
     "pk": 13,
     "fields": {
-    "harvest_cutting": 9,
+    "schedule_harvest_vehicle": 9,
     "harvest_container": 32,
     "quantity": 60,
     "full_containers": 0,

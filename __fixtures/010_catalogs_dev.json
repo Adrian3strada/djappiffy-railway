@@ -2920,10 +2920,12 @@
   "model": "catalogs.pallet",
   "pk": 1,
   "fields": {
+    "market": 1,
     "product": 1,
     "supply": 22,
     "name": "AGUACATE MX MADERA 14",
     "alias": "AGMXMAD14",
+    "max_packages_quantity": 100,
     "is_enabled": true,
     "organization": 1
   }
@@ -2932,10 +2934,12 @@
   "model": "catalogs.pallet",
   "pk": 2,
   "fields": {
+    "market": 1,
     "product": 1,
     "supply": 23,
     "name": "AGUACATE MX PLASTICO 14",
     "alias": "AAP14",
+    "max_packages_quantity": 100,
     "is_enabled": true,
     "organization": 1
   }
@@ -3173,12 +3177,10 @@
   }
 },
 {
-  "model": "catalogs.productpackaging",
+  "model": "catalogs.sizepackaging",
   "pk": 1,
   "fields": {
     "category": "single",
-    "market": 1,
-    "product": 1,
     "product_size": 1,
     "packaging": 2,
     "product_weight_per_packaging": 11.3,
@@ -3192,12 +3194,10 @@
   }
 },
 {
-  "model": "catalogs.productpackaging",
+  "model": "catalogs.sizepackaging",
   "pk": 2,
   "fields": {
     "category": "single",
-    "market": 3,
-    "product": 1,
     "product_size": 6,
     "packaging": 4,
     "product_weight_per_packaging": 11.3,
@@ -3211,12 +3211,10 @@
   }
 },
 {
-  "model": "catalogs.productpackaging",
+  "model": "catalogs.sizepackaging",
   "pk": 3,
   "fields": {
     "category": "presentation",
-    "market": 1,
-    "product": 1,
     "product_size": 1,
     "packaging": 2,
     "product_weight_per_packaging": 11.3,
@@ -3230,12 +3228,10 @@
   }
 },
 {
-  "model": "catalogs.productpackaging",
+  "model": "catalogs.sizepackaging",
   "pk": 4,
   "fields": {
     "category": "presentation",
-    "market": 3,
-    "product": 1,
     "product_size": 6,
     "packaging": 4,
     "product_weight_per_packaging": 11.3,

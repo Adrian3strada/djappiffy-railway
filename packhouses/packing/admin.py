@@ -10,7 +10,7 @@ from common.base.mixins import (ByOrganizationAdminMixin)
 from packhouses.receiving.models import Batch
 from packhouses.gathering.models import ScheduleHarvest
 from packhouses.catalogs.models import Market, Product, ProductPhenologyKind, ProductSize, ProductMarketClass, \
-    ProductRipeness, ProductPackaging, ProductPackagingPallet
+    ProductRipeness, SizePackaging, ProductPackagingPallet
 
 
 # Register your models here.
@@ -137,7 +137,7 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
             kwargs["queryset"] = ProductRipeness.objects.filter(product__in=organization_products)
 
         if db_field.name == "product_packaging":
-            kwargs["queryset"] = ProductPackaging.objects.filter(organization=organization)
+            kwargs["queryset"] = SizePackaging.objects.filter(organization=organization)
 
         if db_field.name == "product_packaging_pallet":
             kwargs["queryset"] = ProductPackagingPallet.objects.filter(product_packaging__organization=organization)
@@ -173,7 +173,7 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
         if request.POST:
             product_packaging = request.POST.get("product_packaging")
             if product_packaging:
-                product_packaging_instance = ProductPackaging.objects.get(id=product_packaging)
+                product_packaging_instance = SizePackaging.objects.get(id=product_packaging)
 
         if db_field.name == "product_presentations_per_packaging":
             formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
@@ -224,7 +224,7 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
             kwargs["queryset"] = ProductRipeness.objects.filter(product__in=organization_products)
 
         if db_field.name == "product_packaging":
-            kwargs["queryset"] = ProductPackaging.objects.filter(organization=organization)
+            kwargs["queryset"] = SizePackaging.objects.filter(organization=organization)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

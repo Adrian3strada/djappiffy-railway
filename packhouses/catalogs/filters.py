@@ -3,7 +3,7 @@ from cities_light.models import Country, Region, SubRegion, City
 from common.profiles.models import UserProfile, OrganizationProfile, PackhouseExporterSetting, PackhouseExporterProfile
 from .models import (Product, ProductVariety, Market, ProductHarvestSizeKind, ProductPhenologyKind,
                      Gatherer, PaymentKind, Supply, Packaging, ProductSize,
-                     Provider, Client, CapitalFramework, ProductPackaging, ProductPresentation,
+                     Provider, Client, CapitalFramework, SizePackaging, ProductPresentation,
                      Maquiladora, WeighingScale, ExportingCompany, CustomsBroker, Pallet,
                      ProductKindCountryStandardPackaging
                      )
@@ -44,15 +44,6 @@ class ByProductForOrganizationFilter(admin.SimpleListFilter):
         return queryset
 
 
-class ByProductForOrganizationProductPackagingFilter(ByProductForOrganizationFilter):
-    def lookups(self, request, model_admin):
-        products = Product.objects.none()
-        if hasattr(request, 'organization'):
-            product_relatedlist = list(ProductPackaging.objects.filter(organization=request.organization).values_list('product', flat=True).distinct())
-            products = Product.objects.filter(id__in=product_relatedlist).order_by('name')
-        return [(product.id, product.name) for product in products]
-
-
 class ByProductForOrganizationProductSizeFilter(ByProductForOrganizationFilter):
     def lookups(self, request, model_admin):
         products = Product.objects.none()
@@ -80,7 +71,7 @@ class ByProductSizeForOrganizationProductPackagingFilter(ByProductSizeForOrganiz
     def lookups(self, request, model_admin):
         product_sizes = ProductSize.objects.none()
         if hasattr(request, 'organization'):
-            product_size_relatedlist = list(ProductPackaging.objects.filter(organization=request.organization).values_list('product_size', flat=True).distinct())
+            product_size_relatedlist = list(SizePackaging.objects.filter(organization=request.organization).values_list('product_size', flat=True).distinct())
             product_sizes = ProductSize.objects.filter(id__in=product_size_relatedlist).order_by('name')
         return [(product_size.id, f"{product_size.name} ({product_size.product.name}: {product_size.market.alias})") for product_size in product_sizes]
 
@@ -122,8 +113,8 @@ class ByPackagingForOrganizationProductPackagingFilter(ByPackagingForOrganizatio
         packagings = Packaging.objects.none()
         if hasattr(request, 'organization'):
             packaging_relatedlist = list(
-                ProductPackaging.objects.filter(organization=request.organization).values_list('packaging',
-                                                                                               flat=True).distinct())
+                SizePackaging.objects.filter(organization=request.organization).values_list('packaging',
+                                                                                            flat=True).distinct())
             packagings = Packaging.objects.filter(id__in=packaging_relatedlist).order_by('name')
 
         return [(packaging.id, f"{packaging.name}" + f" - ({packaging.country_standard_packaging.standard.name if packaging.country_standard_packaging.standard and packaging.country_standard_packaging.standard.name else '-'}: {packaging.country_standard_packaging})") for packaging in packagings]
@@ -153,8 +144,8 @@ class ByProductPresentationForOrganizationProductPackagingFilter(ByPackagingForO
         product_presentations = ProductPresentation.objects.none()
         if hasattr(request, 'organization'):
             packaging_relatedlist = list(
-                ProductPackaging.objects.filter(organization=request.organization).values_list('product_presentation',
-                                                                                               flat=True).distinct())
+                SizePackaging.objects.filter(organization=request.organization).values_list('product_presentation',
+                                                                                            flat=True).distinct())
             product_presentations = ProductPresentation.objects.filter(id__in=packaging_relatedlist).order_by('name')
         return [(product_presentation.id, f"{product_presentation.name}") for product_presentation in product_presentations]
 
@@ -216,15 +207,6 @@ class ByMarketForOrganizationProductSizeFilter(ByMarketForOrganizationFilter):
         if hasattr(request, 'organization'):
             productsize_relatedlist = list(ProductSize.objects.filter(product__organization=request.organization).values_list('market', flat=True).distinct())
             markets = Market.objects.filter(id__in=productsize_relatedlist).order_by('name')
-        return [(market.id, market.name) for market in markets]
-
-
-class ByMarketForOrganizationProductPackagingFilter(ByMarketForOrganizationFilter):
-    def lookups(self, request, model_admin):
-        markets = Market.objects.none()
-        if hasattr(request, 'organization'):
-            market_relatedlist = list(ProductPackaging.objects.filter(organization=request.organization).values_list('market', flat=True).distinct())
-            markets = Market.objects.filter(id__in=market_relatedlist).order_by('name')
         return [(market.id, market.name) for market in markets]
 
 

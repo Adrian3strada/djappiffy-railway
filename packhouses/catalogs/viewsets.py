@@ -13,7 +13,7 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, Client, Maquiladora, Provider,
-                     Product, Packaging, ProductPresentation, ProductPackaging, Pallet, ProductPackagingPallet,
+                     Product, Packaging, ProductPresentation, SizePackaging, Pallet, ProductPackagingPallet,
                      Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, OrchardGeoLocation,
                      ProductRipeness, Service
                      )
@@ -185,7 +185,7 @@ class ProductPackagingViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        queryset = ProductPackaging.objects.filter(organization=self.request.organization)
+        queryset = SizePackaging.objects.filter(organization=self.request.organization)
 
         product_presentation__isnull = self.request.GET.get('product_presentation__isnull')
 

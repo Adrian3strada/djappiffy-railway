@@ -1,6 +1,6 @@
 from django.forms import BaseInlineFormSet
 from .models import ProductSize
-from ..catalogs.models import ProductPackaging, ProductPackagingPallet
+from ..catalogs.models import SizePackaging, ProductPackagingPallet
 
 
 class OrderItemWeightFormSet(BaseInlineFormSet):
@@ -67,7 +67,7 @@ class OrderItemPackagingFormSet(BaseInlineFormSet):
                             form.fields['product_market_class'].required = True
 
                 if product_packaging_id:
-                    product_packaging = ProductPackaging.objects.filter(id=product_packaging_id).first()
+                    product_packaging = SizePackaging.objects.filter(id=product_packaging_id).first()
                     if product_packaging:
                         if product_packaging.product_presentation:
                             form.fields['product_presentations_per_packaging'].required = True
