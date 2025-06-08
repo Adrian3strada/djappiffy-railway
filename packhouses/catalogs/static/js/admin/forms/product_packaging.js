@@ -8,13 +8,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let productProperties = null;
   let marketProperties = null;
-
   let productStandardPackagingProperties = null;
   let packagingSupplyKindProperties = null;
   let listenChanges = false;
-
   const isEditing = window.location.pathname.match(/\/change\//) !== null;
-
 
   function updateFieldOptions(field, options, selectedValue = null) {
     field.empty().append(new Option('---------', '', !selectedValue, !selectedValue));
@@ -84,15 +81,9 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(async data => {
           updateFieldOptions(countryStandardPackagingField, data);
           await updateName();
-          if (data.length > 0) {
-            countryStandardPackagingField.closest('.form-group').fadeIn();
-          } else {
-            countryStandardPackagingField.closest('.form-group').fadeOut();
-          }
         })
     } else {
       updateFieldOptions(countryStandardPackagingField, []);
-      countryStandardPackagingField.closest('.form-group').fadeOut();
       await updateName();
     }
   }
@@ -149,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function getproductStandardPackagingFieldProperties() {
+  function getProductStandardPackagingFieldProperties() {
     return new Promise((resolve, reject) => {
       if (countryStandardPackagingField.val()) {
         fetchOptions(`/rest/v1/base/product-standard-packaging/${countryStandardPackagingField.val()}/`)
@@ -179,31 +170,28 @@ document.addEventListener('DOMContentLoaded', function () {
     await updateName();
   })
 
-
   packagingSupplyField.on('change', async () => {
     if (packagingSupplyField.val()) {
       await updateName();
     }
   });
 
-  packagingSupplyKindField.on('change', function () {
-    getPackagingSupplyKindProperties().then(async () => {
-      updatePackagingSupply();
-      if (marketProperties) {
-        await updateProductStandardPackaging();
-      } else {
-        await getMarketProperties()
-        await updateProductStandardPackaging();
-      }
-    });
+  packagingSupplyKindField.on('change', async function () {
+    await getPackagingSupplyKindProperties();
+    await updatePackagingSupply();
+    if (marketProperties) {
+      await updateProductStandardPackaging();
+    } else {
+      await getMarketProperties()
+      await updateProductStandardPackaging();
+    }
   });
 
-  countryStandardPackagingField.on('change', function () {
+  countryStandardPackagingField.on('change', async function () {
     if (listenChanges) {
-      getproductStandardPackagingFieldProperties().then(async () => {
-        updatePackagingSupply();
-        await updateName();
-      });
+      await getProductStandardPackagingFieldProperties();
+      await updatePackagingSupply();
+      await updateName();
     }
   });
 
@@ -231,10 +219,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
-
-  countryStandardPackagingField.closest('.form-group').hide();
-
-  if (countryStandardPackagingField.val()) countryStandardPackagingField.closest('.form-group').show();
 
   if (isEditing) {
     setTimeout(() => {
