@@ -1,15 +1,14 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const productField = $('#id_product');
   const marketField = $('#id_market');
+  const productField = $('#id_product');
   const packagingSupplyKindField = $('#id_packaging_supply_kind');
   const countryStandardPackagingField = $('#id_country_standard_packaging');
   const packagingSupplyField = $('#id_packaging_supply');
   const nameField = $('#id_name');
-  const packagingSupplyQuantityField = $('#id_packaging_supply_quantity');
 
   let productProperties = null;
   let marketProperties = null;
-  let marketCountries = [];
+
   let productStandardPackagingProperties = null;
   let packagingSupplyKindProperties = null;
   let listenChanges = false;
@@ -189,12 +188,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   packagingSupplyKindField.on('change', function () {
     getPackagingSupplyKindProperties().then(async () => {
-      if (packagingSupplyKindField.val() && packagingSupplyKindProperties && packagingSupplyKindProperties.usage_discount_unit_category !== 'pieces') {
-        packagingSupplyQuantityField.closest('.form-group').fadeIn();
-      } else {
-        packagingSupplyQuantityField.val(1);
-        packagingSupplyQuantityField.closest('.form-group').fadeOut();
-      }
       updatePackagingSupply();
       if (marketProperties) {
         await updateProductStandardPackaging();
@@ -239,15 +232,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  if (packagingSupplyKindField.val()) {
-    getPackagingSupplyKindProperties().then(() => {
-      if (packagingSupplyKindField.val() && packagingSupplyKindProperties && packagingSupplyKindProperties.usage_discount_unit_category !== 'pieces') {
-        packagingSupplyQuantityField.closest('.form-group').fadeIn();
-      }
-    });
-  }
-
-  packagingSupplyQuantityField.closest('.form-group').hide();
   countryStandardPackagingField.closest('.form-group').hide();
 
   if (countryStandardPackagingField.val()) countryStandardPackagingField.closest('.form-group').show();
