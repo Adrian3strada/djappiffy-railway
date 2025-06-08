@@ -1611,7 +1611,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packaging.js',)
+        js = ('js/admin/forms/product_packaging.js',)
 
 
 @admin.register(SizePackaging)

@@ -5,7 +5,7 @@ from .viewsets import (
     ClientViewSet, ProviderViewSet, ProductViewSet, MaquiladoraViewSet, SupplyViewSet,
     ProductSizeViewSet, ProductPresentationViewSet, SizePackagingViewSet,
     PalletViewSet,
-    OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, OrchardGeoLocationViewSet, ProductPackagingViewSet,
+    OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, OrchardGeoLocationViewSet, PackagingViewSet,
     ProductRipenessViewSet,
     ServiceViewSet, PestProductKindViewSet, DiseaseProductKindViewSet
 )
@@ -25,7 +25,7 @@ drf_router.register(r'rest/v1/catalogs/product-presentation', ProductPresentatio
                     basename='product_presentation')
 drf_router.register(r'rest/v1/catalogs/size-packaging', SizePackagingViewSet, basename='size_packaging')
 # drf_router.register(r'rest/v1/catalogs/product-packaging-pallet', ProductPackagingPalletViewSet, basename='product_packaging_pallet')
-drf_router.register(r'rest/v1/catalogs/product-packaging', ProductPackagingViewSet, basename='product_packaging')
+drf_router.register(r'rest/v1/catalogs/product-packaging', PackagingViewSet, basename='product_packaging')
 drf_router.register(r'rest/v1/catalogs/provider', ProviderViewSet, basename='provider')
 drf_router.register(r'rest/v1/catalogs/supply', SupplyViewSet, basename='supply')
 drf_router.register(r'rest/v1/catalogs/vehicle', VehicleViewSet, basename='vehicle')

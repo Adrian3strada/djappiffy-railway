@@ -160,7 +160,7 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
         return ProductVariety.objects.filter(product__organization=self.request.organization)
 
 
-class ProductPackagingViewSet(viewsets.ModelViewSet):
+class PackagingViewSet(viewsets.ModelViewSet):
     serializer_class = ProductPackagingSerializer
     filterset_fields = ['product', 'market', 'is_enabled']
     pagination_class = None
