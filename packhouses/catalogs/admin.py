@@ -1563,8 +1563,7 @@ class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixi
         obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
-        packaging_supply_kind = request.POST.get(
-            'packaging_supply_kind') if request.POST else obj.packaging_supply_kind if obj else None
+        packaging_supply_kind = request.POST.get('packaging_supply_kind') if request.POST else obj.packaging_supply_kind if obj else None
         market_id = request.POST.get('market') if request.POST else obj.market_id if obj else None
         product_id = request.POST.get('product') if request.POST else obj.product_id if obj else None
         product_kind = ProductKind.objects.get(id=Product.objects.get(id=product_id).kind_id) if product_id else None

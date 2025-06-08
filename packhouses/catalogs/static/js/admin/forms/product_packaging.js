@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
   const marketField = $('#id_market');
   const productField = $('#id_product');
   const packagingSupplyKindField = $('#id_packaging_supply_kind');
@@ -73,15 +73,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   async function updateProductStandardPackaging() {
     if (packagingSupplyKindField.val() && marketProperties) {
-      let paramStandardProductKind = ''
-      if (productProperties) {
-        paramStandardProductKind = `&standard__product_kind=${productProperties.kind}`
-      }
-      fetchOptions(`/rest/v1/base/product-standard-packaging/?supply_kind=${packagingSupplyKindField.val()}&standard__country__in=${marketProperties.country}${paramStandardProductKind}&is_enabled=1`)
-        .then(async data => {
-          updateFieldOptions(countryStandardPackagingField, data);
-          await updateName();
-        })
+      let paramStandardProductKind = '';
+      productProperties ? paramStandardProductKind = `&standard__product_kind=${productProperties.kind}` : paramStandardProductKind = '';
+      const productStandardPackagingResponse = await fetchOptions(`/rest/v1/base/product-standard-packaging/?supply_kind=${packagingSupplyKindField.val()}&standard__country__in=${marketProperties.country}${paramStandardProductKind}&is_enabled=1`)
+      updateFieldOptions(countryStandardPackagingField, productStandardPackagingResponse, countryStandardPackagingField.val() ? countryStandardPackagingField.val() : null);
+      await updateName();
     } else {
       updateFieldOptions(countryStandardPackagingField, []);
       await updateName();
@@ -93,10 +89,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (packagingSupplyKindId && productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
       fetchOptions(`/rest/v1/catalogs/supply/?kind=${packagingSupplyKindId}&capacity=${productStandardPackagingProperties.max_product_amount}&is_enabled=1`)
         .then(data => {
-          const packagingSupplyFieldId = packagingSupplyField.val();
           updateFieldOptions(packagingSupplyField, data);
-          if (packagingSupplyFieldId && data.some(item => item.id === parseInt(packagingSupplyFieldId))) {
-            packagingSupplyField.val(packagingSupplyFieldId).trigger('change');
+          if (packagingSupplyField.val() && data.some(item => item.id === parseInt(packagingSupplyField.val()))) {
+            packagingSupplyField.val(packagingSupplyField.val()).trigger('change');
           }
         });
     } else if (packagingSupplyKindId) {
@@ -195,29 +190,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  if (!countryStandardPackagingField.val()) updateFieldOptions(countryStandardPackagingField, []);
-
   if (marketField.val()) {
-    getMarketProperties().then(() => {
-      if (packagingSupplyKindField.val() && marketProperties) {
-        fetchOptions(`/rest/v1/base/product-standard-packaging/?supply_kind=${packagingSupplyKindField.val()}&standard__country__in=${marketProperties.country}&is_enabled=1`)
-          .then(data => {
-            updateFieldOptions(countryStandardPackagingField, data);
-            if (countryStandardPackagingField.val()) {
-              countryStandardPackagingField.val(countryStandardPackagingField.val()).trigger('change');
+    await getMarketProperties()
+    await updateProductStandardPackaging();
+    await updateName();
+  }
 
-              fetchOptions(`/rest/v1/base/product-standard-packaging/${countryStandardPackagingField.val()}/`)
-                .then(data => {
-                  productStandardPackagingProperties = data;
-                  updatePackagingSupply();
-                })
-                .catch(error => {
-                  console.error('Fetch error:', error);
-                });
-            }
-          })
-      }
-    });
+  if (countryStandardPackagingField.val()) {
+    if (listenChanges) {
+      await getProductStandardPackagingFieldProperties();
+      await updatePackagingSupply();
+    }
   }
 
   if (isEditing) {
