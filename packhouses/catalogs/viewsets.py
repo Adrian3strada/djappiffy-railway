@@ -58,6 +58,12 @@ class MarketViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         queryset = Market.objects.filter(organization=self.request.organization)
+
+        product = self.request.GET.get('product')
+
+        if product:
+            queryset = queryset.filter(product__id=product)
+
         return queryset
 
 

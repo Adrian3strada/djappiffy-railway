@@ -5,13 +5,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const presentationSupplyField = $('#id_presentation_supply');
   const nameField = $('#id_name');
 
-  const API_BASE_URL = '/rest/v1';
+  let productProperties = null;
 
   function updateFieldOptions(field, options, selectedValue = null) {
     console.log("updateFieldOptions", field, options, selectedValue);
     field.empty().append(new Option('---------', '', !selectedValue, !selectedValue));
     options.forEach(option => {
-      field.append(new Option(option.name, option.id, selectedValue === option.id, selectedValue === option.id));
+      field.append(new Option(option.name, option.id, selectedValue === option.id, parseInt(selectedValue) === option.id));
     });
     field.trigger('change').select2();
   }
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updatePresentationSupply() {
     const presentationSupplyKindId = presentationSupplyKindField.val();
     if (presentationSupplyKindId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${presentationSupplyKindId}&is_enabled=1`)
+      fetchOptions(`/rest/v1/catalogs/supply/?kind=${presentationSupplyKindId}&is_enabled=1`)
         .then(data => {
           updateFieldOptions(presentationSupplyField, data);
         });
@@ -46,6 +46,16 @@ document.addEventListener('DOMContentLoaded', function () {
       nameField.val('')
     }
   }
+
+  productField.on('change', async function () {
+    if (productField.val()) {
+      productProperties = await fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
+      const productMaketsResult = await fetchOptions(`/rest/v1/catalogs/market/?product=${productField.val()}&is_enabled=1`);
+      updateFieldOptions(marketsField, productMaketsResult, marketsField.val() ? marketsField.val() : null);
+    } else {
+      productProperties = null;
+    }
+  });
 
   presentationSupplyKindField.on('change', function () {
     updatePresentationSupply();

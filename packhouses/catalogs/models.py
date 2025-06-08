@@ -835,7 +835,6 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
         # return f"{self.kind.name}: {self.name}"
         return f"{self.name}"
 
-
     def clean(self):
         value = self.capacity
         if self.kind.category in ['packaging_containment', 'packaging_presentation',
