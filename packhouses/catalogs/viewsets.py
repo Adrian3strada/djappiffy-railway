@@ -3,10 +3,10 @@ from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketSerializer, ProductMarketClassSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
                           ProductPhenologyKindSerializer, ClientSerializer, ProductSizeSerializer,
-                          MaquiladoraSerializer, PackagingSerializer, ProductPresentationSerializer,
+                          MaquiladoraSerializer, ProductPackagingSerializer, ProductPresentationSerializer,
                           SupplySerializer, OrchardSerializer, OrchardGeoLocationSerializer,
                           HarvestingCrewSerializer,
-                          ProductPackagingSerializer, PalletSerializer,
+                          SizePackagingSerializer, PalletSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
                           OrchardCertificationSerializer, ProductRipenessSerializer, ServiceSerializer,
                           PestProductKindSerializer, DiseaseProductKindSerializer
@@ -160,8 +160,8 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
         return ProductVariety.objects.filter(product__organization=self.request.organization)
 
 
-class PackagingViewSet(viewsets.ModelViewSet):
-    serializer_class = PackagingSerializer
+class ProductPackagingViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductPackagingSerializer
     filterset_fields = ['product', 'market', 'is_enabled']
     pagination_class = None
 
@@ -175,8 +175,8 @@ class PackagingViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-class ProductPackagingViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductPackagingSerializer
+class SizePackagingViewSet(viewsets.ModelViewSet):
+    serializer_class = SizePackagingSerializer
     filterset_fields = ['product', 'market', 'category', 'product_size', 'product_presentation', 'is_enabled']
     pagination_class = None
 

@@ -24,14 +24,14 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_packaging(self, obj):
         packaging = ProductPackaging.objects.filter(product=obj)
-        return PackagingSerializer(packaging, many=True).data
+        return ProductPackagingSerializer(packaging, many=True).data
 
     class Meta:
         model = Product
         fields = '__all__'
 
 
-class PackagingSerializer(serializers.ModelSerializer):
+class ProductPackagingSerializer(serializers.ModelSerializer):
     packaging_supply_detail = serializers.SerializerMethodField(read_only=True)
 
     def get_packaging_supply_detail(self, obj):
@@ -42,7 +42,7 @@ class PackagingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProductPackagingSerializer(serializers.ModelSerializer):
+class SizePackagingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SizePackaging

@@ -401,7 +401,7 @@ JAZZMIN_SETTINGS = {
         "catalogs.Product",
         "catalogs.ProductSize",
         "catalogs.Supply",
-        "catalogs.Packaging",
+        "catalogs.ProductPackaging",
         "catalogs.ProductPresentation",
         "catalogs.SizePackaging",
         "catalogs.Pallet",

@@ -85,11 +85,11 @@ class OrderItemInlineMixin(admin.StackedInline):
             if client and product:
                 kwargs["queryset"] = Pallet.objects.filter(market=client.market, product=product, is_enabled=True)
 
-        if db_field.name == "product_packaging":
+        if db_field.name == "size_packaging":
             kwargs["queryset"] = SizePackaging.objects.none()
             if parent_object and parent_object.product:
-                kwargs["queryset"] = SizePackaging.objects.filter(packaging__product=parent_object.product,
-                                                                  packaging__market=parent_object.client.market,
+                kwargs["queryset"] = SizePackaging.objects.filter(product_packaging__product=parent_object.product,
+                                                                  product_packaging__market=parent_object.client.market,
                                                                   is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
