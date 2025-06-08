@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const packagingSupplyQuantityField = $('#id_packaging_supply_quantity');
 
   let productProperties = null;
+  let marketProperties = null;
   let marketCountries = [];
   let productStandardPackagingProperties = null;
   let packagingSupplyKindProperties = null;
@@ -15,12 +16,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
-  const API_BASE_URL = '/rest/v1';
 
   function updateFieldOptions(field, options, selectedValue = null) {
     field.empty().append(new Option('---------', '', !selectedValue, !selectedValue));
     options.forEach(option => {
-      field.append(new Option(option.name, option.id, selectedValue === option.id, selectedValue === option.id));
+      field.append(new Option(option.name, option.id, false, parseInt(selectedValue) === option.id));
     });
     field.trigger('change').select2();
   }
@@ -33,6 +33,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }).fail(error => console.error('Fetch error:', error));
   }
 
+  async function getMarketProperties() {
+    if (marketField.val()) {
+      marketProperties = await fetchOptions(`/rest/v1/catalogs/market/${marketField.val()}/`)
+      const marketProducts = await fetchOptions(`/rest/v1/catalogs/product/?markets=${marketField.val()}&is_enabled=1`);
+      updateFieldOptions(productField, marketProducts, productField.val());
+    } else {
+      marketProperties = null;
+      updateFieldOptions(productField, []);
+    }
+  }
+
   function getProductProperties() {
     if (productField.val()) {
       fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
@@ -43,34 +54,6 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       productProperties = null;
     }
-  }
-
-  function getMarketCountries() {
-    return new Promise((resolve, reject) => {
-      if (marketField.val()) {
-        let uniqueCountries = new Set();
-        let fetchPromises = [];
-        fetchPromises.push(
-          fetchOptions(`/rest/v1/catalogs/market/${marketField.val()}/`)
-            .then(data => {
-              data.countries.forEach(country => {
-                uniqueCountries.add(country);
-              });
-            })
-        )
-
-        Promise.all(fetchPromises).then(() => {
-          marketCountries = Array.from(uniqueCountries);
-          resolve(marketCountries);
-        }).catch(error => {
-          console.error('Fetch error:', error);
-          reject(error);
-        });
-      } else {
-        marketCountries = [];
-        resolve(marketCountries);
-      }
-    });
   }
 
   function getPackagingSupplyKindProperties() {
@@ -92,18 +75,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  function updateProductStandardPackaging() {
-    const packagingSupplyKindId = packagingSupplyKindField.val();
-    if (packagingSupplyKindId && marketCountries.length) {
-      const countries = marketCountries.join(',');
+  async function updateProductStandardPackaging() {
+    if (packagingSupplyKindField.val() && marketProperties) {
       let paramStandardProductKind = ''
       if (productProperties) {
         paramStandardProductKind = `&standard__product_kind=${productProperties.kind}`
       }
-      fetchOptions(`${API_BASE_URL}/base/product-standard-packaging/?supply_kind=${packagingSupplyKindId}&standard__country__in=${countries}${paramStandardProductKind}&is_enabled=1`)
-        .then(data => {
+      fetchOptions(`/rest/v1/base/product-standard-packaging/?supply_kind=${packagingSupplyKindField.val()}&standard__country__in=${marketProperties.country}${paramStandardProductKind}&is_enabled=1`)
+        .then(async data => {
           updateFieldOptions(countryStandardPackagingField, data);
-          updateName();
+          await updateName();
           if (data.length > 0) {
             countryStandardPackagingField.closest('.form-group').fadeIn();
           } else {
@@ -113,14 +94,14 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       updateFieldOptions(countryStandardPackagingField, []);
       countryStandardPackagingField.closest('.form-group').fadeOut();
-      updateName();
+      await updateName();
     }
   }
 
   function updatePackagingSupply() {
     const packagingSupplyKindId = packagingSupplyKindField.val();
     if (packagingSupplyKindId && productStandardPackagingProperties && productStandardPackagingProperties.max_product_amount) {
-      fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&capacity=${productStandardPackagingProperties.max_product_amount}&is_enabled=1`)
+      fetchOptions(`/rest/v1/catalogs/supply/?kind=${packagingSupplyKindId}&capacity=${productStandardPackagingProperties.max_product_amount}&is_enabled=1`)
         .then(data => {
           const packagingSupplyFieldId = packagingSupplyField.val();
           updateFieldOptions(packagingSupplyField, data);
@@ -129,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         });
     } else if (packagingSupplyKindId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/supply/?kind=${packagingSupplyKindId}&is_enabled=1`)
+      fetchOptions(`/rest/v1/catalogs/supply/?kind=${packagingSupplyKindId}&is_enabled=1`)
         .then(data => {
           const packagingSupplyFieldId = packagingSupplyField.val();
           updateFieldOptions(packagingSupplyField, data);
@@ -142,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function updateName() {
+  async function updateName() {
     if (listenChanges) {
       if (packagingSupplyKindField.val() && countryStandardPackagingField.val()) {
         const productName = productField.find('option:selected').text();
@@ -188,26 +169,26 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  productField.on('change', () => {
-    getProductProperties();
-    updateName();
-  })
-
-  marketField.on('change', () => {
-    getMarketCountries().then(() => {
-      updateProductStandardPackaging();
-      updateName();
-    });
+  marketField.on('change', async () => {
+    await getMarketProperties()
+    await updateProductStandardPackaging();
+    await updateName();
   });
 
-  packagingSupplyField.on('change', () => {
+  productField.on('change', async () => {
+    getProductProperties();
+    await updateName();
+  })
+
+
+  packagingSupplyField.on('change', async () => {
     if (packagingSupplyField.val()) {
-      updateName();
+      await updateName();
     }
   });
 
   packagingSupplyKindField.on('change', function () {
-    getPackagingSupplyKindProperties().then(() => {
+    getPackagingSupplyKindProperties().then(async () => {
       if (packagingSupplyKindField.val() && packagingSupplyKindProperties && packagingSupplyKindProperties.usage_discount_unit_category !== 'pieces') {
         packagingSupplyQuantityField.closest('.form-group').fadeIn();
       } else {
@@ -215,21 +196,20 @@ document.addEventListener('DOMContentLoaded', function () {
         packagingSupplyQuantityField.closest('.form-group').fadeOut();
       }
       updatePackagingSupply();
-      if (marketCountries.length) {
-        updateProductStandardPackaging();
+      if (marketProperties) {
+        await updateProductStandardPackaging();
       } else {
-        getMarketCountries().then(() => {
-          updateProductStandardPackaging();
-        });
+        await getMarketProperties()
+        await updateProductStandardPackaging();
       }
     });
   });
 
   countryStandardPackagingField.on('change', function () {
     if (listenChanges) {
-      getproductStandardPackagingFieldProperties().then(() => {
+      getproductStandardPackagingFieldProperties().then(async () => {
         updatePackagingSupply();
-        updateName();
+        await updateName();
       });
     }
   });
@@ -237,17 +217,15 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!countryStandardPackagingField.val()) updateFieldOptions(countryStandardPackagingField, []);
 
   if (marketField.val()) {
-    getMarketCountries().then(() => {
-      if (packagingSupplyKindField.val() && marketCountries.length) {
-        const productStandardPackagingId = countryStandardPackagingField.val();
-        const countries = marketCountries.join(',');
-        fetchOptions(`${API_BASE_URL}/base/product-standard-packaging/?supply_kind=${packagingSupplyKindField.val()}&standard__country__in=${countries}&is_enabled=1`)
+    getMarketProperties().then(() => {
+      if (packagingSupplyKindField.val() && marketProperties) {
+        fetchOptions(`/rest/v1/base/product-standard-packaging/?supply_kind=${packagingSupplyKindField.val()}&standard__country__in=${marketProperties.country}&is_enabled=1`)
           .then(data => {
             updateFieldOptions(countryStandardPackagingField, data);
-            if (productStandardPackagingId) {
-              countryStandardPackagingField.val(productStandardPackagingId).trigger('change');
+            if (countryStandardPackagingField.val()) {
+              countryStandardPackagingField.val(countryStandardPackagingField.val()).trigger('change');
 
-              fetchOptions(`/rest/v1/base/product-standard-packaging/${productStandardPackagingId}/`)
+              fetchOptions(`/rest/v1/base/product-standard-packaging/${countryStandardPackagingField.val()}/`)
                 .then(data => {
                   productStandardPackagingProperties = data;
                   updatePackagingSupply();

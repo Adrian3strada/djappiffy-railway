@@ -124,6 +124,7 @@ class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['address_label'].widget = CKEditor5Widget()
+        form.base_fields['countries'].disabled = True
         return form
 
     def get_readonly_fields(self, request, obj=None):

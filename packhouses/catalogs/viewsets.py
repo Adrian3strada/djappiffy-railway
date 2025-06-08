@@ -113,8 +113,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         markets = self.request.GET.get('markets')
 
         if markets:
-            category_list = markets.split(',')
-            queryset = queryset.filter(markets__in=category_list)
+            items_list = markets.split(',')
+            queryset = queryset.filter(markets__in=items_list)
 
         return queryset
 
