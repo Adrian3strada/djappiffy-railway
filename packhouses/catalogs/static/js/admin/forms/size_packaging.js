@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   const aliasField = $('#id_alias');
   const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
-  let packagingProperties = null;
+  let productPackagingProperties = null;
   let packagingSupplyProperties = null;
   let productPresentationProperties = null;
   let productPresentationSupplyProperties = null;
@@ -51,12 +51,12 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   async function getPackagingProperties() {
     if (productPackagingField.val()) {
-      packagingProperties = await fetchOptions(`/rest/v1/catalogs/packaging/${productPackagingField.val()}/`)
-      packagingSupplyProperties = await fetchOptions(`/rest/v1/catalogs/supply/${packagingProperties.packaging_supply}/`)
-      console.log("Packaging Properties:", packagingProperties);
+      productPackagingProperties = await fetchOptions(`/rest/v1/catalogs/product-packaging/${productPackagingField.val()}/`)
+      packagingSupplyProperties = await fetchOptions(`/rest/v1/catalogs/supply/${productPackagingProperties.packaging_supply}/`)
+      console.log("Packaging Properties:", productPackagingProperties);
       console.log("Packaging Supply Properties:", packagingSupplyProperties);
     } else {
-      packagingProperties = null;
+      productPackagingProperties = null;
       packagingSupplyProperties = null;
     }
   }
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   async function updateProductSize() {
     if (productPackagingField.val()) {
-      const productSizes = await fetchOptions(`/rest/v1/catalogs/product-size/?product=${packagingProperties.product}&market=${packagingProperties.market}&categories=${categories}&is_enabled=1`)
+      const productSizes = await fetchOptions(`/rest/v1/catalogs/product-size/?product=${productPackagingProperties.product}&market=${productPackagingProperties.market}&categories=${categories}&is_enabled=1`)
       updateFieldOptions(productSizeField, productSizes, productSizeField.val() ? productSizeField.val() : null);
     } else {
       updateFieldOptions(productSizeField, []);
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   async function updateProductPackagingProductWeight() {
     if (productPackagingField.val()) {
-      if (!packagingProperties) await getPackagingProperties();
+      if (!productPackagingProperties) await getPackagingProperties();
       productWeightPerPackagingField.val(packagingSupplyProperties.capacity);
       productWeightPerPackagingField.attr('max', packagingSupplyProperties.capacity);
     } else {
@@ -134,8 +134,8 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   async function updateProductPresentation() {
-    if (packagingProperties && categoryField.val() && categoryField.val() === 'presentation') {
-      const productPresentations = await fetchOptions(`/rest/v1/catalogs/product-presentation/?product=${packagingProperties.product}&markets=${packagingProperties.market}`)
+    if (productPackagingProperties && categoryField.val() && categoryField.val() === 'presentation') {
+      const productPresentations = await fetchOptions(`/rest/v1/catalogs/product-presentation/?product=${productPackagingProperties.product}&markets=${productPackagingProperties.market}`)
       updateFieldOptions(productPresentationField, productPresentations, productPresentationField.val() ? productPresentationField.val() : null);
     } else {
       updateFieldOptions(productPresentationField, []);
