@@ -1065,7 +1065,7 @@ class SizePackaging(CleanNameAndOrganizationMixin, models.Model):
         ordering = ('name',)
         constraints = [
             models.UniqueConstraint(
-                fields=('product_size', 'packaging', 'product_presentation', 'organization'),
+                fields=('product_size', 'product_packaging', 'product_presentation', 'organization'),
                 name='sizepackaging_unique_productsize_packaging_productpresentation_organization'),
             models.UniqueConstraint(fields=('name', 'organization'), name='sizepackaging_unique_name_organization'),
             models.UniqueConstraint(fields=('alias', 'organization'), name='sizepackaging_unique_alias_organization'),
