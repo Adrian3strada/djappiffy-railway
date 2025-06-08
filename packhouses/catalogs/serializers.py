@@ -2,7 +2,7 @@ from rest_framework import serializers
 from packhouses.catalogs.models import (
     Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, Pallet, ProductPackagingPallet,
     ProductVariety, ProductPhenologyKind, Maquiladora, ProductPresentation, OrchardGeoLocation,
-    CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, Packaging,
+    CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, ProductPackaging,
     HarvestingCrew, OrchardCertification, ProductRipeness, SizePackaging, Service
 )
 from common.base.models import (PestProductKind, DiseaseProductKind)
@@ -23,7 +23,7 @@ class ProductSerializer(serializers.ModelSerializer):
         return ProductMarketClassSerializer(product_market_classes, many=True).data
 
     def get_packaging(self, obj):
-        packaging = Packaging.objects.filter(product=obj)
+        packaging = ProductPackaging.objects.filter(product=obj)
         return PackagingSerializer(packaging, many=True).data
 
     class Meta:
@@ -38,7 +38,7 @@ class PackagingSerializer(serializers.ModelSerializer):
         return SupplySerializer(obj.packaging_supply, read_only=True).data
 
     class Meta:
-        model = Packaging
+        model = ProductPackaging
         fields = '__all__'
 
 

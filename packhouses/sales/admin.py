@@ -15,7 +15,7 @@ from .filters import (ByMaquiladoraForOrganizationOrderFilter, ByClientForOrgani
 from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
                                         SizePackaging, Pallet,
-                                        ProductPhenologyKind, ProductMarketClass, Packaging, ProductPackagingPallet)
+                                        ProductPhenologyKind, ProductMarketClass, ProductPackaging, ProductPackagingPallet)
 from .models import Order, OrderItemWeight, OrderItemPackaging, OrderItemPallet
 from .forms import OrderItemWeightFormSet, OrderItemPackagingFormSet, OrderItemPalletFormSet
 from django.utils.safestring import mark_safe

@@ -7,7 +7,7 @@ from .models import (
     PaymentKind, Vehicle, Gatherer, Client, ClientShippingAddress, Maquiladora,
     Orchard, OrchardCertification, CrewChief, HarvestingCrew,
     HarvestingPaymentSetting, Supply, ProductKindCountryStandardPackaging,
-    Service, ProductPresentation, Packaging, SizePackaging,
+    Service, ProductPresentation, ProductPackaging, SizePackaging,
     WeighingScale, ColdChamber,
     Pallet, PalletComplementarySupply,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
@@ -45,9 +45,9 @@ from .filters import (ByCountryForOrganizationMarketsFilter, ByProductForOrganiz
                       ByCountryForOrganizationClientsFilter, ByStateForOrganizationClientsFilter,
                       ByCityForOrganizationClientsFilter, ByPaymentKindForOrganizationFilter,
                       ByProductVarietiesForOrganizationFilter, ByMarketForOrganizationFilter,
-                      ByProductSizeForOrganizationProductPackagingFilter,
-                      ByPackagingForOrganizationProductPackagingFilter,
-                      ByProductPresentationForOrganizationProductPackagingFilter,
+                      ByProductSizeForOrganizationSizePackagingFilter,
+                      ByPackagingForOrganizationSizePackagingFilter,
+                      ByProductPresentationForOrganizationSizePackagingFilter,
                       ProductKindForPackagingFilter, ByCountryForOrganizationProvidersFilter,
                       ByStateForOrganizationProvidersFilter, ByCityForOrganizationProvidersFilter,
                       ByStateForOrganizationMaquiladoraFilter, ByCityForOrganizationMaquiladoraFilter,
@@ -78,7 +78,7 @@ from .resources import (ProductResource, MarketResource, ProductSizeResource, Pr
                         ColdChamberResource, PalletResource,
                         ExportingCompanyResource, TransferResource, LocalTransporterResource,
                         BorderToDestinationTransporterResource, CustomsBrokerResource, VesselResource, AirlineResource,
-                        InsuranceCompanyResource, ProductPresentationResource, ProductPackagingResource)
+                        InsuranceCompanyResource, ProductPresentationResource, SizePackagingResource)
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
@@ -1430,7 +1430,7 @@ class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = Packaging.objects.get(id=obj_id) if obj_id else None
+        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
 
@@ -1483,7 +1483,7 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_obj_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = Packaging.objects.get(id=parent_obj_id) if parent_obj_id else None
+        parent_obj = ProductPackaging.objects.get(id=parent_obj_id) if parent_obj_id else None
         packaging_complement_categories = ['packaging_complement', 'packaging_separator', 'packaging_labeling', 'packaging_storage']
 
         if db_field.name == "kind":
@@ -1497,8 +1497,8 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
         # pass
 
 
-@admin.register(Packaging)
-class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
+@admin.register(ProductPackaging)
+class ProductPackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [PackagingResource]
     # TODO: agregar filtro para clientes
@@ -1559,7 +1559,7 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")
-        obj = Packaging.objects.get(id=obj_id) if obj_id else None
+        obj = ProductPackaging.objects.get(id=obj_id) if obj_id else None
 
         organization = request.organization if hasattr(request, 'organization') else None
         packaging_supply_kind = request.POST.get(
@@ -1617,18 +1617,18 @@ class PackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 @admin.register(SizePackaging)
 class SizePackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
-    resource_classes = [ProductPackagingResource]
+    resource_classes = [SizePackagingResource]
     list_filter = ['category',
-                   ByProductSizeForOrganizationProductPackagingFilter,
-                   ByPackagingForOrganizationProductPackagingFilter,
-                   ByProductPresentationForOrganizationProductPackagingFilter,
+                   ByProductSizeForOrganizationSizePackagingFilter,
+                   ByPackagingForOrganizationSizePackagingFilter,
+                   ByProductPresentationForOrganizationSizePackagingFilter,
                    'is_enabled']
-    list_display = ['name', 'alias', 'category', 'product_size', 'packaging',
+    list_display = ['name', 'alias', 'category', 'product_size', 'product_packaging',
                     'product_weight_per_packaging',
                     'product_presentation', 'product_pieces_per_presentation',
                     'product_presentations_per_packaging', 'is_enabled']
     search_fields = ('name', 'alias')
-    fields = ['category', 'packaging', 'product_size', 'product_weight_per_packaging',
+    fields = ['category', 'product_packaging', 'product_size', 'product_weight_per_packaging',
               'product_presentation', 'product_pieces_per_presentation', 'product_presentations_per_packaging',
               'name', 'alias', 'is_enabled']
 
@@ -1658,10 +1658,10 @@ class SizePackagingAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
         if db_field.name == "packaging":
             if organization:
-                queryset = Packaging.objects.filter(**organization_queryfilter)
+                queryset = ProductPackaging.objects.filter(**organization_queryfilter)
                 kwargs["queryset"] = queryset
             else:
-                kwargs["queryset"] = Packaging.objects.none()
+                kwargs["queryset"] = ProductPackaging.objects.none()
 
         if db_field.name == "product_size":
             if organization:

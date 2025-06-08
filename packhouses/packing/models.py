@@ -3,7 +3,7 @@ import datetime
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from organizations.models import Organization
-from ..catalogs.models import Market, ProductSize, Packaging, SizePackaging, ProductMarketClass, ProductRipeness, \
+from ..catalogs.models import Market, ProductSize, ProductPackaging, SizePackaging, ProductMarketClass, ProductRipeness, \
     ProductPhenologyKind, Product, ProductPackagingPallet
 from ..hrm.models import Employee
 from ..receiving.models import Batch

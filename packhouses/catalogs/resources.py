@@ -1,6 +1,6 @@
 from import_export.fields import Field
 from .models import (Market, Product, ProductSize, Provider, Client, Vehicle, Gatherer, Maquiladora, Orchard, HarvestingCrew,
-                     Supply, Packaging, Service, WeighingScale, ColdChamber, Pallet,
+                     Supply, ProductPackaging, Service, WeighingScale, ColdChamber, Pallet,
                      ExportingCompany, Transfer, LocalTransporter, BorderToDestinationTransporter, CustomsBroker,
                      Vessel, Airline, InsuranceCompany, ProductPresentation, SizePackaging)
 from django.http import HttpResponse
@@ -365,7 +365,7 @@ class PackagingResource(DehydrationResource, ExportResource):
             return ", ".join(f"{s.kind.name}: {s.supply.name} ({s.quantity})" for s in complementary_supplies)
 
     class Meta:
-        model = Packaging
+        model = ProductPackaging
         exclude = default_excluded_fields
         export_order = ('id', 'name', 'packaging_supply_kind', 'packaging_supply', 'product', 'market',
                         'country_standard_packaging', 'complementary_supplies', 'is_enabled')
@@ -487,7 +487,7 @@ class ProductPresentationResource(DehydrationResource, ExportResource):
         exclude = default_excluded_fields
         export_order = ('id', 'name', 'product', 'markets', 'presentation_supply_kind', 'presentation_supply', 'complementary_supplies', 'is_enabled')
 
-class ProductPackagingResource(DehydrationResource, ExportResource):
+class SizePackagingResource(DehydrationResource, ExportResource):
     pallets = Field(column_name=_("Pallets"))
     def __init__(self, export_format=None, **kwargs):
         super().__init__(**kwargs)
