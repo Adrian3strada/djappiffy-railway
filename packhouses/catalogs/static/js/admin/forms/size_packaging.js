@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   async function updateProductSize() {
-    if (productPackagingField.val()) {
+    if (productPackagingField.val() && productPackagingProperties) {
       const productSizes = await fetchOptions(`/rest/v1/catalogs/product-size/?product=${productPackagingProperties.product}&market=${productPackagingProperties.market}&categories=${categories}&is_enabled=1`)
       updateFieldOptions(productSizeField, productSizes, productSizeField.val() ? productSizeField.val() : null);
     } else {
