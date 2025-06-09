@@ -3182,7 +3182,7 @@
   "fields": {
     "category": "single",
     "product_size": 1,
-    "packaging": 2,
+    "product_packaging": 2,
     "product_weight_per_packaging": 11.3,
     "product_presentation": null,
     "product_presentations_per_packaging": null,
@@ -3199,7 +3199,7 @@
   "fields": {
     "category": "single",
     "product_size": 6,
-    "packaging": 4,
+    "product_packaging": 4,
     "product_weight_per_packaging": 11.3,
     "product_presentation": null,
     "product_presentations_per_packaging": null,
@@ -3216,7 +3216,7 @@
   "fields": {
     "category": "presentation",
     "product_size": 1,
-    "packaging": 2,
+    "product_packaging": 2,
     "product_weight_per_packaging": 11.3,
     "product_presentation": 2,
     "product_presentations_per_packaging": 12,
@@ -3233,7 +3233,7 @@
   "fields": {
     "category": "presentation",
     "product_size": 6,
-    "packaging": 4,
+    "product_packaging": 4,
     "product_weight_per_packaging": 11.3,
     "product_presentation": 2,
     "product_presentations_per_packaging": 10,
