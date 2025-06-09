@@ -150,11 +150,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productMarketClassField = $(newForm).find('select[name$="-product_market_class"]');
       const productMarketRipenessField = $(newForm).find('select[name$="-product_ripeness"]');
       const palletField = $(newForm).find(`select[name$="-pallet"]`);
-      const productPackagingField = $(newForm).find(`select[name$="-product_packaging"]`);
-      const packagingQuantityField = $(newForm).find(`input[name$="-packaging_quantity"]`);
+      const sizePackagingField = $(newForm).find(`select[name$="-size_packaging"]`);
       const productWeightPerPackagingField = $(newForm).find('input[name$="-product_weight_per_packaging"]');
       const productPresentationsPerPackagingField = $(newForm).find('input[name$="-product_presentations_per_packaging"]');
       const productPiecesPerPresentationField = $(newForm).find('input[name$="-product_pieces_per_presentation"]');
+      const packagingQuantityField = $(newForm).find(`input[name$="-packaging_quantity"]`);
       const palletQuantityField = $(newForm).find('input[name$="-pallet_quantity"]');
       const unitPriceField = $(newForm).find('input[name$="-unit_price"]');
       const amountPriceField = $(newForm).find('input[name$="-amount_price"]');
@@ -166,8 +166,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       productPhenologyField.closest('.form-group').hide();
       productMarketClassField.closest('.form-group').hide();
 
+      productWeightPerPackagingField.attr('step', 0.1);
 
       updateFieldOptions(productSizeField, []);
+      updateFieldOptions(sizePackagingField, []);
       updateFieldOptions(palletField, []);
 
       getProductOptions().then(() => {
@@ -239,7 +241,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             queryParams.product_packaging__category = "presentation";
           }
 
-          const url = `/rest/v1/catalogs/product-packaging-pallet/?${$.param(queryParams)}`;
+          const url = `/rest/v1/catalogs/pallet/?${$.param(queryParams)}`;
 
           fetchOptions(url)
             .then(data => {
@@ -271,7 +273,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             .then(data => {
               const productPackaging = fetchOptions(`/rest/v1/catalogs/product-packaging/${data.product_packaging}/`)
               productPackaging.then(data => {
-                updateFieldOptions(productPackagingField, [data], data.id);
+                updateFieldOptions(sizePackagingField, [data], data.id);
               })
               packagingQuantityField.val(data.product_packaging_quantity)
               productWeightPerPackagingField.val(data.product_packaging_detail.product_weight_per_packaging)

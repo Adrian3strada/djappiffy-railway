@@ -149,12 +149,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productPhenologyField = $(newForm).find('select[name$="-product_phenology"]');
       const productMarketClassField = $(newForm).find('select[name$="-product_market_class"]');
       const productMarketRipenessField = $(newForm).find('select[name$="-product_ripeness"]');
+
       const sizePackagingField = $(newForm).find('select[name$="-size_packaging"]');
       const productWeightPerPackagingField = $(newForm).find('input[name$="-product_weight_per_packaging"]');
       const productPresentationsPerPackagingField = $(newForm).find('input[name$="-product_presentations_per_packaging"]');
       const productPiecesPerPresentationField = $(newForm).find('input[name$="-product_pieces_per_presentation"]');
-
       const packagingQuantityField = $(newForm).find('input[name$="-packaging_quantity"]');
+
       const unitPriceField = $(newForm).find('input[name$="-unit_price"]');
       const amountPriceField = $(newForm).find('input[name$="-amount_price"]');
 
@@ -169,6 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       updateFieldOptions(productSizeField, []);
       updateFieldOptions(sizePackagingField, []);
+
 
       getProductOptions().then(() => {
         updateFieldOptions(pricingByField, productPriceOptions);

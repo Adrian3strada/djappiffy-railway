@@ -183,7 +183,7 @@ class PackagingViewSet(viewsets.ModelViewSet):
 
 class SizePackagingViewSet(viewsets.ModelViewSet):
     serializer_class = SizePackagingSerializer
-    filterset_fields = ['category', 'product_size', 'product_presentation', 'is_enabled']
+    filterset_fields = ['category', 'product_size', 'product_presentation', 'pallet', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -195,12 +195,16 @@ class SizePackagingViewSet(viewsets.ModelViewSet):
 
         market = self.request.GET.get('market')
         product = self.request.GET.get('product')
+        pallet = self.request.GET.get('pallet')
 
         if market:
             queryset = queryset.filter(product_size__market=market)
 
         if product:
             queryset = queryset.filter(product_size__product=product)
+
+        if pallet:
+            queryset = queryset.filter(pallet=pallet)
 
         return queryset
 
