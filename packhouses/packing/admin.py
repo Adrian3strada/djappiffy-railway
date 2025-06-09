@@ -95,7 +95,7 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
     search_fields = ("product_market_class__name", "product_size__name")
     list_filter = ("product_market_class", "product_size")
     fields = ['ooid', 'market', 'product', 'product_size', 'product_phenology', 'product_market_class',
-              'product_ripeness', 'product_packaging', 'product_packaging_pallet', 'status']
+              'product_ripeness', 'size_packaging', 'product_packaging_pallet', 'status']
     inlines = [PackingPackageInline]
 
     def get_readonly_fields(self, request, obj=None):
@@ -154,7 +154,7 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
     search_fields = ("product_market_class__name", "product_size__name")
     list_filter = ("product_market_class", "product_size")
     fields = ['ooid', 'batch', 'market', 'product', 'product_phenology', 'product_size', 'product_market_class',
-              'product_ripeness', 'product_packaging', 'product_weight_per_packaging',
+              'product_ripeness', 'size_packaging', 'product_weight_per_packaging',
               'product_presentations_per_packaging', 'product_pieces_per_presentation', 'packaging_quantity',
               'processing_date', 'status', 'packing_pallet']
 

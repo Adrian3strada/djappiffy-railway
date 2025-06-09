@@ -831,8 +831,9 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
             capacity = int(self.capacity) if self.capacity % 1 == 0 else self.capacity
             unit = _(
                 'piece') if self.kind.capacity_unit_category == 'pieces' and capacity == 1 else self.kind.capacity_unit_category
-            return f"{self.kind.name}: {self.name} ({capacity} {unit})"
-        return f"{self.kind.name}: {self.name}"
+            # return f"{self.kind.name}: {self.name} ({capacity} {unit})"
+        # return f"{self.kind.name}: {self.name}"
+        return f"{self.name}"
 
     def clean(self):
         value = self.capacity
@@ -901,7 +902,7 @@ class Pallet(models.Model):
                                limit_choices_to={'kind__category': 'packaging_pallet', 'is_enabled': True})
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
-    product_packagings = models.ManyToManyField('SizePackaging', verbose_name=_('Product packaging'))
+    size_packagings = models.ManyToManyField('SizePackaging', verbose_name=_('Size packaging'))
     max_packages_quantity = models.PositiveIntegerField(verbose_name=_('Max packages per pallet'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -914,8 +915,6 @@ class Pallet(models.Model):
         verbose_name_plural = _('Pallets')
         ordering = ('name', 'product', 'supply', 'organization')
         constraints = [
-            models.UniqueConstraint(fields=['product', 'supply', 'organization'],
-                                    name='pallet_configuration_unique_product_supply_organization'),
             models.UniqueConstraint(fields=['name', 'organization'],
                                     name='pallet_configuration_unique_name_organization'),
             models.UniqueConstraint(fields=['alias', 'organization'],
@@ -990,7 +989,7 @@ class ProductPresentationComplementarySupply(models.Model):
         ]
 
 
-class Packaging(models.Model):
+class ProductPackaging(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'),
@@ -1008,8 +1007,8 @@ class Packaging(models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('packaging')
-        verbose_name_plural = _('packaging')
+        verbose_name = _('Product packaging')
+        verbose_name_plural = _('Product packaging')
         ordering = ('name',)
         constraints = [
             models.UniqueConstraint(fields=('market', 'product', 'name', 'organization'),
@@ -1018,7 +1017,7 @@ class Packaging(models.Model):
 
 
 class PackagingComplementarySupply(models.Model):
-    packaging = models.ForeignKey(Packaging, on_delete=models.CASCADE)
+    packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
@@ -1039,7 +1038,7 @@ class PackagingComplementarySupply(models.Model):
 class SizePackaging(CleanNameAndOrganizationMixin, models.Model):
     category = models.CharField(max_length=20, choices=PRODUCT_PACKAGING_CATEGORY_CHOICES, verbose_name=_('Category'))
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
-    packaging = models.ForeignKey(Packaging, verbose_name=_('Packaging'), on_delete=models.CASCADE)
+    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.CASCADE)
     product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'),
                                                      validators=[MinValueValidator(0.01)])
     product_presentation = models.ForeignKey(ProductPresentation, verbose_name=_('Product presentation'),
@@ -1060,15 +1059,15 @@ class SizePackaging(CleanNameAndOrganizationMixin, models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name = _('Product packaging')
-        verbose_name_plural = _('Product packaging')
+        verbose_name = _('Size packaging')
+        verbose_name_plural = _('Size packaging')
         ordering = ('name',)
         constraints = [
             models.UniqueConstraint(
-                fields=('product_size', 'packaging', 'product_presentation', 'organization'),
-                name='productpackaging_unique_productsize_packaging_productpresentation_organization'),
-            models.UniqueConstraint(fields=('name', 'organization'), name='productpackaging_unique_name_organization'),
-            models.UniqueConstraint(fields=('alias', 'organization'), name='productpackaging_unique_alias_organization'),
+                fields=('product_size', 'product_packaging', 'product_presentation', 'organization'),
+                name='sizepackaging_unique_productsize_packaging_productpresentation_organization'),
+            models.UniqueConstraint(fields=('name', 'organization'), name='sizepackaging_unique_name_organization'),
+            models.UniqueConstraint(fields=('alias', 'organization'), name='sizepackaging_unique_alias_organization'),
         ]
 
 

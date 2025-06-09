@@ -3,17 +3,17 @@ from rest_framework.exceptions import NotAuthenticated
 from .serializers import (MarketSerializer, ProductMarketClassSerializer, VehicleSerializer,
                           ProductVarietySerializer, ProductHarvestSizeKindSerializer, ProviderSerializer,
                           ProductPhenologyKindSerializer, ClientSerializer, ProductSizeSerializer,
-                          MaquiladoraSerializer, PackagingSerializer, ProductPresentationSerializer,
+                          MaquiladoraSerializer, ProductPackagingSerializer, ProductPresentationSerializer,
                           SupplySerializer, OrchardSerializer, OrchardGeoLocationSerializer,
                           HarvestingCrewSerializer,
-                          ProductPackagingSerializer, PalletSerializer,
+                          SizePackagingSerializer, PalletSerializer,
                           HarvestingCrewProviderSerializer, CrewChiefSerializer, ProductSerializer,
                           OrchardCertificationSerializer, ProductRipenessSerializer, ServiceSerializer,
                           PestProductKindSerializer, DiseaseProductKindSerializer
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, Client, Maquiladora, Provider,
-                     Product, Packaging, ProductPresentation, SizePackaging, Pallet, ProductPackagingPallet,
+                     Product, ProductPackaging, ProductPresentation, SizePackaging, Pallet, ProductPackagingPallet,
                      Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, OrchardGeoLocation,
                      ProductRipeness, Service
                      )
@@ -58,6 +58,12 @@ class MarketViewSet(viewsets.ModelViewSet):
             raise NotAuthenticated()
 
         queryset = Market.objects.filter(organization=self.request.organization)
+
+        product = self.request.GET.get('product')
+
+        if product:
+            queryset = queryset.filter(product__id=product)
+
         return queryset
 
 
@@ -113,15 +119,15 @@ class ProductViewSet(viewsets.ModelViewSet):
         markets = self.request.GET.get('markets')
 
         if markets:
-            category_list = markets.split(',')
-            queryset = queryset.filter(markets__in=category_list)
+            items_list = markets.split(',')
+            queryset = queryset.filter(markets__in=items_list)
 
         return queryset
 
 
 class PalletViewSet(viewsets.ModelViewSet):
     serializer_class = PalletSerializer
-    filterset_fields = ['product', 'is_enabled']
+    filterset_fields = ['market', 'product', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -129,7 +135,14 @@ class PalletViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return Pallet.objects.filter(organization=self.request.organization)
+        queryset = Pallet.objects.filter(organization=self.request.organization)
+
+        size_packagings__product_size = self.request.GET.get('size_packagings__product_size')
+
+        if size_packagings__product_size:
+            queryset = queryset.filter(size_packagings__product_size=size_packagings__product_size)
+
+        return queryset
 
 
 class MaquiladoraViewSet(viewsets.ModelViewSet):
@@ -161,7 +174,7 @@ class ProductVarietyViewSet(viewsets.ModelViewSet):
 
 
 class PackagingViewSet(viewsets.ModelViewSet):
-    serializer_class = PackagingSerializer
+    serializer_class = ProductPackagingSerializer
     filterset_fields = ['product', 'market', 'is_enabled']
     pagination_class = None
 
@@ -170,14 +183,14 @@ class PackagingViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        queryset = Packaging.objects.filter(organization=self.request.organization)
+        queryset = ProductPackaging.objects.filter(organization=self.request.organization)
 
         return queryset
 
 
-class ProductPackagingViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductPackagingSerializer
-    filterset_fields = ['product', 'market', 'category', 'product_size', 'product_presentation', 'is_enabled']
+class SizePackagingViewSet(viewsets.ModelViewSet):
+    serializer_class = SizePackagingSerializer
+    filterset_fields = ['category', 'product_size', 'product_presentation', 'pallet', 'is_enabled']
     pagination_class = None
 
     def get_queryset(self):
@@ -187,10 +200,18 @@ class ProductPackagingViewSet(viewsets.ModelViewSet):
 
         queryset = SizePackaging.objects.filter(organization=self.request.organization)
 
-        product_presentation__isnull = self.request.GET.get('product_presentation__isnull')
+        market = self.request.GET.get('market')
+        product = self.request.GET.get('product')
+        pallet = self.request.GET.get('pallet')
 
-        if product_presentation__isnull:
-            queryset = queryset.filter(product_presentation__isnull=product_presentation__isnull)
+        if market:
+            queryset = queryset.filter(product_size__market=market)
+
+        if product:
+            queryset = queryset.filter(product_size__product=product)
+
+        if pallet:
+            queryset = queryset.filter(pallet=pallet)
 
         return queryset
 

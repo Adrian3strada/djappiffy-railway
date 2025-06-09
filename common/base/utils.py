@@ -34,7 +34,7 @@ def resolve_custom_fields(request, model):
         crew_id = request.GET['harvesting_crew']
         name = HarvestingCrew.objects.filter(id=crew_id).values_list('name', flat=True).first()
         resolved['harvesting_crew'] = name or f"ID {crew_id}"
-    
+
     if 'orchard_certification' in request.GET:
         cert_id = request.GET['orchard_certification']
         name = (
@@ -53,7 +53,7 @@ def resolve_field_verbose_and_value(model, key, raw_value):
             field_lookup = key.replace('__range', '')
             field = model._meta.get_field(field_lookup)
             label = str(_(field.verbose_name)).title()
-            
+
             if isinstance(raw_value, (list, tuple)):
                 if len(raw_value) >= 2:
                     value = f"{raw_value[0]} - {raw_value[1]}"
@@ -132,7 +132,7 @@ def prettify_filter_names(filters, model, request=None):
             if clean_key not in pretty:
                 label_key, resolved_value = resolve_field_verbose_and_value(model, clean_key, value)
                 pretty[clean_key] = resolved_value
-            
+
     # Combinar los filtros de rango almacenados
     for final_key, bounds in range_filters.items():
         combined = ""
@@ -263,7 +263,7 @@ def render_html_list(items):
 class DehydrationResource():
     def dehydrate_countries(self, obj):
         return ", ".join(country.name for country in obj.countries.all()) if obj.countries.exists() else ""
-        
+
     def dehydrate_country(self, obj):
         return obj.country.name if obj.country else ""
 
@@ -282,7 +282,7 @@ class DehydrationResource():
     def dehydrate_markets(self, obj):
         if not obj.markets.exists():
             return ''
-        
+
         if self.export_format == 'pdf':
             return render_html_list([market.name for market in obj.markets.all()])
         else:
@@ -311,13 +311,13 @@ class DehydrationResource():
 
     def dehydrate_product_variety_size(self, obj):
         return obj.product_variety_size.name if obj.product_variety_size else ""
-    
+
     def dehydrate_product_phenologies(self, obj):
         return obj.product_phenologies.name if obj.product_phenologies else ""
-    
+
     def dehydrate_product_phenology(self, obj):
         return obj.product_phenology.name if obj.product_phenology else ""
-    
+
     def dehydrate_product_harvest_size_kind(self, obj):
         return obj.product_harvest_size_kind.name if obj.product_harvest_size_kind else ""
 
@@ -395,46 +395,46 @@ class DehydrationResource():
 
     def dehydrate_is_mixable(self, obj):
         return "✅" if obj.is_mixable else "❌"
-    
+
     def dehydrate_label_language(self, obj):
         return obj.get_label_language_display()
-        
+
     def dehydrate_country_standard_packaging(self, obj):
         return obj.country_standard_packaging.name if obj.country_standard_packaging else ""
-    
+
     def dehydrate_presentation_supply_kind(self, obj):
         return obj.presentation_supply_kind.name if obj.presentation_supply_kind else ""
-    
+
     def dehydrate_presentation_supply(self, obj):
         return f"{obj.presentation_supply.name} ({obj.presentation_supply.capacity} {_('pieces')})" if obj.presentation_supply else ""
-    
+
     def dehydrate_supply(self, obj):
         return obj.supply.name if obj.supply else ""
-    
+
     def dehydrate_packaging(self, obj):
-        return obj.packaging.name if obj.packaging else ""
-    
+        return obj.size_packaging.name if obj.size_packaging else ""
+
     def dehydrate_product_presentation(self, obj):
         return obj.product_presentation.name if obj.product_presentation else ""
-    
+
     def dehydrate_measure_unit_category(self, obj):
         return obj.get_measure_unit_category_display() if obj.measure_unit_category else ""
-    
+
     def dehydrate_orchard(self, obj):
         return obj.orchard.name if obj.orchard else ""
-    
+
     def dehydrate_weighing_scale(self, obj):
         return obj.weighing_scale.name if obj.weighing_scale else ""
-    
+
     def dehydrate_gatherer(self, obj):
         return obj.gatherer.name if obj.gatherer else ""
-    
+
     def dehydrate_maquiladora(self, obj):
         return obj.maquiladora.name if obj.maquiladora else ""
-    
+
     def dehydrate_product_provider(self, obj):
         return obj.product_provider.name if obj.product_provider else ""
-    
+
 default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization', 'description')
 
 

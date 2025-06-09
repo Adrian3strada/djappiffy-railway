@@ -149,12 +149,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productPhenologyField = $(newForm).find('select[name$="-product_phenology"]');
       const productMarketClassField = $(newForm).find('select[name$="-product_market_class"]');
       const productMarketRipenessField = $(newForm).find('select[name$="-product_ripeness"]');
-      const productPackagingField = $(newForm).find('select[name$="-product_packaging"]');
+
+      const sizePackagingField = $(newForm).find('select[name$="-size_packaging"]');
       const productWeightPerPackagingField = $(newForm).find('input[name$="-product_weight_per_packaging"]');
       const productPresentationsPerPackagingField = $(newForm).find('input[name$="-product_presentations_per_packaging"]');
       const productPiecesPerPresentationField = $(newForm).find('input[name$="-product_pieces_per_presentation"]');
-
       const packagingQuantityField = $(newForm).find('input[name$="-packaging_quantity"]');
+
       const unitPriceField = $(newForm).find('input[name$="-unit_price"]');
       const amountPriceField = $(newForm).find('input[name$="-amount_price"]');
 
@@ -165,8 +166,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       productPhenologyField.closest('.form-group').hide();
       productMarketClassField.closest('.form-group').hide();
 
+      productWeightPerPackagingField.attr('step', 0.1);
+
       updateFieldOptions(productSizeField, []);
-      updateFieldOptions(productPackagingField, []);
+      updateFieldOptions(sizePackagingField, []);
+
 
       getProductOptions().then(() => {
         updateFieldOptions(pricingByField, productPriceOptions);
@@ -237,7 +241,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             queryParams.category = "presentation";
           }
 
-          const url = `/rest/v1/catalogs/product-packaging/?${$.param(queryParams)}`;
+          const url = `/rest/v1/catalogs/size-packaging/?${$.param(queryParams)}`;
 
           fetchOptions(url)
             .then(data => {
@@ -253,26 +257,27 @@ document.addEventListener('DOMContentLoaded', async () => {
                   allowOutsideClick: false,
                   allowEscapeKey: false,
                 })
-                updateFieldOptions(productPackagingField, []);
+                updateFieldOptions(sizePackagingField, []);
               }
-              updateFieldOptions(productPackagingField, data);
+              updateFieldOptions(sizePackagingField, data);
             });
 
         } else {
-          updateFieldOptions(productPackagingField, []);
+          updateFieldOptions(sizePackagingField, []);
         }
       });
 
-      productPackagingField.on('change', () => {
+      sizePackagingField.on('change', () => {
         productWeightPerPackagingField.val(null);
         productPresentationsPerPackagingField.val(null);
         productPiecesPerPresentationField.val(null);
         productPresentationsPerPackagingField.closest('.form-group').fadeOut();
         productPiecesPerPresentationField.closest('.form-group').fadeOut();
-        if (productPackagingField.val()) {
-          fetchOptions(`/rest/v1/catalogs/product-packaging/${productPackagingField.val()}/`)
+        if (sizePackagingField.val()) {
+          fetchOptions(`/rest/v1/catalogs/size-packaging/${sizePackagingField.val()}/`)
             .then(data => {
               productWeightPerPackagingField.val(data.product_weight_per_packaging);
+              productWeightPerPackagingField.attr('max', data.product_weight_per_packaging);
               if (data.product_presentation) {
                 productPresentationsPerPackagingField.val(data.product_presentations_per_packaging);
                 productPiecesPerPresentationField.val(data.product_pieces_per_presentation)
@@ -284,6 +289,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 productPiecesPerPresentationField.closest('.form-group').fadeOut();
               }
             })
+        } else {
+          productWeightPerPackagingField.removeAttr('max');
+          productWeightPerPackagingField.val(null)
         }
       })
 
@@ -307,9 +315,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             amountPrice = unitPriceField.val() * packagingQuantityField.val() * productPresentationsPerPackagingField.val()
           }
         }
-
         amountPriceField.val(amountPrice);
       }
+
+      packagingQuantityField.on('change', () => {
+        setAmountPrice();
+      })
 
       packagingQuantityField.on('change', () => {
         setAmountPrice();
@@ -345,7 +356,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productPhenologyField = $(form).find(`select[name$="${index}-product_phenology"]`);
       const productMarketClassField = $(form).find(`select[name$="${index}-product_market_class"]`);
       const productMarketRipenessField = $(form).find(`select[name$="${index}-product_ripeness"]`);
-      const productPackagingField = $(form).find(`select[name$="${index}-product_packaging"]`);
+      const sizePackagingField = $(form).find(`select[name$="${index}-size_packaging"]`);
       const productWeightPerPackagingField = $(form).find(`input[name$="${index}-product_weight_per_packaging"]`);
       const productPresentationsPerPackagingField = $(form).find(`input[name$="${index}-product_presentations_per_packaging"]`);
       const productPiecesPerPresentationField = $(form).find(`input[name$="${index}-product_pieces_per_presentation"]`);
@@ -357,8 +368,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       amountPriceField.prop('disabled', true).attr('readonly', true).addClass('readonly-field');
 
+      productPhenologyField.closest('.form-group').hide();
+      productMarketClassField.closest('.form-group').hide();
+
       if (!productPhenologyField.val()) productPhenologyField.closest('.form-group').hide();
       if (!productMarketClassField.val()) productMarketClassField.closest('.form-group').hide();
+
+      productWeightPerPackagingField.attr('max', productWeightPerPackagingField.val())
+      productWeightPerPackagingField.attr('step', 0.1);
 
       getProductOptions().then(() => {
         updateFieldOptions(pricingByField, productPriceOptions, pricingByField.val());
@@ -444,14 +461,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             queryParams.category = "presentation";
           }
 
-          const url = `/rest/v1/catalogs/product-packaging/?${$.param(queryParams)}`;
+          const url = `/rest/v1/catalogs/size-packaging/?${$.param(queryParams)}`;
 
           fetchOptions(url)
             .then(data => {
               if (data.length === 0) {
                 Swal.fire({
                   icon: "info",
-                  text: "No packaging found for the selected product size and pricing category, it must exists at least one for this combination at 'Product Packaging' catalog.",
+                  text: "No size packaging found for the selected product size, it must exists at least one for this combination at 'Size Packaging' catalog.",
                   showCancelButton: true,
                   confirmButtonText: "Entendido",
                   cancelButtonText: "Cerrar",
@@ -460,26 +477,27 @@ document.addEventListener('DOMContentLoaded', async () => {
                   allowOutsideClick: false,
                   allowEscapeKey: false,
                 })
-                updateFieldOptions(productPackagingField, []);
+                updateFieldOptions(sizePackagingField, []);
               }
-              updateFieldOptions(productPackagingField, data, productPackagingField.val());
+              updateFieldOptions(sizePackagingField, data, sizePackagingField.val());
             });
 
         } else {
-          updateFieldOptions(productPackagingField, []);
+          updateFieldOptions(sizePackagingField, []);
         }
       });
 
-      productPackagingField.on('change', () => {
+      sizePackagingField.on('change', () => {
         productWeightPerPackagingField.val(null);
         productPresentationsPerPackagingField.val(null);
         productPiecesPerPresentationField.val(null);
         productPresentationsPerPackagingField.closest('.form-group').fadeOut();
         productPiecesPerPresentationField.closest('.form-group').fadeOut();
-        if (productPackagingField.val()) {
-          fetchOptions(`/rest/v1/catalogs/product-packaging/${productPackagingField.val()}/`)
+        if (sizePackagingField.val()) {
+          fetchOptions(`/rest/v1/catalogs/size-packaging/${sizePackagingField.val()}/`)
             .then(data => {
               productWeightPerPackagingField.val(data.product_weight_per_packaging);
+              productWeightPerPackagingField.attr('max', data.product_weight_per_packaging);
               if (data.product_presentation) {
                 productPresentationsPerPackagingField.val(data.product_presentations_per_packaging);
                 productPiecesPerPresentationField.val(data.product_pieces_per_presentation)
@@ -491,6 +509,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 productPiecesPerPresentationField.closest('.form-group').fadeOut();
               }
             })
+        } else {
+          productWeightPerPackagingField.removeAttr('max');
+          productWeightPerPackagingField.val(null)
         }
       })
 

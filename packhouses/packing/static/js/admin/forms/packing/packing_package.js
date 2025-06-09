@@ -9,19 +9,9 @@ document.addEventListener("DOMContentLoaded", async function () {
   const productWeightPerPackagingField = $("#id_product_weight_per_packaging")
   const productPresentationsPerPackagingField = $("#id_product_presentations_per_packaging")
   const productPiecesPerPresentationField = $("#id_product_pieces_per_presentation")
-  const isEditing = window.location.pathname.match(/\/change\//) !== null;
+  // const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
   let batchProperties = null
-
-  let market = marketField.val()
-  let product = productField.val()
-  let productPhenology = productPhenologyField.val()
-  let productSize = productSizeField.val()
-  let productMarketClass = productMarketClassField.val()
-  let productPackaging = productPackagingField.val()
-  let productWeightPerPackaging = productWeightPerPackagingField.val()
-  let productPresentationsPerPackaging = productPresentationsPerPackagingField.val()
-  let productPiecesPerPresentation = productPiecesPerPresentationField.val()
 
   productPresentationsPerPackagingField.closest('.form-group').hide()
   productPiecesPerPresentationField.closest('.form-group').hide()
@@ -99,7 +89,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const setProductPackagings = async () => {
     if (marketField.val() && productField.val() && productSizeField.val()) {
-      const packagings = await fetchOptions(`/rest/v1/catalogs/product-packaging/?product=${productField.val()}&market=${marketField.val()}&product_size=${productSizeField.val()}&is_enabled=1`);
+      const packagings = await fetchOptions(`/rest/v1/catalogs/size-packaging/?product=${productField.val()}&market=${marketField.val()}&product_size=${productSizeField.val()}&is_enabled=1`);
       if (packagings.length > 0) {
         updateFieldOptions(productPackagingField, packagings, productPackagingField.val());
       } else {
@@ -156,7 +146,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const productPackagingFieldChangeHandler = async () => {
     if (productPackagingField.val()) {
-      const packaging = await fetchOptions(`/rest/v1/catalogs/product-packaging/${productPackagingField.val()}/`);
+      const packaging = await fetchOptions(`/rest/v1/catalogs/size-packaging/${productPackagingField.val()}/`);
       productWeightPerPackagingField.val(packaging.product_weight_per_packaging);
 
       if (packaging.category === 'presentation') {

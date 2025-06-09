@@ -18,7 +18,7 @@ from organizations.models import Organization
 from cities_light.models import City, Country, Region
 from packhouses.catalogs.models import (Market, ProductMarketClass, Client, Maquiladora, Product, ProductVariety,
                                         ProductPhenologyKind, Pallet,
-                                        Packaging, SizePackaging, ProductPackagingPallet,
+                                        ProductPackaging, SizePackaging, ProductPackagingPallet,
                                         ProductSize, ProductRipeness)
 from packhouses.catalogs.settings import CLIENT_KIND_CHOICES
 from django.db.models import Max, Min, Q, F, Sum
@@ -104,8 +104,8 @@ class OrderItem(models.Model):
     product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
-    product_packaging_pallet = models.ForeignKey(Pallet, verbose_name=_('Product packaging pallet'), on_delete=models.PROTECT, null=True, blank=False)
-    product_packaging = models.ForeignKey(SizePackaging, verbose_name=_('Product packaging'), on_delete=models.PROTECT)
+    pallet = models.ForeignKey(Pallet, verbose_name=_('Pallet'), on_delete=models.PROTECT, null=True, blank=False)
+    size_packaging = models.ForeignKey(SizePackaging, verbose_name=_('Size packaging'), on_delete=models.PROTECT)
     product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'), validators=[MinValueValidator(0.01)])
     product_presentations_per_packaging = models.PositiveIntegerField(verbose_name=_('Product presentations per packaging'), null=True, blank=False)
     product_pieces_per_presentation = models.PositiveIntegerField(verbose_name=_('Product pieces per presentation'), null=True, blank=False)
@@ -183,7 +183,7 @@ class OrderItemPackaging(OrderItem):
 
     def clean(self):
         self.pallet_quantity = 0
-        self.product_packaging_pallet = None
+        self.pallet = None
         self.amount_price = 0
         if self.pricing_by == 'product_weight':
             self.amount_price = self.unit_price * self.packaging_quantity * self.product_weight_per_packaging if self.unit_price and self.packaging_quantity and self.product_weight_per_packaging else 0
