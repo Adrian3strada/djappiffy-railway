@@ -79,16 +79,15 @@ from .resources import (ProductResource, MarketResource, ProductSizeResource, Pr
                         ExportingCompanyResource, TransferResource, LocalTransporterResource,
                         BorderToDestinationTransporterResource, CustomsBrokerResource, VesselResource, AirlineResource,
                         InsuranceCompanyResource, ProductPresentationResource, SizePackagingResource)
+from django.utils.html import format_html
+from cities_light.admin import CityAdmin as CLCityAdmin
+from django.contrib.gis.forms import OSMWidget
+from django import forms
 
 admin.site.unregister(Country)
 admin.site.unregister(Region)
 admin.site.unregister(SubRegion)
 admin.site.unregister(City)
-
-from cities_light.admin import CityAdmin as CLCityAdmin
-from django.contrib.gis.forms import OSMWidget
-from django import forms
-
 
 # @admin.register(City)
 class CityAdmin(CLCityAdmin):
@@ -1768,7 +1767,7 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     list_display = ('name', 'alias', 'max_packages_quantity', 'market', 'product', 'supply', 'is_enabled')
     list_filter = (ByMarketForOrganizationPalletFilter, ByProductForOrganizationProductPackagingPalletFilter,
                    BySupplyForOrganizationPalletFilter, 'is_enabled')
-    fields = ('market', 'product', 'supply', 'name', 'alias', 'max_packages_quantity', 'product_packagings', 'is_enabled')
+    fields = ('market', 'product', 'supply', 'name', 'alias', 'max_packages_quantity', 'size_packagings', 'is_enabled')
     search_fields = ('name', 'alias')
     inlines = [PalletComplementarySupplyInLine]
 
@@ -1788,11 +1787,25 @@ class PalletAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             form.base_fields['supply'].widget.can_view_related = True
         return form
 
+    def size_packagings_display(self, obj):
+        return format_html("<br>".join(str(p) for p in obj.size_packagings.all()))
+    size_packagings_display.short_description = _('Size packagings')
+
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and is_instance_used(obj, exclude=[Market, Product, Supply, Organization, PalletComplementarySupply]):
-            readonly_fields.extend(['market', 'product', 'name', 'alias', 'supply', 'product_packagings', 'max_packages_quantity'])
+            readonly_fields.extend(['market', 'product', 'name', 'alias', 'supply', 'size_packagings_display', 'max_packages_quantity'])
+            # readonly_fields.extend([])
         return readonly_fields
+
+    def get_fields(self, request, obj=None):
+        fields = [
+            'market', 'product', 'supply', 'name', 'alias',
+            'max_packages_quantity', 'size_packagings', 'is_enabled'
+        ]
+        if obj and is_instance_used(obj, exclude=[Market, Product, Supply, Organization, PalletComplementarySupply]):
+            fields[fields.index('size_packagings')] = 'size_packagings_display'
+        return fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         obj_id = request.resolver_match.kwargs.get("object_id")

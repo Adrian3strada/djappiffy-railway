@@ -902,7 +902,7 @@ class Pallet(models.Model):
                                limit_choices_to={'kind__category': 'packaging_pallet', 'is_enabled': True})
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
-    product_packagings = models.ManyToManyField('SizePackaging', verbose_name=_('Product packaging'))
+    size_packagings = models.ManyToManyField('SizePackaging', verbose_name=_('Size packaging'))
     max_packages_quantity = models.PositiveIntegerField(verbose_name=_('Max packages per pallet'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
