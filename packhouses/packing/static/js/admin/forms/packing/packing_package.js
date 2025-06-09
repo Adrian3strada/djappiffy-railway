@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const setProductPackagings = async () => {
     if (marketField.val() && productField.val() && productSizeField.val()) {
-      const packagings = await fetchOptions(`/rest/v1/catalogs/product-packaging/?product=${productField.val()}&market=${marketField.val()}&product_size=${productSizeField.val()}&is_enabled=1`);
+      const packagings = await fetchOptions(`/rest/v1/catalogs/size-packaging/?product=${productField.val()}&market=${marketField.val()}&product_size=${productSizeField.val()}&is_enabled=1`);
       if (packagings.length > 0) {
         updateFieldOptions(productPackagingField, packagings, productPackagingField.val());
       } else {
@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const productPackagingFieldChangeHandler = async () => {
     if (productPackagingField.val()) {
-      const packaging = await fetchOptions(`/rest/v1/catalogs/product-packaging/${productPackagingField.val()}/`);
+      const packaging = await fetchOptions(`/rest/v1/catalogs/size-packaging/${productPackagingField.val()}/`);
       productWeightPerPackagingField.val(packaging.product_weight_per_packaging);
 
       if (packaging.category === 'presentation') {
