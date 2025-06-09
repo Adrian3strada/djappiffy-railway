@@ -42,10 +42,10 @@ class OrderItemInlineMixin(admin.StackedInline):
         parent_object = Order.objects.get(id=parent_object_id) if parent_object_id else None
 
         client_id = request.POST.get('client') if request.POST else parent_object.client.id if parent_object else None
-        product_id = request.POST.get(
-            'product') if request.POST else parent_object.product.id if parent_object else None
+        product_id = request.POST.get('product') if request.POST else parent_object.product.id if parent_object else None
         client = Client.objects.get(id=client_id) if client_id else None
         product = Product.objects.get(id=product_id) if product_id else None
+        order_items_kind = request.POST.get('order_items_kind') if request.POST else parent_object.order_items_kind if parent_object else None
 
         if db_field.name == "product_size":
             if client and product:
@@ -80,10 +80,14 @@ class OrderItemInlineMixin(admin.StackedInline):
                 kwargs["queryset"] = ProductMarketClass.objects.filter(product=product,
                                                                        market=client.market, is_enabled=True)
 
-        if db_field.name == "product_packaging_pallet":
+        if db_field.name == "pallet":
             kwargs["queryset"] = Pallet.objects.none()
             if client and product:
                 kwargs["queryset"] = Pallet.objects.filter(market=client.market, product=product, is_enabled=True)
+            if order_items_kind == 'product_packaging':
+                formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+                formfield.required = False
+                return formfield
 
         if db_field.name == "size_packaging":
             kwargs["queryset"] = SizePackaging.objects.none()
@@ -135,9 +139,11 @@ class OrderItemPackagingInline(OrderItemInlineMixin):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     class Media:
         js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)
-        pass
 
 
 class OrderItemPalletInline(OrderItemInlineMixin):
@@ -169,6 +175,16 @@ class OrderAdmin(ByOrganizationAdminMixin):
     )
     ordering = ('-ooid',)
     inlines = [OrderItemWeightInline, OrderItemPackagingInline, OrderItemPalletInline]
+
+    def get_inlines(self, request, obj):
+        inlines = super().get_inlines(request, obj)
+        if obj and obj.order_items_kind == 'product_weight':
+            return [OrderItemWeightInline]
+        elif obj and obj.order_items_kind == 'product_packaging':
+            return [OrderItemPackagingInline]
+        elif obj and obj.order_items_kind == 'product_pallet':
+            return [OrderItemPalletInline]
+        return inlines
 
     def delivery_kind(self, obj):
         if obj.local_delivery:
