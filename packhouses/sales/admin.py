@@ -129,14 +129,14 @@ class OrderItemPackagingInline(OrderItemInlineMixin):
     model = OrderItemPackaging
     formset = OrderItemPackagingFormSet
 
-    exclude = ('product_packaging_pallet', 'pallet_quantity',)
+    exclude = ('pallet', 'pallet_quantity',)
 
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         return formset
 
     class Media:
-        # js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)
+        js = ('js/admin/forms/packhouses/sales/order_item_packaging_inline.js',)
         pass
 
 
