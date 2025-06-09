@@ -915,8 +915,6 @@ class Pallet(models.Model):
         verbose_name_plural = _('Pallets')
         ordering = ('name', 'product', 'supply', 'organization')
         constraints = [
-            models.UniqueConstraint(fields=['product', 'supply', 'organization'],
-                                    name='pallet_configuration_unique_product_supply_organization'),
             models.UniqueConstraint(fields=['name', 'organization'],
                                     name='pallet_configuration_unique_name_organization'),
             models.UniqueConstraint(fields=['alias', 'organization'],

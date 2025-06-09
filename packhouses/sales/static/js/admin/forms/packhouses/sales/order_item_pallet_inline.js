@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let productMarketClassOptions = [];
   let productRipenessOptions = [];
   let productPriceOptions = []
+  let palletOptions = [];
 
   let clientProperties = null;
   let productProperties = null;
@@ -72,6 +73,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  async function getPalletOptions() {
+    if (clientProperties && productProperties) {
+      const queryParams = {
+        market: clientProperties.market,
+        product: productProperties.id,
+        is_enabled: 1
+      };
+      palletOptions = await fetchOptions(`/rest/v1/catalogs/pallet/?${$.param(queryParams)}`);
+    } else {
+      palletOptions = [];
+    }
+  }
+
   async function getClientProperties() {
     if (clientField.val()) {
       clientProperties = await fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
@@ -100,6 +114,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await getOrganizationProfile()
   await getClientProperties()
   await getProductProperties()
+  await getPalletOptions();
 
   function setIsNationalClient() {
     if (clientProperties && organization) {
@@ -170,13 +185,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       updateFieldOptions(productSizeField, []);
       updateFieldOptions(sizePackagingField, []);
-      updateFieldOptions(palletField, []);
 
       getProductOptions().then(() => {
         updateFieldOptions(pricingByField, productPriceOptions);
         updateFieldOptions(productPhenologyField, productPhenologyOptions);
         updateFieldOptions(productMarketClassField, productMarketClassOptions);
         updateFieldOptions(productMarketRipenessField, productRipenessOptions);
+        updateFieldOptions(palletField, palletOptions);
       });
 
       pricingByField.on('change', () => {
@@ -229,7 +244,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           let queryParams = {
             product_packaging__market: clientProperties.market,
             product_packaging__product: productProperties.id,
-            product_packaging__product_size: productSizeField.val(),
             is_enabled: 1
           }
 
@@ -447,7 +461,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           let queryParams = {
             product_packaging__market: clientProperties.market,
             product_packaging__product: productProperties.id,
-            product_packaging__product_size: productSizeField.val(),
             is_enabled: 1
           }
 
@@ -459,7 +472,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             queryParams.product_packaging__category = "presentation";
           }
 
-          const url = `/rest/v1/catalogs/product-packaging-pallet/?${$.param(queryParams)}`;
+          const url = `/rest/v1/catalogs/pallet/?${$.param(queryParams)}`;
 
           fetchOptions(url)
             .then(data => {
