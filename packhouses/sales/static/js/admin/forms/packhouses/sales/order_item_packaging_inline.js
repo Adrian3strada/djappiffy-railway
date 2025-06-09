@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             queryParams.category = "presentation";
           }
 
-          const url = `/rest/v1/catalogs/product-packaging/?${$.param(queryParams)}`;
+          const url = `/rest/v1/catalogs/size-packaging/?${$.param(queryParams)}`;
 
           fetchOptions(url)
             .then(data => {
@@ -444,14 +444,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             queryParams.category = "presentation";
           }
 
-          const url = `/rest/v1/catalogs/product-packaging/?${$.param(queryParams)}`;
+          const url = `/rest/v1/catalogs/size-packaging/?${$.param(queryParams)}`;
 
           fetchOptions(url)
             .then(data => {
               if (data.length === 0) {
                 Swal.fire({
                   icon: "info",
-                  text: "No packaging found for the selected product size and pricing category, it must exists at least one for this combination at 'Product Packaging' catalog.",
+                  text: "No size packaging found for the selected product size, it must exists at least one for this combination at 'Size Packaging' catalog.",
                   showCancelButton: true,
                   confirmButtonText: "Entendido",
                   cancelButtonText: "Cerrar",
@@ -477,7 +477,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         productPresentationsPerPackagingField.closest('.form-group').fadeOut();
         productPiecesPerPresentationField.closest('.form-group').fadeOut();
         if (productPackagingField.val()) {
-          fetchOptions(`/rest/v1/catalogs/product-packaging/${productPackagingField.val()}/`)
+          fetchOptions(`/rest/v1/catalogs/size-packaging/${productPackagingField.val()}/`)
             .then(data => {
               productWeightPerPackagingField.val(data.product_weight_per_packaging);
               if (data.product_presentation) {
