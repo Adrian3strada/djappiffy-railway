@@ -354,11 +354,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productMarketClassField = $(form).find(`select[name$="${index}-product_market_class"]`);
       const productMarketRipenessField = $(form).find(`select[name$="${index}-product_ripeness"]`);
       const palletField = $(form).find(`select[name$="${index}-pallet"]`);
-      const productPackagingField = $(form).find(`select[name$="-product_packaging"]`);
-      const packagingQuantityField = $(form).find(`input[name$="${index}-packaging_quantity"]`);
+      const sizePackagingField = $(form).find(`select[name$="-size_packaging"]`);
       const productWeightPerPackagingField = $(form).find(`input[name$="${index}-product_weight_per_packaging"]`);
       const productPresentationsPerPackagingField = $(form).find(`input[name$="${index}-product_presentations_per_packaging"]`);
       const productPiecesPerPresentationField = $(form).find(`input[name$="${index}-product_pieces_per_presentation"]`);
+      const packagingQuantityField = $(form).find(`input[name$="${index}-packaging_quantity"]`);
       const palletQuantityField = $(form).find(`input[name$="${index}-pallet_quantity"]`);
       const unitPriceField = $(form).find(`input[name$="${index}-unit_price"]`);
       const amountPriceField = $(form).find(`input[name$="${index}-amount_price"]`);
@@ -370,7 +370,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!productPhenologyField.val()) productPhenologyField.closest('.form-group').hide();
       if (!productMarketClassField.val()) productMarketClassField.closest('.form-group').hide();
 
-      // await getProductOptions();
+      productWeightPerPackagingField.attr('step', 0.1);
+
       getProductOptions().then(() => {
         updateFieldOptions(pricingByField, productPriceOptions, pricingByField.val());
         updateFieldOptions(productPhenologyField, productPhenologyOptions, productPhenologyField.val());
@@ -441,17 +442,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
 
           let queryParams = {
-            product_packaging__market: clientProperties.market,
-            product_packaging__product: productProperties.id,
+            market: clientProperties.market,
+            product: productProperties.id,
+            size_packagings__product_size: productSizeField.val(),
             is_enabled: 1
-          }
-
-          if (productSizeSelectedOptionCategory === 'mix') {
-            queryParams.product_packaging__category = "single";
-          }
-
-          if (pricingByField.val() === 'product_presentation' && productSizeSelectedOptionCategory === 'size') {
-            queryParams.product_packaging__category = "presentation";
           }
 
           const url = `/rest/v1/catalogs/pallet/?${$.param(queryParams)}`;
@@ -471,43 +465,45 @@ document.addEventListener('DOMContentLoaded', async () => {
                   allowEscapeKey: false,
                 })
                 updateFieldOptions(palletField, []);
+              } else {
+                updateFieldOptions(palletField, []);
               }
-              updateFieldOptions(palletField, data, palletField.val());
             });
-
-        } else {
-          updateFieldOptions(palletField, []);
         }
       });
 
-      palletField.on('change', () => {
+      palletField.on('change', async () => {
         if (palletField.val()) {
-          fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${palletField.val()}/`)
+          const sizePackagings = await fetchOptions(`/rest/v1/catalogs/size-packaging/?pallet=${palletField.val()}`)
+            updateFieldOptions(sizePackagingField, sizePackagings, sizePackagingField.val() ? sizePackagingField.val() : null);
+        }
+      })
+
+      sizePackagingField.on('change', () => {
+        productWeightPerPackagingField.val(null);
+        productPresentationsPerPackagingField.val(null);
+        productPiecesPerPresentationField.val(null);
+        productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+        productPiecesPerPresentationField.closest('.form-group').fadeOut();
+        if (sizePackagingField.val()) {
+          fetchOptions(`/rest/v1/catalogs/size-packaging/${sizePackagingField.val()}/`)
             .then(data => {
-              const productPackaging = fetchOptions(`/rest/v1/catalogs/product-packaging/${data.product_packaging}/`)
-              productPackaging.then(data => {
-                updateFieldOptions(productPackagingField, [data], data.id);
-              })
-              packagingQuantityField.val(data.product_packaging_quantity)
-              productWeightPerPackagingField.val(data.product_packaging_detail.product_weight_per_packaging);
-              setTimeout(() => {
-                if (data.product_packaging_detail.product_presentation) {
-                  productPresentationsPerPackagingField.val(data.product_packaging_detail.product_presentations_per_packaging);
-                  productPiecesPerPresentationField.val(data.product_packaging_detail.product_pieces_per_presentation)
-                  if (!productPresentationsPerPackagingField.closest('.form-group').is(':visible')) {
-                    productPresentationsPerPackagingField.closest('.form-group').fadeIn();
-                  }
-                  if (!productPiecesPerPresentationField.closest('.form-group').is(':visible')) {
-                    productPiecesPerPresentationField.closest('.form-group').fadeIn();
-                  }
-                } else {
-                  productPresentationsPerPackagingField.val(null);
-                  productPiecesPerPresentationField.val(null);
-                  productPresentationsPerPackagingField.closest('.form-group').fadeOut();
-                  productPiecesPerPresentationField.closest('.form-group').fadeOut();
-                }
-              }, 100)
+              productWeightPerPackagingField.val(data.product_weight_per_packaging);
+              productWeightPerPackagingField.attr('max', data.product_weight_per_packaging);
+              if (data.product_presentation) {
+                productPresentationsPerPackagingField.val(data.product_presentations_per_packaging);
+                productPiecesPerPresentationField.val(data.product_pieces_per_presentation)
+                productPresentationsPerPackagingField.closest('.form-group').fadeIn();
+                productPiecesPerPresentationField.closest('.form-group').fadeIn();
+              } else {
+                productPresentationsPerPackagingField.val(null);
+                productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+                productPiecesPerPresentationField.closest('.form-group').fadeOut();
+              }
             })
+        } else {
+          productWeightPerPackagingField.removeAttr('max');
+          productWeightPerPackagingField.val(null)
         }
       })
 
