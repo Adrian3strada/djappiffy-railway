@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       palletField.on('change', async () => {
         if (palletField.val()) {
           const sizePackagings = await fetchOptions(`/rest/v1/catalogs/size-packaging/?pallet=${palletField.val()}`)
-            updateFieldOptions(sizePackagingField, sizePackagings, sizePackagingField.val() ? sizePackagingField.val() : null);
+          updateFieldOptions(sizePackagingField, sizePackagings, sizePackagingField.val() ? sizePackagingField.val() : null);
         }
       })
 
@@ -413,7 +413,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       })
 
-      productSizeField.on('change', () => {
+      function productSizeFieldHandler() {
         if (productSizeField.val()) {
           const productSizeSelectedOption = productSizeField.find('option:selected');
           const productSizeSelectedOptionCategory = productSizeSelectedOption.data('category');
@@ -432,13 +432,6 @@ document.addEventListener('DOMContentLoaded', async () => {
               productPhenologyField.val(null).trigger('change');
               productMarketClassField.val(null).trigger('change');
             }
-          } else {
-            productPhenologyField.val(null).trigger('change');
-            productMarketClassField.val(null).trigger('change');
-            productMarketRipenessField.val(null).trigger('change');
-            productPhenologyField.closest('.form-group').fadeOut();
-            productMarketClassField.closest('.form-group').fadeOut();
-            productMarketRipenessField.closest('.form-group').fadeOut();
           }
 
           let queryParams = {
@@ -466,16 +459,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 })
                 updateFieldOptions(palletField, []);
               } else {
-                updateFieldOptions(palletField, []);
+                updateFieldOptions(palletField, data, palletField.val());
               }
             });
         }
+      }
+
+      productSizeField.on('change', () => {
+        productSizeFieldHandler();
       });
+
+      if (productSizeField.val()) {
+        productSizeFieldHandler();
+      }
 
       palletField.on('change', async () => {
         if (palletField.val()) {
           const sizePackagings = await fetchOptions(`/rest/v1/catalogs/size-packaging/?pallet=${palletField.val()}`)
-            updateFieldOptions(sizePackagingField, sizePackagings, sizePackagingField.val() ? sizePackagingField.val() : null);
+          updateFieldOptions(sizePackagingField, sizePackagings, sizePackagingField.val() ? sizePackagingField.val() : null);
         }
       })
 
