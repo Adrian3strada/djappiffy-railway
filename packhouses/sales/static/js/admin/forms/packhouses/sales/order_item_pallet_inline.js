@@ -242,17 +242,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
 
           let queryParams = {
-            product_packaging__market: clientProperties.market,
-            product_packaging__product: productProperties.id,
+            market: clientProperties.market,
+            product: productProperties.id,
+            size_packagings__product_size: productSizeField.val(),
             is_enabled: 1
-          }
-
-          if (productSizeSelectedOptionCategory === 'mix') {
-            queryParams.product_packaging__category = "single";
-          }
-
-          if (pricingByField.val() === 'product_presentation' && productSizeSelectedOptionCategory === 'size') {
-            queryParams.product_packaging__category = "presentation";
           }
 
           const url = `/rest/v1/catalogs/pallet/?${$.param(queryParams)}`;
@@ -271,38 +264,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                   allowOutsideClick: false,
                   allowEscapeKey: false,
                 })
+                updateFieldOptions(palletField, []);
+              } else {
+                updateFieldOptions(palletField, data, palletField.val());
               }
             });
         }
       });
 
-      palletField.on('change', () => {
+      palletField.on('change', async () => {
         if (palletField.val()) {
-          fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${palletField.val()}/`)
-            .then(data => {
-              const productPackaging = fetchOptions(`/rest/v1/catalogs/product-packaging/${data.product_packaging}/`)
-              productPackaging.then(data => {
-                updateFieldOptions(sizePackagingField, [data], data.id);
-              })
-              packagingQuantityField.val(data.product_packaging_quantity)
-              productWeightPerPackagingField.val(data.product_packaging_detail.product_weight_per_packaging)
-              setTimeout(() => {
-                if (data.product_packaging_detail.product_presentation) {
-                  productPresentationsPerPackagingField.val(data.product_packaging_detail.product_presentations_per_packaging)
-                  productPiecesPerPresentationField.val(data.product_packaging_detail.product_pieces_per_presentation)
-                  if (!productPresentationsPerPackagingField.closest('.form-group').is(':visible')) {
-                    productPresentationsPerPackagingField.closest('.form-group').fadeIn();
-                  }
-                  if (!productPiecesPerPresentationField.closest('.form-group').is(':visible')) {
-                    productPiecesPerPresentationField.closest('.form-group').fadeIn();
-                  }
-                } else {
-                  productPresentationsPerPackagingField.val(null);
-                  productPresentationsPerPackagingField.closest('.form-group').fadeOut();
-                  productPiecesPerPresentationField.closest('.form-group').fadeOut();
-                }
-              }, 100)
-            })
+          const sizePackagings = await fetchOptions(`/rest/v1/catalogs/size-packaging/?pallet=${palletField.val()}`)
+            updateFieldOptions(sizePackagingField, sizePackagings, sizePackagingField.val() ? sizePackagingField.val() : null);
         }
       })
 

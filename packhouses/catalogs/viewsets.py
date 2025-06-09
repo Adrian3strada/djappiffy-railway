@@ -135,7 +135,14 @@ class PalletViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             raise NotAuthenticated()
 
-        return Pallet.objects.filter(organization=self.request.organization)
+        queryset = Pallet.objects.filter(organization=self.request.organization)
+
+        size_packagings__product_size = self.request.GET.get('size_packagings__product_size')
+
+        if size_packagings__product_size:
+            queryset = queryset.filter(size_packagings__product_size=size_packagings__product_size)
+
+        return queryset
 
 
 class MaquiladoraViewSet(viewsets.ModelViewSet):
