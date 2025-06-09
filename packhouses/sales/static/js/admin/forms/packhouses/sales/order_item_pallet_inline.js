@@ -527,9 +527,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             amountPrice = packagingQuantityField.val() * unitPriceField.val() * palletQuantityField.val() * productPresentationsPerPackagingField.val()
           }
         }
-
         amountPriceField.val(amountPrice);
       }
+
+      packagingQuantityField.on('change', () => {
+        setAmountPrice();
+      })
 
       palletQuantityField.on('change', () => {
         setAmountPrice();
