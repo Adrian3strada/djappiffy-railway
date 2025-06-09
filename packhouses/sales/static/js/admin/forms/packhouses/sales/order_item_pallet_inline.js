@@ -73,19 +73,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  async function getPalletOptions() {
-    if (clientProperties && productProperties) {
-      const queryParams = {
-        market: clientProperties.market,
-        product: productProperties.id,
-        is_enabled: 1
-      };
-      palletOptions = await fetchOptions(`/rest/v1/catalogs/pallet/?${$.param(queryParams)}`);
-    } else {
-      palletOptions = [];
-    }
-  }
-
   async function getClientProperties() {
     if (clientField.val()) {
       clientProperties = await fetchOptions(`/rest/v1/catalogs/client/${clientField.val()}/`)
@@ -114,7 +101,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   await getOrganizationProfile()
   await getClientProperties()
   await getProductProperties()
-  await getPalletOptions();
 
   function setIsNationalClient() {
     if (clientProperties && organization) {
@@ -276,6 +262,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (palletField.val()) {
           const sizePackagings = await fetchOptions(`/rest/v1/catalogs/size-packaging/?pallet=${palletField.val()}`)
             updateFieldOptions(sizePackagingField, sizePackagings, sizePackagingField.val() ? sizePackagingField.val() : null);
+        }
+      })
+
+      sizePackagingField.on('change', () => {
+        productWeightPerPackagingField.val(null);
+        productPresentationsPerPackagingField.val(null);
+        productPiecesPerPresentationField.val(null);
+        productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+        productPiecesPerPresentationField.closest('.form-group').fadeOut();
+        if (sizePackagingField.val()) {
+          fetchOptions(`/rest/v1/catalogs/size-packaging/${sizePackagingField.val()}/`)
+            .then(data => {
+              productWeightPerPackagingField.val(data.product_weight_per_packaging);
+              productWeightPerPackagingField.attr('max', data.product_weight_per_packaging);
+              if (data.product_presentation) {
+                productPresentationsPerPackagingField.val(data.product_presentations_per_packaging);
+                productPiecesPerPresentationField.val(data.product_pieces_per_presentation)
+                productPresentationsPerPackagingField.closest('.form-group').fadeIn();
+                productPiecesPerPresentationField.closest('.form-group').fadeIn();
+              } else {
+                productPresentationsPerPackagingField.val(null);
+                productPresentationsPerPackagingField.closest('.form-group').fadeOut();
+                productPiecesPerPresentationField.closest('.form-group').fadeOut();
+              }
+            })
+        } else {
+          productWeightPerPackagingField.removeAttr('max');
+          productWeightPerPackagingField.val(null)
         }
       })
 
