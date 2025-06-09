@@ -3097,7 +3097,7 @@
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 1,
   "fields": {
     "packaging": 1,
@@ -3107,7 +3107,7 @@
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 3,
   "fields": {
     "packaging": 2,
@@ -3117,7 +3117,7 @@
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 4,
   "fields": {
     "packaging": 1,
@@ -3127,7 +3127,7 @@
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 5,
   "fields": {
     "packaging": 2,
@@ -3137,7 +3137,7 @@
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 6,
   "fields": {
     "packaging": 4,
@@ -3147,7 +3147,7 @@
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 7,
   "fields": {
     "packaging": 4,
@@ -3157,7 +3157,7 @@
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 8,
   "fields": {
     "packaging": 5,
@@ -3167,7 +3167,7 @@
   }
 },
 {
-  "model": "catalogs.productpackagingcomplementarysupply",
+  "model": "catalogs.packagingcomplementarysupply",
   "pk": 9,
   "fields": {
     "packaging": 5,
