@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productPhenologyField = $(newForm).find('select[name$="-product_phenology"]');
       const productMarketClassField = $(newForm).find('select[name$="-product_market_class"]');
       const productMarketRipenessField = $(newForm).find('select[name$="-product_ripeness"]');
-      const productPackagingPalletField = $(newForm).find(`select[name$="-product_packaging_pallet"]`);
+      const palletField = $(newForm).find(`select[name$="-pallet"]`);
       const productPackagingField = $(newForm).find(`select[name$="-product_packaging"]`);
       const packagingQuantityField = $(newForm).find(`input[name$="-packaging_quantity"]`);
       const productWeightPerPackagingField = $(newForm).find('input[name$="-product_weight_per_packaging"]');
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
       updateFieldOptions(productSizeField, []);
-      updateFieldOptions(productPackagingPalletField, []);
+      updateFieldOptions(palletField, []);
 
       getProductOptions().then(() => {
         updateFieldOptions(pricingByField, productPriceOptions);
@@ -255,19 +255,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                   allowOutsideClick: false,
                   allowEscapeKey: false,
                 })
-                updateFieldOptions(productPackagingPalletField, []);
+                updateFieldOptions(palletField, []);
               }
-              updateFieldOptions(productPackagingPalletField, data, productPackagingPalletField.val());
-              console.log("productPackagingPalletField", productPackagingPalletField)
+              updateFieldOptions(palletField, data, palletField.val());
+              console.log("palletField", palletField)
             });
         } else {
-          updateFieldOptions(productPackagingPalletField, []);
+          updateFieldOptions(palletField, []);
         }
       });
 
-      productPackagingPalletField.on('change', () => {
-        if (productPackagingPalletField.val()) {
-          fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${productPackagingPalletField.val()}/`)
+      palletField.on('change', () => {
+        if (palletField.val()) {
+          fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${palletField.val()}/`)
             .then(data => {
               const productPackaging = fetchOptions(`/rest/v1/catalogs/product-packaging/${data.product_packaging}/`)
               productPackaging.then(data => {
@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const productPhenologyField = $(form).find(`select[name$="${index}-product_phenology"]`);
       const productMarketClassField = $(form).find(`select[name$="${index}-product_market_class"]`);
       const productMarketRipenessField = $(form).find(`select[name$="${index}-product_ripeness"]`);
-      const productPackagingPalletField = $(form).find(`select[name$="${index}-product_packaging_pallet"]`);
+      const palletField = $(form).find(`select[name$="${index}-pallet"]`);
       const productPackagingField = $(form).find(`select[name$="-product_packaging"]`);
       const packagingQuantityField = $(form).find(`input[name$="${index}-packaging_quantity"]`);
       const productWeightPerPackagingField = $(form).find(`input[name$="${index}-product_weight_per_packaging"]`);
@@ -473,19 +473,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                   allowOutsideClick: false,
                   allowEscapeKey: false,
                 })
-                updateFieldOptions(productPackagingPalletField, []);
+                updateFieldOptions(palletField, []);
               }
-              updateFieldOptions(productPackagingPalletField, data, productPackagingPalletField.val());
+              updateFieldOptions(palletField, data, palletField.val());
             });
 
         } else {
-          updateFieldOptions(productPackagingPalletField, []);
+          updateFieldOptions(palletField, []);
         }
       });
 
-      productPackagingPalletField.on('change', () => {
-        if (productPackagingPalletField.val()) {
-          fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${productPackagingPalletField.val()}/`)
+      palletField.on('change', () => {
+        if (palletField.val()) {
+          fetchOptions(`/rest/v1/catalogs/product-packaging-pallet/${palletField.val()}/`)
             .then(data => {
               const productPackaging = fetchOptions(`/rest/v1/catalogs/product-packaging/${data.product_packaging}/`)
               productPackaging.then(data => {
