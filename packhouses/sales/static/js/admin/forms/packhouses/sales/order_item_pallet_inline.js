@@ -271,13 +271,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                   allowOutsideClick: false,
                   allowEscapeKey: false,
                 })
-                updateFieldOptions(palletField, []);
               }
-              updateFieldOptions(palletField, data, palletField.val());
-              console.log("palletField", palletField)
             });
-        } else {
-          updateFieldOptions(palletField, []);
         }
       });
 

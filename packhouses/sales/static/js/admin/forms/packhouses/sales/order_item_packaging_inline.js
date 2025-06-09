@@ -365,6 +365,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       amountPriceField.prop('disabled', true).attr('readonly', true).addClass('readonly-field');
 
+      productPhenologyField.closest('.form-group').hide();
+      productMarketClassField.closest('.form-group').hide();
+
       if (!productPhenologyField.val()) productPhenologyField.closest('.form-group').hide();
       if (!productMarketClassField.val()) productMarketClassField.closest('.form-group').hide();
 
