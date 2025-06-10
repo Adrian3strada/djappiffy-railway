@@ -2,264 +2,99 @@
 
 {% block content_dashboard %}
 
-<style>
-    .card-title {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: block;
-        max-width: 100%;
-        text-align: left;
-        line-height: 1;
-        padding: 0.1rem !important;
-    }
+    <style>
+        .card-title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            max-width: 100%;
+            text-align: left;
+            line-height: 1;
+            padding: 0.1rem !important;
+        }
 
-    .card-small {
-        margin-bottom: 0.1rem !important;
-        padding: 0.4rem !important;
-        font-size: 0.80rem;
-        max-height: 190px;
-        overflow: auto;
-    }
+        .card-small {
+            margin-bottom: 0.1rem !important;
+            padding: 0.4rem !important;
+            font-size: 0.80rem;
+            max-height: 190px;
+            overflow: auto;
+        }
 
-    .card-small .table th{
-        padding: 0.2rem !important;
-        text-align: left;
-        font-weight: normal;
-        /* display: -webkit-box;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 140px; */
-    }
+        .card-small .table th{
+            padding: 0.2rem !important;
+            text-align: left;
+            font-weight: normal;
+        }
 
-    .truncate-text {
-        display: -webkit-box;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 140px;
-    }
+        .truncate-text {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 140px;
+        }
 
-    .card-small .table tr:first-child th {
-        border: none !important;
-    }
+        .card-small .table tr:first-child th {
+            border: none !important;
+        }
 
-    .card-small .table td {
-        padding: 0.2rem !important;
-        text-align: right;
-        border-bottom: none !important;
-    }
+        .card-small .table td {
+            padding: 0.2rem !important;
+            text-align: right;
+            border-bottom: none !important;
+        }
 
-    .card-small .card-header {
-        padding: 0.4rem 0.4rem;
-    }
+        .card-small .card-header {
+            padding: 0.4rem 0.4rem;
+        }
 
-    .card-small .card-header h5 {
-        font-size: 0.9rem;
-        margin: 0;
-        text-align: left;
-    }
-    
-    .card-small .table {
-        margin-bottom: 0;
-    }
+        .card-small .card-header h5 {
+            font-size: 0.9rem;
+            margin: 0;
+            text-align: left;
+        }
+        
+        .card-small .table {
+            margin-bottom: 0;
+        }
 
-    .card-small .card-body {
-        padding: 0.20rem !important;
-    }
-</style>
+        .card-small .card-body {
+            padding: 0.20rem !important;
+        }
+    </style>
 
-<div class="row justify-content-start mb-4 g-3">
-    <!-- CARD: Schedule Harvest -->
-    {% if total_schedule_harvest %}
-        <div class="col-lg-2 col-md-5 col-sm-6 mb-3">
-            <div class="card h-100 shadow-sm card-small">
-                <div class="card-header">
-                    <h5 class="mb-0 text-center card-title" title="{{ total_schedule_harvest.block_name }}">
-                        {{ total_schedule_harvest.block_name }}
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm mb-0">
-                        <tr>
-                            <th>
-                                <div class="truncate-text" title="{{ period.day_title }}">
-                                    {{ period.day_title }}       
-                                </div>
-                            </th>
-                            <td>
-                                <a href="{{ total_schedule_harvest.day_url }}">{{ total_schedule_harvest.day }}</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <div class="truncate-text" title="{{ period.next_week_title }}">
-                                    {{ period.next_week_title }}
-                                </div>
-                            </th>
-                            <td>
-                                <a href="{{ total_schedule_harvest.week_url }}">{{ total_schedule_harvest.week }}</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <div class="truncate-text" title="{{ period.next_month_title }}">
-                                    {{ period.next_month_title }}
-                                </div>
-                            </th>
-                            <td>
-                                <a href="{{ total_schedule_harvest.month_url }}">{{ total_schedule_harvest.month }}</a>
-                            </td>
-                        </tr>
-                    </table>
+<div class="container-fluid">
+    <div class="row">
+        {% for widget in widgets %}
+            <div class="col-lg-2 col-md-5 col-sm-6 mb-3">
+                <div class="card h-100 shadow-sm card-small">
+                    <div class="card-header">
+                        <h5 class="mb-0 text-center card-title" title="{{ widget.block_name }}">
+                            {{ widget.block_name }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm mb-0">
+                            {% for item in widget.items %}
+                                <tr>
+                                    <th>
+                                        <div class="truncate-text" title="{{ item.title }}">
+                                            {{ item.title }}
+                                        </div>
+                                    </th>
+                                    <td>
+                                        <a href="{{ item.url }}">{{ item.count }}</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
-    {% endif %}
-
-    <!-- CARD: Total Batch -->
-    {% if total_batch %}
-        <div class="col-lg-2 col-md-5 col-sm-6 mb-3">
-            <div class="card h-100 shadow-sm card-small">
-                <div class="card-header">
-                    <h5 class="mb-0 text-center card-title" title="{{ total_batch.block_name }}">
-                        {{ total_batch.block_name }}
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm mb-0">
-                        <tr>
-                            <th>
-                                <div class="truncate-text" title="{{ period.day_title }}">
-                                    {{ period.day_title }}
-                                </div>
-                            </th>
-                            <td>
-                                <a href="{{ total_batch.day_url }}">{{ total_batch.day }}</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <div class="truncate-text" title="{{ period.week_ago_title }}">
-                                    {{ period.week_ago_title }}
-                                </div>
-                            </th>
-                            <td>
-                                <a href="{{ total_batch.week_url }}">{{ total_batch.week }}</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <div class="truncate-text" title="{{ period.month_ago_title }}">
-                                    {{ period.month_ago_title }}
-                                </div>
-                            </th>
-                            <td>
-                                <a href="{{ total_batch.month_url }}">{{ total_batch.month }}</a>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
-    <!-- CARD: Total Incoming Product -->
-    {% if incomingproduct %}
-        <div class="col-lg-2 col-md-5 col-sm-6 mb-3">
-            <div class="card h-100 shadow-sm card-small">
-                <div class="card-header">
-                    <h5 class="mb-0 text-center card-title" title="{{ incomingproduct.block_name }}">
-                        {{ incomingproduct.block_name }}
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm mb-0">
-                        <tr>
-                            <th>
-                                <div class="truncate-text" title="{{ incomingproduct.quarantine_title }}">
-                                    {{ incomingproduct.quarantine_title }}
-                                </div>
-                            </th>
-                            <td>
-                                <a href="{{ incomingproduct.quarantine_url }}">{{ incomingproduct.quarantine }}</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <div class="truncate-text" title="{{ incomingproduct.open_title }}">
-                                    {{ incomingproduct.open_title }}
-                                </div>
-                            </th>
-                            <td>
-                                <a href="{{ incomingproduct.open_url }}">{{ incomingproduct.open }}</a>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
-        <!-- CARD: order -->
-        {% if order %}
-        <div class="col-lg-2 col-md-5 col-sm-6 mb-3">
-            <div class="card h-100 shadow-sm card-small">
-                <div class="card-header">
-                    <h5 class="mb-0 text-center card-title" title="{{ order.block_name }}">
-                        {{ order.block_name }}
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm mb-0">
-                        <tr>
-                            <th> 
-                                <div class="truncate-text" title="{{ order.day_shipment_date_title }}">
-                                    {{ order.day_shipment_date_title }}
-                                </div>
-                            </th>
-                            <td>
-                                <a href="{{ order.day_shipment_date_url }}">{{ order.day_shipment_date }}</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <div class="truncate-text" title="{{ order.week_shipment_date_title }}">
-                                    {{ order.week_shipment_date_title }}
-                                </div>
-                            </th>
-                            <td>
-                                <a href="{{ order.week_shipment_date_url }}">{{ order.week_shipment_date }}</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <div class="truncate-text" title="{{ order.day_delivery_date_title }}">
-                                    {{ order.day_delivery_date_title }}
-                                </div>
-                            </th>
-                            <td>
-                                <a href="{{ order.day_delivery_date_url }}">{{ order.day_delivery_date }}</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <div class="truncate-text" title="{{ order.week_delivery_date_title }}">
-                                    {{ order.week_delivery_date_title }}
-                                </div>
-                            </th>
-                            <td>
-                                <a href="{{ order.week_delivery_date_url }}">{{ order.week_delivery_date }}</a>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

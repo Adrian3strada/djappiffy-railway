@@ -2,98 +2,82 @@ from django.contrib import admin
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
-from django.utils.translation import gettext_lazy as _
-from django.utils.http import urlencode
+from packhouses.members.utils import (get_order_block, get_scheduleharvest_block, get_incomingproduct_block, 
+                                        get_batch_block, get_foodsafety_block, get_certification_block, get_requisition_block,
+                                        get_service_block, get_purchase_block, get_adjustment_block, get_storehouse_block
+                                    )
 from django.urls import reverse
-from django.utils import timezone
-from datetime import timedelta
-from django.db.models.functions import TruncDate
-
-from packhouses.receiving.models import Batch, IncomingProduct
-from packhouses.gathering.models import ScheduleHarvest
-from packhouses.sales.models import Order
 
 @method_decorator(never_cache, name='dispatch')
 def custom_index(self, request, extra_context=None):
     app_list = self.get_app_list(request)
+    organization = request.organization.id
+    blocks = []
 
-    today = timezone.now().date()
-    week_ago = today - timedelta(days=7)
-    month_ago = today - timedelta(days=30)
-    next_week = today + timedelta(days=7)
-    next_month = today + timedelta(days=30)
+    if request.user.has_perm("sales.view_order"):
+        changelist_url = reverse("admin:sales_order_changelist")
+
+        blocks.append(get_order_block("Orders(Ready)", "ready", organization, changelist_url))
+        blocks.append(get_order_block("Orders(Open)", "open", organization, changelist_url))
+
+    if request.user.has_perm("gathering.view_scheduleharvest"):
+        changelist_url = reverse("admin:gathering_scheduleharvest_changelist")
+
+        blocks.append(get_scheduleharvest_block("Schedule Harvest(Open)", "open", organization, changelist_url))
+        blocks.append(get_scheduleharvest_block("Schedule Harvest(Ready)", "ready", organization, changelist_url))
+
+    if request.user.has_perm("receiving.view_incomingproduct"):
+        changelist_url = reverse("admin:receiving_incomingproduct_changelist")
+
+        blocks.append(get_incomingproduct_block("Incoming Product(Open)", "open", None, organization, changelist_url))
+        blocks.append(get_incomingproduct_block("Incoming Product(Ready)", "ready", False, organization, changelist_url))
+        blocks.append(get_incomingproduct_block("Incoming Product(In quarantined)", "ready", True, organization, changelist_url))
+
+    if request.user.has_perm("receiving.view_batch"):
+        changelist_url = reverse("admin:receiving_batch_changelist")
+
+        blocks.append(get_batch_block("Batch(Open)", "open", None, organization, changelist_url))
+        blocks.append(get_batch_block("Batch(Ready)", "ready", False, organization, changelist_url))
+        blocks.append(get_batch_block("Batch(For processing)", "ready", True, organization, changelist_url))
+
+    if request.user.has_perm("receiving.view_foodsafety"):
+        changelist_url = reverse("admin:receiving_foodsafety_changelist")
+        blocks.append(get_foodsafety_block("Food Safety(Open)", "open", organization, changelist_url))
+        blocks.append(get_foodsafety_block("Food Safety(Closed)", "closed", organization, changelist_url))
+
+    if request.user.has_perm("certifications.view_certification"):
+        changelist_url = reverse("admin:certifications_certification_changelist")
+        blocks.append(get_certification_block("Certification(Expiration)", organization, changelist_url))
+    
+    if request.user.has_perm("purchases.view_requisition"):
+        changelist_url = reverse("admin:purchases_requisition_changelist")
+        blocks.append(get_requisition_block("Requisition", "ready", True, False, organization, changelist_url))
+    
+    if request.user.has_perm("purchases.view_serviceorder"):
+        changelist_url = reverse("admin:purchases_serviceorder_changelist")
+        blocks.append(get_service_block("Service Order(Created)", "open", "service", True, True, organization, changelist_url))
+        blocks.append(get_service_block("Service Order(Paid)", "open", None, True, True, organization, changelist_url))
+        blocks.append(get_service_block("Service Order(To be paid)", "open", None, False, True, organization, changelist_url))
+    
+    if request.user.has_perm("purchases.view_purchaseorder"):
+        changelist_url = reverse("admin:purchases_purchaseorder_changelist")
+        blocks.append(get_purchase_block("Purchase Order(Created)", "open", True, False, organization, changelist_url))
+    
+    if request.user.has_perm("storehouse.view_adjustmentinventory"):
+        changelist_url = reverse("admin:storehouse_adjustmentinventory_changelist")
+        blocks.append(get_adjustment_block("Adjustment Inventory(Inbound)", "inbound", organization, changelist_url))
+        blocks.append(get_adjustment_block("Adjustment Inventory(Outbound)", "outbound", organization, changelist_url))
+
+    if request.user.has_perm("storehouse.view_storehouseentry"):
+        changelist_url = reverse("admin:storehouse_storehouseentry_changelist")
+        blocks.append(get_storehouse_block("Storehouse Entry", organization, changelist_url))
 
     context = {
         **self.each_context(request),
         "title": self.index_title,
         "app_list": app_list,
-        "period": {
-            "day_title": _('Today'),
-            "week_ago_title": _('Last 7 days'),
-            "month_ago_title": _('Last 30 days'),
-            "next_week_title": _('Next 7 days'),
-            "next_month_title": _('Next 30 days'),
-        },
+        "widgets": blocks,
     }
-
-
-    if request.user.has_perm("gathering.view_scheduleharvest"):
-
-        changelist_url = reverse("admin:gathering_scheduleharvest_changelist")
-        context["total_schedule_harvest"] = {
-            "block_name": _('Schedule harvest'),
-            "day": ScheduleHarvest.objects.filter(harvest_date=today, organization=request.organization).count(),
-            "day_url": f"{changelist_url}?{urlencode({'harvest_date': today, 'organization__id': request.organization.id})}",
-            "week": ScheduleHarvest.objects.filter(harvest_date__range=(today, next_week), organization=request.organization).count(),
-            "week_url": f"{changelist_url}?{urlencode({'harvest_date__gte': today, 'harvest_date__lte': next_week, 'organization__id': request.organization.id})}",
-            "month": ScheduleHarvest.objects.filter(harvest_date__range=(today, next_month), organization=request.organization).count(),
-            "month_url": f"{changelist_url}?{urlencode({'harvest_date__gte': today, 'harvest_date__lte': next_month, 'organization__id': request.organization.id})}",
-        }
-
-    if request.user.has_perm("receiving.view_batch"):
-
-        changelist_url = reverse("admin:receiving_batch_changelist")
-        context["total_batch"] = {
-            "block_name": _('Batch'),
-            "day": Batch.objects.filter(created_at__date=today, organization=request.organization).count(),
-            "day_url": f"{changelist_url}?{urlencode({'created_at__date': today, 'organization__id': request.organization.id})}",
-            "week": Batch.objects.filter(created_at__date__gte=week_ago, organization=request.organization).count(),
-            "week_url": f"{changelist_url}?{urlencode({'created_at__date__gte': week_ago, 'organization__id': request.organization.id})}",
-            "month": Batch.objects.filter(created_at__date__gte=month_ago, organization=request.organization).count(),
-            "month_url": f"{changelist_url}?{urlencode({'created_at__date__gte': month_ago, 'organization__id': request.organization.id})}",
-        }
-
-    if request.user.has_perm("receiving.view_incomingproduct"):
-
-        changelist_url = reverse("admin:receiving_incomingproduct_changelist")
-        context["incomingproduct"] = {
-            "block_name": _('Incoming product'),
-            "open_title": _('Open'),
-            "open": IncomingProduct.objects.filter(status="open", organization=request.organization).count(),
-            "open_url": f"{changelist_url}?{urlencode({'status': 'open', 'organization__id': request.organization.id})}",
-            "quarantine_title": _('Quarantine'),
-            "quarantine": IncomingProduct.objects.filter(status="open", is_quarantined=True, organization=request.organization).count(),
-            "quarantine_url": f"{changelist_url}?{urlencode({'status':'open', 'is_quarantined':True, 'organization__id': request.organization.id})}",
-        }
-
-    if request.user.has_perm("sales.view_order"):
-
-        changelist_url = reverse("admin:sales_order_changelist")
-        context["order"] = {
-            "block_name": _('Orders'),
-            "day_shipment_date_title": _('Today’s shipments'),
-            "day_shipment_date": Order.objects.filter(shipment_date=today, organization=request.organization).count(),
-            "day_shipment_date_url": f"{changelist_url}?{urlencode({'shipment_date': today, 'organization__id': request.organization.id})}",
-            "week_shipment_date_title": _('Next 7 days’ shipments'),
-            "week_shipment_date": Order.objects.filter(shipment_date__range=(today, next_week), organization=request.organization).count(),
-            "week_shipment_date_url": f"{changelist_url}?{urlencode({'shipment_date__gte': today, 'shipment_date__lte': next_week, 'organization__id': request.organization.id})}",
-            "day_delivery_date_title": _('Today’s deliveries'),
-            "day_delivery_date": Order.objects.filter(delivery_date=today, organization=request.organization).count(),
-            "day_delivery_date_url": f"{changelist_url}?{urlencode({'delivery_date': today, 'organization__id': request.organization.id})}",
-            "week_delivery_date_title": _('Next 7 days’ deliveries'),
-            "week_delivery_date": Order.objects.filter(delivery_date__range=(today, next_week), organization=request.organization).count(),
-            "week_delivery_date_url": f"{changelist_url}?{urlencode({'delivery_date__gte': today, 'delivery_date__lte': next_week, 'organization__id': request.organization.id})}",
-        }
 
     return TemplateResponse(request, "admin/index.html", context)
 

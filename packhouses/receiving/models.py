@@ -420,6 +420,7 @@ class IncomingProduct(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'))
     batch = models.OneToOneField(Batch, on_delete=models.PROTECT, verbose_name=_('Batch'), null=True, blank=True)
     comments = models.TextField(verbose_name=_("Comments"), blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     @property
     def weighed_sets_count(self):
@@ -651,6 +652,7 @@ class WeighingSetContainer(models.Model):
 class FoodSafety(models.Model):
     batch = models.OneToOneField(Batch, verbose_name=_('Batch'), on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'), )
+    status = models.CharField(max_length=20, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -659,7 +661,6 @@ class FoodSafety(models.Model):
     class Meta:
         verbose_name = _('Food Safety')
         verbose_name_plural = _('Food Safeties')
-
 
 class DryMatter(models.Model):
     product_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)

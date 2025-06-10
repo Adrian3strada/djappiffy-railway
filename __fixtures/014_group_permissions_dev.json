@@ -2647,62 +2647,6 @@
 },
 {
   "model": "auth.group_permissions",
-  "pk": 264,
-  "fields": {
-    "group": [
-      "Catalogs / Packaging"
-    ],
-    "permission": [
-      "add_packaging",
-      "catalogs",
-      "packaging"
-    ]
-  }
-},
-{
-  "model": "auth.group_permissions",
-  "pk": 265,
-  "fields": {
-    "group": [
-      "Catalogs / Packaging"
-    ],
-    "permission": [
-      "change_packaging",
-      "catalogs",
-      "packaging"
-    ]
-  }
-},
-{
-  "model": "auth.group_permissions",
-  "pk": 266,
-  "fields": {
-    "group": [
-      "Catalogs / Packaging"
-    ],
-    "permission": [
-      "delete_packaging",
-      "catalogs",
-      "packaging"
-    ]
-  }
-},
-{
-  "model": "auth.group_permissions",
-  "pk": 267,
-  "fields": {
-    "group": [
-      "Catalogs / Packaging"
-    ],
-    "permission": [
-      "view_packaging",
-      "catalogs",
-      "packaging"
-    ]
-  }
-},
-{
-  "model": "auth.group_permissions",
   "pk": 268,
   "fields": {
     "group": [

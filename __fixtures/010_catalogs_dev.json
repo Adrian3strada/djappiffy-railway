@@ -154,7 +154,7 @@
     "name": "LIMÓN AMARILLO",
     "description": null,
     "measure_unit_category": "Kg",
-    "is_enabled": false,
+    "is_enabled": true,
     "organization": 1,
     "markets": [
       1
@@ -283,6 +283,56 @@
   }
 },
 {
+  "model": "catalogs.productphenologykind",
+  "pk": 9,
+  "fields": {
+    "name": "NORMAL",
+    "is_enabled": true,
+    "product": 7,
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalogs.productphenologykind",
+  "pk": 10,
+  "fields": {
+    "name": "AVENTAJADA",
+    "is_enabled": true,
+    "product": 7,
+    "sort_order": 1
+  }
+},
+{
+  "model": "catalogs.productphenologykind",
+  "pk": 11,
+  "fields": {
+    "name": "MARCEÑA",
+    "is_enabled": true,
+    "product": 7,
+    "sort_order": 2
+  }
+},
+{
+  "model": "catalogs.productphenologykind",
+  "pk": 12,
+  "fields": {
+    "name": "TIERNO",
+    "is_enabled": true,
+    "product": 4,
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalogs.productphenologykind",
+  "pk": 13,
+  "fields": {
+    "name": "NORMAL",
+    "is_enabled": true,
+    "product": 4,
+    "sort_order": 0
+  }
+},
+{
   "model": "catalogs.productmarketmeasureunitmanagementcost",
   "pk": 1,
   "fields": {
@@ -317,7 +367,7 @@
   "pk": 4,
   "fields": {
     "product": 4,
-    "market": 4,
+    "market": 1,
     "measure_unit_management_cost": "40",
     "is_enabled": true
   }
@@ -439,6 +489,36 @@
     "product": 7,
     "market": 1,
     "name": "CANICA",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 12,
+  "fields": {
+    "product": 4,
+    "market": 1,
+    "name": "1",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 13,
+  "fields": {
+    "product": 4,
+    "market": 1,
+    "name": "2",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productmarketclass",
+  "pk": 14,
+  "fields": {
+    "product": 4,
+    "market": 1,
+    "name": "3",
     "is_enabled": true
   }
 },
@@ -692,7 +772,136 @@
     "sort_order": 9
   }
 },
-
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 16,
+  "fields": {
+    "product": 7,
+    "name": "210 g +",
+    "is_enabled": true,
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 17,
+  "fields": {
+    "product": 7,
+    "name": "180 g +",
+    "is_enabled": true,
+    "sort_order": 1
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 18,
+  "fields": {
+    "product": 7,
+    "name": "150 g +",
+    "is_enabled": true,
+    "sort_order": 2
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 19,
+  "fields": {
+    "product": 7,
+    "name": "120 g -",
+    "is_enabled": true,
+    "sort_order": 3
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 20,
+  "fields": {
+    "product": 7,
+    "name": "Parejo",
+    "is_enabled": true,
+    "sort_order": 4
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 21,
+  "fields": {
+    "product": 4,
+    "name": "140 g +",
+    "is_enabled": true,
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 22,
+  "fields": {
+    "product": 4,
+    "name": "130 g +",
+    "is_enabled": true,
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 23,
+  "fields": {
+    "product": 4,
+    "name": "120 g +",
+    "is_enabled": true,
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 24,
+  "fields": {
+    "product": 4,
+    "name": "110 g +",
+    "is_enabled": true,
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 25,
+  "fields": {
+    "product": 4,
+    "name": "100 g +",
+    "is_enabled": true,
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 26,
+  "fields": {
+    "product": 4,
+    "name": "90 g +",
+    "is_enabled": true,
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 27,
+  "fields": {
+    "product": 4,
+    "name": "80 g +",
+    "is_enabled": true,
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalogs.productharvestsizekind",
+  "pk": 28,
+  "fields": {
+    "product": 4,
+    "name": "70 g -",
+    "is_enabled": true,
+    "sort_order": 0
+  }
+},
 {
   "model": "catalogs.productripeness",
   "pk": 1,
@@ -717,6 +926,60 @@
   "fields": {
     "product": 1,
     "name": "PARA HOY",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productripeness",
+  "pk": 5,
+  "fields": {
+    "product": 7,
+    "name": "MADURO",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productripeness",
+  "pk": 6,
+  "fields": {
+    "product": 7,
+    "name": "TIERNO",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productripeness",
+  "pk": 7,
+  "fields": {
+    "product": 7,
+    "name": "LISTO",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productripeness",
+  "pk": 8,
+  "fields": {
+    "product": 4,
+    "name": "MUY AMARILLO",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productripeness",
+  "pk": 9,
+  "fields": {
+    "product": 4,
+    "name": "VERDE",
+    "is_enabled": true
+  }
+},
+{
+  "model": "catalogs.productripeness",
+  "pk": 10,
+  "fields": {
+    "product": 4,
+    "name": "LISTO",
     "is_enabled": true
   }
 },
@@ -1040,6 +1303,204 @@
     "varieties": [
       1,
       2
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 18,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "category": "size",
+    "standard_size": 1,
+    "name": "COMERCIAL",
+    "alias": "COM",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 18,
+    "varieties": [
+      14
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 19,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "category": "mix",
+    "standard_size": 4,
+    "name": "EXTRA",
+    "alias": "EXT",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 19,
+    "varieties": [
+      14
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 20,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "category": "size",
+    "standard_size": 2,
+    "name": "MEDIANO",
+    "alias": "MED",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 20,
+    "varieties": [
+      11
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 21,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "category": "size",
+    "standard_size": 3,
+    "name": "PRIMERA",
+    "alias": "PRI",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 21,
+    "varieties": [
+      11
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 22,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "category": "mix",
+    "standard_size": 48,
+    "name": "MIXTO",
+    "alias": "MIX",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 22,
+    "varieties": [
+      11
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 23,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "category": "waste",
+    "standard_size": 50,
+    "name": "DESECHO",
+    "alias": "DES",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 23,
+    "varieties": [
+      14
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 24,
+  "fields": {
+    "product": 7,
+    "market": 1,
+    "category": "biomass",
+    "standard_size": 49,
+    "name": "MATERIA ORGÁNICA",
+    "alias": "MAT",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 24,
+    "varieties": [
+      14
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 25,
+  "fields": {
+    "product": 4,
+    "market": 1,
+    "category": "size",
+    "standard_size": 29,
+    "name": "600",
+    "alias": "600",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 25,
+    "varieties": [
+      8
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 26,
+  "fields": {
+    "product": 4,
+    "market": 1,
+    "category": "mix",
+    "standard_size": 30,
+    "name": "500",
+    "alias": "500",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 26,
+    "varieties": [
+      8
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 27,
+  "fields": {
+    "product": 4,
+    "market": 1,
+    "category": "waste",
+    "standard_size": 31,
+    "name": "400",
+    "alias": "400",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 27,
+    "varieties": [
+      8
+    ]
+  }
+},
+{
+  "model": "catalogs.productsize",
+  "pk": 28,
+  "fields": {
+    "product": 4,
+    "market": 1,
+    "category": "biomass",
+    "standard_size": 32,
+    "name": "300",
+    "alias": "300",
+    "description": null,
+    "is_enabled": true,
+    "sort_order": 28,
+    "varieties": [
+      8
     ]
   }
 },
@@ -2074,6 +2535,118 @@
   }
 },
 {
+  "model": "catalogs.orchard",
+  "pk": 3,
+  "fields": {
+    "name": "LA APLANADORA AR",
+    "code": "HUE23820238441",
+    "category": "conventional",
+    "producer": 2,
+    "producer_name": null,
+    "safety_authority_registration_date": "2026-06-06",
+    "state": [
+      3995955
+    ],
+    "city": [
+      8582258
+    ],
+    "district": [
+      4019757
+    ],
+    "ha": 42.0,
+    "sanitary_certificate": "8763782984629",
+    "is_enabled": true,
+    "organization": 1,
+    "product": [
+      7
+    ]
+  }
+},
+{
+  "model": "catalogs.orchard",
+  "pk": 4,
+  "fields": {
+    "name": "LA APLANADORA LIMON",
+    "code": "HUE23820238442",
+    "category": "conventional",
+    "producer": 2,
+    "producer_name": null,
+    "safety_authority_registration_date": "2026-06-06",
+    "state": [
+      3531730
+    ],
+    "city": [
+      6942858
+    ],
+    "district": [
+      3820784
+    ],
+    "ha": 50.0,
+    "sanitary_certificate": "8763782984629",
+    "is_enabled": true,
+    "organization": 1,
+    "product": [
+      4
+    ]
+  }
+},
+{
+  "model": "catalogs.orchard",
+  "pk": 5,
+  "fields": {
+    "name": "RANCHO VIEJO AR",
+    "code": "HUE873537255743",
+    "category": "organic",
+    "producer": 2,
+    "producer_name": null,
+    "safety_authority_registration_date": "2026-06-06",
+    "state": [
+      3531730
+    ],
+    "city": [
+      6942858
+    ],
+    "district": [
+      3530840
+    ],
+    "ha": 35.0,
+    "sanitary_certificate": "87635DGGD53243",
+    "is_enabled": true,
+    "organization": 1,
+    "product": [
+      7
+    ]
+  }
+},
+{
+  "model": "catalogs.orchard",
+  "pk": 6,
+  "fields": {
+    "name": "RANCHO VIEJO LIMON",
+    "code": "HUE873537255744",
+    "category": "organic",
+    "producer": 2,
+    "producer_name": null,
+    "safety_authority_registration_date": "2026-06-06",
+    "state": [
+      4017700
+    ],
+    "city": [
+      6942831
+    ],
+    "district": [
+      8858249
+    ],
+    "ha": 30.0,
+    "sanitary_certificate": "87635DGGD53244",
+    "is_enabled": true,
+    "organization": 1,
+    "product": [
+      4
+    ]
+  }
+},
+{
   "model": "catalogs.orchardcertification",
   "pk": 1,
   "fields": {
@@ -2099,6 +2672,74 @@
     "is_enabled": true,
     "orchard": 2,
     "created_at": "2025-03-24T17:30:45.174Z"
+  }
+},
+{
+  "model": "catalogs.orchardcertification",
+  "pk": 3,
+  "fields": {
+    "certification_kind": 1,
+    "certification_kind_name": null,
+    "certification_number": "763GD663HD6",
+    "certification_document": "orchard_certifications/Requisito_2.docx",
+    "expiration_date": "2027-06-06",
+    "verifier": 1,
+    "verifier_name": null,
+    "extra_code": "6637H",
+    "is_enabled": true,
+    "orchard": 3,
+    "created_at": "2025-06-06T17:15:33.018Z"
+  }
+},
+{
+  "model": "catalogs.orchardcertification",
+  "pk": 4,
+  "fields": {
+    "certification_kind": 3,
+    "certification_kind_name": null,
+    "certification_number": "763GD663HD6",
+    "certification_document": "orchard_certifications/Requisito_3.docx",
+    "expiration_date": "2026-06-06",
+    "verifier": 1,
+    "verifier_name": null,
+    "extra_code": "6637H",
+    "is_enabled": true,
+    "orchard": 4,
+    "created_at": "2025-06-06T17:17:20.402Z"
+  }
+},
+{
+  "model": "catalogs.orchardcertification",
+  "pk": 5,
+  "fields": {
+    "certification_kind": 3,
+    "certification_kind_name": null,
+    "certification_number": "ORG653678231",
+    "certification_document": "orchard_certifications/Requisito_4.docx",
+    "expiration_date": "2026-06-06",
+    "verifier": 4,
+    "verifier_name": null,
+    "extra_code": "665D7H3",
+    "is_enabled": true,
+    "orchard": 5,
+    "created_at": "2025-06-06T17:20:22.343Z"
+  }
+},
+{
+  "model": "catalogs.orchardcertification",
+  "pk": 6,
+  "fields": {
+    "certification_kind": 3,
+    "certification_kind_name": null,
+    "certification_number": "ORG653678234",
+    "certification_document": "orchard_certifications/Requisito_1.docx",
+    "expiration_date": "2026-06-06",
+    "verifier": 1,
+    "verifier_name": null,
+    "extra_code": "665D7H4",
+    "is_enabled": true,
+    "orchard": 6,
+    "created_at": "2025-06-06T17:21:44.597Z"
   }
 },
 {
@@ -2917,6 +3558,36 @@
   }
 },
 {
+  "model": "catalogs.supply",
+  "pk": 33,
+  "fields": {
+    "kind": 3,
+    "name": "MADERA 14 EU",
+    "capacity": null,
+    "minimum_stock_quantity": 1,
+    "maximum_stock_quantity": 150,
+    "usage_discount_quantity": 1.0,
+    "kg_tare": 0.0,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.supply",
+  "pk": 34,
+  "fields": {
+    "kind": 3,
+    "name": "PLÁSTICO 11 A EU",
+    "capacity": null,
+    "minimum_stock_quantity": 0,
+    "maximum_stock_quantity": 150,
+    "usage_discount_quantity": 1.0,
+    "kg_tare": 0.0,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
   "model": "catalogs.pallet",
   "pk": 1,
   "fields": {
@@ -2941,6 +3612,90 @@
     "alias": "AAP14",
     "max_packages_quantity": 100,
     "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.pallet",
+  "pk": 3,
+  "fields": {
+    "product": 7,
+    "supply": 22,
+    "name": "TA14 AGR",
+    "alias": "TA14AGR",
+    "is_enabled": true,
+    "max_packages_quantity" : 40,
+    "market": 1,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.pallet",
+  "pk": 4,
+  "fields": {
+    "product": 7,
+    "supply": 23,
+    "name": "TA11 AGR",
+    "alias": "TA11AGR",
+    "is_enabled": true,
+    "max_packages_quantity" : 40,
+    "market": 1,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.pallet",
+  "pk": 5,
+  "fields": {
+    "product": 4,
+    "supply": 22,
+    "name": "TA14 LIMON",
+    "alias": "TA14LIMON",
+    "is_enabled": true,
+    "max_packages_quantity" : 40,
+    "market": 1,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.pallet",
+  "pk": 6,
+  "fields": {
+    "product": 4,
+    "supply": 23,
+    "name": "TA11 LIMON",
+    "alias": "TA11LIMON",
+    "is_enabled": true,
+    "max_packages_quantity" : 40,
+    "market": 1,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.pallet",
+  "pk": 7,
+  "fields": {
+    "product": 1,
+    "supply": 33,
+    "name": "TA14 A EU",
+    "alias": "TA14AEU",
+    "is_enabled": true,
+    "max_packages_quantity" : 40,
+    "market": 3,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.pallet",
+  "pk": 8,
+  "fields": {
+    "product": 1,
+    "supply": 34,
+    "name": "TA11 A EU",
+    "alias": "TA11AEU",
+    "is_enabled": true,
+    "max_packages_quantity" : 40,
+    "market": 3,
     "organization": 1
   }
 },
@@ -3032,6 +3787,66 @@
   }
 },
 {
+  "model": "catalogs.productpresentation",
+  "pk": 4,
+  "fields": {
+    "product": 7,
+    "presentation_supply_kind": 6,
+    "presentation_supply": 21,
+    "name": "MALLA 12 (MORADA)",
+    "is_enabled": true,
+    "organization": 1,
+    "markets": [
+      1
+    ]
+  }
+},
+{
+  "model": "catalogs.productpresentation",
+  "pk": 5,
+  "fields": {
+    "product": 7,
+    "presentation_supply_kind": 6,
+    "presentation_supply": 20,
+    "name": "MALLA 8 (BLANCA)",
+    "is_enabled": true,
+    "organization": 1,
+    "markets": [
+      1
+    ]
+  }
+},
+{
+  "model": "catalogs.productpresentation",
+  "pk": 6,
+  "fields": {
+    "product": 4,
+    "presentation_supply_kind": 6,
+    "presentation_supply": 21,
+    "name": "MALLA 12 (MORADA)LIMON",
+    "is_enabled": true,
+    "organization": 1,
+    "markets": [
+      1
+    ]
+  }
+},
+{
+  "model": "catalogs.productpresentation",
+  "pk": 7,
+  "fields": {
+    "product": 4,
+    "presentation_supply_kind": 6,
+    "presentation_supply": 20,
+    "name": "MALLA 8 (BLANCA)LIMON",
+    "is_enabled": true,
+    "organization": 1,
+    "markets": [
+      1
+    ]
+  }
+},
+{
   "model": "catalogs.productpresentationcomplementarysupply",
   "pk": 1,
   "fields": {
@@ -3070,7 +3885,7 @@
 },
 {
   "model": "catalogs.productpackaging",
-  "pk": 4,
+  "pk": 3,
   "fields": {
     "market": 3,
     "product": 1,
@@ -3084,13 +3899,69 @@
 },
 {
   "model": "catalogs.productpackaging",
-  "pk": 5,
+  "pk": 4,
   "fields": {
     "market": 1,
     "product": 1,
     "packaging_supply_kind": 1,
     "country_standard_packaging": 4,
     "name": "CAJA CARTÓN 10 (AGMX)",
+    "packaging_supply": 29,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.productpackaging",
+  "pk": 5,
+  "fields": {
+    "market": 1,
+    "product": 7,
+    "packaging_supply_kind": 1,
+    "country_standard_packaging": 1,
+    "name": "CAJA113 AR",
+    "packaging_supply": 3,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.productpackaging",
+  "pk": 6,
+  "fields": {
+    "market": 1,
+    "product": 7,
+    "packaging_supply_kind": 1,
+    "country_standard_packaging": 4,
+    "name": "CAJA10 AR",
+    "packaging_supply": 29,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.productpackaging",
+  "pk": 7,
+  "fields": {
+    "market": 1,
+    "product": 4,
+    "packaging_supply_kind": 1,
+    "country_standard_packaging": 1,
+    "name": "CAJA113LIMON",
+    "packaging_supply": 3,
+    "is_enabled": true,
+    "organization": 1
+  }
+},
+{
+  "model": "catalogs.productpackaging",
+  "pk": 8,
+  "fields": {
+    "market": 1,
+    "product": 4,
+    "packaging_supply_kind": 1,
+    "country_standard_packaging": 4,
+    "name": "CAJA10LIMON",
     "packaging_supply": 29,
     "is_enabled": true,
     "organization": 1
@@ -3325,6 +4196,16 @@
   }
 },
 {
+  "model": "catalogs.productpackagingpallet",
+  "pk": 10,
+  "fields": {
+    "product_packaging": 2,
+    "product_packaging_quantity": 1000,
+    "pallet": 1,
+    "is_enabled": true
+  }
+},
+{
   "model": "catalogs.weighingscale",
   "pk": 1,
   "fields": {
@@ -3379,6 +4260,502 @@
     "comments": null,
     "is_enabled": true,
     "organization": 1
+  }
+},
+{
+  "model": "catalogs.productdisease",
+  "pk": 2,
+  "fields": {
+      "name" : "La roy (Aguacate)",
+      "is_enabled" : 1,
+      "disease" : 3,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productdisease",
+  "pk": 3,
+  "fields": {
+      "name" : "Phy (Aguacate)",
+      "is_enabled" : 1,
+      "disease" : 2,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productdisease",
+  "pk": 4,
+  "fields": {
+      "name" : "Mildu (Aguacate)",
+      "is_enabled" : 1,
+      "disease" : 5,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productdisease",
+  "pk": 6,
+  "fields": {
+      "name" : "La roy (Remanente)",
+      "is_enabled" : 1,
+      "disease" : 3,
+      "product" : 7
+  }
+},
+{
+  "model": "catalogs.productdisease",
+  "pk": 7,
+  "fields": {
+      "name" : "Ant (Limon A)",
+      "is_enabled" : 1,
+      "disease" : 1,
+      "product" : 4
+  }
+},
+{
+  "model": "catalogs.productdisease",
+  "pk": 8,
+  "fields": {
+      "name" : "Azul (Limon A)",
+      "is_enabled" : 1,
+      "disease" : 9,
+      "product" : 4
+  }
+},
+{
+  "model": "catalogs.productdisease",
+  "pk": 9,
+  "fields": {
+      "name" : "Fumagina (Limon A)",
+      "is_enabled" : 1,
+      "disease" : 10,
+      "product" : 4
+  }
+},
+{
+  "model": "catalogs.productdisease",
+  "pk": 10,
+  "fields": {
+      "name" : "Ant (Aguacate 2)",
+      "is_enabled" : 1,
+      "disease" : 1,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productdisease",
+  "pk": 11,
+  "fields": {
+      "name" : "Phy (Aguacate 2)",
+      "is_enabled" : 1,
+      "disease" : 2,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productdisease",
+  "pk": 12,
+  "fields": {
+      "name" : "La roy (Aguacate 2)",
+      "is_enabled" : 1,
+      "disease" : 3,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productdisease",
+  "pk": 13,
+  "fields": {
+      "name" : "Cercos (Aguacate 2)",
+      "is_enabled" : 1,
+      "disease" : 4,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productdisease",
+  "pk": 14,
+  "fields": {
+      "name" : "Mildu (Aguacate 2)",
+      "is_enabled" : 1,
+      "disease" : 5,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productdisease",
+  "pk": 15,
+  "fields": {
+      "name" : "Ros (Aguacate 2)",
+      "is_enabled" : 1,
+      "disease" : 6,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 1,
+  "fields": {
+      "name" : "Trip (Aguacate)",
+      "is_enabled" : 1,
+      "pest" : 1,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 2,
+  "fields": {
+      "name" : "Mosca (Aguacate)",
+      "is_enabled" : 1,
+      "pest" : 2,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 3,
+  "fields": {
+      "name" : "Ba Hueso (Aguacate)",
+      "is_enabled" : 1,
+      "pest" : 5,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 4,
+  "fields": {
+      "name" : "Ba Ramas (Aguacate)",
+      "is_enabled" : 1,
+      "pest" : 6,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 5,
+  "fields": {
+      "name" : "Trip (Remanente)",
+      "is_enabled" : 1,
+      "pest" : 1,
+      "product" : 7
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 6,
+  "fields": {
+      "name" : "Ba Hueso (Remanente)",
+      "is_enabled" : 1,
+      "pest" : 5,
+      "product" : 7
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 7,
+  "fields": {
+      "name" : "Ba Ramas (Remanente)",
+      "is_enabled" : 1,
+      "pest" : 6,
+      "product" : 7
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 8,
+  "fields": {
+      "name" : "Pulgon (Limon A)",
+      "is_enabled" : 1,
+      "pest" : 8,
+      "product" : 4
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 9,
+  "fields": {
+      "name" : "Trip (Aguacate 2)",
+      "is_enabled" : 1,
+      "pest" : 1,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 10,
+  "fields": {
+      "name" : "Mosca (Aguacate 2)",
+      "is_enabled" : 1,
+      "pest" : 2,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 11,
+  "fields": {
+      "name" : "Ba Hueso (Aguacate 2)",
+      "is_enabled" : 1,
+      "pest" : 5,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 12,
+  "fields": {
+      "name" : "Ba Ramas (Aguacate 2)",
+      "is_enabled" : 1,
+      "pest" : 6,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 13,
+  "fields": {
+      "name" : "Gorgojo (Aguacate 2)",
+      "is_enabled" : 1,
+      "pest" : 7,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 14,
+  "fields": {
+      "name" : "Cristalino (Aguacate 2)",
+      "is_enabled" : 1,
+      "pest" : 3,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productpest",
+  "pk": 15,
+  "fields": {
+      "name" : "Rojo (Aguacate 2)",
+      "is_enabled" : 1,
+      "pest" : 4,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productphysicaldamage",
+  "pk": 1,
+  "fields": {
+      "name" : "Cortes (Aguacate)",
+      "is_enabled" : 1,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productphysicaldamage",
+  "pk": 2,
+  "fields": {
+      "name" : "Golpeado (Aguacate)",
+      "is_enabled" : 1,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productphysicaldamage",
+  "pk": 3,
+  "fields": {
+      "name" : "Descorche (Aguacate)",
+      "is_enabled" : 1,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productphysicaldamage",
+  "pk": 4,
+  "fields": {
+      "name" : "Cortes (Remanente)",
+      "is_enabled" : 1,
+      "product" : 7
+  }
+},
+{
+  "model": "catalogs.productphysicaldamage",
+  "pk": 5,
+  "fields": {
+      "name" : "Cortes (Limon A)",
+      "is_enabled" : 1,
+      "product" : 4
+  }
+},
+{
+  "model": "catalogs.productphysicaldamage",
+  "pk": 6,
+  "fields": {
+      "name" : "Cortes (Aguacate 2)",
+      "is_enabled" : 1,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productphysicaldamage",
+  "pk": 7,
+  "fields": {
+      "name" : "Golpeado (Aguacate 2)",
+      "is_enabled" : 1,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productresidue",
+  "pk": 1,
+  "fields": {
+      "name" : "Cal (Aguacate)",
+      "is_enabled" : 1,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productresidue",
+  "pk": 2,
+  "fields": {
+      "name" : "Cobre (Aguacate)",
+      "is_enabled" : 1,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productresidue",
+  "pk": 3,
+  "fields": {
+      "name" : "Cal (Remanente)",
+      "is_enabled" : 1,
+      "product" : 7
+  }
+},
+{
+  "model": "catalogs.productresidue",
+  "pk": 4,
+  "fields": {
+      "name" : "Cal (Limon A)",
+      "is_enabled" : 1,
+      "product" : 4
+  }
+},
+{
+  "model": "catalogs.productresidue",
+  "pk": 5,
+  "fields": {
+      "name" : "Cal (Aguacate 2)",
+      "is_enabled" : 1,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productfoodsafetyprocess",
+  "pk": 1,
+  "fields": {
+      "is_enabled" : 1,
+      "procedure" : 1,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productfoodsafetyprocess",
+  "pk": 2,
+  "fields": {
+      "is_enabled" : 1,
+      "procedure" : 2,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productfoodsafetyprocess",
+  "pk": 3,
+  "fields": {
+      "is_enabled" : 1,
+      "procedure" : 3,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productfoodsafetyprocess",
+  "pk": 4,
+  "fields": {
+      "is_enabled" : 1,
+      "procedure" : 4,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productfoodsafetyprocess",
+  "pk": 5,
+  "fields": {
+      "is_enabled" : 1,
+      "procedure" : 5,
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productfoodsafetyprocess",
+  "pk": 6,
+  "fields": {
+      "is_enabled" : 1,
+      "procedure" : 3,
+      "product" : 7
+  }
+},
+{
+  "model": "catalogs.productfoodsafetyprocess",
+  "pk": 7,
+  "fields": {
+      "is_enabled" : 1,
+      "procedure" : 3,
+      "product" : 4
+  }
+},
+{
+  "model": "catalogs.productfoodsafetyprocess",
+  "pk": 8,
+  "fields": {
+      "is_enabled" : 1,
+      "procedure" : 4,
+      "product" : 4
+  }
+},
+{
+  "model": "catalogs.productfoodsafetyprocess",
+  "pk": 9,
+  "fields": {
+      "is_enabled" : 1,
+      "procedure" : 3,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productfoodsafetyprocess",
+  "pk": 10,
+  "fields": {
+      "is_enabled" : 1,
+      "procedure" : 4,
+      "product" : 2
+  }
+},
+{
+  "model": "catalogs.productdrymatteracceptancereport",
+  "pk": 1,
+  "fields": {
+      "acceptance_report" : 19,
+      "created_at": "2025-04-15T12:30:00Z",
+      "product" : 1
+  }
+},
+{
+  "model": "catalogs.productdrymatteracceptancereport",
+  "pk": 2,
+  "fields": {
+      "acceptance_report" : 19,
+      "created_at": "2025-04-15T12:30:00Z",
+      "product" : 7
   }
 }
 ]
