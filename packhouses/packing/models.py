@@ -70,7 +70,7 @@ class ScanPackage(models.Model):
 class PackingPallet(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_('OOID'), null=True, blank=True)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    # product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'), on_delete=models.PROTECT, null=True, blank=False)
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
@@ -104,7 +104,7 @@ class PackingPackage(models.Model):
     batch = models.ForeignKey(Batch, verbose_name=_('Batch'), on_delete=models.PROTECT)
     # , limit_choices_to={'parent__isnull': True, 'is_available_for_processing': True} ?
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+    # product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_('Product phenology'),on_delete=models.PROTECT, null=True, blank=False)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)

@@ -83,7 +83,7 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
 class PackingPackageInline(admin.StackedInline):
     model = PackingPackage
     extra = 0
-    fields = ('ooid', 'batch', 'market', 'product', 'product_size', 'product_market_class', 'product_ripeness',
+    fields = ('ooid', 'batch', 'market', 'product_size', 'product_market_class', 'product_ripeness',
               'product_packaging', 'product_weight_per_packaging', 'product_presentations_per_packaging',
               'product_pieces_per_presentation', 'packaging_quantity', 'processing_date', 'status')
     readonly_fields = ('ooid',)
@@ -91,10 +91,10 @@ class PackingPackageInline(admin.StackedInline):
 
 @admin.register(PackingPallet)
 class PackingPalletAdmin(ByOrganizationAdminMixin):
-    list_display = ("ooid", "market", "product_market_class", "product_size", "product", "status")
+    list_display = ("ooid", "market", "product_market_class", "product_size", "status")
     search_fields = ("product_market_class__name", "product_size__name")
     list_filter = ("product_market_class", "product_size")
-    fields = ['ooid', 'market', 'product', 'product_size', 'product_phenology', 'product_market_class',
+    fields = ['ooid', 'market', 'product_size', 'product_phenology', 'product_market_class',
               'product_ripeness', 'size_packaging', 'product_packaging_pallet', 'status']
     inlines = [PackingPackageInline]
 
@@ -150,10 +150,10 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
 
 @admin.register(PackingPackage)
 class PackingPackageAdmin(ByOrganizationAdminMixin):
-    list_display = ("ooid", "batch", "market", "product_market_class", "product_size", "product", "status")
+    list_display = ("ooid", "batch", "market", "product_market_class", "product_size", "status")
     search_fields = ("product_market_class__name", "product_size__name")
     list_filter = ("product_market_class", "product_size")
-    fields = ['ooid', 'batch', 'market', 'product', 'product_phenology', 'product_size', 'product_market_class',
+    fields = ['ooid', 'batch', 'market', 'product_phenology', 'product_size', 'product_market_class',
               'product_ripeness', 'size_packaging', 'product_weight_per_packaging',
               'product_presentations_per_packaging', 'product_pieces_per_presentation', 'packaging_quantity',
               'processing_date', 'status', 'packing_pallet']
