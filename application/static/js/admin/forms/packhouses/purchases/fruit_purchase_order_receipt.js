@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div class="row" style="margin-bottom: 1rem;">
                         <label class="col-sm-3 text-left">Peso ingresado</label>
                         <div class="col-sm-7 field-batch-summary-weight">
-                            <div id="batch-ingress-weight" class="readonly">—</div>
+                            <div id="batch-weight_received" class="readonly">—</div>
                             <div class="help-block red"></div>
                             <div class="help-block text-red"></div>
                         </div>
@@ -202,8 +202,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             $("#batch-yield-producer").text(batch.yield_orchard_producer?.name || '—');
             $("#batch-harvest-provider").text(batch.harvest_product_provider?.name || '—');
-            $("#batch-ingress-weight").text(
-                batch.ingress_weight != null ? `${batch.ingress_weight} kg` : '—'
+            $("#batch-weight_received").text(
+                batch.weight_received != null ? `${batch.weight_received}` : '—'
             );
         });
 
@@ -226,8 +226,8 @@ document.addEventListener("DOMContentLoaded", function () {
               const batch = data[0];
               $("#batch-yield-producer").text(batch.yield_orchard_producer?.name || '—');
               $("#batch-harvest-provider").text(batch.harvest_product_provider?.name || '—');
-              $("#batch-ingress-weight").text(
-                  batch.ingress_weight != null ? `${batch.ingress_weight} kg` : '—'
+              $("#batch-weight_received").text(
+                  batch.weight_received != null ? `${batch.weight_received}` : '—'
               );
           });
 

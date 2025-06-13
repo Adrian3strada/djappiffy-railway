@@ -42,9 +42,9 @@ from django.utils.html import format_html
 from django.urls import reverse
 from .forms import ScheduleHarvestForm, ContainerInlineForm, ContainerInlineFormSet
 from .filters import (ByProductProviderForOrganizationScheduleHarvestFilter, ByOrchardProductProducerForOrganizationScheduleHarvestFilter,
-                      ByHarvestingCrewForOrganizationScheduleHarvestFilter, ByProductForOrganizationScheduleHarvestFilter, 
-                      ByProductVarietyForOrganizationScheduleHarvestFilter, ByProductPhenologyForOrganizationScheduleHarvestFilter, 
-                      ByOrchardProductCategoryForOrganizationScheduleHarvestFilter, HarvestingCategoryFilter, SchedulingTypeFilter, 
+                      ByHarvestingCrewForOrganizationScheduleHarvestFilter, ByProductForOrganizationScheduleHarvestFilter,
+                      ByProductVarietyForOrganizationScheduleHarvestFilter, ByProductPhenologyForOrganizationScheduleHarvestFilter,
+                      ByOrchardProductCategoryForOrganizationScheduleHarvestFilter, HarvestingCategoryFilter, SchedulingTypeFilter,
                       GathererFilter, MaquiladoraFilter, ByOrchardCertificationForOrganizationScheduleHarvestFilter)
 from .views import basic_report
 from .resources import ScheduleHarvestResource
@@ -171,10 +171,10 @@ class ScheduleHarvestAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin
                     'get_orchard_name', 'get_orchard_code', 'get_orchard_product_producer',
                     'product', 'get_orchard_category', 'product_variety', 'product_phenology', 'product_ripeness', 'market',
                     'weight_expected', 'scheduled_harvest', 'status',  'generate_actions_buttons')
-    list_filter = (("harvest_date", GatheringDateRangeFilter), ByProductProviderForOrganizationScheduleHarvestFilter, 
+    list_filter = (("harvest_date", GatheringDateRangeFilter), ByProductProviderForOrganizationScheduleHarvestFilter,
                    ByOrchardProductProducerForOrganizationScheduleHarvestFilter, ByProductForOrganizationScheduleHarvestFilter,
-                   ByProductPhenologyForOrganizationScheduleHarvestFilter, ByOrchardProductCategoryForOrganizationScheduleHarvestFilter, 
-                   ByHarvestingCrewForOrganizationScheduleHarvestFilter, HarvestingCategoryFilter, GathererFilter, 
+                   ByProductPhenologyForOrganizationScheduleHarvestFilter, ByOrchardProductCategoryForOrganizationScheduleHarvestFilter,
+                   ByHarvestingCrewForOrganizationScheduleHarvestFilter, HarvestingCategoryFilter, GathererFilter,
                    MaquiladoraFilter, ByOrchardCertificationForOrganizationScheduleHarvestFilter, SchedulingTypeFilter, 'status',)
     search_fields = ('ooid',)
     readonly_fields = ('ooid', 'status')
@@ -205,7 +205,7 @@ class ScheduleHarvestAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin
     get_orchard_product_producer.admin_order_field = 'orchard__producer'
 
     def scheduled_harvest(self, obj):
-        return obj.is_scheduled  
+        return obj.is_scheduled
     scheduled_harvest.boolean = True
     scheduled_harvest.short_description = _('Scheduled Harvest')
     scheduled_harvest.admin_order_field = 'is_scheduled'
