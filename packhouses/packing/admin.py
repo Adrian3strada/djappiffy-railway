@@ -84,7 +84,7 @@ class PackingPackageInline(admin.StackedInline):
     model = PackingPackage
     extra = 0
     fields = ('ooid', 'batch', 'market', 'product_size', 'product_market_class', 'product_ripeness',
-              'product_packaging', 'product_weight_per_packaging', 'product_presentations_per_packaging',
+              'size_packaging', 'product_weight_per_packaging', 'product_presentations_per_packaging',
               'product_pieces_per_presentation', 'packaging_quantity', 'processing_date', 'status')
     readonly_fields = ('ooid',)
 
@@ -95,7 +95,7 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
     search_fields = ("product_market_class__name", "product_size__name")
     list_filter = ("product_market_class", "product_size")
     fields = ['ooid', 'market', 'product_size', 'product_phenology', 'product_market_class',
-              'product_ripeness', 'size_packaging', 'product_packaging_pallet', 'status']
+              'product_ripeness', 'size_packaging', 'pallet', 'status']
     inlines = [PackingPackageInline]
 
     def get_readonly_fields(self, request, obj=None):
@@ -140,7 +140,7 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
             kwargs["queryset"] = SizePackaging.objects.filter(organization=organization)
 
         if db_field.name == "pallet":
-            kwargs["queryset"] = Pallet.objects.filter(size_packaging__organization=organization)
+            kwargs["queryset"] = Pallet.objects.filter(size_packagings__organization=organization)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -168,24 +168,24 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
         object_id = request.resolver_match.kwargs.get("object_id")
         obj = ProductSize.objects.get(id=object_id) if object_id else None
         organization = request.organization if hasattr(request, 'organization') else None
-        product_packaging_instance = None
+        size_packaging_instance = None
 
         if request.POST:
-            product_packaging = request.POST.get("product_packaging")
-            if product_packaging:
-                product_packaging_instance = SizePackaging.objects.get(id=product_packaging)
+            size_packaging = request.POST.get("size_packaging")
+            if size_packaging:
+                size_packaging_instance = SizePackaging.objects.get(id=size_packaging)
 
         if db_field.name == "product_presentations_per_packaging":
             formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
-            if product_packaging_instance:
-                if product_packaging_instance.category == 'single':
+            if size_packaging_instance:
+                if size_packaging_instance.category == 'single':
                     formfield.required = False
             return formfield
 
         if db_field.name == "product_pieces_per_presentation":
             formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
-            if product_packaging_instance:
-                if product_packaging_instance.category == 'single':
+            if size_packaging_instance:
+                if size_packaging_instance.category == 'single':
                     formfield.required = False
             return formfield
 
@@ -223,7 +223,7 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
             organization_products = Product.objects.filter(organization=organization)
             kwargs["queryset"] = ProductRipeness.objects.filter(product__in=organization_products)
 
-        if db_field.name == "product_packaging":
+        if db_field.name == "size_packaging":
             kwargs["queryset"] = SizePackaging.objects.filter(organization=organization)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
