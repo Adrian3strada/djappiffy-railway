@@ -17,18 +17,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   productPresentationsPerPackagingField.closest('.form-group').hide()
   productPiecesPerPresentationField.closest('.form-group').hide()
 
-  function getOrganization() {
-    fetchOptions(`/rest/v1/profiles/packhouse-exporter-profile/?same=1`).then(
-      (data) => {
-        if (data.count === 1) {
-          organization = data.results.pop()
-        }
-      }
-    );
-  }
-
-  await getOrganization();
-
   function updateFieldOptions(field, options, selectedValue = null) {
     if (field) {
       field.empty();
@@ -58,7 +46,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }).fail((error) => console.error("Fetch error:", error));
   }
 
-  async function getBatchProperties() {
+  const getBatchProperties = async () => {
     if (batchField.val()) {
       batchProperties = await fetchOptions(`/rest/v1/receiving/batch/${batchField.val()}/`)
     } else {
@@ -210,6 +198,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     await productPackagingFieldChangeHandler();
   });
 
+  if (batchField.val()) {
+    await getBatchProperties();
+  }
+
   if (marketField.val()) {
     await marketFieldChangeHandler();
   }
@@ -221,6 +213,5 @@ document.addEventListener("DOMContentLoaded", async function () {
   if (productSizeField.val()) {
     await productSizeFieldChangeHandler();
   }
-
 
 });

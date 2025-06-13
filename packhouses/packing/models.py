@@ -76,9 +76,7 @@ class PackingPallet(models.Model):
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
     size_packaging = models.ForeignKey(SizePackaging, verbose_name=_('Size packaging'), on_delete=models.PROTECT)
     packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'), validators=[MinValueValidator(1)])
-
     pallet = models.ForeignKey(Pallet, verbose_name=_('Pallet'), on_delete=models.PROTECT, null=True, blank=False)
-
     status = models.CharField(max_length=20, default='open', verbose_name=_('Status'), choices=STATUS_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
