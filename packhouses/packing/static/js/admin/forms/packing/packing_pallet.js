@@ -5,23 +5,13 @@ document.addEventListener("DOMContentLoaded", async function () {
   const productPhenologyField = $("#id_product_phenology")
   const productSizeField = $("#id_product_size")
   const productMarketClassField = $("#id_product_market_class")
-  const productPackagingField = $("#id_product_packaging")
+  const sizePackagingField = $("#id_size_packaging")
   const productWeightPerPackagingField = $("#id_product_weight_per_packaging")
   const productPresentationsPerPackagingField = $("#id_product_presentations_per_packaging")
   const productPiecesPerPresentationField = $("#id_product_pieces_per_presentation")
   const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
   let batchProperties = null
-
-  let market = marketField.val()
-  let product = productField.val()
-  let productPhenology = productPhenologyField.val()
-  let productSize = productSizeField.val()
-  let productMarketClass = productMarketClassField.val()
-  let productPackaging = productPackagingField.val()
-  let productWeightPerPackaging = productWeightPerPackagingField.val()
-  let productPresentationsPerPackaging = productPresentationsPerPackagingField.val()
-  let productPiecesPerPresentation = productPiecesPerPresentationField.val()
 
   productPresentationsPerPackagingField.closest('.form-group').hide()
   productPiecesPerPresentationField.closest('.form-group').hide()
@@ -101,12 +91,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (marketField.val() && productField.val() && productSizeField.val()) {
       const packagings = await fetchOptions(`/rest/v1/catalogs/size-packaging/?product=${productField.val()}&market=${marketField.val()}&product_size=${productSizeField.val()}&is_enabled=1`);
       if (packagings.length > 0) {
-        updateFieldOptions(productPackagingField, packagings, productPackagingField.val());
+        updateFieldOptions(sizePackagingField, packagings, sizePackagingField.val());
       } else {
-        updateFieldOptions(productPackagingField, []);
+        updateFieldOptions(sizePackagingField, []);
       }
     } else {
-      updateFieldOptions(productPackagingField, []);
+      updateFieldOptions(sizePackagingField, []);
     }
   }
 
@@ -155,8 +145,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   const productPackagingFieldChangeHandler = async () => {
-    if (productPackagingField.val()) {
-      const packaging = await fetchOptions(`/rest/v1/catalogs/size-packaging/${productPackagingField.val()}/`);
+    if (sizePackagingField.val()) {
+      const packaging = await fetchOptions(`/rest/v1/catalogs/size-packaging/${sizePackagingField.val()}/`);
       productWeightPerPackagingField.val(packaging.product_weight_per_packaging);
 
       if (packaging.category === 'presentation') {
@@ -196,7 +186,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     await productSizeFieldChangeHandler();
   });
 
-  productPackagingField.on("change", async function () {
+  sizePackagingField.on("change", async function () {
     await productPackagingFieldChangeHandler();
   });
 

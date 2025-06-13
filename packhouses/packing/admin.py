@@ -10,7 +10,7 @@ from common.base.mixins import (ByOrganizationAdminMixin)
 from packhouses.receiving.models import Batch
 from packhouses.gathering.models import ScheduleHarvest
 from packhouses.catalogs.models import Market, Product, ProductPhenologyKind, ProductSize, ProductMarketClass, \
-    ProductRipeness, SizePackaging, ProductPackagingPallet
+    ProductRipeness, SizePackaging, Pallet
 
 
 # Register your models here.
@@ -136,11 +136,11 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
             organization_products = Product.objects.filter(organization=organization)
             kwargs["queryset"] = ProductRipeness.objects.filter(product__in=organization_products)
 
-        if db_field.name == "product_packaging":
+        if db_field.name == "size_packaging":
             kwargs["queryset"] = SizePackaging.objects.filter(organization=organization)
 
-        if db_field.name == "product_packaging_pallet":
-            kwargs["queryset"] = ProductPackagingPallet.objects.filter(product_packaging__organization=organization)
+        if db_field.name == "pallet":
+            kwargs["queryset"] = Pallet.objects.filter(size_packaging__organization=organization)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 

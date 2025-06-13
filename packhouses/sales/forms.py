@@ -118,7 +118,7 @@ class OrderItemPalletFormSet(BaseInlineFormSet):
             if pallet_id:
                 pallet = ProductPackagingPallet.objects.filter(id=pallet_id).first()
                 if pallet:
-                    if pallet.product_packaging.product_presentation:
+                    if pallet.size_packaging.product_presentation:
                         form.fields['product_presentations_per_packaging'].required = True
                         form.fields['product_pieces_per_presentation'].required = True
                     else:

@@ -1063,16 +1063,13 @@ class SizePackaging(CleanNameAndOrganizationMixin, models.Model):
         verbose_name_plural = _('Size packaging')
         ordering = ('name',)
         constraints = [
-            models.UniqueConstraint(
-                fields=('product_size', 'product_packaging', 'product_presentation', 'organization'),
-                name='sizepackaging_unique_productsize_packaging_productpresentation_organization'),
             models.UniqueConstraint(fields=('name', 'organization'), name='sizepackaging_unique_name_organization'),
             models.UniqueConstraint(fields=('alias', 'organization'), name='sizepackaging_unique_alias_organization'),
         ]
 
 
 class ProductPackagingPallet(models.Model):
-    product_packaging = models.ForeignKey(SizePackaging, on_delete=models.CASCADE)
+    size_packaging = models.ForeignKey(SizePackaging, on_delete=models.CASCADE)
     product_packaging_quantity = models.PositiveIntegerField(verbose_name=_('Product packaging quantity'),
                                                              help_text=_(
                                                                  'Amount of product packaging units for this pallet.'),
@@ -1081,14 +1078,14 @@ class ProductPackagingPallet(models.Model):
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
-        return f"{self.product_packaging} - {self.pallet} ({self.product_packaging_quantity})"
+        return f"{self.size_packaging} - {self.pallet} ({self.product_packaging_quantity})"
 
     class Meta:
         verbose_name = _('Product packaging pallet')
         verbose_name_plural = _('Product packaging pallets')
-        ordering = ('product_packaging', 'pallet')
+        ordering = ('size_packaging', 'pallet')
         constraints = [
-            models.UniqueConstraint(fields=('product_packaging', 'pallet', 'product_packaging_quantity'),
+            models.UniqueConstraint(fields=('size_packaging', 'pallet', 'product_packaging_quantity'),
                                     name='productpackagingpallet_unique_productpackaging_pallet_product_packaging_quantity'),
         ]
 
