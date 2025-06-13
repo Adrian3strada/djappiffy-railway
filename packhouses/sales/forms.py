@@ -1,6 +1,6 @@
 from django.forms import BaseInlineFormSet
 from .models import ProductSize
-from ..catalogs.models import SizePackaging, ProductPackagingPallet, Pallet
+from ..catalogs.models import SizePackaging, Pallet
 
 
 class OrderItemWeightFormSet(BaseInlineFormSet):

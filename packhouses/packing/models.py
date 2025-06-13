@@ -4,7 +4,7 @@ from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from organizations.models import Organization
 from ..catalogs.models import Market, ProductSize, ProductPackaging, SizePackaging, ProductMarketClass, ProductRipeness, \
-    ProductPhenologyKind, Product, ProductPackagingPallet, Pallet
+    ProductPhenologyKind, Product, Pallet
 from ..hrm.models import Employee
 from ..receiving.models import Batch
 from django.utils.translation import gettext_lazy as _
@@ -75,8 +75,7 @@ class PackingPallet(models.Model):
     product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
     product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
     size_packaging = models.ForeignKey(SizePackaging, verbose_name=_('Size packaging'), on_delete=models.PROTECT)
-    product_packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'), validators=[MinValueValidator(1)])
-    product_packaging_pallet = models.ForeignKey(ProductPackagingPallet, verbose_name=_('Product packaging pallet'), on_delete=models.PROTECT, null=True, blank=False)
+    packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'), validators=[MinValueValidator(1)])
 
     pallet = models.ForeignKey(Pallet, verbose_name=_('Pallet'), on_delete=models.PROTECT, null=True, blank=False)
 

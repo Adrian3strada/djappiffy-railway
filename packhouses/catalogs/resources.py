@@ -505,10 +505,10 @@ class SizePackagingResource(DehydrationResource, ExportResource):
         if not pallets.exists():
             return ''
         if self.export_format == 'pdf':
-            pallet_names = [f"{ppp.pallet}: {ppp.product_packaging_quantity} ({_('quantity')})" for ppp in pallets.filter(is_enabled=True)]
+            pallet_names = [f"{ppp.pallet}: {ppp.packaging_quantity} ({_('quantity')})" for ppp in pallets.filter(is_enabled=True)]
             return render_html_list(pallet_names)
         else:
-            return ", ".join(f"{ppp.pallet}: {ppp.product_packaging_quantity} ({_('quantity')})" for ppp in pallets.filter(is_enabled=True))
+            return ", ".join(f"{ppp.pallet}: {ppp.packaging_quantity} ({_('quantity')})" for ppp in pallets.filter(is_enabled=True))
 
     class Meta:
         model = SizePackaging

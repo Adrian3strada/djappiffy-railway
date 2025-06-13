@@ -1068,28 +1068,6 @@ class SizePackaging(CleanNameAndOrganizationMixin, models.Model):
         ]
 
 
-class ProductPackagingPallet(models.Model):
-    size_packaging = models.ForeignKey(SizePackaging, on_delete=models.CASCADE)
-    product_packaging_quantity = models.PositiveIntegerField(verbose_name=_('Product packaging quantity'),
-                                                             help_text=_(
-                                                                 'Amount of product packaging units for this pallet.'),
-                                                             validators=[MinValueValidator(1)])
-    pallet = models.ForeignKey(Pallet, on_delete=models.CASCADE)
-    is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-
-    def __str__(self):
-        return f"{self.size_packaging} - {self.pallet} ({self.product_packaging_quantity})"
-
-    class Meta:
-        verbose_name = _('Product packaging pallet')
-        verbose_name_plural = _('Product packaging pallets')
-        ordering = ('size_packaging', 'pallet')
-        constraints = [
-            models.UniqueConstraint(fields=('size_packaging', 'pallet', 'product_packaging_quantity'),
-                                    name='productpackagingpallet_unique_productpackaging_pallet_product_packaging_quantity'),
-        ]
-
-
 # Básculas
 
 class WeighingScale(CleanNameAndOrganizationMixin, models.Model):
