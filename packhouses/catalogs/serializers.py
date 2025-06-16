@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from packhouses.catalogs.models import (
-    Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, Pallet, ProductPackagingPallet,
+    Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, Pallet,
     ProductVariety, ProductPhenologyKind, Maquiladora, ProductPresentation, OrchardGeoLocation,
     CrewChief, ProductHarvestSizeKind, Client, Provider, Product, Supply, ProductSize, Orchard, ProductPackaging,
     HarvestingCrew, OrchardCertification, ProductRipeness, SizePackaging, Service

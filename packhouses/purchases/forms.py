@@ -528,3 +528,28 @@ class FruitPaymentInlineFormSet(BaseInlineFormSet):
         return super()._construct_form(i, **kwargs)
 
 
+class FruitPurchaseOrderReceiptInlineFormset(BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+
+        total_quantity = Decimal('0.00')
+
+        for form in self.forms:
+            if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
+                quantity = form.cleaned_data.get('quantity') or Decimal('0.00')
+                price_category = form.cleaned_data.get('price_category')
+                container_capacity = form.cleaned_data.get('container_capacity') or Decimal('1.00')
+
+                if price_category and getattr(price_category, 'is_container', False):
+                    # Si la categoría es por contenedor, multiplicar cantidad por capacidad
+                    quantity *= container_capacity
+
+                total_quantity += quantity
+
+        if self.instance.batch and total_quantity > self.instance.batch.weight_received:
+            raise ValidationError(
+                _("The total quantity entered (%(total)s kg) exceeds the batch's received weight (%(received)s kg).") % {
+                    'total': f"{total_quantity:,.2f}",
+                    'received': f"{self.instance.batch.weight_received:,.2f}"
+                }
+            )

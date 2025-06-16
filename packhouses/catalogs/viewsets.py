@@ -13,7 +13,7 @@ from .serializers import (MarketSerializer, ProductMarketClassSerializer, Vehicl
                           )
 from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider, CrewChief, ProductVariety,
                      ProductHarvestSizeKind, ProductPhenologyKind, Client, Maquiladora, Provider,
-                     Product, ProductPackaging, ProductPresentation, SizePackaging, Pallet, ProductPackagingPallet,
+                     Product, ProductPackaging, ProductPresentation, SizePackaging, Pallet,
                      Supply, Orchard, HarvestingCrew, ProductSize, OrchardCertification, OrchardGeoLocation,
                      ProductRipeness, Service
                      )

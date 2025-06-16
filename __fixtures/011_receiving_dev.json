@@ -194,7 +194,8 @@
     "is_quarantined": false,
     "organization": 1,
     "batch": 1,
-    "comments": ""
+    "comments": "",
+    "created_at": "2025-05-24T17:26:31.736Z"
   }
 },
 {
@@ -212,7 +213,8 @@
     "is_quarantined": false,
     "organization": 1,
     "batch": 2,
-    "comments": ""
+    "comments": "",
+    "created_at": "2025-05-24T17:26:31.736Z"
   }
 },
 {
@@ -230,7 +232,8 @@
     "is_quarantined": false,
     "organization": 1,
     "batch": 3,
-    "comments": ""
+    "comments": "",
+    "created_at": "2025-05-24T17:26:31.736Z"
   }
 },
 {
@@ -248,7 +251,8 @@
     "is_quarantined": false,
     "organization": 1,
     "batch": null,
-    "comments": null
+    "comments": null,
+    "created_at": "2025-05-24T17:26:31.736Z"
   }
 },
 {
@@ -266,7 +270,8 @@
     "is_quarantined": false,
     "organization": 1,
     "batch": null,
-    "comments": ""
+    "comments": "",
+    "created_at": "2025-05-24T17:26:31.736Z"
   }
 },
 {

@@ -11,6 +11,7 @@ class BatchSerializer(serializers.ModelSerializer):
     yield_orchard_producer = serializers.SerializerMethodField(read_only=True)
     harvest_product_provider = serializers.SerializerMethodField(read_only=True)
     ingress_weight = serializers.SerializerMethodField(read_only=True)
+    weight_received = serializers.SerializerMethodField(read_only=True)
     yield_orchard_registry_code = serializers.SerializerMethodField(read_only=True)
     market = serializers.SerializerMethodField(read_only=True)
     product = serializers.SerializerMethodField(read_only=True)
@@ -50,6 +51,9 @@ class BatchSerializer(serializers.ModelSerializer):
             "name": provider.name
         } if provider else None
 
+    def get_weight_received(self, obj):
+        weight_received = obj.weight_received
+        return weight_received if weight_received else 0
     def get_ingress_weight(self, obj):
         ingress_weight = obj.ingress_weight
         return ingress_weight if ingress_weight else 0

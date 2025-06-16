@@ -6,7 +6,7 @@ from .models import Batch
 
 class BatchViewSet(viewsets.ModelViewSet):
     serializer_class = BatchSerializer
-    filterset_fields = ['ooid', 'status', 'is_available_for_processing']
+    filterset_fields = ['id','ooid', 'status', 'is_available_for_processing']
     pagination_class = None
 
     def get_queryset(self):

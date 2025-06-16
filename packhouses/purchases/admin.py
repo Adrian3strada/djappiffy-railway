@@ -20,7 +20,7 @@ from common.base.mixins import (
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import (RequisitionForm, PurchaseOrderForm, PurchaseOrderPaymentForm, RequisitionSupplyForm,
                     ServiceOrderForm, ServiceOrderPaymentForm, PurchaseMassPaymentForm, FruitOrderPaymentForm,
-                    FruitPaymentInlineFormSet, FruitPurchaseOrderReceiptForm
+                    FruitPaymentInlineFormSet, FruitPurchaseOrderReceiptForm, FruitPurchaseOrderReceiptInlineFormset
                     )
 from django.utils.html import format_html, format_html_join, mark_safe
 from django.urls import reverse
@@ -1280,12 +1280,13 @@ class ServiceOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.
             # Filtramos los lotes por organización actual
             org = getattr(request, 'organization', None)
             if org:
-                batches = Batch.objects.filter(organization=org).select_related('organization')
+                batches = Batch.objects.filter(
+                    organization=org,
+                    parent__isnull=True
+                ).select_related('organization')
             else:
                 batches = Batch.objects.all()
 
-            # Se renombraron campos y valores relacionados con 'status' antes 'operational_status'
-            # Es necesario validar que esta refactorización no rompa el comportamiento esperado
             def is_batch_valid(batch):
                 last_status = batch.last_status_change()
                 if not last_status:
@@ -1471,8 +1472,10 @@ class FruitPurchaseOrderReceiptInline(DisableInlineRelatedLinksMixin, admin.Stac
     """
     model = FruitPurchaseOrderReceipt
     form = FruitPurchaseOrderReceiptForm
+    formset = FruitPurchaseOrderReceiptInlineFormset
     readonly_fields = ('ooid','status', 'created_at', 'created_by', 'created_at', 'cancellation_date', 'canceled_by')
     extra = 0
+    min_num = 1
     can_delete = False
 
     class Media:
@@ -1519,14 +1522,12 @@ class FruitPaymentInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
         Pasa la orden de compra al formset para filtrar correctamente los receipts.
         También desactiva proof_of_payment si el payment ya existe.
         """
-        kwargs['formset'] = self.formset  # Asegura que se use el correcto
-
-        # ← Este es el formset real (con soporte para 'fruit_purchase_order')
+        kwargs['formset'] = self.formset
         base_formset_class = super().get_formset(request, obj, **kwargs)
 
         class CustomFormset(base_formset_class):
             def __init__(self2, *args, **kwargs2):
-                kwargs2['fruit_purchase_order'] = obj  # ¡Este es el paso clave!
+                kwargs2['fruit_purchase_order'] = obj
                 super().__init__(*args, **kwargs2)
 
                 for form in self2.forms:
@@ -1627,6 +1628,7 @@ class FruitPurchaseOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, 
 
         if obj and (obj.fruitpurchaseorderreceipt_set.exists() or obj.fruitpurchaseorderpayment_set.exists()):
             readonly.append("batch")
+            readonly.append("category")
 
         return readonly
 
@@ -1637,7 +1639,10 @@ class FruitPurchaseOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, 
         if db_field.name == "batch" and hasattr(request, 'organization'):
             org = getattr(request, 'organization', None)
             if org:
-                batches = Batch.objects.filter(organization=org).select_related('organization')
+                batches = Batch.objects.filter(
+                    organization=org,
+                    parent__isnull=True
+                ).select_related('organization')
             else:
                 batches = Batch.objects.all()
 
@@ -1718,7 +1723,7 @@ class FruitPurchaseOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, 
         """
         Cancela un pago de una orden de compra de fruta y recalcula el balance del recibo asociado.
         """
-        fruit_order_id = None  # Lo declaramos arriba para asegurarlo
+        fruit_order_id = None
 
         try:
             with transaction.atomic():

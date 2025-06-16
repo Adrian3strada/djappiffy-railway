@@ -15,7 +15,7 @@ from .filters import (ByMaquiladoraForOrganizationOrderFilter, ByClientForOrgani
 from common.base.mixins import ByOrganizationAdminMixin
 from packhouses.catalogs.models import (Client, Maquiladora, ProductVariety, Market, Product, ProductSize,
                                         SizePackaging, Pallet,
-                                        ProductPhenologyKind, ProductMarketClass, ProductPackaging, ProductPackagingPallet)
+                                        ProductPhenologyKind, ProductMarketClass)
 from .models import Order, OrderItemWeight, OrderItemPackaging, OrderItemPallet
 from .forms import OrderItemWeightFormSet, OrderItemPackagingFormSet, OrderItemPalletFormSet
 from django.utils.safestring import mark_safe
@@ -92,8 +92,8 @@ class OrderItemInlineMixin(admin.StackedInline):
         if db_field.name == "size_packaging":
             kwargs["queryset"] = SizePackaging.objects.none()
             if parent_object and parent_object.product:
-                kwargs["queryset"] = SizePackaging.objects.filter(product_packaging__product=parent_object.product,
-                                                                  product_packaging__market=parent_object.client.market,
+                kwargs["queryset"] = SizePackaging.objects.filter(size_packaging__product=parent_object.product,
+                                                                  size_packaging__market=parent_object.client.market,
                                                                   is_enabled=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)

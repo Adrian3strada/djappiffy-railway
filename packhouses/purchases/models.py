@@ -1047,8 +1047,7 @@ class FruitPurchaseOrder(models.Model):
     )
 
     def __str__(self):
-        batch_label = _("Batch")
-        return f"{batch_label} {self.batch.ooid}"
+        return f"{_("Batch")} {self.batch.ooid}"
 
     def save(self, *args, **kwargs):
         if not self.ooid:
@@ -1162,7 +1161,51 @@ class FruitPurchaseOrderReceipt(models.Model):
             "provider": self.provider.name,
         }
 
+    def recalculate_balance_payable(self):
+        """
+        Recalcula el balance_payable restando todos los pagos activos (no cancelados).
+        """
+        total_paid = FruitPurchaseOrderPayment.objects.filter(
+            fruit_purchase_order_receipt=self,
+            status__in=['open', 'closed']
+        ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+
+        self.balance_payable = (self.quantity * self.unit_price) - total_paid
+        self.balance_payable = self.balance_payable.quantize(Decimal('0.01'))
+
+    def clean(self):
+        if not self.fruit_purchase_order or not self.fruit_purchase_order.pk:
+            return  # La orden aún no está guardada
+
+        if not self.pk:
+            return  # Este recibo aún no está guardado, no podemos validar pagos
+
+        super().clean()
+
+        if not self.quantity or not self.unit_price:
+            return
+
+        total_paid = FruitPurchaseOrderPayment.objects.filter(
+            fruit_purchase_order_receipt=self,
+            status__in=['open', 'closed']
+        ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+
+        expected_total = self.quantity * self.unit_price
+        new_balance = expected_total - total_paid
+
+        if new_balance < 0:
+            raise ValidationError({
+                'balance_payable': _(
+                    "The balance payable cannot be negative. "
+                    "Total payments (%(paid)s) exceed the receipt total (%(total)s)."
+                ) % {
+                                       'paid': f"{total_paid:,.2f}",
+                                       'total': f"{expected_total:,.2f}"
+                                   }
+            })
+
     def save(self, *args, **kwargs):
+        self.full_clean()
         user = kwargs.pop('user', None)
 
         with transaction.atomic():
@@ -1171,25 +1214,18 @@ class FruitPurchaseOrderReceipt(models.Model):
             if user and is_new:
                 self.created_by = user
 
-            # Calcular el total de la orden (cantidad * precio unitario)
             self.total_cost = self.quantity * self.unit_price
 
-            # Si es nuevo, asignar el folio incremental
             if is_new:
                 last_order = FruitPurchaseOrderReceipt.objects.select_for_update().filter(
                     fruit_purchase_order=self.fruit_purchase_order
                 ).order_by('-ooid').first()
                 self.ooid = (last_order.ooid + 1) if last_order and last_order.ooid is not None else 1
 
-            # Guardar temporalmente para que esté en la DB si es nuevo (necesario para el cálculo de pagos)
+            # Actualizamos siempre el balance
+            self.recalculate_balance_payable()
+
             super().save(*args, **kwargs)
-
-            # Recalcular balance_payable restando los pagos no cancelados
-            total_paid = FruitPurchaseOrderPayment.objects.filter(
-                fruit_purchase_order_receipt=self,
-                status__in=['open', 'closed']  # o != 'canceled' si es más directo
-            ).aggregate(total=Sum('amount'))['total'] or 0
-
 
     class Meta:
         verbose_name = _("Fruit Receipt")
@@ -1282,6 +1318,51 @@ class FruitPurchaseOrderPayment(models.Model):
         null=True,
         blank=True
     )
+
+
+    def clean(self):
+        if not self.fruit_purchase_order or not self.fruit_purchase_order.pk:
+            return
+
+        super().clean()
+
+        if not self.amount or not self.fruit_purchase_order_receipt:
+            return
+
+        # Base: todos los pagos que no están cancelados
+        payments_qs = FruitPurchaseOrderPayment.objects.filter(
+            fruit_purchase_order_receipt=self.fruit_purchase_order_receipt
+        ).exclude(status='canceled')
+
+        # Si el pago actual ya existe en DB y NO será cancelado, lo excluimos para evitar sumarlo doble
+        if self.pk:
+            if self.status != 'canceled':
+                payments_qs = payments_qs.exclude(pk=self.pk)
+            # Si está cancelado, no lo agregamos ni en queryset ni manualmente
+
+        total_paid = payments_qs.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+
+        # Solo sumamos self.amount si NO será cancelado
+        if self.status != 'canceled':
+            new_total = total_paid + self.amount
+        else:
+            new_total = total_paid  # ni lo tomamos en cuenta
+
+        total_receipt = self.fruit_purchase_order_receipt.quantity * self.fruit_purchase_order_receipt.unit_price
+
+        if new_total > total_receipt:
+            raise ValidationError({
+                'amount': _(
+                    "The total payment amount (%(new_total)s) exceeds the receipt total (%(receipt_total)s)."
+                ) % {
+                        'new_total': f"{new_total:,.2f}",
+                        'receipt_total': f"{total_receipt:,.2f}"
+                    }
+            })
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.payment_date} - ${self.amount}"

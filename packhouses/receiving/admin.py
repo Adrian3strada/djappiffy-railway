@@ -813,6 +813,26 @@ class DryMatterInline(nested_admin.NestedTabularInline):
     class Media:
         js = ('js/admin/forms/packhouses/receiving/food_safety/average.js',)
 
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.status == 'closed':
+            return [field.name for field in self.model._meta.fields if field.name != 'id']
+        return super().get_readonly_fields(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.status == 'closed':
+            return request.method in ['GET']
+        return super().has_change_permission(request, obj)
+
+    def has_add_permission(self, request, obj):
+        if obj and obj.status == 'closed':
+            return False
+        return super().has_add_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.status == 'closed':
+            return False
+        return super().has_delete_permission(request, obj)
+
 class InternalInspectionInline(nested_admin.NestedTabularInline):
     model = InternalInspection
     extra = 0
@@ -836,6 +856,28 @@ class InternalInspectionInline(nested_admin.NestedTabularInline):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.status == 'closed':
+            fields = [field.name for field in self.model._meta.fields if field.name != 'id']
+            m2m_fields = [field.name for field in self.model._meta.many_to_many]
+            return fields + m2m_fields
+        return super().get_readonly_fields(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.status == 'closed':
+            return request.method in ['GET']
+        return super().has_change_permission(request, obj)
+
+    def has_add_permission(self, request, obj):
+        if obj and obj.status == 'closed':
+            return False
+        return super().has_add_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.status == 'closed':
+            return False
+        return super().has_delete_permission(request, obj)
+
     class Media:
         js = ('js/admin/forms/packhouses/receiving/food_safety/average.js',)
 
@@ -852,6 +894,38 @@ class VehicleInspectionInline(nested_admin.NestedTabularInline):
     fields = ['transport_inspection', 'sealed', 'only_the_product', 'free_foreign_matter',
               'free_unusual_odors', 'certificate', 'free_fecal_matter']
 
+    def get_readonly_fields(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return ['transport_inspection'] + [f.name for f in self.model._meta.fields if f.name != 'id']
+        return super().get_readonly_fields(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return request.method in ['GET']
+        return super().has_change_permission(request, obj)
+
+    def has_add_permission(self, request, obj):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_add_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_delete_permission(request, obj)
+
 class VehicleConditionInline(nested_admin.NestedTabularInline):
     model = VehicleCondition
     extra = 0
@@ -864,12 +938,46 @@ class VehicleConditionInline(nested_admin.NestedTabularInline):
     readonly_fields = ['transport_condition']
     fields = ['transport_condition', 'is_clean', 'good_condition', 'broken', 'damaged', 'seal']
 
+    def get_readonly_fields(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return ['transport_condition'] + [f.name for f in self.model._meta.fields if f.name != 'id']
+        return super().get_readonly_fields(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return request.method in ['GET']
+        return super().has_change_permission(request, obj)
+
+    def has_add_permission(self, request, obj):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_add_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_delete_permission(request, obj)
+
 class VehicleReviewInline(nested_admin.NestedStackedInline):
     model = VehicleReview
     extra = 0
     inlines = [VehicleInspectionInline, VehicleConditionInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+
         if db_field.name == "vehicle":
             object_id = request.resolver_match.kwargs.get("object_id")
 
@@ -886,6 +994,38 @@ class SampleWeightInline(nested_admin.NestedTabularInline):
     model = SampleWeight
     extra = 0
     fields = ['weight']
+
+    def get_readonly_fields(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return [f.name for f in self.model._meta.fields if f.name != 'id']
+        return super().get_readonly_fields(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return request.method in ['GET']
+        return super().has_change_permission(request, obj)
+
+    def has_add_permission(self, request, obj):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_add_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_delete_permission(request, obj)
 
 class SamplePestInline(nested_admin.NestedTabularInline):
     model = SamplePest
@@ -909,6 +1049,38 @@ class SamplePestInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    def get_readonly_fields(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return [f.name for f in self.model._meta.fields if f.name != 'id']
+        return super().get_readonly_fields(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return request.method in ['GET']
+        return super().has_change_permission(request, obj)
+
+    def has_add_permission(self, request, obj):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_add_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_delete_permission(request, obj)
+
 class SampleDiseaseInline(nested_admin.NestedTabularInline):
     model = SampleDisease
     extra = 0
@@ -930,6 +1102,38 @@ class SampleDiseaseInline(nested_admin.NestedTabularInline):
                 kwargs['queryset'] = ProductDisease.objects.none()
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_readonly_fields(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return [f.name for f in self.model._meta.fields if f.name != 'id']
+        return super().get_readonly_fields(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return request.method in ['GET']
+        return super().has_change_permission(request, obj)
+
+    def has_add_permission(self, request, obj):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_add_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_delete_permission(request, obj)
 
 class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
     model = SamplePhysicalDamage
@@ -953,6 +1157,38 @@ class SamplePhysicalDamageInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    def get_readonly_fields(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return [f.name for f in self.model._meta.fields if f.name != 'id']
+        return super().get_readonly_fields(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return request.method in ['GET']
+        return super().has_change_permission(request, obj)
+
+    def has_add_permission(self, request, obj):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_add_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_delete_permission(request, obj)
+
 class SampleResidueInline(nested_admin.NestedTabularInline):
     model = SampleResidue
     extra = 0
@@ -975,6 +1211,38 @@ class SampleResidueInline(nested_admin.NestedTabularInline):
 
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    def get_readonly_fields(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return [f.name for f in self.model._meta.fields if f.name != 'id']
+        return super().get_readonly_fields(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return request.method in ['GET']
+        return super().has_change_permission(request, obj)
+
+    def has_add_permission(self, request, obj):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_add_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return False
+        return super().has_delete_permission(request, obj)
+
 class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
     model = SampleCollection
     extra = 1
@@ -982,6 +1250,36 @@ class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInl
     max_num = 1
     can_delete = False
     inlines = [SampleWeightInline, SamplePestInline, SampleDiseaseInline, SamplePhysicalDamageInline, SampleResidueInline]
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.status == 'closed':
+            return [field.name for field in self.model._meta.fields if field.name != 'id']
+        return super().get_readonly_fields(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        # Check if the object is provided and its status is 'closed'
+        if obj and obj.status == 'closed':
+            return request.method in ['GET']
+        
+        # Handle the case where object_id is retrieved from request
+        object_id = request.resolver_match.kwargs.get("object_id")
+        if object_id:
+            food_safety = FoodSafety.objects.get(pk=object_id)
+            if food_safety.status == 'closed':
+                return request.method in ['GET']
+        
+        # Default behavior
+        return super().has_change_permission(request, obj)
+
+    def has_add_permission(self, request, obj):
+        if obj and obj.status == 'closed':
+            return False
+        return super().has_add_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.status == 'closed':
+            return False
+        return super().has_delete_permission(request, obj)
 
     class Media:
         js = (
@@ -1026,18 +1324,47 @@ class AverageInline(CustomNestedStackedAvgInlineMixin, admin.StackedInline):
 
         return include_fields
 
+class FoodSafetyForm(forms.ModelForm):
+    class Meta:
+        model = FoodSafety
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        allowed_statuses = ['open', 'closed']
+        if 'status' in self.fields:
+            self.fields['status'].choices = [
+                (key, label) for key, label in STATUS_CHOICES if key in allowed_statuses
+            ]
+
 @admin.register(FoodSafety)
 class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('batch',)
     list_filter = ['batch']
+    form = FoodSafetyForm
     inlines = [DryMatterInline, InternalInspectionInline, VehicleReviewInline, SampleCollectionInline, AverageInline]
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.status == 'closed':
+            exclude = {'id', 'created_at'}
+            return [field.name for field in self.model._meta.fields if field.name not in exclude]
+        return super().get_readonly_fields(request, obj)
+
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        if obj is None:
+            return [f for f in fields if f != 'status']
+        return fields
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        form.base_fields['batch'].widget.can_add_related = False
-        form.base_fields['batch'].widget.can_change_related = False
-        form.base_fields['batch'].widget.can_delete_related = False
-        form.base_fields['batch'].widget.can_view_related = False
+
+        if 'batch' in form.base_fields:
+            widget = form.base_fields['batch'].widget
+            widget.can_add_related = False
+            widget.can_change_related = False
+            widget.can_delete_related = False
+            widget.can_view_related = False
 
         return form
 
