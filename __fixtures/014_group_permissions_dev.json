@@ -2580,12 +2580,12 @@
   "pk": 259,
   "fields": {
     "group": [
-      "Catalogs / Product packaging"
+      "Catalogs / Packaging"
     ],
     "permission": [
-      "add_productpackagingpallet",
+      "add_pallet",
       "catalogs",
-      "productpackagingpallet"
+      "pallet"
     ]
   }
 },
@@ -2594,12 +2594,12 @@
   "pk": 260,
   "fields": {
     "group": [
-      "Catalogs / Product packaging"
+      "Catalogs / Packaging"
     ],
     "permission": [
-      "change_productpackagingpallet",
+      "change_pallet",
       "catalogs",
-      "productpackagingpallet"
+      "pallet"
     ]
   }
 },
@@ -2608,12 +2608,12 @@
   "pk": 261,
   "fields": {
     "group": [
-      "Catalogs / Product packaging"
+      "Catalogs / Packaging"
     ],
     "permission": [
-      "delete_productpackagingpallet",
+      "delete_pallet",
       "catalogs",
-      "productpackagingpallet"
+      "pallet"
     ]
   }
 },
@@ -2625,23 +2625,9 @@
       "Catalogs / Product packaging"
     ],
     "permission": [
-      "view_productpackagingpallet",
+      "view_pallet",
       "catalogs",
-      "productpackagingpallet"
-    ]
-  }
-},
-{
-  "model": "auth.group_permissions",
-  "pk": 263,
-  "fields": {
-    "group": [
-      "Catalogs / Product packaging"
-    ],
-    "permission": [
-      "view_user",
-      "users",
-      "user"
+      "pallet"
     ]
   }
 },
