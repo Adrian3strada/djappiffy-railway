@@ -149,10 +149,10 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
     list_display = ("ooid", "batch", "market", "product_market_class", "product_size", "status")
     search_fields = ("product_market_class__name", "product_size__name")
     list_filter = ("product_market_class", "product_size")
-    fields = ['ooid', 'packing_pallet', 'batch', 'market', 'product_size', 'product_market_class',
+    fields = ['ooid', 'batch', 'market', 'product_size', 'product_market_class',
               'product_ripeness', 'size_packaging', 'product_weight_per_packaging',
               'product_presentations_per_packaging', 'product_pieces_per_presentation', 'packaging_quantity',
-              'processing_date', 'status']
+              'processing_date', 'packing_pallet', 'status']
 
     def get_readonly_fields(self, request, obj=None):
         fields = self.get_fields(request, obj)
@@ -194,7 +194,7 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
             kwargs["queryset"] = Batch.objects.filter(organization=organization)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda \
-                obj: f"{obj.ooid} - {obj.incomingproduct.scheduleharvest.orchard.name}"
+                obj: f"{obj.ooid} - {obj.incomingproduct.scheduleharvest.orchard.name} ({obj.available_weight} {obj.incomingproduct.scheduleharvest.product.measure_unit_category})"
             return formfield
 
         if db_field.name == "market":
