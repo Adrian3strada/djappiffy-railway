@@ -91,11 +91,10 @@ class PackingPackageInline(admin.StackedInline):
 
 @admin.register(PackingPallet)
 class PackingPalletAdmin(ByOrganizationAdminMixin):
-    list_display = ("ooid", "market", "product_market_class", "product_size", "status")
-    search_fields = ("product_market_class__name", "product_size__name")
-    list_filter = ("product_market_class", "product_size")
-    fields = ['ooid', 'product', 'market', 'product_size', 'product_market_class',
-              'product_ripeness', 'size_packaging', 'pallet', 'status']
+    list_display = ("ooid", "market", "product_size", "status")
+    search_fields = ("ooid", )
+    list_filter = ('product', 'market', "product_size", 'pallet', 'status')
+    fields = ['ooid', 'product', 'market', 'product_size', 'pallet', 'status']
     inlines = [PackingPackageInline]
 
     def get_readonly_fields(self, request, obj=None):
@@ -107,33 +106,15 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = request.organization if hasattr(request, 'organization') else None
 
-        if db_field.name == "batch":
-            kwargs["queryset"] = Batch.objects.filter(organization=organization)
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda \
-                obj: f"{obj.ooid} :: {obj.harvest_product_provider} - {obj.incomingproduct.scheduleharvest.created_at.strftime('%Y-%m-%d')}"
-            return formfield
+        if db_field.name == "product":
+            kwargs["queryset"] = Product.objects.filter(organization=organization)
 
         if db_field.name == "market":
             kwargs["queryset"] = Market.objects.filter(organization=organization)
 
-        if db_field.name == "product":
-            kwargs["queryset"] = Product.objects.filter(organization=organization)
-
         if db_field.name == "product_size":
             organization_products = Product.objects.filter(organization=organization)
             kwargs["queryset"] = ProductSize.objects.filter(product__in=organization_products)
-
-        if db_field.name == "product_market_class":
-            organization_products = Product.objects.filter(organization=organization)
-            kwargs["queryset"] = ProductMarketClass.objects.filter(product__in=organization_products)
-
-        if db_field.name == "product_ripeness":
-            organization_products = Product.objects.filter(organization=organization)
-            kwargs["queryset"] = ProductRipeness.objects.filter(product__in=organization_products)
-
-        if db_field.name == "size_packaging":
-            kwargs["queryset"] = SizePackaging.objects.filter(organization=organization)
 
         if db_field.name == "pallet":
             kwargs["queryset"] = Pallet.objects.filter(size_packagings__organization=organization)

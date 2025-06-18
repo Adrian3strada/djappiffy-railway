@@ -2,22 +2,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   const productField = $("#id_product")
   const marketField = $("#id_market")
   const productSizeField = $("#id_product_size")
-  const productMarketClassField = $("#id_product_market_class")
-  const productRipenessField = $("#id_product_ripeness")
-  const sizePackagingField = $("#id_size_packaging")
-  const productWeightPerPackagingField = $("#id_product_weight_per_packaging")
-  const productPresentationsPerPackagingField = $("#id_product_presentations_per_packaging")
-  const productPiecesPerPresentationField = $("#id_product_pieces_per_presentation")
-  const packagingQuantityField = $("#id_packaging_quantity")
   // const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
   let productProperties = null
-
-  productPresentationsPerPackagingField.closest('.form-group').hide()
-  productPiecesPerPresentationField.closest('.form-group').hide()
-
-  productWeightPerPackagingField.attr('min', 1);
-  packagingQuantityField.attr('min', 1);
+  let allMarkets = await fetchOptions(`/rest/v1/catalogs/market/?is_enabled=1`);
+  let marketOptions = []
 
   function updateFieldOptions(field, options, selectedValue = null) {
     if (field) {
@@ -51,17 +40,26 @@ document.addEventListener("DOMContentLoaded", async function () {
   const getProductProperties = async () => {
     if (productField.val()) {
       productProperties = await fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
+      console.log("Product properties fetched getProductProperties:", productProperties);
     } else {
       productProperties = null;
     }
   }
 
+  const setMarketOptions = async () => {
+    if (productProperties) {
+      marketOptions = allMarkets.filter(market => productProperties.markets.includes(market.id));
+      console.log("productProperties.markets", productProperties.markets);
+      console.log("allMarkets", allMarkets);
+      console.log("productProperties.markets", productProperties.markets);
+      console.log("marketOptions", marketOptions);
+      updateFieldOptions(marketField, marketOptions, marketField.val() ? marketField.val() : null);
+    }
+  }
+
   const setProductSizes = async () => {
-    if (productProperties && productProperties.product && marketField.val()) {
-      console.log("setProductSizes", productProperties.product)
-      const sizes = await fetchOptions(`/rest/v1/catalogs/product-size/?product=${productProperties.product.id}&market=${marketField.val()}&category=size&is_enabled=1`);
-      console.log("Sizes fetched:", sizes);
-      console.log("productSizeField.val()", productSizeField.val());
+    if (productProperties && productProperties.id && marketField.val()) {
+      const sizes = await fetchOptions(`/rest/v1/catalogs/product-size/?product=${productProperties.id}&market=${marketField.val()}&category=size&is_enabled=1`);
       updateFieldOptions(productSizeField, sizes, productSizeField.val() ? productSizeField.val() : null);
     } else {
       if (productSizeField.val()) {
@@ -72,120 +70,19 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
-  const setProductMarketClasses = async () => {
-    if (productProperties && productProperties.product && marketField.val()) {
-      const classes = await fetchOptions(`/rest/v1/catalogs/product-market-class/?product=${productProperties.product.id}&market=${marketField.val()}&is_enabled=1`);
-      updateFieldOptions(productMarketClassField, classes, productMarketClassField.val());
-    } else {
-      if (productMarketClassField.val()) {
-        const marketClass = await fetchOptions(`/rest/v1/catalogs/product-market-class/${productMarketClassField.val()}/`);
-        updateFieldOptions(productMarketClassField, [marketClass], productMarketClassField.val());
-      }
-      updateFieldOptions(productMarketClassField, []);
-    }
-  }
-
-  const setProductRipeness = async () => {
-    if (productProperties && productProperties.product && marketField.val()) {
-      const ripeness = await fetchOptions(`/rest/v1/catalogs/product-ripeness/?product=${productProperties.product.id}&market=${marketField.val()}&is_enabled=1`);
-      updateFieldOptions(productRipenessField, ripeness, productRipenessField.val() ? productRipenessField.val() : null);
-    } else {
-      if (productRipenessField.val()) {
-        const ripeness = await fetchOptions(`/rest/v1/catalogs/product-ripeness/${productRipenessField.val()}/`);
-        updateFieldOptions(productRipenessField, [ripeness], productRipenessField.val());
-      }
-      updateFieldOptions(productRipenessField, []);
-    }
-  }
-
-  const setSizePackagings = async () => {
-    if (productProperties && productProperties.product && marketField.val() && productSizeField.val()) {
-      const packagings = await fetchOptions(`/rest/v1/catalogs/size-packaging/?product=${productProperties.product.id}&market=${marketField.val()}&product_size=${productSizeField.val()}&is_enabled=1`);
-      updateFieldOptions(sizePackagingField, packagings, sizePackagingField.val() ? sizePackagingField.val() : null);
-    } else {
-      if (sizePackagingField.val()) {
-        const packaging = await fetchOptions(`/rest/v1/catalogs/size-packaging/${sizePackagingField.val()}/`);
-        updateFieldOptions(sizePackagingField, [packaging], sizePackagingField.val());
-      }
-      updateFieldOptions(sizePackagingField, []);
-    }
-  }
-
-  const productFieldChangeHandler = async () => {
-    await getProductProperties();
-    if (productProperties) {
-      console.log("Product properties:", productProperties);
-      const market = productProperties.market;
-      marketField.val(market.id).trigger('change');
-    }
-  }
-
   const marketFieldChangeHandler = async () => {
     await setProductSizes();
-    await setProductMarketClasses();
-    await setProductRipeness();
-    await setSizePackagings();
-  }
-
-  const productSizeFieldChangeHandler = async () => {
-    if (productSizeField.val()) {
-      await setSizePackagings();
-    }
-  }
-
-  const productPackagingFieldChangeHandler = async () => {
-    if (sizePackagingField.val()) {
-      const packaging = await fetchOptions(`/rest/v1/catalogs/size-packaging/${sizePackagingField.val()}/`);
-      productWeightPerPackagingField.val(packaging.product_weight_per_packaging);
-
-      if (packaging.category === 'presentation') {
-        productPresentationsPerPackagingField.closest('.form-group').fadeIn();
-        productPiecesPerPresentationField.closest('.form-group').fadeIn();
-        productPresentationsPerPackagingField.val(packaging.product_presentations_per_packaging);
-        productPiecesPerPresentationField.val(packaging.product_pieces_per_presentation);
-      } else {
-        productPresentationsPerPackagingField.closest('.form-group').fadeOut();
-        productPiecesPerPresentationField.closest('.form-group').fadeOut();
-        productPresentationsPerPackagingField.val(null);
-        productPiecesPerPresentationField.val(null);
-      }
-
-    } else {
-      productPresentationsPerPackagingField.closest('.form-group').fadeOut();
-      productPiecesPerPresentationField.closest('.form-group').fadeOut();
-      productPresentationsPerPackagingField.val(null);
-      productPiecesPerPresentationField.val(null);
-      productWeightPerPackagingField.val(null);
-    }
   }
 
   productField.on("change", async function () {
-    await productFieldChangeHandler();
+    await getProductProperties();
+    await setMarketOptions();
   });
 
   marketField.on("change", async function () {
     await marketFieldChangeHandler();
   });
 
-  productSizeField.on("change", async function () {
-    await productSizeFieldChangeHandler();
-  });
-
-  sizePackagingField.on("change", async function () {
-    await productPackagingFieldChangeHandler();
-    if (productProperties && sizePackagingField.val()) {
-      packagingQuantityField.attr('max', productProperties.available_weight / parseInt(productWeightPerPackagingField.val()));
-      if (!packagingQuantityField.val()) {
-        packagingQuantityField.val(parseInt(batchProperties.available_weight / parseInt(productWeightPerPackagingField.val())));
-      }
-    } else {
-      packagingQuantityField.attr('max', null);
-    }
-  });
-
   await getProductProperties();
   await setProductSizes();
-  await setProductMarketClasses();
-  await setProductRipeness();
-  await setSizePackagings();
 });
