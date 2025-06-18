@@ -19,6 +19,9 @@ from .models import (Market, ProductMarketClass, Vehicle, HarvestingCrewProvider
                      )
 from common.base.models import (PestProductKind, DiseaseProductKind)
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Q
+from rest_framework.exceptions import NotFound
+
 
 
 class ProductHarvestSizeKindViewSet(viewsets.ModelViewSet):
@@ -350,7 +353,7 @@ class ClientViewSet(viewsets.ModelViewSet):
 
 class OrchardViewSet(viewsets.ModelViewSet):
     serializer_class = OrchardSerializer
-    filterset_fields = ['organization', 'is_enabled', 'product']
+    filterset_fields = ['organization', 'is_enabled', 'products']
     pagination_class = None
 
     def get_queryset(self):
@@ -477,3 +480,54 @@ class DiseaseProductKindViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(product_kind_id=product_kind_id)
 
         return queryset
+
+
+class OrchardForEudrViewSet(viewsets.ModelViewSet):
+    serializer_class = OrchardSerializer
+    filterset_fields = ['is_enabled', 'products']
+
+    def get_queryset(self):
+        id_organization = self.request.query_params.get('id_organization')
+        if not id_organization:
+            return Orchard.objects.none()
+        return Orchard.objects.filter(organization_id=id_organization)
+
+class OrchardCertificationForEudrViewSet(viewsets.ModelViewSet):
+    serializer_class = OrchardCertificationSerializer
+    filterset_fields = ['is_enabled', 'orchard']
+
+    def get_queryset(self):
+        id_organization = self.request.query_params.get('id_organization')
+        if not id_organization:
+            return OrchardCertification.objects.none()
+        return OrchardCertification.objects.filter(orchard__organization_id=id_organization)
+
+
+class OrchardGeoLocationForEudrViewSet(viewsets.ModelViewSet):
+    serializer_class = OrchardGeoLocationSerializer
+    filterset_fields = ['is_enabled', 'orchard']
+
+    def get_queryset(self):
+        id_organization = self.request.query_params.get('id_organization')
+        if not id_organization:
+            return OrchardGeoLocation.objects.none()
+
+        # Solo se usa para el listado
+        return OrchardGeoLocation.objects.filter(
+            orchard__organization_id=id_organization
+        )
+
+    def get_object(self):
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        lookup_value = self.kwargs.get(lookup_url_kwarg)
+
+        try:
+            obj = OrchardGeoLocation.objects.get(pk=lookup_value)
+        except OrchardGeoLocation.DoesNotExist:
+            raise NotFound('Not found geolocation expected.')
+
+        id_organization = self.request.query_params.get('id_organization')
+        if obj.orchard and str(obj.orchard.organization_id) != str(id_organization):
+            raise NotFound('This not belongs to your organization.')
+
+        return obj

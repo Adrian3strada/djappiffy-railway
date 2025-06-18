@@ -27,6 +27,18 @@ from packhouses.packhouse_settings.models import (Bank, VehicleOwnershipKind,
 from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOICES, PRODUCT_PACKAGING_CATEGORY_CHOICES,
                        PRODUCT_PRICE_MEASURE_UNIT_CATEGORY_CHOICES, PRODUCT_SIZE_CATEGORY_CHOICES)
 from common.base.models import FoodSafetyProcedure
+from django.utils import timezone
+from eudr.parcels.utils import (uuid_file_path, validate_geom_vector_file, fix_format, fix_crs, to_polygon,
+                    get_geom_from_file, to_multipolygon, test_open_file)
+from django.contrib.gis.geos import GEOSGeometry
+import os
+from django.dispatch import receiver
+from django.db.models.signals import post_save, pre_save
+import uuid
+import json
+
+import fiona
+
 
 
 # Create your models here.
@@ -640,7 +652,8 @@ class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
     code = models.CharField(max_length=100, verbose_name=_('Registry code'))
     category = models.CharField(max_length=100, verbose_name=_('Product category'),
                                 choices=ORCHARD_PRODUCT_CLASSIFICATION_CHOICES)
-    product = models.ManyToManyField(Product, verbose_name=_('Product'), blank=True, )
+    products = models.ManyToManyField(Product, verbose_name=_('Products'), blank=False)
+    product_kinds = models.ManyToManyField(ProductKind, verbose_name=_('Product kinds'), blank=True)
     producer = models.ForeignKey(Provider, verbose_name=_('Producer'), on_delete=models.PROTECT, null=True, blank=True)
     producer_name = models.CharField(max_length=255, verbose_name=_('Producer name'), null=True, blank=True)
     safety_authority_registration_date = models.DateField(verbose_name=_('Safety authority registration date'))
@@ -655,10 +668,17 @@ class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
     def __str__(self):
         return f"{self.code} - {self.name}"
 
+
     def save(self, *args, **kwargs):
         if self.producer:
             self.producer_name = None
         super().save(*args, **kwargs)
+
+    def clean(self):
+        if not self.producer and not self.producer_name:
+            raise ValidationError("You must specify either a producer or a producer name.")
+        if self.producer and self.producer_name:
+            raise ValidationError("You cannot set both a producer and a producer name at the same time.")
 
     class Meta:
         verbose_name = _('Orchard')
@@ -672,15 +692,13 @@ class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
 
 class OrchardCertification(models.Model):
     certification_kind = models.ForeignKey(OrchardCertificationKind, verbose_name=_('Orchard certification kind'),
-                                           on_delete=models.PROTECT, null=True, blank=True)
-    certification_kind_name = models.CharField(max_length=255, null=True, blank=True)
+                                           on_delete=models.PROTECT, null=True, blank=False)
     certification_number = models.CharField(max_length=100, verbose_name=_('Certification number'))
     certification_document = models.FileField(upload_to='orchard_certifications/',
                                               verbose_name=_('Certification document'))
     expiration_date = models.DateField(verbose_name=_('Expiration date'))
     verifier = models.ForeignKey(OrchardCertificationVerifier, verbose_name=_('Orchard certification verifier'),
-                                 on_delete=models.PROTECT, null=True, blank=True)
-    verifier_name = models.CharField(max_length=255, null=True, blank=True)
+                                 on_delete=models.PROTECT, null=True, blank=False)
     extra_code = models.CharField(max_length=100, verbose_name=_('Extra code'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.CASCADE)
@@ -697,24 +715,59 @@ class OrchardCertification(models.Model):
 
 
 class OrchardGeoLocation(models.Model):
-    orchard = models.ForeignKey(Orchard, verbose_name=_('Orchard'), on_delete=models.CASCADE)
-    mode = models.CharField(max_length=20, choices=(('upload', _('Upload')), ('draw', _('Draw')),
-                                                    ('coordinates', _('Write coordinates'))), verbose_name=_('Mode'))
-    file = models.FileField(upload_to='orchard_geolocation/', verbose_name=_('File'), null=True, blank=False)
-    coordinates = models.JSONField(verbose_name=_('Coordinates'), null=True, blank=False)
+    orchard = models.ForeignKey('Orchard', verbose_name=_('Orchard'), on_delete=models.CASCADE, null=True, blank=True)
+    mode = models.CharField(max_length=20, choices=(('upload', _('Upload')), ('draw', _('Draw')), ('coordinates', _('Write coordinates'))), verbose_name=_('Mode'))
+    file = models.FileField(upload_to='orchard_geolocation/', verbose_name=_('File'), validators=[validate_geom_vector_file], null=True, blank=True)
+    coordinates = models.JSONField(verbose_name=_('Coordinates'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    geom = models.MultiPolygonField(srid=4326, verbose_name=_('Orchard geolocation'))
+    created_at = models.DateTimeField(auto_now_add=True)
+    geom = models.MultiPolygonField(srid=settings.EUDR_DATA_FEATURES_SRID, verbose_name=_('Orchard geolocation'), null=True, blank=True)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
+
+    def geom_extent(self):
+        return json.dumps(str(list(self.geom.extent))) if self.geom else None
+
+    def clean(self):
+        super().clean()
+        if not self.file and not self.geom:
+            raise ValidationError("You must provide either a file or a geometry.")
+        if self.file and self.geom:
+            raise ValidationError("You must provide either a file or a geometry, not both.")
+        if self.file and not self.geom:
+            validate_geom_vector_file(self.file)
 
     class Meta:
         verbose_name = _('Orchard geolocation')
         verbose_name_plural = _('Orchard geolocations')
         ordering = ('orchard', 'id')
-        constraints = [
-            models.UniqueConstraint(fields=['orchard'], name='orchard_geolocation_unique_orchard'),
-        ]
+
+@receiver(post_save, sender=OrchardGeoLocation)
+def set_geom_from_file(sender, instance, created, **kwargs):
+    # Previene loop infinito
+    if getattr(instance, 'save_due_to_update_geom', False):
+        return
+
+    if instance.file and not instance.geom:
+        try:
+            fix_format(instance)
+            fix_crs(instance)
+            to_polygon(instance)
+            to_multipolygon(instance)
+
+            geom = get_geom_from_file(instance)
+            instance.geom = GEOSGeometry(geom, srid=4326)
+            instance.save_due_to_update_geom = True
+            instance.save(update_fields=['geom'])
+        except Exception as e:
+            if hasattr(instance.file, 'close'):
+                instance.file.close()
+            if hasattr(instance.file, 'path') and os.path.exists(instance.file.path):
+                os.remove(instance.file.path)
+            raise ValidationError(f"Error procesando archivo: {e}")
+
+
 
 
 class CrewChief(models.Model):

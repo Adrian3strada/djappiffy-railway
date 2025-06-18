@@ -59,6 +59,7 @@ class ProductResource(DehydrationResource, ExportResource):
         else:
             return ", ".join([f"{pc.name} ({pc.market.alias})" for pc in product_classes])
 
+
     def dehydrate_product_variety(self, product):
         product_varieties = product.productvariety_set.filter(is_enabled=True)
         if not product_varieties.exists():
@@ -99,6 +100,7 @@ class ProductResource(DehydrationResource, ExportResource):
         else:
             return ", ".join([pr.name for pr in product_ripeness])
 
+
     def dehydrate_product_pest(self, product):
         product_pests = product.productpest_set.filter(is_enabled=True)
         if not product_pests.exists():
@@ -109,6 +111,7 @@ class ProductResource(DehydrationResource, ExportResource):
         else:
             return ", ".join([f"{p.pest} ({p.name})" for p in product_pests])
 
+
     def dehydrate_product_diseases(self, product):
         product_diseases = product.productdisease_set.filter(is_enabled=True)
         if not product_diseases.exists():
@@ -118,6 +121,7 @@ class ProductResource(DehydrationResource, ExportResource):
             return render_html_list(product_diseases)
         else:
             return ", ".join([f"{pd.disease} ({pd.name})" for pd in product_diseases])
+
 
     def dehydrate_product_physical_damage(self, product):
         product_physical_damage = product.productphysicaldamage_set.filter(is_enabled=True)
@@ -140,6 +144,7 @@ class ProductResource(DehydrationResource, ExportResource):
             residue_names = ", ".join([pr.name for pr in product_residues])
             return residue_names
 
+
     def dehydrate_product_food_safety_process(self, product):
         product_food_safety_process = product.productfoodsafetyprocess_set.filter(is_enabled=True)
         if not product_food_safety_process.exists():
@@ -155,8 +160,8 @@ class ProductResource(DehydrationResource, ExportResource):
         model = Product
         exclude = default_excluded_fields
         export_order = ('id', 'kind', 'name', 'measure_unit_category', 'markets', 'product_managment_cost', 'product_class',  'product_variety',
-                        'product_phenology', 'product_harvest_size', 'product_ripeness', 'product_pest', 'product_diseases',
-                        'product_physical_damage', 'product_residues', 'product_food_safety_process', 'is_enabled')
+                        'product_phenology', 'product_harvest_size', 'product_mass_volume', 'product_ripeness', 'product_pest', 'product_diseases',
+                        'product_physical_damage', 'product_residues', 'product_food_safety_process', 'product_additional_values', 'is_enabled')
 
 class ProductSizeResource(DehydrationResource, ExportResource):
     class Meta:
@@ -233,7 +238,7 @@ class MaquiladoraResource(DehydrationResource, ExportResource):
         export_order = ('id', 'name', 'zone', 'tax_id', 'state', 'city', 'district', 'neighborhood', 'postal_code', 'address', 'external_number', 'email', 'phone_number', 'clients', 'is_enabled')
 
 class OrchardResource(DehydrationResource, ExportResource):
-    product = Field(column_name="Product")
+    products = Field(column_name="Products")
     certification_kind = Field(column_name=_("Orchard Certification Kind"))
     certification_number = Field(column_name=_("Orchard Certification Number"))
     expiration_date = Field(column_name=_("Orchard Certification Expiration Date"))
@@ -244,12 +249,12 @@ class OrchardResource(DehydrationResource, ExportResource):
         self.export_format = export_format
 
     def dehydrate_product(self, obj):
-        product = obj.product.all()
+        products = obj.products.all()
         if self.export_format == "pdf":
-            product = [p for p in product]
-            return render_html_list(product)
+            products = [p for p in products]
+            return render_html_list(products)
         else:
-            return ", ".join([str(p) for p in product])
+            return ", ".join([str(p) for p in products])
 
     def dehydrate_category(self, obj):
         choices_dict = dict(ORCHARD_PRODUCT_CLASSIFICATION_CHOICES)
@@ -268,6 +273,7 @@ class OrchardResource(DehydrationResource, ExportResource):
         else:
             return ", ".join([oc.certification_kind.name for oc in certification_kinds])
 
+
     def dehydrate_certification_number(self, orchard):
         certification_number = orchard.orchardcertification_set.filter(is_enabled=True)
         if not certification_number:
@@ -277,6 +283,7 @@ class OrchardResource(DehydrationResource, ExportResource):
             return certification_number[0] if certification_number else ""
         else:
             return ",".join([ocn.certification_number for ocn in certification_number])
+
 
     def dehydrate_expiration_date(self, orchard):
         certification_qs = orchard.orchardcertification_set.filter(is_enabled=True)
@@ -296,6 +303,7 @@ class OrchardResource(DehydrationResource, ExportResource):
             result = ", ".join(formatted_dates)
             return result
 
+
     def dehydrate_certification_verifier(self, orchard):
         certification_verifier = orchard.orchardcertification_set.filter(is_enabled=True)
         if not certification_verifier.exists():
@@ -309,7 +317,7 @@ class OrchardResource(DehydrationResource, ExportResource):
     class Meta:
         model = Orchard
         exclude = default_excluded_fields
-        export_order = ('id', 'name', 'code', 'category', 'product', 'producer', 'safety_authority_registration_date',
+        export_order = ('id', 'name', 'code', 'category', 'products', 'producer', 'safety_authority_registration_date',
                         'state', 'city', 'district', 'ha', 'sanitary_certificate', 'certification_kind', 'certification_number',
                         'expiration_date', 'certification_verifier', 'is_enabled')
 
@@ -353,6 +361,7 @@ class PackagingResource(DehydrationResource, ExportResource):
     def __init__(self, export_format=None, **kwargs):
         super().__init__(**kwargs)
         self.export_format = export_format
+
 
     def dehydrate_complementary_supplies(self, packaging):
         complementary_supplies = packaging.packagingcomplementarysupply_set.all()
@@ -482,6 +491,7 @@ class ProductPresentationResource(DehydrationResource, ExportResource):
         else:
             return ", ".join(f"{s.kind.name} ({s.supply.name})" for s in complementary_supplies)
 
+
     class Meta:
         model = ProductPresentation
         exclude = default_excluded_fields
@@ -493,12 +503,14 @@ class SizePackagingResource(DehydrationResource, ExportResource):
         super().__init__(**kwargs)
         self.export_format = export_format
 
+
     def dehydrate_category(self, obj):
         choices_dict = dict(PRODUCT_PACKAGING_CATEGORY_CHOICES)
         category_value = obj.category
         category_display = choices_dict.get(category_value, "No category")
 
         return f"{category_display}"
+
 
     def dehydrate_pallets(self, productpackaging):
         pallets = productpackaging.productpackagingpallet_set.all()

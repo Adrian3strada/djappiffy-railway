@@ -41,7 +41,7 @@ urlpatterns = [
     path('dadmin/purchases/set_purchase_order_supply_payment/<int:purchase_order_supply_id>/',
          set_purchase_order_supply_payment,
          name='set_purchase_order_supply_payment'),
-    
+
     # Admin URLs
     path("dadmin/", admin.site.urls),
     path("wadmin/", include(wagtailadmin_urls)),
@@ -72,7 +72,8 @@ urlpatterns = [
     # CKEditor integration
     path("ckeditor5/", include("django_ckeditor_5.urls")),
     path("_nested_admin/", include("nested_admin.urls")),
-    path("", include('packhouses.purchases.urls'))
+    path("purchases/", include('packhouses.purchases.urls')),
+    path("packing/", include("packhouses.packing.urls")),
 ]
 
 # Add static and media files serving in debug mode

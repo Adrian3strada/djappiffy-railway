@@ -78,7 +78,7 @@ class PackerEmployeeAdmin(ByOrganizationAdminMixin):
         return custom_urls + urls
 
     class Media:
-        js = ('js/admin.js',)
+        js = ('js/admin/forms/packing/packer_label.js',)
 
 
 class PackingPackageInline(admin.StackedInline):

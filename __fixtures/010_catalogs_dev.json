@@ -2508,7 +2508,7 @@
     "sanitary_certificate": "8763782984628",
     "is_enabled": true,
     "organization": 1,
-    "product": [
+    "products": [
       1
     ]
   }
@@ -2529,7 +2529,7 @@
     "sanitary_certificate": "87635DGGD5324",
     "is_enabled": true,
     "organization": 1,
-    "product": [
+    "products": [
       1
     ]
   }
@@ -2544,20 +2544,14 @@
     "producer": 2,
     "producer_name": null,
     "safety_authority_registration_date": "2026-06-06",
-    "state": [
-      3995955
-    ],
-    "city": [
-      8582258
-    ],
-    "district": [
-      4019757
-    ],
+    "state": 2282,
+    "city": 12059,
+    "district": 22946,
     "ha": 42.0,
     "sanitary_certificate": "8763782984629",
     "is_enabled": true,
     "organization": 1,
-    "product": [
+    "products": [
       7
     ]
   }
@@ -2572,20 +2566,14 @@
     "producer": 2,
     "producer_name": null,
     "safety_authority_registration_date": "2026-06-06",
-    "state": [
-      3531730
-    ],
-    "city": [
-      6942858
-    ],
-    "district": [
-      3820784
-    ],
+    "state": 2282,
+    "city": 25697,
+    "district": 88107,
     "ha": 50.0,
     "sanitary_certificate": "8763782984629",
     "is_enabled": true,
     "organization": 1,
-    "product": [
+    "products": [
       4
     ]
   }
@@ -2600,20 +2588,14 @@
     "producer": 2,
     "producer_name": null,
     "safety_authority_registration_date": "2026-06-06",
-    "state": [
-      3531730
-    ],
-    "city": [
-      6942858
-    ],
-    "district": [
-      3530840
-    ],
+    "state": 2282,
+    "city": 25698,
+    "district": 88515,
     "ha": 35.0,
     "sanitary_certificate": "87635DGGD53243",
     "is_enabled": true,
     "organization": 1,
-    "product": [
+    "products": [
       7
     ]
   }
@@ -2628,20 +2610,14 @@
     "producer": 2,
     "producer_name": null,
     "safety_authority_registration_date": "2026-06-06",
-    "state": [
-      4017700
-    ],
-    "city": [
-      6942831
-    ],
-    "district": [
-      8858249
-    ],
+    "state":2282,
+    "city": 25691,
+    "district": 88178,
     "ha": 30.0,
     "sanitary_certificate": "87635DGGD53244",
     "is_enabled": true,
     "organization": 1,
-    "product": [
+    "products": [
       4
     ]
   }
@@ -2679,12 +2655,10 @@
   "pk": 3,
   "fields": {
     "certification_kind": 1,
-    "certification_kind_name": null,
     "certification_number": "763GD663HD6",
     "certification_document": "orchard_certifications/Requisito_2.docx",
     "expiration_date": "2027-06-06",
     "verifier": 1,
-    "verifier_name": null,
     "extra_code": "6637H",
     "is_enabled": true,
     "orchard": 3,
@@ -2696,12 +2670,10 @@
   "pk": 4,
   "fields": {
     "certification_kind": 3,
-    "certification_kind_name": null,
     "certification_number": "763GD663HD6",
     "certification_document": "orchard_certifications/Requisito_3.docx",
     "expiration_date": "2026-06-06",
     "verifier": 1,
-    "verifier_name": null,
     "extra_code": "6637H",
     "is_enabled": true,
     "orchard": 4,
@@ -2713,12 +2685,10 @@
   "pk": 5,
   "fields": {
     "certification_kind": 3,
-    "certification_kind_name": null,
     "certification_number": "ORG653678231",
     "certification_document": "orchard_certifications/Requisito_4.docx",
     "expiration_date": "2026-06-06",
     "verifier": 4,
-    "verifier_name": null,
     "extra_code": "665D7H3",
     "is_enabled": true,
     "orchard": 5,
@@ -2730,12 +2700,10 @@
   "pk": 6,
   "fields": {
     "certification_kind": 3,
-    "certification_kind_name": null,
     "certification_number": "ORG653678234",
     "certification_document": "orchard_certifications/Requisito_1.docx",
     "expiration_date": "2026-06-06",
     "verifier": 1,
-    "verifier_name": null,
     "extra_code": "665D7H4",
     "is_enabled": true,
     "orchard": 6,

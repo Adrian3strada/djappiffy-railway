@@ -2,10 +2,11 @@ document.addEventListener("DOMContentLoaded", function() { });
 
 
 function submitNewLabels(id) {
+    console.log('Entrando a submitNewLabels con id:', id);
     const input = document.getElementById("number_of_labels_" + id);
     if (input) {
-        const quantity = parseInt(input.value, 10); 
-        if (quantity < 1 || quantity > 1000 ) {  
+        const quantity = parseInt(input.value, 10);
+        if (quantity < 1 || quantity > 1000 ) {
             Swal.fire({
                 icon: "error",
                 title: "Error",
@@ -14,7 +15,7 @@ function submitNewLabels(id) {
             });
             return;
         }
-        const action = `/dadmin/product_packaging/packeremployee/generate_label/${id}/?quantity=${quantity}`;
+        const action = `/dadmin/packing/packeremployee/generate_label/${id}/?quantity=${quantity}`;
         fetch(action, {
             method: "GET",
             headers: {
@@ -50,8 +51,8 @@ function submitNewLabels(id) {
 function submitPendingLabels(id) {
     const input = document.getElementById("pending_quantity_" + id);
     if (input) {
-        const quantity = parseInt(input.value, 10); 
-        if (quantity < 1) {  
+        const quantity = parseInt(input.value, 10);
+        if (quantity < 1) {
             Swal.fire({
                 icon: "error",
                 text: "No hay etiquetas pendientes para este empacador.",
@@ -59,7 +60,7 @@ function submitPendingLabels(id) {
             });
             return;
         }
-        const action = `/dadmin/product_packaging/packeremployee/generate_pending_labels/${id}/`;
+        const action = `/dadmin/packing/packeremployee/generate_pending_labels/${id}/`;
         fetch(action, {
             method: "GET",
             headers: {
@@ -86,7 +87,7 @@ function submitPendingLabels(id) {
         .catch(error => {
             console.error("Error trying to recover pending labels:", error);
         });
-    } 
+    }
     else {
         console.error("No inputs found for employee:", id);
     }
@@ -104,7 +105,7 @@ function discardLabels(employeeId) {
         confirmButtonText: "Si, descartar todas"
     }).then((result) => {
         if (result.isConfirmed) {
-            fetch(`/dadmin/product_packaging/packeremployee/discard_labels/${employeeId}/`, {
+            fetch(`/dadmin/packing/packeremployee/discard_labels/${employeeId}/`, {
                 method: "POST",
                 headers: {
                     "X-CSRFToken": getCSRFToken(),
@@ -123,7 +124,7 @@ function discardLabels(employeeId) {
                     }).then(() => {
                         location.reload();
                     });
-                } 
+                }
                 else {
                     Swal.fire({
                         icon: "error",

@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,42 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Etiquetas de {{ employee.full_name }}</title>
     <style>
-        /* define size for each label  */
+        /* define size for each label */
         @page {
-            size: 5cm 3cm; 
+            size: 5cm 2.5cm;
             margin: 0;
         }
         body {
             font-family: Arial, sans-serif;
+            height: auto;
         }
         .label-container {
             width: 5cm;
-            height: 3cm;
+            height: 2.5cm;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: space-around;
+            flex-direction: row;
+            align-items: flex-start;
             text-align: center;
-            page-break-before: always; 
-            padding-top: 10px;
-            transform: rotate(-90deg);
-        }
-        .label-info, .qr-container {
-            transform: rotate(90deg); 
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            page-break-before: always;
+            padding: 10px;
         }
         .label-info {
-            font-size: 5px;
-            text-align: center;
+            font-size: 10px;
+            text-align: left;
+            overflow-wrap: break-word;
             word-wrap: break-word;
             white-space: normal;
-            width: 60%;
+            width: 65%;
             font-weight: bold;
+            margin-top: 5px;
         }
         .qr-container {
-            margin-top: 0px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            width: 40%; /* Ajusta el ancho del contenedor QR */
+            margin-top: -5px; /* Mueve el QR hacia arriba */
+            margin-left: -10px; /* Mueve el QR más cerca del texto */
         }
         .qr-image {
             width: 50px;
@@ -53,11 +52,11 @@
 <body>
     {% for label in labels %}
         <div class="label-container">
-            <div class="label-info">
-                <p>{{ label.label_id }}</p>
-            </div>
             <div class="qr-container">
                 <img src="data:image/png;base64,{{ label.qr_image_base64 }}" alt="QR Code" class="qr-image">
+            </div>
+            <div class="label-info">
+                <p>{{ label.label_id }}</p>
             </div>
         </div>
     {% endfor %}

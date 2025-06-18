@@ -39,3 +39,25 @@ class OrchardCertificationVerifierViewSet(viewsets.ModelViewSet):
 
         user_organizations = user.organizations_organization.all()
         return OrchardCertificationVerifier.objects.filter(organization__in=user_organizations)
+
+class OrchardCertificationKindForEudrViewSet(viewsets.ModelViewSet):
+    serializer_class = OrchardCertificationKindSerializer
+    filterset_fields = ['organization', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        organization_id = self.request.query_params.get('organization')
+        if not organization_id:
+            return OrchardCertificationKind.objects.none()
+        return OrchardCertificationKind.objects.filter(organization_id=organization_id)
+
+class OrchardCertificationVerifierForEudrViewSet(viewsets.ModelViewSet):
+    serializer_class = OrchardCertificationVerifierSerializer
+    filterset_fields = ['organization', 'is_enabled']
+    pagination_class = None
+
+    def get_queryset(self):
+        organization_id = self.request.query_params.get('organization')
+        if not organization_id:
+            return OrchardCertificationVerifier.objects.none()
+        return OrchardCertificationVerifier.objects.filter(organization_id=organization_id)

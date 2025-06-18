@@ -244,7 +244,7 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
             if db_field.name == "orchard":
                 org = incoming_product.organization if incoming_product else None
                 prod = schedule_harvest.product if schedule_harvest and hasattr(schedule_harvest, "product") else None
-                kwargs["queryset"] = model.objects.filter(organization=org, product=prod, is_enabled=True) if org and prod else qs_none
+                kwargs["queryset"] = model.objects.filter(organization=org, products=prod, is_enabled=True) if org and prod else qs_none
             else:
                 prod_obj = getattr(schedule_harvest, field, None) if schedule_harvest else None
                 prod = prod_obj.product if prod_obj else None
@@ -255,6 +255,8 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
                 "model": Market,
                 "filters": {"is_enabled": True},
             },
+
+
             "weighing_scale": {
                 "model": WeighingScale,
                 "filters": {"is_enabled": True},
@@ -537,7 +539,7 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
                     qs = ProductHarvestSizeKind.objects.filter(product=pid, is_enabled=True)
                 else:  # "orchard"
                     org = sh.incoming_product.organization
-                    qs = Orchard.objects.filter(product=pid, organization=org, is_enabled=True)
+                    qs = Orchard.objects.filter(products=pid, organization=org, is_enabled=True) #
             else:
                 qs = db_field.related_model.objects.none()
 
