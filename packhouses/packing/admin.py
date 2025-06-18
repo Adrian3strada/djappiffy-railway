@@ -133,9 +133,11 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
 
 @admin.register(PackingPackage)
 class PackingPackageAdmin(ByOrganizationAdminMixin):
-    list_display = ("ooid", "batch", "market", "product_market_class", "product_size", "status")
-    search_fields = ("product_market_class__name", "product_size__name")
-    list_filter = ("product_market_class", "product_size")
+    list_display = ("ooid", "batch", "market", "product_size", "product_market_class", "product_ripeness",
+                    "size_packaging", "packaging_quantity", "processing_date", "packing_pallet", "status")
+    search_fields = ("batch__name", "product_size__name", "packing_pallet__name")
+    list_filter = ("batch", "market", "product_size", "product_market_class", "product_ripeness", "size_packaging",
+                   "processing_date", "packing_pallet", "status")
     fields = ['ooid', 'batch', 'market', 'product_size', 'product_market_class',
               'product_ripeness', 'size_packaging', 'product_weight_per_packaging',
               'product_presentations_per_packaging', 'product_pieces_per_presentation', 'packaging_quantity',
