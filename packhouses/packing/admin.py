@@ -9,9 +9,10 @@ from .views import generate_label_pdf, generate_pending_label_pdf, discard_label
 from common.base.mixins import (ByOrganizationAdminMixin)
 from packhouses.receiving.models import Batch
 from packhouses.gathering.models import ScheduleHarvest
-from packhouses.catalogs.models import Market, Product, ProductPhenologyKind, ProductSize, ProductMarketClass, \
-    ProductRipeness, SizePackaging, Pallet
-
+from packhouses.catalogs.models import (Market, Product, ProductSize, ProductMarketClass,
+                                        ProductRipeness, SizePackaging, Pallet)
+from .filters import (ByBatchForOrganizationPackingPackageFilter, ByMarketForOrganizationPackingPackageFilter,
+                      ByProductSizeForOrganizationPackingPackageFilter)
 
 # Register your models here.
 
@@ -91,12 +92,17 @@ class PackingPackageInline(admin.StackedInline):
 
 @admin.register(PackingPallet)
 class PackingPalletAdmin(ByOrganizationAdminMixin):
-    list_display = ("ooid", "market", "product_market_class", "product_size", "status")
-    search_fields = ("product_market_class__name", "product_size__name")
-    list_filter = ("product_market_class", "product_size")
-    fields = ['ooid', 'market', 'product_size', 'product_phenology', 'product_market_class',
-              'product_ripeness', 'size_packaging', 'pallet', 'status']
+    list_display = ("ooid", "market", "get_product_sizes_display", "status")
+    search_fields = ("ooid", )
+    list_filter = ('product', 'market', "product_sizes", 'pallet', 'status')
+    fields = ['ooid', 'product', 'market', 'product_sizes', 'pallet', 'status']
     inlines = [PackingPackageInline]
+
+    def get_product_sizes_display(self, obj):
+        return ", ".join([size.name for size in obj.product_sizes.all()]) if obj.product_sizes.exists() else "-"
+    get_product_sizes_display.short_description = _("Product Sizes")
+    get_product_sizes_display.admin_order_field = 'product_sizes__name'
+
 
     def get_readonly_fields(self, request, obj=None):
         fields = self.get_fields(request, obj)
@@ -107,37 +113,15 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = request.organization if hasattr(request, 'organization') else None
 
-        if db_field.name == "batch":
-            kwargs["queryset"] = Batch.objects.filter(organization=organization)
-            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda \
-                obj: f"{obj.ooid} :: {obj.harvest_product_provider} - {obj.incomingproduct.scheduleharvest.created_at.strftime('%Y-%m-%d')}"
-            return formfield
+        if db_field.name == "product":
+            kwargs["queryset"] = Product.objects.filter(organization=organization)
 
         if db_field.name == "market":
             kwargs["queryset"] = Market.objects.filter(organization=organization)
 
-        if db_field.name == "product":
-            kwargs["queryset"] = Product.objects.filter(organization=organization)
-
-        if db_field.name == "product_phenology":
-            organization_products = Product.objects.filter(organization=organization)
-            kwargs["queryset"] = ProductPhenologyKind.objects.filter(product__in=organization_products)
-
         if db_field.name == "product_size":
             organization_products = Product.objects.filter(organization=organization)
             kwargs["queryset"] = ProductSize.objects.filter(product__in=organization_products)
-
-        if db_field.name == "product_market_class":
-            organization_products = Product.objects.filter(organization=organization)
-            kwargs["queryset"] = ProductMarketClass.objects.filter(product__in=organization_products)
-
-        if db_field.name == "product_ripeness":
-            organization_products = Product.objects.filter(organization=organization)
-            kwargs["queryset"] = ProductRipeness.objects.filter(product__in=organization_products)
-
-        if db_field.name == "size_packaging":
-            kwargs["queryset"] = SizePackaging.objects.filter(organization=organization)
 
         if db_field.name == "pallet":
             kwargs["queryset"] = Pallet.objects.filter(size_packagings__organization=organization)
@@ -150,13 +134,16 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
 
 @admin.register(PackingPackage)
 class PackingPackageAdmin(ByOrganizationAdminMixin):
-    list_display = ("ooid", "batch", "market", "product_market_class", "product_size", "status")
-    search_fields = ("product_market_class__name", "product_size__name")
-    list_filter = ("product_market_class", "product_size")
-    fields = ['ooid', 'batch', 'market', 'product_phenology', 'product_size', 'product_market_class',
+    list_display = ("ooid", "batch", "market", "product_size", "product_market_class", "product_ripeness",
+                    "size_packaging", "packaging_quantity", "processing_date", "packing_pallet", "status")
+    search_fields = ("batch__name", "product_size__name", "packing_pallet__name")
+    list_filter = (ByBatchForOrganizationPackingPackageFilter, ByMarketForOrganizationPackingPackageFilter,
+                   ByProductSizeForOrganizationPackingPackageFilter, "product_market_class", "product_ripeness", "size_packaging",
+                   "processing_date", "packing_pallet", "status")
+    fields = ['ooid', 'batch', 'market', 'product_size', 'product_market_class',
               'product_ripeness', 'size_packaging', 'product_weight_per_packaging',
               'product_presentations_per_packaging', 'product_pieces_per_presentation', 'packaging_quantity',
-              'processing_date', 'status', 'packing_pallet']
+              'processing_date', 'packing_pallet', 'status']
 
     def get_readonly_fields(self, request, obj=None):
         fields = self.get_fields(request, obj)
@@ -198,7 +185,7 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
             kwargs["queryset"] = Batch.objects.filter(organization=organization)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             formfield.label_from_instance = lambda \
-                obj: f"{obj.ooid} :: {obj.harvest_product_provider} - {obj.incomingproduct.scheduleharvest.created_at.strftime('%Y-%m-%d')}"
+                obj: f"{obj.ooid} - {obj.incomingproduct.scheduleharvest.orchard.name} ({obj.available_weight} {obj.incomingproduct.scheduleharvest.product.measure_unit_category})"
             return formfield
 
         if db_field.name == "market":
@@ -206,10 +193,6 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
 
         if db_field.name == "product":
             kwargs["queryset"] = Product.objects.filter(organization=organization)
-
-        if db_field.name == "product_phenology":
-            organization_products = Product.objects.filter(organization=organization)
-            kwargs["queryset"] = ProductPhenologyKind.objects.filter(product__in=organization_products)
 
         if db_field.name == "product_size":
             organization_products = Product.objects.filter(organization=organization)

@@ -151,7 +151,7 @@ class ProductMarketClass(models.Model):
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
 
     def __str__(self):
-        return f"{self.product.name} ({self.market.name} ): {self.name}"
+        return f"{self.product.name} ({self.market.alias}): {self.name}"
 
     class Meta:
         verbose_name = _('Product market class')

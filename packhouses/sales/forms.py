@@ -37,7 +37,6 @@ class OrderItemPackagingFormSet(BaseInlineFormSet):
         super().__init__(*args, **kwargs)
 
         for form in self.forms:
-            print("Processing form:", form.data)
             if form.data:
                 if f"{form.prefix}-product_size" in form.data:
                     try:

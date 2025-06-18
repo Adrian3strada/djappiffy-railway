@@ -154,7 +154,7 @@
     "name": "LIMÓN AMARILLO",
     "description": null,
     "measure_unit_category": "Kg",
-    "is_enabled": true,
+    "is_enabled": false,
     "organization": 1,
     "markets": [
       1
@@ -3978,7 +3978,7 @@
   }
 },
 {
-  "model": "catalogs.packagingcomplementarysupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 3,
   "fields": {
     "packaging": 2,
@@ -3988,7 +3988,7 @@
   }
 },
 {
-  "model": "catalogs.packagingcomplementarysupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 4,
   "fields": {
     "packaging": 1,
@@ -3998,7 +3998,7 @@
   }
 },
 {
-  "model": "catalogs.packagingcomplementarysupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 5,
   "fields": {
     "packaging": 2,
@@ -4008,7 +4008,7 @@
   }
 },
 {
-  "model": "catalogs.packagingcomplementarysupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 6,
   "fields": {
     "packaging": 4,
@@ -4018,7 +4018,7 @@
   }
 },
 {
-  "model": "catalogs.packagingcomplementarysupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 7,
   "fields": {
     "packaging": 4,
@@ -4028,7 +4028,7 @@
   }
 },
 {
-  "model": "catalogs.packagingcomplementarysupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 8,
   "fields": {
     "packaging": 5,
@@ -4038,7 +4038,7 @@
   }
 },
 {
-  "model": "catalogs.packagingcomplementarysupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 9,
   "fields": {
     "packaging": 5,
