@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", async function () {
   const batchField = $("#id_batch")
   const marketField = $("#id_market")
-  const productField = $("#id_product")
   const productSizeField = $("#id_product_size")
   const productMarketClassField = $("#id_product_market_class")
   const productRipenessField = $("#id_product_ripeness")
@@ -9,12 +8,16 @@ document.addEventListener("DOMContentLoaded", async function () {
   const productWeightPerPackagingField = $("#id_product_weight_per_packaging")
   const productPresentationsPerPackagingField = $("#id_product_presentations_per_packaging")
   const productPiecesPerPresentationField = $("#id_product_pieces_per_presentation")
+  const packagingQuantityField = $("#id_packaging_quantity")
   // const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
   let batchProperties = null
 
   productPresentationsPerPackagingField.closest('.form-group').hide()
   productPiecesPerPresentationField.closest('.form-group').hide()
+
+  productWeightPerPackagingField.attr('min', 1);
+  packagingQuantityField.attr('min', 1);
 
   function updateFieldOptions(field, options, selectedValue = null) {
     if (field) {
@@ -118,7 +121,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   const marketFieldChangeHandler = async () => {
-
     await setProductSizes();
     await setProductMarketClasses();
     await setProductRipeness();
@@ -171,6 +173,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   sizePackagingField.on("change", async function () {
     await productPackagingFieldChangeHandler();
+    if (batchProperties && sizePackagingField.val()) {
+      packagingQuantityField.val(parseInt(batchProperties.available_weight / parseInt(productWeightPerPackagingField.val())));
+      packagingQuantityField.attr('max', batchProperties.available_weight / parseInt(productWeightPerPackagingField.val()));
+    } else {
+      packagingQuantityField.attr('max', null);
+    }
   });
 
   await getBatchProperties();
