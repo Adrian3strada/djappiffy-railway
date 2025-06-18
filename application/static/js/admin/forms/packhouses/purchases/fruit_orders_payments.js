@@ -1,5 +1,21 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+  if (window.location.href.includes('/add/')) {
+      const paymentsTabLink = document.querySelector('a.nav-link[href="#payments-tab"]');
+
+      if (paymentsTabLink) {
+        const navItem = paymentsTabLink.closest('li.nav-item');
+        if (navItem) {
+          navItem.style.display = 'none';
+        }
+
+        const paymentsTabContent = document.querySelector('#payments-tab');
+        if (paymentsTabContent) {
+          paymentsTabContent.style.display = 'none';
+        }
+      }
+    }
+
     function fetchOptions(url) {
         return $.ajax({
             url: url,
@@ -205,6 +221,10 @@ document.addEventListener("DOMContentLoaded", function () {
         return null;
     }
 
+    $(document).on('change', '#id_batch', function (){
+      updateSimulatedBalance();
+    })
+
 
     // Nuevos forms agregados
     document.addEventListener('formset:added', (event) => {
@@ -233,6 +253,29 @@ document.addEventListener("DOMContentLoaded", function () {
                     }));
                 });
             });
+
+            selectField.on('change', function () {
+                const receiptId = $(this).val();
+                const amountField = $newForm.find('input[name$="-amount"]');
+
+                if (!receiptId) {
+                    amountField.val('');
+                    return;
+                }
+
+                $.get(`/rest/v1/purchases/fruit-receipts/?id=${receiptId}`, function (data) {
+                    if (Array.isArray(data) && data.length > 0) {
+                        const receipt = data[0];
+                        const balance = parseFloat(receipt.balance_payable || 0).toFixed(2);
+                        amountField.val(balance);
+                        updateSimulatedBalance(); // también actualizamos el resumen
+                    }
+                }).fail(error => {
+                    console.error('Error al obtener balance del recibo:', error);
+                    amountField.val('');
+                });
+            });
+
         }
     });
 
@@ -242,6 +285,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if ($('#balance-summary').length) return; // Evita duplicados
           const html = `
             <div id="balance-summary">
+              <div><strong>Kg pendientes de nota:</strong> <span id="kg-balance">—</span></div>
               <div><strong>Balance actual:</strong> $<span id="original-balance">—</span></div>
               <div><strong>Balance después de los pagos:</strong> $<span id="simulated-balance">—</span></div>
             </div>
@@ -265,6 +309,14 @@ document.addEventListener("DOMContentLoaded", function () {
           total += value;
       });
 
+      return total;
+  }
+  function getKgOriginalBalance() {
+      let total = 0;
+
+      if(document.getElementById('batch-weight_received') && document.getElementById('batch-weight_received').textContent.trim()) {
+        total = parseFloat(document.getElementById('batch-weight_received').textContent.trim());
+      }
       return total;
   }
 
@@ -295,10 +347,54 @@ document.addEventListener("DOMContentLoaded", function () {
       return total;
   }
 
+  function getNewKgTotal() {
+      let total = 0;
+
+      $('div[id^="fruitpurchaseorderreceipt_set-"]').each(function () {
+          const formId = $(this).attr('id');
+
+          // Ignora el form plantilla "__prefix__" que no debe procesarse nunca
+          if (formId.includes('__prefix__')) {
+              return;
+          }
+
+          // Verifica si el formId es tipo fruitpurchaseorderreceipt_set-<número> o -empty
+          const matchId = formId.match(/^fruitpurchaseorderreceipt_set-(\d+|empty)$/);
+          if (!matchId) return;
+
+          const quantityField = $(this).find('input[name$="-quantity"]');
+          const nameAttr = quantityField.attr('name') || '';
+          const match = nameAttr.match(/fruitpurchaseorderreceipt_set-(\d+|empty)-quantity/);
+          if (!match) return;
+
+          let value = parseFloat(quantityField.val().replace(',', '.')) || 0;
+
+          const container_capacity = $(this).find('input[name$="-container_capacity"]');
+          if (container_capacity && container_capacity.val()) {
+              value *= parseFloat(container_capacity.val().replace(',', '.')) || 0;
+          }
+
+          total += value;
+      });
+      return total;
+  }
+
   function updateSimulatedBalance() {
       const original = getOriginalBalance();
       const newPayments = getNewPaymentsTotal();
       const simulated = original - newPayments;
+
+      setTimeout(function(){
+         const kgOriginal = getKgOriginalBalance();
+         const kgBalance = getNewKgTotal();
+         const kgPending = kgOriginal - kgBalance;
+         if(isNaN(kgPending)) {
+            $('#kg-balance').text('—');
+         }else{
+           $('#kg-balance').text(kgPending.toLocaleString('es-MX', { minimumFractionDigits: 2 }));
+         }
+      }, 300);
+
 
       if(simulated < 0) {
         $('#simulated-balance').css('color', 'red');
@@ -308,14 +404,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
       $('#original-balance').text(original.toLocaleString('es-MX', { minimumFractionDigits: 2 }));
       $('#simulated-balance').text(simulated.toLocaleString('es-MX', { minimumFractionDigits: 2 }));
+
+
   }
 
   function attachSimulatedBalanceListeners() {
       $(document).on('input', 'input[name$="-amount"]', updateSimulatedBalance);
       updateSimulatedBalance();
+
+      $(document).on('input', 'input[name$="-quantity"]', updateSimulatedBalance);
+      updateSimulatedBalance();
   }
 
   $(document).on('input', 'input[id^="id_fruitpurchaseorderpayment_set-"][id$="-amount"]', function () {
+      updateSimulatedBalance();
+  });
+  $(document).on('input', 'input[id^="id_fruitpurchaseorderreceipt_set-"][id$="-quantity"]', function () {
       updateSimulatedBalance();
   });
 

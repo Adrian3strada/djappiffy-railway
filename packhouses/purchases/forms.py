@@ -470,7 +470,7 @@ class FruitOrderPaymentForm(forms.ModelForm):
 
         fruit_order = fruit_purchase_order or getattr(self.instance, 'fruit_purchase_order', None)
 
-        if fruit_order:
+        if fruit_order and fruit_order.pk:
             self.fields['fruit_purchase_order_receipt'].queryset = FruitPurchaseOrderReceipt.objects.filter(
                 fruit_purchase_order=fruit_order
             )
@@ -532,24 +532,28 @@ class FruitPurchaseOrderReceiptInlineFormset(BaseInlineFormSet):
     def clean(self):
         super().clean()
 
-        total_quantity = Decimal('0.00')
+        total_quantity = 0.0
 
         for form in self.forms:
             if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
-                quantity = form.cleaned_data.get('quantity') or Decimal('0.00')
+                quantity = form.cleaned_data.get('quantity') or 0.0
                 price_category = form.cleaned_data.get('price_category')
-                container_capacity = form.cleaned_data.get('container_capacity') or Decimal('1.00')
+                container_capacity = form.cleaned_data.get('container_capacity') or 1.0
 
                 if price_category and getattr(price_category, 'is_container', False):
-                    # Si la categoría es por contenedor, multiplicar cantidad por capacidad
                     quantity *= container_capacity
 
-                total_quantity += quantity
+                total_quantity += float(quantity)
 
-        if self.instance.batch and total_quantity > self.instance.batch.weight_received:
-            raise ValidationError(
-                _("The total quantity entered (%(total)s kg) exceeds the batch's received weight (%(received)s kg).") % {
-                    'total': f"{total_quantity:,.2f}",
-                    'received': f"{self.instance.batch.weight_received:,.2f}"
-                }
-            )
+        if self.instance.batch and self.instance.batch.weight_received is not None:
+            batch_weight = round(float(self.instance.batch.weight_received), 2)
+            total_quantity = round(total_quantity, 2)
+
+            if total_quantity > batch_weight:
+                raise ValidationError(
+                    _("The total quantity entered (%(total)s kg) exceeds the batch's received weight (%(received)s kg).") % {
+                        'total': f"{total_quantity:,.2f}",
+                        'received': f"{batch_weight:,.2f}"
+                    }
+                )
+

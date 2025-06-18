@@ -59,7 +59,7 @@ class Batch(models.Model):
         if self.is_parent:
             total_weight += sum(child.ingress_weight for child in self.children.all())
         return total_weight
-    
+
     # Peso recibido propio (sin hijos), para el admin
     @property
     def self_weighing_weight(self):
@@ -200,7 +200,7 @@ class Batch(models.Model):
             _('provider'): prefix + 'product_provider',
             _('product'): prefix + 'product',
             _('variety'): prefix + 'product_variety',
-            _('phenology'): prefix + 'product_phenologies',
+            _('phenology'): prefix + 'product_phenology',
         }
 
         for label, path in checks.items():
@@ -271,7 +271,7 @@ class Batch(models.Model):
             _('provider'): prefix + 'product_provider',
             _('product'):  prefix + 'product',
             _('variety'):  prefix + 'product_variety',
-            _('phenology'): prefix + 'product_phenologies',
+            _('phenology'): prefix + 'product_phenology',
         }
 
         for label, path in checks.items():
@@ -306,7 +306,7 @@ class Batch(models.Model):
                     _('Cannot add batches: non-mixable market cannot be mixed with others.'),
                     code='invalid_market_mix'
                 )
-    
+
     # Unir lote a un lote padre
     @classmethod
     def add_batches_to_merge(cls, parent, children_queryset):
@@ -324,7 +324,7 @@ class Batch(models.Model):
                 _('The selected batch is not a parent.'), code='not_parent_batch')
         parent_batch.children.update(parent=None)
 
-    @classmethod 
+    @classmethod
     def unmerge_selected_children(cls, batch_queryset):
         if not batch_queryset:
             raise ValidationError(_('No batches provided.'), code='no_batches_selected')
@@ -336,11 +336,11 @@ class Batch(models.Model):
                 code='not_a_child_batch',
                 params={'ooids': ', '.join(map(str, non_children))}
             )
-        
+
         parents = {batch.parent_id for batch in batch_queryset}
         if len(parents) > 1:
             raise ValidationError(
-                _('Selected batches belong to a different parent batch.'), 
+                _('Selected batches belong to a different parent batch.'),
                 code='multiple_parent_batches'
                 )
         batch_queryset.update(parent=None)
@@ -622,7 +622,7 @@ class WeighingSetContainer(models.Model):
 
     def clean(self):
         if not self.pk:
-            return 
+            return
 
         if self.weighing_set and self.weighing_set.protected:
             try:
@@ -638,12 +638,12 @@ class WeighingSetContainer(models.Model):
             if changed:
                 raise ValidationError(_("You cannot modify a container that belongs to a protected weighing set."))
 
-    
+
     def delete(self, *args, **kwargs):
         if self.weighing_set and self.weighing_set.protected:
             raise ValidationError(_('You cannot delete a container that belongs to a protected weighing set.'))
         return super().delete(*args, **kwargs)
-    
+
     class Meta:
         verbose_name = _('Weighing Set Containment')
         verbose_name_plural = _('Weighing Sets Containments')

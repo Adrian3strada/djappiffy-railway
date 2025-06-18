@@ -838,6 +838,7 @@ class ServiceOrderPayment(models.Model):
         verbose_name = _("Payment")
         verbose_name_plural = _("Payments")
 
+
 class PurchaseMassPayment(models.Model):
     """
     Representa un pago masivo realizado a proveedores por órdenes de compra.
@@ -1005,6 +1006,7 @@ class PurchaseMassPayment(models.Model):
         verbose_name = _("Mass Payment")
         verbose_name_plural = _("Mass Payments")
 
+
 class FruitPurchaseOrder(models.Model):
     """
     Representa una orden de compra de fruta, vinculada a un proveedor y a un lote específico.
@@ -1025,7 +1027,7 @@ class FruitPurchaseOrder(models.Model):
         choices=FRUIT_PURCHASE_CATEGORY_CHOICES,
     )
     status = models.CharField(
-        max_length=255,
+        max_length=20,
         choices=STATUS_CHOICES,
         default='open',
     )
@@ -1047,25 +1049,27 @@ class FruitPurchaseOrder(models.Model):
     )
 
     def __str__(self):
-        return f"{_("Batch")} {self.batch.ooid}"
+        return f"{_('Order')} #{self.ooid} – {_('Batch')}: {self.batch.ooid}"
 
     def save(self, *args, **kwargs):
-        if not self.ooid:
-            # Usar transacción y bloqueo de fila para evitar condiciones de carrera
+        if not self.ooid and self.organization:
             with transaction.atomic():
-                last_order = FruitPurchaseOrder.objects.select_for_update().filter(organization=self.organization).order_by(
-                    '-ooid').first()
-                self.ooid = (last_order.ooid + 1) if last_order and last_order.ooid is not None else 1
+                last_order = FruitPurchaseOrder.objects.select_for_update().filter(
+                    organization=self.organization
+                ).order_by('-ooid').first()
+                self.ooid = (last_order.ooid + 1) if last_order and last_order.ooid else 1
 
         super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _("Fruit Purchase Order")
         verbose_name_plural = _("Fruit Purchase Orders")
-        ordering = ['-created_at']
+        ordering = ['-created_at', '-ooid']
         constraints = [
+            models.UniqueConstraint(fields=['ooid', 'organization'], name='unique_ooid_per_organization'),
             models.UniqueConstraint(fields=['batch', 'organization'], name='unique_batch_fruit_order_organization')
         ]
+
 
 class FruitPurchaseOrderReceipt(models.Model):
     """
@@ -1222,10 +1226,11 @@ class FruitPurchaseOrderReceipt(models.Model):
                 ).order_by('-ooid').first()
                 self.ooid = (last_order.ooid + 1) if last_order and last_order.ooid is not None else 1
 
-            # Actualizamos siempre el balance
-            self.recalculate_balance_payable()
+            super().save(*args, **kwargs)  # PRIMERO guarda la instancia
 
-            super().save(*args, **kwargs)
+            # SOLO DESPUÉS de guardar, recalcula balance
+            self.recalculate_balance_payable()
+            super().save(update_fields=["balance_payable"])
 
     class Meta:
         verbose_name = _("Fruit Receipt")
@@ -1236,6 +1241,7 @@ class FruitPurchaseOrderReceipt(models.Model):
                 name='unique_ooid_per_purchase_order'
             )
         ]
+
 
 class FruitPurchaseOrderPayment(models.Model):
     fruit_purchase_order = models.ForeignKey(
@@ -1319,34 +1325,28 @@ class FruitPurchaseOrderPayment(models.Model):
         blank=True
     )
 
-
     def clean(self):
+        super().clean()
+
         if not self.fruit_purchase_order or not self.fruit_purchase_order.pk:
             return
-
-        super().clean()
 
         if not self.amount or not self.fruit_purchase_order_receipt:
             return
 
-        # Base: todos los pagos que no están cancelados
         payments_qs = FruitPurchaseOrderPayment.objects.filter(
             fruit_purchase_order_receipt=self.fruit_purchase_order_receipt
         ).exclude(status='canceled')
 
-        # Si el pago actual ya existe en DB y NO será cancelado, lo excluimos para evitar sumarlo doble
-        if self.pk:
-            if self.status != 'canceled':
-                payments_qs = payments_qs.exclude(pk=self.pk)
-            # Si está cancelado, no lo agregamos ni en queryset ni manualmente
+        if self.pk and self.status != 'canceled':
+            payments_qs = payments_qs.exclude(pk=self.pk)
 
         total_paid = payments_qs.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
-        # Solo sumamos self.amount si NO será cancelado
         if self.status != 'canceled':
             new_total = total_paid + self.amount
         else:
-            new_total = total_paid  # ni lo tomamos en cuenta
+            new_total = total_paid
 
         total_receipt = self.fruit_purchase_order_receipt.quantity * self.fruit_purchase_order_receipt.unit_price
 
@@ -1355,14 +1355,17 @@ class FruitPurchaseOrderPayment(models.Model):
                 'amount': _(
                     "The total payment amount (%(new_total)s) exceeds the receipt total (%(receipt_total)s)."
                 ) % {
-                        'new_total': f"{new_total:,.2f}",
-                        'receipt_total': f"{total_receipt:,.2f}"
-                    }
+                              'new_total': f"{new_total:,.2f}",
+                              'receipt_total': f"{total_receipt:,.2f}"
+                          }
             })
 
     def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
+        user = kwargs.pop('user', None)
+        with transaction.atomic():
+            if user and not self.pk:
+                self.created_by = user
+            super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.payment_date} - ${self.amount}"
