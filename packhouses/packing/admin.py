@@ -11,7 +11,7 @@ from packhouses.receiving.models import Batch
 from packhouses.gathering.models import ScheduleHarvest
 from packhouses.catalogs.models import Market, Product, ProductPhenologyKind, ProductSize, ProductMarketClass, \
     ProductRipeness, SizePackaging, Pallet
-
+from .filters import ByBatchForOrganizationPackingPackageFilter, ByMarketForOrganizationPackingPackageFilter
 
 # Register your models here.
 
@@ -136,7 +136,7 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
     list_display = ("ooid", "batch", "market", "product_size", "product_market_class", "product_ripeness",
                     "size_packaging", "packaging_quantity", "processing_date", "packing_pallet", "status")
     search_fields = ("batch__name", "product_size__name", "packing_pallet__name")
-    list_filter = ("batch", "market", "product_size", "product_market_class", "product_ripeness", "size_packaging",
+    list_filter = (ByBatchForOrganizationPackingPackageFilter, ByMarketForOrganizationPackingPackageFilter, "product_size", "product_market_class", "product_ripeness", "size_packaging",
                    "processing_date", "packing_pallet", "status")
     fields = ['ooid', 'batch', 'market', 'product_size', 'product_market_class',
               'product_ripeness', 'size_packaging', 'product_weight_per_packaging',
