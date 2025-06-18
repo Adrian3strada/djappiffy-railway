@@ -55,8 +55,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const setProductSizes = async () => {
     if (batchProperties && batchProperties.product && marketField.val()) {
-      console.log(batchProperties.product)
+      console.log("setProductSizes", batchProperties.product)
       const sizes = await fetchOptions(`/rest/v1/catalogs/product-size/?product=${batchProperties.product.id}&market=${marketField.val()}&category=size&is_enabled=1`);
+      console.log("Sizes fetched:", sizes);
+      console.log("productSizeField.val()", productSizeField.val());
       updateFieldOptions(productSizeField, sizes, productSizeField.val() ? productSizeField.val() : null);
     } else {
       if (productSizeField.val()) {
@@ -70,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const setProductMarketClasses = async () => {
     if (batchProperties && batchProperties.product && marketField.val()) {
       const classes = await fetchOptions(`/rest/v1/catalogs/product-market-class/?product=${batchProperties.product.id}&market=${marketField.val()}&is_enabled=1`);
-        updateFieldOptions(productMarketClassField, classes, productMarketClassField.val());
+      updateFieldOptions(productMarketClassField, classes, productMarketClassField.val());
     } else {
       if (productMarketClassField.val()) {
         const marketClass = await fetchOptions(`/rest/v1/catalogs/product-market-class/${productMarketClassField.val()}/`);
@@ -83,12 +85,12 @@ document.addEventListener("DOMContentLoaded", async function () {
   const setProductRipeness = async () => {
     if (batchProperties && batchProperties.product && marketField.val()) {
       const ripeness = await fetchOptions(`/rest/v1/catalogs/product-ripeness/?product=${batchProperties.product.id}&market=${marketField.val()}&is_enabled=1`);
-      if (ripeness.length > 0) {
-        updateFieldOptions(productRipenessField, ripeness, productRipenessField.val());
-      } else {
-        updateFieldOptions(productRipenessField, []);
-      }
+      updateFieldOptions(productRipenessField, ripeness, productRipenessField.val() ? productRipenessField.val() : null);
     } else {
+      if (productRipenessField.val()) {
+        const ripeness = await fetchOptions(`/rest/v1/catalogs/product-ripeness/${productRipenessField.val()}/`);
+        updateFieldOptions(productRipenessField, [ripeness], productRipenessField.val());
+      }
       updateFieldOptions(productRipenessField, []);
     }
   }
@@ -96,14 +98,12 @@ document.addEventListener("DOMContentLoaded", async function () {
   const setSizePackagings = async () => {
     if (batchProperties && batchProperties.product && marketField.val() && productSizeField.val()) {
       const packagings = await fetchOptions(`/rest/v1/catalogs/size-packaging/?product=${batchProperties.product.id}&market=${marketField.val()}&product_size=${productSizeField.val()}&is_enabled=1`);
-      if (packagings.length > 0) {
-        console.log("Packagings:", packagings);
-        updateFieldOptions(sizePackagingField, packagings, sizePackagingField.val());
-      } else {
-        console.log("No packagings found for the selected product size.");
-        updateFieldOptions(sizePackagingField, []);
-      }
+      updateFieldOptions(sizePackagingField, packagings, sizePackagingField.val() ? sizePackagingField.val() : null);
     } else {
+      if (sizePackagingField.val()) {
+        const packaging = await fetchOptions(`/rest/v1/catalogs/size-packaging/${sizePackagingField.val()}/`);
+        updateFieldOptions(sizePackagingField, [packaging], sizePackagingField.val());
+      }
       updateFieldOptions(sizePackagingField, []);
     }
   }
@@ -118,12 +118,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   const marketFieldChangeHandler = async () => {
+
     await setProductSizes();
-    if (marketField.val()) {
-      await setProductMarketClasses();
-      await setProductRipeness();
-      await setSizePackagings();
-    }
+    await setProductMarketClasses();
+    await setProductRipeness();
+    await setSizePackagings();
   }
 
   const productSizeFieldChangeHandler = async () => {
@@ -174,17 +173,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     await productPackagingFieldChangeHandler();
   });
 
-
-  if (marketField.val()) {
-    await marketFieldChangeHandler();
-  }
-
-  if (productSizeField.val()) {
-    await productSizeFieldChangeHandler();
-  }
-
-
   await getBatchProperties();
   await setProductSizes();
   await setProductMarketClasses();
+  await setProductRipeness();
+  await setSizePackagings();
 });
