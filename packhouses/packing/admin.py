@@ -91,11 +91,17 @@ class PackingPackageInline(admin.StackedInline):
 
 @admin.register(PackingPallet)
 class PackingPalletAdmin(ByOrganizationAdminMixin):
-    list_display = ("ooid", "market", "product_size", "status")
+    list_display = ("ooid", "market", "get_product_sizes_display", "status")
     search_fields = ("ooid", )
-    list_filter = ('product', 'market', "product_size", 'pallet', 'status')
-    fields = ['ooid', 'product', 'market', 'product_size', 'pallet', 'status']
+    list_filter = ('product', 'market', "product_sizes", 'pallet', 'status')
+    fields = ['ooid', 'product', 'market', 'product_sizes', 'pallet', 'status']
     inlines = [PackingPackageInline]
+
+    def get_product_sizes_display(self, obj):
+        return ", ".join([size.name for size in obj.product_sizes.all()]) if obj.product_sizes.exists() else "-"
+    get_product_sizes_display.short_description = _("Product Sizes")
+    get_product_sizes_display.admin_order_field = 'product_sizes__name'
+
 
     def get_readonly_fields(self, request, obj=None):
         fields = self.get_fields(request, obj)

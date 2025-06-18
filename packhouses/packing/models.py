@@ -71,7 +71,7 @@ class PackingPallet(models.Model):
     ooid = models.PositiveIntegerField(verbose_name=_('OOID'), null=True, blank=True)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
-    product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
+    product_sizes = models.ManyToManyField(ProductSize, verbose_name=_('Product sizes'))
     pallet = models.ForeignKey(Pallet, verbose_name=_('Pallet'), on_delete=models.PROTECT, null=True, blank=False)
     status = models.CharField(max_length=20, default='open', verbose_name=_('Status'), choices=STATUS_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
