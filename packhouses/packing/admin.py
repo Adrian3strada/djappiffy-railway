@@ -94,7 +94,7 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
     list_display = ("ooid", "market", "product_market_class", "product_size", "status")
     search_fields = ("product_market_class__name", "product_size__name")
     list_filter = ("product_market_class", "product_size")
-    fields = ['ooid', 'market', 'product_size', 'product_market_class',
+    fields = ['ooid', 'product', 'market', 'product_size', 'product_market_class',
               'product_ripeness', 'size_packaging', 'pallet', 'status']
     inlines = [PackingPackageInline]
 
