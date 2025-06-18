@@ -174,8 +174,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   sizePackagingField.on("change", async function () {
     await productPackagingFieldChangeHandler();
     if (batchProperties && sizePackagingField.val()) {
-      packagingQuantityField.val(parseInt(batchProperties.available_weight / parseInt(productWeightPerPackagingField.val())));
       packagingQuantityField.attr('max', batchProperties.available_weight / parseInt(productWeightPerPackagingField.val()));
+      if (!packagingQuantityField.val()) {
+        packagingQuantityField.val(parseInt(batchProperties.available_weight / parseInt(productWeightPerPackagingField.val())));
+      }
     } else {
       packagingQuantityField.attr('max', null);
     }
