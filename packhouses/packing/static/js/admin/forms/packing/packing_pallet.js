@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const productField = $("#id_product")
   const marketField = $("#id_market")
   const productSizesField = $("#id_product_sizes")
+  const palletField = $("#id_pallet")
   // const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
   let productProperties = null
@@ -49,10 +50,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   const setMarketOptions = async () => {
     if (productProperties) {
       marketOptions = allMarkets.filter(market => productProperties.markets.includes(market.id));
-      console.log("productProperties.markets", productProperties.markets);
-      console.log("allMarkets", allMarkets);
-      console.log("productProperties.markets", productProperties.markets);
-      console.log("marketOptions", marketOptions);
       updateFieldOptions(marketField, marketOptions, marketField.val() ? marketField.val() : null);
     }
   }
@@ -70,13 +67,33 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
+  const setPallets = async () => {
+    if (productField.val() && marketField.val()) {
+      let pallets = await fetchOptions(`/rest/v1/catalogs/pallet/?product=${productField.val()}&market=${marketField.val()}&is_enabled=1`);
+      console.log("Pallets fetched setPallets:", pallets);
+      pallets = pallets.map(pallet => ({
+        ...pallet,
+        name: `${pallet.name} (Q:${pallet.max_packages_quantity})`
+      }));
+      updateFieldOptions(palletField, pallets, palletField.val() ? palletField.val() : null);
+    } else {
+      if (palletField.val()) {
+        const pallets = await fetchOptions(`/rest/v1/catalogs/pallet/${palletField.val()}/`);
+        updateFieldOptions(palletField, pallets, palletField.val());
+      }
+      updateFieldOptions(palletField, []);
+    }
+  }
+
   const marketFieldChangeHandler = async () => {
     await setProductSizes();
+    await setPallets();
   }
 
   productField.on("change", async function () {
     await getProductProperties();
     await setMarketOptions();
+    await setProductSizes();
   });
 
   marketField.on("change", async function () {

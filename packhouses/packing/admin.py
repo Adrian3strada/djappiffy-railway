@@ -120,7 +120,7 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
             kwargs["queryset"] = Market.objects.filter(organization=organization)
 
         if db_field.name == "pallet":
-            kwargs["queryset"] = Pallet.objects.filter(size_packagings__organization=organization)
+            kwargs["queryset"] = Pallet.objects.filter(product__organization=organization)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
