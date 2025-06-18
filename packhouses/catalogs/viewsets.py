@@ -230,6 +230,7 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
 
         categories = self.request.GET.get('categories')
         varieties = self.request.GET.get('varieties')
+        id__in = self.request.GET.get('id__in')
 
         if categories:
             category_list = categories.split(',')
@@ -238,6 +239,10 @@ class ProductSizeViewSet(viewsets.ModelViewSet):
         if varieties:
             variety_list = varieties.split(',')
             queryset = queryset.filter(varieties__in=variety_list)
+
+        if id__in:
+            id_list = id__in.split(',')
+            queryset = queryset.filter(id__in=id_list)
 
         return queryset
 

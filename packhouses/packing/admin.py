@@ -119,14 +119,19 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
         if db_field.name == "market":
             kwargs["queryset"] = Market.objects.filter(organization=organization)
 
-        if db_field.name == "product_size":
-            organization_products = Product.objects.filter(organization=organization)
-            kwargs["queryset"] = ProductSize.objects.filter(product__in=organization_products)
-
         if db_field.name == "pallet":
             kwargs["queryset"] = Pallet.objects.filter(size_packagings__organization=organization)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        organization = request.organization if hasattr(request, 'organization') else None
+
+        if db_field.name == "product_size":
+            organization_products = Product.objects.filter(organization=organization)
+            kwargs["queryset"] = ProductSize.objects.filter(product__in=organization_products)
+
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     class Media:
         js = ('js/admin/forms/packing/packing_pallet.js',)

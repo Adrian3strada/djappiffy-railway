@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async function () {
   const productField = $("#id_product")
   const marketField = $("#id_market")
-  const productSizeField = $("#id_product_size")
+  const productSizesField = $("#id_product_sizes")
   // const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
   let productProperties = null
@@ -60,13 +60,13 @@ document.addEventListener("DOMContentLoaded", async function () {
   const setProductSizes = async () => {
     if (productProperties && productProperties.id && marketField.val()) {
       const sizes = await fetchOptions(`/rest/v1/catalogs/product-size/?product=${productProperties.id}&market=${marketField.val()}&category=size&is_enabled=1`);
-      updateFieldOptions(productSizeField, sizes, productSizeField.val() ? productSizeField.val() : null);
+      updateFieldOptions(productSizesField, sizes, productSizesField.val() ? productSizesField.val() : null);
     } else {
-      if (productSizeField.val()) {
-        const size = await fetchOptions(`/rest/v1/catalogs/product-size/${productSizeField.val()}/`);
-        updateFieldOptions(productSizeField, [size], productSizeField.val());
+      if (productSizesField.val()) {
+        const sizes = await fetchOptions(`/rest/v1/catalogs/product-size/?id__in=${productSizesField.val()}`);
+        updateFieldOptions(productSizesField, sizes, productSizesField.val());
       }
-      updateFieldOptions(productSizeField, []);
+      updateFieldOptions(productSizesField, []);
     }
   }
 
