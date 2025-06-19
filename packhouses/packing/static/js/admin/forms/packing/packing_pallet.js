@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const palletField = $("#id_pallet")
   // const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
-  // $('a[data-toggle="pill"][href="#packing-packages-tab"]').addClass('disabled-field');
+  $('a[data-toggle="pill"][href="#packing-packages-tab"]').addClass('disabled-field');
 
   let productProperties = null
   let allMarkets = await fetchOptions(`/rest/v1/catalogs/market/?is_enabled=1`);
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
       const selected = selectedValue ? parseInt(selectedValue) || selectedValue : null;
       options.forEach(option => {
-        const newOption = new Option(option.name, option.id, false, selected === option.id || selectedValue.includes(option.id.toString()));
+        const newOption = new Option(option.name, option.id, false, selectedValue ? selected === option.id || selectedValue.includes(option.id.toString()) : false);
         if ('alias' in option && option.alias) {
           newOption.setAttribute('data-alias', option.alias);
         }
@@ -38,6 +38,15 @@ document.addEventListener("DOMContentLoaded", async function () {
       method: "GET",
       dataType: "json",
     }).fail((error) => console.error("Fetch error:", error));
+  }
+
+  const updatePackingPackagesTab = () => {
+    const packagesTab = $('a[data-toggle="pill"][href="#packing-packages-tab"]');
+    if (productField.val() && marketField.val() && productSizesField.val() && productSizesField.val().length > 0 && palletField.val()) {
+      packagesTab.removeClass('disabled-field');
+    } else {
+      packagesTab.addClass('disabled-field');
+    }
   }
 
   const getProductProperties = async () => {
@@ -98,12 +107,24 @@ document.addEventListener("DOMContentLoaded", async function () {
     await getProductProperties();
     await setMarketOptions();
     await setProductSizes();
+    updatePackingPackagesTab();
   });
 
   marketField.on("change", async function () {
     await marketFieldChangeHandler();
+    updatePackingPackagesTab();
+  });
+
+  productSizesField.on("change", function () {
+    console.log("Product sizes changed:", productSizesField.val());
+    updatePackingPackagesTab();
+  });
+
+  palletField.on("change", function () {
+    updatePackingPackagesTab();
   });
 
   await getProductProperties();
   await setProductSizes();
+  await setPallets();
 });

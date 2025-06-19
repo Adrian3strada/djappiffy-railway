@@ -144,7 +144,7 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
 class PackingPackageAdmin(ByOrganizationAdminMixin):
     list_display = ("ooid", "batch", "market", "product_size", "product_market_class", "product_ripeness",
                     "size_packaging", "packaging_quantity", "processing_date", "packing_pallet", "status")
-    search_fields = ("batch__name", "product_size__name", "packing_pallet__name")
+    search_fields = ("product_size__name",)
     list_filter = (ByBatchForOrganizationPackingPackageFilter, ByMarketForOrganizationPackingPackageFilter,
                    ByProductSizeForOrganizationPackingPackageFilter, "product_market_class", "product_ripeness", "size_packaging",
                    "processing_date", "packing_pallet", "status")
@@ -192,8 +192,7 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
         if db_field.name == "batch":
             kwargs["queryset"] = Batch.objects.filter(organization=organization)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda \
-                obj: f"{obj.ooid} - {obj.incomingproduct.scheduleharvest.orchard.name} ({obj.available_weight} {obj.incomingproduct.scheduleharvest.product.measure_unit_category})"
+            # formfield.label_from_instance = lambda obj: f"{obj.ooid} - {obj.incomingproduct.scheduleharvest.orchard.name} ({obj.available_weight} {obj.incomingproduct.scheduleharvest.product.measure_unit_category})"
             return formfield
 
         if db_field.name == "market":
