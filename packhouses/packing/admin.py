@@ -89,6 +89,9 @@ class PackingPackageInline(admin.StackedInline):
               'product_pieces_per_presentation', 'packaging_quantity', 'processing_date', 'status')
     readonly_fields = ('ooid',)
 
+    class Media:
+        js = ('js/admin/forms/packing/packing_package_inline.js',)
+
 
 @admin.register(PackingPallet)
 class PackingPalletAdmin(ByOrganizationAdminMixin):
