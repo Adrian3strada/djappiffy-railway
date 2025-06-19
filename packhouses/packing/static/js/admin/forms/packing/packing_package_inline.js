@@ -6,8 +6,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   let productProperties = null;
   let marketProperties = null;
-  let productSizesOptions = [];
   let palletProperties = null;
+
+  let productSizesOptions = [];
+  let productMarketClassOptions = [];
+  let productRipenessOptions = [];
+
 
   function updateFieldOptions(field, options, selectedValue = null) {
     if (field) {
@@ -54,14 +58,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
-  const getProductSizesOptions = async () => {
-    if (productSizesField.val()) {
-      productSizesOptions = await fetchOptions(`/rest/v1/catalogs/product-size/?id__in=${productSizesField.val().join(",")}/`)
-    } else {
-      productSizesOptions = [];
-    }
-  }
-
   const getPalletProperties = async () => {
     if (marketField.val()) {
       palletProperties = await fetchOptions(`/rest/v1/catalogs/pallet/${palletField.val()}/`)
@@ -70,6 +66,29 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
+  const getProductSizesOptions = async () => {
+    if (productSizesField.val()) {
+      productSizesOptions = await fetchOptions(`/rest/v1/catalogs/product-size/?id__in=${productSizesField.val().join(",")}/`)
+    } else {
+      productSizesOptions = [];
+    }
+  }
+
+  const getProductMarketClassOptions = async () => {
+    if (productField.val() && marketField.val()) {
+      productMarketClassOptions = await fetchOptions(`/rest/v1/catalogs/product-market-class/?product=${productField.val()}&market=${marketField.val()}&is_enabled=1`);
+    } else {
+      productMarketClassOptions = [];
+    }
+  }
+
+  const getProductRipenessOptions = async () => {
+    if (productField.val()) {
+      productRipenessOptions = await fetchOptions(`/rest/v1/catalogs/product-ripeness/?product=${productField.val()}&is_enabled=1`);
+    } else {
+      productRipenessOptions = [];
+    }
+  }
 
   const batchField = $("#id_batch")
   // const marketField = $("#id_market")
