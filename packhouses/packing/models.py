@@ -80,7 +80,7 @@ class PackingPallet(models.Model):
     # kg -- @property / invref
 
     def __str__(self):
-        return f"{self.ooid} - {self.market} - {self.product_size} ({self.product})"
+        return f"{self.ooid} - {self.market} - {self.pallet.name} (Q:{self.pallet.max_packages_quantity}) - {', '.join(self.product_sizes.all().values_list('name', flat=True))}"
 
     def save(self, *args, **kwargs):
         if self.ooid is None:

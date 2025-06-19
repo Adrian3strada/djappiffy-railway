@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   const palletField = $("#id_pallet")
   // const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
+  // $('a[data-toggle="pill"][href="#packing-packages-tab"]').addClass('disabled-field');
+
   let productProperties = null
   let allMarkets = await fetchOptions(`/rest/v1/catalogs/market/?is_enabled=1`);
   let marketOptions = []
@@ -17,7 +19,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
       const selected = selectedValue ? parseInt(selectedValue) || selectedValue : null;
       options.forEach(option => {
-        const newOption = new Option(option.name, option.id, false, selected === option.id);
+        const newOption = new Option(option.name, option.id, false, selected === option.id || selectedValue.includes(option.id.toString()));
         if ('alias' in option && option.alias) {
           newOption.setAttribute('data-alias', option.alias);
         }
@@ -57,6 +59,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   const setProductSizes = async () => {
     if (productProperties && productProperties.id && marketField.val()) {
       const sizes = await fetchOptions(`/rest/v1/catalogs/product-size/?product=${productProperties.id}&market=${marketField.val()}&category=size&is_enabled=1`);
+      console.log("sizes", sizes)
+      console.log("productSizesField.val()", productSizesField.val())
       updateFieldOptions(productSizesField, sizes, productSizesField.val() ? productSizesField.val() : null);
     } else {
       if (productSizesField.val()) {

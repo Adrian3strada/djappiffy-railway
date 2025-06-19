@@ -121,6 +121,9 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
 
         if db_field.name == "pallet":
             kwargs["queryset"] = Pallet.objects.filter(product__organization=organization)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: f"{obj.name} (Q:{obj.max_packages_quantity})"
+            return formfield
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
