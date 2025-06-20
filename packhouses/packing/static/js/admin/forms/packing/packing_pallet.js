@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const setPallets = async () => {
     if (productField.val() && marketField.val()) {
       let pallets = await fetchOptions(`/rest/v1/catalogs/pallet/?product=${productField.val()}&market=${marketField.val()}&is_enabled=1`);
-      console.log("Pallets fetched setPallets:", pallets);
+      if (DEBUG) console.log("Pallets fetched setPallets:", pallets);
       pallets = pallets.map(pallet => ({
         ...pallet,
         name: `${pallet.name} (Q:${pallet.max_packages_quantity})`
