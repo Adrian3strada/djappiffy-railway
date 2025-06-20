@@ -12,10 +12,11 @@ from common.base.models import Pest
 from django.db.models import F, Sum
 from django.core.exceptions import ValidationError
 from common.settings import STATUS_CHOICES
-
+import uuid
 
 # Create your models here.
 class Batch(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     ooid = models.PositiveIntegerField(verbose_name=_('Batch ID'), null=True, blank=True)
     status = models.CharField(max_length=25, verbose_name=_('Status'),
                                      choices=STATUS_CHOICES, default='open', blank=True)
@@ -405,6 +406,7 @@ class BatchStatusChange(models.Model):
 
 
 class IncomingProduct(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     status = models.CharField(max_length=20, verbose_name=_('Status'), choices=STATUS_CHOICES,
                               default='open')
     public_weighing_scale = models.ForeignKey(WeighingScale, verbose_name=_("Public Weighing Scale"),

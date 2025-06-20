@@ -15,18 +15,12 @@ class ScheduleHarvestResource(DehydrationResource, ExportResource):
     is_scheduled = Field(column_name=_("Scheduling Type"), readonly=True)
     category = Field(column_name=_("Harvesting Category"), readonly=True)
     orchard_registry_code = Field(column_name=_("Orchard Registry Code"), readonly=True)
-    creation_date = Field(column_name=_("Creation Date"), readonly=True)
-
+   
     def __init__(self, export_format=None, **kwargs):
         super().__init__(**kwargs)
         self.export_format = export_format
 
-    def dehydrate_creation_date(self, obj):
-        date = obj.created_at
-        if not date:
-            return ' '
-        return localize(localtime(date))
-
+    
     def dehydrate_crew(self, obj):
         crews = obj.scheduleharvestharvestingcrew_set.select_related('harvesting_crew').all()
         if not crews.exists():
@@ -67,9 +61,14 @@ class ScheduleHarvestResource(DehydrationResource, ExportResource):
     
     class Meta:
         model = ScheduleHarvest
-        exclude = tuple(default_excluded_fields + 
-                        ('id', 'meeting_point', 'incoming_product', 'created_at', 'product', 'product_variety', 'weighing_scale'))
-        export_order = ('ooid', 'harvest_date', 'creation_date', 'orchard', 'orchard_registry_code', 
-                        'product_producer', 'gatherer', 'maquiladora', 'product_provider', 'crew', 
-                        'orchard_certification', 'product_category', 'product_harvest_size_kind',  'product_ripeness', 
-                        'market', 'weight_expected', 'product_phenology', 'is_scheduled', 'category',)
+        exclude = tuple(
+            f for f in default_excluded_fields
+            if f != 'comments'
+        ) + (
+            'id', 'meeting_point', 'incoming_product', 'created_at',
+            'product', 'product_variety', 'weighing_scale',
+            'product_ripeness', 'product_harvest_size_kind',
+        )
+        export_order = ('ooid', 'harvest_date', 'orchard', 'orchard_registry_code', 
+                        'product_producer', 'gatherer', 'maquiladora', 'product_provider', 'crew', 'orchard_certification', 
+                        'product_category', 'market', 'weight_expected', 'product_phenology', 'is_scheduled', 'category', 'comments', 'status')

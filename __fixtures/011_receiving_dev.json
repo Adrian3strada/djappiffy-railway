@@ -3,6 +3,7 @@
   "model": "receiving.batch",
   "pk": 1,
   "fields": {
+    "uuid": "e18b7c9a-37e0-482f-bc45-b2b76452a744",
     "ooid": 1,
     "status": "open",
     "is_available_for_processing": false,
@@ -15,10 +16,11 @@
   "model": "receiving.batch",
   "pk": 2,
   "fields": {
+    "uuid": "e3b50253-2afa-4e30-becf-a1c41717016d",
     "ooid": 2,
     "status": "open",
     "is_available_for_processing": false,
-    "created_at": "2025-03-24T17:30:45.174Z",
+    "created_at": "2025-04-12T17:30:45.174Z",
     "organization": 1,
     "parent": null
   }
@@ -27,10 +29,11 @@
   "model": "receiving.batch",
   "pk": 3,
   "fields": {
+    "uuid": "ceb5193c-bac3-4fe5-b8af-928dd72e1ddd",
     "ooid": 3,
     "status": "open",
     "is_available_for_processing": false,
-    "created_at": "2025-03-24T17:30:45.174Z",
+    "created_at": "2025-04-12T17:30:45.174Z",
     "organization": 1,
     "parent": null
   }
@@ -183,6 +186,7 @@
   "model": "receiving.incomingproduct",
   "pk": 1,
   "fields": {
+    "uuid": "481ed204-4857-4e15-92f8-49c92777e3ae",
     "status": "ready",
     "public_weighing_scale": 2,
     "public_weight_result": 4500.0,
@@ -192,16 +196,17 @@
     "phytosanitary_certificate": null,
     "kg_sample": 0.0,
     "is_quarantined": false,
+    "created_at": "2025-03-24T17:26:31.736Z",
     "organization": 1,
     "batch": 1,
-    "comments": "",
-    "created_at": "2025-05-24T17:26:31.736Z"
+    "comments": ""
   }
 },
 {
   "model": "receiving.incomingproduct",
   "pk": 2,
   "fields": {
+    "uuid": "11568a98-f53e-494b-8b54-2f8cbea0942a",
     "status": "ready",
     "public_weighing_scale": 2,
     "public_weight_result": 3300.0,
@@ -211,16 +216,17 @@
     "phytosanitary_certificate": null,
     "kg_sample": 30.0,
     "is_quarantined": false,
+    "created_at": "2025-04-12T17:26:31.736Z",
     "organization": 1,
     "batch": 2,
-    "comments": "",
-    "created_at": "2025-05-24T17:26:31.736Z"
+    "comments": ""
   }
 },
 {
   "model": "receiving.incomingproduct",
   "pk": 3,
   "fields": {
+    "uuid": "04ecd4a4-637a-4c75-8094-7872b8aab7ad",
     "status": "ready",
     "public_weighing_scale": 3,
     "public_weight_result": 3800.0,
@@ -230,35 +236,37 @@
     "phytosanitary_certificate": null,
     "kg_sample": 0.0,
     "is_quarantined": false,
+    "created_at": "2025-04-12T17:26:31.736Z",
     "organization": 1,
     "batch": 3,
-    "comments": "",
-    "created_at": "2025-05-24T17:26:31.736Z"
+    "comments": ""
   }
 },
 {
   "model": "receiving.incomingproduct",
   "pk": 4,
   "fields": {
+    "uuid": "e2170cb0-7392-48d9-aabd-9109338bfb9c",
     "status": "open",
-    "public_weighing_scale": null,
-    "public_weight_result": 0.0,
-    "weighing_record_number": "",
+    "public_weighing_scale": 2,
+    "public_weight_result": 600.0,
+    "weighing_record_number": "123",
     "total_weighed_sets": 0,
     "mrl": 0.0,
     "phytosanitary_certificate": null,
-    "kg_sample": 0.0,
+    "kg_sample": 10.0,
     "is_quarantined": false,
+    "created_at": "2025-04-12T17:26:31.736Z",
     "organization": 1,
     "batch": null,
-    "comments": null,
-    "created_at": "2025-05-24T17:26:31.736Z"
+    "comments": ""
   }
 },
 {
   "model": "receiving.incomingproduct",
   "pk": 5,
   "fields": {
+    "uuid": "1751a015-ba8f-4b2c-af3d-04f562c3ec5e",
     "status": "open",
     "public_weighing_scale": 3,
     "public_weight_result": 2600.0,
@@ -268,10 +276,10 @@
     "phytosanitary_certificate": null,
     "kg_sample": 10.0,
     "is_quarantined": false,
+    "created_at": "2025-04-12T17:26:31.736Z",
     "organization": 1,
     "batch": null,
-    "comments": "",
-    "created_at": "2025-05-24T17:26:31.736Z"
+    "comments": ""
   }
 },
 {
@@ -440,6 +448,21 @@
   }
 },
 {
+  "model": "receiving.weighingset",
+  "pk": 12,
+  "fields": {
+    "ooid": 1,
+    "harvesting_crew": 6,
+    "gross_weight": 880.0,
+    "total_containers": 30,
+    "container_tare": 9.0,
+    "platform_tare": 3.0,
+    "net_weight": 868.0,
+    "protected": false,
+    "incoming_product": 4
+  }
+},
+{
   "model": "receiving.weighingsetcontainer",
   "pk": 1,
   "fields": {
@@ -536,6 +559,15 @@
     "harvest_container": 32,
     "quantity": 60,
     "weighing_set": 11
+  }
+},
+{
+  "model": "receiving.weighingsetcontainer",
+  "pk": 12,
+  "fields": {
+    "harvest_container": 32,
+    "quantity": 30,
+    "weighing_set": 12
   }
 }
 ]

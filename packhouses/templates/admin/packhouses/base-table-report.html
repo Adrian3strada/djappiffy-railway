@@ -93,6 +93,44 @@ tr {
     text-align: left;
 }
 
+/* Estilos para el contenedor de filtros */
+    .filters-container {
+  border: 1px solid #000;
+  padding: 0;
+  margin-top: 0.5em;
+  font-size: 7pt;
+}
+
+.filters-header {
+  background-color: #fff4cc;
+  padding: 8px;
+  font-weight: bold;
+  border-bottom: 1px solid #000;
+}
+
+.filters-columns-3,
+.filters-columns-4 {
+  display: grid;
+  gap: 0 1.5em;
+  padding: 8px;
+  margin: 0;
+  list-style-type: none;
+}
+
+.filters-columns-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.filters-columns-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.filters-columns-3 li:empty,
+.filters-columns-4 li:empty {
+  display: none;
+}
+
+
 </style>
 
 
@@ -105,8 +143,8 @@ tr {
 </div>
 
 {% if date_ranges %}
-  <p>
-    <strong>{% translate "Records in Specified Date Range:" %}</strong>
+  <p style="font-size: 7pt;">
+    <strong>{% translate "Records Between Date Range:" %}</strong>
     {% for label, value in date_ranges.items %}
       {{ label }}: {{ value }}{% if not forloop.last %}, {% endif %}
     {% endfor %}.
@@ -114,15 +152,19 @@ tr {
 {% endif %}
 
 
-
 {% if other_filters %}
-  <p style="text-decoration: underline;">
-    <strong>{% translate "Applied Filters:" %}</strong>
-    {% for label, value in other_filters.items %}
-      {{ label }}: {{ value }}{% if not forloop.last %}, {% endif %}
-    {% endfor %}
-  </p>
+  <div class="filters-container">
+    <div class="filters-header">
+      {% translate "Applied Filters" %}
+    </div>
+    <ul class="filters-columns-{{ col_count }}">
+      {% for label, value in other_filters.items %}
+        <li><strong>{{ label }}:</strong> {{ value }}</li>
+      {% endfor %}
+    </ul>
+  </div>
 {% endif %}
+
 
 
 <div class="div-table">

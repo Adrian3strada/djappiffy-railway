@@ -70,30 +70,40 @@ body {
     padding-left: 5px;
 }
 
-.qr {
-    width: 60%;
-    height: 100px;
-    border: 2px solid black;
-    margin-bottom: 20px;
-    margin-left: 20px;
+/* estilos para qr */
+.qr-space {
+    width: 50%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px; 
+}
+
+
+.qr-space img {
+    max-height: 100%;   
+    max-width: 100%;    
+    height: auto;       
+    width: auto;
+    object-fit: contain;
 }
 
 </style>
 </head>
 
 <body>
+{% for weighing_set in weighing_sets %}
     <div class="container">
         <div class="container-2">
-            <p style="margin-bottom: 20px; margin-top: 20px; font-size: 10pt;"><strong>{% translate "LOT:" %}</strong></p>
-            <p style="margin-bottom: 20px; font-size: 10pt;"><strong>{% translate "HARVEST:" %}</strong></p>
-            <p style="margin-bottom: 20px; font-size: 10pt;"><strong>{% translate "WEIGHT:" %}</strong></p>
-            <p>{% translate "Producer:" %}</p>
-            <p>{% translate "Orchard:" %}</p>
-            <p style="margin-bottom: 20px;">{% translate "Orchard Certification:" %}</p>
-            <p>{% translate "Boxes:" %}</p>
-            <p>{% translate "kgs:" %}</p>
-            <p>{% translate "Mass Volume:" %}</p>
-            <p>{% translate "Entry Date:" %}</p>
+            <p style="margin-bottom: 20px; margin-top: 20px; font-size: 10pt;"><strong>{% translate "BATCH NUMBER:" %}</strong> {{ batch.ooid }} </p>
+            <p style="margin-bottom: 20px; font-size: 10pt;"><strong>{% translate "HARVEST NUMBER:" %}</strong> {{ batch.incomingproduct.scheduleharvest.ooid }}</p>
+            <p style="margin-bottom: 20px; font-size: 10pt;"><strong>{% translate "WEIGHING SET NET WEIGHT:" %}</strong> {{ weighing_set.net_weight }}</p>
+            <p>{% translate "Producer:" %} {{ batch.incomingproduct.scheduleharvest.orchard.producer }}</p>
+            <p>{% translate "Orchard:" %} {{ batch.incomingproduct.scheduleharvest.orchard.name }}</p>
+            <p style="margin-bottom: 20px;">{% translate "Orchard Certification:" %} {{ batch.incomingproduct.scheduleharvest.orchard.code }}</p>
+            <p>{% translate "Boxes:" %} {{ weighing_set.total_containers }}</p>
+            <p>{% translate "Batch KGs:" %} {{ batch.incomingproduct.total_net_weight }}</p>
+            <p>{% translate "Entry Date:" %} {{ batch.created_at }}</p>
             <div class="logo-container">
                 {% if logo_url %}
                     <img src="{{ logo_url }}" alt="{{ organization_name }} Logo">
@@ -103,13 +113,14 @@ body {
             </div>
         </div>
         <div class="container-3">
-            <p style="margin-bottom: 20px; margin-top: 20px;">Lot:</p>
-                <div class="qr">
-                    <p>QR</p>
+            <p style="margin-bottom: 20px; margin-top: 20px;">{% translate "BATCH:" %}</p>
+                <div class="qr-space">
+                    <img src="{{ qr_code }}" alt="QR Code" style="max-height: 100%; max-width: 100%; align-items: center;">
                 </div>
             <p style="font-size: 10pt;">{% translate "Company" %}: {{ packhouse_name }}</p>
             <p style="font-size: 10pt;">{% translate "Address:" %} {{ company_address }}</p>
         </div>
     </div>
+{% endfor %}
 </body>
 </html>

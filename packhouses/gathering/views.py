@@ -32,7 +32,8 @@ def generate_qr_base64(data: str) -> str:
     return f"data:image/png;base64,{img_str}"
 
 
-def harvest_order_pdf(request, harvest_id):
+def harvest_order_pdf(request, uuid):
+    user = request.user
     """
     # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
     if not request.user.is_authenticated:
@@ -41,7 +42,7 @@ def harvest_order_pdf(request, harvest_id):
     """
 
     # Obtener el registro
-    harvest = get_object_or_404(ScheduleHarvest, pk=harvest_id)
+    harvest = get_object_or_404(ScheduleHarvest, uuid=uuid)
 
     organization_profile = harvest.orchard.organization.organizationprofile
     organization = organization_profile.name
@@ -90,7 +91,7 @@ def harvest_order_pdf(request, harvest_id):
         }''')
 
     report_url = request.build_absolute_uri(
-        reverse("harvest_order_pdf", args=[harvest.pk])
+        reverse("harvest_order_pdf", args=[harvest.uuid])
     )
     qr_data = report_url
     qr_image = generate_qr_base64(qr_data)
@@ -108,6 +109,7 @@ def harvest_order_pdf(request, harvest_id):
         'scheduleharvestvehicleinline': scheduleharvestvehicleinline,
         'year': year,
         'date': date,
+        'printed_by': user,
     })
 
     # Convertir el HTML a PDF
@@ -125,14 +127,14 @@ def harvest_order_pdf(request, harvest_id):
     return response
 
 
-def good_harvest_practices_format(request, harvest_id):
+def good_harvest_practices_format(request, uuid):
     # Redirige al login del admin usando 'reverse' si el usuario no está autenticado.
     if not request.user.is_authenticated:
         login_url = reverse('admin:login')
         return redirect(login_url)
 
     # Obtener el registro
-    harvest = get_object_or_404(ScheduleHarvest, pk=harvest_id)
+    harvest = get_object_or_404(ScheduleHarvest, uuid=uuid)
 
     # Obtener Datos de la Organización
     if hasattr(request, 'organization'):
@@ -156,7 +158,7 @@ def good_harvest_practices_format(request, harvest_id):
             logo_url = organization_profile.logo.url
         else:
             logo_url = None
-    pdf_title = _("REGISTRO DE VERIFICACIÓN DE LAS BUENAS PRÁCTICAS DE HIGIENE Y SEGURIDAD DURANTE LAS OPERACIONES DE COSECHA (BIT-BPHS-01)")
+    pdf_title = _("Verification Record of Hygiene and Safety Compliance in Harvest Activities (BIT-BPHS-01)")
     packhouse_name = organization
     company_address = f"{add}, {district_name}, {city_name}, {state_name}, {country_name}"
     date = datetime.now()
@@ -274,6 +276,7 @@ def set_scheduleharvest_ready(request, harvest_id):
 
 
 def basic_report(request, json_data, model_verbose_name, model_key, pretty_filters):
+    user = request.user
     # prepare data
     json_data = json.loads(json_data)
     base_url = request.build_absolute_uri('/')
@@ -327,12 +330,14 @@ def basic_report(request, json_data, model_verbose_name, model_key, pretty_filte
         else:
             other_filters[label] = value
 
+    col_count = 4
     # orientation page
     if len(headers) < 10:
         css = CSS(string='''
         @page {
             size: letter portrait;
         }''')
+        col_count = 3
     elif len(headers) < 16:
         css = CSS(string='''
         @page {
@@ -359,6 +364,8 @@ def basic_report(request, json_data, model_verbose_name, model_key, pretty_filte
             "date":            date,
             "date_ranges":     date_ranges,
             "other_filters":   other_filters,
+            'col_count': col_count,
+            'printed_by': user,
         },
     )
 

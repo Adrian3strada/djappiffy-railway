@@ -12,6 +12,12 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
   
+  $(document).ready(function() {
+      $('input[name$="-missing_containers"]').each(function() {
+          disableField($(this));
+      });
+  });
+
   // Aplica a cualquier input de peso esperado
   $('input[id$="-weight_expected"]').each((_, input) => {
     disableField($(input));

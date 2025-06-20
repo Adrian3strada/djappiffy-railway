@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const productField = $("#id_product");
   const varietyField = $("#id_product_variety");
   const initialVarietyValue = varietyField.val();
-  const seasonField = $("#id_product_phenologies");
+  const seasonField = $("#id_product_phenology");
   const initialSeasonValue = seasonField.val();
   const ripinessField = $("#id_product_ripeness");
   const initialRipenessValue = ripinessField.val();
@@ -313,7 +313,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function updateOrchardField() {
     const productId = productField.val();
     if (productId) {
-      fetchOptions(`${API_BASE_URL}/catalogs/orchard/?product=${productId}&is_enabled=true`)
+      fetchOptions(`${API_BASE_URL}/catalogs/orchard/?products=${productId}&is_enabled=true`)
         .then((data) => {
           updateFieldOptions(orchardField, data);
           if (initialOrchardSizeValue) {

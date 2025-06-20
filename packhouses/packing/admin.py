@@ -12,7 +12,9 @@ from packhouses.gathering.models import ScheduleHarvest
 from packhouses.catalogs.models import (Market, Product, ProductSize, ProductMarketClass,
                                         ProductRipeness, SizePackaging, Pallet)
 from .filters import (ByBatchForOrganizationPackingPackageFilter, ByMarketForOrganizationPackingPackageFilter,
-                      ByProductSizeForOrganizationPackingPackageFilter)
+                      ByProductSizeForOrganizationPackingPackageFilter, ByProductMarketClassForOrganizationPackingPackageFilter, ByProductRipenessForOrganizationPackingPackageFilter,
+                      BySizePackagingForOrganizationPackingPackageFilter, ByPackingPalletForOrganizationPackingPackageFilter, ByProductForOrganizationPackingPalletFilter, 
+                      ByMarketForOrganizationPackingPalletFilter, ByPalletForOrganizationPackingPalletFilter, ByProductSizeForOrganizationPackingPalletFilter)
 
 # Register your models here.
 
@@ -97,7 +99,7 @@ class PackingPackageInline(admin.StackedInline):
 class PackingPalletAdmin(ByOrganizationAdminMixin):
     list_display = ("ooid", "market", "get_product_sizes_display", "status")
     search_fields = ("ooid", )
-    list_filter = ('product', 'market', "product_sizes", 'pallet', 'status')
+    list_filter = (ByProductForOrganizationPackingPalletFilter, ByMarketForOrganizationPackingPalletFilter, ByProductSizeForOrganizationPackingPalletFilter, ByPalletForOrganizationPackingPalletFilter, 'status')
     fields = ['ooid', 'product', 'market', 'product_sizes', 'pallet', 'status']
     inlines = [PackingPackageInline]
 
@@ -149,8 +151,8 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
                     "size_packaging", "packaging_quantity", "processing_date", "packing_pallet", "status")
     search_fields = ("product_size__name",)
     list_filter = (ByBatchForOrganizationPackingPackageFilter, ByMarketForOrganizationPackingPackageFilter,
-                   ByProductSizeForOrganizationPackingPackageFilter, "product_market_class", "product_ripeness", "size_packaging",
-                   "processing_date", "packing_pallet", "status")
+                   ByProductSizeForOrganizationPackingPackageFilter, ByProductMarketClassForOrganizationPackingPackageFilter, ByProductRipenessForOrganizationPackingPackageFilter, BySizePackagingForOrganizationPackingPackageFilter,
+                   "processing_date", ByPackingPalletForOrganizationPackingPackageFilter, "status")
     fields = ['ooid', 'batch', 'market', 'product_size', 'product_market_class',
               'product_ripeness', 'size_packaging', 'product_weight_per_packaging',
               'product_presentations_per_packaging', 'product_pieces_per_presentation', 'packaging_quantity',
