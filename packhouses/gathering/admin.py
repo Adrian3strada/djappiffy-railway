@@ -50,6 +50,9 @@ from .views import basic_report
 from .resources import ScheduleHarvestResource
 from common.base.utils import SheetReportExportAdminMixin
 from datetime import datetime
+from .filters import GatheringDateRangeFilter
+from django.urls import path, reverse
+from packhouses.gathering.views import good_harvest_practices_format, harvest_order_pdf
 
 class ScheduleHarvestHarvestingCrewInline(DisableInlineRelatedLinksMixin, nested_admin.NestedStackedInline):
     model = ScheduleHarvestHarvestingCrew
@@ -160,7 +163,6 @@ class ScheduleHarvestVehicleInline(DisableInlineRelatedLinksMixin, nested_admin.
     class Media:
         js = ('js/admin/forms/packhouses/gathering/harvest_cutting_vehicle_inline.js',)
 
-from .filters import GatheringDateRangeFilter
 @admin.register(ScheduleHarvest)
 class ScheduleHarvestAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, ByProductForOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     form = ScheduleHarvestForm
@@ -210,10 +212,18 @@ class ScheduleHarvestAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin
     scheduled_harvest.short_description = _('Scheduled Harvest')
     scheduled_harvest.admin_order_field = 'is_scheduled'
 
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('harvest-order/<uuid:uuid>/', self.admin_site.admin_view(harvest_order_pdf), name='harvest_order_pdf'),
+            path('good_harvest_practices_format/<uuid:uuid>/', self.admin_site.admin_view(good_harvest_practices_format), name='good_harvest_practices_format'),
+        ]
+        return custom_urls + urls
+
     def generate_actions_buttons(self, obj):
-        pdf_url = reverse('harvest_order_pdf', args=[obj.pk])
+        pdf_url = reverse('harvest_order_pdf', args=[obj.uuid])
         tooltip_harvest_order = _('Generate Harvest Order PDF')
-        report_url = reverse('good_harvest_practices_format', args=[obj.pk])
+        report_url = reverse('good_harvest_practices_format', args=[obj.uuid])
         tooltip_report = _('Good harvest practices format')
         cancel_url = reverse('cancel_schedule_harvest', args=[obj.pk])
         tooltip_cancel = _('Cancel this harvest')
@@ -310,6 +320,10 @@ class ScheduleHarvestAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin
 
         if db_field.name == "product_ripeness":
             kwargs["queryset"] = ProductRipeness.objects.filter(**product_organization_queryfilter)
+        
+        if db_field.name == "orchard":
+            product_id = request.GET.get("product")
+            kwargs["queryset"] = Orchard.objects.filter(**organization_queryfilter, **({"products__id": product_id} if product_id else {})).distinct()
 
         field_filters = {
             "product_provider": {
@@ -327,10 +341,6 @@ class ScheduleHarvestAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin
 
             "market": {
                 "model": Market,
-                "filters": {"is_enabled": True},
-            },
-            "orchard": {
-                "model": Orchard,
                 "filters": {"is_enabled": True},
             },
             "weighing_scale": {

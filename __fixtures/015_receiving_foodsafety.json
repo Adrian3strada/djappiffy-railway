@@ -1,0 +1,1164 @@
+[
+{
+  "model": "receiving.foodsafety",
+  "pk": 1,
+  "fields": {
+    "batch": 1,
+    "organization": 1,
+    "status": "open",
+    "created_at": "2025-06-20T18:17:56.303Z"
+  }
+},
+{
+  "model": "receiving.foodsafety",
+  "pk": 2,
+  "fields": {
+    "batch": 2,
+    "organization": 1,
+    "status": "open",
+    "created_at": "2025-06-20T18:29:45.314Z"
+  }
+},
+{
+  "model": "receiving.drymatter",
+  "pk": 1,
+  "fields": {
+    "product_weight": "180.00",
+    "paper_weight": "1.00",
+    "moisture_weight": "10.00",
+    "dry_weight": "3.10",
+    "dry_matter": "32.00",
+    "food_safety": 1
+  }
+},
+{
+  "model": "receiving.drymatter",
+  "pk": 2,
+  "fields": {
+    "product_weight": "183.00",
+    "paper_weight": "1.00",
+    "moisture_weight": "10.00",
+    "dry_weight": "3.00",
+    "dry_matter": "31.00",
+    "food_safety": 1
+  }
+},
+{
+  "model": "receiving.drymatter",
+  "pk": 3,
+  "fields": {
+    "product_weight": "190.00",
+    "paper_weight": "1.00",
+    "moisture_weight": "10.00",
+    "dry_weight": "3.70",
+    "dry_matter": "32.00",
+    "food_safety": 1
+  }
+},
+{
+  "model": "receiving.drymatter",
+  "pk": 4,
+  "fields": {
+    "product_weight": "198.00",
+    "paper_weight": "1.00",
+    "moisture_weight": "10.00",
+    "dry_weight": "2.90",
+    "dry_matter": "24.00",
+    "food_safety": 1
+  }
+},
+{
+  "model": "receiving.drymatter",
+  "pk": 5,
+  "fields": {
+    "product_weight": "184.00",
+    "paper_weight": "1.00",
+    "moisture_weight": "10.00",
+    "dry_weight": "3.30",
+    "dry_matter": "29.00",
+    "food_safety": 1
+  }
+},
+{
+  "model": "receiving.drymatter",
+  "pk": 6,
+  "fields": {
+    "product_weight": "181.00",
+    "paper_weight": "1.00",
+    "moisture_weight": "10.00",
+    "dry_weight": "2.80",
+    "dry_matter": "29.00",
+    "food_safety": 1
+  }
+},
+{
+  "model": "receiving.drymatter",
+  "pk": 7,
+  "fields": {
+    "product_weight": "192.00",
+    "paper_weight": "1.00",
+    "moisture_weight": "10.00",
+    "dry_weight": "3.00",
+    "dry_matter": "30.00",
+    "food_safety": 1
+  }
+},
+{
+  "model": "receiving.drymatter",
+  "pk": 8,
+  "fields": {
+    "product_weight": "191.00",
+    "paper_weight": "1.00",
+    "moisture_weight": "10.00",
+    "dry_weight": "3.20",
+    "dry_matter": "33.00",
+    "food_safety": 1
+  }
+},
+{
+  "model": "receiving.drymatter",
+  "pk": 9,
+  "fields": {
+    "product_weight": "150.00",
+    "paper_weight": "1.00",
+    "moisture_weight": "10.00",
+    "dry_weight": "3.10",
+    "dry_matter": "28.00",
+    "food_safety": 2
+  }
+},
+{
+  "model": "receiving.drymatter",
+  "pk": 10,
+  "fields": {
+    "product_weight": "153.00",
+    "paper_weight": "1.00",
+    "moisture_weight": "10.00",
+    "dry_weight": "3.00",
+    "dry_matter": "29.00",
+    "food_safety": 2
+  }
+},
+{
+  "model": "receiving.drymatter",
+  "pk": 11,
+  "fields": {
+    "product_weight": "149.00",
+    "paper_weight": "1.00",
+    "moisture_weight": "10.00",
+    "dry_weight": "2.90",
+    "dry_matter": "28.00",
+    "food_safety": 2
+  }
+},
+{
+  "model": "receiving.drymatter",
+  "pk": 12,
+  "fields": {
+    "product_weight": "160.00",
+    "paper_weight": "1.00",
+    "moisture_weight": "10.00",
+    "dry_weight": "2.80",
+    "dry_matter": "31.00",
+    "food_safety": 2
+  }
+},
+{
+  "model": "receiving.drymatter",
+  "pk": 13,
+  "fields": {
+    "product_weight": "161.00",
+    "paper_weight": "1.00",
+    "moisture_weight": "10.00",
+    "dry_weight": "3.20",
+    "dry_matter": "30.00",
+    "food_safety": 2
+  }
+},
+{
+  "model": "receiving.internalinspection",
+  "pk": 1,
+  "fields": {
+    "internal_temperature": "20.00",
+    "food_safety": 1,
+    "product_pest": []
+  }
+},
+{
+  "model": "receiving.internalinspection",
+  "pk": 2,
+  "fields": {
+    "internal_temperature": "21.00",
+    "food_safety": 1,
+    "product_pest": []
+  }
+},
+{
+  "model": "receiving.internalinspection",
+  "pk": 3,
+  "fields": {
+    "internal_temperature": "22.00",
+    "food_safety": 1,
+    "product_pest": [
+      2
+    ]
+  }
+},
+{
+  "model": "receiving.internalinspection",
+  "pk": 4,
+  "fields": {
+    "internal_temperature": "20.40",
+    "food_safety": 1,
+    "product_pest": []
+  }
+},
+{
+  "model": "receiving.internalinspection",
+  "pk": 5,
+  "fields": {
+    "internal_temperature": "20.70",
+    "food_safety": 1,
+    "product_pest": []
+  }
+},
+{
+  "model": "receiving.internalinspection",
+  "pk": 6,
+  "fields": {
+    "internal_temperature": "19.00",
+    "food_safety": 1,
+    "product_pest": []
+  }
+},
+{
+  "model": "receiving.internalinspection",
+  "pk": 7,
+  "fields": {
+    "internal_temperature": "19.10",
+    "food_safety": 1,
+    "product_pest": []
+  }
+},
+{
+  "model": "receiving.internalinspection",
+  "pk": 8,
+  "fields": {
+    "internal_temperature": "19.30",
+    "food_safety": 1,
+    "product_pest": []
+  }
+},
+{
+  "model": "receiving.internalinspection",
+  "pk": 9,
+  "fields": {
+    "internal_temperature": "20.10",
+    "food_safety": 2,
+    "product_pest": []
+  }
+},
+{
+  "model": "receiving.internalinspection",
+  "pk": 10,
+  "fields": {
+    "internal_temperature": "19.90",
+    "food_safety": 2,
+    "product_pest": []
+  }
+},
+{
+  "model": "receiving.internalinspection",
+  "pk": 11,
+  "fields": {
+    "internal_temperature": "22.80",
+    "food_safety": 2,
+    "product_pest": []
+  }
+},
+{
+  "model": "receiving.internalinspection",
+  "pk": 12,
+  "fields": {
+    "internal_temperature": "19.10",
+    "food_safety": 2,
+    "product_pest": []
+  }
+},
+{
+  "model": "receiving.internalinspection",
+  "pk": 13,
+  "fields": {
+    "internal_temperature": "17.00",
+    "food_safety": 2,
+    "product_pest": [
+      3,
+      2,
+      1
+    ]
+  }
+},
+{
+  "model": "receiving.average",
+  "pk": 1,
+  "fields": {
+    "average_dry_matter": "30.00",
+    "average_internal_temperature": "20.19",
+    "acceptance_report": 1,
+    "food_safety": 1
+  }
+},
+{
+  "model": "receiving.average",
+  "pk": 2,
+  "fields": {
+    "average_dry_matter": "29.20",
+    "average_internal_temperature": "19.78",
+    "acceptance_report": 1,
+    "food_safety": 2
+  }
+},
+{
+  "model": "receiving.vehiclereview",
+  "pk": 1,
+  "fields": {
+    "vehicle": 1,
+    "food_safety": 1
+  }
+},
+{
+  "model": "receiving.vehiclereview",
+  "pk": 2,
+  "fields": {
+    "vehicle": 2,
+    "food_safety": 2
+  }
+},
+{
+  "model": "receiving.vehiclereview",
+  "pk": 3,
+  "fields": {
+    "vehicle": 3,
+    "food_safety": 2
+  }
+},
+{
+  "model": "receiving.vehicleinspection",
+  "pk": 1,
+  "fields": {
+    "sealed": true,
+    "only_the_product": true,
+    "free_foreign_matter": true,
+    "free_unusual_odors": true,
+    "certificate": true,
+    "free_fecal_matter": true,
+    "vehicle_review": 1
+  }
+},
+{
+  "model": "receiving.vehicleinspection",
+  "pk": 2,
+  "fields": {
+    "sealed": true,
+    "only_the_product": true,
+    "free_foreign_matter": true,
+    "free_unusual_odors": true,
+    "certificate": true,
+    "free_fecal_matter": true,
+    "vehicle_review": 2
+  }
+},
+{
+  "model": "receiving.vehicleinspection",
+  "pk": 3,
+  "fields": {
+    "sealed": true,
+    "only_the_product": true,
+    "free_foreign_matter": true,
+    "free_unusual_odors": true,
+    "certificate": true,
+    "free_fecal_matter": true,
+    "vehicle_review": 3
+  }
+},
+{
+  "model": "receiving.vehiclecondition",
+  "pk": 1,
+  "fields": {
+    "is_clean": true,
+    "good_condition": false,
+    "broken": false,
+    "damaged": true,
+    "seal": true,
+    "vehicle_review": 1
+  }
+},
+{
+  "model": "receiving.vehiclecondition",
+  "pk": 2,
+  "fields": {
+    "is_clean": true,
+    "good_condition": true,
+    "broken": false,
+    "damaged": false,
+    "seal": true,
+    "vehicle_review": 2
+  }
+},
+{
+  "model": "receiving.vehiclecondition",
+  "pk": 3,
+  "fields": {
+    "is_clean": true,
+    "good_condition": true,
+    "broken": true,
+    "damaged": false,
+    "seal": true,
+    "vehicle_review": 3
+  }
+},
+{
+  "model": "receiving.samplecollection",
+  "pk": 1,
+  "fields": {
+    "whole": true,
+    "foreign_material": false,
+    "insects": false,
+    "temperature_damage": false,
+    "unusual_odor": true,
+    "food_safety": 1
+  }
+},
+{
+  "model": "receiving.samplecollection",
+  "pk": 2,
+  "fields": {
+    "whole": false,
+    "foreign_material": false,
+    "insects": false,
+    "temperature_damage": true,
+    "unusual_odor": true,
+    "food_safety": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 1,
+  "fields": {
+    "weight": "180.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 2,
+  "fields": {
+    "weight": "208.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 3,
+  "fields": {
+    "weight": "168.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 4,
+  "fields": {
+    "weight": "166.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 5,
+  "fields": {
+    "weight": "184.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 6,
+  "fields": {
+    "weight": "181.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 7,
+  "fields": {
+    "weight": "187.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 8,
+  "fields": {
+    "weight": "203.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 9,
+  "fields": {
+    "weight": "201.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 10,
+  "fields": {
+    "weight": "198.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 11,
+  "fields": {
+    "weight": "196.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 12,
+  "fields": {
+    "weight": "193.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 13,
+  "fields": {
+    "weight": "191.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 14,
+  "fields": {
+    "weight": "174.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 15,
+  "fields": {
+    "weight": "179.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 16,
+  "fields": {
+    "weight": "178.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 17,
+  "fields": {
+    "weight": "189.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 18,
+  "fields": {
+    "weight": "181.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 19,
+  "fields": {
+    "weight": "182.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 20,
+  "fields": {
+    "weight": "187.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 21,
+  "fields": {
+    "weight": "180.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 22,
+  "fields": {
+    "weight": "180.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 23,
+  "fields": {
+    "weight": "180.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 24,
+  "fields": {
+    "weight": "186.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 25,
+  "fields": {
+    "weight": "183.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 26,
+  "fields": {
+    "weight": "155.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 27,
+  "fields": {
+    "weight": "160.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 28,
+  "fields": {
+    "weight": "158.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 29,
+  "fields": {
+    "weight": "161.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 30,
+  "fields": {
+    "weight": "156.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 31,
+  "fields": {
+    "weight": "166.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 32,
+  "fields": {
+    "weight": "168.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 33,
+  "fields": {
+    "weight": "152.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 34,
+  "fields": {
+    "weight": "150.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 35,
+  "fields": {
+    "weight": "170.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 36,
+  "fields": {
+    "weight": "159.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 37,
+  "fields": {
+    "weight": "155.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 38,
+  "fields": {
+    "weight": "172.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 39,
+  "fields": {
+    "weight": "178.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 40,
+  "fields": {
+    "weight": "189.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 41,
+  "fields": {
+    "weight": "153.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 42,
+  "fields": {
+    "weight": "162.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 43,
+  "fields": {
+    "weight": "154.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 44,
+  "fields": {
+    "weight": "159.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 45,
+  "fields": {
+    "weight": "180.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 46,
+  "fields": {
+    "weight": "181.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 47,
+  "fields": {
+    "weight": "177.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 48,
+  "fields": {
+    "weight": "176.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 49,
+  "fields": {
+    "weight": "149.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 50,
+  "fields": {
+    "weight": "180.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 51,
+  "fields": {
+    "weight": "176.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 52,
+  "fields": {
+    "weight": "171.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 53,
+  "fields": {
+    "weight": "164.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 54,
+  "fields": {
+    "weight": "169.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 55,
+  "fields": {
+    "weight": "159.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 56,
+  "fields": {
+    "weight": "167.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 57,
+  "fields": {
+    "weight": "160.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 58,
+  "fields": {
+    "weight": "182.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 59,
+  "fields": {
+    "weight": "179.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleweight",
+  "pk": 60,
+  "fields": {
+    "weight": "173.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.samplepest",
+  "pk": 1,
+  "fields": {
+    "sample_pest": 0,
+    "product_pest": 3,
+    "percentage": "0.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.samplepest",
+  "pk": 2,
+  "fields": {
+    "sample_pest": 0,
+    "product_pest": 4,
+    "percentage": "0.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.samplepest",
+  "pk": 3,
+  "fields": {
+    "sample_pest": 1,
+    "product_pest": 2,
+    "percentage": "4.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.samplepest",
+  "pk": 4,
+  "fields": {
+    "sample_pest": 0,
+    "product_pest": 1,
+    "percentage": "0.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.samplepest",
+  "pk": 5,
+  "fields": {
+    "sample_pest": 0,
+    "product_pest": 3,
+    "percentage": "0.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.samplepest",
+  "pk": 6,
+  "fields": {
+    "sample_pest": 0,
+    "product_pest": 4,
+    "percentage": "0.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.samplepest",
+  "pk": 7,
+  "fields": {
+    "sample_pest": 0,
+    "product_pest": 2,
+    "percentage": "0.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.samplepest",
+  "pk": 8,
+  "fields": {
+    "sample_pest": 1,
+    "product_pest": 1,
+    "percentage": "2.86",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampledisease",
+  "pk": 1,
+  "fields": {
+    "sample_disease": 0,
+    "product_disease": 2,
+    "percentage": "0.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampledisease",
+  "pk": 2,
+  "fields": {
+    "sample_disease": 0,
+    "product_disease": 4,
+    "percentage": "0.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampledisease",
+  "pk": 3,
+  "fields": {
+    "sample_disease": 0,
+    "product_disease": 3,
+    "percentage": "0.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampledisease",
+  "pk": 4,
+  "fields": {
+    "sample_disease": 0,
+    "product_disease": 2,
+    "percentage": "0.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampledisease",
+  "pk": 5,
+  "fields": {
+    "sample_disease": 1,
+    "product_disease": 4,
+    "percentage": "2.86",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampledisease",
+  "pk": 6,
+  "fields": {
+    "sample_disease": 0,
+    "product_disease": 3,
+    "percentage": "0.00",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.samplephysicaldamage",
+  "pk": 1,
+  "fields": {
+    "sample_physical_damage": 1,
+    "product_physical_damage": 1,
+    "percentage": "4.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.samplephysicaldamage",
+  "pk": 2,
+  "fields": {
+    "sample_physical_damage": 3,
+    "product_physical_damage": 3,
+    "percentage": "12.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.samplephysicaldamage",
+  "pk": 3,
+  "fields": {
+    "sample_physical_damage": 0,
+    "product_physical_damage": 2,
+    "percentage": "0.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.samplephysicaldamage",
+  "pk": 4,
+  "fields": {
+    "sample_physical_damage": 1,
+    "product_physical_damage": 1,
+    "percentage": "2.86",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.samplephysicaldamage",
+  "pk": 5,
+  "fields": {
+    "sample_physical_damage": 2,
+    "product_physical_damage": 3,
+    "percentage": "5.71",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.samplephysicaldamage",
+  "pk": 6,
+  "fields": {
+    "sample_physical_damage": 1,
+    "product_physical_damage": 2,
+    "percentage": "2.86",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleresidue",
+  "pk": 1,
+  "fields": {
+    "sample_residue": 0,
+    "product_residue": 2,
+    "percentage": "0.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleresidue",
+  "pk": 2,
+  "fields": {
+    "sample_residue": 1,
+    "product_residue": 1,
+    "percentage": "4.00",
+    "sample_collection": 1
+  }
+},
+{
+  "model": "receiving.sampleresidue",
+  "pk": 3,
+  "fields": {
+    "sample_residue": 2,
+    "product_residue": 1,
+    "percentage": "5.71",
+    "sample_collection": 2
+  }
+},
+{
+  "model": "receiving.sampleresidue",
+  "pk": 4,
+  "fields": {
+    "sample_residue": 0,
+    "product_residue": 2,
+    "percentage": "0.00",
+    "sample_collection": 2
+  }
+}
+]

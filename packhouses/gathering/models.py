@@ -33,11 +33,13 @@ from packhouses.receiving.models import IncomingProduct
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from decimal import Decimal, ROUND_DOWN
+import uuid
 
 # Create your models here.
 
 
 class ScheduleHarvest(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     ooid = models.PositiveIntegerField(verbose_name=_("Harvest Number"), null=True, blank=True, unique=True)
     harvest_date = models.DateField(verbose_name=_('Harvest date'), default=datetime.date.today)
     product_provider = models.ForeignKey(Provider, verbose_name=_("Product provider"), on_delete=models.PROTECT, null=True, blank=True)
@@ -46,8 +48,8 @@ class ScheduleHarvest(models.Model):
     maquiladora = models.ForeignKey(Maquiladora, verbose_name=_("Maquiladora"), on_delete=models.PROTECT, null=True, blank=True)
     product = models.ForeignKey(Product, verbose_name=_("Product"), on_delete=models.PROTECT,)
     product_variety = models.ForeignKey(ProductVariety, verbose_name=_("Product Variety"), on_delete=models.PROTECT,)
-    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_("Product phenology"), on_delete=models.PROTECT)
-    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_("Product ripeness"), on_delete=models.PROTECT, null=True,blank=True)
+    product_phenology = models.ForeignKey(ProductPhenologyKind, verbose_name=_("Product Phenology"), on_delete=models.PROTECT)
+    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_("Product Ripeness"), on_delete=models.PROTECT, null=True,blank=True)
     product_harvest_size_kind = models.ForeignKey(ProductHarvestSizeKind, verbose_name=_("Product harvest size"), on_delete=models.PROTECT)
     orchard = models.ForeignKey(Orchard, verbose_name=_("Orchard"), on_delete=models.PROTECT,)
     market = models.ForeignKey(Market, verbose_name=_("Market"), on_delete=models.PROTECT,)

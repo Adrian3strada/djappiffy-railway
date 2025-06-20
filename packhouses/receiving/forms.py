@@ -317,3 +317,9 @@ class WeighingSetContainerInlineFormSet(BaseInlineFormSet):
                 raise ValidationError(_('You cannot delete a container that belongs to a protected weighing set.'))
             if instance.weighing_set.protected and form.has_changed():
                 raise ValidationError(_('You cannot modify a container that belongs to a protected weighing set.'))
+
+class BaseIncomingProductInlineFormSet(BaseInlineFormSet):
+    def add_fields(self, form, index):
+        super().add_fields(form, index)
+        if 'DELETE' in form.fields:
+            form.fields['DELETE'].widget.attrs['disabled'] = 'disabled'

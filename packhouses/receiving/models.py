@@ -12,10 +12,11 @@ from common.base.models import Pest
 from django.db.models import F, Sum
 from django.core.exceptions import ValidationError
 from common.settings import STATUS_CHOICES
-
+import uuid
 
 # Create your models here.
 class Batch(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     ooid = models.PositiveIntegerField(verbose_name=_('Batch Number'), null=True, blank=True)
     status = models.CharField(max_length=25, verbose_name=_('Status'),
                                      choices=STATUS_CHOICES, default='open', blank=True)
@@ -405,6 +406,7 @@ class BatchStatusChange(models.Model):
 
 
 class IncomingProduct(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     status = models.CharField(max_length=20, verbose_name=_('Status'), choices=STATUS_CHOICES,
                               default='open')
     public_weighing_scale = models.ForeignKey(WeighingScale, verbose_name=_("Public Weighing Scale"),
@@ -417,11 +419,11 @@ class IncomingProduct(models.Model):
                                                  blank=True)
     kg_sample = models.FloatField(default=0, verbose_name=_("Kg for Sample"), validators=[MinValueValidator(0.01)])
     is_quarantined = models.BooleanField(default=False, verbose_name=_('In quarantine'))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Received Date'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'))
     batch = models.OneToOneField(Batch, on_delete=models.PROTECT, verbose_name=_('Batch'), null=True, blank=True)
     comments = models.TextField(verbose_name=_("Comments"), blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
+    
     @property
     def weighed_sets_count(self):
         return self.weighingset_set.count()
@@ -653,7 +655,7 @@ class FoodSafety(models.Model):
     batch = models.OneToOneField(Batch, verbose_name=_('Batch'), on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'), )
     status = models.CharField(max_length=20, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open', blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Creation Date'))
 
     def __str__(self):
         return f"{self.batch}"

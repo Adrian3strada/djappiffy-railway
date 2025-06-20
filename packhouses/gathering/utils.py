@@ -4,7 +4,6 @@ from .models import ScheduleHarvest
 FILTER_DISPLAY_CONFIG = {
     'ScheduleHarvest': {
         'ordering': [
-            'orchard_certification',
             'scheduleharvest_product_producer',
             'gatherer',
             'maquiladora',
@@ -19,8 +18,8 @@ FILTER_DISPLAY_CONFIG = {
             'status',
         ],
         'renames': {
-            'scheduleharvest_product_producer': _('Product Provider'),
-            'scheduleharvest_product_provider': _('Product Producer'),
+            'scheduleharvest_product_producer': _('Product Producer'),
+            'scheduleharvest_product_provider': _('Product Provider'),
             'harvesting_crew': _('Harvesting Crew'),
             'product': _('Product'),
             'product_phenology': _('Product Phenology'),
@@ -76,13 +75,13 @@ def apply_filter_config(applied_filters, model_key):
             field_name = key.replace('__range', '')
             try:
                 field_obj = Model._meta.get_field(field_name)
-                etiqueta = str(gettext(field_obj.verbose_name)).title()
+                title = str(gettext(field_obj.verbose_name)).title()
             except Exception:
-                etiqueta = renames.get(key, key.replace('_', ' ').title())
+                title = renames.get(key, key.replace('_', ' ').title())
         else:
-            etiqueta = renames.get(key, key.replace('_', ' ').title())
+            title = renames.get(key, key.replace('_', ' ').title())
 
-        internal_map[key] = (etiqueta, val)
+        internal_map[key] = (title, val)
 
     ordered = {}
     for key_in_order in ordering:

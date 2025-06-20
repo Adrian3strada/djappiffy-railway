@@ -93,10 +93,11 @@ class BatchDisplayMixin:
         if obj.is_parent:
             children_ids = [str(child.ooid) for child in obj.children.all()]
             children_text = f" [{', '.join(children_ids)}]" if children_ids else ""
-            return f"Parent of {children_text}"
+            return f"Parent{children_text}"
         elif obj.is_child:
             return f"Child of {obj.parent.ooid}"
-        return " "
+        return _("Independent")
+        
     get_batch_merge_status.short_description = _('Batch Merge Status')
     get_batch_merge_status.admin_order_field = 'parent'
 
@@ -154,9 +155,9 @@ class BatchDisplayMixin:
     def get_scheduleharvest_product_phenology(self, obj):
         incoming_product = getattr(obj, 'incomingproduct', None)
         schedule_harvest = getattr(incoming_product, 'scheduleharvest', None) if incoming_product else None
-        product_phenologies = getattr(schedule_harvest, 'product_phenologies', None) if schedule_harvest else None
+        product_phenology = getattr(schedule_harvest, 'product_phenology', None) if schedule_harvest else None
 
-        return str(product_phenologies) if product_phenologies else ''
+        return str(product_phenology) if product_phenology else ''
     get_scheduleharvest_product_phenology.short_description = _('Product Phenology')
     get_scheduleharvest_product_phenology.admin_order_field = 'incomingproduct__scheduleharvest__product'
 
@@ -165,8 +166,8 @@ class BatchDisplayMixin:
         schedule_harvest = getattr(incoming_product, 'scheduleharvest', None) if incoming_product else None
         orchard = getattr(schedule_harvest, 'orchard', None) if schedule_harvest else None
 
-        return str(orchard) if orchard else ''
-    get_scheduleharvest_orchards.short_description = _('Orchards')
+        return str(orchard.name) if orchard else ''
+    get_scheduleharvest_orchards.short_description = _('Orchard')
     get_scheduleharvest_orchards.admin_order_field = 'incomingproduct__scheduleharvest__orchard'
 
     def display_available_for_processing(self, obj):
@@ -175,3 +176,26 @@ class BatchDisplayMixin:
         return _boolean_icon(obj.is_available_for_processing)
     display_available_for_processing.short_description = _('Available for Processing')
     display_available_for_processing.admin_order_field = 'is_available_for_processing'
+    
+    def get_orchard_code(self, obj):
+        return obj.incomingproduct.scheduleharvest.orchard.code if obj.incomingproduct.scheduleharvest.orchard else None
+    get_orchard_code.short_description = _('Orchard Code')
+    get_orchard_code.admin_order_field = 'incomingproduct__scheduleharvest__orchard__code'
+
+    def get_orchard_product_producer(self, obj):
+        schedule_harvest = obj.incomingproduct.scheduleharvest
+        return schedule_harvest.orchard.producer if schedule_harvest else None
+    get_orchard_product_producer.admin_order_field = 'incomingproduct__scheduleharvest__orchard__producer'
+    get_orchard_product_producer.short_description = _('Product Producer')
+
+    def get_orchard_category(self, obj):
+        if obj.incomingproduct.scheduleharvest.orchard:
+            return obj.incomingproduct.scheduleharvest.orchard.get_category_display()
+        return None
+    get_orchard_category.short_description = _('Product Category')
+    get_orchard_category.admin_order_field = 'incomingproduct__scheduleharvest__orchard__category'
+
+    def get_product_ripeness(self, obj):
+        return obj.incomingproduct.scheduleharvest.product_ripeness if obj.incomingproduct.scheduleharvest else None
+    get_product_ripeness.short_description = _('Product Ripeness')
+    get_product_ripeness.admin_order_field = 'incomingproduct__scheduleharvest__product_ripeness'

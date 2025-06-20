@@ -180,23 +180,60 @@ tr {
 </style>
 
 <div style="margin-top: 0px;">
-<table style="margin-top: 0px;" class="folio-table">
-    <tr>
-        <td style="width: 20%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest No." %}</td>
-        <td style="width: 20%; color:#b30000; background-color: #fff4cc;"> {{ harvest.ooid }}</td>
+  <table style="margin-top: 0px;" class="folio-table">
+    {% if batch %}
+      <tr>
+        <td style="width: 20%; border-left: 10px solid #123782; background-color: #ffc600;">
+          {% translate "Batch No." %}
+        </td>
+        <td style="width: 20%; color: #b30000; background-color: #fff4cc;">
+          {{ batch.id }}
+        </td>
         <td style="width: 60%;"></td>
-    </tr>
+      </tr>
+    {% endif %}
+
     <tr>
-        <td style="width: 20%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest Schedule Date" %}</td>
-        <td style="width: 20%; color:#b30000; background-color: #fff4cc;"> {{ harvest.harvest_date }}</td>
-        <td style="width: 60%;"></td>
+      <td style="width: 20%; border-left: 10px solid #123782; background-color: #ffc600;">
+        {% translate "Harvest No." %}
+      </td>
+      <td style="width: 20%; color: #b30000; background-color: #fff4cc;">
+        {{ harvest.ooid }}
+      </td>
+      <td style="width: 60%;"></td>
     </tr>
+
+    {% if not batch %}
     <tr>
-        <td style=" width: 20%; border-left: 10px solid #123782; background-color: #ffc600;">{% translate "Harvest Reception Date" %}</td>
-        <td style=" width: 20%; color: #b30000; background-color: #fff4cc;"> {{ harvest.created_at }}</td>
-        
+      <td style="width: 20%; border-left: 10px solid #123782; background-color: #ffc600;">
+        {% translate "Harvest Schedule Date" %}
+      </td>
+      <td style="width: 20%; color: #b30000; background-color: #fff4cc;">
+        {{ harvest.harvest_date }}
+      </td>
+      <td style="width: 60%;"></td>
     </tr>
-</table>
+    {% endif %}
+
+    <tr>
+      <td style="width: 20%; border-left: 10px solid #123782; background-color: #ffc600;">
+        {% if batch %}
+          {% translate "Batch Reception Date" %}
+        {% else %}
+          {% translate "Harvest Reception Date" %}
+        {% endif %}
+      </td>
+      <td style="width: 20%; color: #b30000; background-color: #fff4cc;">
+        {% if batch %}
+          {{ batch.created_at }}
+        {% else %}
+          {{ harvest.created_at }}
+        {% endif %}
+      </td>
+      <td style="width: 60%;"></td>
+    </tr>
+
+  </table>
 </div>
 
 <div class="information-section">
@@ -224,7 +261,7 @@ tr {
         <p><strong>{% translate "Registery Code:" %} </strong>{{harvest.orchard.code}}</p>
         <p><strong>{% translate "Product Variety:" %} </strong>{{harvest.product_variety}}</p>
         <p><strong>{% translate "Product Producer:" %} </strong>{{ harvest.orchard.producer }}</p>
-        <p><strong>{% translate "Creation Date:" %}</strong> {{harvest.created_at}}</p>
+        <p><strong>{% translate "Harvest Reception Date:" %}</strong> {{harvest.created_at}}</p>
      </div>
      <div class="row row-four">
         <p>&nbsp;</p>

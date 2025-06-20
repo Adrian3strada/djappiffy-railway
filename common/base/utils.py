@@ -47,8 +47,21 @@ def resolve_custom_fields(request, model):
     return resolved
 
 
+
 def resolve_field_verbose_and_value(model, key, raw_value):
     try:
+        if key in ["scheduleharvest__harvesting_crew", "incomingproduct__scheduleharvest__harvesting_crew"]:
+            HarvestingCrewLinkModel = apps.get_model("gathering", "ScheduleHarvestHarvestingCrew")
+            link_obj = HarvestingCrewLinkModel.objects.filter(harvesting_crew=raw_value).first()
+            if link_obj:
+                return key, link_obj.harvesting_crew.name
+            else:
+                return key, raw_value
+        if key in ["scheduleharvest__orchard_product_category", "incomingproduct__scheduleharvest__orchard_product_category"]:
+            label = dict(ORCHARD_PRODUCT_CLASSIFICATION_CHOICES).get(raw_value, raw_value)
+            label = str(_(label)).title()
+            return key, label
+
         if key.endswith('__range'):
             field_lookup = key.replace('__range', '')
             field = model._meta.get_field(field_lookup)
@@ -83,18 +96,23 @@ def resolve_field_verbose_and_value(model, key, raw_value):
         label = str(_(field.verbose_name)).title()
 
         if field.choices:
-            value = str(_(dict(field.choices).get(raw_value, raw_value)))
-        elif hasattr(field, 'remote_field'):
+            value = str(_(dict(field.choices).get(raw_value, raw_value))).title()
+        elif hasattr(field, 'remote_field') and field.remote_field:
             obj = field.remote_field.model.objects.filter(pk=raw_value).first()
-            value = str(obj) if obj else raw_value
+            if obj:
+                try:
+                    obj_name = obj.name
+                    value = obj_name
+                except AttributeError:
+                    value = str(obj)
+            else:
+                value = raw_value
         else:
             value = raw_value
         return key, value
 
     except Exception as e:
         return key, raw_value
-
-
 
 def prettify_filter_names(filters, model, request=None):
     ignored_keys = {'q', 'o', 'export_type'}
@@ -119,7 +137,11 @@ def prettify_filter_names(filters, model, request=None):
             elif key.endswith('__lte'):
                 base_key = key.replace('__lte', '')
                 bound = 'lte'
-            final_key = f"{base_key}__range"
+            # Si la clave base ya termina en '__range', la usamos sin agregar otro sufijo
+            if base_key.endswith('__range'):
+                final_key = base_key
+            else:
+                final_key = f"{base_key}__range"
             if final_key not in range_filters:
                 range_filters[final_key] = {}
             range_filters[final_key][bound] = value
@@ -435,7 +457,7 @@ class DehydrationResource():
     def dehydrate_product_provider(self, obj):
         return obj.product_provider.name if obj.product_provider else ""
 
-default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization', 'description')
+default_excluded_fields = ('label_language', 'internal_number', 'comments' ,'organization', 'description', 'uuid')
 
 
 def filter_models_by_food_safety():
