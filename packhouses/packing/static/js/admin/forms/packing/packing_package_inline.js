@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (productField.val()) {
       productProperties = await fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
     } else {
-      batchProperties = null;
+      productProperties = null;
     }
   }
 
