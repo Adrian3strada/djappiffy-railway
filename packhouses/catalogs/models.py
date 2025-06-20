@@ -1045,15 +1045,14 @@ class ProductPresentationComplementarySupply(models.Model):
 class ProductPackaging(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'),
-                                              on_delete=models.PROTECT)
+    packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
     country_standard_packaging = models.ForeignKey(ProductKindCountryStandardPackaging,
                                                    verbose_name=_('Country standard packaging'),
                                                    null=True, blank=True, on_delete=models.PROTECT)
     packaging_supply = models.ForeignKey(Supply, verbose_name=_('Packaging supply'), on_delete=models.PROTECT)
     name = models.CharField(max_length=255, verbose_name=_('Name'))
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
-    clients = models.ManyToManyField('Client', verbose_name=_('Clients'), blank=True)
+    clients = models.ManyToManyField(Client, verbose_name=_('Clients'), blank=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.CASCADE)
 
     def __str__(self):
