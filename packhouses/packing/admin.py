@@ -91,6 +91,9 @@ class PackingPackageInline(admin.StackedInline):
               'product_pieces_per_presentation', 'packaging_quantity', 'processing_date', 'status')
     readonly_fields = ('ooid',)
 
+    class Media:
+        js = ('js/admin/forms/packing/packing_package_inline.js',)
+
 
 @admin.register(PackingPallet)
 class PackingPalletAdmin(ByOrganizationAdminMixin):
@@ -121,14 +124,22 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
         if db_field.name == "market":
             kwargs["queryset"] = Market.objects.filter(organization=organization)
 
+        if db_field.name == "pallet":
+            kwargs["queryset"] = Pallet.objects.filter(product__organization=organization)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            formfield.label_from_instance = lambda obj: f"{obj.name} (Q:{obj.max_packages_quantity})"
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        organization = request.organization if hasattr(request, 'organization') else None
+
         if db_field.name == "product_size":
             organization_products = Product.objects.filter(organization=organization)
             kwargs["queryset"] = ProductSize.objects.filter(product__in=organization_products)
 
-        if db_field.name == "pallet":
-            kwargs["queryset"] = Pallet.objects.filter(size_packagings__organization=organization)
-
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     class Media:
         js = ('js/admin/forms/packing/packing_pallet.js',)
@@ -138,7 +149,7 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
 class PackingPackageAdmin(ByOrganizationAdminMixin):
     list_display = ("ooid", "batch", "market", "product_size", "product_market_class", "product_ripeness",
                     "size_packaging", "packaging_quantity", "processing_date", "packing_pallet", "status")
-    search_fields = ("batch__name", "product_size__name", "packing_pallet__name")
+    search_fields = ("product_size__name",)
     list_filter = (ByBatchForOrganizationPackingPackageFilter, ByMarketForOrganizationPackingPackageFilter,
                    ByProductSizeForOrganizationPackingPackageFilter, ByProductMarketClassForOrganizationPackingPackageFilter, ByProductRipenessForOrganizationPackingPackageFilter, BySizePackagingForOrganizationPackingPackageFilter,
                    "processing_date", ByPackingPalletForOrganizationPackingPackageFilter, "status")
@@ -186,8 +197,6 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
         if db_field.name == "batch":
             kwargs["queryset"] = Batch.objects.filter(organization=organization)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            formfield.label_from_instance = lambda \
-                obj: f"{obj.ooid} - {obj.incomingproduct.scheduleharvest.orchard.name} ({obj.available_weight} {obj.incomingproduct.scheduleharvest.product.measure_unit_category})"
             return formfield
 
         if db_field.name == "market":

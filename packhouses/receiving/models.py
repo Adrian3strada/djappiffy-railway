@@ -17,7 +17,7 @@ import uuid
 # Create your models here.
 class Batch(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    ooid = models.PositiveIntegerField(verbose_name=_('Batch Number'), null=True, blank=True)
+    ooid = models.PositiveIntegerField(verbose_name=_('Batch ID'), null=True, blank=True)
     status = models.CharField(max_length=25, verbose_name=_('Status'),
                                      choices=STATUS_CHOICES, default='open', blank=True)
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
@@ -31,7 +31,7 @@ class Batch(models.Model):
         if incoming:
             sh = getattr(incoming, 'scheduleharvest', None)
             harvest = f"{_('Schedule Harvest Number')}: {sh.ooid}" if sh else _('No Harvest')
-            return f"Batch {self.ooid} – {_('Incoming Product')} ID: {incoming.id} – {harvest}"
+            return f"ID:{self.ooid} - {sh.orchard.name} - SH:{sh.ooid}, IP:{incoming.id} (AW:{self.available_weight} {sh.product.measure_unit_category})"
 
         if hasattr(self, 'children') and self.children.exists():
             return f"{self.ooid} – {_('Parent Batch')}"
@@ -419,11 +419,11 @@ class IncomingProduct(models.Model):
                                                  blank=True)
     kg_sample = models.FloatField(default=0, verbose_name=_("Kg for Sample"), validators=[MinValueValidator(0.01)])
     is_quarantined = models.BooleanField(default=False, verbose_name=_('In quarantine'))
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Received Date'))
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'))
     batch = models.OneToOneField(Batch, on_delete=models.PROTECT, verbose_name=_('Batch'), null=True, blank=True)
     comments = models.TextField(verbose_name=_("Comments"), blank=True, null=True)
-    
+    created_at = models.DateTimeField(auto_now_add=True)
+
     @property
     def weighed_sets_count(self):
         return self.weighingset_set.count()
@@ -655,7 +655,7 @@ class FoodSafety(models.Model):
     batch = models.OneToOneField(Batch, verbose_name=_('Batch'), on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'), )
     status = models.CharField(max_length=20, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open', blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Creation Date'))
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.batch}"
