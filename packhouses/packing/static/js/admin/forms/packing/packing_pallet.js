@@ -93,8 +93,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (palletField.val()) {
         const pallets = await fetchOptions(`/rest/v1/catalogs/pallet/${palletField.val()}/`);
         updateFieldOptions(palletField, pallets, palletField.val());
+      } else {
+        updateFieldOptions(palletField, []);
       }
-      updateFieldOptions(palletField, []);
     }
   }
 
