@@ -1469,7 +1469,6 @@ class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         parent_obj_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = ProductPresentation.objects.get(id=parent_obj_id) if parent_obj_id else None
         organization = request.organization if hasattr(request, 'organization') else None
         organization_queryfilter = {'organization': organization, 'is_enabled': True}
 
