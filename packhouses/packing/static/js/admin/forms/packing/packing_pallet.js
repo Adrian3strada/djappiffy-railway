@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (!field.prop('multiple')) {
         field.append(new Option('---------', '', true, !selectedValue));
       }
-      const selected = selectedValue ? parseInt(selectedValue) || selectedValue : null;
+      // Removed unused `selected` variable as it is redundant.
       options.forEach(option => {
         const newOption = new Option(option.name, option.id, false, selectedValue ? selected === option.id || selectedValue.includes(option.id.toString()) : false);
         if ('alias' in option && option.alias) {
