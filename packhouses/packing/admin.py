@@ -195,7 +195,6 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
         if db_field.name == "batch":
             kwargs["queryset"] = Batch.objects.filter(organization=organization)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-            # formfield.label_from_instance = lambda obj: f"{obj.ooid} - {obj.incomingproduct.scheduleharvest.orchard.name} ({obj.available_weight} {obj.incomingproduct.scheduleharvest.product.measure_unit_category})"
             return formfield
 
         if db_field.name == "market":
