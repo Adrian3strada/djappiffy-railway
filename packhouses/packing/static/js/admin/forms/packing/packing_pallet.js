@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
       // Removed unused `selected` variable as it is redundant.
       options.forEach(option => {
-        const newOption = new Option(option.name, option.id, false, selectedValue ? selected === option.id || selectedValue.includes(option.id.toString()) : false);
+        const newOption = new Option(option.name, option.id, false, selectedValue ? (Array.isArray(selectedValue) ? selectedValue.includes(option.id.toString()) : selectedValue === option.id.toString()) : false);
         if ('alias' in option && option.alias) {
           newOption.setAttribute('data-alias', option.alias);
         }
