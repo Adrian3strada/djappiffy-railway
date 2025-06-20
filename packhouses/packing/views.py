@@ -23,21 +23,22 @@ def generate_label_pdf(request, employee_id):
     labels = []
     for _ in range(quantity):
         label_uuid = uuid.uuid4()
-        
+
         label = PackerLabel.objects.create(
             employee=employee,
             uuid=label_uuid,
         )
-        
+
         qr_data = f"{employee.id}-{label_uuid}"
         qr_image = qrcode.make(qr_data)
+        qr_label = f"E_{employee.id}"
 
         qr_io = BytesIO()
         qr_image.save(qr_io, format="PNG")
         qr_base64 = base64.b64encode(qr_io.getvalue()).decode("utf-8")
 
         labels.append({
-            "label_id": qr_data,
+            "label_id": qr_label,
             "qr_image_base64": qr_base64
         })
 
@@ -70,13 +71,14 @@ def generate_pending_label_pdf(request, employee_id):
     for label in pending_labels:
         qr_data = f"{employee.id}-{label.uuid}"
         qr_image = qrcode.make(qr_data)
+        qr_label = f"E_{employee.id}"
 
         qr_io = BytesIO()
         qr_image.save(qr_io, format="PNG")
         qr_base64 = base64.b64encode(qr_io.getvalue()).decode("utf-8")
 
         labels.append({
-            "label_id": qr_data,
+            "label_id": qr_label,
             "qr_image_base64": qr_base64
         })
 
@@ -93,7 +95,7 @@ def generate_pending_label_pdf(request, employee_id):
 
     response = HttpResponse(pdf, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="labels_{employee.full_name}_pending.pdf"'
-    
+
     return response
 
 

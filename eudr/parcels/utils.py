@@ -152,11 +152,15 @@ def to_polygon(instance):
 
 def fix_format(instance):
     try:
-        # Leer el contenido del archivo original
         file_content = default_storage.open(instance.file.name).read()
         file_extension = instance.file.name.split('.')[-1].lower()
 
-        if file_extension == 'kml':
+        # Si ya está en un formato válido, no hagas nada
+        if file_extension in ['gpkg', 'geojson', 'zip', 'shp']:
+            print(f"Archivo ya está en formato válido: {file_extension}")
+            return
+
+        elif file_extension == 'kml':
             with fiona.BytesCollection(file_content, driver='LIBKML') as src:
                 with MemoryFile() as memfile:
                     with memfile.open(
@@ -170,7 +174,6 @@ def fix_format(instance):
                     generated_file = memfile.read()
                     new_file_path = default_storage.get_available_name(instance.file.name.replace('.kml', '.gpkg'))
                     default_storage.save(new_file_path, ContentFile(generated_file))
-
                     instance.file.name = new_file_path
 
         elif file_extension == 'kmz':
@@ -190,7 +193,6 @@ def fix_format(instance):
                     generated_file = memfile.read()
                     new_file_path = default_storage.get_available_name(instance.file.name.replace('.kmz', '.gpkg'))
                     default_storage.save(new_file_path, ContentFile(generated_file))
-
                     instance.file.name = new_file_path
 
         else:
@@ -198,6 +200,7 @@ def fix_format(instance):
 
     except Exception as e:
         raise ValidationError(f"fix_format Error al procesar el formato: {str(e)}")
+
 
 
 def fix_crs(instance):
@@ -270,5 +273,15 @@ def set_year_path(path):
         return wrapper
 
     return decorator
+
+def test_open_file(instance):
+    try:
+        file_content = default_storage.open(instance.file.name).read()
+        with fiona.BytesCollection(file_content) as src:
+            print('Número de features:', len(src))
+    except Exception as e:
+        print('Error abriendo archivo con Fiona:', e)
+
+
 
 

@@ -3,11 +3,10 @@ from .viewsets import (
     MarketViewSet, ProductMarketClassViewSet, VehicleViewSet, HarvestingCrewProviderViewSet,
     CrewChiefViewSet, ProductVarietyViewSet, ProductHarvestSizeKindViewSet, ProductPhenologyKindViewSet,
     ClientViewSet, ProviderViewSet, ProductViewSet, MaquiladoraViewSet, SupplyViewSet,
-    ProductSizeViewSet, ProductPresentationViewSet, SizePackagingViewSet,
-    PalletViewSet,
-    OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, OrchardGeoLocationViewSet, PackagingViewSet,
-    ProductRipenessViewSet,
-    ServiceViewSet, PestProductKindViewSet, DiseaseProductKindViewSet
+    ProductSizeViewSet, ProductPresentationViewSet, PackagingViewSet,  PalletViewSet,
+    OrchardViewSet, HarvestingCrewViewSet, OrchardCertificationViewSet, OrchardGeoLocationViewSet, ProductRipenessViewSet,
+    ServiceViewSet, PestProductKindViewSet, DiseaseProductKindViewSet, SizePackagingViewSet,
+    OrchardForEudrViewSet, OrchardCertificationForEudrViewSet, OrchardGeoLocationForEudrViewSet
 )
 
 urlpatterns = []
@@ -45,4 +44,7 @@ drf_router.register(r'rest/v1/catalogs/service', ServiceViewSet, basename='servi
 drf_router.register(r'rest/v1/catalogs/pest-kinds', PestProductKindViewSet, basename='pest_kinds')
 drf_router.register(r'rest/v1/catalogs/disease-kinds', DiseaseProductKindViewSet, basename='disease_kinds')
 
+drf_router.register(r'rest/v1/catalogs/orchard-for-eudr', OrchardForEudrViewSet, basename='orchard_for_eudr')
+drf_router.register(r'rest/v1/catalogs/orchard-certification-for-eudr', OrchardCertificationForEudrViewSet, basename='orchard_certification_for_eudr')
+drf_router.register(r'rest/v1/catalogs/orchard-geolocation-for-eudr', OrchardGeoLocationForEudrViewSet, basename='orchard_geolocation_for_eudr')
 urlpatterns += drf_router.urls

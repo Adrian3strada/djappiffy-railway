@@ -1469,6 +1469,7 @@ class PurchaseMassPaymentAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin,
 class FruitPurchaseOrderReceiptInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
     """
     Inline del admin para agregar recibos a una orden de compra de frutas.
+    No permite agregar nuevos si la orden está cerrada o cancelada.
     """
     model = FruitPurchaseOrderReceipt
     form = FruitPurchaseOrderReceiptForm
@@ -1478,8 +1479,25 @@ class FruitPurchaseOrderReceiptInline(DisableInlineRelatedLinksMixin, admin.Stac
     min_num = 1
     can_delete = False
 
+    def get_extra(self, request, obj=None, **kwargs):
+        """
+        No agrega formularios vacíos si la orden está cerrada o cancelada.
+        """
+        if obj and obj.status in ['closed', 'canceled']:
+            return 0
+        return super().get_extra(request, obj, **kwargs)
+
+    def has_add_permission(self, request, obj=None):
+        """
+        No permite agregar nuevos recibos si la orden está cerrada o cancelada.
+        """
+        if obj and obj.status in ['closed', 'canceled']:
+            return False
+        return super().has_add_permission(request, obj)
+
     class Media:
         js = ('js/admin/forms/packhouses/purchases/fruit_purchase_order_receipt.js',)
+
 
 class FruitPaymentInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
     """
@@ -1491,10 +1509,10 @@ class FruitPaymentInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
     fields = (
         'cancel_button',
         'fruit_purchase_order_receipt',
+        'amount',
         'payment_kind',
         'bank',
         'additional_inputs',
-        'amount',
         'payment_date',
         'proof_of_payment',
         'comments',
@@ -1503,6 +1521,14 @@ class FruitPaymentInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
     extra = 0
     can_delete = False
     readonly_fields = ('cancel_button', 'payment_info')
+
+    def save_model(self, request, obj, form, change):
+        """
+        Guarda el objeto principal (sin relaciones M2M).
+        """
+        if not change:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         """
@@ -1513,7 +1539,10 @@ class FruitPaymentInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
 
         if db_field.name == 'fruit_purchase_order_receipt' and hasattr(request, 'fruit_purchase_order_obj'):
             fruit_order = request.fruit_purchase_order_obj
-            field.queryset = field.queryset.filter(fruit_purchase_order=fruit_order)
+            if fruit_order and fruit_order.pk:
+                field.queryset = field.queryset.filter(fruit_purchase_order=fruit_order)
+            else:
+                field.queryset = field.queryset.none()
 
         return field
 
@@ -1593,10 +1622,25 @@ class FruitPaymentInline(DisableInlineRelatedLinksMixin, admin.StackedInline):
 
     payment_info.short_description = _("Payment info")
 
+    def get_extra(self, request, obj=None, **kwargs):
+        """
+        No agrega formularios vacíos si la orden está cerrada o cancelada.
+        """
+        if obj and obj.status in ['closed', 'canceled']:
+            return 0
+        return super().get_extra(request, obj, **kwargs)
 
+    def has_add_permission(self, request, obj=None):
+        """
+        No permite agregar nuevos recibos si la orden está cerrada o cancelada.
+        """
+        if obj and obj.status in ['closed', 'canceled']:
+            return False
+        return super().has_add_permission(request, obj)
 
     class Media:
         js = ('js/admin/forms/packhouses/purchases/fruit_orders_payments.js',)
+
 
 @admin.register(FruitPurchaseOrder)
 class FruitPurchaseOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, admin.ModelAdmin):
@@ -1691,26 +1735,42 @@ class FruitPurchaseOrderAdmin(DisableLinksAdminMixin, ByOrganizationAdminMixin, 
 
     def save_formset(self, request, form, formset, change):
         """
-        Asigna automáticamente el usuario que creó los recibos cuando se agregan desde el inline.
-        También elimina correctamente los recibos marcados para borrar.
+        Maneja el guardado de formsets personalizados.
+        Asigna automáticamente el usuario que creó los registros cuando se agregan desde el inline.
         """
-        if formset.model != FruitPurchaseOrderReceipt:
-            return formset.save()
+        if formset.model == FruitPurchaseOrderPayment:
+            for inline_form in formset.forms:
+                try:
+                    instance = inline_form.save(commit=False)
+                    instance.full_clean()
+                except ValidationError as e:
+                    inline_form.add_error(None, e)
+                    return
 
-        instances = formset.save(commit=False)
+            instances = formset.save(commit=False)
+            for obj in instances:
+                if not obj.pk and hasattr(obj, 'created_by'):
+                    obj.save(user=request.user)  # Pasa el usuario aquí
+                else:
+                    obj.save()
+            formset.save_m2m()
 
-        # Guardar los nuevos o modificados
-        for obj in instances:
-            if not obj.pk:
-                obj.created_by = request.user
-            obj.save()
+            for obj in formset.deleted_objects:
+                obj.delete()
+            return
 
-        # Eliminar los marcados
-        for obj in formset.deleted_objects:
-            obj.delete()
+        if formset.model == FruitPurchaseOrderReceipt:
+            instances = formset.save(commit=False)
+            for obj in instances:
+                if not obj.pk:
+                    obj.created_by = request.user
+                obj.save()
+            for obj in formset.deleted_objects:
+                obj.delete()
+            formset.save_m2m()
+            return
 
-        # Guardar M2M si aplica
-        formset.save_m2m()
+        return formset.save()
 
     def get_urls(self):
         urls = super().get_urls()

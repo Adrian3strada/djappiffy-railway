@@ -191,7 +191,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const batchId = $(this).val();
         const endpoint = `/rest/v1/receiving/batch/?id=${batchId}`;
 
-        if (!batchId) return;
+        if (!batchId){
+          if($("#batch-yield-producer").length ) {
+            $("#batch-yield-producer").text('—');
+            $("#batch-harvest-provider").text('—');
+            $("#batch-weight_received").text('—');
+          }
+          return;
+        }
 
         ensureBatchInfoBox();
 

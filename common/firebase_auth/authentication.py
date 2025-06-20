@@ -25,17 +25,20 @@ User = get_user_model()
 
 firebase_instances = {}
 
-for index, project in enumerate(api_settings.FIREBASE_AUTH_PROJECTS):
-    # log.info(index, project)
-    if index == 0:
-        default_credentials = firebase_admin.credentials.Certificate(project['SERVICE_ACCOUNT'])
-        firebase_admin.initialize_app(credential=default_credentials)
-    credentials = firebase_admin.credentials.Certificate(project['SERVICE_ACCOUNT'])
-    firebase_instances[project['PROJECT_ID']] = firebase_admin.initialize_app(credentials,
-                                                                              {'projectId': project['PROJECT_ID']},
-                                                                              name=project['PROJECT_ID']
-                                                                              )
+for index, project in enumerate(api_settings.FIREBASE_AUTH_PROJECTS):  # 22 may 2025
+    service_account = project['SERVICE_ACCOUNT']
+    if isinstance(service_account, str):
+        service_account = json.loads(service_account)
 
+    if index == 0 and not firebase_admin._apps:
+        default_credentials = firebase_admin.credentials.Certificate(service_account)
+        firebase_admin.initialize_app(credential=default_credentials)
+    credentials = firebase_admin.credentials.Certificate(service_account)
+    firebase_instances[project['PROJECT_ID']] = firebase_admin.initialize_app(
+        credentials,
+        {'projectId': project['PROJECT_ID']},
+        name=project['PROJECT_ID']
+    )
 
 class FirebaseAuthentication(authentication.TokenAuthentication):
     """

@@ -30,14 +30,19 @@ def recalculate_receipt_balance_on_delete(sender, instance, **kwargs):
     update_receipt_balance(instance.fruit_purchase_order_receipt)
 
 
+
 def try_close_fruit_purchase_order(order: FruitPurchaseOrder):
     """
-    Revisa si la orden puede cerrarse y la actualiza si es necesario.
+    Revisa si la orden puede cerrarse y actualiza su estado si es necesario.
+    Una orden puede cerrarse solo si:
+    - Tiene al menos un recibo asociado
+    - La suma de cantidades coincide exactamente con el peso recibido del lote
+    - El total pagado cubre exactamente el costo total de los recibos
     """
     if not order.pk or not order.batch:
         return
 
-    # Se verifica si tiene al menos un recibo guardado
+    # Verifica que exista al menos un recibo
     if not FruitPurchaseOrderReceipt.objects.filter(fruit_purchase_order=order).exists():
         return
 
@@ -46,26 +51,30 @@ def try_close_fruit_purchase_order(order: FruitPurchaseOrder):
         status__in=['open', 'closed']
     ).select_related('price_category')
 
-    total_quantity = Decimal('0.00')
+    total_quantity = 0.0
     total_cost = Decimal('0.00')
 
     for receipt in receipts:
-        quantity = receipt.quantity or Decimal('0.00')
-        container_capacity = receipt.container_capacity or Decimal('1.00')
+        quantity = float(receipt.quantity or 0)
+        container_capacity = float(receipt.container_capacity or 1)
+
         if receipt.price_category and receipt.price_category.is_container:
             quantity *= container_capacity
+
         total_quantity += quantity
-        total_cost += receipt.total_cost or Decimal('0.00')
+        total_cost += Decimal(receipt.total_cost or 0)
 
     total_paid = FruitPurchaseOrderPayment.objects.filter(
         fruit_purchase_order=order,
         status__in=['open', 'closed']
     ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
-    new_status = 'closed' if (
-        total_quantity.quantize(Decimal('0.00')) == Decimal(order.batch.weight_received).quantize(Decimal('0.00')) and
-        total_paid == total_cost
-    ) else 'open'
+    expected_quantity = float(order.batch.weight_received or 0)
+
+    if total_quantity == expected_quantity and total_paid == total_cost:
+        new_status = 'closed'
+    else:
+        new_status = 'open'
 
     if order.status != new_status:
         order.status = new_status

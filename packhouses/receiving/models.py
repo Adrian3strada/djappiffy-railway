@@ -200,7 +200,7 @@ class Batch(models.Model):
             _('provider'): prefix + 'product_provider',
             _('product'): prefix + 'product',
             _('variety'): prefix + 'product_variety',
-            _('phenology'): prefix + 'product_phenologies',
+            _('phenology'): prefix + 'product_phenology',
         }
 
         for label, path in checks.items():
@@ -271,7 +271,7 @@ class Batch(models.Model):
             _('provider'): prefix + 'product_provider',
             _('product'):  prefix + 'product',
             _('variety'):  prefix + 'product_variety',
-            _('phenology'): prefix + 'product_phenologies',
+            _('phenology'): prefix + 'product_phenology',
         }
 
         for label, path in checks.items():

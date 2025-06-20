@@ -173,4 +173,3 @@ class OrchardCertificationKind(CleanNameAndOrganizationMixin, models.Model):
             models.UniqueConstraint(fields=['name', 'organization'], name='orchardcertificationkind_unique_name_organization'),
         ]
 
-

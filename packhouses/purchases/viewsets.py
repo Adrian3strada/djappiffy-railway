@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from rest_framework.exceptions import NotAuthenticated
+from rest_framework.exceptions import NotAuthenticated, ParseError
 from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import (PaymentKindAdditionalInputSerializer, PurchaseOrderSerializer, ServiceOrderSerializer,
                           FruitReceiptsSerializer)
@@ -96,20 +96,41 @@ class ServiceOrderViewSet(viewsets.ModelViewSet):
 
 
 class FruitReceiptsViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet para gestionar recibos de fruta.
+    Permite filtrar por ID del recibo o por ID de la orden de compra.
+    """
     serializer_class = FruitReceiptsSerializer
-    filterset_fields = ['fruit_purchase_order',]
+    filterset_fields = ['id', 'fruit_purchase_order']
     filter_backends = [DjangoFilterBackend]
     pagination_class = None
 
     def get_queryset(self):
         user = self.request.user
-        if not user.is_authenticated:
-            raise NotAuthenticated()
+        if not user or not user.is_authenticated:
+            raise NotAuthenticated("Debes iniciar sesión para ver esta información.")
 
-        order_id = self.kwargs.get('pk') or self.request.query_params.get('fruit_purchase_order')
+        org = self.request.organization
 
-        return FruitPurchaseOrderReceipt.objects.filter(
-            fruit_purchase_order__organization=self.request.organization,
-            fruit_purchase_order_id=order_id
+        receipt_id = self.kwargs.get('pk') or self.request.query_params.get('id')
+        order_id = self.request.query_params.get('fruit_purchase_order')
+
+        queryset = FruitPurchaseOrderReceipt.objects.filter(
+            fruit_purchase_order__organization=org
         )
 
+        if receipt_id:
+            try:
+                receipt_id = int(receipt_id)
+                queryset = queryset.filter(id=receipt_id)
+            except (ValueError, TypeError):
+                raise ParseError("'id' debe ser un número válido.")
+
+        if order_id:
+            try:
+                order_id = int(order_id)
+                queryset = queryset.filter(fruit_purchase_order_id=order_id)
+            except (ValueError, TypeError):
+                raise ParseError("'fruit_purchase_order' debe ser un número válido.")
+
+        return queryset

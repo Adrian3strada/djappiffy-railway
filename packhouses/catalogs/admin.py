@@ -89,6 +89,11 @@ admin.site.unregister(Region)
 admin.site.unregister(SubRegion)
 admin.site.unregister(City)
 
+from cities_light.admin import CityAdmin as CLCityAdmin
+from django.contrib.gis.forms import OSMWidget
+from django import forms
+
+
 # @admin.register(City)
 class CityAdmin(CLCityAdmin):
     verbose_name = _('District')
@@ -1015,8 +1020,35 @@ class OrchardCertificationInline(admin.StackedInline):
         js = ('js/admin/forms/packhouses/catalogs/orchard_certification_inline.js',)
 
 
+class OrchardGeoLocationAdminForm(forms.ModelForm):
+    class Meta:
+        model = OrchardGeoLocation
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        mode = cleaned_data.get('mode')
+        file = cleaned_data.get('file')
+        coordinates = cleaned_data.get('coordinates')
+        geom = cleaned_data.get('geom')
+
+        if not file and not coordinates and not geom:
+            raise forms.ValidationError("You must provide a file, geom or coordinates.")
+
+        if mode == 'upload' and not file:
+            self.add_error('file', "You need to provide a file if mode 'upload'.")
+
+        if mode in ['coordinates'] and not coordinates:
+            self.add_error("You need to provide coordinates if mode 'coordinates'.")
+
+        if mode == 'draw' and not geom:
+            self.add_error("You need to draw features if mode 'draw'.")
+
+        return cleaned_data
+
 class OrchardGeoLocationInline(admin.StackedInline):
     model = OrchardGeoLocation
+    form = OrchardGeoLocationAdminForm
     extra = 1
     max_num = 1
     can_delete = False
@@ -1035,6 +1067,13 @@ class OrchardAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['producer'].required = True
+        self.fields['products'].required = True
+
+    def clean_products(self):
+        products = self.cleaned_data.get('products')
+        if not products or len(products) == 0:
+            raise forms.ValidationError("You must select at least one product in the admin.")
+        return products
 
 @admin.register(Orchard)
 class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
@@ -1044,7 +1083,7 @@ class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     list_display = ('name', 'code', 'producer', 'get_category', 'is_enabled')
     list_filter = ('category', 'safety_authority_registration_date', 'is_enabled')
     search_fields = ('name', 'code', 'producer__name')
-    fields = ('name', 'code', 'category', 'product', 'producer', 'safety_authority_registration_date', 'state', 'city',
+    fields = ('name', 'code', 'category', 'products', 'producer', 'safety_authority_registration_date', 'state', 'city',
               'district', 'ha',
               'sanitary_certificate', 'is_enabled')
     inlines = [OrchardCertificationInline, OrchardGeoLocationInline]
@@ -1073,7 +1112,7 @@ class OrchardAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return readonly_fields
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
-        if db_field.name == "product":
+        if db_field.name == "products":
             organization = request.organization if hasattr(request, 'organization') else None
             if organization:
                 kwargs["queryset"] = Product.objects.filter(organization=organization, is_enabled=True)
