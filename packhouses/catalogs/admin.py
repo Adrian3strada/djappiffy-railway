@@ -12,7 +12,7 @@ from .models import (
     Pallet, PalletComplementarySupply,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    PackagingComplementarySupply, ProductRipeness,
+    ProductPackagingComplementarySupply, ProductRipeness,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary,
     ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue, ProductFoodSafetyProcess,
     ProductDryMatterAcceptanceReport
@@ -1499,7 +1499,7 @@ class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
 
 
 class PackagingComplementarySupplyInline(admin.TabularInline):
-    model = PackagingComplementarySupply
+    model = ProductPackagingComplementarySupply
     min_num = 0
     extra = 0
     verbose_name = _('Complementary supply')
@@ -1521,7 +1521,7 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_obj_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = PackagingComplementarySupply.objects.get(id=parent_obj_id) if parent_obj_id else None
+        parent_obj = ProductPackaging.objects.get(id=parent_obj_id) if parent_obj_id else None
         packaging_complement_categories = ['packaging_complement', 'packaging_separator', 'packaging_labeling', 'packaging_storage']
 
         if db_field.name == "kind":

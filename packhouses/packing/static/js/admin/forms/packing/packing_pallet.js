@@ -3,9 +3,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   const marketField = $("#id_market")
   const productSizesField = $("#id_product_sizes")
   const palletField = $("#id_pallet")
+  const packagesTab = $('a[data-toggle="pill"][href="#packing-packages-tab"]');
   // const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
-  $('a[data-toggle="pill"][href="#packing-packages-tab"]').addClass('disabled-field');
+  packagesTab.addClass('disabled-field');
 
   let productProperties = null
   let allMarkets = await fetchOptions(`/rest/v1/catalogs/market/?is_enabled=1`);
@@ -41,7 +42,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   const updatePackingPackagesTab = () => {
-    const packagesTab = $('a[data-toggle="pill"][href="#packing-packages-tab"]');
     if (productField.val() && marketField.val() && productSizesField.val() && productSizesField.val().length > 0 && palletField.val()) {
       packagesTab.removeClass('disabled-field');
     } else {
@@ -67,12 +67,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const setProductSizes = async () => {
     if (productProperties && productProperties.id && marketField.val()) {
-      const sizes = await fetchOptions(`/rest/v1/catalogs/product-size/?product=${productProperties.id}&market=${marketField.val()}&category=size&is_enabled=1`);
-      if (DEBUG) console.log("sizes", sizes)
-      if (DEBUG) console.log("productSizesField.val()", productSizesField.val())
+      const sizes = await fetchOptions(`/rest/v1/catalogs/product-size/?category=size&product=${productProperties.id}&market=${marketField.val()}&is_enabled=1`);
+      if (DEBUG) {
+        console.log("sizes", sizes);
+      }
+      console.log("productSizesField.val()", productSizesField.val())
       updateFieldOptions(productSizesField, sizes, productSizesField.val() ? productSizesField.val() : null);
     } else {
-      if (productSizesField.val()) {
+      if (!!productSizesField.val()) {
         const sizes = await fetchOptions(`/rest/v1/catalogs/product-size/?id__in=${productSizesField.val()}`);
         updateFieldOptions(productSizesField, sizes, productSizesField.val());
       }
@@ -81,9 +83,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   const setPallets = async () => {
-    if (productField.val() && marketField.val()) {
+
+    if (productField.val() && marketField.val() && productSizesField.val() && productSizesField.val().length > 0) {
       let pallets = await fetchOptions(`/rest/v1/catalogs/pallet/?product=${productField.val()}&market=${marketField.val()}&is_enabled=1`);
-      if (DEBUG) console.log("Pallets fetched setPallets:", pallets);
+      console.log("Pallets fetched setPallets:", pallets);
       pallets = pallets.map(pallet => ({
         ...pallet,
         name: `${pallet.name} (Q:${pallet.max_packages_quantity})`
@@ -92,7 +95,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     } else {
       if (palletField.val()) {
         const pallets = await fetchOptions(`/rest/v1/catalogs/pallet/${palletField.val()}/`);
-        updateFieldOptions(palletField, pallets, palletField.val());
+        updateFieldOptions(palletField, [pallets], palletField.val() ? palletField.val() : null);
       } else {
         updateFieldOptions(palletField, []);
       }
@@ -116,12 +119,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     updatePackingPackagesTab();
   });
 
-  productSizesField.on("change", function () {
+  productSizesField.on("change", async function () {
     console.log("Product sizes changed:", productSizesField.val());
+    await setPallets();
     updatePackingPackagesTab();
   });
 
   palletField.on("change", function () {
+    console.log("Pallet changed:", palletField.val());
     updatePackingPackagesTab();
   });
 

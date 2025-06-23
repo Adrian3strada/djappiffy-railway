@@ -1068,8 +1068,8 @@ class ProductPackaging(models.Model):
         ]
 
 
-class PackagingComplementarySupply(models.Model):
-    packaging = models.ForeignKey(ProductPackaging, on_delete=models.CASCADE)
+class ProductPackagingComplementarySupply(models.Model):
+    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.CASCADE)
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
@@ -1082,7 +1082,7 @@ class PackagingComplementarySupply(models.Model):
         verbose_name_plural = _('Product packaging complementary supplies')
         ordering = ('kind', 'supply')
         constraints = [
-            models.UniqueConstraint(fields=('packaging', 'kind', 'supply'),
+            models.UniqueConstraint(fields=('product_packaging', 'kind', 'supply'),
                                     name='productpackagingcomplementarysupply_unique_packaging_kind_supply'),
         ]
 

@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   const getPalletProperties = async () => {
-    if (marketField.val()) {
+    if (palletField.val()) {
       palletProperties = await fetchOptions(`/rest/v1/catalogs/pallet/${palletField.val()}/`)
     } else {
       palletProperties = null;
