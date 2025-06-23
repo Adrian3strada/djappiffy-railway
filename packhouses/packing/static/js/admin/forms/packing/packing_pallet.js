@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const setProductSizes = async () => {
     if (productProperties && productProperties.id && marketField.val()) {
-      const sizes = await fetchOptions(`/rest/v1/catalogs/product-size/?category=size&product=${productProperties.id}&market=${marketField.val()}&category=size&is_enabled=1`);
+      const sizes = await fetchOptions(`/rest/v1/catalogs/product-size/?category=size&product=${productProperties.id}&market=${marketField.val()}&is_enabled=1`);
       console.log("sizes", sizes)
       console.log("productSizesField.val()", productSizesField.val())
       updateFieldOptions(productSizesField, sizes, productSizesField.val() ? productSizesField.val() : null);
