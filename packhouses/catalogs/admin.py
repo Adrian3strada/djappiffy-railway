@@ -12,7 +12,7 @@ from .models import (
     Pallet, PalletComplementarySupply,
     ExportingCompany, Transfer, LocalTransporter, ProductPresentationComplementarySupply,
     BorderToDestinationTransporter, CustomsBroker, Vessel, Airline, InsuranceCompany,
-    PackagingComplementarySupply, ProductRipeness,
+    ProductPackagingComplementarySupply, ProductRipeness,
     Provider, ProviderBeneficiary, ProviderFinancialBalance, ExportingCompanyBeneficiary,
     ProductPest, ProductDisease, ProductPhysicalDamage, ProductResidue, ProductFoodSafetyProcess,
     ProductDryMatterAcceptanceReport
@@ -1499,7 +1499,7 @@ class ProductPresentationAdmin(SheetReportExportAdminMixin, ByOrganizationAdminM
 
 
 class PackagingComplementarySupplyInline(admin.TabularInline):
-    model = PackagingComplementarySupply
+    model = ProductPackagingComplementarySupply
     min_num = 0
     extra = 0
     verbose_name = _('Complementary supply')

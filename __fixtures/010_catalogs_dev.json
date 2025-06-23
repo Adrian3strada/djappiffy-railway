@@ -3936,10 +3936,10 @@
   }
 },
 {
-  "model": "catalogs.packagingcomplementarysupply",
+  "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 1,
   "fields": {
-    "packaging": 1,
+    "product_packaging": 1,
     "kind": 5,
     "supply": 6,
     "quantity": 1
@@ -3949,7 +3949,7 @@
   "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 3,
   "fields": {
-    "packaging": 2,
+    "product_packaging": 2,
     "kind": 2,
     "supply": 24,
     "quantity": 2
@@ -3959,7 +3959,7 @@
   "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 4,
   "fields": {
-    "packaging": 1,
+    "product_packaging": 1,
     "kind": 2,
     "supply": 26,
     "quantity": 2
@@ -3969,7 +3969,7 @@
   "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 5,
   "fields": {
-    "packaging": 2,
+    "product_packaging": 2,
     "kind": 5,
     "supply": 6,
     "quantity": 1
@@ -3979,7 +3979,7 @@
   "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 6,
   "fields": {
-    "packaging": 4,
+    "product_packaging": 4,
     "kind": 2,
     "supply": 26,
     "quantity": 2
@@ -3989,7 +3989,7 @@
   "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 7,
   "fields": {
-    "packaging": 4,
+    "product_packaging": 4,
     "kind": 5,
     "supply": 6,
     "quantity": 1
@@ -3999,7 +3999,7 @@
   "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 8,
   "fields": {
-    "packaging": 5,
+    "product_packaging": 5,
     "kind": 2,
     "supply": 24,
     "quantity": 2
@@ -4009,7 +4009,7 @@
   "model": "catalogs.productpackagingcomplementarysupply",
   "pk": 9,
   "fields": {
-    "packaging": 5,
+    "product_packaging": 5,
     "kind": 5,
     "supply": 6,
     "quantity": 1
