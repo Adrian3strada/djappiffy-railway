@@ -13,7 +13,7 @@ from packhouses.catalogs.models import (Market, Product, ProductSize, ProductMar
                                         ProductRipeness, SizePackaging, Pallet)
 from .filters import (ByBatchForOrganizationPackingPackageFilter, ByMarketForOrganizationPackingPackageFilter,
                       ByProductSizeForOrganizationPackingPackageFilter, ByProductMarketClassForOrganizationPackingPackageFilter, ByProductRipenessForOrganizationPackingPackageFilter,
-                      BySizePackagingForOrganizationPackingPackageFilter, ByPackingPalletForOrganizationPackingPackageFilter, ByProductForOrganizationPackingPalletFilter, 
+                      BySizePackagingForOrganizationPackingPackageFilter, ByPackingPalletForOrganizationPackingPackageFilter, ByProductForOrganizationPackingPalletFilter,
                       ByMarketForOrganizationPackingPalletFilter, ByPalletForOrganizationPackingPalletFilter, ByProductSizeForOrganizationPackingPalletFilter)
 
 # Register your models here.
@@ -107,7 +107,6 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
         return ", ".join([size.name for size in obj.product_sizes.all()]) if obj.product_sizes.exists() else "-"
     get_product_sizes_display.short_description = _("Product Sizes")
     get_product_sizes_display.admin_order_field = 'product_sizes__name'
-
 
     def get_readonly_fields(self, request, obj=None):
         fields = self.get_fields(request, obj)
