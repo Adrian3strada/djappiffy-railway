@@ -1,3 +1,8 @@
+/**
+ * Este archivo maneja la lógica de actualización dinámica para los campos 
+ * país, estado, ciudad y distrito *cuando el usuario puede seleccionar o cambiar el país*.
+ */
+
 document.addEventListener('DOMContentLoaded', function () {
   const countryField = $('#id_country');
   const stateField = $('#id_state');
