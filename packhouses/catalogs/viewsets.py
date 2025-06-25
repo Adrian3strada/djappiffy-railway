@@ -206,6 +206,8 @@ class SizePackagingViewSet(viewsets.ModelViewSet):
         market = self.request.GET.get('market')
         product = self.request.GET.get('product')
         pallet = self.request.GET.get('pallet')
+        product_packaging__market = self.request.GET.get('product_packaging__market')
+        product_packaging__product = self.request.GET.get('product_packaging__product')
 
         if market:
             queryset = queryset.filter(product_size__market=market)
@@ -215,6 +217,12 @@ class SizePackagingViewSet(viewsets.ModelViewSet):
 
         if pallet:
             queryset = queryset.filter(pallet=pallet)
+
+        if product_packaging__market:
+            queryset = queryset.filter(product_packaging__market=product_packaging__market)
+
+        if product_packaging__product:
+            queryset = queryset.filter(product_packaging__product=product_packaging__product)
 
         return queryset
 
