@@ -716,15 +716,12 @@ class OrchardCertification(models.Model):
 
 class OrchardGeoLocation(models.Model):
     orchard = models.ForeignKey('Orchard', verbose_name=_('Orchard'), on_delete=models.CASCADE, null=True, blank=True)
-    mode = models.CharField(max_length=20, choices=(('upload', _('Upload')), ('draw', _('Draw')),
-                                                    ('coordinates', _('Write coordinates'))), verbose_name=_('Mode'))
-    file = models.FileField(upload_to='orchard_geolocation/', verbose_name=_('File'),
-                            validators=[validate_geom_vector_file], null=True, blank=True)
+    mode = models.CharField(max_length=20, choices=(('upload', _('Upload')), ('draw', _('Draw')), ('coordinates', _('Write coordinates'))), verbose_name=_('Mode'))
+    file = models.FileField(upload_to='orchard_geolocation/', verbose_name=_('File'), validators=[validate_geom_vector_file], null=True, blank=True)
     coordinates = models.JSONField(verbose_name=_('Coordinates'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     created_at = models.DateTimeField(auto_now_add=True)
-    geom = models.MultiPolygonField(srid=settings.EUDR_DATA_FEATURES_SRID, verbose_name=_('Orchard geolocation'),
-                                    null=True, blank=True)
+    geom = models.MultiPolygonField(srid=settings.EUDR_DATA_FEATURES_SRID, verbose_name=_('Orchard geolocation'), null=True, blank=True)
 
     def __str__(self):
         return str(self.id)
@@ -1047,8 +1044,7 @@ class ProductPresentationComplementarySupply(models.Model):
 class ProductPackaging(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'),
-                                              on_delete=models.PROTECT)
+    packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
     country_standard_packaging = models.ForeignKey(ProductKindCountryStandardPackaging,
                                                    verbose_name=_('Country standard packaging'),
                                                    null=True, blank=True, on_delete=models.PROTECT)
@@ -1072,8 +1068,7 @@ class ProductPackaging(models.Model):
 
 
 class ProductPackagingComplementarySupply(models.Model):
-    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'),
-                                          on_delete=models.CASCADE)
+    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.CASCADE)
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])

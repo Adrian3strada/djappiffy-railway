@@ -57,7 +57,7 @@ from .filters import (ByCountryForOrganizationMarketsFilter, ByProductForOrganiz
                       ByCountryForOrganizationCustomsBrokersFilter,
                       ByProductForOrganizationProductPackagingPalletFilter,
                       ByMarketForOrganizationPalletFilter,
-                      BySupplyForOrganizationPalletFilter,
+                      BySupplyForOrganizationPalletFilter, ByMarketsForOrganizationFilter
                       )
 from common.utils import is_instance_used
 from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline, SortableAdminBase
@@ -282,6 +282,7 @@ class ProductPestInline(admin.TabularInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "pest":
             product_id = request.resolver_match.kwargs.get("object_id")
+            kind_id = request.POST.get("kind") or request.GET.get("kind")
 
             if product_id:
                 try:
@@ -289,13 +290,16 @@ class ProductPestInline(admin.TabularInline):
                     kwargs['queryset'] = PestProductKind.objects.filter(product_kind=product.kind)
                 except Product.DoesNotExist:
                     kwargs['queryset'] = PestProductKind.objects.none()
+            elif kind_id:
+                kwargs['queryset'] = PestProductKind.objects.filter(product_kind=kind_id)
             else:
                 kwargs['queryset'] = PestProductKind.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/select_product.js', 'js/admin/forms/packhouses/catalogs/product_pest_disease.js',)
+        js = ('js/admin/forms/packhouses/catalogs/select_product.js',
+              'js/admin/forms/packhouses/catalogs/product_pest_disease.js',)
 
 
 class ProductDiseaseInline(admin.TabularInline):
@@ -307,12 +311,13 @@ class ProductDiseaseInline(admin.TabularInline):
     can_delete = True
 
     def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
+        formset = super().get_formset(request, obj=obj, **kwargs)
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "disease":
             product_id = request.resolver_match.kwargs.get("object_id")
+            kind_id = request.POST.get("kind") or request.GET.get("kind")
 
             if product_id:
                 try:
@@ -320,13 +325,18 @@ class ProductDiseaseInline(admin.TabularInline):
                     kwargs["queryset"] = DiseaseProductKind.objects.filter(product_kind=product.kind)
                 except Product.DoesNotExist:
                     kwargs["queryset"] = DiseaseProductKind.objects.none()
+            elif kind_id:
+                kwargs["queryset"] = DiseaseProductKind.objects.filter(product_kind=kind_id)
             else:
                 kwargs["queryset"] = DiseaseProductKind.objects.none()
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/packhouses/catalogs/select_product.js', 'js/admin/forms/packhouses/catalogs/product_pest_disease.js',)
+        js = (
+            'js/admin/forms/packhouses/catalogs/select_product.js',
+            'js/admin/forms/packhouses/catalogs/product_pest_disease.js',
+        )
 
 
 class ProductPhysicalDamageInline(admin.TabularInline):
@@ -424,7 +434,7 @@ class ProductAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [ProductResource]
     list_display = ('name', 'kind', 'is_enabled')
-    list_filter = (ProductKindForPackagingFilter, 'measure_unit_category', ByMarketForOrganizationFilter, 'is_enabled',)
+    list_filter = (ProductKindForPackagingFilter, 'measure_unit_category', ByMarketsForOrganizationFilter, 'is_enabled',)
     search_fields = ('name', 'kind__name', 'description')
     fields = ('kind', 'name', 'description', 'measure_unit_category', 'markets', 'is_enabled')
     inlines = [ProductMarketMeasureUnitManagementCostInline, ProductMarketClassInline,
@@ -585,7 +595,7 @@ class ClientShipAddressInline(admin.StackedInline):
     @uppercase_formset_charfield('address')
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        formset.form.base_fields['country'].initial = obj.country.all() if obj and obj.country.exists() else None
+        formset.form.base_fields['country'].initial = obj.country if obj and obj.country else None
         return formset
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -717,8 +727,8 @@ class ClientAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         if db_field.name == "country":
             if request.POST:
                 market_id = request.POST.get('market')
-        else:
-            market_id = obj.market_id if obj else None
+            else:
+                market_id = obj.market_id if obj else None
 
             if market_id:
                 try:
@@ -729,10 +739,6 @@ class ClientAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
 
             else:
                 kwargs["queryset"] = Country.objects.none()
-
-        formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-        formfield.label_from_instance = lambda item: item.name
-        return formfield
 
         if db_field.name == "state":
             if request.POST:
@@ -785,7 +791,6 @@ class ClientAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
             if country_id:
                 print("country_id", country_id)
                 kwargs["queryset"] = CapitalFramework.objects.filter(country_id=country_id)
-                print("queryset", kwargs["queryset"])
                 formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
                 """
                 if len(kwargs["queryset"]) > 0:
@@ -804,7 +809,8 @@ class ClientAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         if db_field.name == "payment_kind":
             kwargs["queryset"] = PaymentKind.objects.filter(organization=organization, is_enabled=True)
 
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+        return formfield
 
     class Media:
         js = (
@@ -1513,8 +1519,6 @@ class PackagingComplementarySupplyInline(admin.TabularInline):
         return formset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        parent_obj_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = ProductPackaging.objects.get(id=parent_obj_id) if parent_obj_id else None
         packaging_complement_categories = ['packaging_complement', 'packaging_separator', 'packaging_labeling', 'packaging_storage']
 
         if db_field.name == "kind":
@@ -2356,7 +2360,7 @@ class ProviderAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     class Media:
-        js = ('js/admin/forms/common/country-state-city-district.js',
+        js = ('js/admin/forms/common/country-state-city.js',
               'js/admin/forms/packhouses/catalogs/provider.js',
               'js/admin/forms/packhouses/catalogs/harvesting_crew_provider.js')
 

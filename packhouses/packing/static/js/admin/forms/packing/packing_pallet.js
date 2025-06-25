@@ -124,7 +124,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   palletField.on("change", function () {
-    console.log("Pallet changed:", palletField.val());
     updatePackingPackagesTab();
   });
 
@@ -143,4 +142,3 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
 });
-
