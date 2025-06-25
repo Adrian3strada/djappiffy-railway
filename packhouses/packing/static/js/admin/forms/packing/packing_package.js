@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
-  const productPackagingFieldChangeHandler = async () => {
+  const sizePackagingFieldChangeHandler = async () => {
     if (sizePackagingField.val()) {
       const packaging = await fetchOptions(`/rest/v1/catalogs/size-packaging/${sizePackagingField.val()}/`);
       productWeightPerPackagingField.val(packaging.product_weight_per_packaging);
@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   sizePackagingField.on("change", async function () {
-    await productPackagingFieldChangeHandler();
+    await sizePackagingFieldChangeHandler();
     if (batchProperties && sizePackagingField.val()) {
       packagingQuantityField.attr('max', batchProperties.available_weight / parseInt(productWeightPerPackagingField.val()));
       if (!packagingQuantityField.val()) {

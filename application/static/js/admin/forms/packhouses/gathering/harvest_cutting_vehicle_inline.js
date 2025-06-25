@@ -224,62 +224,67 @@ document.addEventListener('DOMContentLoaded', () => {
       // Manejar formularios existentes
       $('div[id^="scheduleharvestvehicle_set-"]:not([id*="-empty"])').each((index, form) => {
         initVehicle(form);
-        const providerField = $(form).find(`select[name$="${index-1}-provider"]`); // Encontrar el campo proveedor
-        const vehicleField = $(form).find(`select[name$="${index-1}-vehicle"]`); // Encontrar el campo vehicle
-        const selectedVehicle = vehicleField.val(); // Obtener el valor actualmente seleccionado en vehicle
-        const deleteField = $(form).find(`input[name$="${index-1}-DELETE"]`); // Encontrar el campo DELETE
-        const deleteLabel = $(form).find(`label[for$="${index-1}-DELETE"]`); // Encontrar el campo DELETE
-        const stampField = $(form).find(`input[name$="${index-1}-stamp_number"]`); // Encontrar el campo stamp
 
-        // Si ya se ha seleccionado un proveedor, actualizar las opciones del campo vehicle
-        if (providerField.val()) {
-            handleProviderChange(providerField, vehicleField, selectedVehicle);
-        } else {
-            updateFieldOptions(vehicleField, [], null); // Limpiar opciones si no hay proveedor seleccionado
+        const formId = $(form).attr('id');
+        const match = formId.match(/scheduleharvestvehicle_set-(\d+)/);
+        const realIndex = match ? match[1] : null;
+
+        if (realIndex === null) {
+          console.warn(`Unexpected formId format: "${formId}". Unable to extract realIndex.`);
+          return;
         }
 
-        // Manejar el cambio de proveedor en formularios existentes
+        const providerField = $(form).find(`select[name$="${realIndex}-provider"]`);
+        const vehicleField = $(form).find(`select[name$="${realIndex}-vehicle"]`);
+        const selectedVehicle = vehicleField.val();
+        const deleteField = $(form).find(`input[name$="${realIndex}-DELETE"]`);
+        const deleteLabel = $(form).find(`label[for$="${realIndex}-DELETE"]`);
+        const stampField = $(form).find(`input[name$="${realIndex}-stamp_number"]`);
+
+        if (providerField.val()) {
+          handleProviderChange(providerField, vehicleField, selectedVehicle);
+        } else {
+          updateFieldOptions(vehicleField, [], null);
+        }
+
         providerField.on('change', function() {
-            handleProviderChange(providerField, vehicleField, vehicleField.val());
+          handleProviderChange(providerField, vehicleField, vehicleField.val());
         });
 
-        var status = $('.field-status .readonly').first().text().trim(); // Obtiene el primer "readonly" dentro de "field-status"
-        if(status === 'Closed' || status === 'Canceled'){
-            setTimeout(function(){
+        const status = $('.field-status .readonly').first().text().trim();
+        if (status === 'Closed' || status === 'Canceled') {
+              setTimeout(function() {
                 providerField.next('.select2-container').addClass('disabled-field');
                 vehicleField.next('.select2-container').addClass('disabled-field');
                 stampField.addClass('disabled-field');
                 deleteField.hide();
                 deleteLabel.hide();
-
                 $(".select2-selection--single").addClass('disabled-field');
                 $('.djn-add-handler').hide();
             }, 200);
         }
 
-        // Deshabilitar campos en inlines anidados
-        $(form).find('div[id^="scheduleharvestvehicle_set-"][id$="-scheduleharvestcontainervehicle_set-group"]').each((nestedIndex, nestedForm) => {
-            const nestedQuantityFields = $(nestedForm).find('input[id^="id_scheduleharvestvehicle_set-"][id$="-quantity"]');
-            const nestedDeleteFields = $(nestedForm).find('input[id^="id_scheduleharvestvehicle_set-"][id$="-DELETE"]');
-            const nestedDeleteLabels = $(nestedForm).find('label[for^="id_scheduleharvestvehicle_set-"][for$="-DELETE"]');
-            const nestedAddWidget = $(nestedForm).find('a[id^="add_id_scheduleharvestvehicle_set-"]');
-            const nestedChangeWidget = $(nestedForm).find('a[id^="change_id_scheduleharvestvehicle_set-"]');
-            const nestedViewWidget = $(nestedForm).find('a[id^="view_id_scheduleharvestvehicle_set-"]');
+        $(form).find(`div[id^="scheduleharvestvehicle_set-${realIndex}-"][id$="-scheduleharvestcontainervehicle_set-group"]`).each((_, nestedForm) => {
+          const nestedQuantityFields = $(nestedForm).find('input[id$="-quantity"]');
+          const nestedDeleteFields = $(nestedForm).find('input[id$="-DELETE"]');
+          const nestedDeleteLabels = $(nestedForm).find('label[for$="-DELETE"]');
+          const nestedAddWidget = $(nestedForm).find('a[id^="add_id_scheduleharvestvehicle_set-"]');
+          const nestedChangeWidget = $(nestedForm).find('a[id^="change_id_scheduleharvestvehicle_set-"]');
+          const nestedViewWidget = $(nestedForm).find('a[id^="view_id_scheduleharvestvehicle_set-"]');
+          const nestedAddHandlers = $(nestedForm).find('.djn-add-handler');
 
-            const nestedAddHandlers = $(nestedForm).find('.djn-add-handler');
-
-            if(status === 'Closed' || status === 'Canceled'){
-                setTimeout(function(){
-                    nestedQuantityFields.addClass('disabled-field');
-                    nestedDeleteFields.hide();
-                    nestedDeleteLabels.hide();
-                    nestedAddHandlers.hide();
-                    nestedAddWidget.hide();
-                    nestedChangeWidget.hide();
-                    nestedViewWidget.hide();
-                }, 200);
-            }
+          if (status === 'Closed' || status === 'Canceled') {
+            setTimeout(function() {
+              nestedQuantityFields.addClass('disabled-field');
+              nestedDeleteFields.hide();
+              nestedDeleteLabels.hide();
+              nestedAddHandlers.hide();
+              nestedAddWidget.hide();
+              nestedChangeWidget.hide();
+              nestedViewWidget.hide();
+            }, 200);
+          }
         });
-    });
+      });
   });
 });

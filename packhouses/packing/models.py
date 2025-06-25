@@ -174,6 +174,8 @@ class PackingPackage(models.Model):
     def save(self, *args, **kwargs):
         if self.ooid is None:
             with transaction.atomic():
+                if not self.organization_id:
+                    self.organization = self.packing_pallet.organization if self.packing_pallet else None
                 last = (PackingPackage.objects.filter(organization=self.organization).order_by('-ooid').first())
                 self.ooid = (last.ooid + 1) if last else 1
         super().save(*args, **kwargs)

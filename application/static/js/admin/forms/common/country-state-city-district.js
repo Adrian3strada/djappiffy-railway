@@ -1,6 +1,9 @@
+/**
+ * Este archivo maneja la lógica de actualización dinámica para los campos 
+ * estado, ciudad y distrito *cuando el país ya viene predefinido y no cambia*.
+ */
 // descomentar  consoles de depueración en desarrollo
 // console.log('✅ Script country-state-city-district.js cargado');
-
 const API_BASE_URL = '/rest/v1/cities';
 
 function fetchOptions(url) {

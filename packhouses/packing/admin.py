@@ -12,9 +12,15 @@ from packhouses.gathering.models import ScheduleHarvest
 from packhouses.catalogs.models import (Market, Product, ProductSize, ProductMarketClass,
                                         ProductRipeness, SizePackaging, Pallet)
 from .filters import (ByBatchForOrganizationPackingPackageFilter, ByMarketForOrganizationPackingPackageFilter,
-                      ByProductSizeForOrganizationPackingPackageFilter, ByProductMarketClassForOrganizationPackingPackageFilter, ByProductRipenessForOrganizationPackingPackageFilter,
-                      BySizePackagingForOrganizationPackingPackageFilter, ByPackingPalletForOrganizationPackingPackageFilter, ByProductForOrganizationPackingPalletFilter,
-                      ByMarketForOrganizationPackingPalletFilter, ByPalletForOrganizationPackingPalletFilter, ByProductSizeForOrganizationPackingPalletFilter)
+                      ByProductSizeForOrganizationPackingPackageFilter,
+                      ByProductMarketClassForOrganizationPackingPackageFilter,
+                      ByProductRipenessForOrganizationPackingPackageFilter,
+                      BySizePackagingForOrganizationPackingPackageFilter,
+                      ByPackingPalletForOrganizationPackingPackageFilter, ByProductForOrganizationPackingPalletFilter,
+                      ByMarketForOrganizationPackingPalletFilter, ByPalletForOrganizationPackingPalletFilter,
+                      ByProductSizeForOrganizationPackingPalletFilter)
+from common.utils import is_instance_used
+from organizations.models import Organization
 
 # Register your models here.
 
@@ -91,6 +97,11 @@ class PackingPackageInline(admin.StackedInline):
               'product_pieces_per_presentation', 'packaging_quantity', 'processing_date', 'status')
     readonly_fields = ('ooid',)
 
+    def save_model(self, request, obj, form, change):
+        if not obj.organization:
+            obj.organization = request.organization
+        super().save_model(request, obj, form, change)
+
     class Media:
         js = ('js/admin/forms/packing/packing_package_inline.js',)
 
@@ -98,21 +109,34 @@ class PackingPackageInline(admin.StackedInline):
 @admin.register(PackingPallet)
 class PackingPalletAdmin(ByOrganizationAdminMixin):
     list_display = ("ooid", "market", "get_product_sizes_display", "status")
-    search_fields = ("ooid", )
-    list_filter = (ByProductForOrganizationPackingPalletFilter, ByMarketForOrganizationPackingPalletFilter, ByProductSizeForOrganizationPackingPalletFilter, ByPalletForOrganizationPackingPalletFilter, 'status')
+    search_fields = ("ooid",)
+    list_filter = (ByProductForOrganizationPackingPalletFilter, ByMarketForOrganizationPackingPalletFilter,
+                   ByProductSizeForOrganizationPackingPalletFilter, ByPalletForOrganizationPackingPalletFilter,
+                   'status')
     fields = ['ooid', 'product', 'market', 'product_sizes', 'pallet', 'status']
     inlines = [PackingPackageInline]
 
     def get_product_sizes_display(self, obj):
         return ", ".join([size.name for size in obj.product_sizes.all()]) if obj.product_sizes.exists() else "-"
+
     get_product_sizes_display.short_description = _("Product Sizes")
     get_product_sizes_display.admin_order_field = 'product_sizes__name'
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if obj and is_instance_used(obj, exclude=[Organization, Product, Market, ProductSize, Pallet]):
+            form.base_fields['product'].widget.attrs.update({'class': 'disabled-field','readonly': 'readonly'})
+            form.base_fields['market'].widget.attrs.update({'class': 'disabled-field','readonly': 'readonly'})
+            form.base_fields['product_sizes'].widget.attrs.update({'class': 'disabled-field','readonly': 'readonly'})
+        return form
+
     def get_readonly_fields(self, request, obj=None):
-        fields = self.get_fields(request, obj)
+        readonly_fields = []
+        if obj:
+            readonly_fields = ['ooid']
         if obj and obj.status not in ['open']:
-            return [f for f in fields if f != 'status']
-        return ['ooid']
+            readonly_fields.extend('status')
+        return readonly_fields
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = request.organization if hasattr(request, 'organization') else None
@@ -150,7 +174,10 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
                     "size_packaging", "packaging_quantity", "processing_date", "packing_pallet", "status")
     search_fields = ("product_size__name",)
     list_filter = (ByBatchForOrganizationPackingPackageFilter, ByMarketForOrganizationPackingPackageFilter,
-                   ByProductSizeForOrganizationPackingPackageFilter, ByProductMarketClassForOrganizationPackingPackageFilter, ByProductRipenessForOrganizationPackingPackageFilter, BySizePackagingForOrganizationPackingPackageFilter,
+                   ByProductSizeForOrganizationPackingPackageFilter,
+                   ByProductMarketClassForOrganizationPackingPackageFilter,
+                   ByProductRipenessForOrganizationPackingPackageFilter,
+                   BySizePackagingForOrganizationPackingPackageFilter,
                    "processing_date", ByPackingPalletForOrganizationPackingPackageFilter, "status")
     fields = ['ooid', 'batch', 'market', 'product_size', 'product_market_class',
               'product_ripeness', 'size_packaging', 'product_weight_per_packaging',

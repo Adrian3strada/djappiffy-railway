@@ -141,43 +141,48 @@ class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.Stacked
     extra = 0
     max_num = 0
     inlines = [HarvestCuttingContainerVehicleInline]
+    readonly_fields = ('provider',)
 
     def get_formset(self, request, obj=None, **kwargs):
-        # Obtén el formset base
         formset = super().get_formset(request, obj, **kwargs)
 
-        # Configurar widgets de campos relacionados en el form base
+        # Deshabilitar los enlaces relacionados
         for field in formset.form.base_fields.values():
             field.widget.can_add_related = False
             field.widget.can_change_related = False
             field.widget.can_delete_related = False
             field.widget.can_view_related = False
 
-        # Definir una clase interna para pasar el request a cada formulario del formset
         class CustomFormSet(formset):
             def _construct_form(self, i, **kwargs_inner):
-                kwargs_inner['request'] = request  # Pasar el objeto request
-                return super()._construct_form(i, **kwargs_inner)
+                kwargs_inner['request'] = request
+                form = super()._construct_form(i, **kwargs_inner)
+
+                # Filtrar vehículos según el provider de la instancia
+                if form.instance and form.instance.provider_id:
+                    provider = form.instance.provider
+                    filtered_qs = Vehicle.objects.filter(
+                        organization=request.organization,
+                        is_enabled=True,
+                        provider=provider 
+                    ).distinct()
+
+                    form.fields['vehicle'].queryset = filtered_qs
+                else:
+                    form.fields['vehicle'].queryset = Vehicle.objects.none()
+
+                return form
 
         return CustomFormSet
 
-
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        organization = None
-        if hasattr(request, 'organization'):
-            organization = request.organization
+        organization = getattr(request, 'organization', None)
 
         if db_field.name == "provider":
             kwargs["queryset"] = Provider.objects.filter(
                 organization=organization,
                 is_enabled=True,
                 category='harvesting_provider'
-            )
-
-        if db_field.name == "vehicle":
-            kwargs["queryset"] = Vehicle.objects.filter(
-                organization=organization,
-                is_enabled=True
             )
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -200,7 +205,7 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
     model = ScheduleHarvest
     extra = 0
     inlines = [ScheduleHarvestHarvestingCrewInline, ScheduleHarvestVehicleInline ]
-    readonly_fields = ('ooid','is_scheduled', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
+    readonly_fields = ('ooid','is_scheduled', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety', 'orchard',)
     can_delete = False
     can_add = False
     show_title = False
@@ -264,8 +269,10 @@ class ScheduleHarvestInline(CustomNestedStackedInlineMixin, admin.StackedInline)
                 "model": Market,
                 "filters": {"is_enabled": True},
             },
-
-
+            "product_provider": {
+                "model": Provider,
+                "filters": {"category": "product_provider", "is_enabled": True},
+            },
             "weighing_scale": {
                 "model": WeighingScale,
                 "filters": {"is_enabled": True},
@@ -549,7 +556,7 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
     fields = ('ooid', 'is_scheduled', 'harvest_date', 'category', 'product_provider', 'product', 'product_variety',
         'product_phenology', 'product_harvest_size_kind', 'orchard', 'market',
         'weight_expected', 'comments')
-    readonly_fields = ('ooid', 'is_scheduled', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety')
+    readonly_fields = ('ooid', 'is_scheduled', 'category', 'maquiladora', 'gatherer', 'product', 'product_variety', 'orchard')
     can_delete = False
     can_add = False
     custom_title = _("Schedule Harvest Information")
@@ -602,6 +609,10 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
             "market": {
                 "model": Market,
                 "filters": {"is_enabled": True},
+            },
+            "product_provider": {
+                "model": Provider,
+                "filters": {"category": "product_provider", "is_enabled": True},
             },
             "weighing_scale": {
                 "model": WeighingScale,
