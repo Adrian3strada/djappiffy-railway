@@ -91,6 +91,11 @@ class PackingPackageInline(admin.StackedInline):
               'product_pieces_per_presentation', 'packaging_quantity', 'processing_date', 'status')
     readonly_fields = ('ooid',)
 
+    def save_model(self, request, obj, form, change):
+        if not obj.organization:
+            obj.organization = request.organization
+        super().save_model(request, obj, form, change)
+
     class Media:
         js = ('js/admin/forms/packing/packing_package_inline.js',)
 
