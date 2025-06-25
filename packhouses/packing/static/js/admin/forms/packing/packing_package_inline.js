@@ -154,12 +154,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     const productPresentationsPerPackagingField = $(newForm).find('input[name$="-product_presentations_per_packaging"]');
     const productPiecesPerPresentationField = $(newForm).find('input[name$="-product_pieces_per_presentation"]');
     const packagingQuantityField = $(newForm).find('input[name$="-packaging_quantity"]');
+    const statusField = $(newForm).find('select[name$="-status"]');
 
     console.log("New form added:", newForm);
 
     marketField.closest('.form-group').hide()
     productPresentationsPerPackagingField.closest('.form-group').hide()
     productPiecesPerPresentationField.closest('.form-group').hide()
+    statusField.closest('.form-group').hide()
 
     let batchProperties = null
 
@@ -244,12 +246,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     const productPresentationsPerPackagingField = $(form).find(`input[name$="${index}-product_presentations_per_packaging"]`);
     const productPiecesPerPresentationField = $(form).find(`input[name$="${index}-product_pieces_per_presentation"]`);
     const packagingQuantityField = $(form).find(`input[name$="${index}-packaging_quantity"]`);
+    const statusField = $(form).find(`select[name$="${index}-status"]`);
 
     console.log("form", index, form)
 
     marketField.closest('.form-group').hide()
     productPresentationsPerPackagingField.closest('.form-group').hide()
     productPiecesPerPresentationField.closest('.form-group').hide()
+    statusField.closest('.form-group').hide()
 
     let batchProperties = null
 
