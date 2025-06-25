@@ -29,7 +29,7 @@ from .settings import (CLIENT_KIND_CHOICES, ORCHARD_PRODUCT_CLASSIFICATION_CHOIC
 from common.base.models import FoodSafetyProcedure
 from django.utils import timezone
 from eudr.parcels.utils import (uuid_file_path, validate_geom_vector_file, fix_format, fix_crs, to_polygon,
-                    get_geom_from_file, to_multipolygon, test_open_file)
+                                get_geom_from_file, to_multipolygon, test_open_file)
 from django.contrib.gis.geos import GEOSGeometry
 import os
 from django.dispatch import receiver
@@ -40,11 +40,11 @@ import json
 import fiona
 
 
-
 # Create your models here.
 
 
 # Markets
+
 
 class Market(CleanNameOrAliasAndOrganizationMixin, models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
@@ -228,7 +228,8 @@ class ProductSize(CleanNameAndAliasProductMixin, models.Model):
     varieties = models.ManyToManyField(ProductVariety, verbose_name=_('Varieties'), blank=False)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     category = models.CharField(max_length=30, verbose_name=_('Category'), choices=PRODUCT_SIZE_CATEGORY_CHOICES)
-    standard_size = models.ForeignKey(ProductKindCountryStandardSize, verbose_name=_('Standard size'), on_delete=models.PROTECT, null=True, blank=True)
+    standard_size = models.ForeignKey(ProductKindCountryStandardSize, verbose_name=_('Standard size'),
+                                      on_delete=models.PROTECT, null=True, blank=True)
 
     name = models.CharField(max_length=160, verbose_name=_('Name'))
     alias = models.CharField(max_length=20, verbose_name=_('Alias'))
@@ -668,7 +669,6 @@ class Orchard(CleanNameAndCodeAndOrganizationMixin, models.Model):
     def __str__(self):
         return f"{self.code} - {self.name}"
 
-
     def save(self, *args, **kwargs):
         if self.producer:
             self.producer_name = None
@@ -716,12 +716,15 @@ class OrchardCertification(models.Model):
 
 class OrchardGeoLocation(models.Model):
     orchard = models.ForeignKey('Orchard', verbose_name=_('Orchard'), on_delete=models.CASCADE, null=True, blank=True)
-    mode = models.CharField(max_length=20, choices=(('upload', _('Upload')), ('draw', _('Draw')), ('coordinates', _('Write coordinates'))), verbose_name=_('Mode'))
-    file = models.FileField(upload_to='orchard_geolocation/', verbose_name=_('File'), validators=[validate_geom_vector_file], null=True, blank=True)
+    mode = models.CharField(max_length=20, choices=(('upload', _('Upload')), ('draw', _('Draw')),
+                                                    ('coordinates', _('Write coordinates'))), verbose_name=_('Mode'))
+    file = models.FileField(upload_to='orchard_geolocation/', verbose_name=_('File'),
+                            validators=[validate_geom_vector_file], null=True, blank=True)
     coordinates = models.JSONField(verbose_name=_('Coordinates'), null=True, blank=True)
     is_enabled = models.BooleanField(default=True, verbose_name=_('Is enabled'))
     created_at = models.DateTimeField(auto_now_add=True)
-    geom = models.MultiPolygonField(srid=settings.EUDR_DATA_FEATURES_SRID, verbose_name=_('Orchard geolocation'), null=True, blank=True)
+    geom = models.MultiPolygonField(srid=settings.EUDR_DATA_FEATURES_SRID, verbose_name=_('Orchard geolocation'),
+                                    null=True, blank=True)
 
     def __str__(self):
         return str(self.id)
@@ -742,6 +745,7 @@ class OrchardGeoLocation(models.Model):
         verbose_name = _('Orchard geolocation')
         verbose_name_plural = _('Orchard geolocations')
         ordering = ('orchard', 'id')
+
 
 @receiver(post_save, sender=OrchardGeoLocation)
 def set_geom_from_file(sender, instance, created, **kwargs):
@@ -766,8 +770,6 @@ def set_geom_from_file(sender, instance, created, **kwargs):
             if hasattr(instance.file, 'path') and os.path.exists(instance.file.path):
                 os.remove(instance.file.path)
             raise ValidationError(f"Error procesando archivo: {e}")
-
-
 
 
 class CrewChief(models.Model):
@@ -1045,7 +1047,8 @@ class ProductPresentationComplementarySupply(models.Model):
 class ProductPackaging(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
-    packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'), on_delete=models.PROTECT)
+    packaging_supply_kind = models.ForeignKey(SupplyKind, verbose_name=_('Packaging supply kind'),
+                                              on_delete=models.PROTECT)
     country_standard_packaging = models.ForeignKey(ProductKindCountryStandardPackaging,
                                                    verbose_name=_('Country standard packaging'),
                                                    null=True, blank=True, on_delete=models.PROTECT)
@@ -1069,7 +1072,8 @@ class ProductPackaging(models.Model):
 
 
 class ProductPackagingComplementarySupply(models.Model):
-    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.CASCADE)
+    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'),
+                                          on_delete=models.CASCADE)
     kind = models.ForeignKey(SupplyKind, verbose_name=_('Kind'), on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(verbose_name=_('Quantity'), validators=[MinValueValidator(1)])
@@ -1090,7 +1094,8 @@ class ProductPackagingComplementarySupply(models.Model):
 class SizePackaging(CleanNameAndOrganizationMixin, models.Model):
     category = models.CharField(max_length=20, choices=PRODUCT_PACKAGING_CATEGORY_CHOICES, verbose_name=_('Category'))
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
-    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'), on_delete=models.CASCADE)
+    product_packaging = models.ForeignKey(ProductPackaging, verbose_name=_('Product packaging'),
+                                          on_delete=models.CASCADE)
     product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'),
                                                      validators=[MinValueValidator(0.01)])
     product_presentation = models.ForeignKey(ProductPresentation, verbose_name=_('Product presentation'),

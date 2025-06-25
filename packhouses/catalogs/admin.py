@@ -111,30 +111,23 @@ class CityAdmin(CLCityAdmin):
 class MarketAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin):
     report_function = staticmethod(basic_report)
     resource_classes = [MarketResource]
-    list_display = ('name', 'alias', 'get_countries', 'is_mixable', 'is_enabled')
+    list_display = ('name', 'alias', 'country', 'is_mixable', 'is_enabled')
     list_filter = (ByCountryForOrganizationMarketsFilter, 'is_mixable', 'is_enabled',)
     search_fields = ('name', 'alias')
     fields = ('country', 'countries', 'name', 'alias', 'is_mixable',
               'label_language', 'address_label', 'is_enabled')
-
-    def get_countries(self, obj):
-        return ", ".join([m.name for m in obj.countries.all()])
-
-    get_countries.short_description = _('Countries')
-    get_countries.admin_order_field = 'countries__name'
 
     @uppercase_form_charfield('name')
     @uppercase_alphanumeric_form_charfield('alias')
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields['address_label'].widget = CKEditor5Widget()
-        form.base_fields['countries'].disabled = True
         return form
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and is_instance_used(obj, exclude=[Organization]):
-            readonly_fields.extend(['name', 'alias', 'country', 'countries', 'organization'])
+        if obj and is_instance_used(obj, exclude=[Organization, Country]):
+            readonly_fields.extend(['name', 'alias', 'country', 'countries', 'is_mixable', 'organization'])
         return readonly_fields
 
     def save_model(self, request, obj, form, change):

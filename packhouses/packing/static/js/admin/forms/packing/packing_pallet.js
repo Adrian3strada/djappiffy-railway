@@ -131,4 +131,16 @@ document.addEventListener("DOMContentLoaded", async function () {
   await getProductProperties();
   await setProductSizes();
   await setPallets();
+
+
+
+    const disabledFields = [productField, marketField, productSizesField];
+    disabledFields.forEach(field => {
+      console.log(`Disabling field: ${field.attr('readonly')}`);
+      if (field.attr('readonly') == 'readonly' || field.attr('disabled') == 'disabled') {
+        field.next('.select2-container').addClass('disabled-field');      }
+    })
+
+
 });
+
