@@ -1,0 +1,1962 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-25 22:06-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: application/templates/admin/base.html:99
+msgid "Search"
+msgstr ""
+
+#: application/templates/admin/base.html:160
+msgid "Account"
+msgstr ""
+
+#: application/templates/admin/base.html:163
+msgid "Change password"
+msgstr ""
+
+#: application/templates/admin/base.html:168
+msgid "Log out"
+msgstr ""
+
+#: application/templates/admin/base.html:179
+msgid "See Profile"
+msgstr ""
+
+#: application/templates/admin/base.html:219
+msgid "Dashboard"
+msgstr ""
+
+#: application/templates/admin/base.html:337
+msgid "Jazzmin version"
+msgstr ""
+
+#: application/templates/admin/base.html:340
+msgid "Copyright"
+msgstr ""
+
+#: application/templates/admin/base.html:340
+msgid "All rights reserved."
+msgstr ""
+
+#: application/templates/admin/base.html:356
+msgid "UI Configuration"
+msgstr ""
+
+#: application/templates/admin/base.html:360
+msgid "Copy this info your settings file to persist these UI changes"
+msgstr ""
+
+#: application/templates/admin/base.html:364
+msgid "Close"
+msgstr ""
+
+#: application/templates/admin/change_form.html:23
+#: application/templates/admin/content.html:7
+msgid "Home"
+msgstr ""
+
+#: application/templates/admin/change_form.html:34
+#: application/templates/admin/content.html:18
+#, python-format
+msgid "Add %(name)s"
+msgstr ""
+
+#: application/templates/admin/change_form.html:55
+msgid "Please correct the error below."
+msgstr ""
+
+#: application/templates/admin/change_form.html:57
+msgid "Please correct the errors below."
+msgstr ""
+
+#: application/templates/nesting/admin/includes/grappelli_inline_tabular.html:32
+#: application/templates/nesting/admin/inlines/grappelli_stacked.html:42
+#: application/templates/nesting/admin/inlines/polymorphic_stacked.html:34
+#: application/templates/nesting/admin/inlines/tabular.html:62
+msgid "Change"
+msgstr ""
+
+#: application/templates/nesting/admin/includes/grappelli_inline_tabular.html:38
+#: application/templates/nesting/admin/inlines/grappelli_stacked.html:50
+#: application/templates/nesting/admin/inlines/polymorphic_grappelli_stacked.html:44
+msgid "Move Item"
+msgstr ""
+
+#: application/templates/nesting/admin/includes/grappelli_inline_tabular.html:45
+#: application/templates/nesting/admin/includes/grappelli_inline_tabular.html:52
+#: application/templates/nesting/admin/inlines/grappelli_stacked.html:57
+#: application/templates/nesting/admin/inlines/grappelli_stacked.html:61
+#: application/templates/nesting/admin/inlines/polymorphic_grappelli_stacked.html:51
+#: application/templates/nesting/admin/inlines/polymorphic_grappelli_stacked.html:55
+msgid "Delete Item"
+msgstr ""
+
+#: application/templates/nesting/admin/inlines/grappelli_stacked.html:15
+#: application/templates/nesting/admin/inlines/polymorphic_grappelli_stacked.html:14
+msgid "Open All Items"
+msgstr ""
+
+#: application/templates/nesting/admin/inlines/grappelli_stacked.html:16
+#: application/templates/nesting/admin/inlines/polymorphic_grappelli_stacked.html:15
+msgid "Close All Items"
+msgstr ""
+
+#: application/templates/nesting/admin/inlines/grappelli_stacked.html:17
+#: application/templates/nesting/admin/inlines/grappelli_stacked.html:97
+#: application/templates/nesting/admin/inlines/grappelli_tabular.html:83
+#: application/templates/nesting/admin/inlines/polymorphic_grappelli_stacked.html:16
+#: application/templates/nesting/admin/inlines/polymorphic_grappelli_stacked.html:94
+msgid "Add Item"
+msgstr ""
+
+#: application/templates/nesting/admin/inlines/grappelli_stacked.html:46
+#: application/templates/nesting/admin/inlines/polymorphic_grappelli_stacked.html:40
+#: application/templates/nesting/admin/inlines/polymorphic_stacked.html:36
+#: application/templates/nesting/admin/inlines/stacked.html:56
+#: application/templates/nesting/admin/inlines/tabular.html:64
+msgid "View on site"
+msgstr ""
+
+#: application/templates/nesting/admin/inlines/grappelli_stacked.html:93
+#: application/templates/nesting/admin/inlines/grappelli_tabular.html:81
+#: application/templates/nesting/admin/inlines/polymorphic_grappelli_stacked.html:90
+#: application/templates/nesting/admin/inlines/polymorphic_stacked.html:74
+#: application/templates/nesting/admin/inlines/stacked.html:132
+#: application/templates/nesting/admin/inlines/tabular.html:128
+#, python-format
+msgid "Add another %(verbose_name)s"
+msgstr ""
+
+#: application/templates/nesting/admin/inlines/grappelli_tabular.html:17
+msgid "Add Another"
+msgstr ""
+
+#: application/templates/nesting/admin/inlines/stacked.html:52
+msgid "New"
+msgstr ""
+
+#: application/templates/nesting/admin/inlines/tabular.html:36
+msgid "Delete?"
+msgstr ""
+
+#: application/templates/nesting/admin/inlines/tabular.html:62
+msgid "View"
+msgstr ""
+
+#: common/mixins.py:31
+msgid "Kind must be unique, it already exists."
+msgstr ""
+
+#: common/mixins.py:59 common/mixins.py:94 common/mixins.py:133
+#: common/mixins.py:249 common/mixins.py:311 common/mixins.py:342
+#: common/mixins.py:376 common/mixins.py:410 common/mixins.py:485
+msgid "Name must be unique, it already exists."
+msgstr ""
+
+#: common/mixins.py:136
+msgid "Code must be unique, it already exists."
+msgstr ""
+
+#: common/mixins.py:172 common/mixins.py:173
+msgid ""
+"Name and category must be unique, it already exists a registry with this "
+"data."
+msgstr ""
+
+#: common/mixins.py:212 common/mixins.py:215
+msgid "Must be unique, it already exists."
+msgstr ""
+
+#: common/mixins.py:448 common/mixins.py:449 common/mixins.py:450
+#: common/mixins.py:451
+msgid "Name, variety, market and volume kind must be unique together."
+msgstr ""
+
+#: common/mixins.py:514
+msgid "Incoterms is required when the market is foreign."
+msgstr ""
+
+#: common/mixins.py:519
+msgid "Local delivery is required when the market is not foreign."
+msgstr ""
+
+#: common/mixins.py:555 common/mixins.py:556
+msgid "Name and service provider must be unique together."
+msgstr ""
+
+#: common/settings.py:4
+msgid "Open"
+msgstr ""
+
+#: common/settings.py:5
+msgid "Ready"
+msgstr ""
+
+#: common/settings.py:6
+msgid "Closed"
+msgstr ""
+
+#: common/settings.py:7
+msgid "Canceled"
+msgstr ""
+
+#: common/settings.py:11
+msgid "Text"
+msgstr ""
+
+#: common/settings.py:12
+msgid "Integer"
+msgstr ""
+
+#: common/settings.py:13
+msgid "Decimal"
+msgstr ""
+
+#: common/settings.py:14
+msgid "Date"
+msgstr ""
+
+#: common/settings.py:15
+msgid "Checkbox"
+msgstr ""
+
+#: common/utils.py:46
+msgid ""
+"The file does not have a valid extension. Please provide a file with one of "
+"the following extensions: "
+msgstr ""
+
+#: common/utils.py:51
+msgid ""
+"Unsupported file extension. Allowed extensions are: {\", \"."
+"join(allowed_extensions)}."
+msgstr ""
+
+#: common/widgets.py:86
+msgid "View attached file"
+msgstr ""
+
+#: packhouses/templates/admin/export/export_pdf/change_list_export_item.html:6
+#: packhouses/templates/admin/export/export_pdf_sheet/change_list_export_item.html:9
+msgid "Export PDF"
+msgstr ""
+
+#: packhouses/templates/admin/export/export_pdf_sheet/change_list_export_item.html:6
+#: packhouses/templates/admin/export/export_sheet/change_list_export_item.html:6
+msgid "Export Excel"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/base-table-report.html:147
+msgid "Records Between Date Range:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/base-table-report.html:158
+msgid "Applied Filters"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:230
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:225
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:259
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:422
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:595
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:198
+msgid "Harvest No."
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:235
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:230
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:209
+msgid "Harvest Schedule Date"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:239
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:235
+#: packhouses/templates/admin/packhouses/purchase-order-supply.html:99
+#: packhouses/templates/admin/packhouses/sales-order-requisition-report.html:99
+msgid "Folio"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:247
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:243
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:288
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:450
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:623
+msgid "General Information"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:251
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:248
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:241
+#: packhouses/templates/admin/packhouses/receiving/weighing_labels.html:102
+msgid "Orchard:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:252
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:249
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:242
+msgid "Product:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:255
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:251
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:245
+msgid "Gatherer:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:257
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:253
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:247
+msgid "Maquiladora:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:259
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:310
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:304
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:300
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:345
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:462
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:507
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:635
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:680
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:249
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:294
+msgid "No Data"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:262
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:792
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:360
+msgid "Crew Chief"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:266
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:267
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:261
+msgid "Registery Code:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:267
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:268
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:393
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:262
+msgid "Product Variety:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:268
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:269
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:263
+msgid "Product Producer:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:269
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:330
+msgid "Crew:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:274
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:275
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:394
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:268
+msgid "Product Phenology:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:275
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:276
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:269
+msgid "Product Provider:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:276
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:257
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:252
+msgid "Scheduling Type:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:278
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:259
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:305
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:467
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:640
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:254
+msgid "Scheduled Harvest"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:280
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:261
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:307
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:469
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:642
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:256
+msgid "Unscheduled Harvest"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:287
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:274
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:274
+msgid "Safety Reg. Date:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:288
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:282
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:275
+msgid "Product Category:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:289
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:283
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:276
+msgid "Product Ripeness:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:296
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:270
+msgid "Creation Date:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:300
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:294
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:286
+msgid "Orchard Location:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:301
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:295
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:395
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:270
+msgid "Harvest Size:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:306
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:300
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:290
+msgid "Orchard Certifications:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:317
+msgid "Vehicle:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:318
+msgid "License Plate:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:319
+msgid "Stamp Number:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:320
+msgid "Operator:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:324
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:310
+msgid "Meeting Point:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:328
+msgid "Departure Time:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:329
+msgid "Arrival Time:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:333
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:314
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:398
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:299
+msgid "Comments:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:339
+msgid "Harvester's Name"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:340
+msgid "Factor"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:341
+msgid "Fruit/Box"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:342
+msgid "Price"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:343
+msgid "Kg"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:344
+msgid "Boxes Harvested"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:347
+msgid "Exp."
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:348
+msgid "Nat."
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:349
+msgid "Trimming"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:350
+msgid "Mishandling"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:351
+msgid "Out of Size"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:369
+#: packhouses/templates/admin/packhouses/purchase-order-supply.html:116
+msgid "Total"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:381
+msgid "Water Managment - Preparation and Monitoring of Substances"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:385
+msgid "Equipped with Monitoring Equipment"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:386
+msgid "Preparation"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:387
+msgid "Monitoring"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:391
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:404
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:440
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:445
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:450
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:455
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:460
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:465
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:470
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:475
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:480
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:485
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:490
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:501
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:506
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:517
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:522
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:527
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:532
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:537
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:542
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:547
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:552
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:557
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:562
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:567
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:572
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:577
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:590
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:595
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:600
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:605
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:610
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:615
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:626
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:631
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:636
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:641
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:646
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:651
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:663
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:668
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:673
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:678
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:683
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:688
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:693
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:698
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:703
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:708
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:713
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:724
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:729
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:734
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:739
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:744
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:749
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:754
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:759
+msgid "Yes"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:392
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:405
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:441
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:446
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:451
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:456
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:461
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:466
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:471
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:476
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:481
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:486
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:491
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:502
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:507
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:518
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:523
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:528
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:533
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:538
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:543
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:548
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:553
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:558
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:563
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:568
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:573
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:578
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:591
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:596
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:601
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:606
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:611
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:616
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:627
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:632
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:637
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:642
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:647
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:652
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:664
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:669
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:674
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:679
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:684
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:689
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:694
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:699
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:704
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:709
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:714
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:725
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:730
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:735
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:740
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:745
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:750
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:755
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:760
+msgid "No"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:393
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:397
+msgid "Hour"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:394
+msgid "Volume to Prepare"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:395
+msgid "PH"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:396
+msgid "ML Applied"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:398
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:401
+msgid "PPM. Detected"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:399
+msgid "Needs Corrective Action"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:400
+msgid "ML Aplied"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:408
+msgid "Punto de Muestreo"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:411
+msgid "Conditioning (Container)"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:414
+msgid "Sanitizing Agent (Sprayer)"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:417
+msgid "Products Used:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:426
+msgid ""
+"\n"
+"                Preventive Guidelines Before, During, and After Harvest "
+"<br>\n"
+"                (As indicated below: Yes or No, as appropriate)\n"
+"            "
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:436
+msgid "Health, Hygiene, and Safety of Personnel"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:439
+msgid "Clean staff"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:444
+msgid "Hair and nails trimmed"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:449
+msgid "Jewelry worn"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:454
+msgid "Proper shirt, pants, and footwear"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:459
+msgid "Proper hand washing"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:464
+msgid "Food was consumed in harvest area"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:469
+msgid "Hive presence"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:474
+msgid "Appearance of electric wires"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:479
+msgid "A fully equipped first aid kit is available"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:484
+msgid "Personnel under the influence of substances and/or alcohol."
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:489
+msgid "Sick and/or injured personnel"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:497
+msgid "3.- Orchand Inspection"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:500
+msgid "The orchard follows a food safety program"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:505
+msgid "Meets the safety interval requirements"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:510
+msgid "Applied product:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:513
+msgid "Application date:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:516
+msgid "Harvest area inspected"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:521
+msgid "Presencia de basura"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:526
+msgid "Presencia de animales y/o materia fecal"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:531
+msgid "The orchard's restroom was inspected"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:536
+msgid "Restroom clean and leak-free"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:541
+msgid "Equipped with handwashing supplies"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:546
+msgid "Restroom water quality, potable (in PPM)"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:551
+msgid "The orchard's dining area was inspected"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:556
+msgid "Clean table"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:561
+msgid "Clean grill"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:566
+msgid "Trash container available"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:571
+msgid "The facilities were cleaned and organized after finishing"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:576
+msgid "The fire pit was extinguished"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:586
+msgid "5.- Vehicle Hygiene"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:589
+msgid "Clean Truck"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:594
+msgid "Presence of odors and/or trash"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:599
+msgid "Muddy or mesh-covered truck"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:604
+msgid "Leakage of fuel and/or oil"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:609
+msgid "Operator"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:614
+msgid "Trailer"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:625
+msgid "A sanitary facility was used for no more than 20 people"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:630
+msgid "The hand washing station was the only one installed"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:635
+msgid "Sets up a fully equipped restroom"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:640
+msgid "Is equipped with all necessary hygiene materials and supplies"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:645
+msgid "Cleaned and sanitized the workbench"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:650
+msgid "Lime was applied and the pit was sealed"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:659
+msgid "2.- Tools Maintenance and Hygiene "
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:662
+msgid "Cleaned and disinfected scissors"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:667
+msgid "Cleaned and disinfected hooks"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:672
+msgid "Clean and sanitized bags and nets"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:677
+msgid "Empty bags"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:682
+msgid "Cleaning and disinfection of the bin"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:687
+msgid "Cleaning and disinfection of sprayers"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:692
+msgid "Clean sanitation compartment"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:697
+msgid "Leak-free and clean water collection vessel"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:702
+msgid "Clean tool carrying bags and containers"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:707
+msgid "Well-organized personnel transport"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:712
+msgid ""
+"Measures are taken to keep cutting tools separate from safety gear and "
+"sanitary facilities"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:720
+msgid "4.- Guidelines for measures during harvest process"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:723
+msgid "The producer or supervisor was present"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:728
+msgid "Isolate dirty or damaged boxes"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:733
+msgid "Inspected the proper stacking of boxes"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:738
+msgid "Fruit harvested and trimmed from the top"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:743
+msgid "Fruit transferred from bag to box"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:748
+msgid "Fruit is stored in a sheltered space"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:753
+msgid "Fruit that touched the ground was collected"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:758
+msgid "Contact between cutting tools and the ground is avoided"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:766
+msgid "7.-Inventory of Materials"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:774
+msgid "Observations"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:779
+msgid ""
+"\n"
+"            To the producer or fruit supervisor: In order to ensure the "
+"quality and safety of the fruit, the points mentioned above were verified.\n"
+"            We suggest checking the market, verify the number of boxes "
+"filled with fruit, check that the truck doors are closed, check the picking "
+"bags and the personnel's truck.\n"
+"            If not, it will be your responsibility if an anomaly occurs.\n"
+"            If you agree with the above, please write your name and sign in "
+"the indicated section.\n"
+"        "
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:793
+msgid "Responsible Technician or Supervisor"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:794
+msgid "Transport Operator"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/safety-guidelines-report.html:795
+msgid "Producer and/or Orchard Manager"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:319
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:352
+msgid "Crew Information"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:324
+msgid "Harvesting Crew Provider:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:327
+msgid "Crew Chief:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:338
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:374
+msgid "Transport Information"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:342
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:378
+msgid "Vehicle/Crew Provider"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:343
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:380
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:692
+msgid "Vehicle"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:344
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:381
+msgid "License Plate"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:345
+msgid "Stamp Number"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:346
+msgid "Container"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:347
+#: packhouses/templates/admin/packhouses/purchase-order-supply.html:114
+#: packhouses/templates/admin/packhouses/sales-order-requisition-report.html:115
+msgid "Quantity"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:392
+msgid "Product: "
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:396
+msgid "Total of Containers:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/gathering/schedule-harvest-report.html:397
+msgid "Expected Weight:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/header-footer.html:124
+#: packhouses/templates/admin/packhouses/receiving/weighing_labels.html:120
+msgid "Company"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/header-footer.html:125
+#: packhouses/templates/admin/packhouses/receiving/weighing_labels.html:121
+msgid "Address:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/header-footer.html:150
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:209
+msgid "Document Generated by Certiffy ©"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/header-footer.html:152
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:210
+msgid "Print date"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/header-footer.html:155
+msgid "Printed by"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/purchase-order-supply.html:100
+#: packhouses/templates/admin/packhouses/sales-order-requisition-report.html:100
+msgid "N°"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/purchase-order-supply.html:113
+#: packhouses/templates/admin/packhouses/sales-order-requisition-report.html:114
+msgid "Supply"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/purchase-order-supply.html:115
+msgid "Unit price"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/purchase-order-supply.html:129
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:164
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:166
+msgid "SUBTOTAL:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/purchase-order-supply.html:133
+msgid "TAX"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/purchase-order-supply.html:137
+msgid "SUBTOTAL + TAX:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/purchase-order-supply.html:142
+msgid "Charges"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/purchase-order-supply.html:154
+msgid "Deductions"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/purchase-order-supply.html:165
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:123
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:126
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:161
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:160
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:198
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:234
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:279
+msgid "TOTAL:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:248
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:411
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:584
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:187
+msgid "Batch No."
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:270
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:433
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:606
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:221
+msgid "Batch Reception Date"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:272
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:435
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:608
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:223
+msgid "Harvest Reception Date"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:292
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:454
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:627
+msgid "Orchard"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:293
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:455
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:628
+msgid "Product"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:296
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:458
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:631
+msgid "Gatherer"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:298
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:460
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:633
+msgid "Maquiladora"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:303
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:465
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:638
+msgid "Scheduling Type"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:313
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:475
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:648
+msgid "Registery Code"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:314
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:476
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:649
+msgid "Product Variety"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:315
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:477
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:650
+msgid "Product Producer"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:316
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:478
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:651
+msgid "Harvest Date"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:320
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:482
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:655
+msgid "Safety Reg. Date"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:321
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:483
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:656
+msgid "Product Phenology"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:322
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:484
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:657
+msgid "Product Provider"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:323
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:485
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:658
+msgid "Harvest Size"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:329
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:491
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:664
+msgid "Product Category"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:330
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:492
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:665
+msgid "Product Ripeness"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:331
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:493
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:666
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:138
+msgid "Status"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:335
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:497
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:670
+msgid "Orchard Location"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:341
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:503
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:676
+msgid "Orchard Certifications"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:357
+msgid "Harvesting Crew Provider"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:363
+msgid "Crew"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:366
+msgid "Crew Size"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:379
+msgid "Vehicle Kind"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:514
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:522
+msgid "Dry Matter"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:518
+msgid "Product Weight"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:519
+msgid "Paper Weight"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:520
+msgid "Moister Weight"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:521
+msgid "Dry Weight"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:537
+msgid "AVERAGE DRY MATTER"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:538
+msgid "ACCEPTENCE REPORT"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:542
+msgid "Internal Fruit Inspection"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:550
+msgid "Internal Temperature"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:559
+msgid "YES"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:561
+msgid "NO"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:573
+msgid "No internal inspections available."
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:576
+msgid "AVERAGE TEMPERATURE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:688
+msgid "Vehicle Inspection"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:725
+msgid "Sample Test"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:728
+#, python-format
+msgid ""
+"\n"
+"                A random sample of %(product)s was selected, and the "
+"following percentages are calculated.\n"
+"            "
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:732
+msgid "Sample Size"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:741
+msgid "DAMAGE TYPE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:742
+msgid "DESCRIPTION"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:743
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:171
+msgid "QUANTITY"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:774
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:792
+msgid "Harvest Sizes"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:797
+msgid "No weights found"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:808
+msgid "Harvest Size (Min)"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:809
+msgid "Harvest Size (Max)"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/batch_record.html:810
+msgid "Total Samples"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:78
+msgid "Harvest Information"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:81
+msgid "PRODUCT:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:82
+msgid "ORCHARD:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:85
+msgid "MARKET:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:86
+msgid "TICKETED KG:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:89
+msgid "PRODUCER:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:90
+msgid "NOTE:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:94
+msgid "PRICE PER KG:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:97
+msgid "OBS GATHERER:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:98
+msgid "OBS NOTES:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:124
+msgid "PERCENTAGE PER PRODUCT SIZE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:129
+msgid "PRODUCT SIZE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:130
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:219
+msgid "CLASS"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:131
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:182
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:217
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:257
+msgid "MARKET"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/harvest-size-report.html:132
+#, python-format
+msgid "%%"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:264
+msgid "Harvest Reception Date:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/weighing-set-report.html:303
+msgid "No Comments"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/weighing_labels.html:98
+msgid "BATCH NUMBER:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/weighing_labels.html:99
+msgid "HARVEST NUMBER:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/weighing_labels.html:100
+msgid "WEIGHING SET NET WEIGHT:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/weighing_labels.html:101
+msgid "Producer:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/weighing_labels.html:103
+msgid "Orchard Certification:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/weighing_labels.html:104
+msgid "Boxes:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/weighing_labels.html:105
+msgid "Batch KGs:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/weighing_labels.html:106
+msgid "Entry Date:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/receiving/weighing_labels.html:116
+msgid "BATCH:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales-order-requisition-report.html:106
+msgid "Order Date:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales-order-requisition-report.html:116
+msgid "Unit"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales-order-requisition-report.html:117
+msgid "Delivery deadline"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales-order-requisition-report.html:118
+msgid "Comments"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:94
+msgid "NATIONAL BILLING:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:98
+msgid "EXPORTING BILLING:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:104
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:92
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:115
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:125
+msgid "CLIENT:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:105
+msgid "CLIENT TAX ID:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:106
+msgid "DETAILS:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:109
+msgid "DATE:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:111
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:97
+msgid "STATUS:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:116
+msgid "GENARAL SUMMARY"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:119
+msgid "FRUIT (+):"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:120
+msgid "INTERNAL TRANSACTIONS:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:121
+msgid "WITHDRAWALS (+):"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:122
+msgid "DEDUCTIONS (-):"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:127
+msgid "DEPOSIT/CREDIT (-):"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:128
+msgid "FEES (-):"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:129
+msgid "REVERSAL / CANCELLATIONS"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:130
+msgid "CURRENT BALANCE:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:136
+msgid "TRANSACTION DETAILS"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:140
+msgid "DATE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:141
+msgid "USER"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:142
+msgid "NOTE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:143
+msgid "PAYMENT METHOD"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:144
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:265
+msgid "STATUS"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:145
+msgid "BALANCE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:146
+msgid "DEPOSIT"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:147
+msgid "NEW BALANCE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/account-balance-report.html:165
+msgid "NO DATA AVAILABLE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:90
+msgid "SALES DATE:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:91
+msgid "SHIPMENT RECORD:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:96
+msgid "PEDIDO RECORD:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:101
+msgid "INVOICE N°:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:102
+msgid "DEPARTURE TYPE:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:109
+msgid "CARGO UNIT LICENSE PLATE:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:112
+msgid "DRIVER:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:116
+msgid "VEHICLE LICENSE PLATE:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:117
+msgid "STAMP:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:156
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:185
+msgid "COMMENTS"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:162
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:241
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:194
+msgid "PREPARED BY"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/on-site-sales-report.html:167
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:246
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:199
+msgid "RECEIVED BY"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/orders-report.html:77
+msgid "ORDER DETAILS"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/orders-report.html:114
+msgid "ORDER OBSERVATIONS"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:114
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:124
+msgid "ORDER:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:116
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:127
+msgid "TAX ID:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:119
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:118
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:126
+msgid "ADDRESS:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:120
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:128
+msgid "REGISTRATION DATE:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:121
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:129
+msgid "PAYMENT DATE:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:126
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:132
+msgid "DETAILS"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:170
+msgid "COST"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:175
+msgid "TOTAL COST"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:184
+msgid "TOTAL EXPENSES"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:192
+msgid "DEDUCTIONS"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:196
+msgid "CONCEPT"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:197
+msgid "AMOUNT"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:206
+msgid "TOTAL DEDUCTION"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-billing-report.html:235
+msgid "INVOICE OBSERVATIONS:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:117
+msgid "COMPANY:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:138
+msgid "SIZE:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:139
+msgid "QUANTITY:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:140
+msgid "PRESENTATION:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:141
+msgid "PRICE:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:142
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:157
+msgid "TOTAL PRICE:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:156
+msgid "TOTAL QUANTITY:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:163
+msgid "COST:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:165
+msgid "DEDUCTIONS:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:167
+msgid "TOTALS:"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/pre-invoice-ticket.html:172
+msgid "TOTAL FINAL"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:136
+msgid "Chamber"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:137
+msgid "Position"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:139
+msgid "Pallet"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:140
+msgid "Lot"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:141
+msgid "Size-Box"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:142
+msgid "Class"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:143
+msgid "Market"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:144
+msgid "Boxes"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:145
+msgid "Box Type"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:146
+msgid "Freshness Date"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:147
+msgid "KG per Box"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:148
+msgid "Total KG"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:178
+msgid "LOOSE BOXES"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:181
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:251
+msgid "LOT"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:183
+msgid "SIZE - CLASS"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:184
+msgid "BOXES"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:185
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:220
+msgid "BOX TYPE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:186
+msgid "KGs"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:214
+msgid "Overall Summary by Size"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:218
+msgid "SIZE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:221
+msgid "N° BOXES"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:222
+msgid "TOTAL KG"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:248
+msgid "Current Stock in Kg of Fruit in Receiving Department"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:252
+msgid "HARVEST"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:253
+msgid "GATHERER"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:254
+msgid "PROVIDER"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:255
+msgid "PRODUCER"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:256
+msgid "HUE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:258
+msgid "CERTIFICATION"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:259
+msgid "SETTLED PRICE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:260
+msgid "KG"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:261
+msgid "CURRENT LOT BALANCE IN KG"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:262
+msgid "HARVEST DATE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:263
+msgid "ENTRY DATE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:264
+msgid "HARVEST TYPE"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:266
+msgid "Dry Matter Average"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:267
+msgid "Week"
+msgstr ""
+
+#: packhouses/templates/admin/packhouses/sales/stock-report.html:285
+msgid "Note: Only lots that have not been completed are displayed"
+msgstr ""
