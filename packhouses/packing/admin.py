@@ -21,6 +21,7 @@ from .filters import (ByBatchForOrganizationPackingPackageFilter, ByMarketForOrg
                       ByProductSizeForOrganizationPackingPalletFilter)
 from common.utils import is_instance_used
 from organizations.models import Organization
+from .forms import PackingPackageInlineFormSet
 
 # Register your models here.
 
@@ -96,6 +97,7 @@ class PackingPackageInline(admin.StackedInline):
               'size_packaging', 'product_weight_per_packaging', 'product_presentations_per_packaging',
               'product_pieces_per_presentation', 'packaging_quantity', 'processing_date', 'status')
     readonly_fields = ('ooid',)
+    formset = PackingPackageInlineFormSet
 
     def save_model(self, request, obj, form, change):
         if not obj.organization:
