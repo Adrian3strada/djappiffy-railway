@@ -73,7 +73,7 @@ class PackingPallet(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product_sizes = models.ManyToManyField(ProductSize, verbose_name=_('Product sizes'))
     pallet = models.ForeignKey(Pallet, verbose_name=_('Pallet'), on_delete=models.PROTECT, null=True, blank=False)
-    status = models.CharField(max_length=20, default='open', verbose_name=_('Status'), choices=STATUS_CHOICES)
+    status = models.CharField(max_length=20, default='ready', verbose_name=_('Status'), choices=STATUS_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
     # cajas -- @property / invref

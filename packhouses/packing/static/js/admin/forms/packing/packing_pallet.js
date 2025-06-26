@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const marketField = $("#id_market")
   const productSizesField = $("#id_product_sizes")
   const palletField = $("#id_pallet")
+  const statusField = $("#id_status")
   const packagesTab = $('a[data-toggle="pill"][href="#packing-packages-tab"]');
   // const isEditing = window.location.pathname.match(/\/change\//) !== null;
 
@@ -127,18 +128,23 @@ document.addEventListener("DOMContentLoaded", async function () {
     updatePackingPackagesTab();
   });
 
+  statusField.on("change", function () {
+    if (statusField.val() === 'open') {
+      statusField.val('ready').trigger('change')
+    }
+  });
+
   await getProductProperties();
   await setProductSizes();
   await setPallets();
 
 
-
-    const disabledFields = [productField, marketField, productSizesField];
-    disabledFields.forEach(field => {
-      console.log(`Disabling field: ${field.attr('readonly')}`);
-      if (field.attr('readonly') == 'readonly' || field.attr('disabled') == 'disabled') {
-        field.next('.select2-container').addClass('disabled-field');      }
-    })
-
+  const disabledFields = [productField, marketField, productSizesField];
+  disabledFields.forEach(field => {
+    console.log(`Disabling field: ${field.attr('readonly')}`);
+    if (field.attr('readonly') == 'readonly' || field.attr('disabled') == 'disabled') {
+      field.next('.select2-container').addClass('disabled-field');
+    }
+  })
 
 });

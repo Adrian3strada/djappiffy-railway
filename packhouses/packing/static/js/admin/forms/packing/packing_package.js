@@ -10,8 +10,20 @@ document.addEventListener("DOMContentLoaded", async function () {
   const productPiecesPerPresentationField = $("#id_product_pieces_per_presentation")
   const packagingQuantityField = $("#id_packaging_quantity")
   const packingPalletField = $("#id_packing_pallet")
+  const statusField = $("#id_status")
 
   let batchProperties = null
+  let statusOptions = [
+    {value: 'open', name: 'Open'},
+    {value: 'ready', name: 'Ready'},
+  ]
+
+  if (statusField.val() === 'closed') {
+    statusOptions.push({value: 'closed', name: 'Closed'});
+  }
+
+  console.log(statusField.val())
+  updateFieldOptions(statusField, statusOptions, statusField.val());
 
   productPresentationsPerPackagingField.closest('.form-group').hide()
   productPiecesPerPresentationField.closest('.form-group').hide()
@@ -25,9 +37,13 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (!field.prop('multiple')) {
         field.append(new Option('---------', '', true, !selectedValue));
       }
-      const selected = selectedValue ? parseInt(selectedValue) || selectedValue : null;
+      console.log("selectedValue", selectedValue)
+      const selected = selectedValue === "" || selectedValue === null || selectedValue === undefined
+        ? null
+        : (isNaN(parseInt(selectedValue)) ? selectedValue : parseInt(selectedValue));
+      console.log("selected", selected)
       options.forEach(option => {
-        const newOption = new Option(option.name, option.id, false, selected === option.id);
+        const newOption = new Option(option.name, option.id, false, option.id ? selected === option.id : option.value ? selected === option.value : null );
         if ('alias' in option && option.alias) {
           newOption.setAttribute('data-alias', option.alias);
         }
@@ -198,9 +214,23 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   });
 
+  statusField.on("change", function () {
+    console.log("Status changed to:", statusField.val());
+    if (statusField.val() === 'open') {
+      packingPalletField.val(null).trigger('change');
+    }
+  });
+
+  packingPalletField.on("change", async function () {
+    if (packingPalletField.val()) {
+      statusField.val('ready').trigger('change');
+    }
+  });
+
   await getBatchProperties();
   await setProductSizes();
   await setProductMarketClasses();
   await setProductRipeness();
   await setSizePackagings();
+
 });
