@@ -1,0 +1,186 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-25 22:05-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: packhouses/packhouse_settings/apps.py:8
+msgid "Catalogs settings"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:12
+msgid "name"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:13
+#: packhouses/packhouse_settings/models.py:28
+#: packhouses/packhouse_settings/models.py:42
+#: packhouses/packhouse_settings/models.py:56
+#: packhouses/packhouse_settings/models.py:70
+#: packhouses/packhouse_settings/models.py:89
+#: packhouses/packhouse_settings/models.py:105
+#: packhouses/packhouse_settings/models.py:117
+#: packhouses/packhouse_settings/models.py:131
+#: packhouses/packhouse_settings/models.py:149
+#: packhouses/packhouse_settings/models.py:165
+msgid "Is enabled"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:14
+#: packhouses/packhouse_settings/models.py:29
+#: packhouses/packhouse_settings/models.py:43
+#: packhouses/packhouse_settings/models.py:57
+#: packhouses/packhouse_settings/models.py:71
+#: packhouses/packhouse_settings/models.py:90
+#: packhouses/packhouse_settings/models.py:118
+#: packhouses/packhouse_settings/models.py:132
+#: packhouses/packhouse_settings/models.py:150
+#: packhouses/packhouse_settings/models.py:166
+msgid "Organization"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:15
+msgid "Order"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:18
+msgid "Status"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:19
+msgid "Statuses"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:27
+#: packhouses/packhouse_settings/models.py:41
+#: packhouses/packhouse_settings/models.py:55
+#: packhouses/packhouse_settings/models.py:69
+#: packhouses/packhouse_settings/models.py:83
+#: packhouses/packhouse_settings/models.py:102
+#: packhouses/packhouse_settings/models.py:116
+#: packhouses/packhouse_settings/models.py:130
+#: packhouses/packhouse_settings/models.py:148
+#: packhouses/packhouse_settings/models.py:162
+msgid "Name"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:32
+msgid "Bank"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:33
+msgid "Banks"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:46
+msgid "Vehicle ownership kind"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:47
+msgid "Vehicle ownership kinds"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:60
+msgid "Vehicle kind"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:61
+msgid "Vehicle kinds"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:74
+msgid "Vehicle fuel kind"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:75
+msgid "Vehicle fuel kinds"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:86
+msgid "Requires bank"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:87
+msgid "Check if this payment kind requires selecting a bank."
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:93
+msgid "Payment kind"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:94
+msgid "Payment kinds"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:101
+msgid "Payment Kind"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:103
+msgid "Data type"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:104
+msgid "Is required"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:108
+msgid "Additional Input"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:109
+msgid "Additional Inputs"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:121
+msgid "Vehicle brand"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:122
+msgid "Vehicle brands"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:138
+msgid "Packaging Kind Authority"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:139
+msgid "Packaging Kind Authorities"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:153
+msgid "Orchard certification verifier"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:154
+msgid "Orchard certification verifiers"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:163
+msgid "Verifiers"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:164
+msgid "Extra code name"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:169
+msgid "Orchard certification kind"
+msgstr ""
+
+#: packhouses/packhouse_settings/models.py:170
+msgid "Orchard certification kinds"
+msgstr ""

@@ -1,0 +1,163 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-25 22:06-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: packhouses/storehouse/admin.py:93 packhouses/storehouse/models.py:69
+msgid "Quantity in Inventory"
+msgstr ""
+
+#: packhouses/storehouse/admin.py:104 packhouses/storehouse/models.py:74
+msgid "Equivalent in inventory for discount"
+msgstr ""
+
+#: packhouses/storehouse/admin.py:222
+msgid ""
+"Purchase Order balance updated successfully based on received quantities."
+msgstr ""
+
+#: packhouses/storehouse/apps.py:7
+msgid "Storehouse"
+msgstr ""
+
+#: packhouses/storehouse/forms.py:98
+msgid "Unable to determine the creator user for this transaction."
+msgstr ""
+
+#: packhouses/storehouse/forms.py:149 packhouses/storehouse/models.py:17
+msgid "Purchase Order"
+msgstr ""
+
+#: packhouses/storehouse/models.py:22 packhouses/storehouse/models.py:140
+#: packhouses/storehouse/models.py:181
+msgid "Created at"
+msgstr ""
+
+#: packhouses/storehouse/models.py:26 packhouses/storehouse/models.py:145
+msgid "User"
+msgstr ""
+
+#: packhouses/storehouse/models.py:31 packhouses/storehouse/models.py:150
+#: packhouses/storehouse/models.py:189
+msgid "Organization"
+msgstr ""
+
+#: packhouses/storehouse/models.py:44 packhouses/storehouse/models.py:51
+msgid "Storehouse Entry"
+msgstr ""
+
+#: packhouses/storehouse/models.py:45
+msgid "Storehouse Entries"
+msgstr ""
+
+#: packhouses/storehouse/models.py:56
+msgid "Purchase Order Supply"
+msgstr ""
+
+#: packhouses/storehouse/models.py:60
+msgid "Expected Quantity"
+msgstr ""
+
+#: packhouses/storehouse/models.py:64
+msgid "Received Quantity"
+msgstr ""
+
+#: packhouses/storehouse/models.py:82
+msgid "Comments"
+msgstr ""
+
+#: packhouses/storehouse/models.py:106
+msgid "Storehouse Entry Supply"
+msgstr ""
+
+#: packhouses/storehouse/models.py:107
+msgid "Storehouse Entry Supplies"
+msgstr ""
+
+#: packhouses/storehouse/models.py:115
+msgid "Inbound Supply"
+msgstr ""
+
+#: packhouses/storehouse/models.py:121 packhouses/storehouse/models.py:171
+#: packhouses/storehouse/reports.py:23
+msgid "Supply"
+msgstr ""
+
+#: packhouses/storehouse/models.py:125 packhouses/storehouse/models.py:160
+msgid "Transaction Kind"
+msgstr ""
+
+#: packhouses/storehouse/models.py:130 packhouses/storehouse/models.py:165
+msgid "Transaction Category"
+msgstr ""
+
+#: packhouses/storehouse/models.py:135 packhouses/storehouse/models.py:175
+#: packhouses/storehouse/reports.py:23
+msgid "Quantity"
+msgstr ""
+
+#: packhouses/storehouse/models.py:185
+msgid "Updated at"
+msgstr ""
+
+#: packhouses/storehouse/reports.py:23
+msgid "Transaction date"
+msgstr ""
+
+#: packhouses/storehouse/reports.py:23
+msgid "Transaction category"
+msgstr ""
+
+#: packhouses/storehouse/reports.py:23
+msgid "Transaction kind"
+msgstr ""
+
+#: packhouses/storehouse/reports.py:24
+msgid "Linked entry or purchase order"
+msgstr ""
+
+#: packhouses/storehouse/reports.py:24
+msgid "Reference date"
+msgstr ""
+
+#: packhouses/storehouse/reports.py:24
+msgid "Created by"
+msgstr ""
+
+#: packhouses/storehouse/reports.py:25 packhouses/storehouse/resources.py:77
+msgid "Inventory balance after transaction"
+msgstr ""
+
+#: packhouses/storehouse/reports.py:93
+msgid "Export Inventory Movements Report"
+msgstr ""
+
+#: packhouses/storehouse/serializers.py:16
+msgid "meters"
+msgstr ""
+
+#: packhouses/storehouse/serializers.py:17
+msgid "liters"
+msgstr ""
+
+#: packhouses/storehouse/serializers.py:18
+msgid "kilograms"
+msgstr ""
+
+#: packhouses/storehouse/serializers.py:19
+msgid "pieces"
+msgstr ""

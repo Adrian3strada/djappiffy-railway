@@ -1,0 +1,104 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-25 22:05-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: eudr/operators/models.py:101 eudr/operators/models.py:127
+msgid "Operator Parcel"
+msgstr ""
+
+#: eudr/operators/models.py:102
+msgid "The parcel associated with this time production interval."
+msgstr ""
+
+#: eudr/operators/models.py:105
+msgid "Start date"
+msgstr ""
+
+#: eudr/operators/models.py:106
+msgid "Start of the time production interval."
+msgstr ""
+
+#: eudr/operators/models.py:109
+msgid "End date"
+msgstr ""
+
+#: eudr/operators/models.py:110
+msgid "End of the time production interval."
+msgstr ""
+
+#: eudr/operators/models.py:114
+msgid "Production interval"
+msgstr ""
+
+#: eudr/operators/models.py:115
+msgid "Production intervals"
+msgstr ""
+
+#: eudr/operators/models.py:128
+msgid "Operator parcel related to this compliance record."
+msgstr ""
+
+#: eudr/operators/models.py:133
+msgid "Land use right"
+msgstr ""
+
+#: eudr/operators/models.py:134
+msgid "E.g. legal title, lease, community agreement"
+msgstr ""
+
+#: eudr/operators/models.py:139
+msgid "Third-party rights (shapefile)"
+msgstr ""
+
+#: eudr/operators/models.py:140
+msgid ""
+"Upload a ZIP shapefile or related document evidencing third-party rights."
+msgstr ""
+
+#: eudr/operators/models.py:147
+msgid "Labor & Human Rights (PDF)"
+msgstr ""
+
+#: eudr/operators/models.py:148
+msgid "Upload a PDF document showing protection of labor and human rights."
+msgstr ""
+
+#: eudr/operators/models.py:155
+msgid "Free, Prior and Informed Consent (PDF)"
+msgstr ""
+
+#: eudr/operators/models.py:156
+msgid "Upload a PDF document evidencing FPIC compliance."
+msgstr ""
+
+#: eudr/operators/models.py:163
+msgid "Environmental protection (shapefile)"
+msgstr ""
+
+#: eudr/operators/models.py:164
+msgid ""
+"Upload a ZIP shapefile showing environmental protection areas or measures."
+msgstr ""
+
+#: eudr/operators/models.py:170
+msgid "Legal compliance"
+msgstr ""
+
+#: eudr/operators/models.py:171
+msgid "Legal compliances"
+msgstr ""

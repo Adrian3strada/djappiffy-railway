@@ -1,0 +1,188 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-25 22:06-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: packhouses/packing/admin.py:49
+msgid "Generate"
+msgstr ""
+
+#: packhouses/packing/admin.py:52
+msgid "New labels"
+msgstr ""
+
+#: packhouses/packing/admin.py:68
+msgid "Download remaining"
+msgstr ""
+
+#: packhouses/packing/admin.py:70
+msgid "Discard"
+msgstr ""
+
+#: packhouses/packing/admin.py:73
+msgid "Pending labels"
+msgstr ""
+
+#: packhouses/packing/admin.py:122
+msgid "Product Sizes"
+msgstr ""
+
+#: packhouses/packing/apps.py:8
+msgid "Packing"
+msgstr ""
+
+#: packhouses/packing/filters.py:12 packhouses/packing/models.py:99
+msgid "Batch"
+msgstr ""
+
+#: packhouses/packing/filters.py:31 packhouses/packing/filters.py:165
+#: packhouses/packing/models.py:73 packhouses/packing/models.py:100
+msgid "Market"
+msgstr ""
+
+#: packhouses/packing/filters.py:50 packhouses/packing/filters.py:184
+msgid "Product Size"
+msgstr ""
+
+#: packhouses/packing/filters.py:69
+msgid "Product Market Class"
+msgstr ""
+
+#: packhouses/packing/filters.py:88
+msgid "Product Ripeness"
+msgstr ""
+
+#: packhouses/packing/filters.py:107
+msgid "Size Packaging"
+msgstr ""
+
+#: packhouses/packing/filters.py:126 packhouses/packing/models.py:93
+#: packhouses/packing/models.py:110
+msgid "Packing Pallet"
+msgstr ""
+
+#: packhouses/packing/filters.py:146 packhouses/packing/models.py:72
+msgid "Product"
+msgstr ""
+
+#: packhouses/packing/filters.py:204 packhouses/packing/models.py:75
+msgid "Pallet"
+msgstr ""
+
+#: packhouses/packing/models.py:19
+msgid "Employee"
+msgstr ""
+
+#: packhouses/packing/models.py:23
+msgid "Packer label"
+msgstr ""
+
+#: packhouses/packing/models.py:24
+msgid "Packer labels"
+msgstr ""
+
+#: packhouses/packing/models.py:43
+msgid "Packer Employee"
+msgstr ""
+
+#: packhouses/packing/models.py:44
+msgid "Packer Employees"
+msgstr ""
+
+#: packhouses/packing/models.py:53
+msgid "Full name"
+msgstr ""
+
+#: packhouses/packing/models.py:58
+msgid "Packer"
+msgstr ""
+
+#: packhouses/packing/models.py:66
+msgid "Package"
+msgstr ""
+
+#: packhouses/packing/models.py:67
+msgid "Packages"
+msgstr ""
+
+#: packhouses/packing/models.py:71
+msgid "OOID"
+msgstr ""
+
+#: packhouses/packing/models.py:74
+msgid "Product sizes"
+msgstr ""
+
+#: packhouses/packing/models.py:76 packhouses/packing/models.py:111
+msgid "Status"
+msgstr ""
+
+#: packhouses/packing/models.py:78 packhouses/packing/models.py:113
+msgid "Organization"
+msgstr ""
+
+#: packhouses/packing/models.py:94
+msgid "Packing Pallets"
+msgstr ""
+
+#: packhouses/packing/models.py:98
+msgid "Package ID"
+msgstr ""
+
+#: packhouses/packing/models.py:101
+msgid "Product size"
+msgstr ""
+
+#: packhouses/packing/models.py:102
+msgid "Product market class"
+msgstr ""
+
+#: packhouses/packing/models.py:103
+msgid "Product ripeness"
+msgstr ""
+
+#: packhouses/packing/models.py:104
+msgid "Size packaging"
+msgstr ""
+
+#: packhouses/packing/models.py:105
+msgid "Product weight per packaging"
+msgstr ""
+
+#: packhouses/packing/models.py:106
+msgid "Product presentations per packaging"
+msgstr ""
+
+#: packhouses/packing/models.py:107
+msgid "Product pieces per presentation"
+msgstr ""
+
+#: packhouses/packing/models.py:108
+msgid "Packaging quantity"
+msgstr ""
+
+#: packhouses/packing/models.py:109
+msgid "Processing date"
+msgstr ""
+
+#: packhouses/packing/models.py:184
+msgid "Packing Package"
+msgstr ""
+
+#: packhouses/packing/models.py:185
+msgid "Packing Packages"
+msgstr ""

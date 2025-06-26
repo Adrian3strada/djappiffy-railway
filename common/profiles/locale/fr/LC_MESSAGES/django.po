@@ -1,0 +1,201 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-25 22:06-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: common/profiles/admin.py:25 common/profiles/models.py:54
+#: common/profiles/models.py:95
+msgid "Country"
+msgstr ""
+
+#: common/profiles/admin.py:31 common/profiles/models.py:100
+msgid "State"
+msgstr ""
+
+#: common/profiles/admin.py:37 common/profiles/models.py:105
+msgid "City"
+msgstr ""
+
+#: common/profiles/admin.py:74
+msgid "Platform setting"
+msgstr ""
+
+#: common/profiles/models.py:31
+msgid "User profile"
+msgstr ""
+
+#: common/profiles/models.py:39
+msgid "First name"
+msgstr ""
+
+#: common/profiles/models.py:44
+msgid "Last name"
+msgstr ""
+
+#: common/profiles/models.py:62 common/profiles/models.py:158
+msgid "Phone number"
+msgstr ""
+
+#: common/profiles/models.py:79
+msgid "Name"
+msgstr ""
+
+#: common/profiles/models.py:80
+msgid "Name of the Organization."
+msgstr ""
+
+#: common/profiles/models.py:87
+msgid "Organization"
+msgstr ""
+
+#: common/profiles/models.py:88
+msgid "Linked Organization to this profile."
+msgstr ""
+
+#: common/profiles/models.py:110
+msgid "District"
+msgstr ""
+
+#: common/profiles/models.py:116
+msgid "Postal code"
+msgstr ""
+
+#: common/profiles/models.py:120
+msgid "Neighborhood"
+msgstr ""
+
+#: common/profiles/models.py:124
+msgid "Address"
+msgstr ""
+
+#: common/profiles/models.py:128
+msgid "External number"
+msgstr ""
+
+#: common/profiles/models.py:134
+msgid "Internal number"
+msgstr ""
+
+#: common/profiles/models.py:143
+msgid "Legal entity category"
+msgstr ""
+
+#: common/profiles/models.py:144
+msgid ""
+"Legal category, must have a country selected to show that country legal "
+"categories."
+msgstr ""
+
+#: common/profiles/models.py:154
+msgid "Email address"
+msgstr ""
+
+#: common/profiles/models.py:163
+msgid "URL"
+msgstr ""
+
+#: common/profiles/models.py:177 common/profiles/models.py:223
+msgid "Product kinds"
+msgstr ""
+
+#: common/profiles/models.py:184
+msgid "Organization profile"
+msgstr ""
+
+#: common/profiles/models.py:185
+msgid "Organization profiles"
+msgstr ""
+
+#: common/profiles/models.py:194
+msgid "Producer profile"
+msgstr ""
+
+#: common/profiles/models.py:195
+msgid "Producer profiles"
+msgstr ""
+
+#: common/profiles/models.py:201
+msgid "Importer profile"
+msgstr ""
+
+#: common/profiles/models.py:202
+msgid "Importer profiles"
+msgstr ""
+
+#: common/profiles/models.py:206
+msgid "Packhouse number"
+msgstr ""
+
+#: common/profiles/models.py:207
+msgid "Registry number"
+msgstr ""
+
+#: common/profiles/models.py:208
+msgid "Sanitary registry"
+msgstr ""
+
+#: common/profiles/models.py:209
+msgid "Chain of custody"
+msgstr ""
+
+#: common/profiles/models.py:218 common/profiles/models.py:222
+msgid "Packhouse exporter profile"
+msgstr ""
+
+#: common/profiles/models.py:219
+msgid "Packhouse exporter profiles"
+msgstr ""
+
+#: common/profiles/models.py:224
+msgid "Hostname"
+msgstr ""
+
+#: common/profiles/models.py:225
+msgid "Is enabled"
+msgstr ""
+
+#: common/profiles/models.py:226
+msgid "User owner"
+msgstr ""
+
+#: common/profiles/models.py:241 common/profiles/models.py:242
+msgid "Packhouse exporter settings"
+msgstr ""
+
+#: common/profiles/models.py:248
+msgid "Trade exporter profile"
+msgstr ""
+
+#: common/profiles/models.py:249
+msgid "Trade exporter profiles"
+msgstr ""
+
+#: common/profiles/models.py:258
+msgid "EORI number"
+msgstr ""
+
+#: common/profiles/models.py:259
+msgid "Required for importers"
+msgstr ""
+
+#: common/profiles/models.py:263
+msgid "EUDR operator profile"
+msgstr ""
+
+#: common/profiles/models.py:264
+msgid "EUDR operator profiles"
+msgstr ""

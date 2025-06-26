@@ -1,0 +1,669 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-25 22:05-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
+#: packhouses/purchases/admin.py:166
+msgid "Generate Requisition PDF"
+msgstr ""
+
+#: packhouses/purchases/admin.py:168
+msgid "Send to Purchase Operations Department"
+msgstr ""
+
+#: packhouses/purchases/admin.py:170
+msgid ""
+"Are you sure you want to send this requisition to Purchase Operations "
+"Department?"
+msgstr ""
+
+#: packhouses/purchases/admin.py:171 packhouses/purchases/admin.py:573
+msgid "Yes, send"
+msgstr ""
+
+#: packhouses/purchases/admin.py:172 packhouses/purchases/admin.py:573
+#: packhouses/purchases/admin.py:582 packhouses/purchases/admin.py:1374
+#: packhouses/purchases/admin.py:1445
+msgid "No"
+msgstr ""
+
+#: packhouses/purchases/admin.py:196 packhouses/purchases/admin.py:606
+#: packhouses/purchases/admin.py:1406
+msgid "Actions"
+msgstr ""
+
+#: packhouses/purchases/admin.py:299
+msgid "Quantity must be greater than 0."
+msgstr ""
+
+#: packhouses/purchases/admin.py:302
+msgid "Unit price must be greater than 0."
+msgstr ""
+
+#: packhouses/purchases/admin.py:444 packhouses/purchases/admin.py:986
+#: packhouses/purchases/admin.py:1571
+msgid "Are you sure you want to cancel this payment?"
+msgstr ""
+
+#: packhouses/purchases/admin.py:445 packhouses/purchases/admin.py:987
+#: packhouses/purchases/admin.py:1387 packhouses/purchases/admin.py:1444
+#: packhouses/purchases/admin.py:1572
+msgid "Yes, cancel"
+msgstr ""
+
+#: packhouses/purchases/admin.py:446 packhouses/purchases/admin.py:988
+#: packhouses/purchases/admin.py:1573
+msgid "No, keep it"
+msgstr ""
+
+#: packhouses/purchases/admin.py:447 packhouses/purchases/admin.py:989
+#: packhouses/purchases/admin.py:1574
+msgid "Cancel payment"
+msgstr ""
+
+#: packhouses/purchases/admin.py:465 packhouses/purchases/admin.py:1007
+#: packhouses/purchases/admin.py:1439 packhouses/purchases/admin.py:1592
+msgid "Payment canceled"
+msgstr ""
+
+#: packhouses/purchases/admin.py:487 packhouses/purchases/admin.py:498
+#: packhouses/purchases/admin.py:1023 packhouses/purchases/admin.py:1034
+#: packhouses/purchases/admin.py:1608 packhouses/purchases/admin.py:1619
+msgid "Registered by"
+msgstr ""
+
+#: packhouses/purchases/admin.py:488 packhouses/purchases/admin.py:499
+#: packhouses/purchases/admin.py:1024 packhouses/purchases/admin.py:1035
+#: packhouses/purchases/admin.py:1609 packhouses/purchases/admin.py:1620
+#: packhouses/purchases/models.py:157 packhouses/purchases/models.py:419
+#: packhouses/purchases/models.py:553 packhouses/purchases/models.py:764
+#: packhouses/purchases/models.py:898 packhouses/purchases/models.py:1258
+#: packhouses/purchases/views.py:225
+msgid "Payment date"
+msgstr ""
+
+#: packhouses/purchases/admin.py:492 packhouses/purchases/admin.py:1028
+#: packhouses/purchases/admin.py:1613 packhouses/purchases/models.py:466
+#: packhouses/purchases/models.py:811 packhouses/purchases/models.py:936
+#: packhouses/purchases/models.py:1151 packhouses/purchases/models.py:1305
+msgid "Canceled by"
+msgstr ""
+
+#: packhouses/purchases/admin.py:493 packhouses/purchases/admin.py:1029
+#: packhouses/purchases/admin.py:1614 packhouses/purchases/models.py:472
+#: packhouses/purchases/models.py:817 packhouses/purchases/models.py:942
+#: packhouses/purchases/models.py:1157 packhouses/purchases/models.py:1311
+msgid "Cancellation date"
+msgstr ""
+
+#: packhouses/purchases/admin.py:502 packhouses/purchases/admin.py:1038
+#: packhouses/purchases/admin.py:1623
+msgid "Payment info"
+msgstr ""
+
+#: packhouses/purchases/admin.py:555
+msgid "Send to Storehouse"
+msgstr ""
+
+#: packhouses/purchases/admin.py:558
+msgid "Reopen this purchases order"
+msgstr ""
+
+#: packhouses/purchases/admin.py:561
+msgid "Payment application"
+msgstr ""
+
+#: packhouses/purchases/admin.py:573
+msgid ""
+"Are you sure you want to send this purchases order supply to Storehouse?"
+msgstr ""
+
+#: packhouses/purchases/admin.py:582
+msgid "Are you sure you want to reopen this purchases order?"
+msgstr ""
+
+#: packhouses/purchases/admin.py:582
+msgid "Yes, reopen"
+msgstr ""
+
+#: packhouses/purchases/admin.py:603
+msgid "Generate Purchase Order Supply PDF"
+msgstr ""
+
+#: packhouses/purchases/admin.py:698
+#, python-brace-format
+msgid ""
+"Payment canceled successfully. New balance payable: ${payment.purchase_order."
+"balance_payable:.2f}"
+msgstr ""
+
+#: packhouses/purchases/admin.py:704 packhouses/purchases/admin.py:1130
+msgid "Payment not found"
+msgstr ""
+
+#: packhouses/purchases/admin.py:711 packhouses/purchases/admin.py:1135
+#: packhouses/purchases/admin.py:1813
+msgid "An error occurred while canceling the payment: {str(e)}"
+msgstr ""
+
+#: packhouses/purchases/admin.py:730
+msgid ""
+"Cannot save this order because the balance would be negative "
+"(${balance_data['balance']}). "
+msgstr ""
+
+#: packhouses/purchases/admin.py:759
+msgid "The final balance would be negative (${balance_data['balance']}). "
+msgstr ""
+
+#: packhouses/purchases/admin.py:861
+#, python-brace-format
+msgid "The final balance would be negative (${balance}) "
+msgstr ""
+
+#: packhouses/purchases/admin.py:1124
+#, python-brace-format
+msgid ""
+"Payment canceled successfully. New balance payable: ${payment.service_order."
+"balance_payable:.2f}"
+msgstr ""
+
+#: packhouses/purchases/admin.py:1171
+msgid ""
+"Cannot save the service order because the final balance would be negative "
+"(${data['balance']}). "
+msgstr ""
+
+#: packhouses/purchases/admin.py:1187
+msgid ""
+"Cannot save this service order because the balance would be negative "
+"(${data['balance']})."
+msgstr ""
+
+#: packhouses/purchases/admin.py:1253
+#, python-brace-format
+msgid "The final balance would be negative (${balance}). "
+msgstr ""
+
+#: packhouses/purchases/admin.py:1373
+msgid "Generate Mass Payment PDF"
+msgstr ""
+
+#: packhouses/purchases/admin.py:1384 packhouses/purchases/admin.py:1446
+msgid "Cancel Mass Payment"
+msgstr ""
+
+#: packhouses/purchases/admin.py:1386 packhouses/purchases/admin.py:1443
+msgid "Are you sure you want to cancel this mass payment?"
+msgstr ""
+
+#: packhouses/purchases/admin.py:1800
+#, python-brace-format
+msgid ""
+"Payment canceled successfully. New balance payable: ${payment."
+"fruit_purchase_order_receipt.balance_payable:.2f}"
+msgstr ""
+
+#: packhouses/purchases/admin.py:1807
+msgid "Payment not found."
+msgstr ""
+
+#: packhouses/purchases/apps.py:8
+msgid "Purchases"
+msgstr ""
+
+#: packhouses/purchases/forms.py:24 packhouses/purchases/forms.py:54
+msgid "How would you like to proceed?"
+msgstr ""
+
+#: packhouses/purchases/forms.py:25
+msgid "Save and send to purchases"
+msgstr ""
+
+#: packhouses/purchases/forms.py:26 packhouses/purchases/forms.py:56
+msgid "Only save"
+msgstr ""
+
+#: packhouses/purchases/forms.py:27 packhouses/purchases/forms.py:57
+msgid "Cancel"
+msgstr ""
+
+#: packhouses/purchases/forms.py:30
+msgid "Save and send to Purchase Operations Department"
+msgstr ""
+
+#: packhouses/purchases/forms.py:44
+msgid "You must add at least one supply to the requisition."
+msgstr ""
+
+#: packhouses/purchases/forms.py:55 packhouses/purchases/forms.py:60
+msgid "Save and send to Storehouse"
+msgstr ""
+
+#: packhouses/purchases/forms.py:83
+msgid ""
+"Cannot save this purchases order because the balance would be negative "
+"(${balance_data['balance']}). "
+msgstr ""
+
+#: packhouses/purchases/forms.py:141 packhouses/purchases/forms.py:278
+#: packhouses/purchases/forms.py:383 packhouses/purchases/forms.py:511
+msgid "This field is required for the selected payment kind."
+msgstr ""
+
+#: packhouses/purchases/forms.py:199
+msgid "Cost cannot be less than 0."
+msgstr ""
+
+#: packhouses/purchases/forms.py:202
+msgid "Tax must be between 0% and 100%."
+msgstr ""
+
+#: packhouses/purchases/forms.py:205
+msgid "You must select a batch when category is 'for_batch'."
+msgstr ""
+
+#: packhouses/purchases/forms.py:517
+msgid "This receipt does not belong to the selected order."
+msgstr ""
+
+#: packhouses/purchases/forms.py:554
+#, python-format
+msgid ""
+"The total quantity entered (%(total)s kg) exceeds the batch's received "
+"weight (%(received)s kg)."
+msgstr ""
+
+#: packhouses/purchases/models.py:35 packhouses/purchases/models.py:143
+#: packhouses/purchases/models.py:519 packhouses/purchases/models.py:858
+#: packhouses/purchases/models.py:1016 packhouses/purchases/models.py:1080
+msgid "Folio"
+msgstr ""
+
+#: packhouses/purchases/models.py:40 packhouses/purchases/models.py:148
+msgid "User"
+msgstr ""
+
+#: packhouses/purchases/models.py:44 packhouses/purchases/models.py:113
+#: packhouses/purchases/models.py:171 packhouses/purchases/models.py:337
+#: packhouses/purchases/models.py:441 packhouses/purchases/models.py:786
+#: packhouses/purchases/models.py:915 packhouses/purchases/models.py:1280
+msgid "Comments"
+msgstr ""
+
+#: packhouses/purchases/models.py:52 packhouses/purchases/models.py:190
+#: packhouses/purchases/models.py:462 packhouses/purchases/models.py:582
+#: packhouses/purchases/models.py:807 packhouses/purchases/models.py:932
+#: packhouses/purchases/models.py:1036 packhouses/purchases/models.py:1147
+#: packhouses/purchases/models.py:1301
+msgid "Created at"
+msgstr ""
+
+#: packhouses/purchases/models.py:56 packhouses/purchases/models.py:193
+#: packhouses/purchases/models.py:607 packhouses/purchases/models.py:954
+#: packhouses/purchases/models.py:1047
+msgid "Organization"
+msgstr ""
+
+#: packhouses/purchases/models.py:78 packhouses/purchases/models.py:89
+msgid "Requisition"
+msgstr ""
+
+#: packhouses/purchases/models.py:79
+msgid "Requisitions"
+msgstr ""
+
+#: packhouses/purchases/models.py:94 packhouses/purchases/models.py:308
+#: packhouses/purchases/models.py:353
+msgid "Supply"
+msgstr ""
+
+#: packhouses/purchases/models.py:98 packhouses/purchases/models.py:312
+#: packhouses/purchases/models.py:1112
+msgid "Quantity"
+msgstr ""
+
+#: packhouses/purchases/models.py:104 packhouses/purchases/models.py:318
+msgid "Unit category"
+msgstr ""
+
+#: packhouses/purchases/models.py:108 packhouses/purchases/models.py:322
+msgid "Delivery deadline"
+msgstr ""
+
+#: packhouses/purchases/models.py:117
+msgid "Is enabled"
+msgstr ""
+
+#: packhouses/purchases/models.py:125
+msgid "Requisition Supply"
+msgstr ""
+
+#: packhouses/purchases/models.py:126
+msgid "Requisition Supplies"
+msgstr ""
+
+#: packhouses/purchases/models.py:153 packhouses/purchases/models.py:529
+#: packhouses/purchases/models.py:868 packhouses/purchases/views.py:224
+msgid "Provider"
+msgstr ""
+
+#: packhouses/purchases/models.py:162 packhouses/purchases/models.py:558
+#: packhouses/purchases/models.py:873
+msgid "Currency"
+msgstr ""
+
+#: packhouses/purchases/models.py:167 packhouses/purchases/models.py:570
+msgid "Tax (%)"
+msgstr ""
+
+#: packhouses/purchases/models.py:180 packhouses/purchases/models.py:599
+msgid "Total cost (with tax)"
+msgstr ""
+
+#: packhouses/purchases/models.py:188 packhouses/purchases/models.py:596
+#: packhouses/purchases/models.py:1131
+msgid "Balance payable"
+msgstr ""
+
+#: packhouses/purchases/models.py:293 packhouses/purchases/models.py:303
+#: packhouses/purchases/models.py:362 packhouses/purchases/models.py:388
+#: packhouses/purchases/models.py:415 packhouses/purchases/models.py:878
+msgid "Purchase Order"
+msgstr ""
+
+#: packhouses/purchases/models.py:294
+msgid "Purchase Orders"
+msgstr ""
+
+#: packhouses/purchases/models.py:326 packhouses/purchases/models.py:1117
+msgid "Unit Price"
+msgstr ""
+
+#: packhouses/purchases/models.py:331
+msgid "Total Price"
+msgstr ""
+
+#: packhouses/purchases/models.py:342
+msgid "Is in inventory"
+msgstr ""
+
+#: packhouses/purchases/models.py:354
+msgid "Supplies"
+msgstr ""
+
+#: packhouses/purchases/models.py:367 packhouses/purchases/models.py:713
+msgid "Charge description"
+msgstr ""
+
+#: packhouses/purchases/models.py:370 packhouses/purchases/models.py:396
+#: packhouses/purchases/models.py:423 packhouses/purchases/models.py:716
+#: packhouses/purchases/models.py:742 packhouses/purchases/models.py:768
+#: packhouses/purchases/models.py:902 packhouses/purchases/models.py:1262
+msgid "Amount"
+msgstr ""
+
+#: packhouses/purchases/models.py:379 packhouses/purchases/models.py:725
+msgid "Charge"
+msgstr ""
+
+#: packhouses/purchases/models.py:380 packhouses/purchases/models.py:726
+msgid "Charges"
+msgstr ""
+
+#: packhouses/purchases/models.py:393 packhouses/purchases/models.py:739
+msgid "Deduction description"
+msgstr ""
+
+#: packhouses/purchases/models.py:405 packhouses/purchases/models.py:751
+msgid "Deduction"
+msgstr ""
+
+#: packhouses/purchases/models.py:406 packhouses/purchases/models.py:752
+msgid "Deductions"
+msgstr ""
+
+#: packhouses/purchases/models.py:429 packhouses/purchases/models.py:774
+#: packhouses/purchases/models.py:890 packhouses/purchases/models.py:1268
+msgid "Payment kind"
+msgstr ""
+
+#: packhouses/purchases/models.py:434 packhouses/purchases/models.py:779
+#: packhouses/purchases/models.py:908 packhouses/purchases/models.py:1273
+msgid "Bank"
+msgstr ""
+
+#: packhouses/purchases/models.py:445 packhouses/purchases/models.py:790
+#: packhouses/purchases/models.py:894 packhouses/purchases/models.py:1284
+msgid "Additional inputs"
+msgstr ""
+
+#: packhouses/purchases/models.py:455 packhouses/purchases/models.py:800
+#: packhouses/purchases/models.py:1294
+msgid "Added by"
+msgstr ""
+
+#: packhouses/purchases/models.py:477 packhouses/purchases/models.py:822
+#: packhouses/purchases/models.py:1316
+msgid "Mass payment"
+msgstr ""
+
+#: packhouses/purchases/models.py:482 packhouses/purchases/models.py:827
+#: packhouses/purchases/models.py:946 packhouses/purchases/models.py:1321
+msgid "Proof of Payment"
+msgstr ""
+
+#: packhouses/purchases/models.py:494 packhouses/purchases/models.py:838
+#: packhouses/purchases/models.py:1374
+msgid "Payment"
+msgstr ""
+
+#: packhouses/purchases/models.py:495 packhouses/purchases/models.py:839
+#: packhouses/purchases/models.py:1375
+msgid "Payments"
+msgstr ""
+
+#: packhouses/purchases/models.py:524 packhouses/purchases/models.py:863
+#: packhouses/purchases/models.py:1026
+msgid "Category"
+msgstr ""
+
+#: packhouses/purchases/models.py:534
+msgid "Service"
+msgstr ""
+
+#: packhouses/purchases/models.py:538
+msgid "Start date"
+msgstr ""
+
+#: packhouses/purchases/models.py:542
+msgid "End date"
+msgstr ""
+
+#: packhouses/purchases/models.py:547 packhouses/purchases/models.py:1021
+msgid "Batch"
+msgstr ""
+
+#: packhouses/purchases/models.py:562
+msgid "Cost"
+msgstr ""
+
+#: packhouses/purchases/models.py:578
+msgid "Status"
+msgstr ""
+
+#: packhouses/purchases/models.py:586 packhouses/purchases/models.py:925
+#: packhouses/purchases/models.py:1040 packhouses/purchases/models.py:1140
+msgid "Created by"
+msgstr ""
+
+#: packhouses/purchases/models.py:675 packhouses/purchases/models.py:708
+#: packhouses/purchases/models.py:734 packhouses/purchases/models.py:760
+#: packhouses/purchases/models.py:884
+msgid "Service Order"
+msgstr ""
+
+#: packhouses/purchases/models.py:676
+msgid "Service Orders"
+msgstr ""
+
+#: packhouses/purchases/models.py:1006
+msgid "Mass Payment"
+msgstr ""
+
+#: packhouses/purchases/models.py:1007
+msgid "Mass Payments"
+msgstr ""
+
+#: packhouses/purchases/models.py:1065 packhouses/purchases/models.py:1085
+#: packhouses/purchases/models.py:1249
+msgid "Fruit Purchase Order"
+msgstr ""
+
+#: packhouses/purchases/models.py:1066
+msgid "Fruit Purchase Orders"
+msgstr ""
+
+#: packhouses/purchases/models.py:1090
+msgid "Receipt kind"
+msgstr ""
+
+#: packhouses/purchases/models.py:1095
+msgid "Provider/Producer"
+msgstr ""
+
+#: packhouses/purchases/models.py:1100
+msgid "Price category"
+msgstr ""
+
+#: packhouses/purchases/models.py:1104
+msgid "Container capacity"
+msgstr ""
+
+#: packhouses/purchases/models.py:1122
+msgid "Total cost"
+msgstr ""
+
+#: packhouses/purchases/models.py:1162
+#, python-format
+msgid "BATCH %(batch)s - RECEIPT %(receipt)s - %(provider)s"
+msgstr ""
+
+#: packhouses/purchases/models.py:1203
+#, python-format
+msgid ""
+"The balance payable cannot be negative. Total payments (%(paid)s) exceed the "
+"receipt total (%(total)s)."
+msgstr ""
+
+#: packhouses/purchases/models.py:1236
+msgid "Fruit Receipt"
+msgstr ""
+
+#: packhouses/purchases/models.py:1237
+msgid "Fruit Receipts"
+msgstr ""
+
+#: packhouses/purchases/models.py:1254
+msgid "Fruit Purchase Order Receipt"
+msgstr ""
+
+#: packhouses/purchases/models.py:1356
+#, python-format
+msgid ""
+"The total payment amount (%(new_total)s) exceeds the receipt total "
+"(%(receipt_total)s)."
+msgstr ""
+
+#: packhouses/purchases/settings.py:4
+msgid "TIME PERIOD"
+msgstr ""
+
+#: packhouses/purchases/settings.py:5
+msgid "FOR BATCH"
+msgstr ""
+
+#: packhouses/purchases/settings.py:9
+msgid "PURCHASE ORDER"
+msgstr ""
+
+#: packhouses/purchases/settings.py:10
+msgid "SERVICE ORDER"
+msgstr ""
+
+#: packhouses/purchases/settings.py:14
+msgid "FIXED PRICE"
+msgstr ""
+
+#: packhouses/purchases/settings.py:15
+msgid "YIELD-BASED PRICE"
+msgstr ""
+
+#: packhouses/purchases/settings.py:19
+msgid "PRODUCER"
+msgstr ""
+
+#: packhouses/purchases/settings.py:20
+msgid "PROVIDER"
+msgstr ""
+
+#: packhouses/purchases/views.py:69
+msgid ""
+"We hereby request the Purchasing Operations Department to acquire the "
+"necessary supplies as detailed in this document."
+msgstr ""
+
+#: packhouses/purchases/views.py:118
+msgid "Requisition sent to Purchase Operations Department successfully."
+msgstr ""
+
+#: packhouses/purchases/views.py:226
+msgid "Order date"
+msgstr ""
+
+#: packhouses/purchases/views.py:283
+msgid "Purchase order sent to Storehouse successfully."
+msgstr ""
+
+#: packhouses/purchases/views.py:306 packhouses/purchases/views.py:333
+msgid "Success"
+msgstr ""
+
+#: packhouses/purchases/views.py:307
+msgid "Purchase order sent to Purchase successfully."
+msgstr ""
+
+#: packhouses/purchases/views.py:308 packhouses/purchases/views.py:335
+msgid "Continue"
+msgstr ""
+
+#: packhouses/purchases/views.py:334
+msgid "Purchase order sent to Payments successfully."
+msgstr ""
+
+#: packhouses/purchases/views.py:357
+msgid "This Mass Payment is already canceled."
+msgstr ""
+
+#: packhouses/purchases/views.py:391
+msgid "Mass Payment and its related payments were canceled successfully."
+msgstr ""
+
+#: packhouses/purchases/views.py:397
+msgid "Mass Payment not found"
+msgstr ""

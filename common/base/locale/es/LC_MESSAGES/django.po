@@ -1,0 +1,423 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-25 22:05-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
+#: common/base/admin.py:29 common/base/models.py:309 common/base/models.py:331
+msgid "Pest"
+msgstr ""
+
+#: common/base/admin.py:30 common/base/models.py:310
+msgid "Pests"
+msgstr ""
+
+#: common/base/admin.py:35 common/base/models.py:323 common/base/models.py:348
+msgid "Disease"
+msgstr ""
+
+#: common/base/admin.py:36 common/base/models.py:324
+msgid "Diseases"
+msgstr ""
+
+#: common/base/filters.py:10 common/base/filters.py:39
+#: common/base/models.py:100 common/base/models.py:167
+#: common/base/models.py:184 common/base/models.py:248
+msgid "Country"
+msgstr ""
+
+#: common/base/filters.py:25
+msgid "Product kind"
+msgstr ""
+
+#: common/base/models.py:30 common/base/models.py:45 common/base/models.py:82
+#: common/base/models.py:102 common/base/models.py:130
+#: common/base/models.py:151 common/base/models.py:201
+#: common/base/models.py:218 common/base/models.py:233
+#: common/base/models.py:251 common/base/models.py:285
+#: common/base/models.py:305 common/base/models.py:319
+#: common/base/models.py:332 common/base/models.py:349
+#: common/base/models.py:380
+msgid "Is enabled"
+msgstr ""
+
+#: common/base/models.py:37 common/base/models.py:101
+msgid "Product Kind"
+msgstr ""
+
+#: common/base/models.py:38
+msgid "Product Kinds"
+msgstr ""
+
+#: common/base/models.py:43
+msgid "Factor"
+msgstr ""
+
+#: common/base/models.py:44
+msgid "Unit category"
+msgstr ""
+
+#: common/base/models.py:51
+msgid "Supply Measure Unit Category"
+msgstr ""
+
+#: common/base/models.py:52
+msgid "Supply Measure Unit Categories"
+msgstr ""
+
+#: common/base/models.py:59
+msgid "Category"
+msgstr ""
+
+#: common/base/models.py:60 common/base/models.py:166 common/base/models.py:183
+#: common/base/models.py:279 common/base/models.py:302
+#: common/base/models.py:316 common/base/models.py:364
+msgid "Name"
+msgstr ""
+
+#: common/base/models.py:61
+msgid "Capacity unit category"
+msgstr ""
+
+#: common/base/models.py:63
+msgid "Capacity unit to group supply kinds by his capacity"
+msgstr ""
+
+#: common/base/models.py:67
+msgid "Requested unit category"
+msgstr ""
+
+#: common/base/models.py:68
+msgid ""
+"Type of unit of use to measure how inputs are requested from the supplier"
+msgstr ""
+
+#: common/base/models.py:75
+msgid "Usage discount unit category"
+msgstr ""
+
+#: common/base/models.py:76
+msgid "Usage unit kind to measure when supplies are consumed"
+msgstr ""
+
+#: common/base/models.py:88
+msgid "Supply kind"
+msgstr ""
+
+#: common/base/models.py:89
+msgid "Supply kinds"
+msgstr ""
+
+#: common/base/models.py:109
+msgid "Product kind country standard"
+msgstr ""
+
+#: common/base/models.py:110
+msgid "Product kind country standards"
+msgstr ""
+
+#: common/base/models.py:127 common/base/models.py:148
+#: common/base/models.py:165 common/base/models.py:182
+#: common/base/models.py:199 common/base/models.py:231
+msgid "Code"
+msgstr ""
+
+#: common/base/models.py:136
+msgid "Product kind country standard, Size"
+msgstr ""
+
+#: common/base/models.py:137
+msgid "Product kind country standard, Sizes"
+msgstr ""
+
+#: common/base/models.py:149
+msgid "Max product amount"
+msgstr ""
+
+#: common/base/models.py:157 common/base/models.py:158
+msgid "Product kind country standard, Packaging"
+msgstr ""
+
+#: common/base/models.py:173
+msgid "Legal Entity Category"
+msgstr ""
+
+#: common/base/models.py:174
+msgid "Legal Entity Categories"
+msgstr ""
+
+#: common/base/models.py:190
+msgid "Capital framework"
+msgstr ""
+
+#: common/base/models.py:191
+msgid "Capital frameworks"
+msgstr ""
+
+#: common/base/models.py:208
+msgid "Incoterm"
+msgstr ""
+
+#: common/base/models.py:209
+msgid "Incoterms"
+msgstr ""
+
+#: common/base/models.py:225
+msgid "Local Delivery"
+msgstr ""
+
+#: common/base/models.py:226
+msgid "Local Deliveries"
+msgstr ""
+
+#: common/base/models.py:239
+msgid "Currency"
+msgstr ""
+
+#: common/base/models.py:240
+msgid "Currencies"
+msgstr ""
+
+#: common/base/models.py:247 common/base/models.py:330
+#: common/base/models.py:347
+msgid "Product"
+msgstr ""
+
+#: common/base/models.py:249 common/base/models.py:258
+msgid "Certification Entity"
+msgstr ""
+
+#: common/base/models.py:250
+msgid "Certification"
+msgstr ""
+
+#: common/base/models.py:259
+msgid "Certification Entities"
+msgstr ""
+
+#: common/base/models.py:283
+msgid "Document"
+msgstr ""
+
+#: common/base/models.py:292
+msgid "Certification Format"
+msgstr ""
+
+#: common/base/models.py:293
+msgid "Certification Formats"
+msgstr ""
+
+#: common/base/models.py:303 common/base/models.py:317
+msgid "Inside"
+msgstr ""
+
+#: common/base/models.py:304 common/base/models.py:318
+msgid "Outside"
+msgstr ""
+
+#: common/base/models.py:336
+msgid "Pest Product Kind"
+msgstr ""
+
+#: common/base/models.py:337
+msgid "Pests Product Kind"
+msgstr ""
+
+#: common/base/models.py:353
+msgid "Disease Product Kind"
+msgstr ""
+
+#: common/base/models.py:354
+msgid "Diseases Product Kind"
+msgstr ""
+
+#: common/base/models.py:365
+msgid "Description"
+msgstr ""
+
+#: common/base/models.py:366
+msgid "Model"
+msgstr ""
+
+#: common/base/models.py:367
+msgid "Overall Average"
+msgstr ""
+
+#: common/base/models.py:371
+msgid "Food Safety Procedure"
+msgstr ""
+
+#: common/base/models.py:372
+msgid "Food Safety Procedures"
+msgstr ""
+
+#: common/base/models.py:379
+msgid "Is container"
+msgstr ""
+
+#: common/base/models.py:386
+msgid "Fruit Purchase Price Category"
+msgstr ""
+
+#: common/base/models.py:387
+msgid "Fruit Purchase Price Categories"
+msgstr ""
+
+#: common/base/settings.py:4 common/base/settings.py:17
+msgid "Pieces"
+msgstr ""
+
+#: common/base/settings.py:5 common/base/settings.py:18
+msgid "grams"
+msgstr ""
+
+#: common/base/settings.py:6 common/base/settings.py:19
+msgid "Kilograms"
+msgstr ""
+
+#: common/base/settings.py:7 common/base/settings.py:20
+msgid "Tons"
+msgstr ""
+
+#: common/base/settings.py:8 common/base/settings.py:21
+msgid "milliliters"
+msgstr ""
+
+#: common/base/settings.py:9 common/base/settings.py:22
+msgid "Liters"
+msgstr ""
+
+#: common/base/settings.py:10 common/base/settings.py:23
+msgid "Centimeters"
+msgstr ""
+
+#: common/base/settings.py:11 common/base/settings.py:24
+msgid "Meters"
+msgstr ""
+
+#: common/base/settings.py:12 common/base/settings.py:25
+msgid "Kilometers"
+msgstr ""
+
+#: common/base/settings.py:13 common/base/settings.py:26
+#: common/base/settings.py:47 common/base/settings.py:63
+msgid "Other"
+msgstr ""
+
+#: common/base/settings.py:30
+msgid "Packaging Containment"
+msgstr ""
+
+#: common/base/settings.py:31
+msgid "Packaging Complement"
+msgstr ""
+
+#: common/base/settings.py:32
+msgid "Packaging Separator"
+msgstr ""
+
+#: common/base/settings.py:33
+msgid "Packaging Presentation"
+msgstr ""
+
+#: common/base/settings.py:34
+msgid "Packaging Presentation Complement"
+msgstr ""
+
+#: common/base/settings.py:35
+msgid "Packaging Protection"
+msgstr ""
+
+#: common/base/settings.py:36
+msgid "Packaging Pallet"
+msgstr ""
+
+#: common/base/settings.py:37
+msgid "Packaging Pallet Complement"
+msgstr ""
+
+#: common/base/settings.py:38
+msgid "Packaging Labeling"
+msgstr ""
+
+#: common/base/settings.py:39
+msgid "Packaging Storage"
+msgstr ""
+
+#: common/base/settings.py:40
+msgid "Packhouse Stationery"
+msgstr ""
+
+#: common/base/settings.py:41
+msgid "Packhouse Cleaning"
+msgstr ""
+
+#: common/base/settings.py:42
+msgid "Packhouse Maintenance"
+msgstr ""
+
+#: common/base/settings.py:43
+msgid "Packhouse Transport"
+msgstr ""
+
+#: common/base/settings.py:44
+msgid "Packhouse Fuel"
+msgstr ""
+
+#: common/base/settings.py:45
+msgid "Packhouse Tools"
+msgstr ""
+
+#: common/base/settings.py:46
+msgid "Harvest Container"
+msgstr ""
+
+#: common/base/settings.py:51
+msgid "Inbound"
+msgstr ""
+
+#: common/base/settings.py:52
+msgid "Outbound"
+msgstr ""
+
+#: common/base/settings.py:56
+msgid "Adjustment Inventory"
+msgstr ""
+
+#: common/base/settings.py:57
+msgid "Selective Process"
+msgstr ""
+
+#: common/base/settings.py:58
+msgid "Repackaging"
+msgstr ""
+
+#: common/base/settings.py:59
+msgid "Purchase"
+msgstr ""
+
+#: common/base/settings.py:60
+msgid "Sale"
+msgstr ""
+
+#: common/base/settings.py:61
+msgid "Transfer"
+msgstr ""
+
+#: common/base/settings.py:62
+msgid "Return"
+msgstr ""

@@ -1,0 +1,102 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-25 22:06-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: packhouses/members/admin.py:31
+msgid "Orders"
+msgstr ""
+
+#: packhouses/members/admin.py:42
+msgid "Schedule Harvests"
+msgstr ""
+
+#: packhouses/members/admin.py:53
+msgid "Incoming Product"
+msgstr ""
+
+#: packhouses/members/admin.py:65
+msgid "Batches"
+msgstr ""
+
+#: packhouses/members/admin.py:77
+msgid "Food Safeties"
+msgstr ""
+
+#: packhouses/members/admin.py:86
+msgid "Certifications"
+msgstr ""
+
+#: packhouses/members/admin.py:94
+msgid "Requisition"
+msgstr ""
+
+#: packhouses/members/admin.py:102
+msgid "Service Order"
+msgstr ""
+
+#: packhouses/members/admin.py:112
+msgid "Purchase Order"
+msgstr ""
+
+#: packhouses/members/admin.py:120
+msgid "Adjustment Inventory"
+msgstr ""
+
+#: packhouses/members/admin.py:129
+msgid "Storehouse Entry"
+msgstr ""
+
+#: packhouses/members/models.py:6 packhouses/members/models.py:7
+msgid "Widgets for Member"
+msgstr ""
+
+#: packhouses/members/utils.py:25
+msgid "Today"
+msgstr ""
+
+#: packhouses/members/utils.py:26
+msgid "Last 7 days"
+msgstr ""
+
+#: packhouses/members/utils.py:27
+msgid "Last 15 days"
+msgstr ""
+
+#: packhouses/members/utils.py:28
+msgid "Last 30 days"
+msgstr ""
+
+#: packhouses/members/utils.py:29
+msgid "Next 7 days"
+msgstr ""
+
+#: packhouses/members/utils.py:30
+msgid "Next 15 days"
+msgstr ""
+
+#: packhouses/members/utils.py:31
+msgid "Next 30 days"
+msgstr ""
+
+#: packhouses/members/utils.py:32
+msgid "Next 60 days"
+msgstr ""
+
+#: packhouses/members/utils.py:33
+msgid "Next 90 days"
+msgstr ""

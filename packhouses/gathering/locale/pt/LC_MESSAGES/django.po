@@ -1,0 +1,326 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-25 22:06-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: packhouses/gathering/admin.py:189 packhouses/gathering/models.py:54
+msgid "Orchard"
+msgstr ""
+
+#: packhouses/gathering/admin.py:194
+msgid "Orchard Code"
+msgstr ""
+
+#: packhouses/gathering/admin.py:201 packhouses/gathering/filters.py:127
+#: packhouses/gathering/resources.py:14 packhouses/gathering/utils.py:26
+msgid "Product Category"
+msgstr ""
+
+#: packhouses/gathering/admin.py:206 packhouses/gathering/filters.py:33
+#: packhouses/gathering/resources.py:13 packhouses/gathering/utils.py:21
+msgid "Product Producer"
+msgstr ""
+
+#: packhouses/gathering/admin.py:212 packhouses/gathering/filters.py:198
+#: packhouses/gathering/resources.py:57
+msgid "Scheduled Harvest"
+msgstr ""
+
+#: packhouses/gathering/admin.py:225
+msgid "Generate Harvest Order PDF"
+msgstr ""
+
+#: packhouses/gathering/admin.py:227
+msgid "Good harvest practices format"
+msgstr ""
+
+#: packhouses/gathering/admin.py:229
+msgid "Cancel this harvest"
+msgstr ""
+
+#: packhouses/gathering/admin.py:230
+msgid "Are you sure you want to cancel this harvest?"
+msgstr ""
+
+#: packhouses/gathering/admin.py:231
+msgid "Yes, cancel it"
+msgstr ""
+
+#: packhouses/gathering/admin.py:232
+msgid "No"
+msgstr ""
+
+#: packhouses/gathering/admin.py:234
+msgid "Send to Fruit Receiving Area?"
+msgstr ""
+
+#: packhouses/gathering/admin.py:236
+msgid "Are you sure you want to send this Harvest to Fruit Receiving Area?"
+msgstr ""
+
+#: packhouses/gathering/admin.py:237
+msgid "Yes, send"
+msgstr ""
+
+#: packhouses/gathering/admin.py:280
+msgid "Actions"
+msgstr ""
+
+#: packhouses/gathering/admin.py:305
+msgid "Varieties"
+msgstr ""
+
+#: packhouses/gathering/apps.py:9
+msgid "Gathering"
+msgstr ""
+
+#: packhouses/gathering/filters.py:9
+msgid "Product Prodiver"
+msgstr ""
+
+#: packhouses/gathering/filters.py:53 packhouses/gathering/models.py:131
+#: packhouses/gathering/models.py:138 packhouses/gathering/utils.py:23
+msgid "Harvesting Crew"
+msgstr ""
+
+#: packhouses/gathering/filters.py:78 packhouses/gathering/models.py:49
+#: packhouses/gathering/utils.py:24
+msgid "Product"
+msgstr ""
+
+#: packhouses/gathering/filters.py:94 packhouses/gathering/models.py:50
+msgid "Product Variety"
+msgstr ""
+
+#: packhouses/gathering/filters.py:110 packhouses/gathering/models.py:51
+#: packhouses/gathering/utils.py:25
+msgid "Product Phenology"
+msgstr ""
+
+#: packhouses/gathering/filters.py:151 packhouses/gathering/resources.py:16
+#: packhouses/gathering/utils.py:28
+msgid "Harvesting Category"
+msgstr ""
+
+#: packhouses/gathering/filters.py:163 packhouses/gathering/models.py:47
+#: packhouses/gathering/utils.py:30
+msgid "Gatherer"
+msgstr ""
+
+#: packhouses/gathering/filters.py:178 packhouses/gathering/models.py:48
+#: packhouses/gathering/utils.py:29
+msgid "Maquiladora"
+msgstr ""
+
+#: packhouses/gathering/filters.py:193 packhouses/gathering/resources.py:15
+#: packhouses/gathering/utils.py:31
+msgid "Scheduling Type"
+msgstr ""
+
+#: packhouses/gathering/filters.py:199 packhouses/gathering/resources.py:57
+msgid "Unscheduled Harvest"
+msgstr ""
+
+#: packhouses/gathering/filters.py:210 packhouses/gathering/utils.py:27
+msgid "Orchard Certification"
+msgstr ""
+
+#: packhouses/gathering/forms.py:79
+msgid "You must add at least one Harvesting Crew to the Schedule Harvest."
+msgstr ""
+
+#: packhouses/gathering/forms.py:88
+msgid "Harvesting Crew {i + 1} is missing a provider."
+msgstr ""
+
+#: packhouses/gathering/forms.py:91
+msgid "Harvesting Crew {i + 1} is missing a harvesting_crew."
+msgstr ""
+
+#: packhouses/gathering/forms.py:102
+msgid "You must add at least one Vehicle to the Schedule Harvest."
+msgstr ""
+
+#: packhouses/gathering/forms.py:112
+msgid "Vehicle {i + 1} is missing a provider."
+msgstr ""
+
+#: packhouses/gathering/forms.py:115
+msgid "Vehicle {i + 1} is missing a vehicle."
+msgstr ""
+
+#: packhouses/gathering/forms.py:118
+msgid "Vehicle {i + 1} is missing a stamp number."
+msgstr ""
+
+#: packhouses/gathering/models.py:43
+msgid "Harvest Number"
+msgstr ""
+
+#: packhouses/gathering/models.py:44
+msgid "Harvest date"
+msgstr ""
+
+#: packhouses/gathering/models.py:45
+msgid "Product provider"
+msgstr ""
+
+#: packhouses/gathering/models.py:46
+msgid "Category"
+msgstr ""
+
+#: packhouses/gathering/models.py:52
+msgid "Product Ripeness"
+msgstr ""
+
+#: packhouses/gathering/models.py:53
+msgid "Product harvest size"
+msgstr ""
+
+#: packhouses/gathering/models.py:55
+msgid "Market"
+msgstr ""
+
+#: packhouses/gathering/models.py:56
+msgid "Expected Weight in kilograms"
+msgstr ""
+
+#: packhouses/gathering/models.py:57
+msgid "Weighing Scale"
+msgstr ""
+
+#: packhouses/gathering/models.py:58
+msgid "Meeting Point for the Harvest Cutting"
+msgstr ""
+
+#: packhouses/gathering/models.py:59 packhouses/gathering/utils.py:32
+msgid "Status"
+msgstr ""
+
+#: packhouses/gathering/models.py:60
+msgid "Comments"
+msgstr ""
+
+#: packhouses/gathering/models.py:61
+msgid "Created at"
+msgstr ""
+
+#: packhouses/gathering/models.py:62
+msgid "Was it scheduled?"
+msgstr ""
+
+#: packhouses/gathering/models.py:63
+msgid "Organization"
+msgstr ""
+
+#: packhouses/gathering/models.py:109 packhouses/gathering/models.py:121
+msgid "Schedule Harvest"
+msgstr ""
+
+#: packhouses/gathering/models.py:110
+msgid "Schedule Harvests"
+msgstr ""
+
+#: packhouses/gathering/models.py:126 packhouses/gathering/models.py:150
+msgid "Harvesting Crew Provider"
+msgstr ""
+
+#: packhouses/gathering/models.py:139 packhouses/gathering/resources.py:11
+msgid "Harvesting Crews"
+msgstr ""
+
+#: packhouses/gathering/models.py:145
+msgid "Harvest Cutting"
+msgstr ""
+
+#: packhouses/gathering/models.py:155 packhouses/gathering/models.py:177
+msgid "Vehicle"
+msgstr ""
+
+#: packhouses/gathering/models.py:160
+msgid "Guide Number"
+msgstr ""
+
+#: packhouses/gathering/models.py:166
+msgid "Stamp Number"
+msgstr ""
+
+#: packhouses/gathering/models.py:170
+msgid "Vehicle has Arrived"
+msgstr ""
+
+#: packhouses/gathering/models.py:178
+msgid "Vehicles"
+msgstr ""
+
+#: packhouses/gathering/models.py:187
+msgid "Harvest Containments"
+msgstr ""
+
+#: packhouses/gathering/models.py:190
+msgid "Full containments"
+msgstr ""
+
+#: packhouses/gathering/models.py:191
+msgid "Empty containments"
+msgstr ""
+
+#: packhouses/gathering/models.py:192
+msgid "Missing containments"
+msgstr ""
+
+#: packhouses/gathering/models.py:199 packhouses/gathering/models.py:200
+msgid "Schedule Harvest Containment Vehicle"
+msgstr ""
+
+#: packhouses/gathering/resources.py:12
+msgid "Orchard Certifications"
+msgstr ""
+
+#: packhouses/gathering/resources.py:17
+msgid "Orchard Registry Code"
+msgstr ""
+
+#: packhouses/gathering/utils.py:22
+msgid "Product Provider"
+msgstr ""
+
+#: packhouses/gathering/utils.py:35
+msgid "Scheduled"
+msgstr ""
+
+#: packhouses/gathering/utils.py:35
+msgid "Unscheduled"
+msgstr ""
+
+#: packhouses/gathering/views.py:65
+msgid "Schedule Harvest Order"
+msgstr ""
+
+#: packhouses/gathering/views.py:161
+msgid ""
+"Verification Record of Hygiene and Safety Compliance in Harvest Activities "
+"(BIT-BPHS-01)"
+msgstr ""
+
+#: packhouses/gathering/views.py:240
+msgid "Harvest canceled successfully."
+msgstr ""
+
+#: packhouses/gathering/views.py:270
+msgid "Harvest sent to Fruit Receiving Area successfully."
+msgstr ""

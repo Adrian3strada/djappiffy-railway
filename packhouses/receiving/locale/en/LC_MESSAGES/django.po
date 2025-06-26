@@ -1,0 +1,972 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-25 22:05-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: packhouses/receiving/admin.py:444 packhouses/receiving/admin.py:875
+msgid "Generate Weighing Set Report"
+msgstr ""
+
+#: packhouses/receiving/admin.py:456 packhouses/receiving/admin.py:904
+#: packhouses/receiving/admin.py:1562
+msgid "Actions"
+msgstr ""
+
+#: packhouses/receiving/admin.py:516 packhouses/receiving/admin.py:1573
+#: packhouses/receiving/resources.py:33 packhouses/receiving/resources.py:122
+msgid "Harvest Number"
+msgstr ""
+
+#: packhouses/receiving/admin.py:518 packhouses/receiving/resources.py:34
+msgid "Harvest Date"
+msgstr ""
+
+#: packhouses/receiving/admin.py:520 packhouses/receiving/admin.py:1617
+#: packhouses/receiving/filters.py:52 packhouses/receiving/filters.py:465
+#: packhouses/receiving/mixins.py:134 packhouses/receiving/utils.py:97
+#: packhouses/receiving/utils.py:132
+msgid "Product"
+msgstr ""
+
+#: packhouses/receiving/admin.py:522 packhouses/receiving/admin.py:1599
+#: packhouses/receiving/admin.py:1605 packhouses/receiving/filters.py:15
+#: packhouses/receiving/filters.py:425 packhouses/receiving/mixins.py:170
+#: packhouses/receiving/resources.py:35 packhouses/receiving/resources.py:124
+msgid "Orchard"
+msgstr ""
+
+#: packhouses/receiving/admin.py:524 packhouses/receiving/admin.py:1593
+#: packhouses/receiving/filters.py:33 packhouses/receiving/filters.py:445
+#: packhouses/receiving/mixins.py:143 packhouses/receiving/resources.py:40
+#: packhouses/receiving/resources.py:129 packhouses/receiving/utils.py:93
+#: packhouses/receiving/utils.py:138
+msgid "Product Provider"
+msgstr ""
+
+#: packhouses/receiving/admin.py:526
+msgid "Category"
+msgstr ""
+
+#: packhouses/receiving/admin.py:528 packhouses/receiving/admin.py:1612
+#: packhouses/receiving/filters.py:92 packhouses/receiving/filters.py:258
+#: packhouses/receiving/filters.py:509 packhouses/receiving/mixins.py:189
+#: packhouses/receiving/resources.py:37 packhouses/receiving/resources.py:126
+msgid "Product Producer"
+msgstr ""
+
+#: packhouses/receiving/admin.py:529 packhouses/receiving/mixins.py:182
+msgid "Orchard Code"
+msgstr ""
+
+#: packhouses/receiving/admin.py:531 packhouses/receiving/admin.py:1624
+#: packhouses/receiving/filters.py:131 packhouses/receiving/filters.py:297
+#: packhouses/receiving/filters.py:555 packhouses/receiving/mixins.py:195
+#: packhouses/receiving/utils.py:96 packhouses/receiving/utils.py:141
+msgid "Product Category"
+msgstr ""
+
+#: packhouses/receiving/admin.py:533 packhouses/receiving/admin.py:1630
+#: packhouses/receiving/mixins.py:152
+msgid "Product Variety"
+msgstr ""
+
+#: packhouses/receiving/admin.py:535 packhouses/receiving/admin.py:1636
+#: packhouses/receiving/filters.py:115 packhouses/receiving/filters.py:281
+#: packhouses/receiving/filters.py:534 packhouses/receiving/mixins.py:161
+#: packhouses/receiving/resources.py:41 packhouses/receiving/resources.py:130
+#: packhouses/receiving/utils.py:98 packhouses/receiving/utils.py:133
+msgid "Product Phenology"
+msgstr ""
+
+#: packhouses/receiving/admin.py:537 packhouses/receiving/admin.py:1642
+#: packhouses/receiving/mixins.py:200
+msgid "Product Ripeness"
+msgstr ""
+
+#: packhouses/receiving/admin.py:539
+msgid "Market"
+msgstr ""
+
+#: packhouses/receiving/admin.py:562
+msgid "Schedule Harvest Information"
+msgstr ""
+
+#: packhouses/receiving/admin.py:647
+msgid "Incoming Product Information"
+msgstr ""
+
+#: packhouses/receiving/admin.py:699
+msgid "Batch Info"
+msgstr ""
+
+#: packhouses/receiving/admin.py:704
+msgid "Merge selected batches into a single batch group"
+msgstr ""
+
+#: packhouses/receiving/admin.py:709 packhouses/receiving/admin.py:754
+msgid "Select at least two batches to merge."
+msgstr ""
+
+#: packhouses/receiving/admin.py:728
+#, python-format
+msgid "An unexpected error occurred while merging batches: %s"
+msgstr ""
+
+#: packhouses/receiving/admin.py:742 packhouses/receiving/admin.py:814
+msgid "Batches were successfully merged into <a href=\"{}\">batch {}</a>."
+msgstr ""
+
+#: packhouses/receiving/admin.py:749
+msgid "Merge batches to an existing batch group."
+msgstr ""
+
+#: packhouses/receiving/admin.py:768
+msgid ""
+"You must select exactly one merged batch (a batch that already has batches "
+"merged into) as the destination."
+msgstr ""
+
+#: packhouses/receiving/admin.py:776
+msgid ""
+"Only one merged batch can be selected as destination, but multiple were "
+"found."
+msgstr ""
+
+#: packhouses/receiving/admin.py:790
+#, python-format
+msgid "Validation error: %s"
+msgstr ""
+
+#: packhouses/receiving/admin.py:801
+#, python-format
+msgid "An error occurred while saving batches: %s"
+msgstr ""
+
+#: packhouses/receiving/admin.py:819
+msgid "Unmerge all batches from this parent"
+msgstr ""
+
+#: packhouses/receiving/admin.py:824
+msgid "Please select only one parent batch to unmerge."
+msgstr ""
+
+#: packhouses/receiving/admin.py:833
+#, python-format
+msgid "All child batches of batch %(ooid)s were successfully unmerged."
+msgstr ""
+
+#: packhouses/receiving/admin.py:843
+msgid "Unmerge selected batches from parent."
+msgstr ""
+
+#: packhouses/receiving/admin.py:850
+#, python-format
+msgid "The following batches were successfully unmerged: %(ooids)s."
+msgstr ""
+
+#: packhouses/receiving/admin.py:871
+msgid "Weighing Set Labels"
+msgstr ""
+
+#: packhouses/receiving/admin.py:873
+msgid "Generate Batch Record"
+msgstr ""
+
+#: packhouses/receiving/admin.py:913 packhouses/receiving/models.py:24
+msgid "Entry Date"
+msgstr ""
+
+#: packhouses/receiving/admin.py:1548
+msgid "Batch and Food Safety Record"
+msgstr ""
+
+#: packhouses/receiving/admin.py:1568
+msgid "Batch Number"
+msgstr ""
+
+#: packhouses/receiving/admin.py:1580 packhouses/receiving/mixins.py:124
+msgid "Schedule Harvest Date"
+msgstr ""
+
+#: packhouses/receiving/admin.py:1587
+msgid "Batch Entry Date"
+msgstr ""
+
+#: packhouses/receiving/admin.py:1647
+msgid "Received Weight"
+msgstr ""
+
+#: packhouses/receiving/apps.py:8
+msgid "Receiving"
+msgstr ""
+
+#: packhouses/receiving/filters.py:71 packhouses/receiving/filters.py:484
+#: packhouses/receiving/resources.py:42 packhouses/receiving/resources.py:131
+#: packhouses/receiving/utils.py:100 packhouses/receiving/utils.py:134
+#: packhouses/receiving/utils.py:139
+msgid "Harvesting Category"
+msgstr ""
+
+#: packhouses/receiving/filters.py:155 packhouses/receiving/filters.py:321
+#: packhouses/receiving/filters.py:579 packhouses/receiving/models.py:573
+#: packhouses/receiving/utils.py:94 packhouses/receiving/utils.py:140
+msgid "Harvesting Crew"
+msgstr ""
+
+#: packhouses/receiving/filters.py:180 packhouses/receiving/filters.py:346
+#: packhouses/receiving/filters.py:604 packhouses/receiving/resources.py:38
+#: packhouses/receiving/resources.py:127 packhouses/receiving/utils.py:91
+#: packhouses/receiving/utils.py:136
+msgid "Gatherer"
+msgstr ""
+
+#: packhouses/receiving/filters.py:200 packhouses/receiving/filters.py:366
+#: packhouses/receiving/filters.py:624 packhouses/receiving/resources.py:39
+#: packhouses/receiving/resources.py:128 packhouses/receiving/utils.py:92
+#: packhouses/receiving/utils.py:135
+msgid "Maquiladora"
+msgstr ""
+
+#: packhouses/receiving/filters.py:220 packhouses/receiving/filters.py:386
+#: packhouses/receiving/filters.py:644 packhouses/receiving/filters.py:711
+#: packhouses/receiving/utils.py:95
+msgid "Orchard Certification"
+msgstr ""
+
+#: packhouses/receiving/filters.py:241 packhouses/receiving/filters.py:407
+#: packhouses/receiving/filters.py:665 packhouses/receiving/utils.py:99
+#: packhouses/receiving/utils.py:142
+msgid "Scheduling Type"
+msgstr ""
+
+#: packhouses/receiving/filters.py:246 packhouses/receiving/filters.py:412
+#: packhouses/receiving/filters.py:670
+msgid "Scheduled Harvest"
+msgstr ""
+
+#: packhouses/receiving/filters.py:247 packhouses/receiving/filters.py:413
+#: packhouses/receiving/filters.py:671
+msgid "Unscheduled Harvest"
+msgstr ""
+
+#: packhouses/receiving/filters.py:682 packhouses/receiving/utils.py:102
+msgid "Batch Type"
+msgstr ""
+
+#: packhouses/receiving/filters.py:687 packhouses/receiving/utils.py:110
+msgid "Parent Batch"
+msgstr ""
+
+#: packhouses/receiving/filters.py:688 packhouses/receiving/utils.py:111
+msgid "Child Batch"
+msgstr ""
+
+#: packhouses/receiving/filters.py:689 packhouses/receiving/utils.py:109
+msgid "Independent Batch"
+msgstr ""
+
+#: packhouses/receiving/forms.py:93
+msgid "Stamp Number"
+msgstr ""
+
+#: packhouses/receiving/forms.py:130
+msgid "The provided Stamp does not match the original."
+msgstr ""
+
+#: packhouses/receiving/forms.py:134
+msgid "Stamp Vehicle Number is required when the vehicle has arrived."
+msgstr ""
+
+#: packhouses/receiving/forms.py:138
+msgid "Guide Number is required when the vehicle has arrived."
+msgstr ""
+
+#: packhouses/receiving/forms.py:175
+msgid "Once it is ready, the status cannot be changed."
+msgstr ""
+
+#: packhouses/receiving/forms.py:184
+msgid "At least one Weighing Set must be registered for the Incoming Product."
+msgstr ""
+
+#: packhouses/receiving/forms.py:194
+msgid "Weighing Set {i + 1} is missing a harvesting crew."
+msgstr ""
+
+#: packhouses/receiving/forms.py:224
+msgid "Cannot change status once closed."
+msgstr ""
+
+#: packhouses/receiving/forms.py:240
+msgid "At least one Weighing Set must be registered."
+msgstr ""
+
+#: packhouses/receiving/forms.py:257 packhouses/receiving/forms.py:276
+msgid "This weighing is protected and cannot be edited."
+msgstr ""
+
+#: packhouses/receiving/forms.py:268
+msgid "Weighing data could not be accessed for validation."
+msgstr ""
+
+#: packhouses/receiving/forms.py:298
+msgid "This weighing is protected and cannot be deleted."
+msgstr ""
+
+#: packhouses/receiving/forms.py:317 packhouses/receiving/models.py:646
+msgid "You cannot delete a container that belongs to a protected weighing set."
+msgstr ""
+
+#: packhouses/receiving/forms.py:319 packhouses/receiving/models.py:641
+msgid "You cannot modify a container that belongs to a protected weighing set."
+msgstr ""
+
+#: packhouses/receiving/mixins.py:27 packhouses/receiving/models.py:416
+msgid "Total Weighed Sets"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:31 packhouses/receiving/resources.py:110
+msgid "Total Containers"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:35 packhouses/receiving/resources.py:111
+msgid "Total Net Weight"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:39
+msgid "Average Weight per Container"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:43
+msgid "Assigned Containers"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:47
+msgid "Full Containers per Harvest"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:51
+msgid "Empty Containers"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:55
+msgid "Missing Containers"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:61
+msgid "Ingress Weight (with children)"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:65
+msgid "Available Weight (with children)"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:69
+msgid "Self Ingress Weight"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:73
+msgid "Self Available Weight"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:77 packhouses/receiving/resources.py:133
+msgid "Weight Received"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:82
+msgid "Available Weight"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:86
+#, python-format
+msgid "Parent of batches: %s"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:88
+#, python-format
+msgid "Child of batch: %s."
+msgstr ""
+
+#: packhouses/receiving/mixins.py:89
+msgid " "
+msgstr ""
+
+#: packhouses/receiving/mixins.py:90 packhouses/receiving/resources.py:132
+msgid "Batch Relationship"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:99 packhouses/receiving/resources.py:238
+msgid "Independent"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:101
+msgid "Batch Merge Status"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:108
+msgid "Harvest"
+msgstr ""
+
+#: packhouses/receiving/mixins.py:177 packhouses/receiving/models.py:23
+#: packhouses/receiving/utils.py:101
+msgid "Available for Processing"
+msgstr ""
+
+#: packhouses/receiving/models.py:20
+msgid "Batch ID"
+msgstr ""
+
+#: packhouses/receiving/models.py:21 packhouses/receiving/models.py:410
+#: packhouses/receiving/models.py:657 packhouses/receiving/utils.py:103
+#: packhouses/receiving/utils.py:137
+msgid "Status"
+msgstr ""
+
+#: packhouses/receiving/models.py:25 packhouses/receiving/models.py:390
+#: packhouses/receiving/models.py:422 packhouses/receiving/models.py:656
+msgid "Organization"
+msgstr ""
+
+#: packhouses/receiving/models.py:26 packhouses/receiving/resources.py:233
+msgid "Parent"
+msgstr ""
+
+#: packhouses/receiving/models.py:33
+msgid "No Harvest"
+msgstr ""
+
+#: packhouses/receiving/models.py:146
+msgid "An 'open' batch cannot be available for processing."
+msgstr ""
+
+#: packhouses/receiving/models.py:151
+msgid "Must be false when status is closed or canceled."
+msgstr ""
+
+#: packhouses/receiving/models.py:180
+msgid ""
+"You cannot merge batches that have already been merged into another batch."
+msgstr ""
+
+#: packhouses/receiving/models.py:187
+msgid "You cannot merge batches that already contain other merged batches."
+msgstr ""
+
+#: packhouses/receiving/models.py:194 packhouses/receiving/models.py:259
+msgid "Only batches with a Review Status of “Ready” can be merged."
+msgstr ""
+
+#: packhouses/receiving/models.py:201 packhouses/receiving/models.py:272
+msgid "provider"
+msgstr ""
+
+#: packhouses/receiving/models.py:202 packhouses/receiving/models.py:273
+msgid "product"
+msgstr ""
+
+#: packhouses/receiving/models.py:203 packhouses/receiving/models.py:274
+msgid "variety"
+msgstr ""
+
+#: packhouses/receiving/models.py:204 packhouses/receiving/models.py:275
+msgid "phenology"
+msgstr ""
+
+#: packhouses/receiving/models.py:209
+#, python-format
+msgid "All batches selected must have the same %(label)s."
+msgstr ""
+
+#: packhouses/receiving/models.py:219
+msgid "Cannot merge batches: non-mixable markets cannot be mixed with others."
+msgstr ""
+
+#: packhouses/receiving/models.py:245
+msgid "The selected destination batch is already merged into another batch."
+msgstr ""
+
+#: packhouses/receiving/models.py:253
+#, python-format
+msgid "The following batches are already part of another merged batch: %s"
+msgstr ""
+
+#: packhouses/receiving/models.py:281
+#, python-format
+msgid ""
+"All batches to be merged must have the same %(label)s as the already merged "
+"ones."
+msgstr ""
+
+#: packhouses/receiving/models.py:300
+msgid "Cannot add batches: more than one non-mixable market is involved."
+msgstr ""
+
+#: packhouses/receiving/models.py:307
+msgid "Cannot add batches: non-mixable market cannot be mixed with others."
+msgstr ""
+
+#: packhouses/receiving/models.py:325
+msgid "The selected batch is not a parent."
+msgstr ""
+
+#: packhouses/receiving/models.py:331
+msgid "No batches provided."
+msgstr ""
+
+#: packhouses/receiving/models.py:336
+msgid "One or more selected batches are not linked to a parent batch."
+msgstr ""
+
+#: packhouses/receiving/models.py:344
+msgid "Selected batches belong to a different parent batch."
+msgstr ""
+
+#: packhouses/receiving/models.py:350 packhouses/receiving/models.py:360
+#: packhouses/receiving/models.py:389 packhouses/receiving/models.py:423
+#: packhouses/receiving/models.py:655
+msgid "Batch"
+msgstr ""
+
+#: packhouses/receiving/models.py:351
+msgid "Batches"
+msgstr ""
+
+#: packhouses/receiving/models.py:361
+msgid "Weight"
+msgstr ""
+
+#: packhouses/receiving/models.py:362
+msgid "Created at"
+msgstr ""
+
+#: packhouses/receiving/models.py:363
+msgid "Source Information"
+msgstr ""
+
+#: packhouses/receiving/models.py:370
+msgid "Batch Weight Movement"
+msgstr ""
+
+#: packhouses/receiving/models.py:371
+msgid "Batch Weight Movements"
+msgstr ""
+
+#: packhouses/receiving/models.py:376
+msgid "This movement would result in a negative weight for the batch."
+msgstr ""
+
+#: packhouses/receiving/models.py:397
+msgid "Batch Status Change"
+msgstr ""
+
+#: packhouses/receiving/models.py:398
+msgid "Batch Status Changes"
+msgstr ""
+
+#: packhouses/receiving/models.py:412
+msgid "Public Weighing Scale"
+msgstr ""
+
+#: packhouses/receiving/models.py:414
+msgid "Public Weight Result"
+msgstr ""
+
+#: packhouses/receiving/models.py:415
+msgid "Weighing Record Number"
+msgstr ""
+
+#: packhouses/receiving/models.py:417
+msgid "Maximum Residue Limit"
+msgstr ""
+
+#: packhouses/receiving/models.py:418 packhouses/receiving/resources.py:123
+msgid "Phytosanitary Certificate"
+msgstr ""
+
+#: packhouses/receiving/models.py:420
+msgid "Kg for Sample"
+msgstr ""
+
+#: packhouses/receiving/models.py:421
+msgid "In quarantine"
+msgstr ""
+
+#: packhouses/receiving/models.py:424
+msgid "Comments"
+msgstr ""
+
+#: packhouses/receiving/models.py:488
+msgid "Cannot be in quarantine if its status is 'ready'"
+msgstr ""
+
+#: packhouses/receiving/models.py:567 packhouses/receiving/models.py:568
+#: packhouses/receiving/models.py:580 packhouses/receiving/models.py:622
+msgid "Incoming Product"
+msgstr ""
+
+#: packhouses/receiving/models.py:572
+msgid "ID"
+msgstr ""
+
+#: packhouses/receiving/models.py:574
+msgid "Gross Weight"
+msgstr ""
+
+#: packhouses/receiving/models.py:575
+msgid "Total Containments"
+msgstr ""
+
+#: packhouses/receiving/models.py:576
+msgid "Container Tare"
+msgstr ""
+
+#: packhouses/receiving/models.py:577
+msgid "Platform Tare"
+msgstr ""
+
+#: packhouses/receiving/models.py:578
+msgid "Net Weight"
+msgstr ""
+
+#: packhouses/receiving/models.py:579
+msgid "Protected"
+msgstr ""
+
+#: packhouses/receiving/models.py:606
+msgid ""
+"Only the latest (unprotected) weighing set can be deleted; older sets remain "
+"locked."
+msgstr ""
+
+#: packhouses/receiving/models.py:620
+msgid "Harvest Containments"
+msgstr ""
+
+#: packhouses/receiving/models.py:621
+msgid "Quantity"
+msgstr ""
+
+#: packhouses/receiving/models.py:650
+msgid "Weighing Set Containment"
+msgstr ""
+
+#: packhouses/receiving/models.py:651
+msgid "Weighing Sets Containments"
+msgstr ""
+
+#: packhouses/receiving/models.py:664 packhouses/receiving/models.py:673
+#: packhouses/receiving/models.py:686 packhouses/receiving/models.py:703
+#: packhouses/receiving/models.py:715 packhouses/receiving/models.py:769
+msgid "Food Safety"
+msgstr ""
+
+#: packhouses/receiving/models.py:665
+msgid "Food Safeties"
+msgstr ""
+
+#: packhouses/receiving/models.py:679
+msgid "Dry Matter"
+msgstr ""
+
+#: packhouses/receiving/models.py:680
+msgid "Dry Matters"
+msgstr ""
+
+#: packhouses/receiving/models.py:685
+msgid "Pests"
+msgstr ""
+
+#: packhouses/receiving/models.py:692
+msgid "Internal Inspection"
+msgstr ""
+
+#: packhouses/receiving/models.py:693
+msgid "Internal Inspections"
+msgstr ""
+
+#: packhouses/receiving/models.py:698
+msgid "Average Dry Matter"
+msgstr ""
+
+#: packhouses/receiving/models.py:700
+msgid "Average Internal Temperature"
+msgstr ""
+
+#: packhouses/receiving/models.py:701
+msgid "Acceptance Report"
+msgstr ""
+
+#: packhouses/receiving/models.py:709
+msgid "Average"
+msgstr ""
+
+#: packhouses/receiving/models.py:710
+msgid "Averages"
+msgstr ""
+
+#: packhouses/receiving/models.py:714
+msgid "Vehicle"
+msgstr ""
+
+#: packhouses/receiving/models.py:721 packhouses/receiving/models.py:737
+#: packhouses/receiving/models.py:753
+msgid "Vehicle Review"
+msgstr ""
+
+#: packhouses/receiving/models.py:722
+msgid "Vehicle Reviews"
+msgstr ""
+
+#: packhouses/receiving/models.py:731
+msgid "The vehicle is sealed"
+msgstr ""
+
+#: packhouses/receiving/models.py:732
+msgid "The vehicle carries only the product"
+msgstr ""
+
+#: packhouses/receiving/models.py:733
+msgid "The vehicle is free of foreign matter"
+msgstr ""
+
+#: packhouses/receiving/models.py:734
+msgid "The vehicle is free of unusual odors"
+msgstr ""
+
+#: packhouses/receiving/models.py:735
+msgid "Has a CERTIFICATE"
+msgstr ""
+
+#: packhouses/receiving/models.py:736
+msgid "The vehicle is free of fecal matter"
+msgstr ""
+
+#: packhouses/receiving/models.py:743
+msgid "Vehicle Inspection"
+msgstr ""
+
+#: packhouses/receiving/models.py:744
+msgid "Vehicle Inspections"
+msgstr ""
+
+#: packhouses/receiving/models.py:748
+msgid "It is clean"
+msgstr ""
+
+#: packhouses/receiving/models.py:749
+msgid "Good condition"
+msgstr ""
+
+#: packhouses/receiving/models.py:750
+msgid "Broken"
+msgstr ""
+
+#: packhouses/receiving/models.py:751
+msgid "Damaged"
+msgstr ""
+
+#: packhouses/receiving/models.py:752
+msgid "Seal"
+msgstr ""
+
+#: packhouses/receiving/models.py:756
+msgid "Vehicle Condition"
+msgstr ""
+
+#: packhouses/receiving/models.py:757
+msgid "Vehicle Conditions"
+msgstr ""
+
+#: packhouses/receiving/models.py:764
+msgid "Whole"
+msgstr ""
+
+#: packhouses/receiving/models.py:765
+msgid "Foreign Material"
+msgstr ""
+
+#: packhouses/receiving/models.py:766
+msgid "Insects"
+msgstr ""
+
+#: packhouses/receiving/models.py:767
+msgid "Temperature Damage"
+msgstr ""
+
+#: packhouses/receiving/models.py:768
+msgid "Unusual Odor"
+msgstr ""
+
+#: packhouses/receiving/models.py:775 packhouses/receiving/models.py:781
+#: packhouses/receiving/models.py:797 packhouses/receiving/models.py:824
+#: packhouses/receiving/models.py:852 packhouses/receiving/models.py:879
+msgid "Sample Collection"
+msgstr ""
+
+#: packhouses/receiving/models.py:776
+msgid "Sample Collections"
+msgstr ""
+
+#: packhouses/receiving/models.py:788
+msgid "Sample Weight"
+msgstr ""
+
+#: packhouses/receiving/models.py:789
+msgid "Sample Weights"
+msgstr ""
+
+#: packhouses/receiving/models.py:793
+msgid "Samples With Pests"
+msgstr ""
+
+#: packhouses/receiving/models.py:794 packhouses/receiving/views.py:531
+msgid "Pest"
+msgstr ""
+
+#: packhouses/receiving/models.py:795 packhouses/receiving/models.py:822
+#: packhouses/receiving/models.py:850 packhouses/receiving/models.py:877
+msgid "Percentage"
+msgstr ""
+
+#: packhouses/receiving/models.py:804
+msgid "Sample Pest"
+msgstr ""
+
+#: packhouses/receiving/models.py:805
+msgid "Sample Pests"
+msgstr ""
+
+#: packhouses/receiving/models.py:820
+msgid "Samples With Diseases"
+msgstr ""
+
+#: packhouses/receiving/models.py:821 packhouses/receiving/views.py:501
+msgid "Disease"
+msgstr ""
+
+#: packhouses/receiving/models.py:831
+msgid "Sample Disease"
+msgstr ""
+
+#: packhouses/receiving/models.py:832
+msgid "Sample Diseases"
+msgstr ""
+
+#: packhouses/receiving/models.py:847
+msgid "Samples With Physical Damage"
+msgstr ""
+
+#: packhouses/receiving/models.py:848 packhouses/receiving/views.py:486
+msgid "Physical Damage"
+msgstr ""
+
+#: packhouses/receiving/models.py:859
+msgid "Sample Physical Damage"
+msgstr ""
+
+#: packhouses/receiving/models.py:860
+msgid "Sample Physical Damages"
+msgstr ""
+
+#: packhouses/receiving/models.py:875
+msgid "Samples With Residue"
+msgstr ""
+
+#: packhouses/receiving/models.py:876 packhouses/receiving/views.py:516
+msgid "Residue"
+msgstr ""
+
+#: packhouses/receiving/models.py:886 packhouses/receiving/models.py:887
+msgid "Sample Residue"
+msgstr ""
+
+#: packhouses/receiving/resources.py:36 packhouses/receiving/resources.py:125
+msgid "Orchard Registery Code"
+msgstr ""
+
+#: packhouses/receiving/resources.py:134
+msgid "Full Containments"
+msgstr ""
+
+#: packhouses/receiving/resources.py:135
+msgid "Kg Sample"
+msgstr ""
+
+#: packhouses/receiving/resources.py:232
+msgid "None"
+msgstr ""
+
+#: packhouses/receiving/resources.py:235
+msgid "Unknown"
+msgstr ""
+
+#: packhouses/receiving/resources.py:236
+msgid "Child"
+msgstr ""
+
+#: packhouses/receiving/templates/nested_stacked.html:55
+#: packhouses/receiving/templates/nested_stacked.html:57
+#: packhouses/receiving/templates/nested_stacked_avg.html:55
+msgid "New"
+msgstr ""
+
+#: packhouses/receiving/templates/nested_stacked.html:63
+#: packhouses/receiving/templates/nested_stacked_avg.html:59
+msgid "View on site"
+msgstr ""
+
+#: packhouses/receiving/templates/nested_stacked.html:143
+#: packhouses/receiving/templates/nested_stacked_avg.html:139
+#, python-format
+msgid "Add another %(verbose_name)s"
+msgstr ""
+
+#: packhouses/receiving/utils.py:17
+msgid "Pending"
+msgstr ""
+
+#: packhouses/receiving/utils.py:90
+msgid "Producer"
+msgstr ""
+
+#: packhouses/receiving/utils.py:106 packhouses/receiving/utils.py:145
+msgid "Scheduled"
+msgstr ""
+
+#: packhouses/receiving/utils.py:106 packhouses/receiving/utils.py:145
+msgid "Unscheduled"
+msgstr ""
+
+#: packhouses/receiving/utils.py:107
+msgid "Yes"
+msgstr ""
+
+#: packhouses/receiving/utils.py:107
+msgid "No"
+msgstr ""
+
+#: packhouses/receiving/views.py:88
+msgid "Weighing Sets"
+msgstr ""
+
+#: packhouses/receiving/views.py:120
+msgid "Total Gross Weight (Kg)"
+msgstr ""
+
+#: packhouses/receiving/views.py:121
+msgid "Total Net Weight (Kg)"
+msgstr ""

@@ -1,0 +1,63 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-25 22:05-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: common/users/admin.py:13 common/users/admin.py:14
+msgid "Is admin"
+msgstr ""
+
+#: common/users/admin.py:61
+msgid "Personal info"
+msgstr ""
+
+#: common/users/admin.py:70 common/users/admin.py:220
+msgid "Permissions"
+msgstr ""
+
+#: common/users/admin.py:82
+msgid "Important dates"
+msgstr ""
+
+#: common/users/models.py:55
+msgid "username"
+msgstr ""
+
+#: common/users/models.py:58
+msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+msgstr ""
+
+#: common/users/models.py:61 common/users/models.py:69
+#: common/users/models.py:104
+msgid "A user with that username already exists."
+msgstr ""
+
+#: common/users/models.py:66
+msgid "email address"
+msgstr ""
+
+#: common/users/models.py:80 common/users/models.py:114
+msgid "groups"
+msgstr ""
+
+#: common/users/models.py:87
+msgid "user permissions"
+msgstr ""
+
+#: common/users/models.py:113
+msgid "group"
+msgstr ""
