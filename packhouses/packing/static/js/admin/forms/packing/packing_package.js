@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const productPresentationsPerPackagingField = $("#id_product_presentations_per_packaging")
   const productPiecesPerPresentationField = $("#id_product_pieces_per_presentation")
   const packagingQuantityField = $("#id_packaging_quantity")
-  // const isEditing = window.location.pathname.match(/\/change\//) !== null;
+  const packingPalletField = $("#id_packing_pallet")
 
   let batchProperties = null
 

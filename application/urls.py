@@ -61,6 +61,8 @@ urlpatterns = [
     path("", include("eudr.operators.urls")),
     path("", include("packhouses.gathering.urls")),
 
+    path("", include("packhouses.packing.urls")),
+
     # Internationalization
     path("i18n/", include("django.conf.urls.i18n")),
 
@@ -68,7 +70,7 @@ urlpatterns = [
     path("ckeditor5/", include("django_ckeditor_5.urls")),
     path("_nested_admin/", include("nested_admin.urls")),
     path("purchases/", include('packhouses.purchases.urls')),
-    path("packing/", include("packhouses.packing.urls")),
+
 ]
 
 # Add static and media files serving in debug mode
