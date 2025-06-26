@@ -72,6 +72,20 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
+  const setPackingPallets = async () => {
+    if (productSizeField.val()) {
+      const pallets = await fetchOptions(`/rest/v1/packing/packing-pallet/?product=${batchProperties.product.id}&market=${marketField.val()}&product_sizes=${productSizeField.val()}&status=ready`);
+      console.log("Packing pallets fetched:", pallets);
+      updateFieldOptions(packingPalletField, pallets, packingPalletField.val() ? packingPalletField.val() : null);
+    } else {
+      if (packingPalletField.val()) {
+        const pallet = await fetchOptions(`/rest/v1/packing/packing-pallet/${packingPalletField.val()}/`);
+        updateFieldOptions(packingPalletField, [pallet], packingPalletField.val());
+      }
+      updateFieldOptions(packingPalletField, []);
+    }
+  }
+
   const setProductMarketClasses = async () => {
     if (batchProperties && batchProperties.product && marketField.val()) {
       const classes = await fetchOptions(`/rest/v1/catalogs/product-market-class/?product=${batchProperties.product.id}&market=${marketField.val()}&is_enabled=1`);
@@ -169,6 +183,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   productSizeField.on("change", async function () {
     await productSizeFieldChangeHandler();
+    await setPackingPallets();
   });
 
   sizePackagingField.on("change", async function () {

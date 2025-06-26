@@ -6,6 +6,11 @@ from .models import PackingPallet
 
 
 class PackingPalletSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = PackingPallet
         fields = '__all__'
+
+    def get_name(self, obj):
+        return str(obj)
