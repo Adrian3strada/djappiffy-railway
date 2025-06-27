@@ -14,6 +14,7 @@ from django.core.exceptions import ValidationError
 from common.settings import STATUS_CHOICES
 import uuid
 
+
 # Create your models here.
 
 
@@ -21,11 +22,12 @@ class Batch(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     ooid = models.PositiveIntegerField(verbose_name=_('Batch ID'), null=True, blank=True)
     status = models.CharField(max_length=25, verbose_name=_('Status'),
-                                     choices=STATUS_CHOICES, default='open', blank=True)
+                              choices=STATUS_CHOICES, default='open', blank=True)
     is_available_for_processing = models.BooleanField(default=False, verbose_name=_('Available for Processing'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Entry Date'))
-    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'),)
-    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='children', verbose_name=_('Parent'))
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'), )
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='children',
+                               verbose_name=_('Parent'))
 
     def __str__(self):
         incoming = getattr(self, 'incomingproduct', None)
@@ -192,7 +194,6 @@ class Batch(models.Model):
     def parent_batch_ooid(self):
         return self.parent.ooid if self.parent else ''
 
-
     def clean(self):
         if self.status == 'open':
             if self.is_available_for_processing:
@@ -272,6 +273,7 @@ class Batch(models.Model):
                 _('Cannot merge batches: non-mixable markets cannot be mixed with others.'),
                 code='invalid_market_mix'
             )
+
     # Unir lotes para crear un padre
     @classmethod
     def merge_batches(cls, batches_queryset):
@@ -323,15 +325,16 @@ class Batch(models.Model):
         prefix = 'incomingproduct__scheduleharvest__'
         checks = {
             _('provider'): prefix + 'product_provider',
-            _('product'):  prefix + 'product',
-            _('variety'):  prefix + 'product_variety',
+            _('product'): prefix + 'product',
+            _('variety'): prefix + 'product_variety',
             _('phenology'): prefix + 'product_phenology',
         }
 
         for label, path in checks.items():
             if all_batches.values_list(path, flat=True).distinct().count() != 1:
                 raise ValidationError(
-                    _('All batches to be merged must have the same %(label)s as the already merged ones.') % {'label': label},
+                    _('All batches to be merged must have the same %(label)s as the already merged ones.') % {
+                        'label': label},
                     code='invalid_merge'
                 )
 
@@ -396,7 +399,7 @@ class Batch(models.Model):
             raise ValidationError(
                 _('Selected batches belong to a different parent batch.'),
                 code='multiple_parent_batches'
-                )
+            )
         batch_queryset.update(parent=None)
 
     class Meta:
@@ -408,6 +411,7 @@ class Batch(models.Model):
                 name='unique_batch_ooid_per_org'
             )
         ]
+
 
 class BatchWeightMovement(models.Model):
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, verbose_name=_('Batch'))
@@ -432,6 +436,12 @@ class BatchWeightMovement(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ['created_at']
+        indexes = [
+            models.Index(fields=['batch', 'created_at']),
+        ]
 
 
 class BatchStatusChange(models.Model):
@@ -534,7 +544,6 @@ class IncomingProduct(models.Model):
             for container in vehicle.scheduleharvestcontainervehicle_set.all()
         )
 
-
     def clean(self):
         if self.status == 'ready':
             if self.is_quarantined:
@@ -609,7 +618,6 @@ class IncomingProduct(models.Model):
         else:
             self.average_per_container = 0.0
 
-
     def __str__(self):
         schedule_harvest = self.scheduleharvest
         if schedule_harvest:
@@ -656,7 +664,8 @@ class WeighingSet(models.Model):
 
     def delete(self, *args, **kwargs):
         if self.protected:
-            raise ValidationError(_("Only the latest (unprotected) weighing set can be deleted; older sets remain locked."))
+            raise ValidationError(
+                _("Only the latest (unprotected) weighing set can be deleted; older sets remain locked."))
         incoming_product_temp = self.incoming_product
         deleted_ooid = self.ooid
 
@@ -666,6 +675,7 @@ class WeighingSet(models.Model):
                 incoming_product=incoming_product_temp,
                 ooid__gt=deleted_ooid
             ).update(ooid=F('ooid') - 1)
+
 
 class WeighingSetContainer(models.Model):
     harvest_container = models.ForeignKey(Supply, on_delete=models.CASCADE,
@@ -687,12 +697,11 @@ class WeighingSetContainer(models.Model):
             changed = any(
                 getattr(self, field.name) != getattr(old, field.name)
                 for field in self._meta.fields
-                if field.name not in ['id',]
+                if field.name not in ['id', ]
             )
 
             if changed:
                 raise ValidationError(_("You cannot modify a container that belongs to a protected weighing set."))
-
 
     def delete(self, *args, **kwargs):
         if self.weighing_set and self.weighing_set.protected:
@@ -707,7 +716,8 @@ class WeighingSetContainer(models.Model):
 class FoodSafety(models.Model):
     batch = models.OneToOneField(Batch, verbose_name=_('Batch'), on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT, verbose_name=_('Organization'), )
-    status = models.CharField(max_length=20, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open', blank=True)
+    status = models.CharField(max_length=20, verbose_name=_('Status'), choices=STATUS_CHOICES, default='open',
+                              blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -716,6 +726,7 @@ class FoodSafety(models.Model):
     class Meta:
         verbose_name = _('Food Safety')
         verbose_name_plural = _('Food Safeties')
+
 
 class DryMatter(models.Model):
     product_weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)

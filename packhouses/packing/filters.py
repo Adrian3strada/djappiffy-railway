@@ -3,7 +3,7 @@ from .models import PackingPackage, PackingPallet
 from packhouses.catalogs.models import Market, ProductSize, Product, Pallet, ProductMarketClass, ProductRipeness, SizePackaging
 from packhouses.receiving.models import Batch
 from django.utils.translation import gettext_lazy as _
-
+from django.utils.translation import gettext_lazy as _
 
 #
 
@@ -63,7 +63,7 @@ class ByProductSizeForOrganizationPackingPackageFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(product_size__id=self.value())
         return queryset
-    
+
 
 class ByProductMarketClassForOrganizationPackingPackageFilter(admin.SimpleListFilter):
     title = _('Product Market Class')
@@ -133,15 +133,18 @@ class ByPackingPalletForOrganizationPackingPackageFilter(admin.SimpleListFilter)
                                   .values_list('packing_pallet', flat=True).distinct()))
             queryset = queryset.filter(id__in=lookup_ids).order_by('ooid')
 
-        return [(obj.id, obj.ooid) for obj in queryset]
+        lookups = [(obj.id, obj.ooid) for obj in queryset]
+        lookups.append((0, _('Null')))
+        return lookups
 
     def queryset(self, request, queryset):
-        if self.value():
+        if self.value() == '0':  # Filtrar valores nulos
+            return queryset.filter(packing_pallet__isnull=True)
+        elif self.value():
             return queryset.filter(packing_pallet_id=self.value())
         return queryset
 
 
-#packing pallet filters
 class ByProductForOrganizationPackingPalletFilter(admin.SimpleListFilter):
     title = _('Product')
     parameter_name = 'product'
@@ -159,7 +162,7 @@ class ByProductForOrganizationPackingPalletFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(product__id=self.value())
         return queryset
-    
+
 
 class ByMarketForOrganizationPackingPalletFilter(admin.SimpleListFilter):
     title = _('Market')
@@ -178,7 +181,7 @@ class ByMarketForOrganizationPackingPalletFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(market__id=self.value())
         return queryset
-    
+
 
 class ByProductSizeForOrganizationPackingPalletFilter(admin.SimpleListFilter):
     title = _('Product Size')
