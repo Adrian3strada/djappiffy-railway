@@ -229,7 +229,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     updateFieldOptions(productRipenessField, productRipenessOptions, productRipenessField.val() ? productRipenessField.val() : null);
   });
 
-
   const existingForms = $('div[id^="packingpackage_set-"]').filter((index, form) => {
     return /^\d+$/.test(form.id.split('-').pop());
   });
