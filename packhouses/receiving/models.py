@@ -48,6 +48,50 @@ class Batch(models.Model):
         )
 
     @property
+    def performance_current_packingpackages(self):
+        return self.packingpackage_set.filter(status__in=['ready', 'closed'])
+
+    @property
+    def performance_market_percentage(self):
+        total_weight = self.performance_current_sum_weight
+        if total_weight == 0:
+            return {}
+
+        market_weights = {}
+        for package in self.performance_current_packingpackages:
+            market_id = package.market.id
+            market_name = package.market.name
+            market_weights[market_id] = market_weights.get(market_id, {'name': market_name, 'weight': 0})
+            market_weights[market_id]['weight'] += package.packing_package_sum_weight
+
+        return {
+            market_id: {
+                'name': data['name'],
+                'percent': round((data['weight'] / total_weight) * 100, 2)
+            }
+            for market_id, data in market_weights.items()
+        }
+
+    def performance_national_export_percentage(self, national_country):
+        total_weight = self.performance_current_sum_weight
+        if total_weight == 0:
+            return {'national': 0, 'export': 0}
+
+        national_weight = 0
+        export_weight = 0
+
+        for package in self.performance_current_packingpackages:
+            if package.market.country == national_country:
+                national_weight += package.packing_package_sum_weight
+            else:
+                export_weight += package.packing_package_sum_weight
+
+        return {
+            'national': round((national_weight / total_weight) * 100, 2),
+            'export': round((export_weight / total_weight) * 100, 2),
+        }
+
+    @property
     def ingress_weight(self):
         if self.batchweightmovement_set.exists():
             return self.batchweightmovement_set.aggregate(
