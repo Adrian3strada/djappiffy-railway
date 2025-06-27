@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   console.log(statusField.val())
-  updateFieldOptions(statusField, statusOptions, statusField.val());
+  updateFieldOptions(statusField, statusOptions, statusField.val() ? statusField.val() : null);
 
   productPresentationsPerPackagingField.closest('.form-group').hide()
   productPiecesPerPresentationField.closest('.form-group').hide()
@@ -43,7 +43,10 @@ document.addEventListener("DOMContentLoaded", async function () {
         : (isNaN(parseInt(selectedValue)) ? selectedValue : parseInt(selectedValue));
       console.log("selected", selected)
       options.forEach(option => {
-        const newOption = new Option(option.name, option.id, false, option.id ? selected === option.id : option.value ? selected === option.value : null );
+        if (!option.id && option.value) {
+          option.id = option.value; // Ensure option has an id if it only has a value
+        }
+        const newOption = new Option(option.name, option.id, false, option.id === selected );
         if ('alias' in option && option.alias) {
           newOption.setAttribute('data-alias', option.alias);
         }
