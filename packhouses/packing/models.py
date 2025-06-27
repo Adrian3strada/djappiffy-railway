@@ -115,7 +115,7 @@ class PackingPackage(models.Model):
     # kg -- @property packaging_quantity * product_weight_per_packaging
 
     @property
-    def packing_package_weight(self):
+    def packing_package_sum_weight(self):
         return self.packaging_quantity * self.product_weight_per_packaging
 
     @property

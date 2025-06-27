@@ -187,9 +187,6 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
               'processing_date', 'packing_pallet', 'status']
 
     def get_readonly_fields(self, request, obj=None):
-        fields = self.get_fields(request, obj)
-        if obj and obj.status not in ['open']:
-            return [f for f in fields if f != 'status']
         return ['ooid']
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
@@ -223,7 +220,7 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
         organization = request.organization if hasattr(request, 'organization') else None
 
         if db_field.name == "batch":
-            kwargs["queryset"] = Batch.objects.filter(organization=organization)
+            kwargs["queryset"] = Batch.objects.filter(organization=organization, status='ready', parent__isnull=True)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
 

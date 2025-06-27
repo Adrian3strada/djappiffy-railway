@@ -15,6 +15,8 @@ from common.settings import STATUS_CHOICES
 import uuid
 
 # Create your models here.
+
+
 class Batch(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     ooid = models.PositiveIntegerField(verbose_name=_('Batch ID'), null=True, blank=True)
@@ -37,6 +39,13 @@ class Batch(models.Model):
             return f"{self.ooid} – {_('Parent Batch')}"
 
         return f"{self.ooid} – {_('No Incoming Product Associated')}"
+
+    @property
+    def performance_current_sum_weight(self):
+        return sum(
+            package.packing_package_sum_weight
+            for package in self.packingpackage_set.filter(status__in=['ready', 'closed'])
+        )
 
     @property
     def ingress_weight(self):
