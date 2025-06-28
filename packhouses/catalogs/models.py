@@ -879,13 +879,14 @@ class Supply(CleanNameAndOrganizationMixin, models.Model):
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
+        name = f"{self.kind.name} {self.name}"
         if self.kind.category == 'packaging_presentation':
             capacity = int(self.capacity) if self.capacity % 1 == 0 else self.capacity
             unit = _(
                 'piece') if self.kind.capacity_unit_category == 'pieces' and capacity == 1 else self.kind.capacity_unit_category
             # return f"{self.kind.name}: {self.name} ({capacity} {unit})"
         # return f"{self.kind.name}: {self.name}"
-        return f"{self.name}"
+        return name
 
     def clean(self):
         value = self.capacity
@@ -1030,6 +1031,9 @@ class ProductPresentationComplementarySupply(models.Model):
                              limit_choices_to={'category': 'packaging_presentation_complement'},
                              on_delete=models.PROTECT)
     supply = models.ForeignKey(Supply, verbose_name=_('Supply'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.supply}"
 
     class Meta:
         verbose_name = _('Product presentation complementary supply')
