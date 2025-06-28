@@ -54,8 +54,8 @@ SUPPLY_TRANSACTION_KIND_CHOICES = [
 
 SUPPLY_TRANSACTION_CATEGORY_CHOICES = [
     ('adjustment_inventory', _('Adjustment Inventory')),
-    ('selective_process', _('Selective Process')),
-    ('repackaging', _('Repackaging')),
+    ('packing', _('Packing')),
+    ('repacking', _('Repacking')),
     ('purchase', _('Purchase')),
     ('sale', _('Sale')),
     ('transfer', _('Transfer')),

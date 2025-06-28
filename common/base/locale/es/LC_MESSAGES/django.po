@@ -399,11 +399,11 @@ msgid "Adjustment Inventory"
 msgstr ""
 
 #: common/base/settings.py:57
-msgid "Selective Process"
+msgid "Packing"
 msgstr ""
 
 #: common/base/settings.py:58
-msgid "Repackaging"
+msgid "Repacking"
 msgstr ""
 
 #: common/base/settings.py:59
