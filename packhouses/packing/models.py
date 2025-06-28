@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from common.settings import STATUS_CHOICES
 import uuid
 
+
 # Create your models here.
 
 
@@ -76,6 +77,7 @@ class PackingPallet(models.Model):
     status = models.CharField(max_length=20, default='ready', verbose_name=_('Status'), choices=STATUS_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
     # cajas -- @property / invref
     # kg -- @property / invref
 
@@ -99,20 +101,50 @@ class PackingPackage(models.Model):
     batch = models.ForeignKey(Batch, verbose_name=_('Batch'), on_delete=models.PROTECT)
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product_size = models.ForeignKey(ProductSize, verbose_name=_('Product size'), on_delete=models.PROTECT)
-    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'), on_delete=models.PROTECT, null=True, blank=False)
-    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT, null=True, blank=True)
+    product_market_class = models.ForeignKey(ProductMarketClass, verbose_name=_('Product market class'),
+                                             on_delete=models.PROTECT, null=True, blank=False)
+    product_ripeness = models.ForeignKey(ProductRipeness, verbose_name=_('Product ripeness'), on_delete=models.PROTECT,
+                                         null=True, blank=True)
     size_packaging = models.ForeignKey(SizePackaging, verbose_name=_('Size packaging'), on_delete=models.PROTECT)
-    product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'), validators=[MinValueValidator(0.01)])
-    product_presentations_per_packaging = models.PositiveIntegerField(verbose_name=_('Product presentations per packaging'), null=True, blank=False)
-    product_pieces_per_presentation = models.PositiveIntegerField(verbose_name=_('Product pieces per presentation'), null=True, blank=False)
-    packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'), validators=[MinValueValidator(1)])
+    product_weight_per_packaging = models.FloatField(verbose_name=_('Product weight per packaging'),
+                                                     validators=[MinValueValidator(0.01)])
+    product_presentations_per_packaging = models.PositiveIntegerField(
+        verbose_name=_('Product presentations per packaging'), null=True, blank=False)
+    product_pieces_per_presentation = models.PositiveIntegerField(verbose_name=_('Product pieces per presentation'),
+                                                                  null=True, blank=False)
+    packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'),
+                                                     validators=[MinValueValidator(1)])
     processing_date = models.DateField(default=datetime.datetime.today, verbose_name=_('Processing date'))
-    packing_pallet = models.ForeignKey(PackingPallet, verbose_name=_('Packing Pallet'), on_delete=models.PROTECT, null=True, blank=True)
+    packing_pallet = models.ForeignKey(PackingPallet, verbose_name=_('Packing Pallet'), on_delete=models.PROTECT,
+                                       null=True, blank=True)
     status = models.CharField(max_length=20, default='open', verbose_name=_('Status'), choices=STATUS_CHOICES)
     created_at = models.DateField(auto_now_add=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
     # cajas -- packaging_quantity
     # kg -- @property packaging_quantity * product_weight_per_packaging
+
+    @property
+    def package_supplies(self):
+        supplies = []
+        main_supply = {'supply': self.size_packaging.product_packaging.packaging_supply,
+                       'quantity': self.packaging_quantity}
+        complementary_supplies = [
+            {'supply': supply.supply, 'quantity': supply.quantity * self.packaging_quantity} for supply in
+            self.size_packaging.product_packaging.productpackagingcomplementarysupply_set.all()
+        ]
+        supplies.append(main_supply)
+        supplies.extend(complementary_supplies)
+        if self.size_packaging.category == 'presentation':
+            presentation_supply = {'supply': self.size_packaging.product_presentation.presentation_supply,
+                                   'quantity': self.product_presentations_per_packaging * self.packaging_quantity}
+            presentation_complementary_supplies = [
+                {'supply': supply.supply, 'quantity': self.product_presentations_per_packaging * self.packaging_quantity} for supply in
+                self.size_packaging.product_presentation.productpresentationcomplementarysupply_set.all()
+            ]
+            supplies.append(presentation_supply)
+            supplies.extend(presentation_complementary_supplies)
+        return supplies
 
     @property
     def packing_package_sum_weight(self):
@@ -141,9 +173,12 @@ class PackingPackage(models.Model):
     @property
     def orchard_certifications(self):
         if self.batch and self.batch.incomingproduct and self.batch.incomingproduct.scheduleharvest and self.batch.incomingproduct.scheduleharvest.orchard:
-            all_certifications = self.batch.incomingproduct.scheduleharvest.orchard.orchardcertification_set.filter(is_enabled=True, expiration_date__gte=datetime.datetime.today())
+            all_certifications = self.batch.incomingproduct.scheduleharvest.orchard.orchardcertification_set.filter(
+                is_enabled=True, expiration_date__gte=datetime.datetime.today())
             if all_certifications.exists():
-                return ", ".join([f"{certification.certification_kind.name} ({certification.certification_number})" for certification in all_certifications])
+                return ", ".join(
+                    [f"{certification.certification_kind.name} ({certification.certification_number})" for certification
+                     in all_certifications])
         return "-"
 
     @property
@@ -165,7 +200,8 @@ class PackingPackage(models.Model):
         if self.batch and self.batch.incomingproduct and self.batch.incomingproduct.scheduleharvest:
             crews = self.batch.incomingproduct.scheduleharvest.scheduleharvestharvestingcrew_set.all()
             if crews.exists():
-                return ", ".join([f"{crew.harvesting_crew.name} ({crew.harvesting_crew.crew_chief.name})" for crew in crews])
+                return ", ".join(
+                    [f"{crew.harvesting_crew.name} ({crew.harvesting_crew.crew_chief.name})" for crew in crews])
         return "-"
 
     def __str__(self):

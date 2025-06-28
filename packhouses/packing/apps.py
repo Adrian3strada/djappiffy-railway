@@ -9,9 +9,8 @@ class PackingConfig(AppConfig):
     verbose_name = _('Packing')
 
     def ready(self):
-        from .signals import handle_packing_package_post_save, track_previous_weight, handle_packing_package_post_delete
+        from .signals import handle_packing_package_post_save, handle_packing_package_post_delete
         from .models import PackingPackage
 
         post_save.connect(handle_packing_package_post_save, sender=PackingPackage)
-        pre_save.connect(track_previous_weight, sender=PackingPackage)
         post_delete.connect(handle_packing_package_post_delete, sender=PackingPackage)
