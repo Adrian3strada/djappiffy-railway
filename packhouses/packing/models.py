@@ -10,7 +10,7 @@ from ..receiving.models import Batch
 from django.utils.translation import gettext_lazy as _
 from common.settings import STATUS_CHOICES
 import uuid
-
+from django.db.models import Sum
 
 # Create your models here.
 
@@ -75,20 +75,30 @@ class PackingPallet(models.Model):
     product_sizes = models.ManyToManyField(ProductSize, verbose_name=_('Product sizes'))
     pallet = models.ForeignKey(Pallet, verbose_name=_('Pallet'), on_delete=models.PROTECT, null=True, blank=False)
     status = models.CharField(max_length=20, default='ready', verbose_name=_('Status'), choices=STATUS_CHOICES)
+    is_repacked = models.BooleanField(default=False, verbose_name=_('Is repacked'))
     created_at = models.DateTimeField(auto_now_add=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
-    # cajas -- @property / invref
-    # kg -- @property / invref
-
     def __str__(self):
         return f"{self.ooid} - {self.market} - {self.pallet.name} (Q:{self.pallet.max_packages_quantity}) - {', '.join(self.product_sizes.all().values_list('name', flat=True))}"
+
+    @property
+    def pallet_sum_weight(self):
+        packing_sum = self.packingpackage_set.all().aggregate(packing_sum=Sum('packing_package_sum_weight'))['packing_sum']
+        return packing_sum
 
     def save(self, *args, **kwargs):
         if self.ooid is None:
             with transaction.atomic():
                 last = (PackingPallet.objects.filter(organization=self.organization).order_by('-ooid').first())
                 self.ooid = (last.ooid + 1) if last else 1
+
+        if self.status == 'ready':
+            self.packingpackage_set.all().update(status='ready')
+        if self.status == 'closed':
+            self.packingpackage_set.all().update(status='closed')
+        if self.is_repacked:
+            self.packingpackage_set.all().update(is_repacked=True)
         super().save(*args, **kwargs)
 
     class Meta:
@@ -121,9 +131,6 @@ class PackingPackage(models.Model):
     is_repacked = models.BooleanField(default=False, verbose_name=_('Is repacked'))
     created_at = models.DateField(auto_now_add=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
-
-    # cajas -- packaging_quantity
-    # kg -- @property packaging_quantity * product_weight_per_packaging
 
     @property
     def package_supplies(self):
