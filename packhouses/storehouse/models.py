@@ -45,6 +45,7 @@ class StorehouseEntry(models.Model):
         verbose_name_plural = _("Storehouse Entries")
         ordering = ['-created_at']
 
+
 class StorehouseEntrySupply(models.Model):
     storehouse_entry = models.ForeignKey(
         StorehouseEntry,
@@ -109,6 +110,7 @@ class StorehouseEntrySupply(models.Model):
             models.UniqueConstraint(fields=['storehouse_entry', 'purchase_order_supply'], name='unique_storehouse_entry_supply')
         ]
 
+
 class InventoryTransaction(models.Model):
     storehouse_entry_supply = models.ForeignKey(
         StorehouseEntrySupply,
@@ -153,6 +155,7 @@ class InventoryTransaction(models.Model):
 
     def __str__(self):
         return f"{self.supply}: {self.quantity} units"
+
 
 # Modelo para simular entradas/salidas de inventario
 class AdjustmentInventory(models.Model):

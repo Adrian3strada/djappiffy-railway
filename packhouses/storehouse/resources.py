@@ -57,10 +57,10 @@ class InventoryTransactionResource(DehydrationResource, ExportResource):
     def dehydrate_transaction_category(self, obj):
         if obj.transaction_category == 'adjustment_inventory':
             return 'ADJUSTMENT INVENTORY'
-        elif obj.transaction_category == 'selective_process':
-            return 'SELECTIVE PROCESS'
-        elif obj.transaction_category == 'repackaging':
-            return 'REPACKAGING'
+        elif obj.transaction_category == 'packing':
+            return 'PACKING'
+        elif obj.transaction_category == 'repacking':
+            return 'REPACKING'
         elif obj.transaction_category == 'purchase':
             return 'PURCHASE'
         elif obj.transaction_category == 'sale':
