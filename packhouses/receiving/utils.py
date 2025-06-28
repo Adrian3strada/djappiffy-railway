@@ -4,6 +4,7 @@ from django.forms.models import BaseInlineFormSet
 from django.apps import apps
 from common.settings import STATUS_CHOICES
 
+
 def update_weighing_set_numbers(incoming_product):
     pallets = incoming_product.weighingset_set.all().order_by('id')
     with transaction.atomic():
@@ -12,6 +13,7 @@ def update_weighing_set_numbers(incoming_product):
                 pallet.ooid = index
                 pallet.save(update_fields=['ooid'])
 
+
 def get_processing_status_choices():
     return [
         ('pending', _('Pending')),
@@ -19,13 +21,15 @@ def get_processing_status_choices():
         ('in_another_batch', 'In Another Batch'),
         ('canceled', 'Canceled'),
         ('finalized', 'Finalized'),
-]
+    ]
 
-def get_batch_status_change (): 
+
+def get_batch_status_change():
     return [
         ('operational_status', 'Operational Status'),
-        ('review_status',      'Review Status'),
+        ('review_status', 'Review Status'),
     ]
+
 
 class CustomScheduleHarvestFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
@@ -51,17 +55,17 @@ class CustomScheduleHarvestFormSet(BaseInlineFormSet):
                 form.fields['gatherer'].widget.can_change_related = False
                 form.fields['gatherer'].widget.can_delete_related = False
                 form.fields['gatherer'].widget.can_view_related = False
-            if 'orchard' in form.fields: 
+            if 'orchard' in form.fields:
                 form.fields['orchard'].widget.can_add_related = False
                 form.fields['orchard'].widget.can_change_related = False
                 form.fields['orchard'].widget.can_delete_related = False
                 form.fields['orchard'].widget.can_view_related = False
-            if 'market' in form.fields: 
+            if 'market' in form.fields:
                 form.fields['market'].widget.can_add_related = False
                 form.fields['market'].widget.can_change_related = False
                 form.fields['market'].widget.can_delete_related = False
                 form.fields['market'].widget.can_view_related = False
-            if 'weighing_scale' in form.fields: 
+            if 'weighing_scale' in form.fields:
                 form.fields['weighing_scale'].widget.can_add_related = False
                 form.fields['weighing_scale'].widget.can_change_related = False
                 form.fields['weighing_scale'].widget.can_delete_related = False
@@ -77,7 +81,7 @@ FILTER_DISPLAY_CONFIG = {
             'incomingproduct__scheduleharvest__product_provider',
             'incomingproduct__scheduleharvest__harvesting_crew',
             'orchard_certification',
-            'incomingproduct__scheduleharvest__orchard__category', 
+            'incomingproduct__scheduleharvest__orchard__category',
             'incomingproduct__scheduleharvest__product',
             'incomingproduct__scheduleharvest__product_phenology',
             'scheduleharvest_is_scheduled',
@@ -121,12 +125,12 @@ FILTER_DISPLAY_CONFIG = {
             'product_provider',
             'harvesting_crew',
             'orchard_certification'
-            'orchard_product_category', 
-            'product', 
+            'orchard_product_category',
+            'product',
             'product_phenology',
             'is_scheduled',
-            'category',  
-            'status',            
+            'category',
+            'status',
         ],
         'renames': {
             'product': _('Product'),
@@ -165,8 +169,8 @@ def apply_filter_config(applied_filters, model_key):
     if not config:
         return applied_filters
 
-    ordering  = config['ordering']
-    renames   = config['renames']
+    ordering = config['ordering']
+    renames = config['renames']
     transforms = config['transform']
 
     BatchModel = apps.get_model("receiving", "Batch")
@@ -235,4 +239,3 @@ def apply_filter_config(applied_filters, model_key):
         ordered[label] = value
 
     return ordered
-

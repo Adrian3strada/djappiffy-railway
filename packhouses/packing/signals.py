@@ -32,6 +32,7 @@ def handle_packing_package_post_save(sender, instance, created, **kwargs):
             source=source_data
         )
 
+
 @receiver(post_delete, sender=PackingPackage)
 def handle_packing_package_post_delete(sender, instance, **kwargs):
     batch = instance.batch  # Asumiendo que PackingPackage tiene una relación con Batch

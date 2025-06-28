@@ -445,7 +445,7 @@ class BatchWeightMovement(models.Model):
 
 
 class BatchStatusChange(models.Model):
-    field_name = models.CharField(max_length=32, choices=get_batch_status_change, )
+    field_name = models.CharField(max_length=32, choices=get_batch_status_change)
     created_at = models.DateTimeField(auto_now_add=True)
     old_status = models.CharField(max_length=25)
     new_status = models.CharField(max_length=25)
