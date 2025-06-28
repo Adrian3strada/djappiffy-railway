@@ -118,6 +118,7 @@ class PackingPackage(models.Model):
     packing_pallet = models.ForeignKey(PackingPallet, verbose_name=_('Packing Pallet'), on_delete=models.PROTECT,
                                        null=True, blank=True)
     status = models.CharField(max_length=20, default='open', verbose_name=_('Status'), choices=STATUS_CHOICES)
+    is_repacked = models.BooleanField(default=False, verbose_name=_('Is repacked'))
     created_at = models.DateField(auto_now_add=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
@@ -144,7 +145,7 @@ class PackingPackage(models.Model):
             ]
             supplies.append(presentation_supply)
             supplies.extend(presentation_complementary_supplies)
-        return supplies
+        return supplies if not self.is_repacked else []
 
     @property
     def packing_package_sum_weight(self):

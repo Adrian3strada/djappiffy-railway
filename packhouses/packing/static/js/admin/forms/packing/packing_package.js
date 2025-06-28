@@ -18,8 +18,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     {value: 'ready', name: 'Ready'},
   ]
 
+  if (statusField.val() === 'ready') {
+    statusOptions = [{value: 'ready', name: 'Ready'}];
+  }
+
   if (statusField.val() === 'closed') {
-    statusOptions.push({value: 'closed', name: 'Closed'});
+    statusOptions = [{value: 'closed', name: 'Closed'}];
   }
 
   console.log(statusField.val())
