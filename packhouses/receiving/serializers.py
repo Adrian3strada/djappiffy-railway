@@ -8,6 +8,7 @@ from packhouses.catalogs.serializers import MarketSerializer, ProductSerializer,
 
 
 class BatchSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField(read_only=True)
     yield_orchard_producer = serializers.SerializerMethodField(read_only=True)
     harvest_product_provider = serializers.SerializerMethodField(read_only=True)
     ingress_weight = serializers.SerializerMethodField(read_only=True)
@@ -17,6 +18,9 @@ class BatchSerializer(serializers.ModelSerializer):
     market = serializers.SerializerMethodField(read_only=True)
     product = serializers.SerializerMethodField(read_only=True)
     product_phenology = serializers.SerializerMethodField(read_only=True)
+
+    def get_name(self, obj):
+        return obj.name
 
     def get_market(self, obj):
         if obj.incomingproduct and obj.incomingproduct.scheduleharvest:

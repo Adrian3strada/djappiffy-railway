@@ -43,6 +43,10 @@ class Batch(models.Model):
         return f"{self.ooid} – {_('No Incoming Product Associated')}"
 
     @property
+    def name(self):
+        return self.__str__()
+
+    @property
     def performance_current_sum_weight(self):
         return sum(
             package.packing_package_sum_weight
