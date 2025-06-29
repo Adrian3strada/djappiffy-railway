@@ -104,6 +104,18 @@ class PackingPackageInline(admin.StackedInline):
             obj.organization = request.organization
         super().save_model(request, obj, form, change)
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        parent_object_id = request.resolver_match.kwargs.get("object_id")
+        parent_obj = Product.objects.get(id=parent_object_id) if parent_object_id else None
+        organization = request.organization if hasattr(request, 'organization') else None
+
+        if db_field.name == "batch":
+            kwargs["queryset"] = Batch.objects.filter(organization=organization, status='ready', parent__isnull=True)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     class Media:
         js = ('js/admin/forms/packing/packing_package_inline.js',)
 

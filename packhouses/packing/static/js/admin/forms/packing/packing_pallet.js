@@ -53,7 +53,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   const getProductProperties = async () => {
     if (productField.val()) {
       productProperties = await fetchOptions(`/rest/v1/catalogs/product/${productField.val()}/`)
-      console.log("Product properties fetched getProductProperties:", productProperties);
     } else {
       productProperties = null;
     }
@@ -69,8 +68,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   const setProductSizes = async () => {
     if (productProperties && productProperties.id && marketField.val()) {
       const sizes = await fetchOptions(`/rest/v1/catalogs/product-size/?category=size&product=${productProperties.id}&market=${marketField.val()}&is_enabled=1`);
-      console.log("sizes", sizes);
-      console.log("productSizesField.val()", productSizesField.val())
       updateFieldOptions(productSizesField, sizes, productSizesField.val() ? productSizesField.val() : null);
     } else {
       if (!!productSizesField.val()) {
@@ -85,7 +82,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (productField.val() && marketField.val() && productSizesField.val() && productSizesField.val().length > 0) {
       let pallets = await fetchOptions(`/rest/v1/catalogs/pallet/?product=${productField.val()}&market=${marketField.val()}&is_enabled=1`);
-      console.log("Pallets fetched setPallets:", pallets);
       pallets = pallets.map(pallet => ({
         ...pallet,
         name: `${pallet.name} (Q:${pallet.max_packages_quantity})`
@@ -119,7 +115,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   productSizesField.on("change", async function () {
-    console.log("Product sizes changed:", productSizesField.val());
     await setPallets();
     updatePackingPackagesTab();
   });
@@ -141,8 +136,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const disabledFields = [productField, marketField, productSizesField];
   disabledFields.forEach(field => {
-    console.log(`Disabling field: ${field.attr('readonly')}`);
-    if (field.attr('readonly') == 'readonly' || field.attr('disabled') == 'disabled') {
+    if (field.attr('readonly') === 'readonly' || field.attr('disabled') === 'disabled') {
       field.next('.select2-container').addClass('disabled-field');
     }
   })
