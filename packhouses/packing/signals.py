@@ -5,6 +5,7 @@ from packhouses.receiving.models import BatchWeightMovement
 
 # Signals for PackingPackage model to handle weight movements and status updates
 
+
 @receiver(pre_save, sender=PackingPackage)
 def handle_packing_package_pre_save(sender, instance, **kwargs):
     if instance.pk:  # Solo para instancias existentes
@@ -29,8 +30,6 @@ def handle_packing_package_pre_save(sender, instance, **kwargs):
     # Actualizar el estado según la lógica existente
     if instance.packing_pallet:
         instance.status = 'ready'
-    else:
-        instance.status = 'open'
 
 
 @receiver(post_save, sender=PackingPackage)

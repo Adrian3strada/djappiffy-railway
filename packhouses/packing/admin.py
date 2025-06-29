@@ -187,7 +187,13 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
               'processing_date', 'packing_pallet', 'status']
 
     def get_readonly_fields(self, request, obj=None):
-        return ['ooid']
+        fields = ['ooid']
+        if obj and obj.status not in ['open']:
+            fields.extend(['batch', 'market', 'product_size', 'product_market_class',
+                           'product_ripeness', 'size_packaging', 'product_weight_per_packaging',
+                           'product_presentations_per_packaging', 'product_pieces_per_presentation',
+                           'packaging_quantity', 'processing_date',])
+        return fields
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
