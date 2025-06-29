@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   let productMarketClassOptions = [];
   let productRipenessOptions = [];
 
+  let availableBatches = await fetchOptions(`/rest/v1/receiving/batch/?status=ready&parent__isnull=1`);
+
   function updateFieldOptions(field, options, selectedValue = null) {
     if (field) {
       field.empty();
@@ -162,6 +164,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     productPresentationsPerPackagingField.closest('.form-group').hide()
     productPiecesPerPresentationField.closest('.form-group').hide()
     statusField.closest('.form-group').hide()
+
+
 
     let batchProperties = null
 

@@ -213,7 +213,6 @@ class BatchForm(forms.ModelForm):
                 if value != 'closed' or value == status
             ]
 
-
     def clean(self):
         cleaned = super().clean()
 
@@ -279,13 +278,14 @@ class WeighingSetForm(forms.ModelForm):
             instance.save()
         return instance
 
+
 class WeighingSetInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for form in self.forms:
             instance = form.instance
             if instance.pk and getattr(instance, 'protected', False):
-                form.fields['DELETE'].disabled = True 
+                form.fields['DELETE'].disabled = True
 
     def clean(self):
         super().clean()
@@ -308,7 +308,7 @@ class WeighingSetContainerInlineFormSet(BaseInlineFormSet):
             if weighing_set and weighing_set.protected:
                 if 'DELETE' in form.fields:
                     form.fields['DELETE'].disabled = True
-                    
+
     def clean(self):
         super().clean()
         for form in self.forms:

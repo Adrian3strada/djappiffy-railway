@@ -19,17 +19,17 @@ from .mixins import CustomNestedStackedInlineMixin, CustomNestedStackedAvgInline
 from .forms import (IncomingProductForm, ScheduleHarvestVehicleForm, BaseScheduleHarvestVehicleFormSet, ContainerInlineForm, ContainerInlineFormSet,
                     BatchForm, WeighingSetForm, WeighingSetInlineFormSet, WeighingSetContainerInlineFormSet, BaseIncomingProductInlineFormSet)
 from .filters import (ByOrchardForOrganizationIncomingProductFilter, ByProviderForOrganizationIncomingProductFilter, ByProductForOrganizationIncomingProductFilter,
-                      ByCategoryForOrganizationIncomingProductFilter, ByProductProducerForOrganizationIncomingProductFilter, ByOrchardForOrganizationBatchFilter, 
+                      ByCategoryForOrganizationIncomingProductFilter, ByProductProducerForOrganizationIncomingProductFilter, ByOrchardForOrganizationBatchFilter,
                       ByProviderForOrganizationBatchFilter, ByProductPhenologyForOrganizationIncomingProductFilter, ByOrchardProductCategoryForOrganizationIncomingProductFilter,
                       MaquiladoraForIncomingProductFilter, ByOrchardCertificationForOrganizationIncomingProductFilter, SchedulingTypeFilter,
                       ByHarvestingCrewForOrganizationIncomingProductFilter, GathererForIncomingProductFilter,
-                      ByCategoryForOrganizationIncomingProductFilter, ByProductProducerForOrganizationIncomingProductFilter, ByOrchardForOrganizationBatchFilter, 
+                      ByCategoryForOrganizationIncomingProductFilter, ByProductProducerForOrganizationIncomingProductFilter, ByOrchardForOrganizationBatchFilter,
                       ByProviderForOrganizationBatchFilter, ByProductPhenologyForOrganizationIncomingProductFilter, ByOrchardProductCategoryForOrganizationIncomingProductFilter,
                       MaquiladoraForIncomingProductFilter, ByOrchardCertificationForOrganizationIncomingProductFilter, SchedulingTypeFilter,
                       ByHarvestingCrewForOrganizationIncomingProductFilter, GathererForIncomingProductFilter,
-                      ByProductForOrganizationBatchFilter, ByCategoryForOrganizationBatchFilter, ByProductProducerForOrganizationBatchFilter, 
-                      ByProductPhenologyForOrganizationBatchFilter, ByOrchardProductCategoryForOrganizationBatchFilter, ByHarvestingCrewForOrganizationBatchFilter, 
-                      GathererForBatchFilter, MaquiladoraForBatchFilter, ByOrchardCertificationForOrganizationBatchFilter, SchedulingTypeForBatchFilter, BatchTypeFilter, 
+                      ByProductForOrganizationBatchFilter, ByCategoryForOrganizationBatchFilter, ByProductProducerForOrganizationBatchFilter,
+                      ByProductPhenologyForOrganizationBatchFilter, ByOrchardProductCategoryForOrganizationBatchFilter, ByHarvestingCrewForOrganizationBatchFilter,
+                      GathererForBatchFilter, MaquiladoraForBatchFilter, ByOrchardCertificationForOrganizationBatchFilter, SchedulingTypeForBatchFilter, BatchTypeFilter,
                       ByOrchardCertificationForOrganizationFoodSafetyFilter)
 from .utils import update_weighing_set_numbers,  CustomScheduleHarvestFormSet
 from common.base.decorators import uppercase_formset_charfield, uppercase_alphanumeric_formset_charfield
@@ -128,7 +128,7 @@ class ScheduleHarvestHarvestingCrewInline(nested_admin.NestedTabularInline):
             )
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-    
+
     class Media:
         js = ('js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_crew_inline.js',)
 
@@ -164,7 +164,7 @@ class ScheduleHarvestVehicleInline(CustomNestedStackedInlineMixin, admin.Stacked
                     filtered_qs = Vehicle.objects.filter(
                         organization=request.organization,
                         is_enabled=True,
-                        provider=provider 
+                        provider=provider
                     ).distinct()
 
                     form.fields['vehicle'].queryset = filtered_qs
@@ -296,7 +296,7 @@ class WeighingSetContainerInline(nested_admin.NestedTabularInline):
     model = WeighingSetContainer
     formset = WeighingSetContainerInlineFormSet
     extra = 0
-    
+
     def get_max_num(self, request, obj=None, **kwargs):
         if obj and getattr(obj, 'protected', False):
             return 0
@@ -328,10 +328,11 @@ class WeighingSetContainerInline(nested_admin.NestedTabularInline):
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+
 class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
     model = WeighingSet
     inlines = [WeighingSetContainerInline]
-    fields = ('ooid', 'harvesting_crew', 'gross_weight', 'total_containers', 'container_tare', 
+    fields = ('ooid', 'harvesting_crew', 'gross_weight', 'total_containers', 'container_tare',
               'platform_tare', 'net_weight',)
     extra = 0
     form = WeighingSetForm
@@ -384,7 +385,7 @@ class WeighingSetInline(CustomNestedStackedInlineMixin, admin.StackedInline):
 # Reciba
 @admin.register(IncomingProduct)
 class IncomingProductAdmin(SheetReportExportAdminMixin, IncomingProductMetricsMixin, ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
-    list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'created_at', 'get_scheduleharvest_product_provider', 
+    list_display = ('get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'created_at', 'get_scheduleharvest_product_provider',
                     'get_scheduleharvest_category', 'get_scheduleharvest_orchard', 'get_orchard_code',
                     'get_scheduleharvest_orchard_product_producer', 'get_scheduleharvest_product', 'get_orchard_category',
                     'get_scheduleharvest_product_variety', 'get_scheduleharvest_product_phenology', 'get_scheduleharvest_product_ripeness',
@@ -393,10 +394,10 @@ class IncomingProductAdmin(SheetReportExportAdminMixin, IncomingProductMetricsMi
     fields = ('mrl', 'phytosanitary_certificate', 'weighing_record_number', 'public_weighing_scale', 'public_weight_result',
               'kg_sample', *IncomingProductMetricsMixin.readonly_fields,
               'comments', 'is_quarantined','status')
-    list_filter = (('created_at', DateRangeFilter), ByProviderForOrganizationIncomingProductFilter, ByProductProducerForOrganizationIncomingProductFilter, 
+    list_filter = (('created_at', DateRangeFilter), ByProviderForOrganizationIncomingProductFilter, ByProductProducerForOrganizationIncomingProductFilter,
                    ByProductForOrganizationIncomingProductFilter,ByProductPhenologyForOrganizationIncomingProductFilter,
-                   ByOrchardProductCategoryForOrganizationIncomingProductFilter, ByHarvestingCrewForOrganizationIncomingProductFilter, 
-                   ByCategoryForOrganizationIncomingProductFilter, GathererForIncomingProductFilter, MaquiladoraForIncomingProductFilter, 
+                   ByOrchardProductCategoryForOrganizationIncomingProductFilter, ByHarvestingCrewForOrganizationIncomingProductFilter,
+                   ByCategoryForOrganizationIncomingProductFilter, GathererForIncomingProductFilter, MaquiladoraForIncomingProductFilter,
                    ByOrchardCertificationForOrganizationIncomingProductFilter, SchedulingTypeFilter, 'status')
     search_fields = ('scheduleharvest__ooid',)
     readonly_fields = IncomingProductMetricsMixin.readonly_fields
@@ -480,30 +481,30 @@ class IncomingProductAdmin(SheetReportExportAdminMixin, IncomingProductMetricsMi
     def get_scheduleharvest_product_provider(self, obj):
         schedule_harvest = obj.scheduleharvest
         return schedule_harvest.product_provider if schedule_harvest else None
-    
+
     def get_scheduleharvest_orchard_product_producer(self, obj):
         schedule_harvest = obj.scheduleharvest
         return schedule_harvest.orchard.producer if schedule_harvest else None
-    
+
     def get_orchard_code(self, obj):
         return obj.scheduleharvest.orchard.code if obj.scheduleharvest.orchard else None
-    
+
     def get_orchard_category(self, obj):
         if obj.scheduleharvest.orchard:
             return obj.scheduleharvest.orchard.get_category_display()
         return None
-    
+
     def get_scheduleharvest_product_variety(self, obj):
         return obj.scheduleharvest.product_variety if obj.scheduleharvest else None
-    
+
     def get_scheduleharvest_product_phenology(self, obj):
         return obj.scheduleharvest.product_phenology if obj.scheduleharvest else None
-    
+
     def get_scheduleharvest_product_ripeness(self, obj):
         return obj.scheduleharvest.product_ripeness if obj.scheduleharvest else None
-    
+
     def get_scheduleharvest_market(self, obj):
-        return obj.scheduleharvest.market if obj.scheduleharvest else None   
+        return obj.scheduleharvest.market if obj.scheduleharvest else None
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -632,7 +633,7 @@ class ScheduleHarvestInlineForBatch(CustomNestedStackedInlineMixin, admin.Stacke
         js = ('js/admin/forms/packhouses/receiving/incomingproduct/vehicle_inline.js',
               'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_inline.js',
               'js/admin/forms/packhouses/receiving/incomingproduct/schedule_harvest_crew_inline.js')
-        
+
 
 class IncomingProductInline(IncomingProductMetricsMixin, CustomNestedStackedInlineMixin, admin.StackedInline):
     model = IncomingProduct
@@ -666,16 +667,16 @@ class IncomingProductInline(IncomingProductMetricsMixin, CustomNestedStackedInli
 
 @admin.register(Batch)
 class BatchAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, BatchDisplayMixin, nested_admin.NestedModelAdmin):
-    list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'display_created_at', 'get_scheduleharvest_product_provider', 
+    list_display = ('ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'display_created_at', 'get_scheduleharvest_product_provider',
                     'get_scheduleharvest_orchards', 'get_orchard_code', 'get_orchard_product_producer', 'get_scheduleharvest_product', 'get_orchard_category',
-                    'get_scheduleharvest_product_variety', 'get_scheduleharvest_product_phenology', 'get_product_ripeness', 'get_batch_merge_status', 
+                    'get_scheduleharvest_product_variety', 'get_scheduleharvest_product_phenology', 'get_product_ripeness', 'get_batch_merge_status',
                     'weight_received_display', 'get_batch_available_weight', 'display_available_for_processing', 'status', 'generate_actions_buttons',
                     )
     form = BatchForm
     inlines = [IncomingProductInline]
-    list_filter = (('created_at', DateRangeFilter),ByProviderForOrganizationBatchFilter, ByProductProducerForOrganizationBatchFilter, ByProductForOrganizationBatchFilter, 
-                   ByProductPhenologyForOrganizationBatchFilter, ByOrchardProductCategoryForOrganizationBatchFilter, ByHarvestingCrewForOrganizationBatchFilter, 
-                   ByCategoryForOrganizationBatchFilter, GathererForBatchFilter, MaquiladoraForBatchFilter, ByOrchardCertificationForOrganizationBatchFilter, 
+    list_filter = (('created_at', DateRangeFilter),ByProviderForOrganizationBatchFilter, ByProductProducerForOrganizationBatchFilter, ByProductForOrganizationBatchFilter,
+                   ByProductPhenologyForOrganizationBatchFilter, ByOrchardProductCategoryForOrganizationBatchFilter, ByHarvestingCrewForOrganizationBatchFilter,
+                   ByCategoryForOrganizationBatchFilter, GathererForBatchFilter, MaquiladoraForBatchFilter, ByOrchardCertificationForOrganizationBatchFilter,
                    SchedulingTypeForBatchFilter, 'is_available_for_processing', BatchTypeFilter, 'status',)
     list_per_page = 20
     search_fields = ('ooid',)
@@ -700,7 +701,7 @@ class BatchAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, BatchDis
 
     def get_readonly_fields(self, request, obj=None):
         return ['ooid', 'display_batch_role'] + self.get_weight_fields(obj.is_parent if obj else False)
-        
+
     @admin.action(description=_('Merge selected batches into a single batch group'))
     def action_merge_batches(self, request, queryset):
         if queryset.count() < 2:
@@ -729,7 +730,7 @@ class BatchAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, BatchDis
                 level=messages.ERROR
             )
             return
-        
+
         url = reverse(
             'admin:%s_%s_change' % (
                 parent_batch._meta.app_label,
@@ -777,7 +778,7 @@ class BatchAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, BatchDis
                 level=messages.ERROR
             )
             return
-        
+
         parent = possible_parents.first()
         children_to_add = qs.exclude(pk=parent.pk)
 
@@ -839,7 +840,7 @@ class BatchAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, BatchDis
                 e.message,
                 level=messages.ERROR
             )
-    
+
     @admin.action(description=_('Unmerge selected batches from parent.'))
     def action_unmerge_selected_batches(self, request, queryset):
         try:
@@ -873,8 +874,8 @@ class BatchAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, BatchDis
         tooltip_batch_record = _('Generate Batch Record')
         weighing_report_url = reverse('batch_weighing_set_report', args=[obj.uuid])
         tooltip_weighing_report = _('Generate Weighing Set Report')
-        
-        
+
+
         return format_html(
             '''
             <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -900,10 +901,10 @@ class BatchAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin, BatchDis
             weighing_labels_url, tooltip_weighing_labels,
         )
 
-    
+
     generate_actions_buttons.short_description = _('Actions')
     generate_actions_buttons.allow_tags = True
-    
+
     def display_created_at(self, obj):
         s = date_format(obj.created_at, format='DATETIME_FORMAT', use_l10n=True)
         return format_html(
@@ -1374,14 +1375,14 @@ class SampleCollectionInline(CustomNestedStackedAvgInlineMixin, admin.StackedInl
         # Check if the object is provided and its status is 'closed'
         if obj and obj.status == 'closed':
             return request.method in ['GET']
-        
+
         # Handle the case where object_id is retrieved from request
         object_id = request.resolver_match.kwargs.get("object_id")
         if object_id:
             food_safety = FoodSafety.objects.get(pk=object_id)
             if food_safety.status == 'closed':
                 return request.method in ['GET']
-        
+
         # Default behavior
         return super().has_change_permission(request, obj)
 
@@ -1455,7 +1456,7 @@ class FoodSafetyForm(forms.ModelForm):
 class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('get_batch_ooid', 'get_scheduleharvest_ooid', 'get_scheduleharvest_harvest_date', 'get_batch_entry_date',
                     'get_product_provider', 'get_orchard', 'get_orchard_product_producer', 'get_product', 'get_orchard_category',
-                    'get_product_variety', 'get_product_phenology', 'get_product_ripeness', 'get_batch_received_weight', 'status', 
+                    'get_product_variety', 'get_product_phenology', 'get_product_ripeness', 'get_batch_received_weight', 'status',
                     'generate_actions_buttons')
     list_filter = (('created_at', DateRangeFilter), ByOrchardCertificationForOrganizationFoodSafetyFilter)
     search_fields = ('Batch',)
@@ -1561,8 +1562,8 @@ class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
         )
     generate_actions_buttons.short_description = _('Actions')
     generate_actions_buttons.allow_tags = True
-    
-    
+
+
     def get_batch_ooid(self, obj):
         return obj.batch.ooid if obj.batch else "-"
     get_batch_ooid.short_description = _('Batch Number')
