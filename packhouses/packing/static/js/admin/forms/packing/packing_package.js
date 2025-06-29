@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   productPiecesPerPresentationField.closest('.form-group').hide()
 
   productWeightPerPackagingField.attr('min', 1);
+  productWeightPerPackagingField.attr('step', 0.1);
   packagingQuantityField.attr('min', 1);
 
   function updateFieldOptions(field, options, selectedValue = null) {

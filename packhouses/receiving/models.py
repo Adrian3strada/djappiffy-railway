@@ -46,7 +46,7 @@ class Batch(models.Model):
     def performance_current_sum_weight(self):
         return sum(
             package.packing_package_sum_weight
-            for package in self.packingpackage_set.filter(status__in=['ready', 'closed'])
+            for package in self.packingpackage_set.filter(status__in=['ready', 'closed']).exclude(is_repacked=True)
         )
 
     @property

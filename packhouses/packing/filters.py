@@ -132,6 +132,8 @@ class ByPackingPalletForOrganizationPackingPackageFilter(admin.SimpleListFilter)
             lookup_ids = list(set(PackingPackage.objects.filter(organization=request.organization)
                                   .values_list('packing_pallet', flat=True).distinct()))
             queryset = queryset.filter(id__in=lookup_ids).order_by('ooid')
+        else:
+            queryset = PackingPallet.objects.none()
 
         lookups = [(obj.id, obj.ooid) for obj in queryset]
         lookups.append((0, _('Null')))
