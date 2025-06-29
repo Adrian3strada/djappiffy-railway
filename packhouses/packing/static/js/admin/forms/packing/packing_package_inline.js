@@ -159,6 +159,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log("New form added:", newForm);
 
     let batchProperties = null
+    let sizePackagingProperties = null;
     let itemWeight = 0;
     let selectedAvailableBatchIndex = 0;
 
@@ -167,6 +168,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     productPiecesPerPresentationField.closest('.form-group').hide()
     statusField.closest('.form-group').hide()
     productWeightPerPackagingField.attr('min', 0);
+    productWeightPerPackagingField.attr('step', 0.1);
     marketField.val(palletMarketField.val()).trigger('change').select2()
     sizePackagingField.prop('disabled', true);
 
@@ -175,7 +177,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log("Available batches:", availableBatches);
 
     const setItemWeight = async () => {
-      setTimeout(() => {
         if (productWeightPerPackagingField.val() && productWeightPerPackagingField.val() > 0 && packagingQuantityField.val() && packagingQuantityField.val() > 0) {
           const prevItemWeight = itemWeight;
           console.log("prevItemWeight", prevItemWeight);
@@ -187,24 +188,22 @@ document.addEventListener("DOMContentLoaded", async function () {
           availableBatches[selectedAvailableBatchIndex].available_weight = availableBatches[selectedAvailableBatchIndex].available_weight + prevItemWeight;
           const newAvailableWeight = availableBatches[selectedAvailableBatchIndex].available_weight - newItemWeight;
           availableBatches[selectedAvailableBatchIndex].available_weight = newAvailableWeight
-          console.log("newAvailableWeight", newAvailableWeight);
-          availableBatches[selectedAvailableBatchIndex].name = availableBatches[selectedAvailableBatchIndex].name.replace(/AW:\d+(\.\d+)?/, `NAW:${newAvailableWeight}`);
-
-          console.log("availableBatches[selectedAvailableBatchIndex].available_weight", availableBatches[selectedAvailableBatchIndex].available_weight);
+          availableBatches[selectedAvailableBatchIndex].name = availableBatches[selectedAvailableBatchIndex].name.replace(/\(AW:\d+(\.\d+)?/, `(NAW:${newAvailableWeight}`);
+          availableBatches[selectedAvailableBatchIndex].name = availableBatches[selectedAvailableBatchIndex].name.replace(/\(NAW:\d+(\.\d+)?/, `(NAW:${newAvailableWeight}`);
         }
-      }, 300);
     }
 
     const sizePackagingFieldChangeHandler = async () => {
       if (sizePackagingField.val()) {
-        const size_packaging = await fetchOptions(`/rest/v1/catalogs/size-packaging/${sizePackagingField.val()}/`);
-        productWeightPerPackagingField.val(size_packaging.product_weight_per_packaging);
+        const sizePackagingProperties = await fetchOptions(`/rest/v1/catalogs/size-packaging/${sizePackagingField.val()}/`);
+        productWeightPerPackagingField.val(sizePackagingProperties.product_weight_per_packaging).trigger("change");;
+        productWeightPerPackagingField.attr('max', sizePackagingProperties.product_weight_per_packaging);
 
-        if (size_packaging.category === 'presentation') {
+        if (sizePackagingProperties.category === 'presentation') {
           productPresentationsPerPackagingField.closest('.form-group').fadeIn();
           productPiecesPerPresentationField.closest('.form-group').fadeIn();
-          productPresentationsPerPackagingField.val(size_packaging.product_presentations_per_packaging);
-          productPiecesPerPresentationField.val(size_packaging.product_pieces_per_presentation);
+          productPresentationsPerPackagingField.val(sizePackagingProperties.product_presentations_per_packaging);
+          productPiecesPerPresentationField.val(sizePackagingProperties.product_pieces_per_presentation);
         } else {
           productPresentationsPerPackagingField.closest('.form-group').fadeOut();
           productPiecesPerPresentationField.closest('.form-group').fadeOut();
@@ -246,9 +245,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (batchProperties && sizePackagingField.val()) {
         packagingQuantityField.attr('max', parseInt(batchProperties.available_weight / parseFloat(productWeightPerPackagingField.val())));
         if (!packagingQuantityField.val()) {
-          packagingQuantityField.val(parseInt(batchProperties.available_weight / parseFloat(productWeightPerPackagingField.val())));
+          packagingQuantityField.val(parseInt(batchProperties.available_weight / parseFloat(productWeightPerPackagingField.val()))).trigger("change");
         }
-        await setItemWeight();
       } else {
         packagingQuantityField.attr('max', null);
       }
@@ -259,6 +257,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     packagingQuantityField.on('change', async function () {
+      if (packagingQuantityField.val() && packagingQuantityField.val() > packagingQuantityField.attr('max')) {
+        packagingQuantityField.val(packagingQuantityField.attr('max'));
+      }
       await setItemWeight();
     });
 
@@ -290,6 +291,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     productPresentationsPerPackagingField.closest('.form-group').hide()
     productPiecesPerPresentationField.closest('.form-group').hide()
     statusField.closest('.form-group').hide()
+    productWeightPerPackagingField.attr('min', 0);
+    productWeightPerPackagingField.attr('step', 0.1);
 
     let batchProperties = null
 
@@ -299,6 +302,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (sizePackagingField.val()) {
         const size_packaging = await fetchOptions(`/rest/v1/catalogs/size-packaging/${sizePackagingField.val()}/`);
         productWeightPerPackagingField.val(size_packaging.product_weight_per_packaging);
+        productWeightPerPackagingField.attr('max', size_packaging.product_weight_per_packaging);
 
         if (size_packaging.category === 'presentation') {
           productPresentationsPerPackagingField.closest('.form-group').fadeIn();
