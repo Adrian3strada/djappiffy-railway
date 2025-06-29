@@ -83,10 +83,7 @@ INSTALLED_APPS = [
     "common.profiles",
     "common.billing",
     "common.producers",
-    "common.brokers",
     "common.exporters",
-    "common.importers",
-    "common.government",
 
     "packhouses",
     "packhouses.packhouse_settings",
