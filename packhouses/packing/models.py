@@ -138,11 +138,9 @@ class PackingPallet(models.Model):
                 last = (PackingPallet.objects.filter(organization=self.organization).order_by('-ooid').first())
                 self.ooid = (last.ooid + 1) if last else 1
 
-        if self.status == 'ready':
-            self.packingpackage_set.all().update(status='ready')
-        if self.status == 'closed':
+        if self.id and self.status == 'closed':
             self.packingpackage_set.all().update(status='closed')
-        if self.is_repacked:
+        if self.id and self.is_repacked:
             self.packingpackage_set.all().update(is_repacked=True)
         super().save(*args, **kwargs)
 
