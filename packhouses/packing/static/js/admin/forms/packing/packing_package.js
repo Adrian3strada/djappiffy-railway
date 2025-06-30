@@ -18,10 +18,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     {value: 'ready', name: 'Ready'},
   ]
 
-  if (statusField.val() === 'ready') {
-    statusOptions = [{value: 'ready', name: 'Ready'}];
-  }
-
   if (statusField.val() === 'closed') {
     statusOptions = [{value: 'closed', name: 'Closed'}];
   }
@@ -98,7 +94,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const setPackingPallets = async () => {
     if (productSizeField.val()) {
-      const pallets = await fetchOptions(`/rest/v1/packing/packing-pallet/?product=${batchProperties.product.id}&market=${marketField.val()}&product_sizes=${productSizeField.val()}&status=ready`);
+      const pallets = await fetchOptions(`/rest/v1/packing/packing-pallet/?product=${batchProperties.product.id}&market=${marketField.val()}&product_sizes=${productSizeField.val()}&status=open`);
       console.log("Packing pallets fetched:", pallets);
       updateFieldOptions(packingPalletField, pallets, packingPalletField.val() ? packingPalletField.val() : null);
     } else {
@@ -240,5 +236,12 @@ document.addEventListener("DOMContentLoaded", async function () {
   await setProductMarketClasses();
   await setProductRipeness();
   await setSizePackagings();
+
+  const disabledFields = [batchField, marketField, productSizeField, productMarketClassField, productRipenessField, sizePackagingField];
+  disabledFields.forEach(field => {
+    if (field.attr('readonly') === 'readonly' || field.attr('disabled') === 'disabled') {
+      field.next('.select2-container').addClass('disabled-field');
+    }
+  })
 
 });

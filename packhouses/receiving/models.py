@@ -35,7 +35,7 @@ class Batch(models.Model):
         if incoming:
             sh = getattr(incoming, 'scheduleharvest', None)
             harvest = f"{_('Schedule Harvest Number')}: {sh.ooid}" if sh else _('No Harvest')
-            return f"ID:{self.ooid} - {sh.orchard.name} - SH:{sh.ooid}, IP:{incoming.id} (AW:{self.available_weight} {sh.product.measure_unit_category})"
+            return f"ID:{self.ooid} - {sh.orchard.name} - SH:{sh.ooid}, IP:{incoming.id} (AW:{round(self.available_weight, 2)} {sh.product.measure_unit_category})"
 
         if hasattr(self, 'children') and self.children.exists():
             return f"{self.ooid} – {_('Parent Batch')}"
@@ -432,7 +432,7 @@ class BatchWeightMovement(models.Model):
         verbose_name_plural = _('Batch Weight Movements')
 
     def clean(self):
-        if self.weight < 0 and self.batch.ingress_weight + self.weight < 0:
+        if self.weight < 0 or self.batch.ingress_weight + self.weight < 0:
             raise ValidationError(
                 _('This movement would result in a negative weight for the batch.'),
             )
@@ -441,15 +441,34 @@ class BatchWeightMovement(models.Model):
         self.clean()
         super().save(*args, **kwargs)
 
+
+class RepackingBatchWeightMovement(models.Model):
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, verbose_name=_('Batch'))
+    weight = models.FloatField(default=0, verbose_name=_('Weight'))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
+    source = models.JSONField(default=dict, blank=True, verbose_name=_("Source Information"))
+
+    def __str__(self):
+        return f"{self.batch} {self.created_at} :: {self.weight}"
+
     class Meta:
-        ordering = ['created_at']
-        indexes = [
-            models.Index(fields=['batch', 'created_at']),
-        ]
+        ordering = ['-created_at']
+        verbose_name = _('Repacking batch weight movement')
+        verbose_name_plural = _('Repacking batch weight movements')
+
+    def clean(self):
+        if self.weight < 0 or self.batch.ingress_weight + self.weight < 0:
+            raise ValidationError(
+                _('This movement would result in a negative weight for the batch.'),
+            )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class BatchStatusChange(models.Model):
-    field_name = models.CharField(max_length=32, choices=get_batch_status_change)
+    field_name = models.CharField(max_length=32, choices=get_batch_status_change())
     created_at = models.DateTimeField(auto_now_add=True)
     old_status = models.CharField(max_length=25)
     new_status = models.CharField(max_length=25)

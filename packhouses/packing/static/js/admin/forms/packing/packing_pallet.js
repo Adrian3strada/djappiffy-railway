@@ -123,12 +123,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     updatePackingPackagesTab();
   });
 
-  statusField.on("change", function () {
-    if (statusField.val() === 'open') {
-      statusField.val('ready').trigger('change')
-    }
-  });
-
   await getProductProperties();
   await setProductSizes();
   await setPallets();

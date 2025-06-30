@@ -1,5 +1,5 @@
 import datetime
-
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from organizations.models import Organization
@@ -11,6 +11,8 @@ from django.utils.translation import gettext_lazy as _
 from common.settings import STATUS_CHOICES
 import uuid
 from django.db.models import Sum
+from collections import defaultdict
+
 
 # Create your models here.
 
@@ -80,12 +82,55 @@ class PackingPallet(models.Model):
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"{self.ooid} - {self.market} - {self.pallet.name} (Q:{self.pallet.max_packages_quantity}) - {', '.join(self.product_sizes.all().values_list('name', flat=True))}"
+        return f"{self.ooid} - {self.market} - {self.pallet.name} (Q:{self.pallet_packages_sum_quantity}|{self.pallet.max_packages_quantity}) - {', '.join(self.product_sizes.all().values_list('name', flat=True))}"
 
     @property
     def pallet_sum_weight(self):
-        packing_sum = self.packingpackage_set.all().aggregate(packing_sum=Sum('packing_package_sum_weight'))['packing_sum']
-        return packing_sum
+        return round(sum(pkg.packing_package_sum_weight for pkg in self.packingpackage_set.all()), 2)
+
+    @property
+    def pallet_batch_weights(self):
+        batch_totals = defaultdict(float)
+
+        for pkg in self.packingpackage_set.select_related('batch').all():
+            batch_totals[pkg.batch] += pkg.packing_package_sum_weight
+
+        return dict(batch_totals)
+
+    @property
+    def pallet_supplies(self):
+        totals = defaultdict(float)
+
+        # 1. Sumar insumos de cada paquete
+        packages = self.packingpackage_set.select_related(
+            'size_packaging__product_packaging__packaging_supply',
+            'size_packaging__product_presentation__presentation_supply'
+        ).prefetch_related(
+            'size_packaging__product_packaging__productpackagingcomplementarysupply_set__supply',
+            'size_packaging__product_presentation__productpresentationcomplementarysupply_set__supply'
+        )
+
+        for pkg in packages:
+            for item in pkg.package_supplies:
+                supply = item['supply']
+                quantity = item['quantity']
+                totals[supply] += float(quantity)
+
+        # 2. Agregar 1 unidad del insumo principal del pallet
+        if self.pallet and self.pallet.supply:
+            totals[self.pallet.supply] += 1.0
+
+        # 3. Agregar insumos complementarios del pallet
+        if self.pallet:
+            for comp in self.pallet.palletcomplementarysupply_set.select_related('supply').all():
+                totals[comp.supply] += float(comp.quantity)
+
+        # 4. Aplicar formato final
+        return {supply: int(qty) if qty == int(qty) else round(qty, 2) for supply, qty in totals.items()}
+
+    @property
+    def pallet_packages_sum_quantity(self):
+        return self.packingpackage_set.all().aggregate(total_quantity=Sum('packaging_quantity'))['total_quantity'] or 0
 
     def save(self, *args, **kwargs):
         if self.ooid is None:
@@ -147,7 +192,8 @@ class PackingPackage(models.Model):
             presentation_supply = {'supply': self.size_packaging.product_presentation.presentation_supply,
                                    'quantity': self.product_presentations_per_packaging * self.packaging_quantity}
             presentation_complementary_supplies = [
-                {'supply': supply.supply, 'quantity': self.product_presentations_per_packaging * self.packaging_quantity} for supply in
+                {'supply': supply.supply,
+                 'quantity': self.product_presentations_per_packaging * self.packaging_quantity} for supply in
                 self.size_packaging.product_presentation.productpresentationcomplementarysupply_set.all()
             ]
             supplies.append(presentation_supply)
@@ -215,6 +261,23 @@ class PackingPackage(models.Model):
     def __str__(self):
         return f"{self.ooid} - {self.batch} - {self.packaging_quantity}"
 
+    def clean(self):
+        super().clean()
+
+        # Resto de tu validación
+        packing_package = PackingPackage.objects.get(pk=self.pk) if self.pk else None
+        packaging_quantity = self.packaging_quantity if self.packaging_quantity else (
+            packing_package.packaging_quantity if packing_package else None)
+        if self.packing_pallet and packaging_quantity:
+            if self.packing_pallet.pallet_packages_sum_quantity + packaging_quantity > self.packing_pallet.pallet.max_packages_quantity:
+                remaining_packages_quantity = self.packing_pallet.pallet.max_packages_quantity - self.packing_pallet.pallet_packages_sum_quantity
+                validation_error = _(
+                    "The pallet cannot accommodate more packages than its maximum capacity. Remaining packages: {}|{}, Tried {}"
+                ).format(remaining_packages_quantity, self.packing_pallet.pallet.max_packages_quantity,
+                         packaging_quantity)
+                raise ValidationError({'__all__': validation_error, 'packaging_quantity': validation_error,
+                                       'packing_pallet': validation_error})
+
     def save(self, *args, **kwargs):
         if self.ooid is None:
             with transaction.atomic():
@@ -222,10 +285,56 @@ class PackingPackage(models.Model):
                     self.organization = self.packing_pallet.organization if self.packing_pallet else None
                 last = (PackingPackage.objects.filter(organization=self.organization).order_by('-ooid').first())
                 self.ooid = (last.ooid + 1) if last else 1
-        if self.packing_pallet:
-            self.status = 'ready'
+
         super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Packing Package')
         verbose_name_plural = _('Packing Packages')
+
+
+class UnpackingPallet(models.Model):
+    packing_pallet = models.OneToOneField(PackingPallet, verbose_name=_('Packing Pallet'), on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+    organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"Unpacking Pallet {self.packing_pallet.ooid} - Unpacked at {self.created_at}"
+
+    class Meta:
+        verbose_name = _('Unpacking Pallet')
+        verbose_name_plural = _('Unpacking Pallets')
+
+
+class UnpackingBatch(models.Model):
+    unpacking_pallet = models.OneToOneField(UnpackingPallet, verbose_name=_('Packing Package'), on_delete=models.CASCADE)
+    initial_weight = models.FloatField(verbose_name=_('Original Weight'), validators=[MinValueValidator(0.1)])
+    lost_weight = models.FloatField(verbose_name=_('Current Weight'), validators=[MinValueValidator(0.1)])
+    return_weight = models.FloatField(verbose_name=_('Return Weight'), validators=[MinValueValidator(0.1)])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.id} - Unpacking pallet {self.unpacking_pallet.packing_pallet.ooid} - Unpacked at {self.created_at}"
+
+    class Meta:
+        verbose_name = _('Unpacking Package')
+        verbose_name_plural = _('Unpacking Packages')
+
+
+class UnpackingSupply(models.Model):
+    unpacking_pallet = models.OneToOneField(UnpackingPallet, verbose_name=_('Packing Package'), on_delete=models.CASCADE)
+    supply = models.ForeignKey(ProductPackaging, verbose_name=_('Supply'), on_delete=models.PROTECT)
+    initial_quantity = models.FloatField(verbose_name=_('Initial quantity'), validators=[MinValueValidator(0.1)])
+    lost_quantity = models.FloatField(verbose_name=_('Lost quantity'), validators=[MinValueValidator(0.1)])
+    return_quantity = models.FloatField(verbose_name=_('Return quantity'), validators=[MinValueValidator(0.1)])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def quantity(self):
+        return self.initial_quantity - self.lost_quantity - self.return_quantity
+    def __str__(self):
+        return f"Unpacking Supply {self.supply.name} - Quantity: {self.quantity}"
+
+    class Meta:
+        verbose_name = _('Unpacking Supply')
+        verbose_name_plural = _('Unpacking Supplies')

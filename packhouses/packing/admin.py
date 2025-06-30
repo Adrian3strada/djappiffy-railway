@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import PackerEmployee, PackerLabel, PackingPackage, PackingPallet
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html
 from django.urls import path, reverse
@@ -11,6 +10,7 @@ from packhouses.receiving.models import Batch
 from packhouses.gathering.models import ScheduleHarvest
 from packhouses.catalogs.models import (Market, Product, ProductSize, ProductMarketClass,
                                         ProductRipeness, SizePackaging, Pallet)
+from .models import PackerEmployee, PackerLabel, PackingPackage, PackingPallet, UnpackingPallet, UnpackingBatch, UnpackingSupply
 from .filters import (ByBatchForOrganizationPackingPackageFilter, ByMarketForOrganizationPackingPackageFilter,
                       ByProductSizeForOrganizationPackingPackageFilter,
                       ByProductMarketClassForOrganizationPackingPackageFilter,
@@ -21,7 +21,7 @@ from .filters import (ByBatchForOrganizationPackingPackageFilter, ByMarketForOrg
                       ByProductSizeForOrganizationPackingPalletFilter)
 from common.utils import is_instance_used
 from organizations.models import Organization
-from .forms import PackingPackageInlineFormSet
+from .forms import PackingPackageInlineFormSet, PackingPackageInlineForm
 
 # Register your models here.
 
@@ -97,7 +97,8 @@ class PackingPackageInline(admin.StackedInline):
               'size_packaging', 'product_weight_per_packaging', 'product_presentations_per_packaging',
               'product_pieces_per_presentation', 'packaging_quantity', 'processing_date', 'status')
     readonly_fields = ('ooid',)
-    formset = PackingPackageInlineFormSet
+    # formset = PackingPackageInlineFormSet
+    form = PackingPackageInlineForm
 
     def save_model(self, request, obj, form, change):
         if not obj.organization:
@@ -139,9 +140,9 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if obj and is_instance_used(obj, exclude=[Organization, Product, Market, ProductSize, Pallet]):
-            form.base_fields['product'].widget.attrs.update({'class': 'disabled-field','readonly': 'readonly'})
-            form.base_fields['market'].widget.attrs.update({'class': 'disabled-field','readonly': 'readonly'})
-            form.base_fields['product_sizes'].widget.attrs.update({'class': 'disabled-field','readonly': 'readonly'})
+            form.base_fields['product'].widget.attrs.update({'class': 'disabled-field', 'readonly': 'readonly'})
+            form.base_fields['market'].widget.attrs.update({'class': 'disabled-field', 'readonly': 'readonly'})
+            form.base_fields['product_sizes'].widget.attrs.update({'class': 'disabled-field', 'readonly': 'readonly'})
         return form
 
     def get_readonly_fields(self, request, obj=None):
@@ -199,13 +200,23 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
               'processing_date', 'packing_pallet', 'status']
 
     def get_readonly_fields(self, request, obj=None):
-        fields = ['ooid']
+        readonly_fields = ['ooid']
+        if obj and obj.status in ['closed', 'cancelled']:
+            readonly_fields = self.fields
+        return readonly_fields
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        ready_disabeld_fields = ['batch', 'market', 'product_size', 'product_market_class', 'product_ripeness',
+                                 'size_packaging', 'product_weight_per_packaging',
+                                 'product_presentations_per_packaging', 'product_pieces_per_presentation',
+                                 'packaging_quantity', 'processing_date'
+                                 ]
         if obj and obj.status not in ['open']:
-            fields.extend(['batch', 'market', 'product_size', 'product_market_class',
-                           'product_ripeness', 'size_packaging', 'product_weight_per_packaging',
-                           'product_presentations_per_packaging', 'product_pieces_per_presentation',
-                           'packaging_quantity', 'processing_date',])
-        return fields
+            for field in ready_disabeld_fields:
+                if field in form.base_fields:
+                    form.base_fields[field].widget.attrs.update({'class': 'readonly-field', 'readonly': 'readonly'})
+        return form
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
@@ -267,3 +278,33 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
 
     class Media:
         js = ('js/admin/forms/packing/packing_package.js',)
+
+
+class UnpackingBatchInline(admin.TabularInline):
+    model = UnpackingBatch
+    extra = 0
+    fields = ('initial_weight', 'lost_weight', 'return_weight')
+
+
+class UnpackingSupplyInline(admin.TabularInline):
+    model = UnpackingSupply
+    extra = 0
+    fields = ('supply', 'initial_quantity', 'lost_quantity', 'return_quantity')
+
+
+@admin.register(UnpackingPallet)
+class UnpackingPalletAdmin(ByOrganizationAdminMixin):
+    list_display = ("packing_pallet", "created_at")
+    list_filter = ("packing_pallet", "created_at")
+    fields = ['packing_pallet']
+    inlines = [UnpackingBatchInline, UnpackingSupplyInline]
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        organization = request.organization if hasattr(request, 'organization') else None
+
+        if db_field.name == "packing_pallet":
+            kwargs["queryset"] = PackingPallet.objects.filter(product__organization=organization)
+            formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return formfield
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)

@@ -2,8 +2,20 @@ from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from .models import PackingPackage
 from packhouses.receiving.models import BatchWeightMovement
+from ..storehouse.models import InventoryTransaction, AdjustmentInventory
+
 
 # Signals for PackingPackage model to handle weight movements and status updates
+
+
+# Variable temporal para almacenar el estado previo
+_package_previous_status = {}
+
+@receiver(pre_save, sender=PackingPackage)
+def capture_previous_status(sender, instance, **kwargs):
+    if instance.pk:  # Solo para instancias existentes
+        previous_instance = PackingPackage.objects.get(pk=instance.pk)
+        _package_previous_status[instance.pk] = previous_instance.status
 
 
 @receiver(pre_save, sender=PackingPackage)
@@ -45,6 +57,39 @@ def handle_packing_package_post_save(sender, instance, created, **kwargs):
                 "weight": instance.packing_package_sum_weight,
             }
         )
+        if instance.status == 'ready':
+            for supply in instance.package_supplies:
+                print(f"Adjusting supply {supply['supply']} with quantity {supply['quantity']}")
+                AdjustmentInventory.objects.create(
+                    transaction_kind='outbound',
+                    transaction_category='packing',
+                    supply=supply['supply'],
+                    quantity=supply['quantity'],
+                    organization=instance.organization
+                )
+    else:
+        previous_status = _package_previous_status.pop(instance.pk, None)
+        if previous_status and previous_status != instance.status:
+            if instance.status == 'ready':
+                for supply in instance.package_supplies:
+                    print(f"Adjusting supply {supply['supply']} with quantity {supply['quantity']}")
+                    AdjustmentInventory.objects.create(
+                        transaction_kind='outbound',
+                        transaction_category='packing',
+                        supply=supply['supply'],
+                        quantity=supply['quantity'],
+                        organization=instance.organization
+                    )
+            if instance.status == 'open':
+                for supply in instance.package_supplies:
+                    print(f"Reverting supply {supply['supply']} with quantity {supply['quantity']}")
+                    AdjustmentInventory.objects.create(
+                        transaction_kind='inbound',
+                        transaction_category='packing',
+                        supply=supply['supply'],
+                        quantity=supply['quantity'],
+                        organization=instance.organization
+                    )
 
 
 @receiver(post_delete, sender=PackingPackage)
