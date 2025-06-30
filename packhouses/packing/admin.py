@@ -107,7 +107,10 @@ class PackingPackageInline(admin.StackedInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         parent_object_id = request.resolver_match.kwargs.get("object_id")
-        parent_obj = Product.objects.get(id=parent_object_id) if parent_object_id else None
+        try:
+            parent_obj = PackingPackage.objects.get(id=parent_object_id) if parent_object_id else None
+        except PackingPackage.DoesNotExist:
+            parent_obj = None
         organization = request.organization if hasattr(request, 'organization') else None
 
         if db_field.name == "batch":
