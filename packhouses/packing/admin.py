@@ -126,13 +126,27 @@ class PackingPackageInline(admin.StackedInline):
 
 @admin.register(PackingPallet)
 class PackingPalletAdmin(ByOrganizationAdminMixin):
-    list_display = ("ooid", "market", "get_product_sizes_display", "status")
+    list_display = ("ooid", "market", "get_product_sizes_display", "status", "get_action_buttons")
     search_fields = ("ooid",)
     list_filter = (ByProductForOrganizationPackingPalletFilter, ByMarketForOrganizationPackingPalletFilter,
                    ByProductSizeForOrganizationPackingPalletFilter, ByPalletForOrganizationPackingPalletFilter,
                    'status')
     fields = ['ooid', 'product', 'market', 'product_sizes', 'pallet', 'status']
     inlines = [PackingPackageInline]
+
+    def get_action_buttons(self, obj):
+        if obj.status == 'open':
+            return format_html('''
+                <a class="button btn-cancel-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
+                data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:red;">
+                <i class="fa-solid fa-box-open"></i>
+                </a>''',
+                "iii", 2,3,4,3,
+                _("Generate Label")
+            )
+        return ""
+
+    get_action_buttons.short_description = _("Actions")
 
     def get_product_sizes_display(self, obj):
         return ", ".join([size.name for size in obj.product_sizes.all()]) if obj.product_sizes.exists() else "-"
