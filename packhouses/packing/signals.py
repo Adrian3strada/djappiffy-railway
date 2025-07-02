@@ -48,8 +48,6 @@ def handle_packing_package_pre_save(sender, instance, **kwargs):
 def handle_packing_package_post_save(sender, instance, created, **kwargs):
     if created:
         # Registrar movimiento con weight negativo al crear
-        logger.debug(f"instance.batch available_weight: {instance.batch.available_weight}")
-        logger.debug(f"instance.batch packing_package_sum_weight: {instance.packing_package_sum_weight}")
         BatchWeightMovement.objects.create(
             batch=instance.batch,
             weight=-instance.packing_package_sum_weight,
