@@ -120,8 +120,11 @@ class SubRegionViewSet(BaseSubRegionModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         state = self.request.GET.get('region')
+        region = self.request.GET.get('region')
         if state:
             queryset = queryset.filter(region_id=state)
+        if region:
+            queryset = queryset.filter(region_id=region)
         return queryset
 
 

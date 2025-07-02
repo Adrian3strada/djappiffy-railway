@@ -24,7 +24,6 @@ class BaseOrganizationProfileViewSet(viewsets.ModelViewSet):
         instance = serializer.save()
         instance.product_kinds.set(products_data)
 
-
     def perform_update(self, serializer):
         products_data = self.request.data.pop('products', [])
         serializer.validated_data.pop('products', None)
