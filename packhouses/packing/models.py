@@ -130,7 +130,9 @@ class PackingPallet(models.Model):
 
     @property
     def pallet_packages_sum_quantity(self):
-        return self.packingpackage_set.all().aggregate(total_quantity=Sum('packaging_quantity'))['total_quantity'] or 0
+        if self.pk:
+            return self.packingpackage_set.all().aggregate(total_quantity=Sum('packaging_quantity'))['total_quantity'] or 0
+        return 0
 
     def save(self, *args, **kwargs):
         if self.ooid is None:
