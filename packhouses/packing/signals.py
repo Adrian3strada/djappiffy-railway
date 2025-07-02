@@ -48,6 +48,8 @@ def handle_packing_package_pre_save(sender, instance, **kwargs):
 def handle_packing_package_post_save(sender, instance, created, **kwargs):
     if created:
         # Registrar movimiento con weight negativo al crear
+        logger.debug(f"instance.batch available_weight: {instance.batch.available_weight}")
+        logger.debug(f"instance.batch packing_package_sum_weight: {instance.packing_package_sum_weight}")
         BatchWeightMovement.objects.create(
             batch=instance.batch,
             weight=-instance.packing_package_sum_weight,
@@ -85,7 +87,7 @@ def handle_packing_package_post_save(sender, instance, created, **kwargs):
                     print(f"Reverting supply {supply['supply']} with quantity {supply['quantity']}")
                     AdjustmentInventory.objects.create(
                         transaction_kind='inbound',
-                        transaction_category='packing',
+                        transaction_category='return',
                         supply=supply['supply'],
                         quantity=supply['quantity'],
                         organization=instance.organization
@@ -103,3 +105,15 @@ def handle_packing_package_post_delete(sender, instance, **kwargs):
             "weight": instance.packing_package_sum_weight,
         }
     )
+    if instance.status == 'ready':
+        # Revertir ajustes de inventario al eliminar el paquete
+        print("Reverting supplies for deleted package")
+        for supply in instance.package_supplies:
+            print(f"Reverting supply {supply['supply']} with quantity {supply['quantity']}")
+            AdjustmentInventory.objects.create(
+                transaction_kind='inbound',
+                transaction_category='return',
+                supply=supply['supply'],
+                quantity=supply['quantity'],
+                organization=instance.organization
+            )

@@ -76,7 +76,7 @@ class PackingPallet(models.Model):
     market = models.ForeignKey(Market, verbose_name=_('Market'), on_delete=models.PROTECT)
     product_sizes = models.ManyToManyField(ProductSize, verbose_name=_('Product sizes'))
     pallet = models.ForeignKey(Pallet, verbose_name=_('Pallet'), on_delete=models.PROTECT, null=True, blank=False)
-    status = models.CharField(max_length=20, default='ready', verbose_name=_('Status'), choices=STATUS_CHOICES)
+    status = models.CharField(max_length=20, default='open', verbose_name=_('Status'), choices=STATUS_CHOICES)
     is_repacked = models.BooleanField(default=False, verbose_name=_('Is repacked'))
     created_at = models.DateTimeField(auto_now_add=True)
     organization = models.ForeignKey(Organization, verbose_name=_('Organization'), on_delete=models.PROTECT)
@@ -168,7 +168,7 @@ class PackingPackage(models.Model):
     packaging_quantity = models.PositiveIntegerField(verbose_name=_('Packaging quantity'),
                                                      validators=[MinValueValidator(1)])
     processing_date = models.DateField(default=datetime.datetime.today, verbose_name=_('Processing date'))
-    packing_pallet = models.ForeignKey(PackingPallet, verbose_name=_('Packing Pallet'), on_delete=models.PROTECT,
+    packing_pallet = models.ForeignKey(PackingPallet, verbose_name=_('Packing Pallet'), on_delete=models.CASCADE,
                                        null=True, blank=True)
     status = models.CharField(max_length=20, default='open', verbose_name=_('Status'), choices=STATUS_CHOICES)
     is_repacked = models.BooleanField(default=False, verbose_name=_('Is repacked'))
@@ -261,8 +261,6 @@ class PackingPackage(models.Model):
 
     def clean(self):
         super().clean()
-
-        # Resto de tu validación
         packing_package = PackingPackage.objects.get(pk=self.pk) if self.pk else None
         packaging_quantity = self.packaging_quantity if self.packaging_quantity else (
             packing_package.packaging_quantity if packing_package else None)

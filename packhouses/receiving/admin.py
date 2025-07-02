@@ -1644,5 +1644,5 @@ class FoodSafetyAdmin(ByOrganizationAdminMixin, nested_admin.NestedModelAdmin):
     get_product_ripeness.admin_order_field = 'batch__incomingproduct__scheduleharvest__product_ripeness'
 
     def get_batch_received_weight(self, obj):
-        return obj.batch.weight_received if obj.batch else "-"
+        return obj.batch.family_ingress_weight if obj.batch else "-"
     get_batch_received_weight.short_description = _('Received Weight')

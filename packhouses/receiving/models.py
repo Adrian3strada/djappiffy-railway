@@ -98,7 +98,7 @@ class Batch(models.Model):
         }
 
     @property
-    def ingress_weight(self):
+    def individual_ingress_weight(self):
         if self.batchweightmovement_set.exists():
             return self.batchweightmovement_set.aggregate(
                 batch_weight=Sum('weight')
@@ -106,18 +106,18 @@ class Batch(models.Model):
         return 0
 
     @property
-    def weight_received(self):
+    def family_ingress_weight(self):
         qs = self.batchweightmovement_set.filter(source__model__icontains='weighingset')
         total_weight = qs.aggregate(ingress_weight=Sum('weight'))['ingress_weight'] or 0
         if self.is_parent:
-            total_weight += sum(child.ingress_weight for child in self.children.all())
+            total_weight += sum(child.individual_ingress_weight for child in self.children.all())
         return total_weight
 
     @property
     def available_weight(self):
-        total_weight = self.ingress_weight
+        total_weight = self.individual_ingress_weight
         if self.is_parent:
-            total_weight += sum(child.ingress_weight for child in self.children.all())
+            total_weight += sum(child.individual_ingress_weight for child in self.children.all())
         return total_weight
 
     # Peso recibido propio (sin hijos), para el admin
@@ -432,7 +432,7 @@ class BatchWeightMovement(models.Model):
         verbose_name_plural = _('Batch Weight Movements')
 
     def clean(self):
-        if self.weight < 0 or self.batch.ingress_weight + self.weight < 0:
+        if self.weight < 0 and self.batch.available_weight + self.weight < 0:
             raise ValidationError(
                 _('This movement would result in a negative weight for the batch.'),
             )
@@ -457,7 +457,7 @@ class RepackingBatchWeightMovement(models.Model):
         verbose_name_plural = _('Repacking batch weight movements')
 
     def clean(self):
-        if self.weight < 0 or self.batch.ingress_weight + self.weight < 0:
+        if self.weight < 0 and self.batch.individual_ingress_weight + self.weight < 0:
             raise ValidationError(
                 _('This movement would result in a negative weight for the batch.'),
             )

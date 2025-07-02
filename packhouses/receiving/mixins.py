@@ -5,10 +5,10 @@ from django.utils.html import format_html
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 
 class CustomNestedStackedInlineMixin(NestedInlineModelAdminMixin):
-    template = "nested_stacked.html" 
+    template = "nested_stacked.html"
 
 class CustomNestedStackedAvgInlineMixin(NestedInlineModelAdminMixin):
-    template = "nested_stacked_avg.html" 
+    template = "nested_stacked_avg.html"
 
 class IncomingProductMetricsMixin:
     readonly_fields = (
@@ -57,7 +57,7 @@ class IncomingProductMetricsMixin:
 
 class BatchDisplayMixin:
     def display_weight_received(self, obj):
-        return '{:,.3f} kg'.format(obj.weight_received)
+        return '{:,.3f} kg'.format(obj.family_ingress_weight)
     display_weight_received.short_description = _('Ingress Weight (with children)')
 
     def display_available_weight(self, obj):
@@ -73,7 +73,7 @@ class BatchDisplayMixin:
     display_own_net_received.short_description = _('Self Available Weight')
 
     def weight_received_display(self, obj):
-        return f"{obj.weight_received:.3f}" if obj.weight_received else ""
+        return f"{obj.family_ingress_weight:.3f}" if obj.family_ingress_weight else ""
     weight_received_display.short_description = _('Weight Received')
 
     def get_batch_available_weight(self, obj):
@@ -97,7 +97,7 @@ class BatchDisplayMixin:
         elif obj.is_child:
             return f"Child of {obj.parent.ooid}"
         return _("Independent")
-        
+
     get_batch_merge_status.short_description = _('Batch Merge Status')
     get_batch_merge_status.admin_order_field = 'parent'
 
@@ -176,7 +176,7 @@ class BatchDisplayMixin:
         return _boolean_icon(obj.is_available_for_processing)
     display_available_for_processing.short_description = _('Available for Processing')
     display_available_for_processing.admin_order_field = 'is_available_for_processing'
-    
+
     def get_orchard_code(self, obj):
         return obj.incomingproduct.scheduleharvest.orchard.code if obj.incomingproduct.scheduleharvest.orchard else None
     get_orchard_code.short_description = _('Orchard Code')

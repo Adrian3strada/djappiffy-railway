@@ -95,7 +95,7 @@ class PackingPackageInline(admin.StackedInline):
     extra = 0
     fields = ('ooid', 'batch', 'market', 'product_size', 'product_market_class', 'product_ripeness',
               'size_packaging', 'product_weight_per_packaging', 'product_presentations_per_packaging',
-              'product_pieces_per_presentation', 'packaging_quantity', 'processing_date', 'status')
+              'product_pieces_per_presentation', 'packaging_quantity', 'processing_date')
     readonly_fields = ('ooid',)
     # formset = PackingPackageInlineFormSet
     form = PackingPackageInlineForm
@@ -135,16 +135,28 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
     inlines = [PackingPackageInline]
 
     def get_action_buttons(self, obj):
-        if obj.status == 'open':
-            return format_html('''
+        action_set_status_ready = format_html('''
+                <a class="button btn-cancel-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
+                data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:#4daf50;">
+                <i class="fa-solid fa-paper-plane"></i></a>''',_("Set ready"), 2,3,4,3,
+            ) if obj.status == 'open' else ''
+        action_unpack = format_html('''
+                <a class="button btn-cancel-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
+                data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}">
+                <i class="fa-solid fa-box-open"></i></a>''',"iii", 2,3,4,3, _("Generate Label")
+            ) if obj.status == 'canceled' else ''
+        action_set_status_canceled = format_html('''
                 <a class="button btn-cancel-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
                 data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:red;">
-                <i class="fa-solid fa-box-open"></i>
-                </a>''',
-                "iii", 2,3,4,3,
-                _("Generate Label")
-            )
-        return ""
+                <i class="fa fa-ban"></i></a>''',"iii", 2,3,4,3, _("Generate Label")
+            ) if obj.status == 'ready' else ''
+        action_delete = format_html('''
+        <a class="button btn-cancel-confirm" href="javascript:void(0);" data-toggle="tooltip" title="{}"
+        data-url="{}" data-message="{}" data-confirm="{}" data-cancel="{}" style="color:red;">
+        <i class="fa fa-trash"></i></a>''', "iii", 2, 3, 4, 3, _("Generate Label")
+        ) if obj.status == 'open' else ''
+
+        return format_html(f"{action_set_status_ready} {action_unpack} {action_set_status_canceled} {action_delete}")
 
     get_action_buttons.short_description = _("Actions")
 
@@ -157,20 +169,42 @@ class PackingPalletAdmin(ByOrganizationAdminMixin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if obj and is_instance_used(obj, exclude=[Organization, Product, Market, ProductSize, Pallet]):
-            form.base_fields['product'].widget.attrs.update({'class': 'disabled-field', 'readonly': 'readonly'})
-            form.base_fields['market'].widget.attrs.update({'class': 'disabled-field', 'readonly': 'readonly'})
-            form.base_fields['product_sizes'].widget.attrs.update({'class': 'disabled-field', 'readonly': 'readonly'})
+            form.base_fields['product'].widget.attrs.update({'class': 'readonly-field', 'readonly': 'readonly'})
+            form.base_fields['market'].widget.attrs.update({'class': 'readonly-field', 'readonly': 'readonly'})
+            form.base_fields['product_sizes'].widget.attrs.update({'class': 'readonly-field', 'readonly': 'readonly'})
+            form.base_fields['pallet'].widget.attrs.update({'class': 'readonly-field', 'readonly': 'readonly'})
         return form
 
     def get_readonly_fields(self, request, obj=None):
-        readonly_fields = []
-        if obj:
-            readonly_fields = ['ooid']
+        readonly_fields = ['ooid']
         if obj and obj.status not in ['open']:
-            readonly_fields.extend('status')
+            readonly_fields.extend(['status'])
         return readonly_fields
 
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = self.model.objects.filter(pk=object_id).first() if object_id else None
+        organization = request.organization if hasattr(request, 'organization') else None
+
+        if db_field.name == "status":
+            choices = list(db_field.choices)
+            if obj:
+                if obj.status in ["open", "ready" "canceled"]:
+                    # Solo mostrar open y ready
+                    choices = [c for c in choices if c[0] in ["open", "ready", "canceled"]]
+                else:
+                    # Solo mostrar la opción actual
+                    choices = [c for c in choices if c[0] == obj.status]
+            else:
+                # Si es nuevo, solo mostrar open y ready
+                choices = [c for c in choices if c[0] in ["open", "ready"]]
+            kwargs['choices'] = choices
+
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = self.model.objects.filter(pk=object_id).first() if object_id else None
         organization = request.organization if hasattr(request, 'organization') else None
 
         if db_field.name == "product":
@@ -237,7 +271,7 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         object_id = request.resolver_match.kwargs.get("object_id")
-        obj = ProductSize.objects.get(id=object_id) if object_id else None
+        obj = PackingPackage.objects.get(id=object_id) if object_id else None
         organization = request.organization if hasattr(request, 'organization') else None
         size_packaging_instance = None
 
@@ -262,11 +296,32 @@ class PackingPackageAdmin(ByOrganizationAdminMixin):
 
         return super().formfield_for_dbfield(db_field, request, **kwargs)
 
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        object_id = request.resolver_match.kwargs.get("object_id")
+        obj = self.model.objects.filter(pk=object_id).first() if object_id else None
+        organization = request.organization if hasattr(request, 'organization') else None
+
+        if db_field.name == "status":
+            choices = list(db_field.choices)
+            if obj:
+                if obj.status in ["open", "ready"]:
+                    # Solo mostrar open y ready
+                    choices = [c for c in choices if c[0] in ["open", "ready"]]
+                else:
+                    # Solo mostrar la opción actual
+                    choices = [c for c in choices if c[0] == obj.status]
+            else:
+                # Si es nuevo, solo mostrar open y ready
+                choices = [c for c in choices if c[0] in ["open", "ready"]]
+            kwargs['choices'] = choices
+
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         organization = request.organization if hasattr(request, 'organization') else None
 
         if db_field.name == "batch":
-            kwargs["queryset"] = Batch.objects.filter(organization=organization, status='ready', parent__isnull=True)
+            kwargs["queryset"] = Batch.objects.filter(organization=organization, is_available_for_processing=True, parent__isnull=True)
             formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
             return formfield
 

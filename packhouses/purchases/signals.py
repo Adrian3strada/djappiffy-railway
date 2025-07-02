@@ -69,7 +69,7 @@ def try_close_fruit_purchase_order(order: FruitPurchaseOrder):
         status__in=['open', 'closed']
     ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
-    expected_quantity = float(order.batch.weight_received or 0)
+    expected_quantity = float(order.batch.family_ingress_weight or 0)
 
     if total_quantity == expected_quantity and total_paid == total_cost:
         new_status = 'closed'

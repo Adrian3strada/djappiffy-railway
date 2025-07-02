@@ -56,11 +56,11 @@ class BatchSerializer(serializers.ModelSerializer):
         return available_weight if available_weight else 0
 
     def get_weight_received(self, obj):
-        weight_received = obj.weight_received
+        weight_received = obj.family_ingress_weight
         return weight_received if weight_received else 0
 
     def get_ingress_weight(self, obj):
-        ingress_weight = obj.ingress_weight
+        ingress_weight = obj.individual_ingress_weight
         return ingress_weight if ingress_weight else 0
 
     def get_yield_orchard_registry_code(self, obj):

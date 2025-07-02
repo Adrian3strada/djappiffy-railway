@@ -12,7 +12,7 @@ class PackingPackageInlineForm(forms.ModelForm):
         self.size_packaging_category = None  # Usamos esto también en clean()
 
         # --- 1. Lógica de campos readonly según status ---
-        if instance.pk and instance.status != 'open':
+        if instance.pk:
             readonly_fields = [
                 'batch', 'market', 'product_size', 'product_market_class',
                 'product_ripeness', 'size_packaging', 'product_weight_per_packaging',

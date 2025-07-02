@@ -177,26 +177,27 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log("Available batches:", availableBatches);
 
     const setItemWeight = async () => {
-        if (productWeightPerPackagingField.val() && productWeightPerPackagingField.val() > 0 && packagingQuantityField.val() && packagingQuantityField.val() > 0) {
-          const prevItemWeight = itemWeight;
-          console.log("prevItemWeight", prevItemWeight);
-          const newItemWeight = parseFloat(productWeightPerPackagingField.val()) * parseInt(packagingQuantityField.val());
-          console.log("newItemWeight", newItemWeight);
-          itemWeight = newItemWeight;
-          console.log("itemWeight", itemWeight);
+      if (productWeightPerPackagingField.val() && productWeightPerPackagingField.val() > 0 && packagingQuantityField.val() && packagingQuantityField.val() > 0) {
+        const prevItemWeight = itemWeight;
+        console.log("prevItemWeight", prevItemWeight);
+        const newItemWeight = parseFloat(productWeightPerPackagingField.val()) * parseInt(packagingQuantityField.val());
+        console.log("newItemWeight", newItemWeight);
+        itemWeight = newItemWeight;
+        console.log("itemWeight", itemWeight);
 
-          availableBatches[selectedAvailableBatchIndex].available_weight = availableBatches[selectedAvailableBatchIndex].available_weight + prevItemWeight;
-          const newAvailableWeight = availableBatches[selectedAvailableBatchIndex].available_weight - newItemWeight;
-          availableBatches[selectedAvailableBatchIndex].available_weight = newAvailableWeight
-          availableBatches[selectedAvailableBatchIndex].name = availableBatches[selectedAvailableBatchIndex].name.replace(/\(AW:\d+(\.\d+)?/, `(NAW:${newAvailableWeight}`);
-          availableBatches[selectedAvailableBatchIndex].name = availableBatches[selectedAvailableBatchIndex].name.replace(/\(NAW:\d+(\.\d+)?/, `(NAW:${newAvailableWeight}`);
-        }
+        availableBatches[selectedAvailableBatchIndex].available_weight = availableBatches[selectedAvailableBatchIndex].available_weight + prevItemWeight;
+        const newAvailableWeight = availableBatches[selectedAvailableBatchIndex].available_weight - newItemWeight;
+        availableBatches[selectedAvailableBatchIndex].available_weight = newAvailableWeight
+        availableBatches[selectedAvailableBatchIndex].name = availableBatches[selectedAvailableBatchIndex].name.replace(/\(AW:\d+(\.\d+)?/, `(NAW:${newAvailableWeight}`);
+        availableBatches[selectedAvailableBatchIndex].name = availableBatches[selectedAvailableBatchIndex].name.replace(/\(NAW:\d+(\.\d+)?/, `(NAW:${newAvailableWeight}`);
+      }
     }
 
     const sizePackagingFieldChangeHandler = async () => {
       if (sizePackagingField.val()) {
         const sizePackagingProperties = await fetchOptions(`/rest/v1/catalogs/size-packaging/${sizePackagingField.val()}/`);
-        productWeightPerPackagingField.val(sizePackagingProperties.product_weight_per_packaging).trigger("change");;
+        productWeightPerPackagingField.val(sizePackagingProperties.product_weight_per_packaging).trigger("change");
+        ;
         productWeightPerPackagingField.attr('max', sizePackagingProperties.product_weight_per_packaging);
 
         if (sizePackagingProperties.category === 'presentation') {
@@ -242,14 +243,16 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     sizePackagingField.on("change", async function () {
       await sizePackagingFieldChangeHandler();
-      if (batchProperties && sizePackagingField.val()) {
-        packagingQuantityField.attr('max', parseInt(batchProperties.available_weight / parseFloat(productWeightPerPackagingField.val())));
-        if (!packagingQuantityField.val()) {
-          packagingQuantityField.val(parseInt(batchProperties.available_weight / parseFloat(productWeightPerPackagingField.val()))).trigger("change");
+      /*
+        if (batchProperties && sizePackagingField.val()) {
+          packagingQuantityField.attr('max', parseInt(batchProperties.available_weight / parseFloat(productWeightPerPackagingField.val())));
+          if (!packagingQuantityField.val()) {
+            packagingQuantityField.val(parseInt(batchProperties.available_weight / parseFloat(productWeightPerPackagingField.val()))).trigger("change");
+          }
+        } else {
+          packagingQuantityField.attr('max', null);
         }
-      } else {
-        packagingQuantityField.attr('max', null);
-      }
+       */
     });
 
     productWeightPerPackagingField.on('change', async function () {

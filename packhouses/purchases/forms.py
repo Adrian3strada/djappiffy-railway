@@ -545,8 +545,8 @@ class FruitPurchaseOrderReceiptInlineFormset(BaseInlineFormSet):
 
                 total_quantity += float(quantity)
 
-        if self.instance.batch and self.instance.batch.weight_received is not None:
-            batch_weight = round(float(self.instance.batch.weight_received), 2)
+        if self.instance.batch and self.instance.batch.family_ingress_weight is not None:
+            batch_weight = round(float(self.instance.batch.family_ingress_weight), 2)
             total_quantity = round(total_quantity, 2)
 
             if total_quantity > batch_weight:

@@ -260,7 +260,6 @@ class ScheduleHarvestAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin
                     tooltip_ready, ready_url, confirm_ready_text, confirm_ready_button_text, cancel_button_text
                 )
 
-
         return format_html(
             '''
             {}
@@ -320,7 +319,7 @@ class ScheduleHarvestAdmin(SheetReportExportAdminMixin, ByOrganizationAdminMixin
 
         if db_field.name == "product_ripeness":
             kwargs["queryset"] = ProductRipeness.objects.filter(**product_organization_queryfilter)
-        
+
         if db_field.name == "orchard":
             product_id = request.GET.get("product")
             kwargs["queryset"] = Orchard.objects.filter(**organization_queryfilter, **({"products__id": product_id} if product_id else {})).distinct()
